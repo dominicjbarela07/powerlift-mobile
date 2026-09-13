@@ -19,11 +19,17 @@ assert.equal(audit.corrected_count, 22);
 assert.equal(audit.kept_count, 176);
 assert.equal(new Set(audit.movements.map(row => row.id)).size, 198);
 assert.deepEqual(sortedIds(audit.movements), sortedIds(before.movements));
-assert.deepEqual(sortedIds(current.movements), sortedIds(before.movements));
+const withdrawn = new Set(humanState.catalog_exclusions.map(row=>row.movement_definition_id));
+assert.deepEqual([...withdrawn].sort((a,b)=>a-b),[38,395,561,569]);
+assert.deepEqual(sortedIds(current.movements), [...sortedIds(before.movements.filter(row=>!withdrawn.has(row.id))),646].sort((a,b)=>a-b), 'current human-approved catalog supersedes the historical audit without erasing its provenance');
 assert.deepEqual(sortedIds(audit.movements.filter(row => row.decision === 'CORRECT')), expected);
 const currentById = new Map(current.movements.map(row => [row.id, row]));
 const artworkOnly = new Set(['files', 'attempt', 'validation_note', 'gaze_correction_receipt']);
 for (const previous of before.movements) {
+  if (withdrawn.has(previous.id)) {
+    assert.equal(humanState.canonical_assets.some(row=>row.movement_definition_id===previous.id),false,'withdrawn historical identities cannot render as canonical photos');
+    continue;
+  }
   const asset = currentById.get(previous.id);
   for (const [key, value] of Object.entries(previous)) {
     if (!artworkOnly.has(key)) assert.deepEqual(asset[key], value, `preserve ${previous.id} ${key}`);

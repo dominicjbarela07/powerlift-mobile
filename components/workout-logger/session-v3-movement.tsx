@@ -23,7 +23,7 @@ export function SessionV3Movement({ title, index, expanded, complete, prescripti
 }) {
   if (!expanded) return <Pressable accessibilityRole="button" accessibilityLabel={`Expand ${title}`} onPress={onOpen} style={({ pressed }) => [s.row, pressed && s.pressed]}>
     <Text style={[s.index, complete && s.success]}>{complete ? '✓' : String(index).padStart(2, '0')}</Text>
-    <CanonicalMovementArtwork requireHumanApproval movement={visual?.movementArtworkInput} accessoryPresentation="muscle-focus" size={__DEV__ ? 64 : 42} />
+    <CanonicalMovementArtwork surface="session-v3-movement" requireHumanApproval movement={visual?.movementArtworkInput} accessoryPresentation="muscle-focus" size={__DEV__ ? 64 : 42} />
     <View style={s.copy}><Text numberOfLines={0} style={s.rowTitle}>{title}</Text><Text style={s.detail}>{prescription}</Text></View>
     <Ionicons name="chevron-forward" color={SLColors.textMuted} size={17} />
   </Pressable>;
@@ -37,7 +37,7 @@ export function SessionV3Movement({ title, index, expanded, complete, prescripti
     <View style={s.activeHeader}>
     {hero ? <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} reduceMotion={reduceMotion} /> : null}
     <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen} style={s.heading}>
-      <CanonicalMovementArtwork requireHumanApproval movement={visual?.movementArtworkInput} accessoryPresentation="muscle-focus" size={__DEV__ ? 68 : 48} />
+      <CanonicalMovementArtwork surface="session-v3-movement" requireHumanApproval movement={visual?.movementArtworkInput} accessoryPresentation="muscle-focus" size={__DEV__ ? 68 : 48} />
       <View style={s.copy}><Text numberOfLines={0} style={s.title}>{title}</Text><Text style={s.eyebrow}>{complete ? 'MOVEMENT COMPLETE' : focus?.currentSetPositionLabel || prescription}</Text></View>
     </Pressable>
     {!complete && focus ? <>

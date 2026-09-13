@@ -147,6 +147,7 @@ export type SessionMovementItem = {
   } | null;
   performed_movement_identity?: SessionMovementItem['movement_identity'];
   performed_canonical_movement_identity?: SessionMovementItem['movement_identity'];
+  effective_movement_identity?: SessionMovementItem['movement_identity'];
   legacy?: {
     state?: string | null;
     original_text?: string | null;
@@ -1430,8 +1431,10 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
 
 function MovementArtwork({ item, kind, size }: { item: SessionMovementItem | null; kind: MovementKind; size: number }) {
   const movement = item ? {
-    id: item.id,
+    item_id: item.id,
     kind,
+    effective_movement_identity: item.effective_movement_identity,
+    is_substituted: item.is_substituted,
     lift: item.lift,
     core_movement: item.core_movement,
     performed_core_movement: item.performed_core_movement,

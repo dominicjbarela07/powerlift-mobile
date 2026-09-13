@@ -15,6 +15,7 @@ import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets
 import { CANONICAL_ACCESSORY_MOVEMENT_ARTWORK, CANONICAL_CORE_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-artwork-assets';
 import {
   resolveCanonicalMovementArtwork,
+  normalizeCanonicalMovementArtSubject,
   type CanonicalMovementArtworkInput,
 } from '@/lib/canonical-movement-artwork';
 
@@ -23,6 +24,7 @@ type Props = Readonly<{
   size?: number;
   style?: StyleProp<ViewStyle>;
   testID?: string;
+  surface?: string;
   requireHumanApproval?: boolean;
   /** Keep governed accessory muscle context visible beside an exact movement hero. */
   accessoryPresentation?: 'movement' | 'muscle-focus';
@@ -30,23 +32,31 @@ type Props = Readonly<{
 
 const warned = new Set<string>();
 
-export function CanonicalMovementArtwork({ movement, size = 72, style, testID, requireHumanApproval = false, accessoryPresentation = 'movement' }: Props) {
-  const resolution = resolveCanonicalMovementArtwork(movement);
+export function CanonicalMovementArtwork({ movement, size = 72, style, testID, surface, accessoryPresentation = 'movement' }: Props) {
+  const subject = normalizeCanonicalMovementArtSubject(movement);
+  const resolution = resolveCanonicalMovementArtwork(subject);
 
   useEffect(() => {
     if (!__DEV__ || resolution.kind !== 'neutral') return;
-    const key = `${resolution.reason}:${movement?.id || movement?.movement_definition_id || movement?.core_movement_id || 'unknown'}`;
+    const consumer = surface || testID || 'canonical-movement-artwork';
+    const key = `${consumer}:${resolution.reason}:${subject.canonicalIdentityId}:${subject.canonicalKey}:${subject.sessionItemId}`;
     if (warned.has(key)) return;
+    if (warned.size >= 200) warned.clear();
     warned.add(key);
-    console.warn('[movement-artwork] neutral fail-closed result', { key, reason: resolution.reason });
-  }, [movement?.core_movement_id, movement?.id, movement?.movement_definition_id, resolution]);
+    console.warn('[movement-artwork] unresolved governed subject', {
+      surface: consumer, reason: resolution.reason, sessionItemId: subject.sessionItemId, evidenceId: subject.evidenceId,
+      canonicalId: subject.canonicalIdentityId, effectiveId: subject.effectiveMovementDefinitionId,
+      performedId: subject.performedMovementDefinitionId, movementKey: subject.canonicalKey, source: subject.source,
+    });
+  }, [subject, resolution, surface, testID]);
 
   if (resolution.kind === 'accessory') {
-    if (accessoryPresentation === 'movement' && __DEV__ && resolution.artworkKey && (!requireHumanApproval || resolveApprovedExactMovementArtwork(movement))) {
-      const asset = CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[resolution.artworkKey];
+    const approved = accessoryPresentation === 'movement' && __DEV__ ? resolveApprovedExactMovementArtwork(subject) : null;
+    const exactAsset = approved ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[approved.key] : null;
+    if (exactAsset) {
       return (
-        <View accessibilityLabel={asset.label} accessibilityRole="image" style={[styles.frame, { width: size, height: size, borderRadius: Math.min(SLRadius.lg, size * 0.16) }, style]} testID={testID}>
-          <Image accessibilityIgnoresInvertColors resizeMode="contain" source={size <= 64 ? asset.thumbnail : asset.source} style={styles.image} />
+        <View accessibilityLabel={exactAsset.label} accessibilityRole="image" style={[styles.frame, { width: size, height: size, borderRadius: Math.min(SLRadius.lg, size * 0.16) }, style]} testID={testID}>
+          <Image accessibilityIgnoresInvertColors resizeMode="contain" source={size <= 64 ? exactAsset.thumbnail : exactAsset.source} style={styles.image} />
         </View>
       );
     }

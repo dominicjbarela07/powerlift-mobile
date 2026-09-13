@@ -17,6 +17,7 @@ import Svg, { Circle, Line, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { canonicalArtworkInputFromDefinition } from '@/lib/canonical-movement-artwork';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLSpacing } from '@/constants/theme';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
@@ -373,7 +374,7 @@ function RecentPrCard({ performance, unit, onPress, hero = false }: { performanc
 
 function LatestEntryArtwork({ movement, entry, fallbackEvent }: { movement?: LedgerMovementProgress | null; entry?: JourneyEntry | null; fallbackEvent?: AccomplishmentEvent }) {
   const movementLabel = movement?.name || entry?.movement?.label || fallbackEvent?.movement_label;
-  return <View accessibilityLabel={movementLabel ? `${movementLabel} canonical artwork` : 'Latest movement'} style={styles.latestImage}>{movement ? <CanonicalMovementArtwork movement={movement} size={78} testID="ledger-latest-canonical-movement-artwork" /> : <Image accessible={false} source={LEDGER_INDEX_ASSETS.latestEntryFallback} resizeMode="contain" style={styles.latestImageFallback} />}</View>;
+  return <View accessibilityLabel={movementLabel ? `${movementLabel} canonical artwork` : 'Latest movement'} style={styles.latestImage}>{movement ? <CanonicalMovementArtwork movement={canonicalArtworkInputFromDefinition(movement)} size={78} testID="ledger-latest-canonical-movement-artwork" /> : <Image accessible={false} source={LEDGER_INDEX_ASSETS.latestEntryFallback} resizeMode="contain" style={styles.latestImageFallback} />}</View>;
 }
 
 export function LedgerIndexExperience() {

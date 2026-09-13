@@ -28,7 +28,7 @@ export default function MovementArtHeroLab() {
   const [mode, setMode] = useState<'logger' | 'crop' | 'source'>(params.mode === 'crop' ? 'crop' : 'logger');
   const entry = SUBJECTS.find(row => row.id === selected) || SUBJECTS[0];
   const registered = CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[entry.id as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES];
-  const movement: CanonicalMovementArtworkInput = { identity_type: 'accessory', id: entry.id,
+  const movement: CanonicalMovementArtworkInput = { identity_type: 'accessory', movement_definition_id: entry.id,
     key: registered?.key || entry.key, primary_muscle_group: registered?.primary || entry.primary };
   const approved = resolveApprovedExactMovementArtwork(movement);
   const [focal, setFocal] = useState<MovementHeroFocal>(registered ? movementHeroFocal(registered.key) : { focalX: 0.5, focalY: 0.45, scale: 1, biasX: 0, biasY: 0 });

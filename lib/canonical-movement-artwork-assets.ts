@@ -1,6 +1,7 @@
 import type { ImageSourcePropType } from 'react-native';
 
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
+import { resolveApprovedExactMovementArtwork } from '@/lib/movement-artwork-hero';
 import {
   resolveCanonicalMovementArtwork,
   type CanonicalAccessoryArtworkKey,
@@ -1005,7 +1006,9 @@ export function canonicalMovementArtworkSource(
 ): ImageSourcePropType | null {
   const resolution = resolveCanonicalMovementArtwork(movement);
   if (resolution.kind === 'accessory') {
-    if (__DEV__ && resolution.artworkKey) return CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[resolution.artworkKey].source;
+    const approved = __DEV__ ? resolveApprovedExactMovementArtwork(movement) : null;
+    const exact = approved ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[approved.key] : null;
+    if (exact) return exact.source;
     return accessoryMuscleRegionAsset(resolution.regionKey).source;
   }
   if (resolution.kind === 'core' || resolution.kind === 'core_variant') {

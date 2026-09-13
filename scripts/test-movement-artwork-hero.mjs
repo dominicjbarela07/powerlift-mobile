@@ -5,7 +5,7 @@ import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES } from '../lib/canonical-movemen
 import { approvedExactArtworkPolicy, assertHumanArtworkGate } from './canonical-art-review-gate.mjs';
 const state=JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
 const policy=JSON.parse(fs.readFileSync('artwork-review/runtime-policy.json'));
-const subject=id=>({ identity_type:'accessory', id, key:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.key, primary_muscle_group:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.primary });
+const subject=id=>({ identity_type:'accessory', movement_definition_id:id, key:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.key, primary_muscle_group:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.primary });
 assertHumanArtworkGate();
 assert.deepEqual(policy.approved_exact_artwork,approvedExactArtworkPolicy(state));
 for (const row of state.canonical_assets) {
@@ -22,13 +22,13 @@ assert.equal(resolveApprovedExactMovementArtwork(subject(33),true,{denied_keys:[
 assert.equal(resolveApprovedExactMovementArtwork(subject(33),true,{...allowed,denied_keys:[original.key]}),null);
 assert.equal(resolveApprovedExactMovementArtwork({...subject(33),key:'lookalike'},true,allowed),null);
 assert.equal(resolveApprovedExactMovementArtwork({...subject(33),primary_muscle_group:'quads'},true,allowed),null);
-assert.equal(resolveApprovedExactMovementArtwork({identity_type:'accessory',id:50000,key:original.key,primary_muscle_group:'chest'},true,allowed),null);
+assert.equal(resolveApprovedExactMovementArtwork({identity_type:'accessory',movement_definition_id:50000,key:original.key,primary_muscle_group:'chest'},true,allowed),null);
 assert.equal(resolveApprovedExactMovementArtwork({movement:'Incline Dumbbell Bench Press'},true,allowed),null,'labels never grant hero eligibility');
 assert.equal(resolveApprovedExactMovementArtwork({identity_type:'core',id:1,family:'squat'},true,allowed),null,'legacy Core family badges are not exact execution photographs');
 assert.equal(resolveApprovedExactMovementArtwork({...subject(33),is_substituted:true},true,allowed),null);
 assert.equal(resolveApprovedExactMovementArtwork({movement_identity:{id:33,key:original.key,primary_muscle_group:'chest'},performed_canonical_movement_identity:{id:113,key:'accessory_cable_lateral_raise',primary_muscle_group:'side_delts'}},true,allowed),null,'performed no-art identity must remove the programmed hero');
 for(const [id,key] of [[121,'accessory_machine_lateral_raise'],[113,'accessory_cable_lateral_raise'],[309,'accessory_single_arm_cable_overhead_triceps_extension']]) {
-  assert.equal(resolveApprovedExactMovementArtwork({identity_type:'accessory',id,key,primary_muscle_group:'side_delts'},true,allowed),null);
+  assert.equal(resolveApprovedExactMovementArtwork({identity_type:'accessory',movement_definition_id:id,key,primary_muscle_group:'side_delts'},true,allowed),null);
 }
 const fake=structuredClone(state);fake.items.find(row=>row.movement_definition_id===33).review.source='automation';
 assert.ok(!approvedExactArtworkPolicy(fake).some(row=>row.movement_definition_id===33),'automation cannot manufacture positive approval');
@@ -53,12 +53,12 @@ assert.match(hero,/reduceMotion \? 0 : 160/);
 assert.doesNotMatch(hero,/setInterval|setTimeout|elapsedSeconds|elapsedMs|restRemaining|Date\.now|MuscleMap|help-outline|require\(/,'the image layer has no timer, fallback, identity guesses or independent asset paths');
 const single=read('components/workout-logger/session-v3-movement.tsx');
 assert.match(single,/active && !complete \? resolveApprovedExactMovementArtwork/);
-assert.match(single,/<CanonicalMovementArtwork requireHumanApproval movement=\{visual\?\.movementArtworkInput\} accessoryPresentation="muscle-focus"/,'targeted muscle context remains beside the canonical movement name');
+assert.match(single,/<CanonicalMovementArtwork[^>]*requireHumanApproval movement=\{visual\?\.movementArtworkInput\} accessoryPresentation="muscle-focus"/,'targeted muscle context remains beside the canonical movement name');
 assert.doesNotMatch(single,/!hero \? <CanonicalMovementArtwork/,'hero eligibility must never hide the muscle cue');
 assert.match(single,/LoggerPlateStackVisual plateStack=\{endpoint.plateStack\}/,'Core physical loading survives');
 const superset=read('components/workout-logger/superset-round-workspace.tsx');
 assert.match(superset,/selected && isActive && !movement.complete \? resolveApprovedExactMovementArtwork/);
-assert.match(superset,/<CanonicalMovementArtwork requireHumanApproval movement=\{item\.movementArtwork\} accessoryPresentation="muscle-focus"/,'each superset member retains its own governed muscle cue');
+assert.match(superset,/<CanonicalMovementArtwork[^>]*requireHumanApproval movement=\{item\.movementArtwork\} accessoryPresentation="muscle-focus"/,'each superset member retains its own governed muscle cue');
 assert.doesNotMatch(superset,/!hero \? <CanonicalMovementArtwork/);
 assert.doesNotMatch(superset,/Log superset round|MOVEMENT PROGRESS/);
 const labPath='app/(tabs)/dev-mocks/movement-art-hero.tsx';

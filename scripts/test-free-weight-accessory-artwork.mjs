@@ -11,7 +11,7 @@ const resolve = (input) => resolveCanonicalMovementArtwork({ kind: 'accessory', 
 const catalog = JSON.parse(fs.readFileSync(new URL('../assets/catalog/accessory-catalog-review.json', import.meta.url), 'utf8'));
 assert.equal(catalog.movements.filter((row) => row.id === key).length, 1);
 
-assert.equal(resolve({ ...target }).artworkKey, key, 'picker identity resolves the one governed entry');
+assert.equal(resolve({ movement_identity: target }).artworkKey, key, 'picker identity resolves the one governed entry');
 assert.equal(resolve({ movement_identity: target }).artworkKey, key, 'programmed identity resolves');
 assert.equal(resolve({ effective_movement_identity: target }).canonicalIdentityId, 33);
 assert.equal(resolve({ effective_movement_identity: target }).artworkKey, key);
@@ -31,10 +31,10 @@ assert.equal(resolve({ effective_movement_identity: target, performed_canonical_
 assert.equal(resolve({ effective_movement_identity: target, performed_canonical_movement_identity: { ...target, key: other.key } }).kind, 'neutral', 'contradictory keys fail closed');
 assert.equal(resolve({ movement_identity: target, legacy: { state: 'resolved', effective_movement_definition_id: 33, effective_movement_identity: other } }).kind, 'neutral', 'legacy ID mismatch fails closed');
 
-assert.equal(resolve({ key, primary_muscle_group: 'chest' }).kind, 'neutral', 'key without authoritative numeric ID is insufficient');
+assert.equal(resolve({ key, primary_muscle_group: 'chest' }).artworkKey, undefined, 'taxonomy survives without a numeric ID but cannot acquire exact photography');
 assert.equal(resolve({ id: 33, primary_muscle_group: 'chest', display_name: 'Dumbbell Incline Bench Press' }).artworkKey, undefined, 'numeric row ID and display name cannot invent governed artwork membership');
-assert.equal(resolve({ id: 7, key: 'incline_dumbbell_press', family: 'horizontal_push' }).artworkKey, 'incline_dumbbell_press', 'separate legacy movement owns independently generated artwork');
-assert.equal(resolve({ id: 7, key, family: 'horizontal_push' }).kind, 'neutral', 'legacy identity cannot borrow ID33 artwork');
+assert.equal(resolve({ movement_definition_id: 7, key: 'incline_dumbbell_press', family: 'horizontal_push' }).artworkKey, 'incline_dumbbell_press', 'separate legacy movement owns independently generated artwork');
+assert.equal(resolve({ movement_definition_id: 7, key, family: 'horizontal_push' }).kind, 'neutral', 'legacy identity cannot borrow ID33 artwork');
 for (const unrelated of [{ id: 135, key: 'accessory_machine_reverse_fly', primary_muscle_group: 'rear_delts' }, { id: 222, key: 'accessory_chest_supported_row', primary_muscle_group: 'upper_back' }]) {
   const result = resolve({ ...unrelated, display_name: 'Dumbbell Incline Bench Press' });
   assert.equal(result.artworkKey, undefined);

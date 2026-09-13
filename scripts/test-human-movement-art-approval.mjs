@@ -10,7 +10,7 @@ assert.equal(assertHumanArtworkGate(root).canonical, 195);
 const state = JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
 assert.match(fs.readFileSync('lib/canonical-movement-artwork-assets.ts', 'utf8'), />> = __DEV__ \? \{/,
   'the explicitly DEV-only generated family must be removed from release bundles');
-assert.match(fs.readFileSync('components/movement/CanonicalMovementArtwork.tsx', 'utf8'), /if \(accessoryPresentation === 'movement' && __DEV__ && resolution.artworkKey && \(!requireHumanApproval \|\| resolveApprovedExactMovementArtwork\(movement\)\)\)/);
+assert.match(fs.readFileSync('components/movement/CanonicalMovementArtwork.tsx', 'utf8'), /const approved = accessoryPresentation === 'movement' && __DEV__ \? resolveApprovedExactMovementArtwork\(subject\) : null/, 'every exact image requires a positive human receipt; absence retains anatomy');
 // Actual decision totals belong to the human and must never be reset by a test.
 for (const item of state.items) {
   if (item.status === 'pending' || item.status === 'rejected') assert.equal(item.human_approved, false);
@@ -30,7 +30,7 @@ try {
   };
   write('artwork-review/review-state.json', fixture);
   write('artwork-review/runtime-policy.json', {denied_keys: [], approved_exact_artwork: approvedExactArtworkPolicy(fixture)});
-  write('lib/canonical-movement-artwork.ts', `  33: { key: '${original.key}', primary: 'chest' },`);
+  write('lib/canonical-accessory-artwork-identities.ts', `  33: { key: '${original.key}', primary: 'chest' },`);
   const mapping = `export const fixture = {\n  ${original.key}: {\n    source: require('@/${original.files.app.path}'),\n    thumbnail: require('@/${original.files.thumbnail.path}'),\n  },\n};`;
   write('lib/canonical-movement-artwork-assets.ts', mapping);
   for (const role of ['master', 'app', 'thumbnail']) {

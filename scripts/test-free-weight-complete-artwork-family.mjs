@@ -54,9 +54,9 @@ for (const row of confirmed) {
   assert.equal(selected.artworkKey,row.key);
   assert.equal(selected.canonicalIdentityId,row.id);
   assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,key:'wrong'}}).kind,'neutral');
-  assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,key:undefined}}).kind,'neutral');
+  assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,key:undefined}}).artworkKey,undefined,'missing photo key preserves anatomy');
   assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,id:999999}}).kind,'neutral');
-  assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,primary_muscle_group:'invalid_primary'}}).kind,'neutral');
+  assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,primary_muscle_group:'invalid_primary'}}).regionKey,registry[row.id].primary,'registered canonical identity supplies known taxonomy');
   assert.equal(resolve({kind:'accessory',effective_movement_identity:identity,performed_canonical_movement_identity:{...identity,id:999999}}).kind,'neutral');
   assert.equal(resolve({kind:'accessory',movement_identity:identity,is_substituted:true}).kind,'neutral');
   const input = canonicalArtworkInputForLoggerItem({
@@ -103,18 +103,18 @@ for(const id of [4,5,6,7]) {
   const row=confirmed.find(item=>item.id===id);
   assert.equal(row.primary_muscle_group,null);
   assert.ok(row.artwork_primary_source.includes('GOVERNED_FAMILY_REGIONS'));
-  assert.equal(resolve({kind:'accessory',id,key:row.key,family:row.family}).artworkKey,row.key,'existing typed family adapter supports independent legacy identity');
+  assert.equal(resolve({kind:'accessory',movement_definition_id:id,key:row.key,family:row.family}).artworkKey,row.key,'existing typed family adapter supports independent legacy identity');
 }
 for(const id of [546,548]) assert.equal(manifest.movements.find(row=>row.id===id).generation_batch,'Completion');
 for(const id of [321,342,343,344,499,595,603]) assert.equal(registry[id],undefined);
-assert.equal(resolve({kind:'accessory',display_name:'Dumbbell Curl',equipment_type:'dumbbell',primary_muscle_group:'biceps'}).kind,'neutral','labels/equipment/muscles cannot select an exact asset');
+assert.equal(resolve({kind:'accessory',display_name:'Dumbbell Curl',equipment_type:'dumbbell',primary_muscle_group:'biceps'}).artworkKey,undefined,'labels/equipment/muscles cannot select an exact asset');
 assert.equal(resolve({kind:'core',core_movement_id:33,core_family:'bench'}).kind,'core');
 const search=json(doc+'qa-search-serialized.json');
 assert.equal(search.length,20);
 assert.equal(search.flatMap(group=>group.items).length,194);
 for(const group of search) for(const row of group.items) {
   assert.equal(group.http_status,200);
-  assert.equal(resolve({...row,kind:'accessory'}).artworkKey,withdrawn.has(row.id) ? undefined : row.key,'historical DTO preserves identity; retired art stays absent');
+  assert.equal(resolve({kind:'accessory',movement_identity:row}).artworkKey,withdrawn.has(row.id) ? undefined : row.key,'historical DTO preserves identity; retired art stays absent');
 }
 const serialized=json(doc+'qa-session-serialized.json').workout;
 assert.equal(serialized.athlete_id,12);
@@ -131,7 +131,8 @@ for (const id of withdrawn) {
   const identity = {id,key:row.key,primary_muscle_group:row.primary_muscle_group,family:row.family};
   assert.equal(resolve({kind:'accessory',effective_movement_identity:identity}).canonicalIdentityId,id);
   assert.equal(resolve({kind:'accessory',effective_movement_identity:identity}).artworkKey,undefined);
-  for(const change of [{key:'wrong'},{id:999999},{primary_muscle_group:'wrong'}])
-    assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,...change}}).kind,'neutral','retired identity still fails closed');
+  for(const change of [{key:'wrong'},{id:999999}])
+    assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,...change}}).kind,'neutral','contradictory retired identity stays closed');
+  assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,primary_muscle_group:'wrong'}}).artworkKey,undefined,'retired photograph stays excluded even when registered taxonomy supplies anatomy');
 }
 console.log('[free-weight-complete-family] 195 human-approved exact assets, four retired identities retain fail-closed history, 100 reviewed additions, 98 prior identities with verified correction provenance, 194 real search DTOs, four independent legacy IDs, mixed-family Session and fail-closed identities passed');

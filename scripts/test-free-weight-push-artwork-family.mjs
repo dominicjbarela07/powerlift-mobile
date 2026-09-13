@@ -34,11 +34,13 @@ for (const row of currentQualifying) {
   assert.equal(row.retired_at, null);
   const identity = { id: row.id, key: row.key, family: row.family, primary_muscle_group: row.primary_muscle_group };
   assert.equal(resolve(identity).artworkKey, row.key);
-  assert.equal(resolve({ ...identity, key: undefined }).kind, 'neutral', 'registered definition ID needs its stable catalog key to exclude unrelated row-ID collisions');
+  assert.equal(resolve({ ...identity, key: undefined }).artworkKey, undefined, 'missing key excludes exact photography while preserving governed anatomy');
+  assert.equal(resolve({ ...identity, key: undefined }).kind, 'accessory');
   assert.equal(resolve({ ...identity, key: 'contradictory_identity' }).kind, 'neutral');
-  assert.equal(resolve({ ...identity, primary_muscle_group: 'lats', family: 'accessory_lats' }).kind, 'neutral');
+  assert.equal(resolve({ ...identity, primary_muscle_group: 'lats', family: 'accessory_lats' }).artworkKey, undefined, 'governed taxonomy remains available, but incompatible photography is excluded');
   assert.equal(resolve({ ...identity, id: 999999 }).kind, 'neutral', 'known key cannot override a contradictory ID');
-  assert.equal(resolve({ ...identity, id: undefined }).kind, 'neutral');
+  assert.equal(resolve({ ...identity, id: undefined }).artworkKey, undefined);
+  assert.equal(resolve({ ...identity, id: undefined }).kind, 'accessory', 'governed taxonomy can survive without an exact ID');
   assert.equal(resolveCanonicalMovementArtwork({ kind: 'accessory', ...identity,
     movement_identity: { ...identity, key: 'contradictory_identity' },
   }).kind, 'neutral', 'contradictory nested identity cannot fall through to outer picker data');
@@ -75,7 +77,7 @@ for (const group of searchGroups) {
   assert.equal(group.http_status, 200);
   for (const item of group.items) {
     assert.equal(item.primary_muscle_group, group.primary);
-    const selected = resolveCanonicalMovementArtwork({ ...item, kind: 'accessory' });
+    const selected = resolveCanonicalMovementArtwork({ movement_identity: item, kind: 'accessory' });
     assert.equal(selected.artworkKey, item.id === 38 ? undefined : item.key, 'real search DTO selects the same exact canonical asset');
     assert.equal(selected.canonicalIdentityId, item.id);
   }

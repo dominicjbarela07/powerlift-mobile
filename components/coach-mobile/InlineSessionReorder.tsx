@@ -1,4 +1,5 @@
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { canonicalArtworkInputForLoggerItem } from '@/lib/logger-movement-identity';
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -35,7 +36,7 @@ function ReorderRow({ item, name, linked, index, count, reduceMotion, onMove, on
   const animated = useAnimatedStyle(() => ({ transform: [{ translateY: y.value }], zIndex: dragging.value ? 10 : 1, backgroundColor: dragging.value ? '#211A33' : '#0D0E13' }));
   return <Animated.View style={[styles.row, animated]}>
     <GestureDetector gesture={gesture}><Animated.View style={styles.button} accessibilityLabel={`Drag ${name}`} accessibilityRole="adjustable" accessibilityActions={[{ name: 'increment', label: 'Move down' }, { name: 'decrement', label: 'Move up' }]} onAccessibilityAction={(event) => onMove(index + (event.nativeEvent.actionName === 'increment' ? 1 : -1))}><Ionicons name="reorder-three" color={SLColors.accentViolet} size={24} /></Animated.View></GestureDetector>
-    <CanonicalMovementArtwork movement={{ ...item, kind: item.variant === 'ACC' ? 'accessory' : 'core' }} size={40} />
+    <CanonicalMovementArtwork surface="InlineSessionReorder" movement={canonicalArtworkInputForLoggerItem(item)} size={40} />
     <View style={styles.copy}><Text numberOfLines={2} style={styles.name}>{name}</Text>{linked ? <Text style={styles.hint}>TOP + backdown</Text> : null}</View>
     <Pressable accessibilityLabel={`Move ${name} up`} disabled={index === 0} onPress={() => onMove(index - 1)} style={[styles.button, index === 0 && styles.disabled]}><Ionicons name="chevron-up" size={18} color={SLColors.textSecondary} /></Pressable>
     <Pressable accessibilityLabel={`Move ${name} down`} disabled={index === count - 1} onPress={() => onMove(index + 1)} style={[styles.button, index === count - 1 && styles.disabled]}><Ionicons name="chevron-down" size={18} color={SLColors.textSecondary} /></Pressable>

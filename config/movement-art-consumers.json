@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "contract": "All exact movement imagery uses CanonicalMovementArtwork, which normalizes semantic identity before exact-approved / focused-anatomy / unresolved rendering.",
+  "consumers": [
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "rendererCount": 9
+    },
+    {
+      "file": "components/coach-mobile/CompletedSessionRecap.tsx",
+      "rendererCount": 3
+    },
+    {
+      "file": "components/coach-mobile/InlineSessionReorder.tsx",
+      "rendererCount": 1
+    },
+    {
+      "file": "components/coach-mobile/SessionEditingWorkspace.tsx",
+      "rendererCount": 1
+    },
+    {
+      "file": "components/coach-mobile/athlete-workspace/CoachAthletePerformance.tsx",
+      "rendererCount": 2
+    },
+    {
+      "file": "components/ledger/AccessoriesExperience.tsx",
+      "rendererCount": 2
+    },
+    {
+      "file": "components/ledger/VariantsExperience.tsx",
+      "rendererCount": 5
+    },
+    {
+      "file": "components/ledger/exploration-experiences.tsx",
+      "rendererCount": 1
+    },
+    {
+      "file": "components/ledger/index-experience.tsx",
+      "rendererCount": 1
+    },
+    {
+      "file": "components/movement/GovernedAccessoryPickerModal.tsx",
+      "rendererCount": 2
+    },
+    {
+      "file": "components/movement-history/CanonicalMovementHistoryScreen.tsx",
+      "rendererCount": 1
+    },
+    {
+      "file": "components/workout-logger/approved-substitution-picker.tsx",
+      "rendererCount": 1
+    },
+    {
+      "file": "components/workout-logger/session-set-entry-context.tsx",
+      "rendererCount": 1
+    },
+    {
+      "file": "components/workout-logger/session-v3-closeout.tsx",
+      "rendererCount": 1
+    },
+    {
+      "file": "components/workout-logger/session-v3-movement.tsx",
+      "rendererCount": 2
+    },
+    {
+      "file": "components/workout-logger/session-v3-shell.tsx",
+      "rendererCount": 2
+    },
+    {
+      "file": "components/workout-logger/substitution-confirmation-sheet.tsx",
+      "rendererCount": 2
+    },
+    {
+      "file": "components/workout-logger/superset-round-workspace.tsx",
+      "rendererCount": 1
+    }
+  ]
+}

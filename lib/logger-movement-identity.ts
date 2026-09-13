@@ -3,7 +3,7 @@ import {
   type EquipmentAwareWorkoutItem,
   type EquipmentIdentityLike,
 } from '@/lib/equipment-selection';
-import type { CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
+import { normalizeCanonicalMovementArtSubject, type CanonicalMovementArtSubject, type CanonicalMovementArtworkInput } from '@/lib/canonical-movement-art-subject';
 
 export type LoggerIdentityReference = EquipmentIdentityLike & {
   kind?: string | null;
@@ -33,6 +33,7 @@ export type LoggerMovementIdentityItem = EquipmentAwareWorkoutItem & {
   core_movement?: LoggerIdentityReference | null;
   performed_core_movement?: LoggerIdentityReference | null;
   legacy?: {
+    state?: string | null;
     effective_movement_definition_id?: number | null;
     effective_movement_identity?: LoggerIdentityReference | null;
   } | null;
@@ -120,24 +121,25 @@ export function resolveLoggerMovementIdentity(
  * Row identity, display copy, equipment, and unrelated Logger state are excluded.
  */
 export function canonicalArtworkInputForLoggerItem(
-  item: LoggerMovementIdentityItem,
-): CanonicalMovementArtworkInput {
-  const normalized = resolveLoggerMovementIdentity(item);
-  if (normalized.kind === 'core') {
-    return {
-      kind: String(item.variant || '').trim().toUpperCase() === 'VR'
-        ? 'variant'
-        : 'core',
-      lift: item.lift || null,
-      variant: item.variant || null,
-      core_movement: withId(item.core_movement),
-      performed_core_movement: withId(item.performed_core_movement),
-    };
-  }
-
-  return {
-    kind: 'accessory',
+  item: CanonicalMovementArtworkInput & { id?: number | null },
+): CanonicalMovementArtSubject {
+  return normalizeCanonicalMovementArtSubject({
+    item_id: item.item_id || item.id,
+    set_log_id: item.set_log_id,
+    movement_definition_id: item.movement_definition_id,
+    effective_movement_definition_id: item.effective_movement_definition_id,
+    performed_canonical_movement_definition_id: item.performed_canonical_movement_definition_id,
+    core_movement_id: item.core_movement_id,
+    core_family: item.core_family, core_kind: item.core_kind,
+    primary_muscle_group: item.primary_muscle_group, secondary_muscle_groups: item.secondary_muscle_groups,
+    kind: item.core_movement || item.performed_core_movement ? 'core' : 'accessory',
+    lift: item.lift, variant: item.variant,
+    core_movement: item.core_movement, performed_core_movement: item.performed_core_movement,
     is_substituted: Boolean(item.is_substituted),
-    effective_movement_identity: normalized.effective,
-  };
+    movement_identity: item.movement_identity,
+    effective_movement_identity: item.effective_movement_identity,
+    performed_canonical_movement_identity: item.performed_canonical_movement_identity,
+    performed_movement_identity: item.performed_movement_identity,
+    legacy: item.legacy,
+  });
 }

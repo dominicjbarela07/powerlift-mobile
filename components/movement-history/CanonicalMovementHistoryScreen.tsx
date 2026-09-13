@@ -15,6 +15,7 @@ import {
 import { AnalyticalHistoryChart } from '@/components/movement-history/AnalyticalHistoryChart';
 import { ChartAxisModeToggle } from '@/components/charts/ChartAxisModeToggle';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { canonicalArtworkInputFromDefinition } from '@/lib/canonical-movement-artwork';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { SLContextualHeader } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
@@ -371,7 +372,7 @@ export function CanonicalMovementHistoryScreen({
           <>
             <View style={styles.movementHeader}>
               <View style={styles.muscleArtworkFrame}>
-                <CanonicalMovementArtwork movement={history.movement} size={__DEV__ ? 112 : 86} testID="movement-history-canonical-artwork" />
+                <CanonicalMovementArtwork movement={canonicalArtworkInputFromDefinition(history.movement)} size={__DEV__ ? 112 : 86} testID="movement-history-canonical-artwork" />
               </View>
               <View style={styles.movementIdentity}>
                 <Text style={styles.movementName}>{history.movement.display_name}</Text>

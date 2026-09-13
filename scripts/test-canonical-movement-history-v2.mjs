@@ -132,7 +132,7 @@ assert.match(screen, /exposureHeaderRow[\s\S]*exposureMetrics[\s\S]*ExposureMetr
 assert.match(screen, /numberOfLines=\{1\} adjustsFontSizeToFit minimumFontScale=\{0\.8\}/);
 assert.doesNotMatch(screen, /resolvedDefaultEquipment/);
 assert.match(screen, /kilogramsToDisplayValue/);
-assert.match(screen, /CanonicalMovementArtwork movement=\{history\.movement\}/);
+assert.match(screen, /CanonicalMovementArtwork movement=\{canonicalArtworkInputFromDefinition\(history\.movement\)\}/);
 assert.doesNotMatch(screen, /MuscleMap/);
 assert.match(screen, /ManufacturerBrandMark/);
 assert.match(screen, /View Full Session/);

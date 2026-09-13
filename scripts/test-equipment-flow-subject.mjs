@@ -18,7 +18,7 @@ for(const item of [a,b]) {
  const subject=equipmentFlowSubject(item);
  assert.equal(subject.displayName,resolveLoggerMovementIdentity(item).displayName);
  assert.equal(subject.movementDefinitionId,item.effective_movement_definition_id);
- assert.equal(canonicalArtworkInputForLoggerItem(item).effective_movement_identity.id,subject.movementDefinitionId);
+ assert.equal(canonicalArtworkInputForLoggerItem(item).canonicalIdentityId,subject.movementDefinitionId);
  assertEquipmentResponseSubject(subject,{usage_movement_definition_id:subject.movementDefinitionId});
  assert.throws(()=>assertEquipmentResponseSubject(subject,{usage_movement_definition_id:999}));
  assert.throws(()=>assertEquipmentResponseSubject(subject,{}));
