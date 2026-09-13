@@ -1,0 +1,71 @@
+Window: "iPhone 17", App: Simulator.
+0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise
+	1 button Action
+	2 button Volume Up
+	3 button Volume Down
+	4 button Sleep/Wake
+	5 container
+		6 button Description: Return to selected week, Secondary Actions: Cancel
+		7 button Description: Session actions, Secondary Actions: Cancel
+		8 text Description: Saved, Secondary Actions: Cancel
+		9 text Description: ATHLETE WORKSPACE · Dev Athlete 12, Secondary Actions: Cancel
+		10 button Description: Rename Session, Secondary Actions: Cancel
+		11 button Description: Change Session date, Secondary Actions: Cancel
+		12 text Description: Draft, Secondary Actions: Cancel
+		13 text Description: Muscle Mommy P1 / Surplus / W3, Secondary Actions: Cancel
+		14 button Description: Edit Notes & Next Steps for Dev Athlete 12, Secondary Actions: Cancel
+		15 button Description: , TestFlight preparation — disposable DEV check., , Secondary Actions: Cancel
+		16 element Description: , Reorder, Secondary Actions: Cancel
+		17 text Description: 2 movements · 6 sets, Secondary Actions: Cancel
+		18 text Description: CORE, Secondary Actions: Cancel
+		19 button Description: Collapse Competition Squat editor, Secondary Actions: Cancel
+		20 text Description: DESIGNATION, Secondary Actions: Cancel
+		21 button Description: Designation: Primary, Secondary Actions: Cancel
+		22 text Description: SET TYPE, Secondary Actions: Cancel
+		23 button Description: Set Type: Straight Sets, Secondary Actions: Cancel
+		24 text Description: INTENSITY TYPE, Secondary Actions: Cancel
+		25 button Description: Intensity Type: RPE, Secondary Actions: Cancel
+		26 slider (settable) Description: Sets, Value: 3 sets, Secondary Actions: Cancel, increment, decrement
+		27 slider (settable) Description: Reps, Value: 5 reps, Secondary Actions: Cancel, increment, decrement
+		28 slider (settable) Description: RPE, Value: 7 RPE, Secondary Actions: Cancel, increment, decrement
+		29 text Description: CALCULATED TARGET, Secondary Actions: Cancel
+		30 text Description: , Secondary Actions: Cancel
+		31 text Description: 132.5–155 lb, Secondary Actions: Cancel
+		32 switch Description: Enable manual target override, Value: 0, Secondary Actions: Cancel
+		33 text Description: , Secondary Actions: Cancel
+		34 text Description: MANUAL OVERRIDE, Secondary Actions: Cancel
+		35 text Description: Override Target, Secondary Actions: Cancel
+		36 button Description: Open exact movement history, Secondary Actions: Cancel
+		37 text Description: LAST EXPOSURE, Secondary Actions: Cancel
+		38 text Description: 125 lb × 7 @8.5 RPE, Secondary Actions: Cancel
+		39 text Description: Sep 9, Secondary Actions: Cancel
+		40 text Description: Representative set · 4 recorded sets, Secondary Actions: Cancel
+		41 button Description: Edit Coach Note, Secondary Actions: Cancel
+		42 text Description: COACH NOTE, Secondary Actions: Cancel
+		43 button Description: Edit Coach Notes, Secondary Actions: Cancel
+		44 button Description: Remove Movement, Secondary Actions: Cancel
+		45 text Description: ACCESSORIES, Secondary Actions: Cancel
+		46 button Description: Edit Wide-Grip Lat Pulldown, 3 × 10–12 @ 2 RIR, Secondary Actions: Cancel
+		47 button Description: , Add another movement, Secondary Actions: Cancel
+		48 button Description: Add Movement, Secondary Actions: Cancel
+		49 button Description: Preview saved Session, Secondary Actions: Cancel
+		50 button Description: , Assign Session, Secondary Actions: Cancel
+	51 toolbar
+		52 button Description: Home, Secondary Actions: Move previous, Move next, Remove from toolbar
+		53 button Description: Save Screen, Secondary Actions: Move previous, Move next, Remove from toolbar
+		54 button Description: Rotate, Secondary Actions: Move previous, Move next, Remove from toolbar
+	55 close button
+	56 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	57 minimize button
+	58 text iPhone 17 iOS 26.2
+59 menu bar
+	60 Simulator
+	61 File
+	62 Edit
+	63 Device
+	64 I/O
+	65 Features
+	66 Window
+	67 Help
+
+The focused UI element is 0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise

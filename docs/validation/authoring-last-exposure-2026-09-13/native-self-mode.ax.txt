@@ -1,0 +1,69 @@
+Window: "iPhone 17", App: Simulator.
+0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise
+	1 button Action
+	2 button Volume Up
+	3 button Volume Down
+	4 button Sleep/Wake
+	5 container
+		6 element Description: Open Settings, Secondary Actions: Cancel
+		7 button Description: Create Session, Secondary Actions: Cancel
+		8 button Description: Open Home, Secondary Actions: Cancel
+		9 text Description: DA, Secondary Actions: Cancel
+		10 text Description: Good afternoon, Dev, Secondary Actions: Cancel
+		11 text Description: Sun, Sep 13, Secondary Actions: Cancel
+		12 text Description: IN PROGRESS, Secondary Actions: Cancel
+		13 text Description: Session, Secondary Actions: Cancel
+		14 text Description: Bodybuilding Offseason · Week 11, Secondary Actions: Cancel
+		15 text Description: , Secondary Actions: Cancel
+		16 text Description: 4 programmed sets, Secondary Actions: Cancel
+		17 text Description: , Secondary Actions: Cancel
+		18 text Description: Quads, Secondary Actions: Cancel
+		19 text Description: , Secondary Actions: Cancel
+		20 text Description: Programmed focus, Secondary Actions: Cancel
+		21 element Description: Session focus: quads, adductors, glutes, Secondary Actions: Cancel
+		22 button Description: Resume Session, , Secondary Actions: Cancel
+		23 button Secondary Actions: Cancel, Description: THIS WEEK, 3 completed, MO, , 7, TU, , 8, , WE, , 9, , TH, , 10, FR, , 11, SA, 12, SU, , 13, 3, Sessions, 63, Sets, 88.6K lb, Total Volume, 0, PRs
+		24 button Secondary Actions: Cancel, Description: NEXT UP · Today, W7 SARMS, Biceps · Side Delts · Triceps · Front Delts, 7 movements · 21 sets, Session focus: biceps, side_delts, triceps, front_delts, forearms, 
+		25 text Description: LAST SESSION, Secondary Actions: Cancel
+		26 text Description: Sep 9, Secondary Actions: Cancel
+		27 button Secondary Actions: Cancel, Description: COMPLETED · Sep 9, W7 Legs, Hamstrings · Quads, 21 sets · 47.8K lb · RPE 7, Session focus: hamstrings, quads, glutes, adductors, lower_back, 
+		28 text Description: 21, Secondary Actions: Cancel
+		29 text Description: 47.8K lb, Secondary Actions: Cancel
+		30 text Description: 7, Secondary Actions: Cancel
+		31 text Description: 0, Secondary Actions: Cancel
+		32 text Description: Sets, Secondary Actions: Cancel
+		33 text Description: Total Volume, Secondary Actions: Cancel
+		34 text Description: Session RPE, Secondary Actions: Cancel
+		35 text Description: PRs, Secondary Actions: Cancel
+		36 text Description: YOUR TRENDS, Secondary Actions: Cancel
+		37 button Secondary Actions: Cancel, Description: READINESS, 9, -0.2 vs prior 7d, Daily Readiness · last 7 days · 10-point display. 4 observations from Sep 7 to Sep 10. Latest 9.
+		38 button Secondary Actions: Cancel, Description: REPORTED BW, 200 lb, ↓ 0.4 lb / 25d, Reported Bodyweight · last 28 days · lb. 6 observations from Aug 16 to Sep 10. Latest 200.00777349493958.
+		39 button Secondary Actions: Cancel, Description: VOLUME, 88.6K lb, −32.1K lb vs prior week, Weekly Total Volume · last 5 weeks · lb. 5 observations from Aug 10 to Sep 7. Latest 88565.00385822455.
+		40 button Secondary Actions: Cancel, Description: FROM YOUR LEDGER, STRENGTH TREND, Squat, 478.5 lb e1RM, → 0 lb from prior marker, Squat e1RM · lb. 8 observations from Jul 13 to Sep 7. Latest 478.336970251946., 
+		41 button Description: RECENT ACHIEVEMENT, MOVEMENT SESSION COMPLETED, Competition Squat, 3 sets, , Secondary Actions: Cancel
+		42 button Description: , Program Training, Secondary Actions: Cancel
+		43 button Description: , Open Calendar, Secondary Actions: Cancel
+		44 button Description: Display unit lb. Switch to kg, Help: Changes only the weights shown on this surface., ID: athlete-home-unit-toggle, Secondary Actions: Cancel
+		45 button (selected) Description: Today, Secondary Actions: Cancel
+		46 element Description: Programming, Secondary Actions: Cancel
+		47 button Description: Calendar, Secondary Actions: Cancel
+		48 button Description: Ledger, Secondary Actions: Cancel
+	49 toolbar
+		50 button Description: Home, Secondary Actions: Move previous, Move next, Remove from toolbar
+		51 button Description: Save Screen, Secondary Actions: Move previous, Move next, Remove from toolbar
+		52 button Description: Rotate, Secondary Actions: Move previous, Move next, Remove from toolbar
+	53 close button
+	54 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	55 minimize button
+	56 text iPhone 17 iOS 26.2
+57 menu bar
+	58 Simulator
+	59 File
+	60 Edit
+	61 Device
+	62 I/O
+	63 Features
+	64 Window
+	65 Help
+
+The focused UI element is 0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise

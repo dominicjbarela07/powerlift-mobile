@@ -1,0 +1,68 @@
+Window: "iPhone 17", App: Simulator.
+0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise
+	1 button Action
+	2 button Volume Up
+	3 button Volume Down
+	4 button Sleep/Wake
+	5 container
+		6 button Description: Back to previous Coach context, Secondary Actions: Cancel
+		7 text Description: DA, Secondary Actions: Cancel
+		8 text Description: ATHLETE WORKSPACE, Secondary Actions: Cancel
+		9 button Description: Open athlete workspace options, Secondary Actions: Cancel
+		10 text Description: Dev Athlete 12, Secondary Actions: Cancel
+		11 button Description: Training Program actions, Secondary Actions: Cancel
+		12 text Description: Programming Manager, Secondary Actions: Cancel
+		13 button Description: Open Program map, Secondary Actions: Cancel
+		14 text Description: Programmed through Sep 12 · 1 draft, Secondary Actions: Cancel
+		15 button Description: Edit Notes & Next Steps for Dev Athlete 12, Secondary Actions: Cancel
+		16 button Description: Previous week, Secondary Actions: Cancel
+		17 button Description: Choose week in Program map, Secondary Actions: Cancel
+		18 button Description: Next week, Secondary Actions: Cancel
+		19 button Description: Monday, September 7, 1 Sessions, Secondary Actions: Cancel
+		20 button Description: Tuesday, September 8, 0 Sessions, Secondary Actions: Cancel
+		21 button Description: Wednesday, September 9, 1 Sessions, Secondary Actions: Cancel
+		22 button Description: Thursday, September 10, 1 Sessions, Secondary Actions: Cancel
+		23 button Description: Friday, September 11, 1 Sessions, Secondary Actions: Cancel
+		24 button Description: Saturday, September 12, 1 Sessions, Secondary Actions: Cancel
+		25 button (selected) Description: Sunday, September 13, 0 Sessions, Secondary Actions: Cancel
+		26 button Help: Tap to open., Secondary Actions: Cancel, Description: M, 7, W3 Push, Incline Dumbbell Bench Press · Machine Chest Press +5, 20 sets, W3 Push actions, Completed
+		27 button Description: , Actions, Secondary Actions: Cancel
+		28 element Description: W, 9, W3 Lower A, Squat · Barbell Hip Thrust +4, 20 sets, W3 Lower A actions, Completed, Help: Tap to open., Secondary Actions: Cancel
+		29 element Description: , Actions, Secondary Actions: Cancel
+		30 button Help: Tap to open. Press and hold, then drag to a date to move., Secondary Actions: Cancel, Description: TH, 10, W3 Pull, Assisted Pull-Up · Chest-Supported Dumbbell Row +4, 17 sets, W3 Pull actions, Assigned
+		31 element Description: , Move, Secondary Actions: Cancel
+		32 button Help: Tap to open. Press and hold, then drag to a date to move., Secondary Actions: Cancel, Description: F, 11, W3 Lower B, Romanian Deadlift (RDL) · Single-Leg Leg Press +4, 20 sets, W3 Lower B actions, Assigned
+		33 element Description: , Move, Secondary Actions: Cancel
+		34 button Help: Tap to open. Press and hold, then drag to a date to move., Secondary Actions: Cancel, Description: SA, 12, DEV Authoring Verification, Squat · Wide-Grip Lat Pulldown, 6 sets, DEV Authoring Verification actions, Draft
+		35 element Description: , Move, Secondary Actions: Cancel
+		36 button Description: Add Session on Sunday, September 13, Secondary Actions: Cancel
+		37 button Description: , Reuse training, Secondary Actions: Cancel
+		38 button Description: Week 3 actions, Secondary Actions: Cancel
+		39 button (selected) Description: Open athlete actions, ID: coach-athlete-actions-control, Secondary Actions: Cancel
+		40 button Description: Brief, Secondary Actions: Cancel
+		41 text Description: 7, Secondary Actions: Cancel
+		42 button (selected) Description: Training, Secondary Actions: Cancel
+		43 button Description: Performance, Secondary Actions: Cancel
+		44 button Description: Reviews, Secondary Actions: Cancel
+		45 text Description: 4, Secondary Actions: Cancel
+		46 button Description: Messages, Secondary Actions: Cancel
+		47 text Description: 1, Secondary Actions: Cancel
+	48 toolbar
+		49 button Description: Home, Secondary Actions: Move previous, Move next, Remove from toolbar
+		50 button Description: Save Screen, Secondary Actions: Move previous, Move next, Remove from toolbar
+		51 button Description: Rotate, Secondary Actions: Move previous, Move next, Remove from toolbar
+	52 close button
+	53 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	54 minimize button
+	55 text iPhone 17 iOS 26.2
+56 menu bar
+	57 Simulator
+	58 File
+	59 Edit
+	60 Device
+	61 I/O
+	62 Features
+	63 Window
+	64 Help
+
+The focused UI element is 0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise

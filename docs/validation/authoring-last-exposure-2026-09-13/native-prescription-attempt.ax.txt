@@ -1,0 +1,74 @@
+Window: "iPhone 17", App: Simulator.
+0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise
+	1 button Action
+	2 button Volume Up
+	3 button Volume Down
+	4 button Sleep/Wake
+	5 container
+		6 button Description: Open Settings, Secondary Actions: Cancel
+		7 button Description: Open Team Brief, Secondary Actions: Cancel
+		8 button Description: Open Home, Secondary Actions: Cancel
+		9 button Description: Return to selected week, Secondary Actions: Cancel
+		10 button Description: Session actions, Secondary Actions: Cancel
+		11 text Description: Saved, Secondary Actions: Cancel
+		12 text Description: Dev Athlete 12, Secondary Actions: Cancel
+		13 button Description: Rename Session, Secondary Actions: Cancel
+		14 button Description: Change Session date, Secondary Actions: Cancel
+		15 text Description: Draft, Secondary Actions: Cancel
+		16 text Description: Muscle Mommy P1 / Surplus / W3, Secondary Actions: Cancel
+		17 button Description: Edit Notes & Next Steps for Dev Athlete 12, Secondary Actions: Cancel
+		18 button Description: , TestFlight preparation — disposable DEV check., , Secondary Actions: Cancel
+		19 button Description: , Reorder, Secondary Actions: Cancel
+		20 text Description: 2 movements · 6 sets, Secondary Actions: Cancel
+		21 text Description: CORE, Secondary Actions: Cancel
+		22 button Description: Collapse Competition Squat editor, Secondary Actions: Cancel
+		23 text Description: DESIGNATION, Secondary Actions: Cancel
+		24 button Description: Designation: Primary, Secondary Actions: Cancel
+		25 text Description: SET TYPE, Secondary Actions: Cancel
+		26 button Description: Set Type: Straight Sets, Secondary Actions: Cancel
+		27 text Description: INTENSITY TYPE, Secondary Actions: Cancel
+		28 button Description: Intensity Type: RPE, Secondary Actions: Cancel
+		29 slider (settable) Description: Sets, Value: 3 sets, Secondary Actions: Cancel, increment, decrement
+		30 slider (settable) Description: Reps, Value: 5 reps, Secondary Actions: Cancel, increment, decrement
+		31 slider (settable) Description: RPE, Value: 7 RPE, Secondary Actions: Cancel, increment, decrement
+		32 text Description: , Secondary Actions: Cancel
+		33 text Description: CALCULATED TARGET, Secondary Actions: Cancel
+		34 container Description: In progress, Value: 1, Secondary Actions: Cancel
+		35 text Description: , Secondary Actions: Cancel
+		36 text Description: MANUAL OVERRIDE, Secondary Actions: Cancel
+		37 switch Description: Enable manual target override, Value: 0, Secondary Actions: Cancel
+		38 text Description: Override Target, Secondary Actions: Cancel
+		39 button Description: Open exact movement history, Secondary Actions: Cancel
+		40 text Description: LAST EXPOSURE, Secondary Actions: Cancel
+		41 text Description: 125 lb × 7 @8.5 RPE, Secondary Actions: Cancel
+		42 text Description: Sep 9, Secondary Actions: Cancel
+		43 text Description: Representative set · 4 recorded sets, Secondary Actions: Cancel
+		44 slider Description: Edit Coach Note, Secondary Actions: Increment, Decrement, Cancel
+		45 text Description: COACH NOTE, Secondary Actions: Cancel
+		46 button Description: Edit Coach Notes, Secondary Actions: Cancel
+		47 button Description: Remove Movement, Secondary Actions: Cancel
+		48 text Description: ACCESSORIES, Secondary Actions: Cancel
+		49 button Description: Edit Wide-Grip Lat Pulldown, 3 × 10–12 @ 2 RIR, Secondary Actions: Cancel
+		50 button Description: , Add another movement, Secondary Actions: Cancel
+		51 element Description: Add Movement, Secondary Actions: Cancel
+		52 button Description: Preview saved Session, Secondary Actions: Cancel
+		53 button Description: , Assign Session, Secondary Actions: Cancel
+	54 toolbar
+		55 button Description: Home, Secondary Actions: Move previous, Move next, Remove from toolbar
+		56 button Description: Save Screen, Secondary Actions: Move previous, Move next, Remove from toolbar
+		57 button Description: Rotate, Secondary Actions: Move previous, Move next, Remove from toolbar
+	58 close button
+	59 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	60 minimize button
+	61 text iPhone 17 iOS 26.2
+62 menu bar
+	63 Simulator
+	64 File
+	65 Edit
+	66 Device
+	67 I/O
+	68 Features
+	69 Window
+	70 Help
+
+The focused UI element is 0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise

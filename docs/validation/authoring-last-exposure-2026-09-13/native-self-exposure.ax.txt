@@ -1,0 +1,77 @@
+Window: "iPhone 17", App: Simulator.
+0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise
+	1 button Action
+	2 button Volume Up
+	3 button Volume Down
+	4 button Sleep/Wake
+	5 container
+		6 slider Description: Return to selected week, Secondary Actions: Increment, Decrement, Cancel
+		7 button Description: Session actions, Secondary Actions: Cancel
+		8 text Description: Saved, Secondary Actions: Cancel
+		9 button Description: Rename Session, Secondary Actions: Cancel
+		10 button Description: Change Session date, Secondary Actions: Cancel
+		11 text Description: Assigned, Secondary Actions: Cancel
+		12 text Description: Bodybuilding Offseason / Offseason / W8, Secondary Actions: Cancel
+		13 button Description: Edit Notes & Next Steps for Dev Athlete 4, Secondary Actions: Cancel
+		14 button Description: , Repeat the established split; keep clean reps and leave room to recover., , Secondary Actions: Cancel
+		15 button Description: , Reorder, Secondary Actions: Cancel
+		16 text Description: 7 movements · 21 sets, Secondary Actions: Cancel
+		17 text Description: CORE, Secondary Actions: Cancel
+		18 button Description: Collapse Competition Squat editor, Secondary Actions: Cancel
+		19 text Description: DESIGNATION, Secondary Actions: Cancel
+		20 button Description: Designation: None, Secondary Actions: Cancel
+		21 text Description: SET TYPE, Secondary Actions: Cancel
+		22 button Description: Set Type: Straight Sets, Secondary Actions: Cancel
+		23 text Description: INTENSITY TYPE, Secondary Actions: Cancel
+		24 button Description: Intensity Type: RPE, Secondary Actions: Cancel
+		25 slider (settable) Description: Sets, Value: 3 sets, Secondary Actions: Cancel, increment, decrement
+		26 button (settable) Description: Reps, Value: 3 reps, Secondary Actions: Cancel, increment, decrement
+		27 button (settable) Description: RPE, Value: 6 RPE, Secondary Actions: Cancel, increment, decrement
+		28 text Description: CALCULATED TARGET, Secondary Actions: Cancel
+		29 text Description: , Secondary Actions: Cancel
+		30 text Description: 425–445 lb, Secondary Actions: Cancel
+		31 text Description: , Secondary Actions: Cancel
+		32 text Description: MANUAL OVERRIDE, Secondary Actions: Cancel
+		33 switch Description: Remove manual target override, Value: 1, Secondary Actions: Cancel
+		34 text Description: Manual target active, Secondary Actions: Cancel
+		35 slider (settable) Description: Target (lb), Value: 380 pounds, Secondary Actions: Cancel, increment, decrement
+		36 slider (settable) Description: Margin ± (lb), Value: plus or minus 25 pounds, Secondary Actions: Cancel, increment, decrement
+		37 button Description: Open exact movement history, Secondary Actions: Cancel
+		38 text Description: LAST EXPOSURE, Secondary Actions: Cancel
+		39 text Description: 315 lb × 3 @8 RPE, Secondary Actions: Cancel
+		40 text Description: Sep 10, Secondary Actions: Cancel
+		41 text Description: Representative set · 1 recorded set, Secondary Actions: Cancel
+		42 slider Description: Edit Coach Note, Secondary Actions: Increment, Decrement, Cancel
+		43 text Description: COACH NOTE, Secondary Actions: Cancel
+		44 button Description: Edit Coach Notes, Secondary Actions: Cancel
+		45 button Description: Remove Movement, Secondary Actions: Cancel
+		46 button Description: Edit Romanian Deadlift (RDL), 3 × 5, Secondary Actions: Cancel
+		47 text Description: ACCESSORIES, Secondary Actions: Cancel
+		48 slider Description: Edit Kneeling Single-Leg Curl, 3 × 10–12 @ 1 RIR, Secondary Actions: Increment, Decrement, Cancel
+		49 button Description: Edit Bulgarian Split Squat, 3 × 10–12 @ 1 RIR, Secondary Actions: Cancel
+		50 button Description: Edit Assisted Nordic Hamstring Curl, 3 × 10–12 @ 1 RIR, Secondary Actions: Cancel
+		51 button Description: Edit Leg Extension, 3 × 12–15 @ 1 RIR, Secondary Actions: Cancel
+		52 button Description: Edit Adductor Machine, 3 × 15–20 @ 2 RIR, Secondary Actions: Cancel
+		53 button Description: , Add another movement, Secondary Actions: Cancel
+		54 slider Description: Add Movement, Secondary Actions: Increment, Decrement, Cancel
+		55 button Description: Preview saved Session, Secondary Actions: Cancel
+		56 button (disabled) Description: , Saved, Secondary Actions: Cancel
+	57 toolbar
+		58 button Description: Home, Secondary Actions: Move previous, Move next, Remove from toolbar
+		59 button Description: Save Screen, Secondary Actions: Move previous, Move next, Remove from toolbar
+		60 button Description: Rotate, Secondary Actions: Move previous, Move next, Remove from toolbar
+	61 close button
+	62 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	63 minimize button
+	64 text iPhone 17 iOS 26.2
+65 menu bar
+	66 Simulator
+	67 File
+	68 Edit
+	69 Device
+	70 I/O
+	71 Features
+	72 Window
+	73 Help
+
+The focused UI element is 0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise
