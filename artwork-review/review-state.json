@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": 395,
-  "updated_at": "2026-09-13T14:18:35.415226+00:00",
-  "updated_at_display": "Sep 13, 2026 07:18 AM PT (Sep 13, 2026 10:18 AM Eastern)",
+  "revision": 417,
+  "updated_at": "2026-09-13T15:16:08.410750+00:00",
+  "updated_at_display": "Sep 13, 2026 08:16 AM PT (Sep 13, 2026 11:16 AM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -21765,7 +21765,7 @@
       "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "just fuckign use ankle weights",
+      "reason": "GET RID OF THE FUCKIGN DUMBELLS AND USE ANGLE WEIHTS! FUCK",
       "tags": [],
       "review_history": [
         {
@@ -21775,6 +21775,30 @@
           "tags": [],
           "reviewed_at": "2026-09-13T03:14:08.091556+00:00",
           "reviewed_at_display": "Sep 12, 2026 08:14 PM PT (Sep 12, 2026 11:14 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9801ebfd5c768b62575de4e5b83e1b5ea83031b0d4a70fe563b3ab67c3a67b1d",
+          "source": "human_review_ui"
+        },
+        {
+          "action": "reopen",
+          "decision": "pending",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T14:22:55.641146+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:22 AM PT (Sep 13, 2026 10:22 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9801ebfd5c768b62575de4e5b83e1b5ea83031b0d4a70fe563b3ab67c3a67b1d",
+          "source": "human_review_ui"
+        },
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "GET RID OF THE FUCKIGN DUMBELLS AND USE ANGLE WEIHTS! FUCK",
+          "tags": [],
+          "reviewed_at": "2026-09-13T14:25:28.372382+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 AM PT (Sep 13, 2026 10:25 AM Eastern)",
           "reviewer": "dev_user_1",
           "reviewer_user_id": 1,
           "candidate_sha256": "9801ebfd5c768b62575de4e5b83e1b5ea83031b0d4a70fe563b3ab67c3a67b1d",
@@ -21789,10 +21813,10 @@
       "review": {
         "action": "reject",
         "decision": "rejected",
-        "reason": "just fuckign use ankle weights",
+        "reason": "GET RID OF THE FUCKIGN DUMBELLS AND USE ANGLE WEIHTS! FUCK",
         "tags": [],
-        "reviewed_at": "2026-09-13T03:14:08.091556+00:00",
-        "reviewed_at_display": "Sep 12, 2026 08:14 PM PT (Sep 12, 2026 11:14 PM Eastern)",
+        "reviewed_at": "2026-09-13T14:25:28.372382+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 AM PT (Sep 13, 2026 10:25 AM Eastern)",
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "9801ebfd5c768b62575de4e5b83e1b5ea83031b0d4a70fe563b3ab67c3a67b1d",
@@ -25368,17 +25392,51 @@
         }
       },
       "candidate_asset": "candidates/fcdb03cee21f3eadb2cf4a7b/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "WHY ARE YOU ADDING A HEAD PAD ON THE BENCH! IT SHOULD LOOK LIKE A FUCKING ACTUALL BENCH PRESS RACK WITH THE JCUPS",
+      "tags": [
+        "equipment",
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "WHY ARE YOU ADDING A HEAD PAD ON THE BENCH! IT SHOULD LOOK LIKE A FUCKING ACTUALL BENCH PRESS RACK WITH THE JCUPS",
+          "tags": [
+            "equipment",
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T14:23:38.139321+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:23 AM PT (Sep 13, 2026 10:23 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "798be42f2d2f417cf657278390101815afe7815a0bf05c0469356248e4513d6f",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T14:18:34.130670+00:00",
       "created_at_display": "Sep 13, 2026 07:18 AM PT (Sep 13, 2026 10:18 AM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. One square photorealistic Strength Ledger movement image. Reference 1 is the immutable STYLE baseline only: preserve its original man's face, charcoal sleeveless tank, black shorts/shoes, realistic skin, black studio and textured dark floor with restrained violet rim. Do not turn style reference into an incline bench press. No text, logos, diagram or collage.\nReference 2 is the EDIT TARGET. Reference 3 shows ONLY correct flat utility bench construction. Replace the target's ENTIRE BENCH with one plain unbranded black flat utility bench: one continuous rectangular horizontal pad, constant thickness and width from head through buttocks. One straight under-pad rail, two simple legs and two floor cross-feet. There is NO inclined headrest, NO extra pad behind the head, NO protruding bracket beside the neck or head, NO part of the pad turned upward. Head rests fully flat on this same single pad. Keep original target athlete, head contact, natural shoulder packing, both arms, both hands, cambered bar, plates, lighting, camera angle and full composition. The cambered bar is continuous and symmetric. Preserve target's elevated diagonal view. Change only bench construction and any minimal contact adjustment required.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-b31fe4c8-a6d1-4508-9066-ad9c31c03fff.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHY ARE YOU ADDING A HEAD PAD ON THE BENCH! IT SHOULD LOOK LIKE A FUCKING ACTUALL BENCH PRESS RACK WITH THE JCUPS",
+        "tags": [
+          "equipment",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T14:23:38.139321+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:23 AM PT (Sep 13, 2026 10:23 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "798be42f2d2f417cf657278390101815afe7815a0bf05c0469356248e4513d6f",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 107,
@@ -25438,17 +25496,51 @@
         }
       },
       "candidate_asset": "candidates/87452b4bb72ff83acc837e3e/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "THIS IS A SHITTY RENDERED INCLINE BENCH! THE USER IS ALSO NOT ON THE BENCH STRAIGHT",
+      "tags": [
+        "equipment",
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "THIS IS A SHITTY RENDERED INCLINE BENCH! THE USER IS ALSO NOT ON THE BENCH STRAIGHT",
+          "tags": [
+            "equipment",
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T14:24:06.561191+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:24 AM PT (Sep 13, 2026 10:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "743b75938a0aaa74c0ac089811958ba91b0d76ab5352fab8054dc865c53732ad",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T14:18:34.399224+00:00",
       "created_at_display": "Sep 13, 2026 07:18 AM PT (Sep 13, 2026 10:18 AM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. One square photorealistic Strength Ledger movement image. Reference 1 is the immutable STYLE baseline only: preserve its original man's face, charcoal sleeveless tank, black shorts/shoes, realistic skin, black studio and textured dark floor with restrained violet rim. Do not turn style reference into an incline bench press. No text, logos, diagram or collage.\nReference 2 is the EDIT TARGET. Reference 3 is ONLY the correct incline bench structure. Rebuild the entire bench below the athlete as a real adjustable incline bench set at 45 degrees. ONE long straight rectangular padded backrest supports his side from hip through shoulder; ONE separate short horizontal seat meets its LOW end at the HIP. Pad gap and steel pivot are together at that junction. One hinged steel backrest support strut meets the ratchet rail below; two stable floor feet. No other hinge halfway along a pad, no extra seat embedded in the torso, no disjointed rails, no bent or melted padding. Preserve the man's side-lying lateral raise, original correctly oriented dumbbell/straight raised wrist, near-straight working arm, relaxed offhand gripping bench edge, charcoal clothes, face, aligned head and feet on floor. Fit the real bench below the pose without distorting the person. Preserve original camera and studio.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-e09ea3dc-b01a-4d8e-ae02-0bf7216a306d.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THIS IS A SHITTY RENDERED INCLINE BENCH! THE USER IS ALSO NOT ON THE BENCH STRAIGHT",
+        "tags": [
+          "equipment",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T14:24:06.561191+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:24 AM PT (Sep 13, 2026 10:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "743b75938a0aaa74c0ac089811958ba91b0d76ab5352fab8054dc865c53732ad",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 108,
@@ -25508,17 +25600,42 @@
         }
       },
       "candidate_asset": "candidates/15399102b5dd205a16c9ac7f/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "THE USER NEEDS TO BE STANDING AND USING THE BENCH FOR TO LEAN THE CHEST AGAINST! USE PROPER PROTORTIONS",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "THE USER NEEDS TO BE STANDING AND USING THE BENCH FOR TO LEAN THE CHEST AGAINST! USE PROPER PROTORTIONS",
+          "tags": [],
+          "reviewed_at": "2026-09-13T14:24:39.744508+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:24 AM PT (Sep 13, 2026 10:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ff81edaa433b5ad5f2fe04ac7100047a988850e454b75cd45dd441002c616298",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T14:18:34.668797+00:00",
       "created_at_display": "Sep 13, 2026 07:18 AM PT (Sep 13, 2026 10:18 AM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. One square photorealistic Strength Ledger movement image. Reference 1 is the immutable STYLE baseline only: preserve its original man's face, charcoal sleeveless tank, black shorts/shoes, realistic skin, black studio and textured dark floor with restrained violet rim. Do not turn style reference into an incline bench press. No text, logos, diagram or collage.\nReference 2 is the EDIT TARGET. Reference 3 is the owner's approved lateral-raise grip reference ONLY. Fix the ATHLETE'S LEFT wrist and dumbbell (on the RIGHT SIDE of the target image). His forearm currently kinks down into the hand. Reconstruct this wrist and closed fist as ONE STRAIGHT CONTINUATION of the forearm, like reference 3: no downward/upward bend and no sideways deviation. Center of fist on forearm axis. The small dumbbell is perpendicular to the arm with its near circular head in front of the fist, far head behind; fingers grasp the center handle, matching the approved reference's grip and rigid neutral alignment. Do not kink the wrist to display a dumbbell. Preserve all other body proportions, shoulder position, high 75-degree incline bench, bench backside hardware, feet, charcoal tank, face, light and framing. Exactly two arms, two hands, two separate dumbbells; each implement has two attached matching round steel heads.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-679d2fc0-2a2b-46c0-9f07-7e4cd81d8d48.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE USER NEEDS TO BE STANDING AND USING THE BENCH FOR TO LEAN THE CHEST AGAINST! USE PROPER PROTORTIONS",
+        "tags": [],
+        "reviewed_at": "2026-09-13T14:24:39.744508+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:24 AM PT (Sep 13, 2026 10:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ff81edaa433b5ad5f2fe04ac7100047a988850e454b75cd45dd441002c616298",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 292,
@@ -25578,17 +25695,42 @@
         }
       },
       "candidate_asset": "candidates/b91b408206e2c54bafa30fd8/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "WHAT THE FUCK IS THIS ANGLE! STOP USING ORTHAGONAL ANGLES! IT SHOULD BE A DIAGONAL",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "WHAT THE FUCK IS THIS ANGLE! STOP USING ORTHAGONAL ANGLES! IT SHOULD BE A DIAGONAL",
+          "tags": [],
+          "reviewed_at": "2026-09-13T14:24:57.618455+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:24 AM PT (Sep 13, 2026 10:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b4b775b8b9c710eb2754e8fdc863583910400d95c2c2255804a186cd685e22e2",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T14:18:34.929613+00:00",
       "created_at_display": "Sep 13, 2026 07:18 AM PT (Sep 13, 2026 10:18 AM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Square full-body photograph for Strength Ledger. Reference 1 is STYLE ONLY: its exact original athletic man, charcoal sleeveless tank, black shorts/shoes, realistic skin and hair, black studio textured floor and restrained purple rim light. Reference 2 supplies actual exercise mechanics only, never copy its person, outfit or surroundings. Render a natural adult man performing an EZ-BAR SKULL CRUSHER. CAMERA: elevated HEAD-END view, centered exactly on the long axis of the bench, looking from beyond his head toward his feet. Camera raised so whole face, both arms, torso and feet can be seen. The man is lying with head nearer camera in LOWER CENTER, feet further away in UPPER CENTER. Both shoulders are equally distant from the camera; both arms project as matching, equal-length left/right anatomy. 85mm normal long lens, generous distance, no wide-angle distortion. The EZ bar is HORIZONTAL ACROSS THE IMAGE, perpendicular to the long bench axis, centered directly across his forehead. A small identical round steel plate at each end, visible symmetric bar bends, a single rigid continuous bar. Both hands on symmetric inner angled grip sections. Upper arms raised, elbows flexed 90 degrees, forearms folded back toward head at equal angles. The elbows, forearms, hands, bar and plates must form a completely bilateral symmetric exercise pose. Natural muscular adult limb dimensions, no shortened arm or giant shoulder. Fingers close around the grip with opposing thumbs; wrists straight. Full head rests on the bench pad; bench extends at least 15 cm beyond the crown of the head, visibly supporting it. Full frame contains whole person, bench and both bar ends, not cropped. No text, logos, diagram or other person. This is the FLAT BENCH variant: one long continuous level black rectangular pad, head/shoulders/hips level, both feet planted on the floor. Plain coherent steel bench base. Skull-crusher bent-elbow phase, not overhead lockout or a chest press.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-46f7353c-48a8-4fb3-bd96-1f712506b420.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHAT THE FUCK IS THIS ANGLE! STOP USING ORTHAGONAL ANGLES! IT SHOULD BE A DIAGONAL",
+        "tags": [],
+        "reviewed_at": "2026-09-13T14:24:57.618455+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:24 AM PT (Sep 13, 2026 10:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b4b775b8b9c710eb2754e8fdc863583910400d95c2c2255804a186cd685e22e2",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 295,
@@ -25648,17 +25790,42 @@
         }
       },
       "candidate_asset": "candidates/50fc143b288fc19bc44a7657/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "SAME FUCKING THING WITH THE OTHER SKULLCRUSHER! FUX THE ANGLE",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "SAME FUCKING THING WITH THE OTHER SKULLCRUSHER! FUX THE ANGLE",
+          "tags": [],
+          "reviewed_at": "2026-09-13T14:25:09.653255+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 AM PT (Sep 13, 2026 10:25 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5cff5a5c826fba0b9b847b0f3b6efdaaf5162ef5f38efb4db09038ba665c66a2",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T14:18:35.169928+00:00",
       "created_at_display": "Sep 13, 2026 07:18 AM PT (Sep 13, 2026 10:18 AM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Reference 1 is the immutable Strength Ledger original style baseline. Reference 2 is the EDIT TARGET, a decline EZ skull crusher whose bar is in the wrong position. Reference 3 demonstrates the correct bent-elbow arm phase ONLY. Correct only the target's entire paired arm pose and the bar position to match reference 3's exact skull-crusher mechanics. Keep reference 2's man, clothes, head supported on pad, decline bench, secured feet, camera, black studio and proportions. Both upper arms should point UP toward the ceiling with elbows equal and at shoulder-width; BOTH FOREARMS FOLD BACK toward the HEAD by flexing the elbows approximately 100 degrees. Hands therefore move toward the near bottom of the image, as in reference 3. The symmetric EZ bar must hover just above the HAIRLINE/FOREHEAD, not above the neck or chest. Hands have matching natural closed EZ grips, neutral wrists. Keep elbows stationary above shoulders; only elbow flexion swings the bar toward forehead. Bar remains horizontal in image and both arms anatomically matched with normal adult humerus/forearm lengths. Preserve correct decline: head at low near end, feet secured high at far end. Keep full head contact on pad. No text, no added objects, no bench press pose. Use the subtle dark studio style, original model and full-frame composition of reference 2.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-40e736bd-e3e9-4fca-aec2-22720852e74b.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "SAME FUCKING THING WITH THE OTHER SKULLCRUSHER! FUX THE ANGLE",
+        "tags": [],
+        "reviewed_at": "2026-09-13T14:25:09.653255+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 AM PT (Sep 13, 2026 10:25 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5cff5a5c826fba0b9b847b0f3b6efdaaf5162ef5f38efb4db09038ba665c66a2",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 546,
@@ -25719,16 +25886,670 @@
         }
       },
       "candidate_asset": "candidates/9635b933e05318233687a15b/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T14:25:12.607296+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 AM PT (Sep 13, 2026 10:25 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "926859929086fb987b34edc3e246ef4eb1567c01e7a931b46b1151d22d88cc09",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-13T14:18:35.415164+00:00",
+      "created_at_display": "Sep 13, 2026 07:18 AM PT (Sep 13, 2026 10:18 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. One square photorealistic Strength Ledger movement image. Reference 1 is the immutable STYLE baseline only: preserve its original man's face, charcoal sleeveless tank, black shorts/shoes, realistic skin, black studio and textured dark floor with restrained violet rim. Do not turn style reference into an incline bench press. No text, logos, diagram or collage.\nReference 2 is Good Morning movement content, but its rear camera view is REJECTED. Recreate this exact BARBELL GOOD MORNING from a FRONT DIAGONAL THREE-QUARTER camera, looking toward the athlete's face/chest and one side. Camera at approximately chest height; head and face visible from front diagonal, never buttocks-facing. Proper hip hinge: feet shoulder width planted, soft slight knee bend, hips pushed back, torso hinged forward about 45 degrees, natural neutral neck with eyes down along torso. Real adult symmetric limbs. A SINGLE DEAD-STRAIGHT barbell rests securely across BOTH upper-trap shoulder shelves, transverse to the shoulder line. Both hands equally wide gripping bar outside shoulders. Shaft, collars, plate holes and sleeves on ONE common straight axis with equal small steel plates each end. No plate obscures the whole face; do not twist bar or body to show it. Full person and bar in frame; original family studio.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-43ce3827-7a0d-4098-beb9-386f94a3217c.png",
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T14:25:12.607296+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 AM PT (Sep 13, 2026 10:25 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "926859929086fb987b34edc3e246ef4eb1567c01e7a931b46b1151d22d88cc09",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 47,
+      "key": "accessory_cambered_bar_bench_press",
+      "movement_name": "Cambered-Bar Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "barbell",
+      "implement": "Cambered barbell",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_47_v6",
+      "generation_batch": "human_review_round_6_20260913",
+      "candidate_id": "3b169e013132081f6fd8bebc",
+      "version": 6,
+      "supersedes_candidate_id": "fcdb03cee21f3eadb2cf4a7b",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHY ARE YOU ADDING A HEAD PAD ON THE BENCH! IT SHOULD LOOK LIKE A FUCKING ACTUALL BENCH PRESS RACK WITH THE JCUPS",
+        "tags": [
+          "equipment",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T14:23:38.139321+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:23 AM PT (Sep 13, 2026 10:23 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "798be42f2d2f417cf657278390101815afe7815a0bf05c0469356248e4513d6f",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/3b169e013132081f6fd8bebc/master.png",
+          "sha256": "4defaa6740e5bcbd619acb815633e926278c0695df1ea3a2ffd6d43ab4efbbde",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2055626
+        },
+        "app": {
+          "path": "candidates/3b169e013132081f6fd8bebc/app.png",
+          "sha256": "f62950ebec1237c6487bcca2fc4efc80eac515c3b66012fb6264216a16c9cfae",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 360466
+        },
+        "thumbnail": {
+          "path": "candidates/3b169e013132081f6fd8bebc/thumbnail.png",
+          "sha256": "0f88e3f08e870509f5b343cad00e3092e7625e36cc8c79767b4456f234fa34c3",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 53968
+        }
+      },
+      "candidate_asset": "candidates/3b169e013132081f6fd8bebc/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "its supposed to be a flat fucking bench press! the only difference is that its a cambered bar! why the fuck o you keep putting the athlete uneven on the bench! GET IT FUCKING RIGHT!!!!",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "its supposed to be a flat fucking bench press! the only difference is that its a cambered bar! why the fuck o you keep putting the athlete uneven on the bench! GET IT FUCKING RIGHT!!!!",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T15:03:28.060159+00:00",
+          "reviewed_at_display": "Sep 13, 2026 08:03 AM PT (Sep 13, 2026 11:03 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "4defaa6740e5bcbd619acb815633e926278c0695df1ea3a2ffd6d43ab4efbbde",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-13T15:01:15.719510+00:00",
+      "created_at_display": "Sep 13, 2026 08:01 AM PT (Sep 13, 2026 11:01 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Reference 1 is immutable family STYLE ONLY. Reference 2 is the EDIT TARGET. Square photorealistic Strength Ledger artwork. Shorten ONLY the top extensions of the two rack uprights so each upright ends approximately 15 cm ABOVE its J-cup, with both top caps fully visible inside the square frame. This is a bench-press rack, not a full-height squat rack. Keep the J-cups, attached grounded rack feet, lifter, hands, cambered bar, pose, simple single continuous flat bench pad, camera and all other pixels unchanged. Do not add a headrest or separate pad. Original man, graphite sleeveless tank, black shorts/shoes, near-black studio, dark textured floor and subdued purple edge light. No new text, branding or objects beyond the requested corrections.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-fb05834d-0766-4bfa-86b4-5d008d40f9f7.png",
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "its supposed to be a flat fucking bench press! the only difference is that its a cambered bar! why the fuck o you keep putting the athlete uneven on the bench! GET IT FUCKING RIGHT!!!!",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T15:03:28.060159+00:00",
+        "reviewed_at_display": "Sep 13, 2026 08:03 AM PT (Sep 13, 2026 11:03 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "4defaa6740e5bcbd619acb815633e926278c0695df1ea3a2ffd6d43ab4efbbde",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 107,
+      "key": "accessory_lying_dumbbell_lateral_raise",
+      "movement_name": "Lying Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "implement": "Single dumbbell",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_107_v6",
+      "generation_batch": "human_review_round_6_20260913",
+      "candidate_id": "002fdea8869cefe72d636472",
+      "version": 6,
+      "supersedes_candidate_id": "87452b4bb72ff83acc837e3e",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THIS IS A SHITTY RENDERED INCLINE BENCH! THE USER IS ALSO NOT ON THE BENCH STRAIGHT",
+        "tags": [
+          "equipment",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T14:24:06.561191+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:24 AM PT (Sep 13, 2026 10:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "743b75938a0aaa74c0ac089811958ba91b0d76ab5352fab8054dc865c53732ad",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/002fdea8869cefe72d636472/master.png",
+          "sha256": "84c75d64c09eb012772d47e86921cd70f10076ef30ee38b97aa419eb00bae84c",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1781997
+        },
+        "app": {
+          "path": "candidates/002fdea8869cefe72d636472/app.png",
+          "sha256": "98524844205e4664eca28a84bfca9d45912da41a72aa7b0cb552fd3261c5fcc1",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 324911
+        },
+        "thumbnail": {
+          "path": "candidates/002fdea8869cefe72d636472/thumbnail.png",
+          "sha256": "f466717a7dac010b7a104c3026d9302ad67611b1d21e83c8fe24e9a1219f1547",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47768
+        }
+      },
+      "candidate_asset": "candidates/002fdea8869cefe72d636472/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T15:03:42.789019+00:00",
+          "reviewed_at_display": "Sep 13, 2026 08:03 AM PT (Sep 13, 2026 11:03 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "84c75d64c09eb012772d47e86921cd70f10076ef30ee38b97aa419eb00bae84c",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-13T15:01:15.993802+00:00",
+      "created_at_display": "Sep 13, 2026 08:01 AM PT (Sep 13, 2026 11:01 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Reference 1 is immutable family STYLE ONLY. Reference 2 is the EDIT TARGET. Square photorealistic Strength Ledger artwork. Remove ONLY the extra CURVED SLOTTED METAL STRIP dangling below the center of the main bench frame. The existing straight main frame, ladder rail, rear support strut and front/rear feet form the complete real bench. No extra loose curved piece is needed. Keep the man's side-lying body straight along the pad, bent legs, shoes, long incline pad, separate small seat, neutral raised wrist/dumbbell, offhand, camera and studio unchanged. Original man, graphite sleeveless tank, black shorts/shoes, near-black studio, dark textured floor and subdued purple edge light. No new text, branding or objects beyond the requested corrections.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-023ce6aa-ad1d-4923-88fc-efaf3a21823d.png",
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T15:03:42.789019+00:00",
+        "reviewed_at_display": "Sep 13, 2026 08:03 AM PT (Sep 13, 2026 11:03 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "84c75d64c09eb012772d47e86921cd70f10076ef30ee38b97aa419eb00bae84c",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 108,
+      "key": "accessory_chest_supported_dumbbell_lateral_raise",
+      "movement_name": "Chest-Supported Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "implement": "Two dumbbells",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_108_v6",
+      "generation_batch": "human_review_round_6_20260913",
+      "candidate_id": "306dc6090aa9986433f79be4",
+      "version": 6,
+      "supersedes_candidate_id": "15399102b5dd205a16c9ac7f",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE USER NEEDS TO BE STANDING AND USING THE BENCH FOR TO LEAN THE CHEST AGAINST! USE PROPER PROTORTIONS",
+        "tags": [],
+        "reviewed_at": "2026-09-13T14:24:39.744508+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:24 AM PT (Sep 13, 2026 10:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ff81edaa433b5ad5f2fe04ac7100047a988850e454b75cd45dd441002c616298",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/306dc6090aa9986433f79be4/master.png",
+          "sha256": "a1e644dfb5642a534d10cf7257f6941ff8fbd714e696a5bf218b0afa2e619508",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1749400
+        },
+        "app": {
+          "path": "candidates/306dc6090aa9986433f79be4/app.png",
+          "sha256": "bcab8d4bfe3e493a5d6ace360331ce9355d6bc352c5fd5de26af88866f683649",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 304371
+        },
+        "thumbnail": {
+          "path": "candidates/306dc6090aa9986433f79be4/thumbnail.png",
+          "sha256": "f02122eceee0a10de8c23feebc178aea0b72b07d18f0cb277a095f8470ff4953",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45456
+        }
+      },
+      "candidate_asset": "candidates/306dc6090aa9986433f79be4/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T15:03:48.333133+00:00",
+          "reviewed_at_display": "Sep 13, 2026 08:03 AM PT (Sep 13, 2026 11:03 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a1e644dfb5642a534d10cf7257f6941ff8fbd714e696a5bf218b0afa2e619508",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-13T15:01:16.273563+00:00",
+      "created_at_display": "Sep 13, 2026 08:01 AM PT (Sep 13, 2026 11:01 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Reference 1 is immutable family STYLE ONLY. Reference 2 is the EDIT TARGET. Square photorealistic Strength Ledger artwork. Correct ONLY the SHORT SEAT and its misplaced support. The small horizontal pad currently sticks out on the RIGHT side of the image, attached to the rear brace. Remove that incorrect rear-facing seat. A real adjustable bench's short seat extends from the LOW FRONT end of the backrest, toward the LEFT of the image, partly hidden behind the standing athlete's thighs. Put the short seat there, connected to the main low hinge; do not put any seat on the backrest's rear support strut. Preserve standing athlete, chest contact at upper front padding, natural full leg proportions and ground contact, both arms/dumbbells/neutral wrists, high incline, rear support spine, diagonal camera and style. Original man, graphite sleeveless tank, black shorts/shoes, near-black studio, dark textured floor and subdued purple edge light. No new text, branding or objects beyond the requested corrections.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-6527e8d3-037e-490c-8421-3fb86661b2e5.png",
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T15:03:48.333133+00:00",
+        "reviewed_at_display": "Sep 13, 2026 08:03 AM PT (Sep 13, 2026 11:03 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a1e644dfb5642a534d10cf7257f6941ff8fbd714e696a5bf218b0afa2e619508",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 292,
+      "key": "accessory_ez_bar_skull_crusher",
+      "movement_name": "EZ-Bar Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "barbell",
+      "implement": "EZ bar",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_292_v6",
+      "generation_batch": "human_review_round_6_20260913",
+      "candidate_id": "6f786855c6b0a2ddb835afab",
+      "version": 6,
+      "supersedes_candidate_id": "b91b408206e2c54bafa30fd8",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHAT THE FUCK IS THIS ANGLE! STOP USING ORTHAGONAL ANGLES! IT SHOULD BE A DIAGONAL",
+        "tags": [],
+        "reviewed_at": "2026-09-13T14:24:57.618455+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:24 AM PT (Sep 13, 2026 10:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b4b775b8b9c710eb2754e8fdc863583910400d95c2c2255804a186cd685e22e2",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/6f786855c6b0a2ddb835afab/master.png",
+          "sha256": "de3aee024577f7565ed97cddd9b3b0b564d9785b2c9cc5c03a29c80618665ec7",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1849328
+        },
+        "app": {
+          "path": "candidates/6f786855c6b0a2ddb835afab/app.png",
+          "sha256": "46626b16fa7ddf54c75b9edf6a406e33fa54f12da501de73d8559542555af89c",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 331481
+        },
+        "thumbnail": {
+          "path": "candidates/6f786855c6b0a2ddb835afab/thumbnail.png",
+          "sha256": "406baeafd97081b1eb7020fedc94a845316065ead5228ab0f874a041269a3713",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49812
+        }
+      },
+      "candidate_asset": "candidates/6f786855c6b0a2ddb835afab/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T15:03:52.116598+00:00",
+          "reviewed_at_display": "Sep 13, 2026 08:03 AM PT (Sep 13, 2026 11:03 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "de3aee024577f7565ed97cddd9b3b0b564d9785b2c9cc5c03a29c80618665ec7",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-13T15:01:16.547213+00:00",
+      "created_at_display": "Sep 13, 2026 08:01 AM PT (Sep 13, 2026 11:01 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Reference 1 is immutable Strength Ledger STYLE ONLY. Reference 2 is EDIT TARGET. Correct ONLY the bench pad. Replace the two segmented bench cushions with ONE SINGLE CONTINUOUS rectangular flat utility-bench pad under hips, shoulders, neck and head. Same level height and same constant width/depth all the way along. Remove the seam/hinge between the long torso pad and the short pad under the head. There is NO separate head pad or headrest. Keep the existing simple under-pad frame and legs, full head support, every part of the athlete including BOTH bent-elbow arm chains and fingers, the bar/plates at the forehead, diagonal camera and black studio EXACTLY unchanged. Do not change camera, proportions or elbow angle. One square photorealistic image, no text or logo.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-537d841f-33ca-4393-95ca-5c9119f3dc44.png",
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T15:03:52.116598+00:00",
+        "reviewed_at_display": "Sep 13, 2026 08:03 AM PT (Sep 13, 2026 11:03 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "de3aee024577f7565ed97cddd9b3b0b564d9785b2c9cc5c03a29c80618665ec7",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 295,
+      "key": "accessory_decline_skull_crusher",
+      "movement_name": "Decline Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "free_weight",
+      "implement": "EZ bar",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_295_v6",
+      "generation_batch": "human_review_round_6_20260913",
+      "candidate_id": "9511f6af6d5d3d9750ea1e5e",
+      "version": 6,
+      "supersedes_candidate_id": "50fc143b288fc19bc44a7657",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "SAME FUCKING THING WITH THE OTHER SKULLCRUSHER! FUX THE ANGLE",
+        "tags": [],
+        "reviewed_at": "2026-09-13T14:25:09.653255+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 AM PT (Sep 13, 2026 10:25 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5cff5a5c826fba0b9b847b0f3b6efdaaf5162ef5f38efb4db09038ba665c66a2",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/9511f6af6d5d3d9750ea1e5e/master.png",
+          "sha256": "bbaf0b9a3f74d252c6f1a0f819a697b7a4fc94c1c8a0bfff15bb0caa24111222",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1848437
+        },
+        "app": {
+          "path": "candidates/9511f6af6d5d3d9750ea1e5e/app.png",
+          "sha256": "1fc4f24d3a77d9b0305224ba88248debf7466aafe44fef6e6450d14d1284d405",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 345633
+        },
+        "thumbnail": {
+          "path": "candidates/9511f6af6d5d3d9750ea1e5e/thumbnail.png",
+          "sha256": "c291aac501e843401820ada2e537a7ad08dbc782288ec330bffefa062452b778",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 52991
+        }
+      },
+      "candidate_asset": "candidates/9511f6af6d5d3d9750ea1e5e/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T15:03:59.976268+00:00",
+          "reviewed_at_display": "Sep 13, 2026 08:03 AM PT (Sep 13, 2026 11:03 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "bbaf0b9a3f74d252c6f1a0f819a697b7a4fc94c1c8a0bfff15bb0caa24111222",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-13T15:01:16.821299+00:00",
+      "created_at_display": "Sep 13, 2026 08:01 AM PT (Sep 13, 2026 11:01 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Reference 1 is immutable Strength Ledger STYLE ONLY. Reference 2 is the DECLINE skull-crusher edit target. Reference 3 supplies the correct paired bent-elbow arm geometry ONLY. Rebuild BOTH shoulder-to-elbow-to-hand chains in the target to have the same natural adult lengths and flexed-elbow action as reference 3, preserving the target's decline bench and DIAGONAL camera. Especially correct the FAR ARM on the upper-right side: its elbow must be raised HIGH ABOVE its hand, leaving a full-length visible forearm sloping back down toward the hand/bar at the forehead, as reference 3. Do not leave a tiny stump between far shoulder and hand. Both humeri and forearms have equal actual adult lengths and muscle volume, with only modest natural foreshortening. Both elbows about 90 degrees flexed, upper arms up, forearms folded back toward forehead. Hands grasp symmetric inner EZ grip sections naturally; wrists remain straight. One rigid symmetric EZ bar hovering just over forehead, matching plates aligned with sleeves and each other, bar perpendicular to torso/shoulder plane. Keep one CONTINUOUS straight decline pad supporting hips through full head; feet secured at raised end. Preserve original man, outfit, studio, head contact, diagonal lens perspective, natural body and bench. No orthogonal/top-down camera. No flat headrest. One square photorealistic movement image.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-4cd90c31-7089-4ce6-adf1-95acfca02fc2.png",
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T15:03:59.976268+00:00",
+        "reviewed_at_display": "Sep 13, 2026 08:03 AM PT (Sep 13, 2026 11:03 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "bbaf0b9a3f74d252c6f1a0f819a697b7a4fc94c1c8a0bfff15bb0caa24111222",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 646,
+      "key": "accessory_ankle_weight_psoas_march",
+      "movement_name": "Ankle-Weight Psoas March",
+      "primary_muscle_group": "hip_flexors",
+      "equipment_type": "free_weight",
+      "implement": "Two secured ankle-weight cuffs and exercise mat",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_646_v1",
+      "generation_batch": "human_review_round_6_20260913",
+      "candidate_id": "dbdcd379caf4fb75b32afcc1",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/dbdcd379caf4fb75b32afcc1/master.png",
+          "sha256": "82cb24955e0aa6d0ac9d0dfe05416afe65d9c4df14c8761496a68ab76b81f547",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1929498
+        },
+        "app": {
+          "path": "candidates/dbdcd379caf4fb75b32afcc1/app.png",
+          "sha256": "321a78113870fded2fe7aaf42a53d85bc97c00d97f431d86ece31061bd61b1e1",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 340576
+        },
+        "thumbnail": {
+          "path": "candidates/dbdcd379caf4fb75b32afcc1/thumbnail.png",
+          "sha256": "5fadbf2df33038d6dcf5f335c632bf2ce815e4aeb05bdaa98cc5729853db35cf",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49042
+        }
+      },
+      "candidate_asset": "candidates/dbdcd379caf4fb75b32afcc1/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T15:04:01.849276+00:00",
+          "reviewed_at_display": "Sep 13, 2026 08:04 AM PT (Sep 13, 2026 11:04 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "82cb24955e0aa6d0ac9d0dfe05416afe65d9c4df14c8761496a68ab76b81f547",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-13T15:01:17.094625+00:00",
+      "created_at_display": "Sep 13, 2026 08:01 AM PT (Sep 13, 2026 11:01 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. First reference is immutable Strength Ledger STYLE ONLY. Second reference is the EDIT TARGET. Change this exercise to an ANKLE-WEIGHT PSOAS MARCH. REMOVE BOTH DUMBBELLS and ALL FOOT-MOUNTED attachments completely. Both shoe soles are ordinary unobstructed shoes. Add one realistic small dark charcoal fabric ANKLE WEIGHT cuff wrapped snugly around EACH ANKLE, just above the shoe collar, with believable fabric weight pockets and one secure Velcro strap. Exactly two ankle cuffs, no metal dumbbells, no weight under either shoe, no ankle brace with protruding steel weights. Preserve the same original man, graphite sleeveless tank, black shorts, supine alternating march pose, one hip/knee flexed and opposite leg extended, hands resting naturally beside torso on thin dark mat, full-body front-side DIAGONAL camera and near-black studio with dark floor/purple rim. Rest full back of head on mat with neck neutral. Natural adult proportions and joints, cuffs follow each ankle without intersecting legs. No new text, logos, symbols or objects. One square realistic commercial fitness photograph.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-b7a7539e-dd8b-4986-91e1-1ed6b8db03dd.png",
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T15:04:01.849276+00:00",
+        "reviewed_at_display": "Sep 13, 2026 08:04 AM PT (Sep 13, 2026 11:04 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "82cb24955e0aa6d0ac9d0dfe05416afe65d9c4df14c8761496a68ab76b81f547",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 47,
+      "key": "accessory_cambered_bar_bench_press",
+      "movement_name": "Cambered-Bar Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "barbell",
+      "implement": "Cambered barbell",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_47_v7",
+      "generation_batch": "human_review_round_7_20260913",
+      "candidate_id": "ffaa0bd71d227452ce468794",
+      "version": 7,
+      "supersedes_candidate_id": "3b169e013132081f6fd8bebc",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "its supposed to be a flat fucking bench press! the only difference is that its a cambered bar! why the fuck o you keep putting the athlete uneven on the bench! GET IT FUCKING RIGHT!!!!",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T15:03:28.060159+00:00",
+        "reviewed_at_display": "Sep 13, 2026 08:03 AM PT (Sep 13, 2026 11:03 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "4defaa6740e5bcbd619acb815633e926278c0695df1ea3a2ffd6d43ab4efbbde",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/ffaa0bd71d227452ce468794/master.png",
+          "sha256": "b2fff5af70c16ea080aad3fa5ba529df40bd15de16c4b78fef0a1e5af6f8aa70",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1838318
+        },
+        "app": {
+          "path": "candidates/ffaa0bd71d227452ce468794/app.png",
+          "sha256": "f5f5e3116c2b9bcff61cbb8bed39756e6173be71d9f8bf7286262cf05c8c927c",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 335063
+        },
+        "thumbnail": {
+          "path": "candidates/ffaa0bd71d227452ce468794/thumbnail.png",
+          "sha256": "5a00204f2fdb3b7b035ee074297095208d8de7ae80c15d5ae1f034e98d045f0e",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 50055
+        }
+      },
+      "candidate_asset": "candidates/ffaa0bd71d227452ce468794/master.png",
       "status": "pending",
       "human_approved": false,
       "automation_passed": true,
       "reason": "",
       "tags": [],
       "review_history": [],
-      "created_at": "2026-09-13T14:18:35.415164+00:00",
-      "created_at_display": "Sep 13, 2026 07:18 AM PT (Sep 13, 2026 10:18 AM Eastern)",
-      "generation_prompt": "Use case: precise-object-edit. One square photorealistic Strength Ledger movement image. Reference 1 is the immutable STYLE baseline only: preserve its original man's face, charcoal sleeveless tank, black shorts/shoes, realistic skin, black studio and textured dark floor with restrained violet rim. Do not turn style reference into an incline bench press. No text, logos, diagram or collage.\nReference 2 is Good Morning movement content, but its rear camera view is REJECTED. Recreate this exact BARBELL GOOD MORNING from a FRONT DIAGONAL THREE-QUARTER camera, looking toward the athlete's face/chest and one side. Camera at approximately chest height; head and face visible from front diagonal, never buttocks-facing. Proper hip hinge: feet shoulder width planted, soft slight knee bend, hips pushed back, torso hinged forward about 45 degrees, natural neutral neck with eyes down along torso. Real adult symmetric limbs. A SINGLE DEAD-STRAIGHT barbell rests securely across BOTH upper-trap shoulder shelves, transverse to the shoulder line. Both hands equally wide gripping bar outside shoulders. Shaft, collars, plate holes and sleeves on ONE common straight axis with equal small steel plates each end. No plate obscures the whole face; do not twist bar or body to show it. Full person and bar in frame; original family studio.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-43ce3827-7a0d-4098-beb9-386f94a3217c.png",
+      "created_at": "2026-09-13T15:16:08.409887+00:00",
+      "created_at_display": "Sep 13, 2026 08:16 AM PT (Sep 13, 2026 11:16 AM Eastern)",
+      "generation_prompt": "Precise equipment edit. EDIT THE THIRD / LAST IMAGE ONLY. Preserve the entire third image's man with his intact head resting on the pad, complete natural body, all hands/arms/legs, flat bench, diagonal camera, rack and studio. The first image is the required immutable style baseline only. The SECOND image is ONLY the real manufacturer's cambered bench-press BAR SHAPE.\nIn the THIRD image, replace ONLY the existing zigzag EZ-bar shaft with the single raised-center cambered bench-press shaft from image TWO. It has long straight outer grip sections connected via two simple diagonal camber transitions to ONE straight raised parallel central bridge. The central bridge is offset approximately 15 cm away from chest. No extra shallow dips, no repeated zigzag. The existing hands in image3 stay at the same coordinates, gripping the two outer straight sections outside the camber transitions. Existing plates/collars/sleeves retain their positions along one connected outer axis. Copy shape only from the second image, preserving brushed-steel family appearance.\nEvery pixel outside the bar shaft remains as image THREE: intact natural head lies on the pad at lower-right, feet on the floor at left, torso horizontal and centered along the one continuous flat pad, no headrest, no body roll, no incline. Both arm chains and gripping hands remain attached and proportional. Do not replace scene with any other reference. Only a shaft replacement in the LAST IMAGE. One square photorealistic image, no labels, logos, brand marks, insets or collage.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-02ad8f2c-f80b-4e3e-9c89-877772fbb4bd.png",
       "test_only": false
     }
   ],
@@ -39634,6 +40455,19 @@
       "replacement_movement_definition_id": null,
       "excluded_at": "2026-09-13T01:21:16.910306+00:00",
       "excluded_at_display": "Sep 12, 2026 06:21 PM PT (Sep 12, 2026 09:21 PM Eastern)",
+      "source": "owner_requested_catalog_retirement",
+      "human_approved": false
+    },
+    {
+      "candidate_id": "8ff8be55009c2060ceb8ae76",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_dumbbell_psoas_march",
+      "movement_definition_id": 569,
+      "movement_name": "Dumbbell Psoas March",
+      "reason": "GET RID OF THE FUCKIGN DUMBELLS AND USE ANGLE WEIHTS! FUCK",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-13T15:01:51.207042+00:00",
+      "excluded_at_display": "Sep 13, 2026 08:01 AM PT (Sep 13, 2026 11:01 AM Eastern)",
       "source": "owner_requested_catalog_retirement",
       "human_approved": false
     }

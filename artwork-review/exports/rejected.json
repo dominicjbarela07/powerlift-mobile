@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 395,
+  "revision": 417,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-13T14:18:35.415226+00:00",
-  "updated_at_display": "Sep 13, 2026 07:18 AM PT (Sep 13, 2026 10:18 AM Eastern)",
+  "updated_at": "2026-09-13T15:16:08.410750+00:00",
+  "updated_at_display": "Sep 13, 2026 08:16 AM PT (Sep 13, 2026 11:16 AM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -85,103 +85,20 @@
       "excluded_at_display": "Sep 12, 2026 06:21 PM PT (Sep 12, 2026 09:21 PM Eastern)",
       "source": "owner_requested_catalog_retirement",
       "human_approved": false
+    },
+    {
+      "candidate_id": "8ff8be55009c2060ceb8ae76",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_dumbbell_psoas_march",
+      "movement_definition_id": 569,
+      "movement_name": "Dumbbell Psoas March",
+      "reason": "GET RID OF THE FUCKIGN DUMBELLS AND USE ANGLE WEIHTS! FUCK",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-13T15:01:51.207042+00:00",
+      "excluded_at_display": "Sep 13, 2026 08:01 AM PT (Sep 13, 2026 11:01 AM Eastern)",
+      "source": "owner_requested_catalog_retirement",
+      "human_approved": false
     }
   ],
-  "rejected": [
-    {
-      "movement_definition_id": 569,
-      "key": "accessory_dumbbell_psoas_march",
-      "movement_name": "Dumbbell Psoas March",
-      "primary_muscle_group": "hip_flexors",
-      "equipment_type": "dumbbell",
-      "implement": "Two light dumbbells with secure midfoot straps and exercise mat",
-      "family": "canonical_free_weight_accessories",
-      "generation_id": "human_review_20260912_569_v2",
-      "generation_batch": "human_review_corrections_20260912",
-      "candidate_id": "8ff8be55009c2060ceb8ae76",
-      "version": 2,
-      "supersedes_candidate_id": "existing-569-d346aa587b83",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "this is a poor render of the interface between the weight and the foot",
-        "tags": [
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-13T00:49:17.721693+00:00",
-        "reviewed_at_display": "Sep 12, 2026 05:49 PM PT (Sep 12, 2026 08:49 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "d346aa587b8384fcc2e1f487b2ae4042f8c401cd7673d04aba87e56cad34042c",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/8ff8be55009c2060ceb8ae76/master.png",
-          "sha256": "9801ebfd5c768b62575de4e5b83e1b5ea83031b0d4a70fe563b3ab67c3a67b1d",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1872846
-        },
-        "app": {
-          "path": "candidates/8ff8be55009c2060ceb8ae76/app.png",
-          "sha256": "49dd48e14ae70ba9bf9d3e2045516da5279920244a1dea0a0b2e1aed37c7b290",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 344167
-        },
-        "thumbnail": {
-          "path": "candidates/8ff8be55009c2060ceb8ae76/thumbnail.png",
-          "sha256": "41ba901846882f907facd9a8f777a40edce514477f633117fe10a62c22e03a85",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 49887
-        }
-      },
-      "candidate_asset": "candidates/8ff8be55009c2060ceb8ae76/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "just fuckign use ankle weights",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "just fuckign use ankle weights",
-          "tags": [],
-          "reviewed_at": "2026-09-13T03:14:08.091556+00:00",
-          "reviewed_at_display": "Sep 12, 2026 08:14 PM PT (Sep 12, 2026 11:14 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "9801ebfd5c768b62575de4e5b83e1b5ea83031b0d4a70fe563b3ab67c3a67b1d",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-13T02:02:03.058130+00:00",
-      "created_at_display": "Sep 12, 2026 07:02 PM PT (Sep 12, 2026 10:02 PM Eastern)",
-      "generation_prompt": "Use case: precise-object-edit. Output ONE square photorealistic Strength Ledger movement-art candidate. Reference 1 is the immutable STYLE BASELINE ONLY; reference 2 is the rejected EDIT TARGET. Preserve baseline lifter appearance in graphite sleeveless shirt, black shorts and dark shoes, realistic skin, dark textured-floor studio blending to black, modest violet rim, brushed steel. Entire body and required equipment inside frame. No text, collage, motion duplicates, extra limbs, malformed hands or equipment. Maintain natural cervical alignment and gaze in the torso's direction. \nExact movement 569: Dumbbell Psoas March. Human rejection (verbatim): \"this is a poor render of the interface between the weight and the foot\".\nCorrection: Completely recompose camera to FOOT-END frontthreequarter view, camera30degrees off footend, so BOTTOM SOLES of both shoes face camera clearly. Supine dumbbell psoas march on mat; head in background onmat, one knee flexed90 high, other leg extendedhovering. Each shoe has a REAL secure footweight attachment: lightweight dumbbell CROSSWISE UNDER its OUTSOLE, visible underneath the rubber sole, NOT across the TOP oflaces. A rigid smallclamp/cradle grips the short dumbbellhandle UNDER sole, with a broad blackstrap around MIDFOOT and buckle OVER laces. Visible shoe rubber BETWEEN footandhandle, two round DBheads projectleft/right outside shoeedges, no metal enteringfoot. Two independent devices,two dumbbells,fourheads, oneforeachfoot. Show the bottomsole-and-handle mechanical contact clearly on both feet. Near shoe should be atimagex65%y60% with8%imageclearance so toe/weightsnotcropped. Widen frame to include FULL head, torso, bothlegs, bothcompletefeet/devices andentiremat. No giantoversizedDBs or floatingmetal. Humanfeet natural and alignedwithshins. Reference2 incorrect weightplacement must be replaced entirely.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-daf2f903-99c1-4ef0-82b7-241fa5172751.png",
-      "test_only": false,
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "just fuckign use ankle weights",
-        "tags": [],
-        "reviewed_at": "2026-09-13T03:14:08.091556+00:00",
-        "reviewed_at_display": "Sep 12, 2026 08:14 PM PT (Sep 12, 2026 11:14 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "9801ebfd5c768b62575de4e5b83e1b5ea83031b0d4a70fe563b3ab67c3a67b1d",
-        "source": "human_review_ui"
-      }
-    }
-  ]
+  "rejected": []
 }
