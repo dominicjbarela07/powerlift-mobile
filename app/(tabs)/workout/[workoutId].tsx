@@ -82,6 +82,7 @@ import {
   type SupersetWorkspaceItem,
 } from '@/components/workout-logger/superset-round-workspace';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
+import { EquipmentTypeChoice } from '@/components/workout-logger/equipment-type-choice';
 import { manufacturerMatchesSearch } from '@/lib/manufacturer-registry';
 import {
   CancelResumeModal,
@@ -9940,6 +9941,7 @@ export default function WorkoutViewerScreen() {
             style={[
               styles.movementHistorySheet,
               styles.equipmentPickerSheet,
+              __DEV__ && identityPickerSubject?.domain === 'machine' && identityPickerManufacturer && styles.equipmentTypeArtSheet,
             ]}
           >
             <View style={styles.coreWheelHandle} />
@@ -9977,7 +9979,9 @@ export default function WorkoutViewerScreen() {
                       </TouchableOpacity>
                       <View style={styles.equipmentPickerHeaderCopy}>
                         <Text style={styles.coreWheelTitle}>
-                          {identityPickerContinuation.kind === 'evidence_correction'
+                          {__DEV__ && identityPickerSubject?.domain === 'machine'
+                            ? 'Equipment type'
+                            : identityPickerContinuation.kind === 'evidence_correction'
                             ? 'Which version did you use?'
                             : 'Which version are you using?'}
                         </Text>
@@ -10008,7 +10012,10 @@ export default function WorkoutViewerScreen() {
                         {identityPickerError}
                       </Text>
                     ) : null}
-                    <View style={styles.equipmentVariantOptions}>
+                    <View style={[
+                      styles.equipmentVariantOptions,
+                      __DEV__ && identityPickerSubject?.domain === 'machine' && styles.equipmentVariantArtOptions,
+                    ]}>
                       {(identityPickerSubject ? equipmentFlowVariants(identityPickerSubject) : []).map((variant) => {
                         const activeIdentity = activeEquipmentIdentity(identityPickerItem);
                         const selectedOther = (
@@ -10040,6 +10047,20 @@ export default function WorkoutViewerScreen() {
                           variant.key,
                           current,
                         ).join(' · ');
+                        if (__DEV__ && identityPickerSubject?.domain === 'machine') {
+                          return (
+                            <EquipmentTypeChoice
+                              key={variant.key}
+                              equipmentType={variant.key}
+                              label={variant.label}
+                              status={status}
+                              current={current}
+                              disabled={identityPickerLoading || !identityPickerEntryRef.current}
+                              singleOption={identityPickerSubject.allowedTypes.length === 1}
+                              onPress={() => void chooseEquipmentVariant(variant.key)}
+                            />
+                          );
+                        }
                         return (
                           <TouchableOpacity
                             key={variant.key}
@@ -11657,6 +11678,10 @@ const styles = StyleSheet.create({
     height: '90%',
     maxHeight: '90%',
   },
+  equipmentTypeArtSheet: {
+    height: 'auto',
+    paddingBottom: 34,
+  },
   movementHistoryCloseIcon: {
     alignItems: 'center',
     borderColor: SLColors.borderStandard,
@@ -11978,6 +12003,10 @@ const styles = StyleSheet.create({
   },
   equipmentVariantOptions: {
     gap: 10,
+  },
+  equipmentVariantArtOptions: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
   },
   equipmentVariantRow: {
     alignItems: 'center',

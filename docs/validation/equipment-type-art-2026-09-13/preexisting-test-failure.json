@@ -1,0 +1,8 @@
+{
+  "test": "scripts/test-equipment-selection.mjs:576",
+  "path": "components/workout-logger/core-loggers.tsx",
+  "base_commit": "95f6a8df14bf6af1d500d8cfc2c0ead46b5ff47b",
+  "unchanged": true,
+  "baseline_assertion_pass": false,
+  "current_assertion_pass": false
+}

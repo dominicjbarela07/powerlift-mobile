@@ -1,0 +1,26 @@
+{
+  "test-equipment-type-artwork": {
+    "exit_code": 0,
+    "last_line": "Equipment category art: two exact keys, distinct verified close-ups, no release assets, contained crop and unchanged governed selection writes PASS"
+  },
+  "test-canonical-equipment-picker": {
+    "exit_code": 0,
+    "last_line": "Canonical equipment picker ordering and movement-scoped usage checks passed."
+  },
+  "test-equipment-gating-regression": {
+    "exit_code": 0,
+    "last_line": "Equipment gating regression checks passed."
+  },
+  "test-superset-equipment-context": {
+    "exit_code": 0,
+    "last_line": "Superset equipment brand context checks passed."
+  },
+  "test-completed-session-equipment-correction": {
+    "exit_code": 0,
+    "last_line": "Completed Session equipment correction lifecycle and immutable-evidence contract: PASS"
+  },
+  "test-equipment-selection": {
+    "exit_code": 1,
+    "last_line": "Node.js v25.2.1"
+  }
+}

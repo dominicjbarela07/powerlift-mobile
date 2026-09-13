@@ -1,0 +1,319 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Equipment and History must share the canonical logger secondary action row.
+    at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-equipment-selection.mjs:576:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '// @ts-nocheck\n' +
+    '\n' +
+    "import React from 'react';\n" +
+    'import {\n' +
+    '  type ImageSourcePropType,\n' +
+    '  StyleSheet,\n' +
+    '  useWindowDimensions,\n' +
+    '  View,\n' +
+    "} from 'react-native';\n" +
+    "import { Text } from '@/components/ui/sl-text';\n" +
+    "import { Ionicons } from '@expo/vector-icons';\n" +
+    "import { BlurView } from 'expo-blur';\n" +
+    "import MaskedView from '@react-native-masked-view/masked-view';\n" +
+    "import { Gesture, GestureDetector } from 'react-native-gesture-handler';\n" +
+    "import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';\n" +
+    'import {\n' +
+    '  SLButton,\n' +
+    '  SLMotionPressable,\n' +
+    '  SLProfileAvatar,\n' +
+    "} from '@/components/ui';\n" +
+    'import {\n' +
+    '  SLColors,\n' +
+    '  SLFontFamilies,\n' +
+    '  SLMovementCardMaterial,\n' +
+    '  SLMotion,\n' +
+    '  SLRadius,\n' +
+    '  SLTypography,\n' +
+    "} from '@/constants/theme';\n" +
+    "import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';\n" +
+    "import { MovementCardMaterial } from '@/components/workout-logger/movement-card-material';\n" +
+    "import { CompactSetTimeline } from '@/components/workout-logger/compact-set-timeline';\n" +
+    "import { MovementLifecycleStatusLabel } from '@/components/workout-logger/movement-lifecycle-status-label';\n" +
+    "import { LoggerPlateStackVisual } from '@/components/workout-logger/logger-primitives';\n" +
+    "import { movementCardStateAccent } from '@/lib/movement-card-material';\n" +
+    "import { logSetActionPresentation, type LoggerFeedbackState, type PrescribedOpportunity } from '@/lib/logger-feedback';\n" +
+    "import { loggerRepMetricCopy } from '@/lib/logger-prescription-copy';\n" +
+    "import type { LoggerPlateStackPresentation, LoggerProgressContext } from '@/lib/logger-visual-context';\n" +
+    "import type { CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';\n" +
+    'import {\n' +
+    '  coreLoggerHeaderMetadataLines,\n' +
+    '  coreLoggerMovementStateLabel,\n' +
+    '  coreLoggerVisibleExpandedContent,\n' +
+    '  coreLoggerVisibleMovementNote,\n' +
+    "} from '@/lib/core-logger-header';\n" +
+    "import { MOVEMENT_STATUS_COLUMN_WIDTH } from '@/lib/movement-lifecycle-status-layout';\n" +
+    "import { coreLoggerHeroLoadLayout } from '@/lib/core-logger-hero';\n" +
+    "import type { AccessoryLastBestCue } from '@/lib/accessory-last-best';\n" +
+    "import { SessionV3Movement } from './session-v3-movement';\n" +
+    '\n' +
+    'export type SetRailStep = {\n' +
+    '  key: string;\n' +
+    '  label: string;\n' +
+    "  state: 'completed' | 'active' | 'locked';\n" +
+    '};\n' +
+    '\n' +
+    'export type MovementLoggerFocusModel = {\n' +
+    '  itemId?: number | null;\n' +
+    '  groupItemId?: number | null;\n' +
+    '  movementName: string;\n' +
+    '  designation?: string | null;\n' +
+    '  liftType?: string | null;\n' +
+    '  currentSetLabel: string;\n' +
+    '  currentSetPositionLabel: string;\n' +
+    '  currentSetRepsLabel?: string | null;\n' +
+    '  currentSetLoadLabel?: string | null;\n' +
+    '  currentSetHistoryPlaceholder?: boolean;\n' +
+    '  currentSetEffortLabel?: string | null;\n' +
+    '  progressionLabel: string;\n' +
+    '  targetLine?: string | null;\n' +
+    '  prescriptionLine?: string | null;\n' +
+    '  recentContext?: string | null;\n' +
+    '  opportunity?: PrescribedOpportunity | null;\n' +
+    '  rail: SetRailStep[];\n' +
+    '  canLog: boolean;\n' +
+    '  canRepeat: boolean;\n' +
+    '  onLogSet?: () => void;\n' +
+    '  onRepeatLast?: () => void;\n' +
+    '  onViewHistory?: () => void;\n' +
+    '  accessoryPresentation?: boolean;\n' +
+    '};\n' +
+    '\n' +
+    'export type ActiveMovementVisualContext = {\n' +
+    '  physicalSetup?: string | null;\n' +
+    '  movementArtworkInput?: CanonicalMovementArtworkInput | null;\n' +
+    '  liftLabel: string;\n' +
+    '  liftAccentColor: string;\n' +
+    '  plateStack?: LoggerPlateStackPresentation | null;\n' +
+    '  progress?: LoggerProgressContext | null;\n' +
+    '  coach?: {\n' +
+    '    name: string;\n' +
+    '    profilePhotoUrl?: string | null;\n' +
+    '    profilePhotoVersion?: string | null;\n' +
+    '    previewSource?: ImageSourcePropType | null;\n' +
+    '  } | null;\n' +
+    '};\n' +
+    '\n' +
+    'export type ActiveMovementDetailRow = {\n' +
+    '  key: string;\n' +
+    '  setLogId?: number | null;\n' +
+    '  label: string;\n' +
+    '  timelineLabel?: string | null;\n' +
+    "  state: 'completed' | 'active' | 'locked';\n" +
+    '  target?: string | null;\n' +
+    '  prescription?: string | null;\n' +
+    '  resultText?: string | null;\n' +
+    '  videoLabel?: string | null;\n' +
+    '  videoStatus?: string | null;\n' +
+    '  videoDisabled?: boolean;\n' +
+    '  onEdit?: () => void;\n' +
+    '  onDelete?: () => void;\n' +
+    '  onVideo?: () => void;\n' +
+    '  onLogSet?: () => void;\n' +
+    '};\n' +
+    '\n' +
+    'export type SessionMovementCardLifecycle =\n' +
+    "  | 'pre_session'\n" +
+    "  | 'active_session'\n" +
+    "  | 'finished_session';\n" +
+    '\n' +
+    'function splitLoadLabel(value?: string | null) {\n' +
+    "  const match = String(value || '').trim().match(/^(.*?)\\s*(kg|lb)$/i);\n" +
+    '  return match\n' +
+    '    ? { value: match[1].trim(), unit: match[2].toLowerCase() }\n' +
+    "    : { value: String(value || '').trim(), unit: '' };\n" +
+    '}\n' +
+    '\n' +
+    'function metricValue(value?: string | null, suffix?: string) {\n' +
+    "  const normalized = String(value || '').trim();\n" +
+    "  return suffix ? normalized.replace(new RegExp(`\\\\s*${suffix}$`, 'i'), '') : normalized;\n" +
+    '}\n' +
+    '\n' +
+    'export function CompletedSetSwipeRow({\n' +
+    '  onEdit,\n' +
+    '  onDelete,\n' +
+    '  shouldShowCompletedSetSwipeTooltip = false,\n' +
+    '  reduceMotion = false,\n' +
+    '  onCompletedSetSwipeTooltipStarted,\n' +
+    '  children,\n' +
+    '}: {\n' +
+    '  onEdit?: () => void;\n' +
+    '  onDelete?: () => void;\n' +
+    '  shouldShowCompletedSetSwipeTooltip?: boolean;\n' +
+    '  reduceMotion?: boolean;\n' +
+    '  onCompletedSetSwipeTooltipStarted?: () => void;\n' +
+    '  children: React.ReactNode;\n' +
+    '}) {\n' +
+    '  const enabled = !!onEdit || !!onDelete;\n' +
+    '  const translateX = useSharedValue(0);\n' +
+    '  const completedSetSwipeTooltipStartedRef = React.useRef(false);\n' +
+    '  const completedSetSwipeTooltipTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);\n' +
+    '  const onCompletedSetSwipeTooltipStartedRef = React.useRef(onCompletedSetSwipeTooltipStarted);\n' +
+    '  const [completedSetSwipeTooltipTextVisible, setCompletedSetSwipeTooltipTextVisible] = React.useState(false);\n' +
+    '\n' +
+    '  React.useEffect(() => {\n' +
+    '    onCompletedSetSwipeTooltipStartedRef.current = onCompletedSetSwipeTooltipStarted;\n' +
+    '  }, [onCompletedSetSwipeTooltipStarted]);\n' +
+    '\n' +
+    '  React.useEffect(() => () => {\n' +
+    '    if (completedSetSwipeTooltipTimerRef.current) clearTimeout(completedSetSwipeTooltipTimerRef.current);\n' +
+    '  }, []);\n' +
+    '\n' +
+    '  React.useEffect(() => {\n' +
+    '    if (!shouldShowCompletedSetSwipeTooltip || completedSetSwipeTooltipStartedRef.current) return;\n' +
+    '    completedSetSwipeTooltipStartedRef.current = true;\n' +
+    '    onCompletedSetSwipeTooltipStartedRef.current?.();\n' +
+    '\n' +
+    '    if (reduceMotion) {\n' +
+    '      setCompletedSetSwipeTooltipTextVisible(true);\n' +
+    '      completedSetSwipeTooltipTimerRef.current = setTimeout(() => setCompletedSetSwipeTooltipTextVisible(false), 2400);\n' +
+    '      return;\n' +
+    '    }\n' +
+    '\n' +
+    '    translateX.value = withSequence(\n' +
+    '      withTiming(-20, { duration: 120 }),\n' +
+    '      withTiming(0, { duration: 140 }),\n' +
+    '      withTiming(20, { duration: 120 }),\n' +
+    '      withTiming(0, { duration: 140 }),\n' +
+    '    );\n' +
+    '  }, [reduceMotion, shouldShowCompletedSetSwipeTooltip, translateX]);\n' +
+    '\n' +
+    '  const pan = enabled ? Gesture.Pan()\n' +
+    '    .activeOffsetX([-14, 14])\n' +
+    '    .failOffsetY([-12, 12])\n' +
+    '    .onUpdate((event) => {\n' +
+    '      translateX.value = Math.max(-96, Math.min(96, event.translationX));\n' +
+    '    })\n' +
+    '    .onEnd((event) => {\n' +
+    '      if (event.translationX <= -72 && onEdit) {\n' +
+    '        translateX.value = withTiming(0, { duration: 180 });\n' +
+    '        runOnJS(onEdit)();\n' +
+    '        return;\n' +
+    '      }\n' +
+    '      if (event.translationX >= 72 && onDelete) {\n' +
+    '        translateX.value = withTiming(0, { duration: 180 });\n' +
+    '        runOnJS(onDelete)();\n' +
+    '        return;\n' +
+    '      }\n' +
+    '      translateX.value = withTiming(0, { duration: 180 });\n' +
+    '    }) : Gesture.Tap().enabled(false);\n' +
+    '  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ translateX: translateX.value }] }));\n' +
+    '  const deleteActionStyle = useAnimatedStyle(() => ({\n' +
+    '    width: Math.max(0, translateX.value),\n' +
+    '  }));\n' +
+    '  const editActionStyle = useAnimatedStyle(() => ({\n' +
+    '    width: Math.max(0, -translateX.value),\n' +
+    '  }));\n' +
+    '\n' +
+    '  if (!enabled) return <>{children}</>;\n' +
+    '\n' +
+    '  return (\n' +
+    '    <View style={styles.completedSetSwipeFrame}>\n' +
+    '      <Animated.View\n' +
+    '        style={[\n' +
+    '          styles.completedSetSwipeAction,\n' +
+    '          styles.completedSetSwipeDelete,\n' +
+    '          deleteActionStyle,\n' +
+    '        ]}\n' +
+    '      >\n' +
+    '        <View style={styles.completedSetSwipeActionButton}>\n' +
+    '          <Text style={styles.completedSetSwipeActionText}>Delete</Text>\n' +
+    '        </View>\n' +
+    '      </Animated.View>\n' +
+    '      <Animated.View\n' +
+    '        style={[\n' +
+    '          styles.completedSetSwipeAction,\n' +
+    '          styles.completedSetSwipeEdit,\n' +
+    '          editActionStyle,\n' +
+    '        ]}\n' +
+    '      >\n' +
+    '        <View style={styles.completedSetSwipeActionButton}>\n' +
+    '          <Text style={styles.completedSetSwipeActionText}>Edit</Text>\n' +
+    '        </View>\n' +
+    '      </Animated.View>\n' +
+    '      <GestureDetector gesture={pan}>\n' +
+    '        <Animated.View\n' +
+    '          style={[styles.completedSetSwipeContent, animatedStyle]}\n' +
+    '          accessibilityRole="button"\n' +
+    '          accessibilityLabel="Completed set"\n' +
+    '          accessibilityActions={[\n' +
+    "            ...(onEdit ? [{ name: 'edit', label: 'Edit set' }] : []),\n" +
+    "            ...(onDelete ? [{ name: 'delete', label: 'Delete set' }] : []),\n" +
+    '          ]}\n' +
+    '          onAccessibilityAction={(event) => {\n' +
+    "            if (event.nativeEvent.actionName === 'edit') onEdit?.();\n" +
+    "            if (event.nativeEvent.actionName === 'delete') onDelete?.();\n" +
+    '          }}\n' +
+    '        >\n' +
+    '          {children}\n' +
+    '        </Animated.View>\n' +
+    '      </GestureDetector>\n' +
+    '      {completedSetSwipeTooltipTextVisible ? (\n' +
+    '        <Text pointerEvents="none" style={styles.completedSetSwipeTooltipText}>\n' +
+    '          Swipe this set to edit or delete\n' +
+    '        </Text>\n' +
+    '      ) : null}\n' +
+    '    </View>\n' +
+    '  );\n' +
+    '}\n' +
+    '\n' +
+    'export function CoreMovementLedgerRow({\n' +
+    '  state,\n' +
+    '  title,\n' +
+    '  designation,\n' +
+    '  variantLabel,\n' +
+    '  scheme,\n' +
+    '  headerPrescription,\n' +
+    '  meta,\n' +
+    '  top,\n' +
+    '  movementNote,\n' +
+    '  priorPerformanceCue,\n' +
+    '  historyPeek,\n' +
+    '  loggerFocus,\n' +
+    '  expanded,\n' +
+    '  detailRows,\n' +
+    '  auxAction,\n' +
+    '  warmupAction,\n' +
+    '  expandedIdentityContext,\n' +
+    '  sessionIndex,\n' +
+    '  sessionLifecycle,\n' +
+    '  visualContext,\n' +
+    "  submissionStatus = 'idle',\n" +
+    '  submissionItemId,\n' +
+    '  reduceMotion = false,\n' +
+    '  completedSetSwipeTooltipSetLogId,\n' +
+    '  onCompletedSetSwipeTooltipStarted,\n' +
+    '  onOpportunityDisplayed,\n' +
+    '  onOpen,\n' +
+    '}: {\n' +
+    "  state: 'complete' | 'logged' | 'not_started';\n" +
+    '  title: string;\n' +
+    '  designation?: string | null;\n' +
+    '  variantLabel: string;\n' +
+    '  scheme?: React.ReactNode;\n' +
+    '  headerPrescription?: string | null;\n' +
+    '  meta?: string | null;\n' +
+    '  top?: string | null;\n' +
+    '  movementNote?: string | null;\n' +
+    '  priorPerformanceCue?: AccessoryLastBestCue | null;\n' +
+    '  historyPeek?: React.ReactNode;\n' +
+    '  loggerFocus?: MovementLoggerFocusModel | null;\n' +
+    '  expanded?: boolean;\n' +
+    '  detailRows?: ActiveMovementDetai'... 54081 more characters,
+  expected: /activeSecondaryActionRow[\s\S]*canonicalMovementCard \? auxAction[\s\S]*>History</,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v25.2.1
