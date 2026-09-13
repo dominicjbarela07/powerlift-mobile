@@ -1,7 +1,7 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
-  Modal,
   Platform,
   Pressable,
   RefreshControl,
@@ -291,15 +291,15 @@ function FilterSheet({
   const setPickerValue = pickerTarget === 'end' ? onEndDate : onStartDate;
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <StrengthLedgerSheetModalAdapter visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.sheetBackdrop}>
         <View style={styles.sheet}>
-          <View style={styles.sheetHeader}>
+          <StrengthLedgerSheetDragRegion><View style={styles.sheetHeader}>
             <Text style={styles.sheetTitle}>Filters</Text>
             <Pressable style={styles.sheetClose} onPress={onClose}>
               <Ionicons name="close" size={18} color={colors.textStrong} />
             </Pressable>
-          </View>
+          </View></StrengthLedgerSheetDragRegion>
           <ScrollView style={styles.sheetScroll} contentContainerStyle={styles.sheetContent}>
             <View style={styles.dateRow}>
               <DatePickerControl
@@ -403,7 +403,7 @@ function FilterSheet({
           </View>
         </View>
       </View>
-    </Modal>
+    </StrengthLedgerSheetModalAdapter>
   );
 }
 

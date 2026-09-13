@@ -1,0 +1,15 @@
+{
+  "accepted_contracts": 216,
+  "critical_areas": 61,
+  "typescript": "PASS",
+  "lint_errors": 0,
+  "lint_warnings": 242,
+  "lint_note": "244 initial warnings; two newly introduced duplicate imports removed and file rechecked clean. Remaining warnings pre-existing in changed consumers.",
+  "legacy_consumer_files": 23,
+  "legacy_sheets": 46,
+  "canonical_sheet_callsites": 34,
+  "embedded_panels": 3,
+  "header_only_panresponder_preview": 1,
+  "classified_native_modal_presentations": 71,
+  "physical_drag_signoff": "PENDING: Simulator pointer injection did not reliably deliver drags, list scrolls, or wheel adjustments. No physical drag/reversal pass claimed."
+}

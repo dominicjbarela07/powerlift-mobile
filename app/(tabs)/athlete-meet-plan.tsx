@@ -1,10 +1,10 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 // app/(tabs)/athlete-meet-plan.tsx
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   RefreshControl,
@@ -1317,7 +1317,7 @@ export default function AthleteMeetPlanScreen() {
 
         {canShowSummaryTab ? renderSummary() : null}
 
-        <Modal
+        <StrengthLedgerSheetModalAdapter
           visible={detailsModalOpen}
           animationType="slide"
           transparent
@@ -1331,7 +1331,7 @@ export default function AthleteMeetPlanScreen() {
             <View style={styles.detailsModalBackdrop}>
               <Pressable style={styles.modalBackdropPressable} onPress={() => setDetailsModalOpen(false)} />
               <View style={styles.meetDetailsModalCard}>
-                <View style={styles.meetDetailsModalHeader}>
+                <StrengthLedgerSheetDragRegion><View style={styles.meetDetailsModalHeader}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.meetDetailsModalTitle}>Update Meet Packet</Text>
                     <Text style={styles.meetDetailsModalSubtitle}>Update logistics, check-in, platform setup, and meet bag.</Text>
@@ -1342,7 +1342,7 @@ export default function AthleteMeetPlanScreen() {
                   >
                     <Ionicons name="close" size={18} color={SLColors.text} />
                   </Pressable>
-                </View>
+                </View></StrengthLedgerSheetDragRegion>
 
                 <ScrollView
                   keyboardShouldPersistTaps="handled"
@@ -1439,7 +1439,7 @@ export default function AthleteMeetPlanScreen() {
               </View>
             </View>
           </KeyboardAvoidingView>
-        </Modal>
+        </StrengthLedgerSheetModalAdapter>
       </View>
     );
   };
@@ -1895,7 +1895,7 @@ export default function AthleteMeetPlanScreen() {
               );
             })}
           </View>
-        <Modal
+        <StrengthLedgerSheetModalAdapter
           visible={detailsModalOpen}
           animationType="slide"
           transparent
@@ -1909,7 +1909,7 @@ export default function AthleteMeetPlanScreen() {
             <View style={styles.detailsModalBackdrop}>
               <Pressable style={styles.modalBackdropPressable} onPress={() => setDetailsModalOpen(false)} />
               <View style={styles.meetDetailsModalCard}>
-                <View style={styles.meetDetailsModalHeader}>
+                <StrengthLedgerSheetDragRegion><View style={styles.meetDetailsModalHeader}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.meetDetailsModalTitle}>Update Meet Details</Text>
                     <Text style={styles.meetDetailsModalSubtitle}>Update logistics, check-in info, platform setup, and your meet bag.</Text>
@@ -1920,7 +1920,7 @@ export default function AthleteMeetPlanScreen() {
                   >
                     <Ionicons name="close" size={18} color={SLColors.text} />
                   </Pressable>
-                </View>
+                </View></StrengthLedgerSheetDragRegion>
 
                 <ScrollView
                   keyboardShouldPersistTaps="handled"
@@ -2082,7 +2082,7 @@ export default function AthleteMeetPlanScreen() {
               </View>
             </View>
           </KeyboardAvoidingView>
-        </Modal>
+        </StrengthLedgerSheetModalAdapter>
         </View>
       </View>
     );
@@ -2517,7 +2517,7 @@ export default function AthleteMeetPlanScreen() {
           onToggleWarmup={toggleMeetWarmupV2}
         />
         {attemptDraft ? (
-          <Modal transparent animationType="fade" visible onRequestClose={() => setAttemptDraft(null)}>
+          <StrengthLedgerSheetModalAdapter transparent animationType="fade" visible onRequestClose={() => setAttemptDraft(null)}>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
               keyboardVerticalOffset={Platform.OS === 'ios' ? 18 : 0}
@@ -2527,13 +2527,13 @@ export default function AthleteMeetPlanScreen() {
                 <Pressable style={styles.modalBackdropPressable} onPress={() => setAttemptDraft(null)} />
                 <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.modalScrollContent} showsVerticalScrollIndicator={false}>
                   <View style={styles.attemptModalCard}>
-                    <View style={styles.attemptModalHeader}>
+                    <StrengthLedgerSheetDragRegion><View style={styles.attemptModalHeader}>
                       <View>
                         <Text style={styles.attemptModalEyebrow}>{resultLabel(attemptDraft.result)}</Text>
                         <Text style={styles.attemptModalTitle}>Log {liftLabels[(attemptDraft.attempt.lift as LiftKey) || activeLift] || liftLabels[activeLift]} {attemptLabel(attemptDraft.attempt.attempt_number)}</Text>
                       </View>
                       <Pressable onPress={() => setAttemptDraft(null)} style={styles.modalCloseButton}><Ionicons name="close" size={18} color={SLColors.text} /></Pressable>
-                    </View>
+                    </View></StrengthLedgerSheetDragRegion>
                     <View style={styles.attemptModalStrategy}><Text style={styles.attemptModalStrategyLabel}>Plan</Text><Text style={styles.attemptModalStrategyText}>{attemptPlanLabel(attemptDraft.attempt, displayUnit)}</Text>{attemptStrategyNote(attemptDraft.attempt) ? <Text style={styles.attemptModalStrategyNote}>{attemptStrategyNote(attemptDraft.attempt)}</Text> : null}</View>
                     <View style={styles.modalFieldGroup}>
                       <Text style={styles.modalLabel}>Result</Text>
@@ -2547,7 +2547,7 @@ export default function AthleteMeetPlanScreen() {
                 </ScrollView>
               </View>
             </KeyboardAvoidingView>
-          </Modal>
+          </StrengthLedgerSheetModalAdapter>
         ) : null}
       </SafeAreaView>
     );
@@ -2574,7 +2574,7 @@ export default function AthleteMeetPlanScreen() {
           )}
         </ScrollView>
         {attemptDraft ? (
-          <Modal transparent animationType="fade" visible={!!attemptDraft} onRequestClose={() => setAttemptDraft(null)}>
+          <StrengthLedgerSheetModalAdapter transparent animationType="fade" visible={!!attemptDraft} onRequestClose={() => setAttemptDraft(null)}>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
               keyboardVerticalOffset={Platform.OS === 'ios' ? 18 : 0}
@@ -2588,7 +2588,7 @@ export default function AthleteMeetPlanScreen() {
                   showsVerticalScrollIndicator={false}
                 >
                   <View style={styles.attemptModalCard}>
-                <View style={styles.attemptModalHeader}>
+                <StrengthLedgerSheetDragRegion><View style={styles.attemptModalHeader}>
                   <View>
                     <Text style={styles.attemptModalEyebrow}>{resultLabel(attemptDraft.result)}</Text>
                     <Text style={styles.attemptModalTitle}>
@@ -2598,7 +2598,7 @@ export default function AthleteMeetPlanScreen() {
                   <Pressable onPress={() => setAttemptDraft(null)} style={styles.modalCloseButton}>
                     <Ionicons name="close" size={18} color={SLColors.text} />
                   </Pressable>
-                </View>
+                </View></StrengthLedgerSheetDragRegion>
 
                 <View style={styles.attemptModalStrategy}>
                   <Text style={styles.attemptModalStrategyLabel}>Plan</Text>
@@ -2719,7 +2719,7 @@ export default function AthleteMeetPlanScreen() {
                 </ScrollView>
               </View>
             </KeyboardAvoidingView>
-          </Modal>
+          </StrengthLedgerSheetModalAdapter>
         ) : null}
       </ThemedView>
     </SafeAreaView>

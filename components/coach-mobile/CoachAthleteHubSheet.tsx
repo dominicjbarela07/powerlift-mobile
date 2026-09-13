@@ -1,10 +1,10 @@
+import { StrengthLedgerBottomSheet, StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -51,7 +51,6 @@ import {
 import { formatPerformedLoad } from '@/lib/performed-load-semantics';
 import { useSLReducedMotion } from '@/lib/motion';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
-import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { useCoachMoreNavigation } from '@/components/navigation/CoachMoreNavigationSheet';
 
 type WorkoutRecapResponse = {
@@ -691,11 +690,11 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
           </ScrollView>
           </FloatingControlCoordinator>
     </StrengthLedgerBottomSheet>
-    <Modal animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={() => setReadinessOpen(false)} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={readinessOpen}>
+    <StrengthLedgerSheetModalAdapter animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={() => setReadinessOpen(false)} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={readinessOpen}>
       <View style={styles.detailBackdrop}>
         <Pressable accessibilityLabel="Close readiness details" accessibilityRole="button" onPress={() => setReadinessOpen(false)} style={StyleSheet.absoluteFillObject} />
         <View style={[styles.detailSheet, { paddingBottom: Math.max(insets.bottom, 12) }]}>
-          <View style={styles.detailHandle} />
+          <StrengthLedgerSheetDragRegion><View style={styles.detailHandle} />
           <View style={styles.detailHeader}>
             <View>
               <Text style={styles.detailEyebrow}>Athlete Readiness</Text>
@@ -704,7 +703,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
             <Pressable accessibilityLabel="Close" accessibilityRole="button" onPress={() => setReadinessOpen(false)} style={styles.roundButton}>
               <Ionicons color={COACH_V2.text} name="close" size={22} />
             </Pressable>
-          </View>
+          </View></StrengthLedgerSheetDragRegion>
           <View style={styles.detailTrendCard}>
             <View>
               <Text style={styles.statusLabel}>Latest Readiness</Text>
@@ -734,7 +733,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
           </ScrollView>
         </View>
       </View>
-    </Modal>
+    </StrengthLedgerSheetModalAdapter>
     </>
   );
 }

@@ -61,7 +61,7 @@ assert.match(sheet, /pendingDestinationRef[\s\S]*sheetRef\.current\?\.dismiss\(\
 assert.match(sheet, /setIsOpen\(false\)[\s\S]*router\.(?:navigate|push)/, 'navigation must occur only after sheet dismissal');
 
 assert.match(primitive, /GestureHandlerRootView[\s\S]*GestureDetector/);
-assert.match(primitive, /Gesture\.Simultaneous\(createDismissGesture\(true, bodyDrag\), Gesture\.Native\(\)\)/, 'sheet-body drag must arbitrate with native scrolling');
+assert.doesNotMatch(primitive, /bodyDismissGesture|Gesture\.Simultaneous|scrollOffsetY/, 'body scrolling never participates in dismissal');
 assert.match(primitive, /GestureDetector gesture=\{chromeDismissGesture\}/, 'the sheet chrome must own a dedicated drag gesture');
 assert.match(primitive, /shouldDismissBottomSheet/);
 assert.match(primitive, /Pressable accessibilityLabel=\{`Dismiss \$\{accessibilityLabel\}`\}[\s\S]*onPress=\{\(\) => requestClose\('backdrop'\)\}/, 'backdrop must dismiss');

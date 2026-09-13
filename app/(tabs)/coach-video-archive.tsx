@@ -1,8 +1,8 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
-  Modal,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -479,11 +479,11 @@ export default function CoachVideoArchiveScreen() {
         </ScrollView>
       )}
 
-      <Modal visible={filterSheetOpen} transparent animationType="slide" onRequestClose={() => setFilterSheetOpen(false)}>
+      <StrengthLedgerSheetModalAdapter visible={filterSheetOpen} transparent animationType="slide" onRequestClose={() => setFilterSheetOpen(false)}>
         <View style={styles.modalBackdrop}>
           <Pressable style={styles.modalScrim} onPress={() => setFilterSheetOpen(false)} />
           <View style={styles.filterSheet}>
-            <View style={styles.filterSheetHandle} />
+            <StrengthLedgerSheetDragRegion><View style={styles.filterSheetHandle} />
             <View style={styles.filterSheetHeader}>
               <View>
                 <Text style={styles.filterSheetTitle}>Filters</Text>
@@ -491,7 +491,7 @@ export default function CoachVideoArchiveScreen() {
               <Pressable style={styles.sheetCloseButton} onPress={() => setFilterSheetOpen(false)}>
                 <Ionicons name="close" size={18} color={palette.text} />
               </Pressable>
-            </View>
+            </View></StrengthLedgerSheetDragRegion>
             <ScrollView style={styles.filterSheetScroll} contentContainerStyle={styles.filterSheetContent}>
               <View style={styles.filterGroup}>
                 <Text style={styles.filterGroupTitle}>Athlete</Text>
@@ -647,7 +647,7 @@ export default function CoachVideoArchiveScreen() {
             </View>
           </View>
         </View>
-      </Modal>
+      </StrengthLedgerSheetModalAdapter>
 
       <SetVideoPlayerModal
         visible={!!selectedVideo}

@@ -1,6 +1,7 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { useSLReducedMotion } from '@/lib/motion';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -57,8 +58,8 @@ export function CompletedSessionCorrection({ mode, workoutId, items, note, refle
     } catch (failure) { if (mounted.current && subject.current.workoutId === dispatched.workoutId) setError(failure instanceof Error ? failure.message : 'Correction could not be saved.'); }
     finally { if (mounted.current && subject.current.workoutId === dispatched.workoutId) setBusy(false); }
   };
-  return <Modal visible={mode != null} transparent animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={onClose}><KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={s.backdrop}><Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close correction" /><View style={[s.sheet, { paddingBottom: Math.max(insets.bottom, 20) }]}>
-    <View style={s.heading}><Text style={s.title}>{mode === 'reflection' ? 'How did it feel?' : mode === 'note' ? 'Session note' : selection ? 'Correct set' : 'Correct performed work'}</Text><Pressable onPress={onClose} accessibilityLabel="Close" style={s.close}><Ionicons name="close" color="#eee" size={24} /></Pressable></View>
+  return <StrengthLedgerSheetModalAdapter visible={mode != null} transparent animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={onClose}><KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={s.backdrop}><Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close correction" /><View style={[s.sheet, { paddingBottom: Math.max(insets.bottom, 20) }]}>
+    <StrengthLedgerSheetDragRegion><View style={s.heading}><Text style={s.title}>{mode === 'reflection' ? 'How did it feel?' : mode === 'note' ? 'Session note' : selection ? 'Correct set' : 'Correct performed work'}</Text><Pressable onPress={onClose} accessibilityLabel="Close" style={s.close}><Ionicons name="close" color="#eee" size={24} /></Pressable></View></StrengthLedgerSheetDragRegion>
     <Text style={s.subtitle}>{mode === 'reflection' ? 'Your working sets are already saved. Reflection is optional.' : 'Your Session stays completed. Saved reflection is preserved.'}</Text>
     <ScrollView keyboardShouldPersistTaps="handled">
       {mode === 'reflection' ? <View style={s.reflectionFields}>
@@ -72,7 +73,7 @@ export function CompletedSessionCorrection({ mode, workoutId, items, note, refle
       {error ? <Text accessibilityRole="alert" style={s.error}>{error}</Text> : null}
       {mode === 'note' || mode === 'reflection' || selection ? <Pressable disabled={busy} onPress={() => { void save(); }} style={s.save} accessibilityRole="button">{busy ? <ActivityIndicator color="#fff" /> : <Text style={s.saveText}>{mode === 'reflection' ? 'Save reflection' : 'Save correction'}</Text>}</Pressable> : null}
     </ScrollView>
-  </View></KeyboardAvoidingView></Modal>;
+  </View></KeyboardAvoidingView></StrengthLedgerSheetModalAdapter>;
 }
 const s = StyleSheet.create({
   reflectionFields: { paddingBottom: 6 }, choices: { flexDirection: 'row', gap: 7 }, choice: { flex: 1, minHeight: 44, borderWidth: 1, borderColor: '#4c3b5c', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }, chosen: { backgroundColor: '#68468d', borderColor: '#c39bef' }, choiceText: { color: '#f1e8fb', textTransform: 'capitalize', fontSize: 16 },

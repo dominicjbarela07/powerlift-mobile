@@ -1,3 +1,4 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { evidenceReadCache } from '@/lib/evidence-read-cache';
 import { ProgrammingReuseLibrary } from '@/components/coach-mobile/ProgrammingReuseLibrary';
 import { FocusedSessionAuthoring } from '@/components/coach-mobile/FocusedSessionAuthoring';
@@ -10,7 +11,6 @@ import {
   Animated,
   Image,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   RefreshControl,
@@ -5245,10 +5245,10 @@ function AttentionModal({
   const title = state?.type === 'missed' ? 'Check in on this session' : 'Add session context';
 
   return (
-    <Modal visible={!!state} transparent animationType="fade" onRequestClose={onClose}>
+    <StrengthLedgerSheetModalAdapter visible={!!state} transparent animationType="fade" onRequestClose={onClose}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.modalBackdrop}>
         <View style={styles.modalSheet}>
-          <View style={styles.modalHandle} />
+          <StrengthLedgerSheetDragRegion><View style={styles.modalHandle} /></StrengthLedgerSheetDragRegion>
           <Text style={styles.modalKicker}>Training context</Text>
           <Text style={styles.modalTitle}>{title}</Text>
           <Text style={styles.modalBody}>{state ? sessionTitle(state.session) : ''}</Text>
@@ -5293,7 +5293,7 @@ function AttentionModal({
           </View>
         </View>
       </KeyboardAvoidingView>
-    </Modal>
+    </StrengthLedgerSheetModalAdapter>
   );
 }
 

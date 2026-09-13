@@ -1,3 +1,4 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -790,11 +791,11 @@ function DayLens({ canRescheduleSessions, detail, error, loading, onAction, onCl
     requestAnimationFrame(() => onAction({ type: 'schedule-session', session }));
   };
   return (
-    <Modal animationType="slide" onRequestClose={onClose} transparent visible={visible}>
+    <StrengthLedgerSheetModalAdapter animationType="slide" onRequestClose={onClose} transparent visible={visible}>
       <View style={styles.modalBackdrop}>
         <Pressable accessibilityLabel="Close day detail" onPress={onClose} style={StyleSheet.absoluteFillObject} />
         <View accessibilityViewIsModal style={[styles.daySheet, { borderColor: `${tone}77` }]}>
-          <View style={styles.sheetHandle} />
+          <StrengthLedgerSheetDragRegion><View style={styles.sheetHandle} /></StrengthLedgerSheetDragRegion>
           <ScrollView contentContainerStyle={styles.daySheetContent} showsVerticalScrollIndicator={false}>
             <ImageBackground imageStyle={styles.heroImage} source={isRecovery ? RECOVERY_ART : TRAINING_ART} style={styles.dayHero}>
               <LinearGradient colors={['rgba(3,3,7,0.20)', 'rgba(3,3,7,0.78)', SLColors.surfaceInset]} style={StyleSheet.absoluteFillObject} />
@@ -836,7 +837,7 @@ function DayLens({ canRescheduleSessions, detail, error, loading, onAction, onCl
           </ScrollView>
         </View>
       </View>
-    </Modal>
+    </StrengthLedgerSheetModalAdapter>
   );
 }
 
@@ -975,12 +976,12 @@ function MonthSummarySheet({ month, onClose, preferredUnits = 'lb', summary }: {
   if (!month) return null;
   const indicator = resolveAthleteCalendarMonthIndicator(summary);
   return (
-    <Modal animationType="slide" onRequestClose={onClose} transparent visible>
+    <StrengthLedgerSheetModalAdapter animationType="slide" onRequestClose={onClose} transparent visible>
       <View style={styles.modalBackdrop}>
         <Pressable onPress={onClose} style={StyleSheet.absoluteFillObject} />
         <View accessibilityViewIsModal style={styles.summarySheet}>
-          <View style={styles.sheetHandle} />
-          <View style={styles.summaryHeader}><Text style={styles.summarySheetTitle}>{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</Text><Pressable onPress={onClose} style={styles.closeButton}><Ionicons color={SLColors.iconPrimary} name="close" size={21} /></Pressable></View>
+          <StrengthLedgerSheetDragRegion><View style={styles.sheetHandle} />
+          <View style={styles.summaryHeader}><Text style={styles.summarySheetTitle}>{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</Text><Pressable onPress={onClose} style={styles.closeButton}><Ionicons color={SLColors.iconPrimary} name="close" size={21} /></Pressable></View></StrengthLedgerSheetDragRegion>
           {summary ? (
             <ScrollView contentContainerStyle={styles.summaryContent} showsVerticalScrollIndicator={false}>
               <View style={styles.summaryMetricGrid}>
@@ -1007,7 +1008,7 @@ function MonthSummarySheet({ month, onClose, preferredUnits = 'lb', summary }: {
           ) : <View style={styles.noSummary}><Text style={styles.emptyTitle}>No monthly evidence yet.</Text><Text style={styles.cardBody}>Summary metrics appear only when canonical Calendar evidence exists.</Text></View>}
         </View>
       </View>
-    </Modal>
+    </StrengthLedgerSheetModalAdapter>
   );
 }
 
@@ -1024,12 +1025,12 @@ function FilterSheet({ filters, onChange, onClose, visible }: { filters: Set<Fil
     onChange(next);
   };
   return (
-    <Modal animationType="slide" onRequestClose={onClose} transparent visible={visible}>
+    <StrengthLedgerSheetModalAdapter animationType="slide" onRequestClose={onClose} transparent visible={visible}>
       <View style={styles.modalBackdrop}>
         <Pressable onPress={onClose} style={StyleSheet.absoluteFillObject} />
         <View style={styles.utilitySheet}>
-          <View style={styles.sheetHandle} />
-          <View style={styles.summaryHeader}><View><Text style={styles.utilityEyebrow}>CALENDAR</Text><Text style={styles.utilityTitle}>Filter what you see</Text></View><Pressable onPress={onClose} style={styles.closeButton}><Ionicons color={SLColors.iconPrimary} name="close" size={21} /></Pressable></View>
+          <StrengthLedgerSheetDragRegion><View style={styles.sheetHandle} />
+          <View style={styles.summaryHeader}><View><Text style={styles.utilityEyebrow}>CALENDAR</Text><Text style={styles.utilityTitle}>Filter what you see</Text></View><Pressable onPress={onClose} style={styles.closeButton}><Ionicons color={SLColors.iconPrimary} name="close" size={21} /></Pressable></View></StrengthLedgerSheetDragRegion>
           <Text style={styles.utilityBody}>The default Calendar shows your whole training life. Filters stay secondary and temporary.</Text>
           <View style={styles.filterOptions}>{options.map((option) => {
             const selected = filters.has(option.id);
@@ -1038,7 +1039,7 @@ function FilterSheet({ filters, onChange, onClose, visible }: { filters: Set<Fil
           <Pressable onPress={() => onChange(new Set())} style={styles.clearFilters}><Text style={styles.clearFiltersText}>Clear Filters</Text></Pressable>
         </View>
       </View>
-    </Modal>
+    </StrengthLedgerSheetModalAdapter>
   );
 }
 

@@ -1,9 +1,9 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
   ActivityIndicator,
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -89,7 +89,7 @@ export function SubstitutionConfirmationSheet({
   const insets = useSafeAreaInsets();
 
   return (
-    <Modal
+    <StrengthLedgerSheetModalAdapter
       animationType="slide"
       onRequestClose={onCancel}
       presentationStyle="overFullScreen"
@@ -100,7 +100,7 @@ export function SubstitutionConfirmationSheet({
       <View accessibilityViewIsModal style={styles.backdrop}>
         <Pressable accessibilityElementsHidden importantForAccessibility="no-hide-descendants" onPress={onCancel} style={styles.backdropHit} />
         <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, SLSpacing.sm) }]}>
-          <View style={styles.grabber} />
+          <StrengthLedgerSheetDragRegion><View style={styles.grabber} />
 
           <View style={styles.header}>
             <TouchableOpacity accessibilityLabel="Choose a different substitute" accessibilityRole="button" disabled={saving} onPress={onBack} style={styles.headerButton}>
@@ -113,7 +113,7 @@ export function SubstitutionConfirmationSheet({
             <TouchableOpacity accessibilityLabel="Close substitution confirmation" accessibilityRole="button" disabled={saving} onPress={onCancel} style={styles.headerButton}>
               <Ionicons color={SLColors.textStrong} name="close" size={24} />
             </TouchableOpacity>
-          </View>
+          </View></StrengthLedgerSheetDragRegion>
 
           <ScrollView
             bounces={false}
@@ -315,7 +315,7 @@ export function SubstitutionConfirmationSheet({
           </View>
         </View>
       </View>
-    </Modal>
+    </StrengthLedgerSheetModalAdapter>
   );
 }
 

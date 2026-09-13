@@ -1,0 +1,62 @@
+[release-critical-invariants] PASS — bottom sheets reserve dismissal for top chrome
+[release-critical-invariants] PASS — movement artwork identity survives completion
+[release-critical-invariants] PASS — canonical superset storyboard and next-member progression
+[release-critical-invariants] PASS — platform-wide mobile full-width and text layout
+[release-critical-invariants] PASS — Athlete Meet Packet V2 lifecycle and immersive shell
+[release-critical-invariants] PASS — Coach Session Reviewer V3 evidence and shared tools
+[release-critical-invariants] PASS — canonical shared athlete and coach post-Session surface
+[release-critical-invariants] PASS — Coach Check-Ins V2 command center and evidence lifecycle
+[release-critical-invariants] PASS — substitution authority
+[release-critical-invariants] PASS — canonical movement identity
+[release-critical-invariants] PASS — catalog authoring
+[release-critical-invariants] PASS — individual movement artwork
+[release-critical-invariants] PASS — human approval of canonical movement artwork
+[release-critical-invariants] PASS — exact movement subject through Equipment
+[release-critical-invariants] PASS — pre-Session readiness before execution
+[release-critical-invariants] PASS — Swap and Session Workspace muscle drill-down anatomy
+[release-critical-invariants] PASS — Swap muscle-result equipment-type narrowing
+[release-critical-invariants] PASS — Session Logger shell
+[release-critical-invariants] PASS — Smart Warmup lifecycle and physical configuration
+[release-critical-invariants] PASS — expanded Core Logger workspace density
+[release-critical-invariants] PASS — canonical compact Set Timeline
+[release-critical-invariants] PASS — movement-scoped SetLog edit/delete order
+[release-critical-invariants] PASS — movement-scoped Logger physical loading
+[release-critical-invariants] PASS — canonical rest-timer lifecycle
+[release-critical-invariants] PASS — Session Logger performance, route, and resume ownership
+[release-critical-invariants] PASS — Session Logger request timeout ownership
+[release-critical-invariants] PASS — equipment
+[release-critical-invariants] PASS — completed Session equipment evidence correction
+[release-critical-invariants] PASS — rich Plan / Compare
+[release-critical-invariants] PASS — Coach Session review shared cross-tab tools
+[release-critical-invariants] PASS — Coach Coming Up exact Session navigation
+[release-critical-invariants] PASS — Coach Calendar direct filter controls
+[release-critical-invariants] PASS — relationship-scoped athlete coaching scratchpad
+[release-critical-invariants] PASS — movement-class strength metrics
+[release-critical-invariants] PASS — assisted movement evidence semantics
+[release-critical-invariants] PASS — persistent global app-shell navigation
+[release-critical-invariants] PASS — immediate mode switching
+[release-critical-invariants] PASS — Settings account identity and mode parity
+[release-critical-invariants] PASS — grouped PR coaching recognition
+[release-critical-invariants] PASS — mobile coach Meet Day visibility and athlete parity
+[release-critical-invariants] PASS — Team Brief coaching analytics and team-relative Athlete Workspace
+[release-critical-invariants] PASS — platform-wide analytical chart fidelity
+[release-critical-invariants] PASS — global display-unit propagation
+[release-critical-invariants] PASS — historical Ledger preservation
+[release-critical-invariants] PASS — Journey continuous storyboard, chapter evidence, bodyweight context, and timeline drill-downs
+[release-critical-invariants] PASS — Accessories continuous anatomy-led evidence, exact progression, bests, and history
+[release-critical-invariants] PASS — data-driven sex-specific strength standards and lifter-facing achievement language
+[release-critical-invariants] PASS — Achievements storyboard hierarchy, evidence details, and asset families
+[release-critical-invariants] PASS — Strength Overview canonical lift navigation, multi-lens progression, standards, evidence, and destination-composed semantic assets
+[release-critical-invariants] PASS — strength-tier certification app-shell integrity
+[release-critical-invariants] PASS — canonical DEV Metro source lineage
+[release-critical-invariants] PASS — background unread-summary network resilience
+[release-critical-invariants] PASS — consolidated Week Programming Manager
+[release-critical-invariants] PASS — Session Workspace composition and presentation-only units
+[release-critical-invariants] PASS — Session Workspace dirty-state reorder transaction
+[release-critical-invariants] PASS — Session Workspace canonical accessory drilldown
+[release-critical-invariants] PASS — Session Workspace Athlete View handoff
+[release-critical-invariants] PASS — Athlete Training Hub Program Timeline navigation
+[release-critical-invariants] PASS — Athlete Training Hub same-day PR hero truth
+[release-critical-invariants] PASS — visible control action reachability
+[release-critical-invariants] PASS — Production Android/iOS release parity guard
+[release-critical-invariants] PASS — 61/61 accepted product areas

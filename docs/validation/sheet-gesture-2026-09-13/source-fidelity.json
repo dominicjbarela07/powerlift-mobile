@@ -1,0 +1,99 @@
+{
+  "baseline": "2afac51886ba7f00fc63ac1aab6b5b342f33fb70",
+  "files": [
+    {
+      "file": "app/(tabs)/accessory-catalog-review.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "app/(tabs)/workout/session-history.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "components/ledger/AchievementsExperience.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "components/coach-mobile/CoachHomeV2.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "components/ledger/CompetitiveStandingCard.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "components/coach-mobile/CoachActivityHome.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "components/volume-achievements/VolumeAchievementExperience.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "components/workout-logger/approved-substitution-picker.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "components/coach-mobile/CompletedSessionRecap.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "components/workout-logger/completed-session-correction.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "components/coach-mobile/CoachAthleteHubSheet.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "app/(tabs)/workout/movement-history.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "components/workout-logger/session-v3-shell.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "app/(tabs)/video-archive.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "app/(tabs)/coach-video-archive.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "components/workout-logger/substitution-confirmation-sheet.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "app/(tabs)/workout/index.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "app/(tabs)/reflection.tsx",
+      "content_and_handlers_unchanged": true
+    },
+    {
+      "file": "app/(tabs)/coach-calendar.tsx",
+      "content_and_handlers_unchanged": true
+    }
+  ],
+  "legacy_sheets": 46,
+  "method": "Whole emitted consumer JS identical after removing only imports, explicit top wrapper, and Modal adapter renaming."
+}

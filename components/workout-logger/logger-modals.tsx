@@ -245,7 +245,6 @@ export function RestTimerPickerModal({
   );
   return <StrengthLedgerBottomSheet
     accessibilityLabel="Rest Timer"
-    contentSwipeEnabled={false}
     heightFraction={embedded ? 0.54 : 0.5}
     onDismiss={() => onClose('dismissed')}
     onRequestClose={() => onClose('dismissed')}

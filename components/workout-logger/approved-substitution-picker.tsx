@@ -1,6 +1,7 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { useSLReducedMotion } from '@/lib/motion';
 import React from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/sl-text';
@@ -19,14 +20,14 @@ export function ApprovedSubstitutionPicker({ visible, choices, currentName, pres
 }) {
   const insets = useSafeAreaInsets();
   const reduceMotion = useSLReducedMotion();
-  return <Modal visible={visible} transparent animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={onCancel}>
+  return <StrengthLedgerSheetModalAdapter visible={visible} transparent animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={onCancel}>
     <View style={styles.backdrop}>
       <Pressable accessibilityLabel="Close approved substitutions" onPress={onCancel} style={StyleSheet.absoluteFill} />
       <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 20) }]}>
-        <View style={styles.heading}>
+        <StrengthLedgerSheetDragRegion><View style={styles.heading}>
           <View style={styles.copy}><Text style={styles.eyebrow}>COACH APPROVED</Text><Text style={styles.title}>Substitute movement</Text></View>
           <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onCancel} style={styles.close}><Ionicons name="close" size={23} color={SLColors.textStrong} /></Pressable>
-        </View>
+        </View></StrengthLedgerSheetDragRegion>
         <Text style={styles.context}>{currentName}</Text>
         <Text style={styles.prescription}>{prescription} · prescription retained</Text>
         <ScrollView>
@@ -39,7 +40,7 @@ export function ApprovedSubstitutionPicker({ visible, choices, currentName, pres
         </ScrollView>
       </View>
     </View>
-  </Modal>;
+  </StrengthLedgerSheetModalAdapter>;
 }
 const styles = StyleSheet.create({
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: '#0009' },

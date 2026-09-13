@@ -1,6 +1,7 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Text } from '@/components/ui/sl-text';
 import { formatWeightFromKg } from '@/lib/display-units';
@@ -60,11 +61,11 @@ export function CompetitiveStandingCard({
       {hasComparisonContext ? <Ionicons name="chevron-forward" size={17} color={accent} /> : null}
     </Pressable>
 
-    <Modal transparent visible={open} animationType="fade" onRequestClose={() => setOpen(false)}>
+    <StrengthLedgerSheetModalAdapter transparent visible={open} animationType="fade" onRequestClose={() => setOpen(false)}>
       <Pressable style={styles.scrim} onPress={() => setOpen(false)}>
         <Pressable style={styles.sheet} onPress={(event) => event.stopPropagation()} testID={`${testID}-detail`}>
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sheetContent}>
-            <View style={styles.sheetHeader}><View style={[styles.detailIcon, { backgroundColor: `${accent}1F` }]}><Ionicons name="people-outline" size={22} color={accent} /></View><View style={styles.headerCopy}><Text style={styles.kicker}>YOUR COMPETITIVE STANDING</Text><Text style={styles.title}>{standing ? `Stronger than about ${standing.roundedPercentile}%` : hasComparisonContext ? 'Below the first reference point' : 'Standing unavailable'}</Text></View><Pressable accessibilityLabel="Close comparison detail" onPress={() => setOpen(false)} style={styles.close}><Ionicons name="close" size={20} color="#E7E2EC" /></Pressable></View>
+            <StrengthLedgerSheetDragRegion><View style={styles.sheetHeader}><View style={[styles.detailIcon, { backgroundColor: `${accent}1F` }]}><Ionicons name="people-outline" size={22} color={accent} /></View><View style={styles.headerCopy}><Text style={styles.kicker}>YOUR COMPETITIVE STANDING</Text><Text style={styles.title}>{standing ? `Stronger than about ${standing.roundedPercentile}%` : hasComparisonContext ? 'Below the first reference point' : 'Standing unavailable'}</Text></View><Pressable accessibilityLabel="Close comparison detail" onPress={() => setOpen(false)} style={styles.close}><Ionicons name="close" size={20} color="#E7E2EC" /></Pressable></View></StrengthLedgerSheetDragRegion>
             {cohort && currentKg != null && state ? <>
               <Text style={styles.explanation}>Your {formatWeightFromKg(currentKg, unit)} {metricLabel} is compared with recorded {metric === 'total' ? 'Full Power Total' : metricLabel} results from the governed OpenPowerlifting reference group used by Strength Ledger.</Text>
               <DetailRow label="Reference group" value={cohort.referenceGroupLabel} />
@@ -85,7 +86,7 @@ export function CompetitiveStandingCard({
           </ScrollView>
         </Pressable>
       </Pressable>
-    </Modal>
+    </StrengthLedgerSheetModalAdapter>
   </>;
 }
 

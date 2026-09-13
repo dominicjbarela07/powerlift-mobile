@@ -1,6 +1,7 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { useSLReducedMotion } from '@/lib/motion';
 import React from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text } from '@/components/ui/sl-text';
@@ -51,12 +52,12 @@ export function SessionV3Footer({ bottom, label, disabled, onPress, secondary, o
 export type SessionNavigatorRow = { key: string; title: string; summary: string; complete: boolean; selected: boolean; artwork?: CanonicalMovementArtworkInput | null };
 export function SessionMovementNavigator({ visible, rows, onClose, onSelect, bottom }: { visible: boolean; rows: SessionNavigatorRow[]; onClose: () => void; onSelect: (key: string) => void; bottom: number }) {
   const reduceMotion = useSLReducedMotion();
-  return <Modal visible={visible} transparent animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={onClose}><View style={s.backdrop}><Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close movement navigator" /><View style={[s.sheet, { paddingBottom: Math.max(20, bottom) }]}>
-    <View style={s.headerRow}><Text style={[s.title, s.copy]}>Session movements</Text><Pressable onPress={onClose} style={s.icon} accessibilityLabel="Close"><Ionicons name="close" color="#eee" size={24} /></Pressable></View>
+  return <StrengthLedgerSheetModalAdapter visible={visible} transparent animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={onClose}><View style={s.backdrop}><Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close movement navigator" /><View style={[s.sheet, { paddingBottom: Math.max(20, bottom) }]}>
+    <StrengthLedgerSheetDragRegion><View style={s.headerRow}><Text style={[s.title, s.copy]}>Session movements</Text><Pressable onPress={onClose} style={s.icon} accessibilityLabel="Close"><Ionicons name="close" color="#eee" size={24} /></Pressable></View></StrengthLedgerSheetDragRegion>
     <ScrollView>{rows.map((row, i) => <Pressable key={row.key} accessibilityRole="button" accessibilityState={{ selected: row.selected }} onPress={() => onSelect(row.key)} style={[s.navigatorRow, row.selected && s.selected]}>
       <Text style={row.complete ? s.green : s.subtitle}>{row.complete ? '✓' : String(i + 1).padStart(2, '0')}</Text><CanonicalMovementArtwork surface="session-v3-shell" movement={row.artwork} size={40} /><View style={s.copy}><Text style={s.headerTitle}>{row.title}</Text><Text style={s.subtitle}>{row.summary}</Text></View><Ionicons name="chevron-forward" color="#b494e6" size={18} />
     </Pressable>)}</ScrollView>
-  </View></View></Modal>;
+  </View></View></StrengthLedgerSheetModalAdapter>;
 }
 const s = StyleSheet.create({
   header: { paddingHorizontal: 18, backgroundColor: '#08060d' }, headerRow: { flexDirection: 'row', alignItems: 'center', minHeight: 46, gap: 8 },

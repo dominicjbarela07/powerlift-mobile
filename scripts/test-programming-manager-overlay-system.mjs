@@ -76,7 +76,7 @@ assert.doesNotMatch(workspace, /Alert\.alert/, 'Session Workspace actions and co
 
 assert.match(canonicalSheet, /Swipe down to close/);
 assert.match(canonicalSheet, /shouldDismissBottomSheet/);
-assert.match(canonicalSheet, /Gesture\.Simultaneous\(createDismissGesture\(true, bodyDrag\), Gesture\.Native\(\)\)/);
+assert.doesNotMatch(canonicalSheet, /bodyDismissGesture|Gesture\.Simultaneous|scrollOffsetY/, 'body scrolling never participates in dismissal');
 assert.doesNotMatch(canonicalSheet, /PanResponder/);
 assert.match(canonicalSheet, /paddingBottom: Math\.max\(insets\.bottom, 10\)/);
 

@@ -25,7 +25,7 @@ assert.match(modal, /wheelTextSelected:\s*\{[\s\S]*?color:\s*SLColors\.textPrima
 assert.match(modal, /cancelButton:\s*\{[\s\S]*?backgroundColor:\s*SLColors\.surfaceInset/);
 assert.match(modal, /style=\{\[styles\.actionButton, styles\.actionPrimary, restTimerPickerStyles\.startButton\]\}/);
 
-assert.match(modal, /contentSwipeEnabled=\{false\}/, 'wheel gestures must remain isolated from sheet dismissal');
+assert.doesNotMatch(fs.readFileSync('components/sheets/StrengthLedgerBottomSheet.tsx', 'utf8'), /bodyDismissGesture|contentSwipeEnabled/, 'all sheet bodies, including timer wheels, remain outside dismissal gestures');
 assert.match(modal, /onRequestClose=\{\(\) => onClose\('dismissed'\)\}/);
 assert.match(modal, /startRestTimer\(REST_TIMER_OPTIONS\[nearestRestTimerIndex\(timerPickerValue\)\]\)/);
 assert.match(modal, /onClose\('selected'\)/);

@@ -1,3 +1,4 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -9,7 +10,6 @@ import {
   AccessibilityInfo,
   Alert,
   FlatList,
-  Modal,
   Platform,
   Pressable,
   RefreshControl,
@@ -1827,7 +1827,7 @@ function CalendarAgendaRow({ entry, onSessionPress, onMeetPress, onCustomPress }
 }
 
 function Sheet({ children, onClose, title, visible, height = 'auto' }: { children: React.ReactNode; onClose: () => void; title: string; visible: boolean; height?: number | 'auto' }) {
-  return <Modal animationType="fade" onRequestClose={onClose} transparent visible={visible}><View style={styles.modalOverlay}><Pressable onPress={onClose} style={StyleSheet.absoluteFill} /><View style={[styles.sheet, height !== 'auto' && { maxHeight: height }]}><View style={styles.sheetHeader}><Text style={styles.sheetTitle}>{title}</Text><Pressable accessibilityLabel={`Close ${title}`} onPress={onClose} style={styles.sheetClose}><Ionicons color={SLColors.text} name="close" size={21} /></Pressable></View>{children}</View></View></Modal>;
+  return <StrengthLedgerSheetModalAdapter animationType="fade" onRequestClose={onClose} transparent visible={visible}><View style={styles.modalOverlay}><Pressable onPress={onClose} style={StyleSheet.absoluteFill} /><View style={[styles.sheet, height !== 'auto' && { maxHeight: height }]}><StrengthLedgerSheetDragRegion><View style={styles.sheetHeader}><Text style={styles.sheetTitle}>{title}</Text><Pressable accessibilityLabel={`Close ${title}`} onPress={onClose} style={styles.sheetClose}><Ionicons color={SLColors.text} name="close" size={21} /></Pressable></View></StrengthLedgerSheetDragRegion>{children}</View></View></StrengthLedgerSheetModalAdapter>;
 }
 
 function CreateModal({ visible, draft, setDraft, athletes, onClose, onSession, onCustom }: { visible: boolean; draft: ItemDraft; setDraft: React.Dispatch<React.SetStateAction<ItemDraft>>; athletes: CalendarAthlete[]; onClose: () => void; onSession: () => void; onCustom: () => void }) {

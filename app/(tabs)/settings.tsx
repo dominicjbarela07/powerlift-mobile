@@ -1,3 +1,4 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -6,7 +7,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Linking,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -1843,7 +1843,7 @@ export default function SettingsScreen() {
         , 'Account Actions')}
       </ScrollView>
 
-      <Modal
+      <StrengthLedgerSheetModalAdapter
         visible={settingsPanel !== null}
         animationType="slide"
         transparent
@@ -1851,7 +1851,7 @@ export default function SettingsScreen() {
       >
         <View style={styles.modalBackdrop}>
           <View style={[styles.modalSheet, styles.settingsPanelSheet]}>
-            <View style={styles.modalHeader}>
+            <StrengthLedgerSheetDragRegion><View style={styles.modalHeader}>
               <View style={styles.modalTitleWrap}>
                 <ThemedText style={styles.modalTitle}>{settingsPanelTitle}</ThemedText>
                 <ThemedText style={styles.modalSubtitle}>Settings</ThemedText>
@@ -1866,7 +1866,7 @@ export default function SettingsScreen() {
               >
                 <Ionicons color={SLColors.textSecondary} name="close" size={22} />
               </Pressable>
-            </View>
+            </View></StrengthLedgerSheetDragRegion>
 
             <ScrollView
               contentContainerStyle={styles.settingsPanelContent}
@@ -1996,10 +1996,10 @@ export default function SettingsScreen() {
             </ScrollView>
           </View>
         </View>
-      </Modal>
+      </StrengthLedgerSheetModalAdapter>
 
         {profileEditor !== null && (profileEditor !== 'maxes' || canDirectEditTrainingMaxes) ? (
-        <Modal
+        <StrengthLedgerSheetModalAdapter
           visible
           animationType="slide"
           transparent
@@ -2007,7 +2007,7 @@ export default function SettingsScreen() {
         >
           <View style={styles.modalBackdrop}>
             <View style={styles.profileEditorSheet}>
-              <View style={styles.modalHeader}>
+              <StrengthLedgerSheetDragRegion><View style={styles.modalHeader}>
                 <View style={styles.modalTitleWrap}>
                   <ThemedText style={styles.modalTitle}>{profileEditorTitle}</ThemedText>
                   <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
@@ -2017,7 +2017,7 @@ export default function SettingsScreen() {
                 <Pressable style={styles.modalClose} onPress={() => setProfileEditor(null)} disabled={profileSaving}>
                   <Ionicons name="close" size={22} color={SLColors.text} />
                 </Pressable>
-              </View>
+              </View></StrengthLedgerSheetDragRegion>
 
               {profileError ? (
                 <View style={styles.editorError}>
@@ -2120,10 +2120,10 @@ export default function SettingsScreen() {
               </View>
             </View>
           </View>
-        </Modal>
+        </StrengthLedgerSheetModalAdapter>
         ) : null}
 
-        <Modal visible={feedbackModalOpen} animationType="slide" transparent onRequestClose={() => setFeedbackModalOpen(false)}>
+        <StrengthLedgerSheetModalAdapter visible={feedbackModalOpen} animationType="slide" transparent onRequestClose={() => setFeedbackModalOpen(false)}>
           <KeyboardAvoidingView
             style={styles.keyboardModalRoot}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -2134,7 +2134,7 @@ export default function SettingsScreen() {
                 style={[styles.modalSheet, styles.feedbackModalSheet, { height: feedbackModalHeight }]}
                 onPress={(event) => event.stopPropagation()}
               >
-              <View style={styles.modalHeader}>
+              <StrengthLedgerSheetDragRegion><View style={styles.modalHeader}>
                 <View style={styles.modalTitleWrap}>
                   <ThemedText style={styles.modalTitle}>Send Feedback</ThemedText>
                   <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
@@ -2144,7 +2144,7 @@ export default function SettingsScreen() {
                 <Pressable style={styles.modalClose} onPress={() => setFeedbackModalOpen(false)} disabled={feedbackSubmitting}>
                   <Ionicons name="close" size={22} color={SLColors.text} />
                 </Pressable>
-              </View>
+              </View></StrengthLedgerSheetDragRegion>
 
               <ScrollView
                 style={styles.editorScroll}
@@ -2224,12 +2224,12 @@ export default function SettingsScreen() {
               </Pressable>
             </Pressable>
           </KeyboardAvoidingView>
-        </Modal>
+        </StrengthLedgerSheetModalAdapter>
 
-        <Modal visible={modeModalOpen} animationType="slide" transparent onRequestClose={() => setModeModalOpen(false)}>
+        <StrengthLedgerSheetModalAdapter visible={modeModalOpen} animationType="slide" transparent onRequestClose={() => setModeModalOpen(false)}>
           <Pressable style={styles.modalBackdrop} onPress={() => setModeModalOpen(false)}>
             <Pressable style={[styles.modalSheet, styles.modeModalSheet]} onPress={(event) => event.stopPropagation()}>
-              <View style={styles.modalHeader}>
+              <StrengthLedgerSheetDragRegion><View style={styles.modalHeader}>
                 <View style={styles.modalTitleWrap}>
                   <ThemedText style={styles.modalTitle}>Switch mobile mode</ThemedText>
                   <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
@@ -2239,7 +2239,7 @@ export default function SettingsScreen() {
                 <Pressable style={styles.modalClose} onPress={() => setModeModalOpen(false)} disabled={modeSwitching !== null}>
                   <Ionicons name="close" size={22} color={SLColors.text} />
                 </Pressable>
-              </View>
+              </View></StrengthLedgerSheetDragRegion>
 
               <View style={styles.modeOptionList}>
                 {accountTransitions ? (
@@ -2308,9 +2308,9 @@ export default function SettingsScreen() {
               </View>
             </Pressable>
           </Pressable>
-        </Modal>
+        </StrengthLedgerSheetModalAdapter>
 
-        <Modal visible={upgradeModalOpen} animationType="slide" transparent onRequestClose={() => setUpgradeModalOpen(false)}>
+        <StrengthLedgerSheetModalAdapter visible={upgradeModalOpen} animationType="slide" transparent onRequestClose={() => setUpgradeModalOpen(false)}>
           <KeyboardAvoidingView
             style={styles.keyboardModalRoot}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -2318,7 +2318,7 @@ export default function SettingsScreen() {
           >
             <Pressable style={styles.modalBackdrop} onPress={Keyboard.dismiss}>
               <Pressable style={[styles.modalSheet, styles.upgradeModalSheet]} onPress={(event) => event.stopPropagation()}>
-                <View style={styles.modalHeader}>
+                <StrengthLedgerSheetDragRegion><View style={styles.modalHeader}>
                   <View style={styles.modalTitleWrap}>
                     <ThemedText style={styles.modalTitle}>Become a Team Coach</ThemedText>
                     <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
@@ -2328,7 +2328,7 @@ export default function SettingsScreen() {
                   <Pressable style={styles.modalClose} onPress={() => setUpgradeModalOpen(false)} disabled={upgradeSubmitting}>
                     <Ionicons name="close" size={22} color={SLColors.text} />
                   </Pressable>
-                </View>
+                </View></StrengthLedgerSheetDragRegion>
 
                 <ScrollView style={styles.upgradeModalScroll} contentContainerStyle={styles.upgradeModalContent} keyboardShouldPersistTaps="handled">
                   <View style={styles.upgradePlanHero}>
@@ -2416,12 +2416,12 @@ export default function SettingsScreen() {
               </Pressable>
             </Pressable>
           </KeyboardAvoidingView>
-        </Modal>
+        </StrengthLedgerSheetModalAdapter>
 
-        <Modal visible={downgradeModalOpen} animationType="slide" transparent onRequestClose={() => setDowngradeModalOpen(false)}>
+        <StrengthLedgerSheetModalAdapter visible={downgradeModalOpen} animationType="slide" transparent onRequestClose={() => setDowngradeModalOpen(false)}>
           <Pressable style={styles.modalBackdrop} onPress={() => (!downgradeSubmitting ? setDowngradeModalOpen(false) : null)}>
             <Pressable style={styles.modalSheet} onPress={(event) => event.stopPropagation()}>
-              <View style={styles.modalHeader}>
+              <StrengthLedgerSheetDragRegion><View style={styles.modalHeader}>
                 <View style={styles.modalTitleWrap}>
                   <ThemedText style={styles.modalTitle}>
                     {pendingTeamCoachUpgrade ? 'Cancel Team Coach upgrade' : 'Return to Athlete'}
@@ -2435,7 +2435,7 @@ export default function SettingsScreen() {
                 <Pressable style={styles.modalClose} onPress={() => setDowngradeModalOpen(false)} disabled={downgradeSubmitting}>
                   <Ionicons name="close" size={22} color={SLColors.text} />
                 </Pressable>
-              </View>
+              </View></StrengthLedgerSheetDragRegion>
 
               <View style={[styles.modeMetadataCard, styles.modeMetadataCardWarning]}>
                 <ThemedText style={styles.modeMetadataTitle}>Before you continue</ThemedText>
@@ -2480,12 +2480,12 @@ export default function SettingsScreen() {
               </View>
             </Pressable>
           </Pressable>
-        </Modal>
+        </StrengthLedgerSheetModalAdapter>
 
-        <Modal visible={timezoneModalOpen} animationType="slide" transparent onRequestClose={() => setTimezoneModalOpen(false)}>
+        <StrengthLedgerSheetModalAdapter visible={timezoneModalOpen} animationType="slide" transparent onRequestClose={() => setTimezoneModalOpen(false)}>
           <View style={styles.modalBackdrop}>
             <View style={styles.modalSheet}>
-              <View style={styles.modalHeader}>
+              <StrengthLedgerSheetDragRegion><View style={styles.modalHeader}>
                 <View>
                   <ThemedText style={styles.modalTitle}>Choose timezone</ThemedText>
                   <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>Search any supported IANA timezone.</ThemedText>
@@ -2493,7 +2493,7 @@ export default function SettingsScreen() {
                 <Pressable style={styles.modalClose} onPress={() => setTimezoneModalOpen(false)}>
                   <Ionicons name="close" size={22} color={SLColors.text} />
                 </Pressable>
-              </View>
+              </View></StrengthLedgerSheetDragRegion>
               <View style={styles.searchWrap}>
                 <Ionicons name="search-outline" size={18} color={SLColors.textMuted} />
                 <TextInput
@@ -2550,11 +2550,11 @@ export default function SettingsScreen() {
               />
             </View>
           </View>
-        </Modal>
-        <Modal visible={deleteModalOpen} animationType="slide" transparent onRequestClose={() => setDeleteModalOpen(false)}>
+        </StrengthLedgerSheetModalAdapter>
+        <StrengthLedgerSheetModalAdapter visible={deleteModalOpen} animationType="slide" transparent onRequestClose={() => setDeleteModalOpen(false)}>
           <View style={styles.modalBackdrop}>
             <View style={styles.modalSheet}>
-              <View style={styles.modalHeader}>
+              <StrengthLedgerSheetDragRegion><View style={styles.modalHeader}>
                 <View style={styles.modalTitleWrap}>
                   <ThemedText style={styles.modalTitle}>Delete Account</ThemedText>
                   <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
@@ -2564,7 +2564,7 @@ export default function SettingsScreen() {
                 <Pressable style={styles.modalClose} onPress={() => setDeleteModalOpen(false)} disabled={deletingAccount}>
                   <Ionicons name="close" size={22} color={SLColors.text} />
                 </Pressable>
-              </View>
+              </View></StrengthLedgerSheetDragRegion>
               <View style={styles.deleteWarning}>
                 <Ionicons name="warning-outline" size={20} color={SLColors.danger} />
                 <ThemedText style={styles.deleteWarningText}>
@@ -2606,7 +2606,7 @@ export default function SettingsScreen() {
               </View>
             </View>
           </View>
-        </Modal>
+        </StrengthLedgerSheetModalAdapter>
     </SLScreen>
   );
 }

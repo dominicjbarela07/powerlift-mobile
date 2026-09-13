@@ -1,9 +1,9 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   FlatList,
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -337,13 +337,13 @@ export default function AccessoryCatalogReviewScreen() {
         </Pressable>
       </ScrollView>
 
-      <Modal visible={correctionOpen} animationType="slide" transparent onRequestClose={() => setCorrectionOpen(false)}>
+      <StrengthLedgerSheetModalAdapter visible={correctionOpen} animationType="slide" transparent onRequestClose={() => setCorrectionOpen(false)}>
         <View style={styles.modalBackdrop}>
           <View style={styles.modalSheet}>
-            <View style={styles.modalHeader}>
+            <StrengthLedgerSheetDragRegion><View style={styles.modalHeader}>
               <ThemedText style={styles.modalTitle}>Proposed Correction</ThemedText>
               <Pressable onPress={() => setCorrectionOpen(false)}><Ionicons name="close" size={25} color={SLColors.text} /></Pressable>
-            </View>
+            </View></StrengthLedgerSheetDragRegion>
             <ScrollView keyboardShouldPersistTaps="handled">
               {current && proposed ? (
                 <>
@@ -371,11 +371,11 @@ export default function AccessoryCatalogReviewScreen() {
             </ScrollView>
           </View>
         </View>
-      </Modal>
+      </StrengthLedgerSheetModalAdapter>
 
-      <Modal visible={filterOpen} animationType="slide" transparent onRequestClose={() => setFilterOpen(false)}>
+      <StrengthLedgerSheetModalAdapter visible={filterOpen} animationType="slide" transparent onRequestClose={() => setFilterOpen(false)}>
         <View style={styles.modalBackdrop}><View style={styles.filterSheet}>
-          <View style={styles.modalHeader}><ThemedText style={styles.modalTitle}>Review Filters</ThemedText><Pressable onPress={() => setFilterOpen(false)}><Ionicons name="close" size={25} color={SLColors.text} /></Pressable></View>
+          <StrengthLedgerSheetDragRegion><View style={styles.modalHeader}><ThemedText style={styles.modalTitle}>Review Filters</ThemedText><Pressable onPress={() => setFilterOpen(false)}><Ionicons name="close" size={25} color={SLColors.text} /></Pressable></View></StrengthLedgerSheetDragRegion>
           <ScrollView>
             <ThemedText style={styles.editorLabel}>REVIEW STATE</ThemedText>
             <View style={styles.chipWrap}>{(['ALL', 'UNREVIEWED', 'CORRECT', 'CORRECTED'] as const).map((state) => <ChoiceChip key={state} label={state} selected={filters.state === state} onPress={() => setFilters({ ...filters, state })} />)}</View>
@@ -386,11 +386,11 @@ export default function AccessoryCatalogReviewScreen() {
             <Pressable onPress={() => { setFilters(DEFAULT_FILTERS); setFilterOpen(false); }} style={styles.clearButton}><ThemedText style={styles.secondaryActionText}>Clear Filters</ThemedText></Pressable>
           </ScrollView>
         </View></View>
-      </Modal>
+      </StrengthLedgerSheetModalAdapter>
 
-      <Modal visible={queueOpen} animationType="slide" transparent onRequestClose={() => setQueueOpen(false)}>
+      <StrengthLedgerSheetModalAdapter visible={queueOpen} animationType="slide" transparent onRequestClose={() => setQueueOpen(false)}>
         <View style={styles.modalBackdrop}><View style={styles.queueSheet}>
-          <View style={styles.modalHeader}><ThemedText style={styles.modalTitle}>Review Queue</ThemedText><Pressable onPress={() => setQueueOpen(false)}><Ionicons name="close" size={25} color={SLColors.text} /></Pressable></View>
+          <StrengthLedgerSheetDragRegion><View style={styles.modalHeader}><ThemedText style={styles.modalTitle}>Review Queue</ThemedText><Pressable onPress={() => setQueueOpen(false)}><Ionicons name="close" size={25} color={SLColors.text} /></Pressable></View></StrengthLedgerSheetDragRegion>
           <TextInput value={filters.search} onChangeText={(search) => setFilters({ ...filters, search })} placeholder="Search movement name" placeholderTextColor={SLColors.textMuted} style={styles.searchInput} />
           <ThemedText style={styles.queueCount}>{filtered.length} movements</ThemedText>
           <FlatList data={filtered} keyExtractor={(item) => item.id} renderItem={({ item }) => (
@@ -400,7 +400,7 @@ export default function AccessoryCatalogReviewScreen() {
             </Pressable>
           )} />
         </View></View>
-      </Modal>
+      </StrengthLedgerSheetModalAdapter>
     </SLScreen>
   );
 }

@@ -1,0 +1,441 @@
+{
+  "schemaVersion": 1,
+  "modalConsumers": [
+    {
+      "file": "app/_layout.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen mandatory update gate"
+    },
+    {
+      "file": "components/ui/sl-confirmation-modal.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "centered confirmation dialog"
+    },
+    {
+      "file": "components/calendar/CalendarEventSheet.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "native pageSheet navigation"
+    },
+    {
+      "file": "components/calendar/CalendarEventSheet.tsx",
+      "index": 1,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "native pageSheet navigation"
+    },
+    {
+      "file": "components/coach-mobile/FocusedSessionAuthoring.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen focused authoring"
+    },
+    {
+      "file": "components/calendar/TrainingScheduleSheet.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "native pageSheet navigation"
+    },
+    {
+      "file": "app/(tabs)/accessory-catalog-review.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/accessory-catalog-review.tsx",
+      "index": 1,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/accessory-catalog-review.tsx",
+      "index": 2,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "index": 1,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "index": 2,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "index": 3,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "centered date dialog"
+    },
+    {
+      "file": "app/(tabs)/workout/session-history.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/ui/sl-compact-dropdown.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "anchored popover"
+    },
+    {
+      "file": "components/ledger/AchievementsExperience.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/coach-mobile/CoachHomeV2.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/coach-mobile/CoachHomeV2.tsx",
+      "index": 1,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/ledger/JourneyExperience.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen evidence route"
+    },
+    {
+      "file": "components/ledger/CompetitiveStandingCard.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/SetVideoPlayerModal.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen video; three nested bottom panels independently governed"
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "index": 1,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "index": 2,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "index": 3,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "index": 4,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "index": 5,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "index": 6,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "index": 7,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "centered completion/unfinished-set dialogs"
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "index": 8,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "centered completion/unfinished-set dialogs"
+    },
+    {
+      "file": "components/coach-mobile/CoachActivityHome.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/coach-mobile/CoachActivityHome.tsx",
+      "index": 1,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/coach-mobile/CoachActivityHome.tsx",
+      "index": 2,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/MessageImageAttachment.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen media preview"
+    },
+    {
+      "file": "components/volume-achievements/VolumeAchievementExperience.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/workout-logger/approved-substitution-picker.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/coach-mobile/CompletedSessionRecap.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/movement/GovernedAccessoryPickerModal.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen governed Swap/search"
+    },
+    {
+      "file": "components/workout-logger/completed-session-correction.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen authoring/reorder or centered date dialog"
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "index": 1,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen authoring/reorder or centered date dialog"
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "index": 2,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen authoring/reorder or centered date dialog"
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "index": 3,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen authoring/reorder or centered date dialog"
+    },
+    {
+      "file": "components/workout-logger/logger-modals.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "centered tardiness form"
+    },
+    {
+      "file": "components/training-hub/AthleteTrainingHubExperience.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen program history"
+    },
+    {
+      "file": "components/coach-mobile/CoachAthleteHubSheet.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/coach-video-review.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "anchored video options popover"
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "index": 1,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "index": 2,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "index": 3,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/workout/movement-history.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/workout-logger/final-session-completion-presenter.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "centered completion confirmation"
+    },
+    {
+      "file": "components/workout-logger/session-v3-shell.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/video-archive.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/coach-video-archive.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/training-hub/TrainingHubSessionPreviewSheet.tsx",
+      "index": 0,
+      "presentation": "header-only-preview",
+      "reason": "header-only PanResponder; updated to canonical threshold policy"
+    },
+    {
+      "file": "components/workout-logger/substitution-confirmation-sheet.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/workout/index.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "index": 1,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "index": 2,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "index": 3,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "index": 4,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "index": 5,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "index": 6,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "index": 7,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/reflection.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "app/(tabs)/athlete-dashboard.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "centered patch-note dialog"
+    },
+    {
+      "file": "app/(tabs)/athlete-dashboard.tsx",
+      "index": 1,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "centered patch-note dialog"
+    },
+    {
+      "file": "app/(tabs)/coach-calendar.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "shared adapter plus explicit top drag region"
+    }
+  ],
+  "inlineBottomPanels": [
+    {
+      "file": "components/SetVideoPlayerModal.tsx",
+      "surfaces": [
+        "exportSheet",
+        "coachFeedbackSheet",
+        "reviewSheet"
+      ]
+    }
+  ]
+}

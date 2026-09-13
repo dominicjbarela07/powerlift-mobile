@@ -1,9 +1,10 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { useLedgerResource } from './use-ledger-resource';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Image, Modal, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
@@ -730,7 +731,7 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
         </> : null}
       </ScrollView>
     </View>
-    <Modal transparent visible={!!detail} animationType="fade" onRequestClose={() => setDetail(null)}><Pressable style={styles.modalScrim} onPress={() => setDetail(null)}><Pressable testID="achievement-detail" style={styles.detailSheet} onPress={(event) => event.stopPropagation()}><View style={[styles.detailIcon, detail?.state === 'completed' ? styles.totalEarned : detail?.state === 'progress' ? styles.totalProgress : styles.totalLocked]}>{detail?.state === 'completed' ? <SLTrophy size={21} /> : <Ionicons name={detail?.state === 'progress' ? 'radio-button-on' : 'lock-closed'} size={21} color={detail?.state === 'progress' ? '#B165FF' : '#AEB7C6'} />}</View><ThemedText typographyRole="heroNumeric" style={styles.detailTitle}>{detail?.value}</ThemedText><ThemedText typographyRole="modalTitle" style={styles.detailLabel}>{detail?.label}</ThemedText><ThemedText typographyRole="modalBody" style={styles.detailState}>{detail?.state === 'completed' ? 'Earned' : detail?.state === 'progress' ? detail.remaining ?? 'In progress' : 'Locked · Keep building'}</ThemedText>{detail?.note ? <ThemedText typographyRole="supportingBody" style={styles.detailNote}>{detail.note}</ThemedText> : null}<Pressable onPress={() => { const href = detail?.sourceHref; setDetail(null); if (href) openScopedPath(href); }} style={styles.detailClose}><ThemedText typographyRole="shortButtonLabel" style={styles.detailCloseText}>{detail?.sourceHref ? detail.actionLabel ?? 'Open source evidence' : 'Done'}</ThemedText></Pressable></Pressable></Pressable></Modal>
+    <StrengthLedgerSheetModalAdapter transparent visible={!!detail} animationType="fade" onRequestClose={() => setDetail(null)}><Pressable style={styles.modalScrim} onPress={() => setDetail(null)}><Pressable testID="achievement-detail" style={styles.detailSheet} onPress={(event) => event.stopPropagation()}><StrengthLedgerSheetDragRegion /><View style={[styles.detailIcon, detail?.state === 'completed' ? styles.totalEarned : detail?.state === 'progress' ? styles.totalProgress : styles.totalLocked]}>{detail?.state === 'completed' ? <SLTrophy size={21} /> : <Ionicons name={detail?.state === 'progress' ? 'radio-button-on' : 'lock-closed'} size={21} color={detail?.state === 'progress' ? '#B165FF' : '#AEB7C6'} />}</View><ThemedText typographyRole="heroNumeric" style={styles.detailTitle}>{detail?.value}</ThemedText><ThemedText typographyRole="modalTitle" style={styles.detailLabel}>{detail?.label}</ThemedText><ThemedText typographyRole="modalBody" style={styles.detailState}>{detail?.state === 'completed' ? 'Earned' : detail?.state === 'progress' ? detail.remaining ?? 'In progress' : 'Locked · Keep building'}</ThemedText>{detail?.note ? <ThemedText typographyRole="supportingBody" style={styles.detailNote}>{detail.note}</ThemedText> : null}<Pressable onPress={() => { const href = detail?.sourceHref; setDetail(null); if (href) openScopedPath(href); }} style={styles.detailClose}><ThemedText typographyRole="shortButtonLabel" style={styles.detailCloseText}>{detail?.sourceHref ? detail.actionLabel ?? 'Open source evidence' : 'Done'}</ThemedText></Pressable></Pressable></Pressable></StrengthLedgerSheetModalAdapter>
     </FloatingControlCoordinator>
   </SLScreen>;
 }

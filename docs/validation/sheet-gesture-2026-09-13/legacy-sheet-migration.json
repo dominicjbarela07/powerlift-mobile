@@ -1,0 +1,278 @@
+[
+  {
+    "file": "app/(tabs)/accessory-catalog-review.tsx",
+    "modal_index": 0,
+    "top_chrome": "modalHeader",
+    "prior_line": 340
+  },
+  {
+    "file": "app/(tabs)/accessory-catalog-review.tsx",
+    "modal_index": 1,
+    "top_chrome": "modalHeader",
+    "prior_line": 376
+  },
+  {
+    "file": "app/(tabs)/accessory-catalog-review.tsx",
+    "modal_index": 2,
+    "top_chrome": "modalHeader",
+    "prior_line": 391
+  },
+  {
+    "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+    "modal_index": 0,
+    "top_chrome": "sheetHandle",
+    "prior_line": 793
+  },
+  {
+    "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+    "modal_index": 1,
+    "top_chrome": "sheetHandle",
+    "prior_line": 978
+  },
+  {
+    "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+    "modal_index": 2,
+    "top_chrome": "sheetHandle",
+    "prior_line": 1027
+  },
+  {
+    "file": "app/(tabs)/workout/session-history.tsx",
+    "modal_index": 0,
+    "top_chrome": "sheetHeader",
+    "prior_line": 294
+  },
+  {
+    "file": "components/ledger/AchievementsExperience.tsx",
+    "modal_index": 0,
+    "top_chrome": "detailSheet",
+    "prior_line": 733
+  },
+  {
+    "file": "components/coach-mobile/CoachHomeV2.tsx",
+    "modal_index": 0,
+    "top_chrome": "kpiHandle",
+    "prior_line": 458
+  },
+  {
+    "file": "components/coach-mobile/CoachHomeV2.tsx",
+    "modal_index": 1,
+    "top_chrome": "kpiHandle",
+    "prior_line": 572
+  },
+  {
+    "file": "components/ledger/CompetitiveStandingCard.tsx",
+    "modal_index": 0,
+    "top_chrome": "sheetHeader",
+    "prior_line": 63
+  },
+  {
+    "file": "app/(tabs)/workout/[workoutId].tsx",
+    "modal_index": 0,
+    "top_chrome": "coreWheelHandle",
+    "prior_line": 9077
+  },
+  {
+    "file": "app/(tabs)/workout/[workoutId].tsx",
+    "modal_index": 1,
+    "top_chrome": "coreWheelHandle",
+    "prior_line": 9180
+  },
+  {
+    "file": "app/(tabs)/workout/[workoutId].tsx",
+    "modal_index": 2,
+    "top_chrome": "coreWheelHandle",
+    "prior_line": 9274
+  },
+  {
+    "file": "app/(tabs)/workout/[workoutId].tsx",
+    "modal_index": 3,
+    "top_chrome": "coreWheelHandle",
+    "prior_line": 9560
+  },
+  {
+    "file": "app/(tabs)/workout/[workoutId].tsx",
+    "modal_index": 4,
+    "top_chrome": "coreWheelHandle",
+    "prior_line": 9637
+  },
+  {
+    "file": "app/(tabs)/workout/[workoutId].tsx",
+    "modal_index": 5,
+    "top_chrome": "coreWheelHandle",
+    "prior_line": 9934
+  },
+  {
+    "file": "app/(tabs)/workout/[workoutId].tsx",
+    "modal_index": 6,
+    "top_chrome": "coreWheelHandle",
+    "prior_line": 10213
+  },
+  {
+    "file": "components/coach-mobile/CoachActivityHome.tsx",
+    "modal_index": 0,
+    "top_chrome": "sheetHandle",
+    "prior_line": 735
+  },
+  {
+    "file": "components/coach-mobile/CoachActivityHome.tsx",
+    "modal_index": 1,
+    "top_chrome": "sheetHandle",
+    "prior_line": 740
+  },
+  {
+    "file": "components/coach-mobile/CoachActivityHome.tsx",
+    "modal_index": 2,
+    "top_chrome": "sheetHandle",
+    "prior_line": 749
+  },
+  {
+    "file": "components/volume-achievements/VolumeAchievementExperience.tsx",
+    "modal_index": 0,
+    "top_chrome": "detailHandle",
+    "prior_line": 368
+  },
+  {
+    "file": "components/workout-logger/approved-substitution-picker.tsx",
+    "modal_index": 0,
+    "top_chrome": "heading",
+    "prior_line": 22
+  },
+  {
+    "file": "components/coach-mobile/CompletedSessionRecap.tsx",
+    "modal_index": 0,
+    "top_chrome": "toolsHandle",
+    "prior_line": 1629
+  },
+  {
+    "file": "components/workout-logger/completed-session-correction.tsx",
+    "modal_index": 0,
+    "top_chrome": "heading",
+    "prior_line": 60
+  },
+  {
+    "file": "components/coach-mobile/CoachAthleteHubSheet.tsx",
+    "modal_index": 0,
+    "top_chrome": "detailHandle",
+    "prior_line": 694
+  },
+  {
+    "file": "app/(tabs)/athlete-meet-plan.tsx",
+    "modal_index": 0,
+    "top_chrome": "meetDetailsModalHeader",
+    "prior_line": 1320
+  },
+  {
+    "file": "app/(tabs)/athlete-meet-plan.tsx",
+    "modal_index": 1,
+    "top_chrome": "meetDetailsModalHeader",
+    "prior_line": 1898
+  },
+  {
+    "file": "app/(tabs)/athlete-meet-plan.tsx",
+    "modal_index": 2,
+    "top_chrome": "attemptModalHeader",
+    "prior_line": 2520
+  },
+  {
+    "file": "app/(tabs)/athlete-meet-plan.tsx",
+    "modal_index": 3,
+    "top_chrome": "attemptModalHeader",
+    "prior_line": 2577
+  },
+  {
+    "file": "app/(tabs)/workout/movement-history.tsx",
+    "modal_index": 0,
+    "top_chrome": "sheetHeader",
+    "prior_line": 454
+  },
+  {
+    "file": "components/workout-logger/session-v3-shell.tsx",
+    "modal_index": 0,
+    "top_chrome": "headerRow",
+    "prior_line": 54
+  },
+  {
+    "file": "app/(tabs)/video-archive.tsx",
+    "modal_index": 0,
+    "top_chrome": "filterSheetHandle",
+    "prior_line": 519
+  },
+  {
+    "file": "app/(tabs)/coach-video-archive.tsx",
+    "modal_index": 0,
+    "top_chrome": "filterSheetHandle",
+    "prior_line": 482
+  },
+  {
+    "file": "components/workout-logger/substitution-confirmation-sheet.tsx",
+    "modal_index": 0,
+    "top_chrome": "grabber",
+    "prior_line": 92
+  },
+  {
+    "file": "app/(tabs)/workout/index.tsx",
+    "modal_index": 0,
+    "top_chrome": "modalHandle",
+    "prior_line": 5248
+  },
+  {
+    "file": "app/(tabs)/settings.tsx",
+    "modal_index": 0,
+    "top_chrome": "modalHeader",
+    "prior_line": 1846
+  },
+  {
+    "file": "app/(tabs)/settings.tsx",
+    "modal_index": 1,
+    "top_chrome": "modalHeader",
+    "prior_line": 2002
+  },
+  {
+    "file": "app/(tabs)/settings.tsx",
+    "modal_index": 2,
+    "top_chrome": "modalHeader",
+    "prior_line": 2126
+  },
+  {
+    "file": "app/(tabs)/settings.tsx",
+    "modal_index": 3,
+    "top_chrome": "modalHeader",
+    "prior_line": 2229
+  },
+  {
+    "file": "app/(tabs)/settings.tsx",
+    "modal_index": 4,
+    "top_chrome": "modalHeader",
+    "prior_line": 2313
+  },
+  {
+    "file": "app/(tabs)/settings.tsx",
+    "modal_index": 5,
+    "top_chrome": "modalHeader",
+    "prior_line": 2421
+  },
+  {
+    "file": "app/(tabs)/settings.tsx",
+    "modal_index": 6,
+    "top_chrome": "modalHeader",
+    "prior_line": 2485
+  },
+  {
+    "file": "app/(tabs)/settings.tsx",
+    "modal_index": 7,
+    "top_chrome": "modalHeader",
+    "prior_line": 2554
+  },
+  {
+    "file": "app/(tabs)/reflection.tsx",
+    "modal_index": 0,
+    "top_chrome": "editorHeader",
+    "prior_line": 536
+  },
+  {
+    "file": "app/(tabs)/coach-calendar.tsx",
+    "modal_index": 0,
+    "top_chrome": "sheetHeader",
+    "prior_line": 1830
+  }
+]

@@ -1,3 +1,4 @@
+import { shouldCaptureBottomSheetDismissGesture, shouldDismissBottomSheet, BOTTOM_SHEET_DRAG_REGION_HEIGHT } from '@/lib/bottom-sheet-gesture';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -52,8 +53,6 @@ type Props = {
   unit: 'kg' | 'lb';
 };
 
-const DISMISS_DISTANCE = 96;
-const DISMISS_VELOCITY = 0.85;
 const MOVEMENT_PREVIEW_LIMIT = 5;
 
 export function TrainingHubSessionPreviewBottomSheet({
@@ -116,13 +115,13 @@ export function TrainingHubSessionPreviewBottomSheet({
 
   const dragResponder = useMemo(() => PanResponder.create({
     onMoveShouldSetPanResponder: (_, gesture) => (
-      gesture.dy > 6 && Math.abs(gesture.dy) > Math.abs(gesture.dx)
+      shouldCaptureBottomSheetDismissGesture({ dx: gesture.dx, dy: gesture.dy, origin: 'chrome' })
     ),
     onPanResponderMove: (_, gesture) => {
       translateY.setValue(Math.max(0, gesture.dy));
     },
     onPanResponderRelease: (_, gesture) => {
-      if (gesture.dy >= DISMISS_DISTANCE || gesture.vy >= DISMISS_VELOCITY) {
+      if (shouldDismissBottomSheet({ dy: gesture.dy, vy: gesture.vy })) {
         dismissSheet();
       } else {
         settleSheet();
@@ -352,7 +351,7 @@ function formatTopLift(
 const styles = StyleSheet.create({
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.74)' },
   sheet: { width: '100%', minHeight: 420, overflow: 'hidden', borderTopLeftRadius: SLRadius.radiusSheet, borderTopRightRadius: SLRadius.radiusSheet, borderWidth: StyleSheet.hairlineWidth, borderBottomWidth: 0, borderColor: SLColors.borderStrong, backgroundColor: '#050507', ...SLShadows.shadowSheet },
-  dragArea: { backgroundColor: '#08080C' },
+  dragArea: { minHeight: BOTTOM_SHEET_DRAG_REGION_HEIGHT, backgroundColor: '#08080C' },
   dragHandle: { alignSelf: 'center', width: 42, height: 5, marginTop: SLSpacing.sm, borderRadius: SLRadius.pill, backgroundColor: SLColors.borderStrong },
   sheetHeader: { minHeight: 58, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SLLayout.sheetPadding, paddingBottom: SLSpacing.sm },
   headerCopy: { gap: SLSpacing.xxs },

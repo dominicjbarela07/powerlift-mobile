@@ -1,3 +1,4 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -6,7 +7,6 @@ import {
   AppState,
   FlatList,
   Image,
-  Modal,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -455,11 +455,11 @@ function CoachRosterDiscoverySheet({
   );
 
   return (
-    <Modal animationType="slide" onRequestClose={onClose} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={visible}>
+    <StrengthLedgerSheetModalAdapter animationType="slide" onRequestClose={onClose} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={visible}>
       <View style={styles.kpiBackdrop}>
         <Pressable accessibilityLabel="Close athlete finder" accessibilityRole="button" onPress={onClose} style={StyleSheet.absoluteFillObject} />
         <View style={[styles.rosterSheet, { paddingBottom: Math.max(insets.bottom, 12) }]}>
-          <View style={styles.kpiHandle} />
+          <StrengthLedgerSheetDragRegion><View style={styles.kpiHandle} />
           <View style={styles.rosterHeader}>
             <View style={styles.rosterHeaderCopy}>
               <Text style={styles.kpiEyebrow}>Coach Home</Text>
@@ -471,7 +471,7 @@ function CoachRosterDiscoverySheet({
               <Text style={styles.rosterInviteText}>Invite</Text>
             </Pressable>
             <Pressable accessibilityLabel="Close" accessibilityRole="button" onPress={onClose} style={styles.kpiClose}><Ionicons color={COACH_V2.text} name="close" size={22} /></Pressable>
-          </View>
+          </View></StrengthLedgerSheetDragRegion>
           <View style={styles.rosterSearch}>
             <Ionicons color={COACH_V2.subtle} name="search" size={18} />
             <TextInput
@@ -516,7 +516,7 @@ function CoachRosterDiscoverySheet({
           />
         </View>
       </View>
-    </Modal>
+    </StrengthLedgerSheetModalAdapter>
   );
 }
 
@@ -569,15 +569,15 @@ function CoachKpiSheet({ athletes, kind, onClose, onOpenAthlete, onOpenSession, 
   const items = coachKpiAthletes(athletes, kind, today);
   const sessions = coachTodaySessions(athletes, today);
   return (
-    <Modal animationType="slide" onRequestClose={onClose} presentationStyle="overFullScreen" statusBarTranslucent transparent visible>
+    <StrengthLedgerSheetModalAdapter animationType="slide" onRequestClose={onClose} presentationStyle="overFullScreen" statusBarTranslucent transparent visible>
       <View style={styles.kpiBackdrop}>
         <Pressable accessibilityLabel="Close KPI detail" accessibilityRole="button" onPress={onClose} style={StyleSheet.absoluteFillObject} />
         <View style={[styles.kpiSheet, { paddingBottom: Math.max(insets.bottom, 12) }]}>
-          <View style={styles.kpiHandle} />
+          <StrengthLedgerSheetDragRegion><View style={styles.kpiHandle} />
           <View style={styles.kpiHeader}>
             <View><Text style={styles.kpiEyebrow}>Coach Command Center</Text><Text style={styles.kpiTitle}>{labels[kind].title}</Text></View>
             <Pressable accessibilityLabel="Close" accessibilityRole="button" onPress={onClose} style={styles.kpiClose}><Ionicons color={COACH_V2.text} name="close" size={22} /></Pressable>
-          </View>
+          </View></StrengthLedgerSheetDragRegion>
           <ScrollView contentContainerStyle={styles.kpiList} showsVerticalScrollIndicator={false}>
             {kind === 'sessions' && sessions.length ? sessions.map(({ athlete, session }) => (
               <Pressable accessibilityRole="button" key={`${athlete.id}-${session.workout_id}`} onPress={() => onOpenSession(session)} style={({ pressed }) => [styles.kpiRow, pressed && styles.pressed]}>
@@ -596,7 +596,7 @@ function CoachKpiSheet({ athletes, kind, onClose, onOpenAthlete, onOpenSession, 
           </ScrollView>
         </View>
       </View>
-    </Modal>
+    </StrengthLedgerSheetModalAdapter>
   );
 }
 

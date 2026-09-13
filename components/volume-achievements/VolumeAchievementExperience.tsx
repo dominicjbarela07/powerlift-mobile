@@ -1,7 +1,8 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Animated, Image, Modal, Pressable, StyleSheet, useWindowDimensions, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
+import { AccessibilityInfo, Animated, Image, Pressable, StyleSheet, useWindowDimensions, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
@@ -365,10 +366,10 @@ function VolumeMilestoneDetail({ selection, unit, onClose }: { selection: Select
     AccessibilityInfo.announceForAccessibility(`Fun fact. ${funFact.text}`);
   };
 
-  return <Modal transparent visible animationType={reduceMotion ? 'none' : 'fade'} onRequestClose={onClose}>
+  return <StrengthLedgerSheetModalAdapter transparent visible animationType={reduceMotion ? 'none' : 'fade'} onRequestClose={onClose}>
     <Pressable accessibilityRole="button" accessibilityLabel="Close achievement details" style={styles.modalScrim} onPress={onClose}>
       <Pressable accessibilityViewIsModal onPress={(event) => event.stopPropagation()} style={[styles.detailSheet, { borderColor: `${tone}55` }]}>
-        <View style={styles.detailHandle} />
+        <StrengthLedgerSheetDragRegion><View style={styles.detailHandle} /></StrengthLedgerSheetDragRegion>
         <ThemedText style={[styles.detailState, { color: tone }]}>ACHIEVED · {selection.contextLabel.toUpperCase()}</ThemedText>
         <View style={styles.detailPhotoStage}>
           <VolumeComparisonPhoto comparison={comparison} tone={tone} surfaceColor="#111823" fadeDirection="bottom" style={styles.detailPhoto} />
@@ -412,7 +413,7 @@ function VolumeMilestoneDetail({ selection, unit, onClose }: { selection: Select
         </Pressable>
       </Pressable>
     </Pressable>
-  </Modal>;
+  </StrengthLedgerSheetModalAdapter>;
 }
 
 export function VolumeAchievementExperience({ data, unit }: Props) {

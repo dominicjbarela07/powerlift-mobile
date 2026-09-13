@@ -100,7 +100,7 @@ import {
 } from '@/components/ui/floating-control-coordinator';
 import { LoggerWheelPicker } from '@/components/workout-logger/logger-wheel-picker';
 import { SubstitutionConfirmationSheet } from '@/components/workout-logger/substitution-confirmation-sheet';
-import { StrengthLedgerSheetModalAdapter } from '@/components/sheets/StrengthLedgerBottomSheet';
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { SmartWarmupSheet } from '@/components/workout-logger/smart-warmup-sheet';
 import {
   GovernedAccessorySubstitutionPickerModal,
@@ -9086,7 +9086,7 @@ export default function WorkoutViewerScreen() {
           </TouchableWithoutFeedback>
           {coreWheel ? (
             <View style={styles.coreWheelSheet}>
-              <View style={styles.coreWheelHandle} />
+              <StrengthLedgerSheetDragRegion><View style={styles.coreWheelHandle} />
               <LoggerSheetHeader
                 onUnitChange={switchDisplayUnit}
                 supporting={coreWheel.prescriptionLine
@@ -9094,7 +9094,7 @@ export default function WorkoutViewerScreen() {
                   : 'Select actuals'}
                 title={coreWheel.title}
                 unit={unit}
-              />
+              /></StrengthLedgerSheetDragRegion>
 
               {coreWheelItem ? <SessionSetEntryContext
                 title={resolveLoggerMovementIdentity(coreWheelItem).displayName}
@@ -9189,13 +9189,13 @@ export default function WorkoutViewerScreen() {
           </TouchableWithoutFeedback>
           {accessoryWheel ? (
             <View style={styles.coreWheelSheet}>
-              <View style={styles.coreWheelHandle} />
+              <StrengthLedgerSheetDragRegion><View style={styles.coreWheelHandle} />
               <LoggerSheetHeader
                 onUnitChange={switchDisplayUnit}
                 supporting={accessoryWheel.targetLine ? accessoryWheel.targetLine : 'Select actuals'}
                 title={accessoryWheel.title}
                 unit={unit}
-              />
+              /></StrengthLedgerSheetDragRegion>
 
               <LoggerWheelPicker columns={[
                 { key: 'weight', label: 'Weight', value: accessoryWheel.weight, options: accessoryWheel.weightOptions, suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, weight: value } : prev) },
@@ -9296,7 +9296,7 @@ export default function WorkoutViewerScreen() {
               if (!activeEntry) return null;
               return (
                 <View style={[styles.coreWheelSheet, styles.supersetRoundSheet]}>
-                  <View style={styles.coreWheelHandle} />
+                  <StrengthLedgerSheetDragRegion><View style={styles.coreWheelHandle} />
                   <View style={styles.supersetRoundContextRow}>
                     <View style={styles.coreWheelHeaderCopy}>
                       <Text style={styles.supersetRoundContext}>
@@ -9317,7 +9317,7 @@ export default function WorkoutViewerScreen() {
                       ) : null}
                     </View>
                     <LogSheetUnitToggle unit={unit} onChange={switchDisplayUnit} />
-                  </View>
+                  </View></StrengthLedgerSheetDragRegion>
 
                   <View
                     accessibilityLabel={`Movement ${supersetRoundLogger.activeIndex + 1} of ${supersetRoundLogger.entries.length}`}
@@ -9569,13 +9569,13 @@ export default function WorkoutViewerScreen() {
           </TouchableWithoutFeedback>
           {pendingRowVideoUpload ? (
             <View style={styles.coreWheelSheet}>
-              <View style={styles.coreWheelHandle} />
+              <StrengthLedgerSheetDragRegion><View style={styles.coreWheelHandle} />
               <View style={styles.coreWheelHeaderRow}>
                 <View style={styles.coreWheelHeaderCopy}>
                   <Text style={styles.coreWheelTitle}>Video angle</Text>
                   <Text style={styles.coreWheelSubtitle}>{isIndividualUser ? 'Tag the camera angle for your archive.' : 'Tag the camera angle for coach review.'}</Text>
                 </View>
-              </View>
+              </View></StrengthLedgerSheetDragRegion>
               <View style={[styles.logVideoAngleChips, { marginTop: 16 }]}>
                 {VIDEO_ANGLE_OPTIONS.map((option) => (
                   <TouchableOpacity
@@ -9674,7 +9674,7 @@ export default function WorkoutViewerScreen() {
                 styles.movementHistoryFullScreenSheet,
                 { paddingBottom: Math.max(insets.bottom, 18) },
               ]}>
-                <View style={styles.coreWheelHandle} />
+                <StrengthLedgerSheetDragRegion><View style={styles.coreWheelHandle} />
                 <View style={styles.coreWheelHeaderRow}>
                   <View style={styles.coreWheelHeaderCopy}>
                     <Text style={styles.coreWheelTitle}>
@@ -9698,7 +9698,7 @@ export default function WorkoutViewerScreen() {
                       size={24}
                     />
                   </TouchableOpacity>
-                </View>
+                </View></StrengthLedgerSheetDragRegion>
 
                 {isMachineHistory ? (
                   <ScrollView
@@ -9931,7 +9931,7 @@ export default function WorkoutViewerScreen() {
         </View>
       </StrengthLedgerSheetModalAdapter>
 
-      <Modal visible={!!identityPickerItem} transparent animationType="slide" onRequestClose={closeIdentityPicker}>
+      <StrengthLedgerSheetModalAdapter visible={!!identityPickerItem} transparent animationType="slide" onRequestClose={closeIdentityPicker}>
         <KeyboardAvoidingView
           style={styles.coreWheelBackdrop}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -9945,7 +9945,7 @@ export default function WorkoutViewerScreen() {
               approvedArtRuntimeEnabled() && identityPickerSubject?.domain === 'machine' && identityPickerManufacturer && styles.equipmentTypeArtSheet,
             ]}
           >
-            <View style={styles.coreWheelHandle} />
+            <StrengthLedgerSheetDragRegion><View style={styles.coreWheelHandle} /></StrengthLedgerSheetDragRegion>
             {identityPickerItem ? (
               <>
                 <View style={styles.equipmentPickerMovementContext}>
@@ -10185,7 +10185,7 @@ export default function WorkoutViewerScreen() {
             ) : null}
           </View>
         </KeyboardAvoidingView>
-      </Modal>
+      </StrengthLedgerSheetModalAdapter>
 
       {/* Cancel / Resume confirmation modal */}
       <CancelResumeModal
@@ -10210,7 +10210,7 @@ export default function WorkoutViewerScreen() {
         onNotYet={dismissFinalSessionCompletion}
       />
 
-      <Modal
+      <StrengthLedgerSheetModalAdapter
         visible={editSetVisible}
         transparent
         animationType="fade"
@@ -10237,7 +10237,7 @@ export default function WorkoutViewerScreen() {
             </TouchableWithoutFeedback>
             {editSetCtx ? (
               <View style={[styles.coreWheelSheet, styles.editSetWheelSheet]}>
-              <View style={styles.coreWheelHandle} />
+              <StrengthLedgerSheetDragRegion><View style={styles.coreWheelHandle} /></StrengthLedgerSheetDragRegion>
               <ScrollView
                 style={styles.editSetScroll}
                 contentContainerStyle={[styles.editSetScrollContent, { paddingBottom: Math.max(insets.bottom, SLSpacing.lg) }]}
@@ -10309,7 +10309,7 @@ export default function WorkoutViewerScreen() {
             ) : null}
           </View>
         </KeyboardAvoidingView>
-      </Modal>
+      </StrengthLedgerSheetModalAdapter>
 
       <Modal
         visible={!!missingCompletionSets}

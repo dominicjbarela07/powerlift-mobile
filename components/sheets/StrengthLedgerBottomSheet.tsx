@@ -6,10 +6,9 @@ import {
   Keyboard,
   Modal as ReactNativeModal,
   type ModalProps,
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
   ScrollView,
   type ScrollViewProps,
+  type ViewProps,
   StyleSheet,
   useWindowDimensions,
   View,
@@ -24,6 +23,8 @@ import { useSLReducedMotion } from '@/lib/motion';
 import { SLColors, SLShadows } from '@/constants/theme';
 import { STRENGTH_LEDGER_APP_HEADER } from '@/components/navigation/StrengthLedgerAppHeader';
 import {
+  BOTTOM_SHEET_ACTIVATION_DISTANCE,
+  BOTTOM_SHEET_DRAG_REGION_HEIGHT,
   bottomSheetVelocityFromGestureHandler,
   shouldDismissBottomSheet,
 } from '@/lib/bottom-sheet-gesture';
@@ -37,7 +38,6 @@ export type StrengthLedgerBottomSheetHandle = Readonly<{
 type Props = Readonly<{
   accessibilityLabel: string;
   children: React.ReactNode;
-  contentSwipeEnabled?: boolean;
   dismissalBlocked?: boolean;
   dismissalBlockedMessage?: string;
   heightFraction?: number;
@@ -52,32 +52,47 @@ type Props = Readonly<{
   visible: boolean;
 }>;
 
-type ScrollContract = Readonly<{
-  offsetY: React.MutableRefObject<number>;
+// Kept as a transparent compatibility export: scroll views own their complete
+// touch sequences. No scroll offset or boundary can grant sheet dismissal.
+export const StrengthLedgerBottomSheetScrollView = forwardRef<ScrollView, ScrollViewProps>(function StrengthLedgerBottomSheetScrollView(props, ref) {
+  return <ScrollView {...props} ref={ref} />;
+});
+
+type ChromeGestureCallbacks = Readonly<{
+  update: (dy: number) => void;
+  release: (dy: number, vy: number) => void;
+  cancel: () => void;
 }>;
 
-type DragContract = {
-  finished: boolean;
-  lastDy: number;
-  lastVy: number;
-  owns: boolean;
-};
+function useSheetChromeGesture({ update, release, cancel }: ChromeGestureCallbacks) {
+  return useMemo(() => Gesture.Pan()
+    .minPointers(1).maxPointers(1)
+    .activeOffsetY(BOTTOM_SHEET_ACTIVATION_DISTANCE)
+    .failOffsetY(-BOTTOM_SHEET_ACTIVATION_DISTANCE)
+    .failOffsetX([-18, 18])
+    .cancelsTouchesInView(false)
+    .runOnJS(true)
+    .onUpdate(event => update(Math.max(0, event.translationY)))
+    .onEnd((event, success) => {
+      if (success) release(event.translationY, bottomSheetVelocityFromGestureHandler(event.velocityY));
+    })
+    .onFinalize((_event, success) => { if (!success) cancel(); }),
+  [cancel, release, update]);
+}
 
-const SheetScrollContext = createContext<ScrollContract | null>(null);
+const SheetChromeContext = createContext<ChromeGestureCallbacks | null>(null);
 
-export const StrengthLedgerBottomSheetScrollView = forwardRef<ScrollView, ScrollViewProps>(function StrengthLedgerBottomSheetScrollView({ onScroll, scrollEventThrottle = 16, ...props }, ref) {
-  const contract = useContext(SheetScrollContext);
-  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (contract) contract.offsetY.current = Math.max(0, event.nativeEvent.contentOffset.y);
-    onScroll?.(event);
-  }, [contract, onScroll]);
+/** Explicit top chrome for legacy layouts; never wrap list/form content here. */
+export function StrengthLedgerSheetDragRegion({ children, style, ...props }: ViewProps) {
+  const callbacks = useContext(SheetChromeContext);
+  if (!callbacks) throw new Error('Sheet drag region requires a governed sheet boundary');
+  return <LegacySheetChrome callbacks={callbacks} style={style} {...props}>{children}</LegacySheetChrome>;
+}
 
-  useEffect(() => () => {
-    if (contract) contract.offsetY.current = 0;
-  }, [contract]);
-
-  return <ScrollView {...props} onScroll={handleScroll} ref={ref} scrollEventThrottle={scrollEventThrottle} />;
-});
+function LegacySheetChrome({ callbacks, children, style, ...props }: ViewProps & { callbacks: ChromeGestureCallbacks }) {
+  const gesture = useSheetChromeGesture(callbacks);
+  return <GestureDetector gesture={gesture}><View {...props} collapsable={false} style={[styles.legacyChrome, style]}>{children ?? <View style={[styles.dragHandle, { alignSelf: 'center' }]} />}</View></GestureDetector>;
+}
 
 /**
  * Compatibility boundary for legacy sheet layouts that still own their visual
@@ -89,7 +104,7 @@ type StrengthLedgerSheetModalAdapterProps = Omit<ModalProps, 'onRequestClose'> &
   onRequestClose?: () => void;
 }>;
 
-export function StrengthLedgerSheetModalAdapter({ children, onRequestClose, visible, ...props }: StrengthLedgerSheetModalAdapterProps) {
+function useLegacySheetMotion(onRequestClose: (() => void) | undefined, visible = true) {
   const reduceMotion = useSLReducedMotion();
   const { height } = useWindowDimensions();
   const translateY = useRef(new Animated.Value(0)).current;
@@ -111,6 +126,7 @@ export function StrengthLedgerSheetModalAdapter({ children, onRequestClose, visi
     Keyboard.dismiss();
     if (reduceMotion) {
       onRequestClose?.();
+      settle();
       return;
     }
     Animated.parallel([
@@ -118,7 +134,9 @@ export function StrengthLedgerSheetModalAdapter({ children, onRequestClose, visi
       Animated.timing(opacity, { duration: 160, toValue: 0, useNativeDriver: true }),
     ]).start(({ finished }) => {
       if (finished) onRequestClose?.();
-      else settle();
+      // A guarded callback may keep the sheet open (saving or unsaved draft).
+      // Never leave that live sheet translated off-screen.
+      settle();
     });
   }, [height, onRequestClose, opacity, reduceMotion, settle, translateY]);
 
@@ -128,44 +146,41 @@ export function StrengthLedgerSheetModalAdapter({ children, onRequestClose, visi
     opacity.setValue(1);
   }, [opacity, translateY, visible]);
 
-  const gesture = useMemo(() => Gesture.Pan()
-    .minPointers(1)
-    .maxPointers(1)
-    .activeOffsetY(8)
-    .failOffsetX([-18, 18])
-    .cancelsTouchesInView(false)
-    .runOnJS(true)
-    .onUpdate((event) => {
-      const dy = Math.max(0, event.translationY);
-      translateY.setValue(dy);
-      opacity.setValue(Math.max(0.4, 1 - (dy / Math.max(height, 1)) * 0.6));
-    })
-    .onEnd((event) => {
-      if (shouldDismissBottomSheet({
-        dy: event.translationY,
-        vy: bottomSheetVelocityFromGestureHandler(event.velocityY),
-      })) close();
-      else settle();
-    })
-    .onFinalize((_event, success) => {
-      if (!success) settle();
-    }), [close, height, opacity, settle, translateY]);
+  const update = useCallback((dy: number) => {
+    translateY.setValue(dy);
+    opacity.setValue(Math.max(0.4, 1 - (dy / Math.max(height, 1)) * 0.6));
+  }, [height, opacity, translateY]);
+  const release = useCallback((dy: number, vy: number) => {
+    if (shouldDismissBottomSheet({ dy, vy })) close();
+    else settle();
+  }, [close, settle]);
+  const chrome = useMemo(() => ({ update, release, cancel: settle }), [update, release, settle]);
 
+  return { chrome, animatedStyle: { opacity, transform: [{ translateY }] } };
+}
+
+export function StrengthLedgerSheetModalAdapter({ children, onRequestClose, visible, ...props }: StrengthLedgerSheetModalAdapterProps) {
+  const { chrome, animatedStyle } = useLegacySheetMotion(onRequestClose, visible);
   return <ReactNativeModal {...props} onRequestClose={() => onRequestClose?.()} visible={visible}>
     <GestureHandlerRootView style={styles.gestureModalRoot}>
-      <GestureDetector gesture={gesture}>
-        <Animated.View style={{ flex: 1, opacity, transform: [{ translateY }] }}>
-          {children}
-        </Animated.View>
-      </GestureDetector>
+      <SheetChromeContext.Provider value={chrome}>
+        <Animated.View style={[{ flex: 1 }, animatedStyle]}>{children}</Animated.View>
+      </SheetChromeContext.Provider>
     </GestureHandlerRootView>
   </ReactNativeModal>;
+}
+
+/** A bottom sheet embedded in an existing modal (for example video review).
+ * The existing modal supplies GestureHandlerRootView; player and popovers stay
+ * outside this surface and never become draggable. */
+export function StrengthLedgerSheetGestureSurface({ children, onRequestClose, style, ...props }: ViewProps & { onRequestClose: () => void }) {
+  const { chrome, animatedStyle } = useLegacySheetMotion(onRequestClose);
+  return <SheetChromeContext.Provider value={chrome}><Animated.View {...props} style={[style, animatedStyle]}>{children}</Animated.View></SheetChromeContext.Provider>;
 }
 
 export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHandle, Props>(function StrengthLedgerBottomSheet({
   accessibilityLabel,
   children,
-  contentSwipeEnabled = true,
   dismissalBlocked = false,
   dismissalBlockedMessage = 'Please wait for the current action to finish.',
   heightFraction = 0.93,
@@ -189,9 +204,6 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   onDismissRef.current = onDismiss;
   const onPresentRef = useRef(onPresent);
   onPresentRef.current = onPresent;
-  const scrollOffsetY = useRef(0);
-  const bodyDrag = useRef<DragContract>({ finished: false, lastDy: 0, lastVy: 0, owns: false });
-  const chromeDrag = useRef<DragContract>({ finished: false, lastDy: 0, lastVy: 0, owns: false });
   const blockedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [blockedNotice, setBlockedNotice] = useState<string | null>(null);
   const topBoundary = presentationBoundary === 'app-shell'
@@ -331,56 +343,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
     } else settle();
   }, [dismiss, dismissalBlocked, onRequestClose, requestClose, settle]);
 
-  const createDismissGesture = useCallback((respectScrollOffset: boolean, contract: React.MutableRefObject<DragContract>) => {
-    return Gesture.Pan()
-      .minPointers(1)
-      .maxPointers(1)
-      .activeOffsetY(8)
-      .failOffsetX([-18, 18])
-      .cancelsTouchesInView(false)
-      .runOnJS(true)
-      .onBegin(() => {
-        contract.current.owns = !respectScrollOffset || scrollOffsetY.current <= 0.5;
-        contract.current.finished = false;
-        contract.current.lastDy = 0;
-        contract.current.lastVy = 0;
-      })
-      .onUpdate((event) => {
-        if (!contract.current.owns) return;
-        contract.current.lastDy = event.translationY;
-        contract.current.lastVy = bottomSheetVelocityFromGestureHandler(event.velocityY);
-        updateDrag(event.translationY);
-      })
-      .onEnd((event) => {
-        if (!contract.current.owns) return;
-        contract.current.finished = true;
-        contract.current.lastDy = event.translationY;
-        contract.current.lastVy = bottomSheetVelocityFromGestureHandler(event.velocityY);
-        finishDrag(contract.current.lastDy, contract.current.lastVy);
-      })
-      .onTouchesUp(() => {
-        if (!contract.current.owns || contract.current.finished) return;
-        contract.current.finished = true;
-        finishDrag(contract.current.lastDy, contract.current.lastVy);
-      })
-      .onFinalize(() => {
-        if (contract.current.owns && !contract.current.finished) {
-          finishDrag(contract.current.lastDy, contract.current.lastVy);
-        }
-        contract.current.owns = false;
-        contract.current.finished = false;
-        contract.current.lastDy = 0;
-        contract.current.lastVy = 0;
-      });
-  }, [finishDrag, updateDrag]);
-
-  const bodyDismissGesture = useMemo(
-    () => Gesture.Simultaneous(createDismissGesture(true, bodyDrag), Gesture.Native()),
-    [bodyDrag, createDismissGesture],
-  );
-  const chromeDismissGesture = useMemo(() => createDismissGesture(false, chromeDrag), [chromeDrag, createDismissGesture]);
-
-  const scrollContract = useMemo<ScrollContract>(() => ({ offsetY: scrollOffsetY }), []);
+  const chromeDismissGesture = useSheetChromeGesture({ update: updateDrag, release: finishDrag, cancel: settle });
 
   return (
     <ReactNativeModal animationType="none" onRequestClose={() => requestClose('system-back')} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={visible}>
@@ -388,7 +351,6 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
         <View style={styles.stage} testID={testID}>
           <Animated.View pointerEvents="none" style={[styles.backdrop, { opacity: backdropOpacity }]} />
           <Pressable accessibilityLabel={`Dismiss ${accessibilityLabel}`} accessibilityRole="button" onPress={() => requestClose('backdrop')} style={StyleSheet.absoluteFillObject} />
-          <GestureDetector gesture={contentSwipeEnabled ? bodyDismissGesture : Gesture.Native()}>
             <Animated.View
               accessibilityLabel={accessibilityLabel}
               accessibilityViewIsModal
@@ -402,7 +364,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
               ]}
             >
               <GestureDetector gesture={chromeDismissGesture}>
-                <View style={styles.chrome}>
+                <View collapsable={false} style={styles.chrome}>
                   <View accessibilityLabel={`Swipe down to close ${accessibilityLabel}`} accessibilityRole="adjustable" style={styles.dragHandle} />
                   {showCloseButton ? <Pressable accessibilityLabel={`Close ${accessibilityLabel}`} accessibilityRole="button" onPress={() => requestClose('close-button')} style={styles.closeButton}>
                     <Ionicons color={SLColors.textPrimary} name="close" size={21} />
@@ -410,11 +372,8 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
                 </View>
               </GestureDetector>
               {blockedNotice ? <View accessibilityLiveRegion="polite" style={styles.blockedNotice}><Text style={styles.blockedNoticeText}>{blockedNotice}</Text></View> : null}
-              <SheetScrollContext.Provider value={scrollContract}>
-                <View style={styles.content}>{children}</View>
-              </SheetScrollContext.Provider>
+              <View style={styles.content}>{children}</View>
             </Animated.View>
-          </GestureDetector>
         </View>
       </GestureHandlerRootView>
     </ReactNativeModal>
@@ -426,7 +385,8 @@ const styles = StyleSheet.create({
   stage: { flex: 1, justifyContent: 'flex-end' },
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.72)' },
   sheet: { width: '100%', overflow: 'hidden', borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderBottomWidth: 0, borderColor: SLColors.borderStrong, backgroundColor: SLColors.canvasRaised, ...SLShadows.shadowSheet },
-  chrome: { position: 'relative', height: 34, flexShrink: 0, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 8 },
+  chrome: { position: 'relative', height: BOTTOM_SHEET_DRAG_REGION_HEIGHT, flexShrink: 0, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 8 },
+  legacyChrome: { minHeight: BOTTOM_SHEET_DRAG_REGION_HEIGHT, flexShrink: 0, alignSelf: 'stretch', justifyContent: 'center' },
   dragHandle: { width: 46, height: 5, borderRadius: 3, backgroundColor: '#5C6070' },
   closeButton: { position: 'absolute', top: 4, right: 10, width: 34, height: 34, borderRadius: 17, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceRaised, alignItems: 'center', justifyContent: 'center' },
   content: { flex: 1, minHeight: 0 },

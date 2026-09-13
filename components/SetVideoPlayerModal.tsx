@@ -1,3 +1,5 @@
+import { StrengthLedgerSheetGestureSurface, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useEvent } from 'expo';
 import { VideoView, useVideoPlayer } from 'expo-video';
@@ -917,7 +919,7 @@ export default function SetVideoPlayerModal({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={closePlayer}>
-      <View style={styles.backdrop}>
+      <GestureHandlerRootView style={styles.backdrop}>
         <View style={styles.sheet}>
           <View style={styles.frame}>
             {videoUrl ? (
@@ -1043,8 +1045,8 @@ export default function SetVideoPlayerModal({
               </View>
             ) : null}
             {canExport && exportSheetOpen ? (
-              <View style={styles.exportSheet}>
-                <View style={styles.reviewSheetHeader}>
+              <StrengthLedgerSheetGestureSurface onRequestClose={() => setExportSheetOpen(false)} style={styles.exportSheet}>
+                <StrengthLedgerSheetDragRegion><View style={styles.reviewSheetHeader}>
                   <View>
                     <Text style={styles.reviewSheetTitle}>Download Video</Text>
                     <Text style={styles.exportSheetMeta}>Strength Ledger HUD video</Text>
@@ -1052,7 +1054,7 @@ export default function SetVideoPlayerModal({
                   <TouchableOpacity style={styles.reviewSheetClose} onPress={() => setExportSheetOpen(false)}>
                     <Text style={styles.reviewSheetCloseText}>Close</Text>
                   </TouchableOpacity>
-                </View>
+                </View></StrengthLedgerSheetDragRegion>
                 <ScrollView
                   style={styles.exportComposerScroll}
                   contentContainerStyle={styles.exportComposerContent}
@@ -1221,7 +1223,7 @@ export default function SetVideoPlayerModal({
                     </TouchableOpacity>
                   )}
                 </ScrollView>
-              </View>
+              </StrengthLedgerSheetGestureSurface>
             ) : null}
             {exportUnitChoiceOpen ? (
               <View style={styles.exportUnitChoiceBackdrop}>
@@ -1247,8 +1249,8 @@ export default function SetVideoPlayerModal({
               </View>
             ) : null}
             {showCoachFeedback && feedbackSheetOpen ? (
-              <View style={styles.coachFeedbackSheet}>
-                <View style={styles.reviewSheetHeader}>
+              <StrengthLedgerSheetGestureSurface onRequestClose={() => setFeedbackSheetOpen(false)} style={styles.coachFeedbackSheet}>
+                <StrengthLedgerSheetDragRegion><View style={styles.reviewSheetHeader}>
                   <View>
                     <Text style={styles.reviewSheetTitle}>Coach Feedback</Text>
                     <Text style={styles.coachFeedbackStatus}>{reviewStatusText(video?.review_status)}</Text>
@@ -1256,7 +1258,7 @@ export default function SetVideoPlayerModal({
                   <TouchableOpacity style={styles.reviewSheetClose} onPress={() => setFeedbackSheetOpen(false)}>
                     <Text style={styles.reviewSheetCloseText}>Close</Text>
                   </TouchableOpacity>
-                </View>
+                </View></StrengthLedgerSheetDragRegion>
                 <ScrollView style={styles.reviewPanel} contentContainerStyle={styles.reviewPanelContent}>
                   {reviewedLine ? (
                     <Text style={styles.coachFeedbackMeta}>{reviewedLine}</Text>
@@ -1269,7 +1271,7 @@ export default function SetVideoPlayerModal({
                     </Text>
                   )}
                 </ScrollView>
-              </View>
+              </StrengthLedgerSheetGestureSurface>
             ) : null}
             {(showPlaybackSpeedControls || reviewPanel) && reviewSheetOpen ? (
               <KeyboardAvoidingView
@@ -1278,8 +1280,8 @@ export default function SetVideoPlayerModal({
                 keyboardVerticalOffset={Platform.OS === 'ios' ? Math.max(insets.top, 12) : 0}
                 style={styles.reviewKeyboardAvoider}
               >
-                <View style={[styles.reviewSheet, keyboardVisible && styles.reviewSheetKeyboardOpen]}>
-                  <View style={styles.reviewSheetHeader}>
+                <StrengthLedgerSheetGestureSurface onRequestClose={() => { Keyboard.dismiss(); setReviewSheetOpen(false); }} style={[styles.reviewSheet, keyboardVisible && styles.reviewSheetKeyboardOpen]}>
+                  <StrengthLedgerSheetDragRegion><View style={styles.reviewSheetHeader}>
                     <View>
                       <Text style={styles.reviewSheetTitle}>Review Tools</Text>
                       {hasUnsavedChanges ? <Text style={styles.reviewSheetUnsaved}>Unsaved review</Text> : null}
@@ -1300,7 +1302,7 @@ export default function SetVideoPlayerModal({
                         <Text style={styles.reviewSheetCloseText}>Close</Text>
                       </TouchableOpacity>
                     </View>
-                  </View>
+                  </View></StrengthLedgerSheetDragRegion>
                   <ScrollView
                     style={[styles.reviewPanel, keyboardVisible && styles.reviewPanelKeyboardOpen]}
                     contentContainerStyle={[
@@ -1338,12 +1340,12 @@ export default function SetVideoPlayerModal({
                     ) : null}
                     {reviewPanel}
                   </ScrollView>
-                </View>
+                </StrengthLedgerSheetGestureSurface>
               </KeyboardAvoidingView>
             ) : null}
           </View>
         </View>
-      </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 }

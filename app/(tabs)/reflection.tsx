@@ -1,10 +1,10 @@
+import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   ImageBackground,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -533,14 +533,14 @@ function FocusEditorModal({
   const activeLiftMeta = SBD_LIFTS.find((item) => item.lift === activeLift) || SBD_LIFTS[0];
 
   return (
-    <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
+    <StrengthLedgerSheetModalAdapter animationType="slide" transparent visible={visible} onRequestClose={onClose}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={16}
         style={styles.modalScrim}
       >
         <View style={styles.focusEditor}>
-          <View style={styles.editorHeader}>
+          <StrengthLedgerSheetDragRegion><View style={styles.editorHeader}>
             <View style={styles.editorTitleCopy}>
               <Text style={styles.editorTitle}>Current Focus</Text>
               <Text style={styles.editorBody}>Pin the cues you want in your head for the next block of work.</Text>
@@ -548,7 +548,7 @@ function FocusEditorModal({
             <TouchableOpacity style={styles.editorIconButton} onPress={onClose} activeOpacity={0.78}>
               <Ionicons name="close" size={20} color={colors.textStrong} />
             </TouchableOpacity>
-          </View>
+          </View></StrengthLedgerSheetDragRegion>
 
           <ScrollView
             keyboardShouldPersistTaps="handled"
@@ -606,7 +606,7 @@ function FocusEditorModal({
           </View>
         </View>
       </KeyboardAvoidingView>
-    </Modal>
+    </StrengthLedgerSheetModalAdapter>
   );
 }
 

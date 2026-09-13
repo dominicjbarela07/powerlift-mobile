@@ -47,13 +47,13 @@ assert.match(sheet, /heightFraction = 0\.93[\s\S]*Math\.min\(0\.93, heightFracti
 assert.match(sheet, /useSafeAreaInsets\(\)/, 'the shared sheet must respect device safe areas.');
 assert.match(sheet, /STRENGTH_LEDGER_APP_HEADER\.contentHeight/, 'app-shell sheets must share the root header geometry rather than inventing another inset.');
 assert.match(sheet, /GestureHandlerRootView[\s\S]*GestureDetector/, 'the modal-local gesture root must own drag-down dismissal at runtime.');
-assert.match(sheet, /Gesture\.Simultaneous\(createDismissGesture\(true, bodyDrag\), Gesture\.Native\(\)\)/, 'body drag and nested scroll must use explicit simultaneous gesture arbitration.');
+assert.doesNotMatch(sheet, /bodyDismissGesture|Gesture\.Simultaneous|scrollOffsetY/, 'body scrolling never participates in dismissal');
 assert.doesNotMatch(sheet, /PanResponder\.create/, 'the shared sheet must not regress to a responder implementation that loses the native ScrollView gesture race.');
 assert.match(sheet, /shouldDismissBottomSheet/, 'drag dismissal must use the canonical threshold contract.');
 assert.match(gesture, /BOTTOM_SHEET_DISMISS_DISTANCE = 96[\s\S]*BOTTOM_SHEET_DISMISS_VELOCITY = 0\.85/, 'canonical drag dismissal must use deliberate distance and velocity thresholds.');
 assert.match(sheet, /Animated\.spring\(translateY/, 'entry and cancelled drags must use the established weighted spring.');
 assert.match(sheet, /useSLReducedMotion\(\)/, 'sheet motion must respect reduced-motion settings.');
-assert.match(sheet, /GestureDetector gesture=\{contentSwipeEnabled \? bodyDismissGesture : Gesture\.Native\(\)\}[\s\S]*GestureDetector gesture=\{chromeDismissGesture\}/, 'both sheet body and chrome must be draggable while preserving explicit content-swipe opt-outs.');
+assert.match(sheet, /GestureDetector gesture=\{chromeDismissGesture\}[\s\S]*styles\.chrome/, 'only top chrome owns dismissal');
 assert.match(sheet, /Dismiss \$\{accessibilityLabel\}[\s\S]*?onPress=\{\(\) => requestClose\('backdrop'\)\}/, 'backdrop dismissal must use the same guarded close path with an explicit close reason.');
 
 console.log('[programming-session-workspace-sheet] ok');
