@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 417,
+  "revision": 420,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-13T15:16:08.410750+00:00",
-  "updated_at_display": "Sep 13, 2026 08:16 AM PT (Sep 13, 2026 11:16 AM Eastern)",
+  "updated_at": "2026-09-13T15:32:46.275977+00:00",
+  "updated_at_display": "Sep 13, 2026 08:32 AM PT (Sep 13, 2026 11:32 AM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -102,11 +102,11 @@
   ],
   "total": 195,
   "counts": {
-    "approved": 194,
+    "approved": 195,
     "rejected": 0,
-    "pending": 1
+    "pending": 0
   },
-  "batch_fully_approved": false,
+  "batch_fully_approved": true,
   "items": [
     {
       "movement_definition_id": 4,
@@ -1569,67 +1569,92 @@
       "equipment_type": "barbell",
       "implement": "Cambered barbell",
       "family": "canonical_free_weight_accessories",
-      "generation_id": "human_review_20260913_47_v7",
-      "generation_batch": "human_review_round_7_20260913",
-      "candidate_id": "ffaa0bd71d227452ce468794",
-      "version": 7,
-      "supersedes_candidate_id": "3b169e013132081f6fd8bebc",
+      "generation_id": "human_review_20260913_47_v8",
+      "generation_batch": "human_review_round_8_20260913",
+      "candidate_id": "5959c93e723389b45858d160",
+      "version": 8,
+      "supersedes_candidate_id": "ffaa0bd71d227452ce468794",
       "prior_rejection": {
         "action": "reject",
         "decision": "rejected",
-        "reason": "its supposed to be a flat fucking bench press! the only difference is that its a cambered bar! why the fuck o you keep putting the athlete uneven on the bench! GET IT FUCKING RIGHT!!!!",
+        "reason": "WHAT THE ACTUAL FUCK IS THIS! WHY IS HE SIDEWAYS COMPARED TO THE FUCKING RACK! ARE YOU FUCKING RETARDED? THIS IS THE BULLSHIT YOU TELL ME TO REVIEW! THIS IS WAY FUCKING WORSE THAT PREVIOUS ATTEMPTS! FUCK YOU",
         "tags": [
           "visual_quality"
         ],
-        "reviewed_at": "2026-09-13T15:03:28.060159+00:00",
-        "reviewed_at_display": "Sep 13, 2026 08:03 AM PT (Sep 13, 2026 11:03 AM Eastern)",
+        "reviewed_at": "2026-09-13T15:18:55.550528+00:00",
+        "reviewed_at_display": "Sep 13, 2026 08:18 AM PT (Sep 13, 2026 11:18 AM Eastern)",
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
-        "candidate_sha256": "4defaa6740e5bcbd619acb815633e926278c0695df1ea3a2ffd6d43ab4efbbde",
+        "candidate_sha256": "b2fff5af70c16ea080aad3fa5ba529df40bd15de16c4b78fef0a1e5af6f8aa70",
         "source": "human_review_ui"
       },
       "baseline_candidate_id": "existing-33-e05a3bf38fa7",
       "files": {
         "master": {
-          "path": "candidates/ffaa0bd71d227452ce468794/master.png",
-          "sha256": "b2fff5af70c16ea080aad3fa5ba529df40bd15de16c4b78fef0a1e5af6f8aa70",
+          "path": "candidates/5959c93e723389b45858d160/master.png",
+          "sha256": "3bc98d30f2b646b342caf56ae4f67612919421e90a5ef5ffd317fcc39c95bbcd",
           "dimensions": [
             1254,
             1254
           ],
-          "bytes": 1838318
+          "bytes": 1918951
         },
         "app": {
-          "path": "candidates/ffaa0bd71d227452ce468794/app.png",
-          "sha256": "f5f5e3116c2b9bcff61cbb8bed39756e6173be71d9f8bf7286262cf05c8c927c",
+          "path": "candidates/5959c93e723389b45858d160/app.png",
+          "sha256": "6721b466406d867f70e1f9a1ff876a4434509f4219886b65220a620de0eda39e",
           "dimensions": [
             512,
             512
           ],
-          "bytes": 335063
+          "bytes": 335613
         },
         "thumbnail": {
-          "path": "candidates/ffaa0bd71d227452ce468794/thumbnail.png",
-          "sha256": "5a00204f2fdb3b7b035ee074297095208d8de7ae80c15d5ae1f034e98d045f0e",
+          "path": "candidates/5959c93e723389b45858d160/thumbnail.png",
+          "sha256": "93d964eed0db8b48e262e2d18de4f13dfe1bdfde8bcbe4b9ff506f9f8968c208",
           "dimensions": [
             192,
             192
           ],
-          "bytes": 50055
+          "bytes": 48052
         }
       },
-      "candidate_asset": "candidates/ffaa0bd71d227452ce468794/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "candidate_asset": "candidates/5959c93e723389b45858d160/master.png",
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
-      "created_at": "2026-09-13T15:16:08.409887+00:00",
-      "created_at_display": "Sep 13, 2026 08:16 AM PT (Sep 13, 2026 11:16 AM Eastern)",
-      "generation_prompt": "Precise equipment edit. EDIT THE THIRD / LAST IMAGE ONLY. Preserve the entire third image's man with his intact head resting on the pad, complete natural body, all hands/arms/legs, flat bench, diagonal camera, rack and studio. The first image is the required immutable style baseline only. The SECOND image is ONLY the real manufacturer's cambered bench-press BAR SHAPE.\nIn the THIRD image, replace ONLY the existing zigzag EZ-bar shaft with the single raised-center cambered bench-press shaft from image TWO. It has long straight outer grip sections connected via two simple diagonal camber transitions to ONE straight raised parallel central bridge. The central bridge is offset approximately 15 cm away from chest. No extra shallow dips, no repeated zigzag. The existing hands in image3 stay at the same coordinates, gripping the two outer straight sections outside the camber transitions. Existing plates/collars/sleeves retain their positions along one connected outer axis. Copy shape only from the second image, preserving brushed-steel family appearance.\nEvery pixel outside the bar shaft remains as image THREE: intact natural head lies on the pad at lower-right, feet on the floor at left, torso horizontal and centered along the one continuous flat pad, no headrest, no body roll, no incline. Both arm chains and gripping hands remain attached and proportional. Do not replace scene with any other reference. Only a shaft replacement in the LAST IMAGE. One square photorealistic image, no labels, logos, brand marks, insets or collage.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-02ad8f2c-f80b-4e3e-9c89-877772fbb4bd.png",
-      "test_only": false
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T15:32:46.275876+00:00",
+          "reviewed_at_display": "Sep 13, 2026 08:32 AM PT (Sep 13, 2026 11:32 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3bc98d30f2b646b342caf56ae4f67612919421e90a5ef5ffd317fcc39c95bbcd",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-13T15:32:04.801489+00:00",
+      "created_at_display": "Sep 13, 2026 08:32 AM PT (Sep 13, 2026 11:32 AM Eastern)",
+      "generation_prompt": "Use case: image outpainting/reframing. The FIRST image is style reference only. The SECOND/LAST image is the edit target. Preserve the target's ENTIRE athlete, head, face, pose, hands, cambered bar, all plates, complete bench/rack geometry, relative placement, perspective, light, texture and color exactly. Only ZOOM OUT THE COMPOSITION by 15 percent within the square output so the whole existing scene fits with empty studio margins. Add more dark studio floor and background around every edge. Both shoes, especially the rightmost toe, must be fully inside the frame with at least 70 pixels of visible floor between any shoe and the canvas edge; both bar sleeves and all rack/bench feet must also have comfortable margins. Do not crop any body part or equipment. Do not turn or move individual objects. Do not change camera direction, head pose, bar shape, bench pitch or rack alignment. This is only an expanded square composition, one image with no text, marks or inset. Retain the original charcoal/black clothing and low violet rim light.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-5e4c1073-69df-45f0-8c94-44a633ebebef.png",
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T15:32:46.275876+00:00",
+        "reviewed_at_display": "Sep 13, 2026 08:32 AM PT (Sep 13, 2026 11:32 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3bc98d30f2b646b342caf56ae4f67612919421e90a5ef5ffd317fcc39c95bbcd",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 73,
@@ -43021,17 +43046,143 @@
         }
       },
       "candidate_asset": "candidates/ffaa0bd71d227452ce468794/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "WHAT THE ACTUAL FUCK IS THIS! WHY IS HE SIDEWAYS COMPARED TO THE FUCKING RACK! ARE YOU FUCKING RETARDED? THIS IS THE BULLSHIT YOU TELL ME TO REVIEW! THIS IS WAY FUCKING WORSE THAT PREVIOUS ATTEMPTS! FUCK YOU",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "WHAT THE ACTUAL FUCK IS THIS! WHY IS HE SIDEWAYS COMPARED TO THE FUCKING RACK! ARE YOU FUCKING RETARDED? THIS IS THE BULLSHIT YOU TELL ME TO REVIEW! THIS IS WAY FUCKING WORSE THAT PREVIOUS ATTEMPTS! FUCK YOU",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T15:18:55.550528+00:00",
+          "reviewed_at_display": "Sep 13, 2026 08:18 AM PT (Sep 13, 2026 11:18 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b2fff5af70c16ea080aad3fa5ba529df40bd15de16c4b78fef0a1e5af6f8aa70",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T15:16:08.409887+00:00",
       "created_at_display": "Sep 13, 2026 08:16 AM PT (Sep 13, 2026 11:16 AM Eastern)",
       "generation_prompt": "Precise equipment edit. EDIT THE THIRD / LAST IMAGE ONLY. Preserve the entire third image's man with his intact head resting on the pad, complete natural body, all hands/arms/legs, flat bench, diagonal camera, rack and studio. The first image is the required immutable style baseline only. The SECOND image is ONLY the real manufacturer's cambered bench-press BAR SHAPE.\nIn the THIRD image, replace ONLY the existing zigzag EZ-bar shaft with the single raised-center cambered bench-press shaft from image TWO. It has long straight outer grip sections connected via two simple diagonal camber transitions to ONE straight raised parallel central bridge. The central bridge is offset approximately 15 cm away from chest. No extra shallow dips, no repeated zigzag. The existing hands in image3 stay at the same coordinates, gripping the two outer straight sections outside the camber transitions. Existing plates/collars/sleeves retain their positions along one connected outer axis. Copy shape only from the second image, preserving brushed-steel family appearance.\nEvery pixel outside the bar shaft remains as image THREE: intact natural head lies on the pad at lower-right, feet on the floor at left, torso horizontal and centered along the one continuous flat pad, no headrest, no body roll, no incline. Both arm chains and gripping hands remain attached and proportional. Do not replace scene with any other reference. Only a shaft replacement in the LAST IMAGE. One square photorealistic image, no labels, logos, brand marks, insets or collage.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-02ad8f2c-f80b-4e3e-9c89-877772fbb4bd.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHAT THE ACTUAL FUCK IS THIS! WHY IS HE SIDEWAYS COMPARED TO THE FUCKING RACK! ARE YOU FUCKING RETARDED? THIS IS THE BULLSHIT YOU TELL ME TO REVIEW! THIS IS WAY FUCKING WORSE THAT PREVIOUS ATTEMPTS! FUCK YOU",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T15:18:55.550528+00:00",
+        "reviewed_at_display": "Sep 13, 2026 08:18 AM PT (Sep 13, 2026 11:18 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b2fff5af70c16ea080aad3fa5ba529df40bd15de16c4b78fef0a1e5af6f8aa70",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 47,
+      "key": "accessory_cambered_bar_bench_press",
+      "movement_name": "Cambered-Bar Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "barbell",
+      "implement": "Cambered barbell",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_47_v8",
+      "generation_batch": "human_review_round_8_20260913",
+      "candidate_id": "5959c93e723389b45858d160",
+      "version": 8,
+      "supersedes_candidate_id": "ffaa0bd71d227452ce468794",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHAT THE ACTUAL FUCK IS THIS! WHY IS HE SIDEWAYS COMPARED TO THE FUCKING RACK! ARE YOU FUCKING RETARDED? THIS IS THE BULLSHIT YOU TELL ME TO REVIEW! THIS IS WAY FUCKING WORSE THAT PREVIOUS ATTEMPTS! FUCK YOU",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T15:18:55.550528+00:00",
+        "reviewed_at_display": "Sep 13, 2026 08:18 AM PT (Sep 13, 2026 11:18 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b2fff5af70c16ea080aad3fa5ba529df40bd15de16c4b78fef0a1e5af6f8aa70",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/5959c93e723389b45858d160/master.png",
+          "sha256": "3bc98d30f2b646b342caf56ae4f67612919421e90a5ef5ffd317fcc39c95bbcd",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1918951
+        },
+        "app": {
+          "path": "candidates/5959c93e723389b45858d160/app.png",
+          "sha256": "6721b466406d867f70e1f9a1ff876a4434509f4219886b65220a620de0eda39e",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 335613
+        },
+        "thumbnail": {
+          "path": "candidates/5959c93e723389b45858d160/thumbnail.png",
+          "sha256": "93d964eed0db8b48e262e2d18de4f13dfe1bdfde8bcbe4b9ff506f9f8968c208",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48052
+        }
+      },
+      "candidate_asset": "candidates/5959c93e723389b45858d160/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T15:32:46.275876+00:00",
+          "reviewed_at_display": "Sep 13, 2026 08:32 AM PT (Sep 13, 2026 11:32 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3bc98d30f2b646b342caf56ae4f67612919421e90a5ef5ffd317fcc39c95bbcd",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-13T15:32:04.801489+00:00",
+      "created_at_display": "Sep 13, 2026 08:32 AM PT (Sep 13, 2026 11:32 AM Eastern)",
+      "generation_prompt": "Use case: image outpainting/reframing. The FIRST image is style reference only. The SECOND/LAST image is the edit target. Preserve the target's ENTIRE athlete, head, face, pose, hands, cambered bar, all plates, complete bench/rack geometry, relative placement, perspective, light, texture and color exactly. Only ZOOM OUT THE COMPOSITION by 15 percent within the square output so the whole existing scene fits with empty studio margins. Add more dark studio floor and background around every edge. Both shoes, especially the rightmost toe, must be fully inside the frame with at least 70 pixels of visible floor between any shoe and the canvas edge; both bar sleeves and all rack/bench feet must also have comfortable margins. Do not crop any body part or equipment. Do not turn or move individual objects. Do not change camera direction, head pose, bar shape, bench pitch or rack alignment. This is only an expanded square composition, one image with no text, marks or inset. Retain the original charcoal/black clothing and low violet rim light.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-5e4c1073-69df-45f0-8c94-44a633ebebef.png",
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T15:32:46.275876+00:00",
+        "reviewed_at_display": "Sep 13, 2026 08:32 AM PT (Sep 13, 2026 11:32 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3bc98d30f2b646b342caf56ae4f67612919421e90a5ef5ffd317fcc39c95bbcd",
+        "source": "human_review_ui"
+      }
     }
   ]
 }
