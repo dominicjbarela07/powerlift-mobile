@@ -162,7 +162,7 @@ assert.deepEqual(
 );
 
 assert.deepEqual(
-  resolveCanonicalMovementArtwork({ kind: 'accessory', movement_definition_id: 12, primary_muscle_group: 'full_body' }),
+  resolveCanonicalMovementArtwork({ kind: 'accessory', movement_definition_id: 100012, primary_muscle_group: 'full_body' }),
   { kind: 'neutral', reason: 'missing_governed_taxonomy' },
   'full-body may never be an individual Accessory result',
 );
@@ -172,7 +172,7 @@ assert.deepEqual(
   'missing identity must fail closed',
 );
 assert.deepEqual(
-  resolveCanonicalMovementArtwork({ kind: 'accessory', movement_definition_id: 13, primary_muscle_group: 'not_governed' }),
+  resolveCanonicalMovementArtwork({ kind: 'accessory', movement_definition_id: 100013, primary_muscle_group: 'not_governed' }),
   { kind: 'neutral', reason: 'missing_governed_taxonomy' },
   'unknown taxonomy must fail closed',
 );

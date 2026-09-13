@@ -1,0 +1,256 @@
+[
+  {
+    "sessionItemId": 18121,
+    "programmed": 197,
+    "effective": 197,
+    "artSubjectVersion": 1,
+    "domain": "accessory",
+    "canonicalIdentityId": 197,
+    "canonicalKey": "accessory_t_bar_row",
+    "movementDefinitionId": 197,
+    "effectiveMovementDefinitionId": 197,
+    "performedMovementDefinitionId": null,
+    "family": "accessory_upper_back",
+    "primaryMuscleGroup": "upper_back",
+    "secondaryMuscleGroups": [
+      "lats",
+      "rear_delts",
+      "biceps"
+    ],
+    "equipmentType": "free_weight",
+    "coreFamily": null,
+    "coreVariant": false,
+    "source": "effective",
+    "reason": null,
+    "evidenceId": null,
+    "taxonomySource": "identity",
+    "result": {
+      "kind": "accessory",
+      "canonicalIdentityId": 197,
+      "regionKey": "upper_back",
+      "primaryMuscleGroup": "upper_back",
+      "secondaryMuscleGroups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "artworkKey": "accessory_t_bar_row"
+    },
+    "approvedExact": true
+  },
+  {
+    "sessionItemId": 18122,
+    "programmed": 164,
+    "effective": 164,
+    "artSubjectVersion": 1,
+    "domain": "accessory",
+    "canonicalIdentityId": 164,
+    "canonicalKey": "accessory_neutral_grip_lat_pulldown",
+    "movementDefinitionId": 164,
+    "effectiveMovementDefinitionId": 164,
+    "performedMovementDefinitionId": null,
+    "family": "accessory_lats",
+    "primaryMuscleGroup": "lats",
+    "secondaryMuscleGroups": [
+      "biceps",
+      "upper_back"
+    ],
+    "equipmentType": "cable",
+    "coreFamily": null,
+    "coreVariant": false,
+    "source": "effective",
+    "reason": null,
+    "evidenceId": null,
+    "taxonomySource": "identity",
+    "result": {
+      "kind": "accessory",
+      "canonicalIdentityId": 164,
+      "regionKey": "lats",
+      "primaryMuscleGroup": "lats",
+      "secondaryMuscleGroups": [
+        "biceps",
+        "upper_back"
+      ]
+    },
+    "approvedExact": false
+  },
+  {
+    "sessionItemId": 18123,
+    "programmed": 216,
+    "effective": 216,
+    "artSubjectVersion": 1,
+    "domain": "accessory",
+    "canonicalIdentityId": 216,
+    "canonicalKey": "accessory_chest_supported_machine_row",
+    "movementDefinitionId": 216,
+    "effectiveMovementDefinitionId": 216,
+    "performedMovementDefinitionId": null,
+    "family": "accessory_upper_back",
+    "primaryMuscleGroup": "upper_back",
+    "secondaryMuscleGroups": [
+      "lats",
+      "rear_delts",
+      "biceps"
+    ],
+    "equipmentType": "machine",
+    "coreFamily": null,
+    "coreVariant": false,
+    "source": "effective",
+    "reason": null,
+    "evidenceId": null,
+    "taxonomySource": "identity",
+    "result": {
+      "kind": "accessory",
+      "canonicalIdentityId": 216,
+      "regionKey": "upper_back",
+      "primaryMuscleGroup": "upper_back",
+      "secondaryMuscleGroups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ]
+    },
+    "approvedExact": false
+  },
+  {
+    "sessionItemId": 18124,
+    "programmed": 178,
+    "effective": 178,
+    "artSubjectVersion": 1,
+    "domain": "accessory",
+    "canonicalIdentityId": 178,
+    "canonicalKey": "accessory_machine_pullover",
+    "movementDefinitionId": 178,
+    "effectiveMovementDefinitionId": 178,
+    "performedMovementDefinitionId": null,
+    "family": "accessory_lats",
+    "primaryMuscleGroup": "lats",
+    "secondaryMuscleGroups": [
+      "biceps",
+      "upper_back"
+    ],
+    "equipmentType": "machine",
+    "coreFamily": null,
+    "coreVariant": false,
+    "source": "effective",
+    "reason": null,
+    "evidenceId": null,
+    "taxonomySource": "identity",
+    "result": {
+      "kind": "accessory",
+      "canonicalIdentityId": 178,
+      "regionKey": "lats",
+      "primaryMuscleGroup": "lats",
+      "secondaryMuscleGroups": [
+        "biceps",
+        "upper_back"
+      ]
+    },
+    "approvedExact": false
+  },
+  {
+    "sessionItemId": 18125,
+    "programmed": 126,
+    "effective": 126,
+    "artSubjectVersion": 1,
+    "domain": "accessory",
+    "canonicalIdentityId": 126,
+    "canonicalKey": "accessory_bent_over_dumbbell_reverse_flye",
+    "movementDefinitionId": 126,
+    "effectiveMovementDefinitionId": 126,
+    "performedMovementDefinitionId": null,
+    "family": "accessory_rear_delts",
+    "primaryMuscleGroup": "rear_delts",
+    "secondaryMuscleGroups": [
+      "upper_back"
+    ],
+    "equipmentType": "dumbbell",
+    "coreFamily": null,
+    "coreVariant": false,
+    "source": "effective",
+    "reason": null,
+    "evidenceId": null,
+    "taxonomySource": "identity",
+    "result": {
+      "kind": "accessory",
+      "canonicalIdentityId": 126,
+      "regionKey": "rear_delts",
+      "primaryMuscleGroup": "rear_delts",
+      "secondaryMuscleGroups": [
+        "upper_back"
+      ],
+      "artworkKey": "accessory_bent_over_dumbbell_reverse_flye"
+    },
+    "approvedExact": true
+  },
+  {
+    "sessionItemId": 18126,
+    "programmed": 252,
+    "effective": 252,
+    "artSubjectVersion": 1,
+    "domain": "accessory",
+    "canonicalIdentityId": 252,
+    "canonicalKey": "accessory_ez_bar_curl",
+    "movementDefinitionId": 252,
+    "effectiveMovementDefinitionId": 252,
+    "performedMovementDefinitionId": null,
+    "family": "accessory_biceps",
+    "primaryMuscleGroup": "biceps",
+    "secondaryMuscleGroups": [
+      "forearms"
+    ],
+    "equipmentType": "barbell",
+    "coreFamily": null,
+    "coreVariant": false,
+    "source": "effective",
+    "reason": null,
+    "evidenceId": null,
+    "taxonomySource": "identity",
+    "result": {
+      "kind": "accessory",
+      "canonicalIdentityId": 252,
+      "regionKey": "biceps",
+      "primaryMuscleGroup": "biceps",
+      "secondaryMuscleGroups": [
+        "forearms"
+      ],
+      "artworkKey": "accessory_ez_bar_curl"
+    },
+    "approvedExact": true
+  },
+  {
+    "sessionItemId": 18127,
+    "programmed": 259,
+    "effective": 259,
+    "artSubjectVersion": 1,
+    "domain": "accessory",
+    "canonicalIdentityId": 259,
+    "canonicalKey": "accessory_single_arm_preacher_curl",
+    "movementDefinitionId": 259,
+    "effectiveMovementDefinitionId": 259,
+    "performedMovementDefinitionId": null,
+    "family": "accessory_biceps",
+    "primaryMuscleGroup": "biceps",
+    "secondaryMuscleGroups": [
+      "forearms"
+    ],
+    "equipmentType": "free_weight",
+    "coreFamily": null,
+    "coreVariant": false,
+    "source": "effective",
+    "reason": null,
+    "evidenceId": null,
+    "taxonomySource": "identity",
+    "result": {
+      "kind": "accessory",
+      "canonicalIdentityId": 259,
+      "regionKey": "biceps",
+      "primaryMuscleGroup": "biceps",
+      "secondaryMuscleGroups": [
+        "forearms"
+      ],
+      "artworkKey": "accessory_single_arm_preacher_curl"
+    },
+    "approvedExact": true
+  }
+]

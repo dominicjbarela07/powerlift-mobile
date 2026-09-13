@@ -54,7 +54,7 @@ for (const row of confirmed) {
   assert.equal(selected.artworkKey,row.key);
   assert.equal(selected.canonicalIdentityId,row.id);
   assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,key:'wrong'}}).kind,'neutral');
-  assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,key:undefined}}).artworkKey,undefined,'missing photo key preserves anatomy');
+  assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,key:undefined}}).artworkKey,row.key,'governed ID recovers its exact key; human approval is still independently required');
   assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,id:999999}}).kind,'neutral');
   assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,primary_muscle_group:'invalid_primary'}}).regionKey,registry[row.id].primary,'registered canonical identity supplies known taxonomy');
   assert.equal(resolve({kind:'accessory',effective_movement_identity:identity,performed_canonical_movement_identity:{...identity,id:999999}}).kind,'neutral');

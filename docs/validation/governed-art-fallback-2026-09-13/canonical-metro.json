@@ -1,0 +1,22 @@
+{
+  "source": {
+    "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "gitRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "scriptRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "branch": "dev/canonical-mobile",
+    "sha": "58f643bd151745cf0e1b011521f8fb20e0eb7a9f",
+    "remoteRef": "origin/dev/canonical-mobile",
+    "remoteSha": "58f643bd151745cf0e1b011521f8fb20e0eb7a9f",
+    "clean": false
+  },
+  "metro": {
+    "port": 8081,
+    "processes": [
+      {
+        "pid": 58127,
+        "cwd": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+        "command": "node /Users/dominic/powerlifting_app_dev/powerlift_mobile/node_modules/.bin/expo start --port 8081"
+      }
+    ]
+  }
+}

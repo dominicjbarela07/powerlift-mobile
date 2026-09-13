@@ -1,3 +1,4 @@
+import { governedAccessoryArtworkTaxonomy, governedCoreArtworkTaxonomy } from './governed-movement-art-taxonomy';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, RETIRED_ACCESSORY_ARTWORK_IDENTITIES } from './canonical-accessory-artwork-identities';
 import { focusedAccessoryMuscleRegionKey, type FocusedAccessoryMuscleRegionKey } from './accessory-muscle-group';
 
@@ -85,6 +86,7 @@ export type CanonicalMovementArtSubject = Readonly<{
   performedMovementDefinitionId: number | null;
   family: string | null;
   primaryMuscleGroup: FocusedAccessoryMuscleRegionKey | null;
+  taxonomySource?: 'identity' | 'matching_reference' | 'catalog' | null;
   secondaryMuscleGroups: readonly string[];
   equipmentType: string | null;
   coreFamily: CanonicalCoreArtworkFamily | null;
@@ -112,7 +114,9 @@ const equipmentOnly = (value?: MovementArtDefinition | null) => token(value?.key
 function taxonomy(identity?: MovementArtDefinition | null) {
   const nested = identity?.material_parameters?.accessory_taxonomy;
   return {
-    primary: focusedAccessoryMuscleRegionKey(identity?.primary_muscle_group || nested?.primary_muscle_group || identity?.family),
+    primary: focusedAccessoryMuscleRegionKey(identity?.primary_muscle_group)
+      || focusedAccessoryMuscleRegionKey(nested?.primary_muscle_group)
+      || focusedAccessoryMuscleRegionKey(identity?.family),
     secondary: identity?.secondary_muscle_groups || nested?.secondary_muscle_groups || [],
   };
 }
@@ -152,10 +156,11 @@ export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | 
     || row.identity_type === 'core' || ['core', 'variant'].includes(token(row.kind)));
   if (isCore) {
     const id = positiveId(core?.id || row.core_movement_id || row.measurement?.canonical_identity_id);
-    const family = coreFamily(core?.family || row.core_family || row.family) || liftFamily(row.lift) || null;
+    const registeredCore = governedCoreArtworkTaxonomy(id, core?.key || row.measurement?.canonical_identity_key || row.key);
+    const family = coreFamily(core?.family || row.core_family || row.family) || coreFamily(registeredCore?.family) || liftFamily(row.lift) || null;
     return { ...base, domain: 'core', canonicalIdentityId: id,
-      canonicalKey: core?.key || row.measurement?.canonical_identity_key || row.key || null,
-      family, coreFamily: family, coreVariant: token(core?.kind || row.core_kind || row.kind) === 'variant' || token(row.variant) === 'vr',
+      canonicalKey: core?.key || row.measurement?.canonical_identity_key || row.key || registeredCore?.key || null,
+      family, coreFamily: family, coreVariant: token(core?.kind || row.core_kind || registeredCore?.core_kind || row.kind) === 'variant' || token(row.variant) === 'vr',
       source: row.performed_core_movement ? 'performed_canonical' : row.measurement ? 'measurement' : 'definition',
       reason: !id ? 'missing_canonical_identity' : !family ? 'unsupported_core_family' : null };
   }
@@ -227,12 +232,49 @@ export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | 
   }
   if (!identity || equipmentOnly(identity)) return fail('missing_canonical_identity');
   identityId = identityId || positiveId(identity.id);
+  const registeredTaxonomy = governedAccessoryArtworkTaxonomy(identityId);
+  if (registeredTaxonomy && identity.key && identity.key !== registeredTaxonomy.key) return fail('conflicting_canonical_identity');
   const registered = identityId ? CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[identityId as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES]
     || RETIRED_ACCESSORY_ARTWORK_IDENTITIES[identityId as keyof typeof RETIRED_ACCESSORY_ARTWORK_IDENTITIES] : null;
   const muscles = taxonomy(identity);
-  // Exact registered canonical IDs may enrich a thin payload, never an arbitrary row ID.
-  if (!muscles.primary && registered && (!identity.key || identity.key === registered.key)) muscles.primary = registered.primary;
-  return { ...base, domain: 'accessory', canonicalIdentityId: identityId, canonicalKey: identity.key || null,
+  let taxonomySource: CanonicalMovementArtSubject['taxonomySource'] = muscles.primary ? 'identity' : null;
+  // Enrich only references to this exact subject. A thin preferred reference
+  // must not discard richer same-ID taxonomy. Programmed A cannot enrich B.
+  const matchingReferences = [row.performed_canonical_movement_identity, row.effective_movement_identity,
+    row.movement_identity, row.legacy?.effective_movement_identity].filter(reference => reference
+      && positiveId(reference.id) === identityId && identityId != null
+      && (!identity?.key || !reference.key || reference.key === identity.key));
+  if (!muscles.primary) {
+    const matching = matchingReferences.find(reference => taxonomy(reference).primary);
+    if (matching) {
+      const enriched = taxonomy(matching);
+      muscles.primary = enriched.primary;
+      muscles.secondary = identity.secondary_muscle_groups || enriched.secondary;
+      taxonomySource = 'matching_reference';
+      identity = { ...matching, ...identity, key: identity.key || matching.key, family: identity.family || matching.family,
+        equipment_type: identity.equipment_type || matching.equipment_type };
+    }
+  }
+  // A generic row's key does not establish definition identity. Key-only recovery
+  // is restricted to explicitly typed definition/measurement/legacy references.
+  const catalog = identityId || source !== 'governed_taxonomy'
+    ? governedAccessoryArtworkTaxonomy(identityId, identity.key) : null;
+  if (catalog) {
+    if (!identityId) identityId = catalog.id;
+    if (!muscles.primary) {
+      muscles.primary = taxonomy(catalog).primary;
+      muscles.secondary = identity.secondary_muscle_groups || catalog.secondary_muscle_groups || [];
+      taxonomySource = 'catalog';
+    }
+    identity = { ...identity, key: identity.key || catalog.key, family: identity.family || catalog.family,
+      equipment_type: identity.equipment_type || catalog.equipment_type };
+  }
+  // Retired exact registrations retain their historical anatomy provenance.
+  if (!muscles.primary && registered && (!identity.key || identity.key === registered.key)) {
+    muscles.primary = registered.primary;
+    taxonomySource = 'catalog';
+  }
+  return { ...base, domain: 'accessory', canonicalIdentityId: identityId, canonicalKey: identity.key || null, taxonomySource,
     performedMovementDefinitionId: source === 'performed_evidence' || source === 'performed_canonical' ? identityId : base.performedMovementDefinitionId,
     family: identity.family || null, primaryMuscleGroup: muscles.primary, secondaryMuscleGroups: muscles.secondary,
     equipmentType: identity.equipment_type || row.measurement?.equipment_type || null, source,

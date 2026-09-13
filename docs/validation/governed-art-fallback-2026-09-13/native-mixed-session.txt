@@ -1,0 +1,47 @@
+Window: "iPhone 17", App: Simulator.
+0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise
+	1 button Action
+	2 button Volume Up
+	3 button Volume Down
+	4 button Sleep/Wake
+	5 container
+		6 button Description: Back to Training, Secondary Actions: Cancel
+		7 text Description: DEV QA · Governed artwork, Secondary Actions: Cancel
+		8 button Description: Session actions, Secondary Actions: Cancel
+		9 text Description: Sun, Sep 13, Secondary Actions: Cancel
+		10 text Description: TODAY’S SESSION, Secondary Actions: Cancel
+		11 text Description: DEV QA · Governed artwork, Secondary Actions: Cancel
+		12 text Description: 7 Accessories, Secondary Actions: Cancel
+		13 text Description: 21, Secondary Actions: Cancel
+		14 text Description: 7, Secondary Actions: Cancel
+		15 text Description: work sets, Secondary Actions: Cancel
+		16 text Description: movements, Secondary Actions: Cancel
+		17 text Description: SESSION PLAN, Secondary Actions: Cancel
+		18 button Description: Expand T-Bar Row, Secondary Actions: Cancel
+		19 button Description: Expand Neutral-Grip Lat Pulldown, Secondary Actions: Cancel
+		20 button Description: Expand Chest-Supported Machine Row, Secondary Actions: Cancel
+		21 button Description: Expand Machine Pullover, Secondary Actions: Cancel
+		22 button Description: Expand Bent-Over Dumbbell Reverse Fly, Secondary Actions: Cancel
+		23 button Description: Expand EZ-Bar Curl, Secondary Actions: Cancel
+		24 button Description: Expand Single-Arm Preacher Curl, Secondary Actions: Cancel
+		25 button Description: Display units lb, Secondary Actions: Cancel
+		26 button Description: Begin Session, Secondary Actions: Cancel
+	27 toolbar
+		28 button Description: Home, Secondary Actions: Move previous, Move next, Remove from toolbar
+		29 button Description: Save Screen, Secondary Actions: Move previous, Move next, Remove from toolbar
+		30 button Description: Rotate, Secondary Actions: Move previous, Move next, Remove from toolbar
+	31 close button
+	32 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	33 minimize button
+	34 text iPhone 17 iOS 26.2
+35 menu bar
+	36 Simulator
+	37 File
+	38 Edit
+	39 Device
+	40 I/O
+	41 Features
+	42 Window
+	43 Help
+
+The focused UI element is 0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise

@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import * as identity from '../lib/canonical-movement-artwork.ts';
 import * as art from '../lib/movement-artwork-hero.ts';
+import * as taxonomy from '../lib/governed-movement-art-taxonomy.ts';
 import { assertHumanArtworkGate, approvedExactArtworkPolicy } from './canonical-art-review-gate.mjs';
 
 // Execute the actual TSX consumers with native host elements represented as a
@@ -20,6 +21,7 @@ const mocks={react,'react-native':{View:'View',Image:'Image',Pressable:'Pressabl
  '@expo/vector-icons':{Ionicons:'Ionicons'},'expo-image':{Image:'ExpoImage'},'expo-linear-gradient':{LinearGradient:'LinearGradient'},'@/components/ui/sl-text':{Text:'Text'},
  '@/constants/theme':{SLColors:{},SLRadius:{lg:18},SLFontFamilies:{}},
  '@/lib/canonical-movement-artwork':identity,
+ '@/lib/governed-movement-art-taxonomy':taxonomy,
  '@/lib/movement-artwork-hero':{...art,reportApprovedArtworkBypass:(m,k,s)=>art.reportApprovedArtworkBypass(m,k,s,currentPolicy,true),resolveApprovedExactMovementArtwork:m=>art.resolveApprovedExactMovementArtwork(m,true,currentPolicy),resolveMovementArtworkPresentation:(m,e,c,s)=>art.resolveMovementArtworkPresentation(m,e,c,s,true,currentPolicy)},
  '@/lib/accessory-muscle-region-assets':{accessoryMuscleRegionAsset:region=>({label:region,source:`anatomy:${region}`})},
  '@/components/workout-logger/core-variant-badge':{CoreVariantBadge:'CoreVariantBadge'},

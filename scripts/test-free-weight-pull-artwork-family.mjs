@@ -34,12 +34,12 @@ for (const row of audit.qualifying) {
   assert.equal(row.retired_at, null);
   const identity = { id: row.id, key: row.key, family: row.family, primary_muscle_group: row.primary_muscle_group };
   assert.equal(resolve(identity).artworkKey, row.key);
-  assert.equal(resolve({ ...identity, key: undefined }).artworkKey, undefined, 'missing key excludes exact photography while preserving governed anatomy');
+  assert.equal(resolve({ ...identity, key: undefined }).artworkKey, row.key, 'known governed ID restores its canonical key; approval stays separate');
   assert.equal(resolve({ ...identity, key: undefined }).kind, 'accessory');
   assert.equal(resolve({ ...identity, key: 'contradictory_identity' }).kind, 'neutral');
   assert.equal(resolve({ ...identity, primary_muscle_group: 'chest', family: 'accessory_chest' }).artworkKey, undefined, 'governed taxonomy remains available, but incompatible photography is excluded');
   assert.equal(resolve({ ...identity, id: 999999 }).kind, 'neutral', 'known key cannot override a contradictory ID');
-  assert.equal(resolve({ ...identity, id: undefined }).artworkKey, undefined);
+  assert.equal(resolve({ ...identity, id: undefined }).artworkKey, row.key, 'an explicitly typed governed key resolves its registered identity');
   assert.equal(resolve({ ...identity, id: undefined }).kind, 'accessory', 'governed taxonomy can survive without an exact ID');
   assert.equal(resolveCanonicalMovementArtwork({ kind: 'accessory', ...identity,
     movement_identity: { ...identity, key: 'contradictory_identity' },

@@ -1,0 +1,17 @@
+{
+  "workout_id": 1752,
+  "athlete_id": 4,
+  "item_ids": [
+    18121,
+    18122,
+    18123,
+    18124,
+    18125,
+    18126,
+    18127
+  ],
+  "purpose": "Reconstructed seven-movement DEV QA Session; not the unavailable original TestFlight payload",
+  "removed_after_validation": true,
+  "performed_sets_created": 0,
+  "existing_setlog_count_unchanged": 17932
+}

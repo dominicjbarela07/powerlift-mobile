@@ -12,6 +12,7 @@ import { movementThumbnailGeometry, reportApprovedArtworkBypass, resolveApproved
 import { CoreVariantBadge } from '@/components/workout-logger/core-variant-badge';
 import { SLColors, SLRadius } from '@/constants/theme';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
+import { governedAccessoryArtworkTaxonomy } from '@/lib/governed-movement-art-taxonomy';
 import { CANONICAL_ACCESSORY_MOVEMENT_ARTWORK, CANONICAL_CORE_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-artwork-assets';
 import {
   resolveCanonicalMovementArtwork,
@@ -49,12 +50,25 @@ export function CanonicalMovementArtwork({ movement, size = 72, style, testID, s
     if (warned.has(key)) return;
     if (warned.size >= 200) warned.clear();
     warned.add(key);
-    console.warn('[movement-artwork] unresolved governed subject', {
+    const reference = movement?.performed_canonical_movement_identity || movement?.effective_movement_identity
+      || movement?.legacy?.effective_movement_identity || movement?.movement_identity;
+    const catalog = governedAccessoryArtworkTaxonomy(subject.canonicalIdentityId
+      || subject.performedMovementDefinitionId || subject.effectiveMovementDefinitionId || subject.movementDefinitionId);
+    const taxonomyPresent = Boolean(subject.primaryMuscleGroup || catalog?.primary_muscle_group
+      || reference?.primary_muscle_group || reference?.material_parameters?.accessory_taxonomy?.primary_muscle_group);
+    const diagnostic = {
       surface: consumer, reason: resolution.reason, sessionItemId: subject.sessionItemId, evidenceId: subject.evidenceId,
+      movementDefinitionId: subject.movementDefinitionId,
       canonicalId: subject.canonicalIdentityId, effectiveId: subject.effectiveMovementDefinitionId,
-      performedId: subject.performedMovementDefinitionId, movementKey: subject.canonicalKey, source: subject.source,
-    });
-  }, [subject, resolution, surface, testID]);
+      performedId: subject.performedMovementDefinitionId, movementKey: subject.canonicalKey || reference?.key, source: subject.source,
+      family: subject.family || reference?.family || catalog?.family,
+      primaryMuscle: subject.primaryMuscleGroup || reference?.primary_muscle_group || catalog?.primary_muscle_group,
+      taxonomyPresent, taxonomySource: subject.taxonomySource,
+      exactArtApproved: Boolean(resolveApprovedExactMovementArtwork(subject)),
+    };
+    console.warn('[movement-artwork] unresolved governed subject', diagnostic);
+    if (taxonomyPresent) console.error('[movement-artwork] INVARIANT: governed taxonomy reached unresolved artwork', diagnostic);
+  }, [movement, subject, resolution, surface, testID]);
 
   if (resolution.kind === 'accessory') {
     if (exactAsset && approved) {

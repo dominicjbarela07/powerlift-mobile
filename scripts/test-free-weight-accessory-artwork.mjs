@@ -25,7 +25,8 @@ const substituted = canonicalArtworkInputForLoggerItem({
 assert.equal(resolve(substituted).artworkKey, key, 'Logger uses performed subject after an approved swap');
 assert.equal(resolve({ movement_identity: target, effective_movement_identity: other, is_substituted: true }).artworkKey, other.key, 'swapping away selects the exact replacement image');
 assert.equal(resolve({ movement_identity: target, is_substituted: true }).kind, 'neutral', 'unresolved substitution cannot reuse programmed artwork');
-assert.equal(resolve({ movement_identity: target, effective_movement_identity: { id: 99 } }).kind, 'neutral', 'incomplete effective identity cannot fall back to the prescription');
+assert.deepEqual(resolve({ movement_identity: target, effective_movement_identity: { id: 99 } }), resolve({ movement_definition_id: 99 }), 'known effective B recovers its own taxonomy and never falls back to programmed A');
+assert.equal(resolve({ movement_identity: target, effective_movement_identity: { id: 100099 } }).kind, 'neutral', 'unknown effective identity cannot fall back to the prescription');
 assert.equal(resolve({ movement_identity: target, effective_movement_identity: {} }).kind, 'neutral');
 assert.equal(resolve({ effective_movement_identity: target, performed_canonical_movement_identity: other }).kind, 'neutral', 'conflicting governed IDs fail closed');
 assert.equal(resolve({ effective_movement_identity: target, performed_canonical_movement_identity: { ...target, key: other.key } }).kind, 'neutral', 'contradictory keys fail closed');

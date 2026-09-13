@@ -1,0 +1,57 @@
+Window: "iPhone 17", App: Simulator.
+0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise
+	1 button Action
+	2 button Volume Up
+	3 button Volume Down
+	4 button Sleep/Wake
+	5 container
+		6 button Description: Back to Training, Secondary Actions: Cancel
+		7 text Description: DEV QA · Governed artwork, Secondary Actions: Cancel
+		8 button Description: Session actions, Secondary Actions: Cancel
+		9 text Description: Sun, Sep 13, Secondary Actions: Cancel
+		10 button Description: Collapse Machine Pullover, Secondary Actions: Cancel
+		11 text Description: PRESCRIBED, Secondary Actions: Cancel
+		12 text Description: 8–12 reps, Secondary Actions: Cancel
+		13 text Secondary Actions: Cancel
+		14 text Description: EQUIPMENT NEEDED, Secondary Actions: Cancel
+		15 text Description: Unknown manufacturer, Secondary Actions: Cancel
+		16 text Description: Choose the machine you are using, Secondary Actions: Cancel
+		17 text Description: Manufacturer and type keep machine history comparable., Secondary Actions: Cancel
+		18 button Description: Open full movement history, Secondary Actions: Cancel
+		19 button Description: , Equipment, Secondary Actions: Cancel
+		20 element Description: Swap, Secondary Actions: Cancel
+		21 text Description: PRESCRIBED SETS, Secondary Actions: Cancel
+		22 button (disabled) Description: 8–12, Secondary Actions: Cancel
+		23 text Description: ○, Secondary Actions: Cancel
+		24 text Description: Set 1, Secondary Actions: Cancel
+		25 text Description: Target, Secondary Actions: Cancel
+		26 button (disabled) Description: 8–12, Secondary Actions: Cancel
+		27 text Description: ○, Secondary Actions: Cancel
+		28 text Description: Set 2, Secondary Actions: Cancel
+		29 text Description: Target, Secondary Actions: Cancel
+		30 button (disabled) Description: 8–12, Secondary Actions: Cancel
+		31 text Description: ○, Secondary Actions: Cancel
+		32 text Description: Set 3, Secondary Actions: Cancel
+		33 text Description: Target, Secondary Actions: Cancel
+		34 button Description: Back to Session plan ⌃, Secondary Actions: Cancel
+		35 button Description: Display units lb, Secondary Actions: Cancel
+		36 button Description: Begin Session, Secondary Actions: Cancel
+	37 toolbar
+		38 button Description: Home, Secondary Actions: Move previous, Move next, Remove from toolbar
+		39 button Description: Save Screen, Secondary Actions: Move previous, Move next, Remove from toolbar
+		40 button Description: Rotate, Secondary Actions: Move previous, Move next, Remove from toolbar
+	41 close button
+	42 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	43 minimize button
+	44 text iPhone 17 iOS 26.2
+45 menu bar
+	46 Simulator
+	47 File
+	48 Edit
+	49 Device
+	50 I/O
+	51 Features
+	52 Window
+	53 Help
+
+The focused UI element is 0 standard window iPhone 17 – iOS 26.2, Secondary Actions: Raise
