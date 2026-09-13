@@ -10,6 +10,12 @@
   ],
   "protectedFixes": [
     {
+      "id": "movement-artwork-lifecycle-identity",
+      "description": "Known movement identity survives active-to-completed evidence; exact approved art falls back to governed anatomy and never treats an ambiguous row ID as canonical identity.",
+      "acceptedCommits": ["ba7ec89e8e07ed2794f0183b4a4bc25ace82d1b7"],
+      "behaviorTests": ["scripts/test-movement-art-lifecycle.mjs", "scripts/test-movement-art-consumer-convergence.mjs"]
+    },
+    {
       "id": "self-coached-governed-swap",
       "description": "Self-coached athletes receive free governed Swap authority.",
       "acceptedCommits": ["d26a2c2c6c7fd0c496f8a38f4c6a8af82d5bfb66"],

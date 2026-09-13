@@ -211,4 +211,3 @@ export type CanonicalAccessoryArtworkKey =
 export const REGISTERED_ACCESSORY_ARTWORK_KEYS = new Set<string>(
   [...Object.values(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES), ...Object.values(RETIRED_ACCESSORY_ARTWORK_IDENTITIES)].map((entry) => entry.key),
 );
-

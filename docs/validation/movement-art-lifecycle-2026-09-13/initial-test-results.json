@@ -1,0 +1,56 @@
+{
+  "test-canonical-movement-artwork": {
+    "exit_code": 1,
+    "error": [
+      "AssertionError [ERR_ASSERTION]: DEV diagnostics must expose missing governed mappings"
+    ]
+  },
+  "test-individual-movement-artwork-hard-rule": {
+    "exit_code": 0,
+    "error": []
+  },
+  "test-free-weight-push-artwork-family": {
+    "exit_code": 1,
+    "error": [
+      "AssertionError [ERR_ASSERTION]: registered definition ID needs its stable catalog key to exclude unrelated row-ID collisions"
+    ]
+  },
+  "test-free-weight-pull-artwork-family": {
+    "exit_code": 1,
+    "error": [
+      "AssertionError [ERR_ASSERTION]: registered definition ID needs its stable catalog key to exclude unrelated row-ID collisions"
+    ]
+  },
+  "test-logger-canonical-artwork-subject": {
+    "exit_code": 1,
+    "error": [
+      "AssertionError [ERR_ASSERTION]: same-movement Swap must not improve or change the canonical artwork subject"
+    ]
+  },
+  "test-human-movement-art-approval": {
+    "exit_code": 1,
+    "error": [
+      "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /if \\(accessoryPresentation === 'movement' && __DEV__ && resolution.artworkKey && \\(!requireHumanApproval \\|\\| resolveApprovedExactMovementArtwork\\(movement\\)\\)\\)/. Input:"
+    ]
+  },
+  "test-movement-artwork-hero": {
+    "exit_code": 1,
+    "error": [
+      "AssertionError [ERR_ASSERTION]: only current positive human receipts enable exact heroes"
+    ]
+  },
+  "test-canonical-movement-history-v2": {
+    "exit_code": 1,
+    "error": [
+      "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /CanonicalMovementArtwork movement=\\{history\\.movement\\}/. Input:"
+    ]
+  },
+  "test-session-workspace-accessory-artwork": {
+    "exit_code": 0,
+    "error": []
+  },
+  "test-anatomy-consumer-convergence": {
+    "exit_code": 0,
+    "error": []
+  }
+}
