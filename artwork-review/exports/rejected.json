@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 1,
+  "revision": 260,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-12T13:02:26.207425+00:00",
-  "updated_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
+  "updated_at": "2026-09-13T02:09:51.821961+00:00",
+  "updated_at_display": "Sep 12, 2026 07:09 PM PT (Sep 12, 2026 10:09 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -46,5 +46,46 @@
       }
     }
   },
+  "catalog_exclusions": [
+    {
+      "candidate_id": "existing-38-144a91e5b835",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_dumbbell_hex_press",
+      "movement_definition_id": 38,
+      "movement_name": "Dumbbell Hex Press",
+      "reason": "This should be pretty much equivalent to the dumbbell squeeze press where it's a neutral grip with the dumbbells touching. its actually the same exact movement and should be consolidated as such",
+      "replacement_movement_definition_id": 37,
+      "excluded_at": "2026-09-13T01:21:15.077207+00:00",
+      "excluded_at_display": "Sep 12, 2026 06:21 PM PT (Sep 12, 2026 09:21 PM Eastern)",
+      "source": "owner_requested_catalog_retirement",
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-395-3907e9eb84c0",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_dumbbell_good_morning",
+      "movement_definition_id": 395,
+      "movement_name": "Dumbbell Good Morning",
+      "reason": "Completely remove dumbbell good morning from the canonical movement picker! this is an unsafe movement and I dont want to provide it",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-13T01:21:16.032241+00:00",
+      "excluded_at_display": "Sep 12, 2026 06:21 PM PT (Sep 12, 2026 09:21 PM Eastern)",
+      "source": "owner_requested_catalog_retirement",
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-561-acfe6042e25d",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_dumbbell_pullover_serratus_reach",
+      "movement_definition_id": 561,
+      "movement_name": "Dumbbell Pullover Serratus Reach",
+      "reason": "Get rid of this fucking movement from the canonical movement picker! I dont want to see it again",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-13T01:21:16.910306+00:00",
+      "excluded_at_display": "Sep 12, 2026 06:21 PM PT (Sep 12, 2026 09:21 PM Eastern)",
+      "source": "owner_requested_catalog_retirement",
+      "human_approved": false
+    }
+  ],
   "rejected": []
 }
