@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['Programming exact Last Exposure and subject isolation', ['scripts/test-programming-last-exposure.mjs', 'scripts/test-programming-workspace-subject.mjs']],
   ['bottom sheets reserve dismissal for top chrome', ['scripts/test-bottom-sheet-gestures.mjs', 'scripts/test-bottom-sheet-consumer-convergence.mjs']],
   ['movement artwork identity survives completion', ['scripts/test-movement-art-lifecycle.mjs', 'scripts/test-movement-art-consumer-convergence.mjs']],
   ['canonical superset storyboard and next-member progression', ['scripts/test-superset-rounds.mjs', 'scripts/test-superset-workspace-convergence.mjs']],

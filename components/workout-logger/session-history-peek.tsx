@@ -1,12 +1,11 @@
-import React, { useEffect, useSyncExternalStore } from 'react';
+import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
 import { SLFontFamilies } from '@/constants/theme';
-import { fetchCanonicalMovementHistory } from '@/lib/canonical-movement-history';
 import type { MovementHistoryLaunchTarget } from '@/lib/movement-history-launch';
 import type { PerformedLoadSemantics } from '@/lib/performed-load-semantics';
-import { exposureSnapshotKey, sessionExposureCache } from '@/lib/session-exposure-cache';
-import { exposureFromCoreHistory, exposureFromHydration, presentSessionExposure, type HydratedExposureHistory } from '@/lib/session-exposure-snapshot';
+import { useSessionExposure } from '@/lib/use-session-exposure';
+import { presentSessionExposure, type HydratedExposureHistory } from '@/lib/session-exposure-snapshot';
 
 /** Accessory evidence comes from authorized Session hydration. Core fallback is
  * optional and shared across remounts; neither history nor clocks own execution. */
@@ -15,28 +14,17 @@ export function SessionHistoryPeek({ target, workoutId, sessionDate, ownerId, hi
   history?: HydratedExposureHistory | null; semantics?: PerformedLoadSemantics;
   unit: 'kg' | 'lb'; onOpen: () => void;
 }) {
-  const identity = { ownerId, athleteId: target.athleteId, workoutId, sessionDate,
-    coreMovementId: target.coreMovementId, movementDefinitionId: target.movementDefinitionId,
-    equipmentId: target.equipmentContextDefinitionId, comparisonKey: history?.comparison_identity_key };
-  const key = exposureSnapshotKey(identity);
-  const revision = useSyncExternalStore(sessionExposureCache.subscribe, sessionExposureCache.snapshot);
-  useEffect(() => {
-    if (!identity.coreMovementId || !ownerId || !sessionDate) return;
-    void sessionExposureCache.ensure(identity, async () => exposureFromCoreHistory(
-      await fetchCanonicalMovementHistory({ athleteId: identity.athleteId, coreMovementId: identity.coreMovementId, range: '3m', limit: 6 }), identity));
-    // Identity primitives and evidence revisions own fetching; display units,
-    // navigation, expansion and display clock ticks are intentionally excluded.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, revision]);
-  const snapshot = target.coreMovementId ? sessionExposureCache.get(identity) : exposureFromHydration(history, identity);
-  const content = presentSessionExposure(snapshot ?? null, unit, target.coreMovementId ? 'core' : 'accessory', semantics);
+  const read = useSessionExposure({ context: { ownerId, athleteId: target.athleteId, workoutId, sessionDate }, target, history });
+  const content = presentSessionExposure(read.exposure, unit, target.coreMovementId ? 'core' : 'accessory', semantics);
+  const emptyCopy = read.status === 'empty' ? 'No comparable exposure' : read.status === 'loading' ? 'Loading prior exposure…' : 'History unavailable';
   return <Pressable accessibilityRole="button" accessibilityLabel="Open full movement history" onPress={onOpen} style={s.panel}>
     <View style={s.heading}><Text style={s.label}>LAST COMPARABLE EXPOSURE</Text><Text style={s.date}>{content?.date || ''}</Text></View>
     <View style={s.performanceRow}>
-      <Text style={s.value}>{content?.performance || (snapshot === undefined && target.coreMovementId ? 'Explore your prior work' : 'No comparable exposure')}</Text>
+      <Text style={s.value}>{content?.performance || emptyCopy}</Text>
       {content?.effort ? <Text style={s.effort}>{content.effort}</Text> : null}
     </View>
-    <Text style={s.context}>{content?.context || (target.coreMovementId ? 'Recent exact task · view full record below' : 'Exact movement · equipment-aware record')}</Text>
+    <Text style={s.context}>{content?.context || (target.coreMovementId ? 'Exact task · view full record below' : 'Exact movement · equipment-aware record')}</Text>
+    {read.status === 'error' && read.retry ? <Pressable accessibilityRole="button" accessibilityLabel="Retry previous exposure" onPress={event => { event.stopPropagation(); read.retry?.(); }}><Text style={s.link}>Retry history</Text></Pressable> : null}
     <Text style={s.link}>Movement history · all sets & progression ↗︎</Text>
   </Pressable>;
 }

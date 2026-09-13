@@ -53,8 +53,24 @@ export function exposureFromCoreHistory(history: CanonicalMovementHistory, ident
     || history.identity_resolution.subject_id !== identity.coreMovementId
     || history.scope !== 'exact_core_identity' || history.comparison_allowed !== true) return null;
   const comparableIds = new Set(history.performance_trend.map(row => row.exposure_id));
+  // The canonical series contains the complete exact-comparable membership;
+  // the exposure cards are paged. Older programmed Sessions must not become
+  // falsely empty merely because their previous Session is outside page one.
+  const point = [...history.performance_trend].reverse().find(row => isPrior(row, identity) && usableSet(row));
+  if (point?.set_log_id) {
+    const pageRow = history.exposures.find(row => row.id === point.exposure_id);
+    if (pageRow && (pageRow.workout_id !== point.workout_id
+      || pageRow.comparison_identity_key !== `core:${identity.coreMovementId}`
+      || pageRow.best_set?.id !== point.set_log_id || !usableSet(pageRow.best_set))) return null;
+    const recordedSetCount = pageRow?.set_count
+      ?? history.load_rep_profile?.filter(row => row.exposure_id === point.exposure_id).length;
+    return { set: pageRow?.best_set || { id: point.set_log_id, weight_kg: point.weight_kg,
+      reps: point.reps, rpe: point.rpe, rir: point.rir }, date: point.date,
+      workoutId: point.workout_id, comparisonKey: pageRow?.comparison_identity_key || `core:${identity.coreMovementId}`,
+      selection: 'Representative set', recordedSetCount: recordedSetCount && recordedSetCount > 0 ? recordedSetCount : undefined };
+  }
   const prior = history.exposures.find(row => isPrior(row, identity) && comparableIds.has(row.id)
-    && Boolean(row.comparison_identity_key) && usableSet(row.best_set));
+    && row.comparison_identity_key === `core:${identity.coreMovementId}` && usableSet(row.best_set));
   if (!prior?.best_set) return null;
   return { set: prior.best_set, date: prior.date, workoutId: prior.workout_id,
     comparisonKey: prior.comparison_identity_key!, selection: 'Representative set',

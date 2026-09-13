@@ -1,0 +1,144 @@
+[
+  {
+    "athlete_id": 4,
+    "workout_id": 1714,
+    "item_id": 17925,
+    "summary_history": null,
+    "full_history_scope": null,
+    "governed_previous": {
+      "workout_id": 1731,
+      "date": "2026-09-10",
+      "representative_set": {
+        "id": 20390,
+        "weight_kg": 142.88159655,
+        "reps": 3,
+        "rir": null,
+        "rpe": 8.0,
+        "date": "2026-09-10",
+        "workout_id": 1731,
+        "item_id": 18022,
+        "movement": "Competition Squat",
+        "set_index": 1,
+        "source_type": "native_set_log",
+        "source_id": 20390,
+        "source_label": "Strength Ledger Training Session",
+        "is_imported": false
+      },
+      "representative_set_id": 20390,
+      "representative_set_selection_reason": "highest_canonical_e10rm",
+      "comparison_identity_key": "core:1",
+      "core_movement_id": 1
+    },
+    "evidence_count": 26,
+    "latest_evidence": {
+      "set_log_id": 20390,
+      "item_id": 18022,
+      "workout_id": 1731,
+      "date": "2026-09-10",
+      "status": "in_progress",
+      "weight_kg": 142.88159655,
+      "reps": 3,
+      "rpe": 8.0,
+      "rir": null,
+      "set_index": 1,
+      "programmed_core_movement_id": 1,
+      "performed_core_movement_id": 1,
+      "performed_canonical_movement_definition_id": 1,
+      "identity_athlete_id": 4,
+      "comparison_key": "core:1",
+      "resolution_source": "immutable_general_core_snapshot"
+    },
+    "sources": [
+      "constrained_legacy_lift_code",
+      "immutable_general_core_snapshot"
+    ],
+    "requests": [
+      {
+        "path": "/workouts/mobile/1714?history=summary",
+        "milliseconds": 286.8,
+        "bytes": 107448
+      },
+      {
+        "path": "/workouts/mobile/1714?history=full",
+        "milliseconds": 348.9,
+        "bytes": 129771
+      },
+      {
+        "path": "/workouts/mobile/athletes/4/movement-history?core_movement_id=1&view=v2&range=all&limit=6",
+        "milliseconds": 175.2,
+        "bytes": 20661
+      }
+    ]
+  },
+  {
+    "athlete_id": 12,
+    "workout_id": 1729,
+    "item_id": 18021,
+    "summary_history": null,
+    "full_history_scope": null,
+    "governed_previous": {
+      "workout_id": 1726,
+      "date": "2026-09-09",
+      "representative_set": {
+        "id": 20372,
+        "weight_kg": 56.699046,
+        "reps": 7,
+        "rir": null,
+        "rpe": 8.5,
+        "date": "2026-09-09",
+        "workout_id": 1726,
+        "item_id": 18002,
+        "movement": "Competition Squat",
+        "set_index": 3,
+        "source_type": "native_set_log",
+        "source_id": 20372,
+        "source_label": "Strength Ledger Training Session",
+        "is_imported": false
+      },
+      "representative_set_id": 20372,
+      "representative_set_selection_reason": "highest_canonical_e10rm",
+      "comparison_identity_key": "core:1",
+      "core_movement_id": 1
+    },
+    "evidence_count": 87,
+    "latest_evidence": {
+      "set_log_id": 20373,
+      "item_id": 18002,
+      "workout_id": 1726,
+      "date": "2026-09-09",
+      "status": "completed",
+      "weight_kg": 56.699046,
+      "reps": 6,
+      "rpe": 8.5,
+      "rir": null,
+      "set_index": 4,
+      "programmed_core_movement_id": 1,
+      "performed_core_movement_id": 1,
+      "performed_canonical_movement_definition_id": 1,
+      "identity_athlete_id": 12,
+      "comparison_key": "core:1",
+      "resolution_source": "immutable_general_core_snapshot"
+    },
+    "sources": [
+      "constrained_legacy_lift_code",
+      "immutable_general_core_snapshot"
+    ],
+    "requests": [
+      {
+        "path": "/workouts/mobile/1729?history=summary",
+        "milliseconds": 152.3,
+        "bytes": 28991
+      },
+      {
+        "path": "/workouts/mobile/1729?history=full",
+        "milliseconds": 144.2,
+        "bytes": 29005
+      },
+      {
+        "path": "/workouts/mobile/athletes/12/movement-history?core_movement_id=1&view=v2&range=all&limit=6",
+        "milliseconds": 60.1,
+        "bytes": 43734
+      }
+    ]
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "athlete_id": 4,
+    "workout_id": 1714,
+    "item_id": 17925,
+    "sets": 3,
+    "reps": 3,
+    "exact_set_count": 26,
+    "existing_evidence_unchanged": true
+  },
+  {
+    "athlete_id": 12,
+    "workout_id": 1729,
+    "item_id": 18021,
+    "sets": 3,
+    "reps": 5,
+    "exact_set_count": 87,
+    "existing_evidence_unchanged": true
+  }
+]

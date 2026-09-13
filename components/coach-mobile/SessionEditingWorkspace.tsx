@@ -56,7 +56,8 @@ import {
   storedRangeFromManualTarget,
 } from '@/lib/coach-session-editor';
 import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
-import { exactAccessoryHistoryRows, exactAccessoryLastExposure } from '@/lib/exact-accessory-history';
+import { ProgrammingLastExposure } from './ProgrammingLastExposure';
+import type { SessionExposureContext } from '@/lib/session-exposure-cache';
 import { resolveLoggerLiftIdentity } from '@/lib/logger-visual-context';
 import { formatLoggerWeightRangeKg, roundLoggerDisplayWeight } from '@/lib/logger-weight-format';
 import { setSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';
@@ -250,6 +251,7 @@ type SessionWorkspaceDraft = {
 };
 
 type Props = {
+  exposureContext?: SessionExposureContext;
   entryMode?: 'self' | 'team' | 'workspace';
   programContext?: string;
   returnWeek?: number;
@@ -783,6 +785,7 @@ export function SessionEditingWorkspace(props: Props) {
                   <View style={styles.movementList}>
                     {items.map((item) => item.id === selectedId && draft ? (
                       <InlineMovementWorkspace
+                        exposureContext={props.exposureContext ? { ...props.exposureContext, sessionDate: sessionDraft.scheduledDate || props.exposureContext.sessionDate } : undefined}
                         key={item.id}
                         item={item}
                         kind={kind}
@@ -801,7 +804,7 @@ export function SessionEditingWorkspace(props: Props) {
                         onBackdownManualOverrideEnabledChange={setBackdownManualOverrideEnabled}
                         onChangeMovement={kind === 'accessory' ? changeSelectedAccessory : undefined}
                         onChooseSubstitution={kind === 'accessory' ? chooseApprovedSubstitution : undefined}
-                        onOpenHistory={kind === 'accessory' && props.onOpenMovementHistory
+                        onOpenHistory={props.onOpenMovementHistory
                           ? () => props.onOpenMovementHistory?.(item)
                           : undefined}
                         onGroupMovements={kind === 'accessory' ? () => setGroupingIds(sessionDraft.accessoryOrder.filter((id) => id === item.id || (!!draft.supersetGroup && sessionDraft.movements[id]?.supersetGroup === draft.supersetGroup))) : undefined}
@@ -1385,7 +1388,7 @@ function VisualMovementRow({ item, kind, pending, onOpen, displayUnit, calculate
   );
 }
 
-function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, canDelete, groupedWith, onChange, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange, onChangeMovement, onChooseSubstitution, onOpenHistory, onDelete, onCollapse, onGroupMovements, accessibilityReflow }: { item: SessionMovementItem; kind: MovementKind; draft: CoachMovementDraft; dirty: boolean; editable: boolean; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; canDelete: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void; onChangeMovement?: () => void; onChooseSubstitution?: () => void; onOpenHistory?: () => void; onDelete: () => void; onCollapse: () => void; onGroupMovements?: () => void; accessibilityReflow: boolean }) {
+function InlineMovementWorkspace({ exposureContext, item, kind, draft, dirty, editable, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, canDelete, groupedWith, onChange, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange, onChangeMovement, onChooseSubstitution, onOpenHistory, onDelete, onCollapse, onGroupMovements, accessibilityReflow }: { exposureContext?: SessionExposureContext; item: SessionMovementItem; kind: MovementKind; draft: CoachMovementDraft; dirty: boolean; editable: boolean; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; canDelete: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void; onChangeMovement?: () => void; onChooseSubstitution?: () => void; onOpenHistory?: () => void; onDelete: () => void; onCollapse: () => void; onGroupMovements?: () => void; accessibilityReflow: boolean }) {
   const load = kind === 'core'
     ? expandedLoadPresentation(draft, calculatedTarget, storageUnit, displayUnit, manualOverrideEnabled)
     : null;
@@ -1421,7 +1424,7 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
           onBackdownManualOverrideEnabledChange={onBackdownManualOverrideEnabledChange}
         />
         {kind === 'accessory' ? <AccessorySessionProgrammingContext onGroupMovements={onGroupMovements} draft={draft} editable={editable} groupedWith={groupedWith} onChange={onChange} onChooseSubstitution={onChooseSubstitution} /> : null}
-        <RecentHistorySection item={item} displayUnit={displayUnit} onOpenHistory={onOpenHistory} />
+        <ProgrammingLastExposure context={exposureContext} item={item} displayUnit={displayUnit} onOpenHistory={onOpenHistory} />
         <CoachNotesSection value={draft.notes} editable={editable} onChange={(value) => onChange({ notes: value })} />
         <MovementDeleteAction disabled={!canDelete} onDelete={onDelete} />
       </View>
@@ -1846,19 +1849,6 @@ function FullCustomOverrideEditor({ draft, editable, onChange, storageUnit, disp
       { key: 'manual-margin', label: `Margin ± (${displayUnit})`, value: marginDisplay, options: marginWheelOptions(displayUnit, marginDisplay), suffix: displayUnit, accessibilityValue: (value) => `plus or minus ${value} ${displayUnit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (margin) => updateRow(index, { rangeLb: convertLoadDisplayValue(margin, displayUnit, storageUnit) }), disabled: !editable },
     ]} /></View>;
   })}</View> : null}</View>;
-}
-
-function RecentHistorySection({ item, displayUnit, onOpenHistory }: { item: SessionMovementItem; displayUnit: CoachDisplayUnit; onOpenHistory?: () => void }) {
-  const rows = exactAccessoryHistoryRows(item.movement_history);
-  const [expanded, setExpanded] = useState(false);
-  const latest = exactAccessoryLastExposure(item.movement_history);
-  return (
-    <View style={styles.quickSection}>
-      <View style={styles.sectionHeadingRow}><Text style={styles.fieldLabel}>LAST EXPOSURE</Text>{onOpenHistory ? <Pressable accessibilityRole="button" onPress={onOpenHistory} style={styles.inlineTextAction}><Text style={styles.inlineTextActionLabel}>History</Text></Pressable> : rows.length > 1 ? <Pressable accessibilityRole="button" onPress={() => setExpanded((value) => !value)} style={styles.inlineTextAction}><Text style={styles.inlineTextActionLabel}>{expanded ? 'Close' : 'History'}</Text></Pressable> : null}</View>
-      {latest ? <Text style={styles.lastExposureValue}>{historySetText(latest, displayUnit)} · {formatDate(latest.date)}</Text> : <Text style={styles.emptyText}>No previous exact exposure.</Text>}
-      {expanded ? <View style={styles.historyList}>{rows.slice(1, 5).map((row, index) => <View key={`${row.date || 'history'}-${index}`} style={styles.historyListRow}><Text style={styles.historyValue}>{historySetText(row, displayUnit)}</Text><Text style={styles.historyDate}>{formatDate(row.date)}</Text></View>)}</View> : null}
-    </View>
-  );
 }
 
 function CoachNotesSection({ value, editable, onChange }: { value: string; editable: boolean; onChange: (value: string) => void }) {
@@ -2330,15 +2320,6 @@ function displayWeight(weightKg: number, displayUnit: CoachDisplayUnit) {
   return roundLoggerDisplayWeight(converted, displayUnit);
 }
 
-function historySetText(row: MovementHistorySet, displayUnit: CoachDisplayUnit) {
-  const load = row.weight_kg != null
-    ? `${numberText(displayUnit === 'lb' ? roundToPlate(Number(row.weight_kg) / KG_PER_LB) : roundToHalf(Number(row.weight_kg)))} ${displayUnit}`
-    : '';
-  const reps = row.reps != null ? `× ${row.reps}` : '';
-  const effort = row.rpe != null ? `@ ${numberText(row.rpe)} RPE` : row.rir != null ? `@ ${numberText(row.rir)} RIR` : '';
-  return [load, reps, effort].filter(Boolean).join(' ') || 'Logged set';
-}
-
 function roundToPlate(value: number) {
   return Math.round(value / 2.5) * 2.5;
 }
@@ -2372,12 +2353,6 @@ function shouldDefaultToAbbreviatedAthleteName(value: string) {
   return parts.length > 2 || normalized.length > 20;
 }
 
-function formatDate(value?: string | null) {
-  if (!value) return 'Previous Session';
-  const [year, month, day] = value.slice(0, 10).split('-').map(Number);
-  if (!year || !month || !day) return value;
-  return new Date(year, month - 1, day).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-}
 
 const authorStyles = StyleSheet.create({
   topbar: { minHeight: 48, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: palette.line },

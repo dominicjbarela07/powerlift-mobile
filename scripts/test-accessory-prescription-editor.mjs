@@ -105,7 +105,7 @@ assert.match(wheel, /accessibilityRole="adjustable"[\s\S]*Haptics\.selectionAsyn
 assert.doesNotMatch(workspace, /NumericStepper|Reps Lower|Reps Upper|Accessory.*(?:Percentage|RPE|CalculatedTargetPanel|ManualOverrideBlock)/, 'no rejected Accessory fields or steppers were added');
 assert.match(workspace, /function collapsedLoadPresentation\([\s\S]*label: 'Manual'[\s\S]*if \(kind !== 'accessory' &&/, 'explicit coach loads may render; accessories never receive calculated Core strength targets');
 assert.match(workspace, /function movementMeta[\s\S]*primary_muscle_group[\s\S]*secondary_muscle_groups[\s\S]*accessoryMuscleRegion\(item\)\.label/, 'collapsed and expanded movement identity uses governed muscle context');
-assert.match(workspace, /function RecentHistorySection[\s\S]*exactAccessoryHistoryRows\(item\.movement_history\)[\s\S]*LAST EXPOSURE[\s\S]*History/, 'Last Exposure remains exact-identity-backed with intentional history access');
+assert.match(workspace, /<ProgrammingLastExposure[\s\S]*item=\{item\}[\s\S]*onOpenHistory=\{onOpenHistory\}/, 'Last Exposure uses the shared exact-identity component with intentional history access');
 assert.match(workspace, /function CoachNotesSection/, 'Coach Notes remain directly in the inline workspace');
 assert.doesNotMatch(workspace, /legacyBadge|item\.legacy\?\.indicator/, 'legacy migration provenance is absent from normal movement cards');
 assert.match(workspace, /accessibilityLabel="Group movements"[\s\S]*sessionDraft\.accessoryOrder\.map[\s\S]*accessibilityRole="checkbox"/, 'grouping selects actual movements in this Session');

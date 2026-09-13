@@ -340,7 +340,8 @@ export async function fetchCanonicalMovementHistory(query: MovementHistoryQuery)
   const expectedId = Number(query.coreMovementId || query.movementDefinitionId);
   const resolution = history.identity_resolution;
   if (
-    resolution?.status !== 'resolved'
+    Number(history.athlete?.id) !== query.athleteId
+    || resolution?.status !== 'resolved'
     || resolution.subject_type !== expectedType
     || Number(resolution.subject_id) !== expectedId
   ) {

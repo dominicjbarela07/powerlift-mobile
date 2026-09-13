@@ -53,7 +53,13 @@ assert.match(logger, /exactAccessoryLastExposure\(it\?\.movement_history\)/);
 assert.match(logger, /resolveSetLoggerLoadDefault\(/);
 assert.match(logger, /comparableHistory:\s*item\.movement_history/);
 assert.match(logger, /No previous exact exposure\./);
-assert.match(workspace, /exactAccessoryHistoryRows\(item\.movement_history\)/);
-assert.match(workspace, /No previous exact exposure\./);
+assert.match(workspace, /<ProgrammingLastExposure/);
+const shared = fs.readFileSync(path.join(root, 'lib/use-session-exposure.ts'), 'utf8');
+const display = fs.readFileSync(path.join(root, 'components/coach-mobile/ProgrammingLastExposure.tsx'), 'utf8');
+assert.match(shared, /history\.identity_scope !== 'exact_identity'/);
+assert.match(shared, /history\.movement_definition_id !== identity\.movementDefinitionId/);
+assert.match(shared, /history\.comparison_allowed !== true/);
+assert.match(shared, /exposureFromHydration/);
+assert.match(display, /read\.status === 'empty' \? 'No previous exact exposure\.'/);
 
 console.log('[accessory-history] exact identity, fail-closed UI, and logger-default contracts passed');

@@ -1,0 +1,15 @@
+./Users/dominic/powerlifting_app_dev/venv/lib/python3.12/site-packages/flask_sqlalchemy/query.py:30: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  rv = self.get(ident)
+[2026-09-13 17:04:12,782] WARNING in security: [SECURITY_REJECTION] status=403 guard=werkzeug_forbidden reason=You don't have the permission to access the requested resource. It is either read-protected or not readable by the server. context={'path': '/workouts/mobile/athletes/4/movement-history', 'method': 'GET', 'endpoint': 'workouts.mobile_identity_backed_movement_history', 'blueprint': 'workouts', 'remote_addr': '127.0.0.1', 'host': 'localhost', 'origin': None, 'referer': None, 'user_agent': 'Werkzeug/3.1.4', 'auth_header_present': True, 'current_user_authenticated': True, 'mobile_token_user_id': 1, 'mobile_token_user_role': 'coach', 'is_mobile_api': True}
+.../Users/dominic/powerlifting_app_dev/app/models.py:133: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  return User.query.get(int(user_id))
+.../Users/dominic/powerlifting_app_dev/app/services/accessory_movement_platform.py:396: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  decided_at=datetime.utcnow(),
+/Users/dominic/powerlifting_app_dev/app/services/accessory_movement_platform.py:403: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  source.retired_at = source.retired_at or datetime.utcnow()
+.[2026-09-13 17:04:16,540] WARNING in security: [SECURITY_REJECTION] status=403 guard=werkzeug_forbidden reason=You don't have the permission to access the requested resource. It is either read-protected or not readable by the server. context={'path': '/workouts/mobile/athletes/1/movement-history', 'method': 'GET', 'endpoint': 'workouts.mobile_identity_backed_movement_history', 'blueprint': 'workouts', 'remote_addr': '127.0.0.1', 'host': 'localhost', 'origin': None, 'referer': None, 'user_agent': 'Werkzeug/3.1.4', 'auth_header_present': True, 'current_user_authenticated': True, 'mobile_token_user_id': 2, 'mobile_token_user_role': 'athlete', 'is_mobile_api': True}
+.......
+----------------------------------------------------------------------
+Ran 15 tests in 10.750s
+
+OK

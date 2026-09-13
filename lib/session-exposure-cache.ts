@@ -6,6 +6,8 @@ export type ExposureSnapshotIdentity = Readonly<{
   coreMovementId?: number; movementDefinitionId?: number; equipmentId?: number;
   comparisonKey?: string | null;
 }>;
+export type SessionExposureContext = Pick<ExposureSnapshotIdentity, 'ownerId' | 'athleteId' | 'workoutId' | 'sessionDate'>;
+export type ExposureReadStatus = 'idle' | 'loading' | 'ready' | 'error' | 'blocked';
 
 export function exposureSnapshotKey(identity: ExposureSnapshotIdentity) {
   return JSON.stringify([identity.ownerId, identity.athleteId, identity.workoutId, identity.sessionDate,
@@ -19,7 +21,7 @@ export function exposureSnapshotKey(identity: ExposureSnapshotIdentity) {
  */
 export class SessionExposureCache<T> {
   private entries = new Map<string, { identity: ExposureSnapshotIdentity; value: T | undefined;
-    revision: number; attempted: number; pending?: Promise<void> }>();
+    revision: number; attempted: number; error?: boolean; pending?: Promise<void> }>();
   private listeners = new Set<() => void>();
   private version = 0;
   private blocked = false;
@@ -30,6 +32,19 @@ export class SessionExposureCache<T> {
   deny() { this.blocked = true; this.entries.clear(); this.emit(); }
   authorize() { if (this.blocked) { this.blocked = false; this.emit(); } }
   get(identity: ExposureSnapshotIdentity) { return this.entries.get(exposureSnapshotKey(identity))?.value; }
+  status(identity: ExposureSnapshotIdentity): ExposureReadStatus {
+    if (this.blocked) return 'blocked';
+    const entry = this.entries.get(exposureSnapshotKey(identity));
+    if (entry?.error) return 'error';
+    if (entry?.pending) return 'loading';
+    return entry && entry.value !== undefined && entry.attempted === entry.revision ? 'ready' : 'idle';
+  }
+  retry(identity: ExposureSnapshotIdentity) {
+    if (this.blocked) return;
+    const entry = this.entries.get(exposureSnapshotKey(identity));
+    if (entry) { entry.revision++; entry.error = false; }
+    this.emit();
+  }
   invalidate(change: { path?: string } = {}) {
     // All current-Session mutations are excluded from its prior exposure. Another
     // Session's edits/deletes/completion may change history. Explicit refreshes
@@ -60,13 +75,22 @@ export class SessionExposureCache<T> {
     const revision = entry.revision;
     entry.attempted = revision;
     const active = entry;
+    active.error = false;
     active.pending = Promise.resolve().then(load).then(value => {
       if (this.entries.get(key) !== active || active.revision !== revision) return;
       if (JSON.stringify(active.value) !== JSON.stringify(value)) { active.value = value; this.emit(); }
-    }).catch(() => { /* Offline: keep known evidence; retry only on real invalidation. */ }).finally(() => {
+    }).catch(() => {
+      if (this.entries.get(key) !== active || active.revision !== revision) return;
+      // An unsuccessful read is never a successful empty result. Keep known
+      // evidence, expose failure, and retry only on explicit invalidation.
+      active.error = true;
+      this.emit();
+    }).finally(() => {
       active.pending = undefined;
       if (this.entries.get(key) === active && active.revision !== revision) void this.ensure(identity, load);
+      else if (this.entries.get(key) === active && active.value == null) this.emit();
     });
+    if (active.value == null) this.emit();
     return active.pending;
   }
 }

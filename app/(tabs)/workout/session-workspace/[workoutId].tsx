@@ -1,3 +1,4 @@
+import { sessionExposureCache } from '@/lib/session-exposure-cache';
 import { ProgrammingReuseLibrary } from '@/components/coach-mobile/ProgrammingReuseLibrary';
 import { sessionAuthoringCommand } from '@/lib/session-authoring-command';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -1295,7 +1296,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
           preferredUnits={user?.preferred_units}
           viewerMode="coach"
           refreshing={refreshing}
-          onRefresh={() => { void loadSession(true); }}
+          onRefresh={() => { sessionExposureCache.invalidate(); void loadSession(true); }}
           onClose={closeToProgrammingHome}
           onViewCalendar={() => router.push({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(payload?.athlete?.id || '') } } as any)}
           onOpenProgramming={closeToProgrammingHome}
@@ -1322,6 +1323,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       {!props.embedded ? <Tabs.Screen options={{ headerShown: true, tabBarStyle: { display: 'none' } }} /> : null}
       <View style={[styles.screen, styles.programmingWorkspaceStage]}>
         <SessionEditingWorkspace
+        exposureContext={{ ownerId: String(user?.id || ''), athleteId: payload?.athlete?.id || 0, workoutId: workout.id, sessionDate: workout.date || '' }}
         title={title}
         onReuseSession={workspaceCapabilities.can_add_movement ? () => setReuseEmptySession(true) : undefined}
         context={context}
@@ -1358,7 +1360,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         assignmentBlockedReason={workspaceCapabilities.assign_blocked_reason || null}
         sheetPresentation={false}
         registerDismissRequest={props.registerDismissRequest}
-        onRefresh={() => { void loadSession(true); }}
+        onRefresh={() => { sessionExposureCache.invalidate(); void loadSession(true); }}
         onCloseWorkspace={closeToProgrammingHome}
         onOpenAthleteView={openAthleteView}
         onOpenReorder={openReorderEditor}
