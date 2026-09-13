@@ -1,0 +1,37 @@
+{
+  "removed": [
+    {
+      "id": 1746,
+      "label": "Artwork Consumption QA",
+      "ids": [
+        253,
+        33,
+        154,
+        354,
+        91,
+        120
+      ]
+    },
+    {
+      "id": 1747,
+      "label": "Artwork Superset QA",
+      "ids": [
+        253,
+        91
+      ]
+    },
+    {
+      "id": 1748,
+      "label": "Artwork Pre-Session QA",
+      "ids": [
+        253,
+        33,
+        154,
+        354,
+        91,
+        120
+      ]
+    }
+  ],
+  "original_setlogs_unchanged": 17932
+}

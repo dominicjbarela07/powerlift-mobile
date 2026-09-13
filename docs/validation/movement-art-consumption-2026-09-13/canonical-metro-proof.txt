@@ -1,0 +1,24 @@
+
+> powerlift_mobile@1.0.0 start
+> node scripts/start-canonical-dev-metro.mjs
+
+[canonical-dev-metro] SOURCE PREFLIGHT PASS
+[canonical-dev-metro] Working tree contains local changes; Metro will run against current filesystem state.
+{
+  "port": 8081,
+  "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "gitRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "scriptRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "branch": "dev/canonical-mobile",
+  "sha": "8d08ad84df1027957032d55b36738f6790e23af7",
+  "remoteRef": "origin/dev/canonical-mobile",
+  "remoteSha": "8d08ad84df1027957032d55b36738f6790e23af7",
+  "clean": false
+}
+Starting project at /Users/dominic/powerlifting_app_dev/powerlift_mobile
+React Compiler enabled
+Starting Metro Bundler
+Waiting on http://localhost:8081
+iOS Bundled 19189ms node_modules/expo-router/entry.js (3428 modules)
+iOS Bundled 331ms node_modules/expo-notifications/build/index.js (687 modules)
+iOS Bundled 123ms node_modules/expo-constants/build/Constants.js (612 modules)

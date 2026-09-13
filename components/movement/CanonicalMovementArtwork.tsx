@@ -8,7 +8,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import { resolveApprovedExactMovementArtwork } from '@/lib/movement-artwork-hero';
+import { movementThumbnailGeometry, reportApprovedArtworkBypass, resolveApprovedExactMovementArtwork } from '@/lib/movement-artwork-hero';
 import { CoreVariantBadge } from '@/components/workout-logger/core-variant-badge';
 import { SLColors, SLRadius } from '@/constants/theme';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
@@ -35,6 +35,12 @@ const warned = new Set<string>();
 export function CanonicalMovementArtwork({ movement, size = 72, style, testID, surface, accessoryPresentation = 'movement' }: Props) {
   const subject = normalizeCanonicalMovementArtSubject(movement);
   const resolution = resolveCanonicalMovementArtwork(subject);
+  const approved = accessoryPresentation === 'movement' && __DEV__ ? resolveApprovedExactMovementArtwork(subject) : null;
+  const exactAsset = approved ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[approved.key] : null;
+
+  useEffect(() => {
+    if (accessoryPresentation === 'movement') reportApprovedArtworkBypass(subject, exactAsset && approved ? approved.key : null, surface || testID || 'canonical-movement-artwork');
+  }, [subject, approved, exactAsset, accessoryPresentation, surface, testID]);
 
   useEffect(() => {
     if (!__DEV__ || resolution.kind !== 'neutral') return;
@@ -51,12 +57,10 @@ export function CanonicalMovementArtwork({ movement, size = 72, style, testID, s
   }, [subject, resolution, surface, testID]);
 
   if (resolution.kind === 'accessory') {
-    const approved = accessoryPresentation === 'movement' && __DEV__ ? resolveApprovedExactMovementArtwork(subject) : null;
-    const exactAsset = approved ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[approved.key] : null;
-    if (exactAsset) {
+    if (exactAsset && approved) {
       return (
         <View accessibilityLabel={exactAsset.label} accessibilityRole="image" style={[styles.frame, { width: size, height: size, borderRadius: Math.min(SLRadius.lg, size * 0.16) }, style]} testID={testID}>
-          <Image accessibilityIgnoresInvertColors resizeMode="contain" source={size <= 64 ? exactAsset.thumbnail : exactAsset.source} style={styles.image} />
+          <Image accessibilityIgnoresInvertColors resizeMode="contain" source={size <= 48 ? exactAsset.thumbnail : exactAsset.source} style={[styles.exactImage, size <= 80 ? movementThumbnailGeometry(size, approved.key) : { width: size, height: size }]} />
         </View>
       );
     }
@@ -101,6 +105,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   image: { height: '100%', width: '100%' },
+  exactImage: { position: 'absolute' },
   neutral: {
     backgroundColor: SLColors.surfaceFloating,
     borderColor: SLColors.borderStrong,

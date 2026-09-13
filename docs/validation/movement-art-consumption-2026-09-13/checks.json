@@ -1,0 +1,18 @@
+{
+  "accepted_contracts": {
+    "passed": 212,
+    "total": 212,
+    "historical_quarantines_unchanged": 49
+  },
+  "critical_areas": {
+    "passed": 60,
+    "total": 60
+  },
+  "typescript_errors": 0,
+  "changed_file_lint_errors": 0,
+  "focused_consumption_and_hero_contracts_after_final_change": "passed",
+  "native_visual_signoff": "incomplete_mac_locked",
+  "new_art_generated": false,
+  "testflight_touched": false,
+  "production_touched": false
+}

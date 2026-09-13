@@ -1,0 +1,1 @@
+Approved art consumption: 195 human-approved asset chains; actual compact/expanded TSX, PRE/ACTIVE/remount, superset selection, pending/rejected/missing, independent machine/cable fallback, crops and diagnostics PASS

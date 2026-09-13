@@ -61,3 +61,17 @@ and explicitly part of the cumulative release-critical gate. Coverage includes a
 substitution A→B, equipment materialization, independent superset members, missing
 keys, row-ID collisions, contradictory evidence and frozen taxonomy. A backend
 recap contract verifies preserved canonical ID/key/taxonomy and unchanged input.
+
+## Compact identity versus expanded target cue
+
+Approved exact images now lead compact Session Plan and superset rows. Expanded
+PRE and ACTIVE movements keep focused target anatomy beside the title and mount
+the approved exact atmospheric hero independently. `resolveMovementArtworkPresentation`
+owns that distinction; eligibility does not depend on whether training has begun.
+This does not change the effective/performed identity or any Session transition.
+
+The approved-consumption contract executes the actual TSX consumers for all current
+positive receipts and all coverage states. Missing expected exact art produces a
+DEV diagnostic, while intentional anatomy cues are excluded. See
+[composition ownership](ACTIVE_LOGGER_MOVEMENT_ART_HERO.md) and
+[validation status](validation/movement-art-consumption-2026-09-13/README.md).

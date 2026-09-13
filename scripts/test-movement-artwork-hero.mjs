@@ -52,13 +52,13 @@ assert.match(hero,/recyclingKey=\{receiptId\}/);
 assert.match(hero,/reduceMotion \? 0 : 160/);
 assert.doesNotMatch(hero,/setInterval|setTimeout|elapsedSeconds|elapsedMs|restRemaining|Date\.now|MuscleMap|help-outline|require\(/,'the image layer has no timer, fallback, identity guesses or independent asset paths');
 const single=read('components/workout-logger/session-v3-movement.tsx');
-assert.match(single,/active && !complete \? resolveApprovedExactMovementArtwork/);
+assert.match(single,/resolveMovementArtworkPresentation\(visual\?\.movementArtworkInput, expanded, complete/);
 assert.match(single,/<CanonicalMovementArtwork[^>]*requireHumanApproval movement=\{visual\?\.movementArtworkInput\} accessoryPresentation="muscle-focus"/,'targeted muscle context remains beside the canonical movement name');
 assert.doesNotMatch(single,/!hero \? <CanonicalMovementArtwork/,'hero eligibility must never hide the muscle cue');
 assert.match(single,/LoggerPlateStackVisual plateStack=\{endpoint.plateStack\}/,'Core physical loading survives');
 const superset=read('components/workout-logger/superset-round-workspace.tsx');
-assert.match(superset,/selected && isActive && !movement.complete \? resolveApprovedExactMovementArtwork/);
-assert.match(superset,/<CanonicalMovementArtwork[^>]*requireHumanApproval movement=\{item\.movementArtwork\} accessoryPresentation="muscle-focus"/,'each superset member retains its own governed muscle cue');
+assert.match(superset,/resolveMovementArtworkPresentation\(item\.movementArtwork, selected, movement.complete/);
+assert.match(superset,/<CanonicalMovementArtwork[^>]*requireHumanApproval movement=\{item\.movementArtwork\} accessoryPresentation=\{thumbnailPresentation\}/,'each superset member retains its own governed muscle cue');
 assert.doesNotMatch(superset,/!hero \? <CanonicalMovementArtwork/);
 assert.doesNotMatch(superset,/Log superset round|MOVEMENT PROGRESS/);
 const labPath='app/(tabs)/dev-mocks/movement-art-hero.tsx';
@@ -78,4 +78,4 @@ for(const folder of ['components','app']) {
  const walk=dir=>{for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const file=`${dir}/${entry.name}`;if(entry.isDirectory())walk(file);else if(/\.tsx$/.test(file)&&read(file).includes('<MovementArtworkHero '))layerConsumers.push(file);}};walk(folder);
 }
 assert.deepEqual(layerConsumers.sort(),[...(hasLab?[labPath]:[]),'components/workout-logger/session-v3-movement.tsx','components/workout-logger/superset-round-workspace.tsx'].sort(),'only the two eligibility-governed surfaces and isolated crop lab may mount hero art');
-console.log('Movement hero: positive approval, exact identity, mapped-byte receipt, DEV scope, focal bounds, cached timer-independent layer, fallback, active-only and superset contracts PASS');
+console.log('Movement hero: positive approval, exact identity, mapped-byte receipt, DEV scope, focal bounds, cached timer-independent layer, fallback, phase-independent and superset contracts PASS');

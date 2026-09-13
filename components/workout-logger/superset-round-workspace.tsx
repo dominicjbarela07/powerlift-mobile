@@ -4,7 +4,7 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { MovementArtworkHero } from '@/components/movement/MovementArtworkHero';
-import { resolveApprovedExactMovementArtwork } from '@/lib/movement-artwork-hero';
+import { resolveMovementArtworkPresentation } from '@/lib/movement-artwork-hero';
 import type { CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
 import { CompactSetTimeline } from './compact-set-timeline';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
@@ -67,12 +67,12 @@ export function SupersetRoundWorkspace({ groupLabel, model, phase, expanded, sel
       const swapAction = swapActionForItem(item.id);
       const swapBusy = swappingItemId === item.id;
       const showEvidence = selected && evidenceItemId === item.id;
-      const hero = selected && isActive && !movement.complete ? resolveApprovedExactMovementArtwork(item.movementArtwork) : null;
+      const { hero, thumbnailPresentation } = resolveMovementArtworkPresentation(item.movementArtwork, selected, movement.complete, 'superset-round-workspace');
       return <View key={item.id} style={[s.member, selected && isActive && s.selectedMember]}>
-        {hero ? <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} surface="superset" reduceMotion={reduceMotion} /> : null}
+        {hero ? <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} movementDefinitionId={hero.movement_definition_id} surface="superset" reduceMotion={reduceMotion} /> : null}
         <Pressable accessibilityRole="button" accessibilityLabel={`${label}, ${item.title}, ${movement.loggedRequiredSets} of ${movement.requiredSets} sets${state ? `, ${state}` : ''}`} onPress={() => onSelectMember(item.id)} style={s.memberRow}>
           <Text style={[s.memberLabel, movement.complete && s.complete]}>{label}</Text>
-          <CanonicalMovementArtwork surface="superset-round-workspace" requireHumanApproval movement={item.movementArtwork} accessoryPresentation="muscle-focus" size={selected && isActive ? 56 : 44} />
+          <CanonicalMovementArtwork surface="superset-round-workspace" requireHumanApproval movement={item.movementArtwork} accessoryPresentation={thumbnailPresentation} size={selected && isActive ? 56 : 44} />
           <View style={s.memberCopy}>
             <Text numberOfLines={0} style={[s.title, selected && isActive && s.activeTitle]}>{item.title}</Text>
             <Text style={[s.prescription, selected && isActive && s.activePrescription, hero && s.heroPrescription]}>{item.prescription}</Text>
