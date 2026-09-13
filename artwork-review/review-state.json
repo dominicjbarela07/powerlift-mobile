@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": 340,
-  "updated_at": "2026-09-13T03:47:22.860183+00:00",
-  "updated_at_display": "Sep 12, 2026 08:47 PM PT (Sep 12, 2026 11:47 PM Eastern)",
+  "revision": 375,
+  "updated_at": "2026-09-13T13:45:45.688660+00:00",
+  "updated_at_display": "Sep 13, 2026 06:45 AM PT (Sep 13, 2026 09:45 AM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -21961,17 +21961,42 @@
         }
       },
       "candidate_asset": "candidates/86d3e3c45a05a3b02d8df847/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T12:54:03.232113+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:54 AM PT (Sep 13, 2026 08:54 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1b85f9ff1651e4e56931ca92c63fe7a5136706656856a6498bc797f46bef8235",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:09.961606+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 37: Dumbbell Squeeze Press. Human rejection verbatim: \"dumbells need to be the same\".\nCorrection: The previous automated attempt wrongly fused two dumbbells into ONE. Rebuild in an elevated FRONT/FOOT-END 3/4 view looking down the athlete's centerline. Flat bench squeeze press with TWO SEPARATE identical brushed-steel dumbbells held touching SIDE BY SIDE above center chest, palms facing EACH OTHER, elbows tucked. TWO separate fists plainly visible around TWO separate parallel handles, each handle runs HEAD-TO-FOOT along body. FOUR circular weight heads total, two near chest/feet and two toward head, all equal diameter and stack thickness; near pair touch edge-to-edge, far pair touch edge-to-edge. Camera clearly separates left and right weights, neither weight hides behind other. No single dumbbell with two hands, no dumbbell fused into one central shaft, no unequal weights. Same lifter, lighting, flat bench and grounded feet.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-96457a37-aa7e-4f06-a334-4859488cc704.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T12:54:03.232113+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:54 AM PT (Sep 13, 2026 08:54 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1b85f9ff1651e4e56931ca92c63fe7a5136706656856a6498bc797f46bef8235",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 47,
@@ -22032,17 +22057,48 @@
         }
       },
       "candidate_asset": "candidates/5a8bea164a4ed5648f46121e/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "change the angle of the camera here! this is an awkward angle",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "change the angle of the camera here! this is an awkward angle",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T12:54:35.999394+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:54 AM PT (Sep 13, 2026 08:54 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b6e9e48b87d4e8b4f7cae20d45a9f7774d61335c46445d0e0c1d3854ae2dda46",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:10.228299+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 47: Cambered-Bar Bench Press. Human rejection, verbatim: \"Biomechanically asymmetric. not natural\".\nCorrection: Recompose this as a centered three-quarter FOOT-END view so the two arms can be seen symmetrically. Athlete lies straight centered on a FLAT bench, shoulders and hips level, two feet evenly planted. Both hands take equidistant overhand grips on the straight outer segments of a proper cambered bench bar, elbows bend equally ~90 degrees, wrists stacked above elbows. Bar held at lower phase over mid chest. The short RAISED central bridge clears the chest; identical deliberate camber bends at equal distances on each side, same-size plate stacks on both ends. The midpoint of the bar is exactly over sternum, both wrists at the same height. No sideways body bend, unequal arm lengths or one wrist forward. Keep realistic modest thoracic arch.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-227281fa-242d-4aa4-b8f9-1263f1714d74.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "change the angle of the camera here! this is an awkward angle",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:54:35.999394+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:54 AM PT (Sep 13, 2026 08:54 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b6e9e48b87d4e8b4f7cae20d45a9f7774d61335c46445d0e0c1d3854ae2dda46",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 87,
@@ -22102,17 +22158,48 @@
         }
       },
       "candidate_asset": "candidates/c88e97802850afb89ef6a498/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "the fucking barbell is bent/1 this is 2 fucking times you need doing it! fucking stop handing it over like this",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "the fucking barbell is bent/1 this is 2 fucking times you need doing it! fucking stop handing it over like this",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T12:54:57.932170+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:54 AM PT (Sep 13, 2026 08:54 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "2b2ba230041280c3b69d34e940864a5f6368d8b3c6803e27505a74eb8fb63149",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:10.548312+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 87: Half-Kneeling Landmine Press. Human rejection, verbatim: \"non of this is proportional. barbell is off to the dice and small compared to lifter\".\nCorrection: Completely rebuild composition from a TRUE SIDE PROFILE looking across the landmine line. Normal-proportioned muscular adult half kneels: left foot forward flat, right knee down on small black mat; upright braced torso. A FULL LENGTH standard 2.2 meter Olympic bar extends from a visible floor pivot well IN FRONT of the athlete to both hands at upper-chest/front-shoulder height. Its shaft and sleeve are one perfectly collinear straight axis; distal sleeve carries one credible 45 cm round steel plate and collar. Athlete cups the very end beyond plate with both hands, elbows beneath hands, mid-press upward in front of sternum. Pivot lies in the athlete's forward-facing sagittal line, not beside hip. Show the full bar length and whole lifter at credible relative scale, no foreshortened toy bar. No tiny disc, disconnected sleeve, warped head/torso or bar off to side.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-740bf389-67a6-4e13-80f0-fd939d0d6fc5.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the fucking barbell is bent/1 this is 2 fucking times you need doing it! fucking stop handing it over like this",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:54:57.932170+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:54 AM PT (Sep 13, 2026 08:54 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2b2ba230041280c3b69d34e940864a5f6368d8b3c6803e27505a74eb8fb63149",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 103,
@@ -22170,17 +22257,51 @@
         }
       },
       "candidate_asset": "candidates/7b6d0411e86d8fdae2727247/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "poor dub ell rendering and arm length asymmetry",
+      "tags": [
+        "human_anatomy",
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "poor dub ell rendering and arm length asymmetry",
+          "tags": [
+            "human_anatomy",
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T12:55:17.627106+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:55 AM PT (Sep 13, 2026 08:55 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d01c13a4fa50b9496c3da284a0fe82794428b59dd0cda5942b53ffdf5aef0d22",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:10.818810+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 103: Dumbbell Lateral Raise. Human rejection, verbatim: \"left dumbbell is at an unnatural angle\".\nCorrection: Critical repair: BOTH dumbbell handle axes must run FRONT-TO-BACK, perpendicular to the forearm direction, not sideways along the extended arms as in rejected image. Recompose straight-on frontal camera with arms raised only 65–75 degrees from sides and soft ~15 degree elbow bend. Athlete's thumbs point FORWARD toward camera and slightly up; palms face down toward floor. Wrists remain straight in line with forearms, no ulnar kink or exaggerated internal rotation. Each dumbbell's front circular end cap faces camera; its rear end cap is behind the fist, not extending farther left/right along the arm. Both hands mirror naturally. Matching moderate steel dumbbells. Preserve standing lateral raise, whole body, centered head and dark studio.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-b056f197-7f5d-47cd-9d77-e509392cbc58.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "poor dub ell rendering and arm length asymmetry",
+        "tags": [
+          "human_anatomy",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:55:17.627106+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:55 AM PT (Sep 13, 2026 08:55 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d01c13a4fa50b9496c3da284a0fe82794428b59dd0cda5942b53ffdf5aef0d22",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 104,
@@ -22238,17 +22359,42 @@
         }
       },
       "candidate_asset": "candidates/fc78b6ea33a42873b8e8b90b/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T12:55:22.341157+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:55 AM PT (Sep 13, 2026 08:55 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "db6d7c3b88cd745d40ad757d184ea16b5c749391fc2a9d7a12334732b63f5933",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:11.086317+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 104: Seated Dumbbell Lateral Raise. Human rejection, verbatim: \"same with standing. the left hand and dumbbell at a shitty angle. not natural\".\nCorrection: Critical repair: BOTH dumbbell handle axes must run FRONT-TO-BACK, perpendicular to the forearm direction, not sideways along the extended arms as in rejected image. Recompose frontal camera; seated upright on flat bench, legs grounded; arms raised 65–75 degrees from sides with soft ~15 degree elbow bend. Thumbs point FORWARD toward camera and slightly up, palms down; wrists straight with forearms without twisting. Each dumbbell's front circular end cap faces camera; the other end cap sits behind hand. Match angles on BOTH sides and equal weights. The hand must actually encircle a continuous handle between the two heads. Preserve seated lateral raise and restrained original baseline materials.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-e399728f-6403-420f-80fb-9fca5240cde9.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T12:55:22.341157+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:55 AM PT (Sep 13, 2026 08:55 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "db6d7c3b88cd745d40ad757d184ea16b5c749391fc2a9d7a12334732b63f5933",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 106,
@@ -22308,17 +22454,48 @@
         }
       },
       "candidate_asset": "candidates/27befc9fdea00a8388c2a759/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "why is the wrist canted up like that! keep it fucking neutral! fucking christ",
+      "tags": [
+        "human_anatomy"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "why is the wrist canted up like that! keep it fucking neutral! fucking christ",
+          "tags": [
+            "human_anatomy"
+          ],
+          "reviewed_at": "2026-09-13T12:55:42.530956+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:55 AM PT (Sep 13, 2026 08:55 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "31194bbc6190bb0976d821f4c864a52f8b7bc4ccfa8b51c42db2c9022b03f415",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:11.341781+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 106: Lean-Away Dumbbell Lateral Raise. Human rejection, verbatim: \"dude stop fukcing up the god damn hand angle on the dumbbell\".\nCorrection: Fix loaded hand/weight orientation: the dumbbell HANDLE axis must run FRONT-TO-BACK perpendicular to the raised forearm, never inline with the outward arm. Frontal view, working arm at ~65 degrees from body's side with slight elbow bend, wrist straight in line with forearm, thumb points forward toward camera and modestly up. Front round dumbbell head faces camera; rear head behind hand. Maintain planted feet by vertical support, opposite hand firmly holding post, straight body leaning away about20degrees, head aligned with torso and looking forward, not twisted sideways. Don't change into front raise or curl. Modest lifter-sized weight, physically credible fingers and support base.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-053b2463-edae-43cb-9fa1-419075165caa.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "why is the wrist canted up like that! keep it fucking neutral! fucking christ",
+        "tags": [
+          "human_anatomy"
+        ],
+        "reviewed_at": "2026-09-13T12:55:42.530956+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:55 AM PT (Sep 13, 2026 08:55 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "31194bbc6190bb0976d821f4c864a52f8b7bc4ccfa8b51c42db2c9022b03f415",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 107,
@@ -22378,17 +22555,42 @@
         }
       },
       "candidate_asset": "candidates/805547b812a0ee0c2d38fd6b/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "unnatural angle of the wrist! 2nt fucking time ive said it! stop fuckign handing it over like that",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "unnatural angle of the wrist! 2nt fucking time ive said it! stop fuckign handing it over like that",
+          "tags": [],
+          "reviewed_at": "2026-09-13T12:56:05.773334+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:56 AM PT (Sep 13, 2026 08:56 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "6f7cb919b05b27c47d56c5e2285be7459401c7b50b4cf5f7cafd001cc5cbb882",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:11.584407+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Original approved image is STYLE ONLY; make a NEW replacement movement image, do not copy reference exercise. Same realistic man, graphite sleeveless shirt, black shorts and shoes, dark floor fading to black, subtle violet rim and brushed steel. ONE square image, whole body/gear, no text. Movement 107: Lying Dumbbell Lateral Raise. Human latest feedback: \"whats with the offhand! this looks fucking stupid. this whole position looks ridiculous. actually reference the lift\". Prior requirement: \"Lying dumbbell lateral raise is to be done on an incline bench not a flat bench\".\nNEW COMPOSITION: man performing SIDE-LYING DUMBBELL LATERAL RAISE on30degree INCLINE bench. Camera at his front sees his chest, but bench back pad is oriented EDGE-ON to camera, running behind his LEFT LATERAL RIBCAGE, not behind his back. Athlete's left shoulder vertically below right shoulder: body lies precisely on LEFT SIDE against pad, hips stacked not sitting back. Legs naturally stagger on floor for stability. Left elbow tucked by side and left hand comfortably grips the FRONT EDGE of bench next to lower ribs. Left hand NOT behind head. Right arm raises a single modest dumbbell in side-abduction toward ceiling with soft elbow and straight wrist; upper arm60degrees from right side. Head follows spine slope, gaze forward along chest direction, no sideways neck rotation. Full body, bench and weight inside frame. Do not depict a leaning-back seated front raise.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-9dd9dcdb-8c19-4855-ad92-499a7f5bac63.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "unnatural angle of the wrist! 2nt fucking time ive said it! stop fuckign handing it over like that",
+        "tags": [],
+        "reviewed_at": "2026-09-13T12:56:05.773334+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:56 AM PT (Sep 13, 2026 08:56 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6f7cb919b05b27c47d56c5e2285be7459401c7b50b4cf5f7cafd001cc5cbb882",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 108,
@@ -22446,17 +22648,42 @@
         }
       },
       "candidate_asset": "candidates/6cda4445a672bb5c048d8134/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "why the fuck are the arms so short! none of this looks fucking natural! the incline needs to be fucking higher! this looks like a rear dely row",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "why the fuck are the arms so short! none of this looks fucking natural! the incline needs to be fucking higher! this looks like a rear dely row",
+          "tags": [],
+          "reviewed_at": "2026-09-13T12:56:40.773443+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:56 AM PT (Sep 13, 2026 08:56 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5bbf56c384086733e391eda87f5435d7a53b7f901e9eeb611e42072a3fde7a1b",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:11.835630+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 108: Chest-Supported Dumbbell Lateral Raise. Human rejection verbatim: \"left hand at bad angle\". Prior feedback: \"the incline bench needs to be higher in incline!\".\nCorrection: Previous attempt did not fix the wrist geometry. Recompose EXACTLY STRAIGHT-ON FRONT camera. Keep STEEP chest support and lateral-raise exercise. Bring both arms very slightly forward in scapular plane with15degree elbow bend. The closest CIRCULAR END FACE of EACH dumbbell must aim DIRECTLY AT CAMERA, hiding most of the handle and showing rear head slightly behind. This requires rotating entire hands and dumbbells90degrees about vertical relative to rejected image, without bending the wrists. Do not show handles running left-right parallel to forearms. Real hand wraps the front-to-back handle across palm. Both thumbs naturally forward, wrists continue straight from forearms. Same stance, grounded feet, supported torso and unturned head; matched steel weights.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-98f7ce3d-890e-497e-89d4-906b3e3c14ef.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "why the fuck are the arms so short! none of this looks fucking natural! the incline needs to be fucking higher! this looks like a rear dely row",
+        "tags": [],
+        "reviewed_at": "2026-09-13T12:56:40.773443+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:56 AM PT (Sep 13, 2026 08:56 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5bbf56c384086733e391eda87f5435d7a53b7f901e9eeb611e42072a3fde7a1b",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 127,
@@ -22514,17 +22741,48 @@
         }
       },
       "candidate_asset": "candidates/6144989c1dafb8d64a810bec/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "FUCKING PRONATE THE WRISTS! YOU ROTATED THEM THE WRONG FUCKIGN WAY! FUCK YOU",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "FUCKING PRONATE THE WRISTS! YOU ROTATED THEM THE WRONG FUCKIGN WAY! FUCK YOU",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T12:57:06.109166+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f8b5c75f530cf769edcbf16560e8309809bc88b3a111a74dd723ce2203b16a76",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:12.083503+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 127: Chest-Supported Dumbbell Reverse Fly. Human rejection verbatim: \"wrists should be rotated for this movement\".\nCorrection: Human wants NEUTRAL-GRIP reverse fly instead of the internally rotated knuckles-up position. Rotate BOTH entire forearms/hands/dumbbells ninety degrees into a HAMMER/THUMBS-UP grip at the top of the chest-supported fly. Dumbbells' long handle axes should now be approximately VERTICAL, one round end above fist and one below fist, rather than lying horizontally. Thumbs lead upward, palms toward the direction of the feet; wrists stay straight. Arms long with soft15degree elbows, gently below shoulder height, shoulders level. Preserve prone supported torso, rear view with centered unturned head, grounded feet, matching steel weights. Clearly expose each thumb wrapping around continuous handle, no finger duplication.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-8869f991-481f-4415-9587-2741e320b07d.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "FUCKING PRONATE THE WRISTS! YOU ROTATED THEM THE WRONG FUCKIGN WAY! FUCK YOU",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:57:06.109166+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f8b5c75f530cf769edcbf16560e8309809bc88b3a111a74dd723ce2203b16a76",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 128,
@@ -22582,17 +22840,48 @@
         }
       },
       "candidate_asset": "candidates/7e1335dbdb050e33cf8d0e62/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "SAME FUCKING THING AS THE OTHER REAR DELT FLY! FUCKING UNACCEPTABLE",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "SAME FUCKING THING AS THE OTHER REAR DELT FLY! FUCKING UNACCEPTABLE",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T12:57:24.753920+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ed7ccab470221bf571f12f70204352a542e389735e300c7b26e8e251810172b0",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:12.342162+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 128: Incline-Bench Rear-Delt Fly. Human rejection verbatim: \"same with the other reverse fly\".\nCorrection: Apply the same requested NEUTRAL/HAMMER grip as the other reverse fly: rotate BOTH forearms and weights so thumbs lead upward and dumbbell handle axes are approximately VERTICAL at the top, upper head above fist and lower head below, rather than the current horizontal palm-down position. Straight wrists, palms face toward feet, no lateral wrist kink. Preserve prone incline-bench rear-delt fly with long softly bent arms out to sides, chest fully supported on45degree pad, centered head down along spine, same rear3/4 camera, two planted feet and anatomically matched shoulders. This is a fly not a row.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-90c0f423-f044-4366-8343-0f9ffe56a400.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "SAME FUCKING THING AS THE OTHER REAR DELT FLY! FUCKING UNACCEPTABLE",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:57:24.753920+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ed7ccab470221bf571f12f70204352a542e389735e300c7b26e8e251810172b0",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 158,
@@ -22650,17 +22939,42 @@
         }
       },
       "candidate_asset": "candidates/5795559f49af0c86eb2e8be3/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T12:57:29.526413+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "26fe1bbc6765e84909bee2e11d29082aa4f146df2754e35d9cc0298567770fb5",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:12.599953+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 158: Three-Point Dumbbell Row. Human rejection verbatim: \"the bench is in the way of the fucking dumbbell path\".\nCorrection: Rebuild support placement to give the loaded dumbbell an unobstructed vertical path outside the bench. Place the entire FLAT BENCH on the athlete's LEFT side running head-to-foot PARALLEL to his torso; LEFT palm braces on its near corner under left shoulder. BOTH feet planted on floor in a staggered standing stance on the RIGHT side of bench; NO knee on pad. RIGHT arm performs dumbbell row outside the OUTER RIGHT hip, visible clear space all the way down to floor beneath weight. The bench and frame must be well LEFT of sternum, never under right hand or across front of body. Hinged spine, shoulders and hips square, right elbow tucked behind torso at top, right hand with neutral grip under ribs. Camera on working RIGHT side exposes air between weight and bench. No bench crossing dumbbell travel.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-efaac40a-852f-466e-b9e9-cfdbdd00cedf.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T12:57:29.526413+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "26fe1bbc6765e84909bee2e11d29082aa4f146df2754e35d9cc0298567770fb5",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 293,
@@ -22718,17 +23032,51 @@
         }
       },
       "candidate_asset": "candidates/2f477c5c90a6c44ace6a1f26/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "WHAT THE FUCK MAN LOOK AT THE FUCKING DUMBELLS... THE WRISTS SHOULD BE IN A NEUTRAL POSITION.... SORT OF LIKE. HAMMER CURL",
+      "tags": [
+        "biomechanics",
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "WHAT THE FUCK MAN LOOK AT THE FUCKING DUMBELLS... THE WRISTS SHOULD BE IN A NEUTRAL POSITION.... SORT OF LIKE. HAMMER CURL",
+          "tags": [
+            "biomechanics",
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T12:58:23.977962+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:58 AM PT (Sep 13, 2026 08:58 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b13e9ef7c87ba8cb274f2ac2e2e8b02e751e7b4ecc68458f1c0107b776ad27fe",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:12.861101+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Original approved image is the STYLE control: graphite tank, black shorts, dark shoes, real skin, black studio textured floor, restrained violet rim, brushed steel. Output one square image, no text/collage. Exact movement 293: Dumbbell Skull Crusher. Human notes: \"poorly rendered dumbbells\"; earlier: \"piss poor render quality\".\nCreate a fresh composition of DUMBBELL SKULL CRUSHER using only reference STYLE. Full-bodied male supine on a FLAT horizontal bench, head supported, feet grounded. Side3/4 camera slightly above shoulder height. Two upper arms point vertically, elbows bend evenly about90degrees, forearms extend back toward temples. ONE small DUMBBELL PER HAND. EXACTLY TWO DUMBBELLS; EACH HAS EXACTLY TWO ROUND CYLINDRICAL END HEADS on a STRAIGHT central handle, FOUR HEADS IN THE ENTIRE IMAGE. Both palms face each other, handles run head-to-foot with forearms, one weight lies beside each temple, no overlap with face or other dumbbell. Credible fingers wrap handles. All body parts and bench/weights in frame, identical weight size, realistic anatomy, no extra discs behind forearms.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-a7c0a9a7-f3c2-42b5-ad4a-5657ffb24eee.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHAT THE FUCK MAN LOOK AT THE FUCKING DUMBELLS... THE WRISTS SHOULD BE IN A NEUTRAL POSITION.... SORT OF LIKE. HAMMER CURL",
+        "tags": [
+          "biomechanics",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:58:23.977962+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:58 AM PT (Sep 13, 2026 08:58 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b13e9ef7c87ba8cb274f2ac2e2e8b02e751e7b4ecc68458f1c0107b776ad27fe",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 422,
@@ -22786,17 +23134,42 @@
         }
       },
       "candidate_asset": "candidates/21258909b16cd32a763f1ea6/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T12:59:08.099740+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:59 AM PT (Sep 13, 2026 08:59 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d6da280e9625421a5a9708800c5c85fea33fbdde9726e2d920364420013bf0e4",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:13.123272+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Original approved image is the STYLE control: graphite tank, black shorts, dark shoes, real skin, black studio textured floor, restrained violet rim, brushed steel. Output one square image, no text/collage. Exact movement 422: Single-Leg Hip Thrust. Human notes: \"other arm should hold the dumbbell\"; earlier: \"the dumbbell needs to be vertical and sitting on the body on the side of the pressing leg\".\nOwner wants the OTHER arm to hold the dumbbell. Change BOTH arms so BOTH HANDS now stabilize the SAME UPRIGHT dumbbell on the hip crease of the GROUNDED PRESSING leg. The near right arm travels down along right ribs, right hand grasps central vertical handle. Far left arm travels along opposite ribs, left hand lightly steadies top plate. NEITHER hand/forearm rests on bench. EXACTLY TWO ARMS attached to two shoulders, no extra arm or abandoned hand on bench. Only upper back/shoulder blades touch bench. Keep upright dumbbell lower plate at near right hip crease, same raised left knee, grounded rightfoot, level extended hips, head aligned as in original, allbody/bench withinframe.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-ec3fbee7-91c7-4d84-a2b0-1892f9a8e339.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T12:59:08.099740+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:59 AM PT (Sep 13, 2026 08:59 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d6da280e9625421a5a9708800c5c85fea33fbdde9726e2d920364420013bf0e4",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 479,
@@ -22854,17 +23227,42 @@
         }
       },
       "candidate_asset": "candidates/8fd7cad47c02dd45290993f7/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T12:59:11.183271+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:59 AM PT (Sep 13, 2026 08:59 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8c2232050b6a17bbf0c431ac3d176cb4deb3b96b0180c7805a87acecd14987da",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:13.388346+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 479: Seated Dumbbell Calf Raise. Human rejection verbatim: \"grip the fuckign dumbbell handles! this looks gay\". Prior feedback also retained: \"the dumbbells need to be sitting vertical on the top of the knee\".\nCorrection: Change BOTH hand placements ONLY. Each hand securely WRAPS AROUND the central VERTICAL DUMBBELL HANDLE between the circular steel ends. Fingers curl around handle, thumb opposed, wrists neutral. Neither palm rests on top end-cap. Both dumbbells remain upright with bottom round head RESTING ON TOP OF the distal thigh above knee. Preserve seated position, matching weight sizes, forefeet on platform, visibly raised heels, two legs, same fullbody composition and baseline materials. Hands must fit physically in handle gap and stay attached to natural forearms. Never change to horizontal weights.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-2b548680-cfe4-43f7-889b-e77db16b84c5.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T12:59:11.183271+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:59 AM PT (Sep 13, 2026 08:59 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8c2232050b6a17bbf0c431ac3d176cb4deb3b96b0180c7805a87acecd14987da",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 526,
@@ -22922,17 +23320,42 @@
         }
       },
       "candidate_asset": "candidates/9a90a98de48fb2df9e2419c8/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T12:59:13.318231+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:59 AM PT (Sep 13, 2026 08:59 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "67d86f5a67a10987155f684f5cac08033f8939b171a8b186fac24c6d446bad1c",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:13.657118+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 526: Landmine Rotation. Human rejection verbatim: \"badly rendered barbell\". Prior feedback also retained: \"THIS IS NOT A REPRESENTATION OF A LANDMINE ROTATION! THE LANDMINE NEEDS TO BE INFRONT OF THE FUCKING USER\".\nCorrection: Rebuild barbell as a real rigid Olympic landmine bar. Camera from front3/4 at a slightly oblique angle, PIVOT clearly on floor IN FRONT of athlete and aligned ahead of his stance center. ONE straight continuous diagonal axis runs from swivel socket to long shaft to distal sleeve through the exact center hole of ONE round steel plate and onward into both hands at sleeve END beyond plate. Plate sits nearer pivot than hands; both hands grip visible protruding sleeve above collar, not the thin shaft below plate. Plate plane exactly perpendicular to bar axis; no disc stuck sideways and no bend under hand. Athlete stands wide, softly bent knees, gently rotated torso and hips together toward his LEFT, long arms sweeping bar end beside left hip, head follows torso modestly. Show full~2.2m bar and normal adult relative scale. Keep support in FRONT never beside foot.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-3b58c06d-ce61-4ef2-ba8a-c8e32602671c.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T12:59:13.318231+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:59 AM PT (Sep 13, 2026 08:59 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "67d86f5a67a10987155f684f5cac08033f8939b171a8b186fac24c6d446bad1c",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 545,
@@ -22990,17 +23413,48 @@
         }
       },
       "candidate_asset": "candidates/42b6cb92c543adaa19baf7ba/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "THE LIFTER'S FOOT IS THROUGH THE GOD DAMN PLATE ON THE GHR! ARE YOU FUCKING KJIDDING ME! AGAIN THIS IS AN OBVIOUS VISUAL MISS THAT I SHOUD NOT SEE",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "THE LIFTER'S FOOT IS THROUGH THE GOD DAMN PLATE ON THE GHR! ARE YOU FUCKING KJIDDING ME! AGAIN THIS IS AN OBVIOUS VISUAL MISS THAT I SHOUD NOT SEE",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T12:59:47.039103+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:59 AM PT (Sep 13, 2026 08:59 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1c12ad5a6d9f0b00fb8bbd592dc61399af807d48f4067e76eabca6a03fa37bbf",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:13.927868+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Original approved image is STYLE ONLY; make a NEW replacement movement image, do not copy reference exercise. Same realistic man, graphite sleeveless shirt, black shorts and shoes, dark floor fading to black, subtle violet rim and brushed steel. ONE square image, whole body/gear, no text. Movement 545: Barbell Back Extension. Human latest feedback: \"looks like the body is all tories with a side bend... fix it\". Prior requirement: \"that is a shitty render of what a GHR apparatus looks like. I need it fixed\".\nNEW COMPOSITION: BARBELL BACK EXTENSION on credible horizontal GHD/Roman chair. Camera TRUE SIDE PROFILE so torso and legs have zero visual twist. Man horizontal facing DOWN, head at RIGHT, feet at LEFT. Length of hip-to-heel LEG segment visibly greater than shoulder-to-hip TORSO. Hip crease just beyond curved pad edge, upper thighs/pelvis supported; both ankles restrained by real rollers, soles against footplate. Shoulder, hip and heel form almost ONE STRAIGHT HORIZONTAL LINE at top of rep, not arched torso upward. Head neutral faces floor, no turning. Short LIGHT straight steel bar on upper traps, two small matching plates, connected symmetric bar with credible grip. Realistic normal human anatomy and natural clothing. View allows far hand/bar end partially occluded honestly, no invented torso extension to expose everything. Complete coherent GHD frame and ground shadow. No side bend, no superlong torso, no situp, no glute ham curl.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-75922b91-08bc-4d96-bd46-78a3e4c937aa.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE LIFTER'S FOOT IS THROUGH THE GOD DAMN PLATE ON THE GHR! ARE YOU FUCKING KJIDDING ME! AGAIN THIS IS AN OBVIOUS VISUAL MISS THAT I SHOUD NOT SEE",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:59:47.039103+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:59 AM PT (Sep 13, 2026 08:59 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1c12ad5a6d9f0b00fb8bbd592dc61399af807d48f4067e76eabca6a03fa37bbf",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 546,
@@ -23058,17 +23512,48 @@
         }
       },
       "candidate_asset": "candidates/b5537302e8070d20790258a4/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "WHAT THE3 FUCK MAN! BARBELL IS NOT ON THE SAME PLANE AS THE SHELF ON THE BACK! THIS IS AN OBVOIUS FAIL AND YOU KEEP HANDING ME GARBAGE@",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "WHAT THE3 FUCK MAN! BARBELL IS NOT ON THE SAME PLANE AS THE SHELF ON THE BACK! THIS IS AN OBVOIUS FAIL AND YOU KEEP HANDING ME GARBAGE@",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T13:00:21.351892+00:00",
+          "reviewed_at_display": "Sep 13, 2026 06:00 AM PT (Sep 13, 2026 09:00 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "2124463ed8dc0e3b7489e163c0ebdab6c99b7898117b410ade919db081e5f07d",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:14.201028+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 546: Good Morning. Human rejection verbatim: \"barbell doesnt look straight on the back\". Prior feedback: \"the head/neck are not neutral and need to be\".\nCorrection: Fix barbell geometry by changing to a clean REAR THREE-QUARTER view so shaft across upper back can be seen continuously. Athlete at mid Good Morning: hips back, modest knee flexion, torso inclined forward40degrees, braced neutral spine, head aligned with torso and gaze down naturally. A standard perfectly STRAIGHT Olympic bar sits evenly on upper traps, hands evenly just outside shoulders; both sleeves, plate centers and exposed shaft segments all lie on ONE ruler-straight axis with no sag, kink, twist or jump behind head. Symmetric modest steel plates, matching collars. The long straight bar spans whole shoulders, head does not turn toward viewer. Preserve full body, planted hip-width feet and original black/violet studio family.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-29ed55a1-7559-4a6e-abdb-ef6ed8bc584c.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHAT THE3 FUCK MAN! BARBELL IS NOT ON THE SAME PLANE AS THE SHELF ON THE BACK! THIS IS AN OBVOIUS FAIL AND YOU KEEP HANDING ME GARBAGE@",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T13:00:21.351892+00:00",
+        "reviewed_at_display": "Sep 13, 2026 06:00 AM PT (Sep 13, 2026 09:00 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2124463ed8dc0e3b7489e163c0ebdab6c99b7898117b410ade919db081e5f07d",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 547,
@@ -23126,17 +23611,42 @@
         }
       },
       "candidate_asset": "candidates/f446851c99e5d016bd4cb3ea/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-13T13:00:27.678967+00:00",
+          "reviewed_at_display": "Sep 13, 2026 06:00 AM PT (Sep 13, 2026 09:00 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "25ddd0492a5b841a3e460c94e16bb0db85fa2a3ec4f540ec7a5c0ff1d7f8ae1b",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:14.465096+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Original approved image is STYLE ONLY; make a NEW replacement movement image, do not copy reference exercise. Same realistic man, graphite sleeveless shirt, black shorts and shoes, dark floor fading to black, subtle violet rim and brushed steel. ONE square image, whole body/gear, no text. Movement 547: Jefferson Curl. Human latest feedback: \"not holding the middle of the bar bro\". Prior requirement: \"what the fuck happened to the barbell? I need some weights\".\nNEW COMPOSITION: JEFFERSON CURL, exact STRAIGHT-ON FRONT camera. Athlete stands symmetrically on center of a low black box, both feet equally spaced from image center. Torso rounded forward intentionally, arms hanging down. All of body, head, box, bar MIDPOINT align on the central vertical line. Straight steel bar horizontal across front, with matching SMALL round weight plates and collars on ends. TWO HANDS grip its central shaft equally spaced left and right of bar midpoint, 40cm apart. Equal long exposed shaft lengths outside hands, equal plate sizes, exactly symmetric bar loading and grip. Keep bar just below foot level, hanging clear in front of box. The head hangs naturally between shoulders, eyes down; no sideways gaze. Normal photographic anatomy. Fully show both hands, both plates and full box. Do not reproduce oblique side-view off-center grips.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-b6645caf-0f39-4ab2-9278-99267a2f635a.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-13T13:00:27.678967+00:00",
+        "reviewed_at_display": "Sep 13, 2026 06:00 AM PT (Sep 13, 2026 09:00 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "25ddd0492a5b841a3e460c94e16bb0db85fa2a3ec4f540ec7a5c0ff1d7f8ae1b",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 560,
@@ -23194,17 +23704,48 @@
         }
       },
       "candidate_asset": "candidates/61ca55dca437641dd0ccf259/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "CHANGE THE FUCKING ANGLE! WHY DO YOU THINK A CROTCH ANGLE IS A GOOD IDEA! FUCKING CHRIST",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "CHANGE THE FUCKING ANGLE! WHY DO YOU THINK A CROTCH ANGLE IS A GOOD IDEA! FUCKING CHRIST",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T13:00:52.194071+00:00",
+          "reviewed_at_display": "Sep 13, 2026 06:00 AM PT (Sep 13, 2026 09:00 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "51eebcba1e3377960ea4f6b4f50f9cf84b4c9de93aee9c76c99df8fd81c832e2",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:43:14.751104+00:00",
       "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Original approved image is STYLE ONLY; make a NEW replacement movement image, do not copy reference exercise. Same realistic man, graphite sleeveless shirt, black shorts and shoes, dark floor fading to black, subtle violet rim and brushed steel. ONE square image, whole body/gear, no text. Movement 560: Dumbbell Serratus Punch. Human latest feedback: \"overly pronated left arm\". Prior requirement: \"the two dumbbells are fused together! that needs to be fixed\".\nNEW COMPOSITION: DUMBBELL SERRATUS PUNCH on flat bench, camera centered ELEVATED FOOT-END three-quarter. Man supine with torso/head on pad, knees90degrees and plantedfeet. Both straight arms extend vertically above shoulders with small shoulder protraction at top, shoulders level. TWO SEPARATE matched dumbbells shoulder-width apart. NEUTRAL GRIP: palms face each other across chest, thumbs toward head, each dumbbell handle axis points head-to-foot parallel with bench. Front circular dumbbell heads aim toward foot-end camera, rear heads appear behind fists toward head, as a pair of neutral-grip parallel weights. Straight wrists, both arms naturally mirrored. Visible empty gap between weights; exactly four heads total. No pronated bench-press grip, no outward twisted left arm, no elbow bend or fusedweights.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-d8b7be76-79bf-45df-9d59-b18acb0c2cc9.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "CHANGE THE FUCKING ANGLE! WHY DO YOU THINK A CROTCH ANGLE IS A GOOD IDEA! FUCKING CHRIST",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T13:00:52.194071+00:00",
+        "reviewed_at_display": "Sep 13, 2026 06:00 AM PT (Sep 13, 2026 09:00 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "51eebcba1e3377960ea4f6b4f50f9cf84b4c9de93aee9c76c99df8fd81c832e2",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 292,
@@ -23265,17 +23806,48 @@
         }
       },
       "candidate_asset": "candidates/5caa8074ae160c4636774dd6/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "POORLY RENDERED EZ BAR AND HANDS",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "POORLY RENDERED EZ BAR AND HANDS",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-13T12:57:44.650948+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "0cd8cb0b61a5545f9648bf59165583b01d896ea6d872d8d14fe6a9a325d38e93",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-13T03:47:22.620540+00:00",
       "created_at_display": "Sep 12, 2026 08:47 PM PT (Sep 12, 2026 11:47 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Reference is immutable STYLE ONLY. NEW movement replacement with same male identity, graphite tank, black shorts/shoes, dark studio fading black, soft violet rim, brushed steel. ONE square photograph no text/collage. Human correction for EZ-Bar Skull Crusher: \"poor rendered body\". Earlier feedback: \"poor quality for showing the movement\".\nSide-profile sports photograph of a man doing an EZ-bar skull crusher on a flat horizontal bench. Lifter head on LEFT, feet on RIGHT. Camera at bench height directly beside his RIGHT shoulder. His right upper arm points STRAIGHT UP VERTICALLY above shoulder, right elbow at eye+forearm height, forearm extends HORIZONTALLY LEFT toward forehead, making a clear right angle at elbow. Right wrist straight, fingers grip underside of EZ bar a few inches above forehead. Left arm executes same movement PARALLEL BEHIND right arm and is naturally PARTLY OCCLUDED; don't pull left elbow toward camera just to expose it. Bar is one connected symmetric EZ curl bar with modest matching steel plates; perspective credible. All normal body proportions, head/back/hips rest on flat pad, two planted feet. Entire bench/body/gear visible. No diagonal upright arm that looks like a press, no mismatched elbow heights, no textured markings on skin. Authentic lowered triceps-extension phase.",
       "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-c7d66f31-f2ed-48d0-9e0f-ed5baf54ac9d.png",
-      "test_only": false
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "POORLY RENDERED EZ BAR AND HANDS",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:57:44.650948+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0cd8cb0b61a5545f9648bf59165583b01d896ea6d872d8d14fe6a9a325d38e93",
+        "source": "human_review_ui"
+      }
     },
     {
       "movement_definition_id": 295,
@@ -23336,16 +23908,1017 @@
         }
       },
       "candidate_asset": "candidates/fe95412ee2aba634a24808c1/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "STOP HANDING ME OBVIOUSLY PPOR RENDERED FUCKING SHIT! LOOK AT THE FUCKING WEIGHT! ITS ON A DIFFERENT PLANE AS THE LIFTER! CATCH THAT BEFORE I FUCKING SEE IT! ITS FUCKIGN RETARDED",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "STOP HANDING ME OBVIOUSLY PPOR RENDERED FUCKING SHIT! LOOK AT THE FUCKING WEIGHT! ITS ON A DIFFERENT PLANE AS THE LIFTER! CATCH THAT BEFORE I FUCKING SEE IT! ITS FUCKIGN RETARDED",
+          "tags": [],
+          "reviewed_at": "2026-09-13T12:59:02.219839+00:00",
+          "reviewed_at_display": "Sep 13, 2026 05:59 AM PT (Sep 13, 2026 08:59 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "36cc0fa4e59e377c9539592d5001551a8bea5138ade00483be34e885e79928d7",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-13T03:47:22.860092+00:00",
+      "created_at_display": "Sep 12, 2026 08:47 PM PT (Sep 12, 2026 11:47 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Original approved image is the STYLE control: graphite tank, black shorts, dark shoes, real skin, black studio textured floor, restrained violet rim, brushed steel. Output one square image, no text/collage. Exact movement 295: Decline Skull Crusher. Human notes: \"unnatural postition. poor quality\"; earlier: \"the hands look like shit! the palms are down when they should be up\".\nCreate a fresh natural SIDE-VIEW photograph of DECLINE EZ-BAR SKULL CRUSHER. Reference image is STYLE ONLY. Fullbody athlete on a standard ONE STRAIGHT-PLANE20degree DECLINE bench, head on low left end, hips and knees higher right end, ankles held under padded rollers. Neck/spine/hips comfortably follow one straight pad slope; pad MUST NOT BEND at shoulder or waist. Both upper arms point vertically up toward ceiling, parallel and shoulder-width; elbows equally bend ~90degrees so forearms extend horizontally toward head. Symmetric EZ-bar held a few inches above forehead, both PALMS support underside of shaft, natural wrapped thumbs, angled grips mirror. Equal small steel plate stacks. Show triceps extension lowered phase, not bench press or reverse curl. Normal human proportions, all limbs attached once, full bench and grounded frame inside image. Natural photographic detail, subdued dark studio family.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-79229448-cf5e-47d3-9e0f-4515e222ce41.png",
+      "test_only": false,
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "STOP HANDING ME OBVIOUSLY PPOR RENDERED FUCKING SHIT! LOOK AT THE FUCKING WEIGHT! ITS ON A DIFFERENT PLANE AS THE LIFTER! CATCH THAT BEFORE I FUCKING SEE IT! ITS FUCKIGN RETARDED",
+        "tags": [],
+        "reviewed_at": "2026-09-13T12:59:02.219839+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:59 AM PT (Sep 13, 2026 08:59 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "36cc0fa4e59e377c9539592d5001551a8bea5138ade00483be34e885e79928d7",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 47,
+      "key": "accessory_cambered_bar_bench_press",
+      "movement_name": "Cambered-Bar Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "barbell",
+      "implement": "Cambered barbell",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_47_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "ae150f886e2ba3273aa9d1d9",
+      "version": 4,
+      "supersedes_candidate_id": "5a8bea164a4ed5648f46121e",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "change the angle of the camera here! this is an awkward angle",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:54:35.999394+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:54 AM PT (Sep 13, 2026 08:54 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b6e9e48b87d4e8b4f7cae20d45a9f7774d61335c46445d0e0c1d3854ae2dda46",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/ae150f886e2ba3273aa9d1d9/master.png",
+          "sha256": "4200944d9aaca5b3a8a03820e903cf8d9748626388ab8e522972d0c3c6dde334",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2281518
+        },
+        "app": {
+          "path": "candidates/ae150f886e2ba3273aa9d1d9/app.png",
+          "sha256": "a430b934be5b19d0d2fdb262b77dc3d5b02ab747ad24d6c1a4dccfcacf2dcd52",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 400976
+        },
+        "thumbnail": {
+          "path": "candidates/ae150f886e2ba3273aa9d1d9/thumbnail.png",
+          "sha256": "e2fdf4733a65a1b81b10239bb4576498653aa4a2b21b4e0408f25881bc0b8822",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 54986
+        }
+      },
+      "candidate_asset": "candidates/ae150f886e2ba3273aa9d1d9/master.png",
       "status": "pending",
       "human_approved": false,
       "automation_passed": true,
       "reason": "",
       "tags": [],
       "review_history": [],
-      "created_at": "2026-09-13T03:47:22.860092+00:00",
-      "created_at_display": "Sep 12, 2026 08:47 PM PT (Sep 12, 2026 11:47 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Original approved image is the STYLE control: graphite tank, black shorts, dark shoes, real skin, black studio textured floor, restrained violet rim, brushed steel. Output one square image, no text/collage. Exact movement 295: Decline Skull Crusher. Human notes: \"unnatural postition. poor quality\"; earlier: \"the hands look like shit! the palms are down when they should be up\".\nCreate a fresh natural SIDE-VIEW photograph of DECLINE EZ-BAR SKULL CRUSHER. Reference image is STYLE ONLY. Fullbody athlete on a standard ONE STRAIGHT-PLANE20degree DECLINE bench, head on low left end, hips and knees higher right end, ankles held under padded rollers. Neck/spine/hips comfortably follow one straight pad slope; pad MUST NOT BEND at shoulder or waist. Both upper arms point vertically up toward ceiling, parallel and shoulder-width; elbows equally bend ~90degrees so forearms extend horizontally toward head. Symmetric EZ-bar held a few inches above forehead, both PALMS support underside of shaft, natural wrapped thumbs, angled grips mirror. Equal small steel plate stacks. Show triceps extension lowered phase, not bench press or reverse curl. Normal human proportions, all limbs attached once, full bench and grounded frame inside image. Natural photographic detail, subdued dark studio family.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-79229448-cf5e-47d3-9e0f-4515e222ce41.png",
+      "created_at": "2026-09-13T13:44:24.760884+00:00",
+      "created_at_display": "Sep 13, 2026 06:44 AM PT (Sep 13, 2026 09:44 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. ONE square photorealistic Strength Ledger exercise photograph. Reference 1 is immutable style only: real adult male in charcoal tank, black shorts/shoes, black studio, dark textured floor, subtle purple rim, realistic steel implements. Reference 2 is rejected target. Keep this exact movement and style. Natural head aligned with torso. All body/equipment in frame. Correct the actual physical geometry; no labels or collage.\nCambered-Bar Bench Press: change the awkward foot-end camera to a HIGH THREE-QUARTER SIDE view from beside the athlete's shoulder, looking diagonally down toward chest. Show his full length on the flat bench, feet grounded, balanced arms gripping a genuine cambered bench bar. The camber's central bridge is raised above the chest and grip sections are equal height. Bar aligned transversely across chest, realistic depth/perspective. Camera must NOT look up between legs. One coherent bar, mirrored purposeful camber bends, equal plate stacks; hands/wrists/elbows correctly support bar.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-99fe1354-bf3d-4ca7-b636-7324304c945a.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 87,
+      "key": "accessory_half_kneeling_landmine_press",
+      "movement_name": "Half-Kneeling Landmine Press",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "free_weight",
+      "implement": "Landmine barbell",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_87_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "9a198a3297f07211f8dcba5c",
+      "version": 4,
+      "supersedes_candidate_id": "c88e97802850afb89ef6a498",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the fucking barbell is bent/1 this is 2 fucking times you need doing it! fucking stop handing it over like this",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:54:57.932170+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:54 AM PT (Sep 13, 2026 08:54 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2b2ba230041280c3b69d34e940864a5f6368d8b3c6803e27505a74eb8fb63149",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/9a198a3297f07211f8dcba5c/master.png",
+          "sha256": "9444445abf1725f540dd0ce9f8e230728cca5621f5c89864075f128a0c094416",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1703756
+        },
+        "app": {
+          "path": "candidates/9a198a3297f07211f8dcba5c/app.png",
+          "sha256": "cb6d1e8cd7f03d7597cd18f804b70f79ee0da42249a2503fd402787bb8bfb691",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 300949
+        },
+        "thumbnail": {
+          "path": "candidates/9a198a3297f07211f8dcba5c/thumbnail.png",
+          "sha256": "efaffef4825d1364867a3f32b8b1573a16d5b0adb9fb160a967b920ca1b1e376",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42598
+        }
+      },
+      "candidate_asset": "candidates/9a198a3297f07211f8dcba5c/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:44:25.035734+00:00",
+      "created_at_display": "Sep 13, 2026 06:44 AM PT (Sep 13, 2026 09:44 AM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Reference1 is immutable approved STYLE: same man/clothes/dark studio. Reference2 is EQUIPMENT AND COMPOSITION reference only for its full-length landmine bar. Create a NEW HALF-KNEELING LANDMINE PRESS, not the standing reference: man on right faces left, left foot planted forward, right knee down behind on black pad. Hands cup bar end at face height, arms press diagonally forward/up. A full-length straight rigid Olympic bar from his hands at upper right runs diagonally downward left to a solid floor pivot. ONE small steel weight plate near upper end. Upper sleeve, center hole of plate, collars, entire long shaft and bottom pivot ALL lie on ONE straight axis. Take exact equipment orientation from reference2, adapted only to kneeling man's lower height. No crooked upper sleeve, no kink at plate or change of angle between bar sections. Show whole man/bar, natural neck, square dark studio photograph. This new asset is ID87 half-kneeling; reference ID86 remains unchanged.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-4fb11d65-91d5-4ef5-8029-db8b2609c4e3.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 103,
+      "key": "accessory_dumbbell_lateral_raise",
+      "movement_name": "Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "implement": "Two dumbbells",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_103_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "328e95f86182e8df9b089c8d",
+      "version": 4,
+      "supersedes_candidate_id": "7b6d0411e86d8fdae2727247",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "poor dub ell rendering and arm length asymmetry",
+        "tags": [
+          "human_anatomy",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:55:17.627106+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:55 AM PT (Sep 13, 2026 08:55 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d01c13a4fa50b9496c3da284a0fe82794428b59dd0cda5942b53ffdf5aef0d22",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/328e95f86182e8df9b089c8d/master.png",
+          "sha256": "3520078b90dbcfa0b45645b2a44e8559642ec28cb84c21d2185f329108c55892",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1674747
+        },
+        "app": {
+          "path": "candidates/328e95f86182e8df9b089c8d/app.png",
+          "sha256": "da25d829fb67708372cd613f4b12de90fe47be0d411d8a7dd99146577554526c",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 292481
+        },
+        "thumbnail": {
+          "path": "candidates/328e95f86182e8df9b089c8d/thumbnail.png",
+          "sha256": "4cdf6e5dc251115ab8c05a7462538fa42450e69013c92e3cb31c6d8e9b12b2c5",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 40932
+        }
+      },
+      "candidate_asset": "candidates/328e95f86182e8df9b089c8d/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:44:25.316802+00:00",
+      "created_at_display": "Sep 13, 2026 06:44 AM PT (Sep 13, 2026 09:44 AM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create a NEW full-body photograph of a standing dumbbell lateral raise. Reference 1 controls the man, charcoal tank/black shorts, realistic steel dumbbells and near-black purple-rim studio STYLE. Reference 2 is POSE/GRIP MECHANICS ONLY: copy the arm and hand orientation of this real lateral-raise demonstration, not that person's identity/clothes/background. Arms extended laterally with soft elbows, forearms naturally pronated, wrists absolutely straight, equal-length arms. Both dumbbells lie front-to-back in his hands; one circular end looks toward camera and the other sits behind the hand, like the mechanics photograph. They must NOT extend sideways along the arms. Use small identical steel dumbbells with clean two-end construction. Natural centered head; full frame square with uncropped hands and feet. No text.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-50504c3e-1e7c-463c-80b2-520681b26cb1.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 106,
+      "key": "accessory_lean_away_dumbbell_lateral_raise",
+      "movement_name": "Lean-Away Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "implement": "Single dumbbell",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_106_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "40d02b8114f15e28ef43dcbc",
+      "version": 4,
+      "supersedes_candidate_id": "27befc9fdea00a8388c2a759",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "why is the wrist canted up like that! keep it fucking neutral! fucking christ",
+        "tags": [
+          "human_anatomy"
+        ],
+        "reviewed_at": "2026-09-13T12:55:42.530956+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:55 AM PT (Sep 13, 2026 08:55 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "31194bbc6190bb0976d821f4c864a52f8b7bc4ccfa8b51c42db2c9022b03f415",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/40d02b8114f15e28ef43dcbc/master.png",
+          "sha256": "8bcdf0c76156cd3084bf50b0a47d90c8f6662349c1f191ffed0656f80285eafc",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1648817
+        },
+        "app": {
+          "path": "candidates/40d02b8114f15e28ef43dcbc/app.png",
+          "sha256": "20063a2918670276a9ecbe1fecc73167bcc73ccb71f19d7eff9141139edc380d",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 298633
+        },
+        "thumbnail": {
+          "path": "candidates/40d02b8114f15e28ef43dcbc/thumbnail.png",
+          "sha256": "5e4be76a3b9b338e8ac55ad243248a2b23bffd5acf039d186c3156ce15e8426b",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44127
+        }
+      },
+      "candidate_asset": "candidates/40d02b8114f15e28ef43dcbc/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:44:25.592547+00:00",
+      "created_at_display": "Sep 13, 2026 06:44 AM PT (Sep 13, 2026 09:44 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Reference 1 STYLE ONLY. Reference 2 is EDIT TARGET and controls EXACT athlete face/hair, charcoal SLEEVELESS tank/black shorts, support pole, lean, body and feet. Reference3 shows ONLY lateral-raise wrist and dumbbell mechanics; do not copy its person or clothes. Repair the target's working LEFT-SIDE-IN-IMAGE hand/wrist and dumbbell. The dorsal surface of hand must continue straight along forearm with ZERO upward cock. Follow reference3's front-to-back dumbbell direction: near circular end facing camera, far end behind hand. Do NOT place dumbbell sideways along forearm. Keep pronated palm downward, fingers wrapped around centered handle, wrist neutral. Small matched steel endplates. Preserve all remaining target pixels/composition, natural head, and full frame.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-2f39e8a2-0c7a-4194-b4aa-64d664fb5b2b.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 107,
+      "key": "accessory_lying_dumbbell_lateral_raise",
+      "movement_name": "Lying Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "implement": "Single dumbbell",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_107_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "61602b208610d400543ef9a8",
+      "version": 4,
+      "supersedes_candidate_id": "805547b812a0ee0c2d38fd6b",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "unnatural angle of the wrist! 2nt fucking time ive said it! stop fuckign handing it over like that",
+        "tags": [],
+        "reviewed_at": "2026-09-13T12:56:05.773334+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:56 AM PT (Sep 13, 2026 08:56 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6f7cb919b05b27c47d56c5e2285be7459401c7b50b4cf5f7cafd001cc5cbb882",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/61602b208610d400543ef9a8/master.png",
+          "sha256": "3efc74774831a081d03475891b74b74c339963813b6cc36312185d2f1b19029a",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1723237
+        },
+        "app": {
+          "path": "candidates/61602b208610d400543ef9a8/app.png",
+          "sha256": "4f6269b061c435739f4a46ab51d2307d6970d029b9263a1560bb6b310a54aa8e",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 312227
+        },
+        "thumbnail": {
+          "path": "candidates/61602b208610d400543ef9a8/thumbnail.png",
+          "sha256": "10feafbbd125f6c70ecb6290f317867a3b1b91ca0192677af1922dadaf3cca98",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46619
+        }
+      },
+      "candidate_asset": "candidates/61602b208610d400543ef9a8/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:44:25.869674+00:00",
+      "created_at_display": "Sep 13, 2026 06:44 AM PT (Sep 13, 2026 09:44 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Reference 1 is immutable dark studio style. Reference 2 is the target lying lateral raise. Reference 3 shows ONLY real lateral-raise GRIP MECHANICS. Keep target's inclined bench and side-lying position. Correct the raised arm, wrist, fist and dumbbell using reference 3 grip mechanics, adjusted for body tilt: forearm and back of hand straight, palm down relative to shoulder's abduction plane, handle perpendicular to forearm. Tilt the whole dumbbell with the properly pronated hand; never bend wrist to fit dumbbell. In camera view show a round near endcap in front of the fist and a far end behind it, rather than plates spreading sideways along the forearm. One small coherent dumbbell. Arm softly bent 10 degrees; lift to side. Original man/clothes, head aligned, dark studio and full bench/feet preserved.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-5e6eb306-e376-4269-afa1-9848b598f47f.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 108,
+      "key": "accessory_chest_supported_dumbbell_lateral_raise",
+      "movement_name": "Chest-Supported Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "implement": "Two dumbbells",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_108_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "df441b8a9168df433b1bec28",
+      "version": 4,
+      "supersedes_candidate_id": "6cda4445a672bb5c048d8134",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "why the fuck are the arms so short! none of this looks fucking natural! the incline needs to be fucking higher! this looks like a rear dely row",
+        "tags": [],
+        "reviewed_at": "2026-09-13T12:56:40.773443+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:56 AM PT (Sep 13, 2026 08:56 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5bbf56c384086733e391eda87f5435d7a53b7f901e9eeb611e42072a3fde7a1b",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/df441b8a9168df433b1bec28/master.png",
+          "sha256": "90e6c7229571a4818f0f5643aed1f9ee0c9f8d006d601058638d59bcf2769e50",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1786576
+        },
+        "app": {
+          "path": "candidates/df441b8a9168df433b1bec28/app.png",
+          "sha256": "3c2c7877e282e5b59c7d062a09a53219c13b2e051fbafb9c8498e0390966ce34",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 320579
+        },
+        "thumbnail": {
+          "path": "candidates/df441b8a9168df433b1bec28/thumbnail.png",
+          "sha256": "4cbf4abe1f3117b498b1ab80a6709115abcfe6d63934fbfb7388ca8a947accea",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47287
+        }
+      },
+      "candidate_asset": "candidates/df441b8a9168df433b1bec28/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:44:26.135237+00:00",
+      "created_at_display": "Sep 13, 2026 06:44 AM PT (Sep 13, 2026 09:44 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Reference1 is original studio style only. Reference2 is target chest-supported lateral raise. Preserve athlete, face, pose, arms, neutral pronated hands, both weights, lighting, 75-degree backrest angle, feet, framing and bench base. Change ONLY CAMERA-FACING BACK SIDE OF BACKREST. Athlete's chest presses into the padded front on the far side, away from camera. The face visible to camera must be a flat black rigid back shell with a narrow central steel spine and small mounting bolts, surrounded by a thin upholstered black edge. It must not have the plush stitched padded face turned away from athlete. Keep hardware physically connected to existing adjustable bench. Do not change any limb, wrist, dumbbell, pose or head.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-6744deb0-b5cb-407e-9fd4-fe6dd6ee018b.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 292,
+      "key": "accessory_ez_bar_skull_crusher",
+      "movement_name": "EZ-Bar Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "barbell",
+      "implement": "EZ bar",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_292_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "c7e07cd284d6281478582c7d",
+      "version": 4,
+      "supersedes_candidate_id": "5caa8074ae160c4636774dd6",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "POORLY RENDERED EZ BAR AND HANDS",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:57:44.650948+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0cd8cb0b61a5545f9648bf59165583b01d896ea6d872d8d14fe6a9a325d38e93",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/c7e07cd284d6281478582c7d/master.png",
+          "sha256": "5b35c6b83086081b63480f0508e51f1076376a07160453118dc7389fbd0ef385",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1956551
+        },
+        "app": {
+          "path": "candidates/c7e07cd284d6281478582c7d/app.png",
+          "sha256": "2a37389901e374e823d55fdf6c9670b4d8bb5b2f2952cfcf86e5ca6487b58f07",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 341401
+        },
+        "thumbnail": {
+          "path": "candidates/c7e07cd284d6281478582c7d/thumbnail.png",
+          "sha256": "74c99e1d1d084a82a0065a2c9d2bdd683e88ad6c511eb54d2dcb8588d2104909",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 50129
+        }
+      },
+      "candidate_asset": "candidates/c7e07cd284d6281478582c7d/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:44:26.376223+00:00",
+      "created_at_display": "Sep 13, 2026 06:44 AM PT (Sep 13, 2026 09:44 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Reference1 is original dark studio STYLE only. Reference2 is edit target. Preserve this exact man's proportions, bench type, camera, clothes, hands, and single coherent EZ bar with equal plates. Change exercise phase to a clearly recognizable SKULL CRUSHER: upper arms stay nearly vertical over the shoulders and ELBOWS BEND TO A RIGHT ANGLE, forearms fold BACK TOWARD FOREHEAD and become nearly horizontal. Lower the WHOLE bar, still rigid and transverse to shoulder line, to roughly 15 cm above the forehead. No shoulder press: elbows stay in place, hands travel back and down in elbow-extension arc. Preserve straight natural wrist grasp and bar's aligned geometry. No duplicate arms/bar, no bar through head. Keep the FLAT bench and feet grounded. Whole person and bar visible in original near-black studio.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-e32465c3-1870-439d-a694-876967bf8c82.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 293,
+      "key": "accessory_dumbbell_skull_crusher",
+      "movement_name": "Dumbbell Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "dumbbell",
+      "implement": "Two dumbbells",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_293_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "f11ec8bb26619230e58b6206",
+      "version": 4,
+      "supersedes_candidate_id": "2f477c5c90a6c44ace6a1f26",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHAT THE FUCK MAN LOOK AT THE FUCKING DUMBELLS... THE WRISTS SHOULD BE IN A NEUTRAL POSITION.... SORT OF LIKE. HAMMER CURL",
+        "tags": [
+          "biomechanics",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:58:23.977962+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:58 AM PT (Sep 13, 2026 08:58 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b13e9ef7c87ba8cb274f2ac2e2e8b02e751e7b4ecc68458f1c0107b776ad27fe",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/f11ec8bb26619230e58b6206/master.png",
+          "sha256": "a8a3023fd6883e437cab061b1c3f719308c2529cf1137015e207d4a9fe70b8fa",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2030839
+        },
+        "app": {
+          "path": "candidates/f11ec8bb26619230e58b6206/app.png",
+          "sha256": "12ab94335df4dfd3480687a7e7be1a1ba4257a8a2ea1b9d4ab294d38e1602c8b",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 348161
+        },
+        "thumbnail": {
+          "path": "candidates/f11ec8bb26619230e58b6206/thumbnail.png",
+          "sha256": "4bccaafde56ec74759683f622a7cf102415eecb593f7f0d25fb0f4d55b0ee7e2",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48568
+        }
+      },
+      "candidate_asset": "candidates/f11ec8bb26619230e58b6206/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:44:26.616077+00:00",
+      "created_at_display": "Sep 13, 2026 06:44 AM PT (Sep 13, 2026 09:44 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. ONE square photorealistic Strength Ledger exercise photograph. Reference 1 is immutable style only: real adult male in charcoal tank, black shorts/shoes, black studio, dark textured floor, subtle purple rim, realistic steel implements. Reference 2 is rejected target. Keep this exact movement and style. Natural head aligned with torso. All body/equipment in frame. Correct the actual physical geometry; no labels or collage.\nDumbbell Skull Crusher. High three-quarter SIDE camera from beside HEAD of flat bench, no crotch view. Athlete supine, feet grounded. Both upper arms point toward ceiling, elbows bent 90 degrees. The two fists are over the temples in a NEUTRAL HAMMER grip: palms face each other, back of hand continues forearm in a straight line. TWO equal small dumbbells, clearly separate. Each has exactly one straight handle gripped in its middle and exactly two matching circular ends on same axis. With folded horizontal forearms, dumbbell handles point roughly UP/DOWN like hammers. No sideways bent wrists, no forked handles, no plate touching face, no fist grasping plate, no extra disks. Keep elbows mirrored and hands fully legible.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-c5a99153-dc8f-4e4b-a47f-a2a41436ab2e.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 295,
+      "key": "accessory_decline_skull_crusher",
+      "movement_name": "Decline Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "free_weight",
+      "implement": "EZ bar",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_295_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "ef2b51d3105fa0f88c3bb070",
+      "version": 4,
+      "supersedes_candidate_id": "fe95412ee2aba634a24808c1",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "STOP HANDING ME OBVIOUSLY PPOR RENDERED FUCKING SHIT! LOOK AT THE FUCKING WEIGHT! ITS ON A DIFFERENT PLANE AS THE LIFTER! CATCH THAT BEFORE I FUCKING SEE IT! ITS FUCKIGN RETARDED",
+        "tags": [],
+        "reviewed_at": "2026-09-13T12:59:02.219839+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:59 AM PT (Sep 13, 2026 08:59 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "36cc0fa4e59e377c9539592d5001551a8bea5138ade00483be34e885e79928d7",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/ef2b51d3105fa0f88c3bb070/master.png",
+          "sha256": "76e520c863e58fec68c869596d057fd78846273dff20cc29cefe7453c5861214",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1878998
+        },
+        "app": {
+          "path": "candidates/ef2b51d3105fa0f88c3bb070/app.png",
+          "sha256": "79437ebbe6f6e4cf64d6e69521d60f0cc975dbee71962012ca2f0a60df9852e5",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 328258
+        },
+        "thumbnail": {
+          "path": "candidates/ef2b51d3105fa0f88c3bb070/thumbnail.png",
+          "sha256": "9b6ecdddf0d31f90971efc66c55e88bc2b7025e5b58d5ce8bfaa2276f6b7d563",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48507
+        }
+      },
+      "candidate_asset": "candidates/ef2b51d3105fa0f88c3bb070/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:44:26.857110+00:00",
+      "created_at_display": "Sep 13, 2026 06:44 AM PT (Sep 13, 2026 09:44 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Reference1 is original dark studio STYLE only. Reference2 is edit target. Preserve this exact man's proportions, bench type, camera, clothes, hands, and single coherent EZ bar with equal plates. Change exercise phase to a clearly recognizable SKULL CRUSHER: upper arms stay nearly vertical over the shoulders and ELBOWS BEND TO A RIGHT ANGLE, forearms fold BACK TOWARD FOREHEAD and become nearly horizontal. Lower the WHOLE bar, still rigid and transverse to shoulder line, to roughly 15 cm above the forehead. No shoulder press: elbows stay in place, hands travel back and down in elbow-extension arc. Preserve straight natural wrist grasp and bar's aligned geometry. No duplicate arms/bar, no bar through head. Keep the DECLINE bench with HEAD LOWER THAN HIPS and secure foot rollers. Whole person and bar visible in original near-black studio.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-505cdf52-9046-4037-9035-83271947e028.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 545,
+      "key": "accessory_barbell_back_extension",
+      "movement_name": "Barbell Back Extension",
+      "primary_muscle_group": "lower_back",
+      "equipment_type": "barbell",
+      "implement": "barbell and horizontal posterior-chain bench",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_545_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "f3ca088b8eab5e49eb9fdcb0",
+      "version": 4,
+      "supersedes_candidate_id": "42b6cb92c543adaa19baf7ba",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE LIFTER'S FOOT IS THROUGH THE GOD DAMN PLATE ON THE GHR! ARE YOU FUCKING KJIDDING ME! AGAIN THIS IS AN OBVIOUS VISUAL MISS THAT I SHOUD NOT SEE",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:59:47.039103+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:59 AM PT (Sep 13, 2026 08:59 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1c12ad5a6d9f0b00fb8bbd592dc61399af807d48f4067e76eabca6a03fa37bbf",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/f3ca088b8eab5e49eb9fdcb0/master.png",
+          "sha256": "7f4aeaaa76c930e2119d926165f9872977ee6ad3f0817ee08a11c4f89d7e4ff7",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1708953
+        },
+        "app": {
+          "path": "candidates/f3ca088b8eab5e49eb9fdcb0/app.png",
+          "sha256": "db45402f4bf4157d25a8c7c741165f4a3e5ecea7fac3bdfc78810b7407e86f08",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 300633
+        },
+        "thumbnail": {
+          "path": "candidates/f3ca088b8eab5e49eb9fdcb0/thumbnail.png",
+          "sha256": "70986b68cb45d4472256af22066cafe2648fe942f937d771dd9099e36988ad18",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43603
+        }
+      },
+      "candidate_asset": "candidates/f3ca088b8eab5e49eb9fdcb0/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:44:27.108691+00:00",
+      "created_at_display": "Sep 13, 2026 06:44 AM PT (Sep 13, 2026 09:44 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. ONE square photorealistic Strength Ledger exercise photograph. Reference 1 is immutable style only: real adult male in charcoal tank, black shorts/shoes, black studio, dark textured floor, subtle purple rim, realistic steel implements. Reference 2 is rejected target. Keep this exact movement and style. Natural head aligned with torso. All body/equipment in frame. Correct the actual physical geometry; no labels or collage.\nBarbell Back Extension: repair ONLY the FOOT RESTRAINT. Both shoes must be entirely on the ATHLETE side of the vertical footplate, soles flat against its solid front face; neither heel nor toe nor shoe can penetrate or project through steel. Move footplate farther LEFT behind the shoe soles by roughly one shoe width and reposition both ankle rollers so they restrain the ankles just in front of the plate. Show complete shoes contacting the plate, not cut off or hidden through it. Preserve straight supported legs, pelvis on pad, torso horizontal, light bar supported across upper traps and natural downward gaze. Keep all equipment physically coherent with visible safe contact and no interpenetration.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-11f1614a-4f54-4fcd-adbc-980c2dedac98.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 546,
+      "key": "accessory_good_morning",
+      "movement_name": "Good Morning",
+      "primary_muscle_group": "lower_back",
+      "equipment_type": "free_weight",
+      "implement": "Straight barbell",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_546_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "341fc9ab1e21828b3a6a6758",
+      "version": 4,
+      "supersedes_candidate_id": "b5537302e8070d20790258a4",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHAT THE3 FUCK MAN! BARBELL IS NOT ON THE SAME PLANE AS THE SHELF ON THE BACK! THIS IS AN OBVOIUS FAIL AND YOU KEEP HANDING ME GARBAGE@",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T13:00:21.351892+00:00",
+        "reviewed_at_display": "Sep 13, 2026 06:00 AM PT (Sep 13, 2026 09:00 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2124463ed8dc0e3b7489e163c0ebdab6c99b7898117b410ade919db081e5f07d",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/341fc9ab1e21828b3a6a6758/master.png",
+          "sha256": "efdc109a6f1cb3c09a266aded2e0554d3228d65cdc0b360754a9ddc30fa9240f",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1919397
+        },
+        "app": {
+          "path": "candidates/341fc9ab1e21828b3a6a6758/app.png",
+          "sha256": "b1d2f2e297ebc9d7e889064eba9e4a9a2884fe0546f7b114fb8df07ec99511eb",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 336967
+        },
+        "thumbnail": {
+          "path": "candidates/341fc9ab1e21828b3a6a6758/thumbnail.png",
+          "sha256": "c4170e7ac54eb911d2e08c4439eefcd364e09abc88b64158c6d623cfb9e84b65",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47669
+        }
+      },
+      "candidate_asset": "candidates/341fc9ab1e21828b3a6a6758/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:44:27.376425+00:00",
+      "created_at_display": "Sep 13, 2026 06:44 AM PT (Sep 13, 2026 09:44 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. ONE square photorealistic Strength Ledger exercise photograph. Reference 1 is immutable style only: real adult male in charcoal tank, black shorts/shoes, black studio, dark textured floor, subtle purple rim, realistic steel implements. Reference 2 is rejected target. Keep this exact movement and style. Natural head aligned with torso. All body/equipment in frame. Correct the actual physical geometry; no labels or collage.\nGood Morning. Fix loaded bar's orientation. The current bar is diagonal to the athlete's shoulder shelf. Turn camera to a centered rear view slightly above shoulder level, so BOTH shoulders are equally distant and their line is horizontal. Lifter hinges hips back, torso tilts forward, knees softly bent, head follows spine. A perfectly straight light bar lies HORIZONTALLY IN CONTACT across both upper trapezius muscles, transverse/perpendicular to spine. Equal hands grip either side, bar and shoulder shelf share one plane. Equal sleeves and plates on both ends. Do not have bar float, touch just one shoulder, run diagonally across neck, or pass through body. Whole lifter visible. Show hinge from this rear elevated angle.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-88a659dc-eb09-4583-8e93-c218c381f613.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 560,
+      "key": "accessory_dumbbell_serratus_punch",
+      "movement_name": "Dumbbell Serratus Punch",
+      "primary_muscle_group": "serratus",
+      "equipment_type": "dumbbell",
+      "implement": "Two light dumbbells and flat bench",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_560_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "3dbe9edc7e5b9277127ebaa6",
+      "version": 4,
+      "supersedes_candidate_id": "61ca55dca437641dd0ccf259",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "CHANGE THE FUCKING ANGLE! WHY DO YOU THINK A CROTCH ANGLE IS A GOOD IDEA! FUCKING CHRIST",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T13:00:52.194071+00:00",
+        "reviewed_at_display": "Sep 13, 2026 06:00 AM PT (Sep 13, 2026 09:00 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "51eebcba1e3377960ea4f6b4f50f9cf84b4c9de93aee9c76c99df8fd81c832e2",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/3dbe9edc7e5b9277127ebaa6/master.png",
+          "sha256": "a393d443563090f93c20554b6ddab412f558cba327c4885a3dc47933bf5d0502",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1948588
+        },
+        "app": {
+          "path": "candidates/3dbe9edc7e5b9277127ebaa6/app.png",
+          "sha256": "bc139d9d6279641f978c271682e5e65b52fb1d41140959c253cf029b4576d30b",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 339876
+        },
+        "thumbnail": {
+          "path": "candidates/3dbe9edc7e5b9277127ebaa6/thumbnail.png",
+          "sha256": "c861a8d61872ece4198a90c91a39e3c5f862f96230b1d52b844553573bc262f5",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49047
+        }
+      },
+      "candidate_asset": "candidates/3dbe9edc7e5b9277127ebaa6/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:44:27.643622+00:00",
+      "created_at_display": "Sep 13, 2026 06:44 AM PT (Sep 13, 2026 09:44 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Reference1 is original dark studio style. Reference2 is an attempted serratus punch with ambiguous merged dumbbells. REBUILD CAMERA AND WEIGHTS. Athlete lies FLAT on bench, arms straight vertically up above shoulders in serratus reach, head and back supported, feet planted. Camera elevated BESIDE THE HEAD looking diagonally along the bench, not between legs. Two hands are SHOULDER WIDTH APART, one separate small dumbbell per hand, large clear AIR GAP between the two objects. Four steel circular weight heads total: two heads attached by a short handle on left dumbbell, two heads attached by a separate short handle on right. Both dumbbells parallel to athlete's head-to-foot axis, palms facing each other, wrist straight and thumb wrapped. Make both complete weights plainly visible with no overlap. Use noticeably LIGHT compact dumbbells. Preserve graphite top/black shorts and original studio, realistic arm proportions. No chest press elbow bend.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-b1181527-00ce-4c7e-ba3b-0afa3b58eacf.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 127,
+      "key": "accessory_chest_supported_dumbbell_reverse_flye",
+      "movement_name": "Chest-Supported Dumbbell Reverse Fly",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "dumbbell",
+      "implement": "paired dumbbells",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_127_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "9e8366baa208633bca0dd89b",
+      "version": 4,
+      "supersedes_candidate_id": "6144989c1dafb8d64a810bec",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "FUCKING PRONATE THE WRISTS! YOU ROTATED THEM THE WRONG FUCKIGN WAY! FUCK YOU",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:57:06.109166+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f8b5c75f530cf769edcbf16560e8309809bc88b3a111a74dd723ce2203b16a76",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/9e8366baa208633bca0dd89b/master.png",
+          "sha256": "f85315cb76c6f3f83d876d1c047b162f1035662f70b0002b0d168acac4f2393e",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2018936
+        },
+        "app": {
+          "path": "candidates/9e8366baa208633bca0dd89b/app.png",
+          "sha256": "49a8a63dda007e81492a07b8e2cdcb47cdc0401064e2f40c3eb2c456df2ecbc7",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 359781
+        },
+        "thumbnail": {
+          "path": "candidates/9e8366baa208633bca0dd89b/thumbnail.png",
+          "sha256": "016421e86cc8fd9789f13a5d8858ce39c8967cafdfec33f036332b6ea4e9c6c0",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 50357
+        }
+      },
+      "candidate_asset": "candidates/9e8366baa208633bca0dd89b/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:45:45.433483+00:00",
+      "created_at_display": "Sep 13, 2026 06:45 AM PT (Sep 13, 2026 09:45 AM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement-art candidate.\nReference 1 is the ONLY appearance/style baseline: its original muscular adult man, charcoal tank top, black shorts and shoes, dark studio, textured black floor, subtle purple rim and compact steel dumbbells. Reference 2 is a real reverse-fly technique demonstration ONLY; borrow the internal rotation of the upper arms and the relationship of shoulders, elbows, hands and weights. Do not copy the demonstration man's face/clothes, gym, text, UI or logos.\nMovement: chest-supported dumbbell reverse fly with BOTH SHOULDERS INTERNALLY ROTATED. This is HUMERAL rotation at the shoulder, not merely turning the wrists. Upper arms spread widely to the sides, rotated inward so the elbow creases turn down/away and the elbow points lead upward/back. Thumb sides of both closed fists point DOWN toward the floor; little-finger sides are higher. Neutral straight wrists. Keep the hand, forearm and humeral rotation consistent on BOTH arms. Elbows only softly bent, forming a broad long-arm fly, not a bent-elbow row. Compact steel dumbbells each have two matching heads connected by one center handle gripped by a real hand; show the weight orientation from the technique reference, not a thumb-up hammer-grip T pose.\nChest and abdomen rest on the inclined bench, feet planted, neck naturally aligned and eyes down. Entire athlete and bench fit in frame. No labels or collage.\nCamera: elevated front three-quarter view, facing the head end, from slightly to the athlete's right. Bench at 25 degrees. Capture the top of the fly near shoulder height, showing both internally rotated shoulders and both hand grips clearly.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-ba8fd9e4-f279-45cc-bc2d-87469922a73b.png",
+      "test_only": false
+    },
+    {
+      "movement_definition_id": 128,
+      "key": "accessory_incline_bench_rear_delt_flye",
+      "movement_name": "Incline-Bench Rear-Delt Fly",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "free_weight",
+      "implement": "paired dumbbells",
+      "family": "canonical_free_weight_accessories",
+      "generation_id": "human_review_20260913_128_v4",
+      "generation_batch": "human_review_round_4_20260913",
+      "candidate_id": "10ca2a4cb45d5db26f65834d",
+      "version": 4,
+      "supersedes_candidate_id": "7e1335dbdb050e33cf8d0e62",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "SAME FUCKING THING AS THE OTHER REAR DELT FLY! FUCKING UNACCEPTABLE",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-13T12:57:24.753920+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ed7ccab470221bf571f12f70204352a542e389735e300c7b26e8e251810172b0",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/10ca2a4cb45d5db26f65834d/master.png",
+          "sha256": "cb922a4d83e12166e5a8a4c5161c6b3df87c2360af8d642c18fd555df1126905",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2019655
+        },
+        "app": {
+          "path": "candidates/10ca2a4cb45d5db26f65834d/app.png",
+          "sha256": "a71b66e3caf45458adedde88a4a2b79c87a295bcdfb1f2135f61569ed4a1f390",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 358820
+        },
+        "thumbnail": {
+          "path": "candidates/10ca2a4cb45d5db26f65834d/thumbnail.png",
+          "sha256": "794d34466ad2317256cc895ce6c3e25720d4afe56d8aab854e16b415fc93890d",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 51220
+        }
+      },
+      "candidate_asset": "candidates/10ca2a4cb45d5db26f65834d/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-13T13:45:45.688571+00:00",
+      "created_at_display": "Sep 13, 2026 06:45 AM PT (Sep 13, 2026 09:45 AM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement-art candidate.\nReference 1 is the ONLY appearance/style baseline: its original muscular adult man, charcoal tank top, black shorts and shoes, dark studio, textured black floor, subtle purple rim and compact steel dumbbells. Reference 2 is a real reverse-fly technique demonstration ONLY; borrow the internal rotation of the upper arms and the relationship of shoulders, elbows, hands and weights. Do not copy the demonstration man's face/clothes, gym, text, UI or logos.\nMovement: chest-supported dumbbell reverse fly with BOTH SHOULDERS INTERNALLY ROTATED. This is HUMERAL rotation at the shoulder, not merely turning the wrists. Upper arms spread widely to the sides, rotated inward so the elbow creases turn down/away and the elbow points lead upward/back. Thumb sides of both closed fists point DOWN toward the floor; little-finger sides are higher. Neutral straight wrists. Keep the hand, forearm and humeral rotation consistent on BOTH arms. Elbows only softly bent, forming a broad long-arm fly, not a bent-elbow row. Compact steel dumbbells each have two matching heads connected by one center handle gripped by a real hand; show the weight orientation from the technique reference, not a thumb-up hammer-grip T pose.\nChest and abdomen rest on the inclined bench, feet planted, neck naturally aligned and eyes down. Entire athlete and bench fit in frame. No labels or collage.\nCamera: elevated front three-quarter view, facing the head end from the athlete's left. Bench at 35 degrees. Capture the top of the fly near shoulder height, showing both internally rotated shoulders and both hand grips clearly.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-5cac94d1-6871-47f7-93a1-22af19ae798f.png",
       "test_only": false
     }
   ],
