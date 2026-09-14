@@ -18,6 +18,17 @@ horizontal body line. Head extension following that arch is distinct from turnin
 head sideways. Both hands must visibly grasp the same supported bar. Earlier failed
 prompts remain historical evidence, not reusable instructions for this movement.
 
+## September 13 owner rejection round 7
+
+All 31 artwork replacements from `rejected-7.json` are pending at revision 715;
+69 approved bodyweight images remain unchanged. Archer Row #152 was separately
+retired from DEV discovery at the owner's explicit request, preserving history.
+Sternum Chin-Up retains the corrected arched pose with a higher bar and visible
+floor clearance. Exact notes, 41 generation attempts, ten withheld intermediate
+versions, inspection sheets and validation are in the backend report at
+`docs/validation/bodyweight-review-round-7-2026-09-13/README.md`.
+The run ends when this queue is ready; no waiting for decisions or promotion.
+
 ## Data and presentation
 
 - `artwork-review/review-state.json`: authoritative identity, generation/version,
