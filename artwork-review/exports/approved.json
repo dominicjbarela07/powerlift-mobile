@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 758,
+  "revision": 775,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-14T04:04:19.373434+00:00",
-  "updated_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+  "updated_at": "2026-09-14T11:47:25.582830+00:00",
+  "updated_at_display": "Sep 14, 2026 04:47 AM PT (Sep 14, 2026 07:47 AM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -18194,6 +18194,509 @@
       }
     },
     {
+      "movement_definition_id": 227,
+      "key": "accessory_ring_row",
+      "movement_name": "Ring Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "bodyweight",
+      "implement": "rings on separate rack straps",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_227_attempt02",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "1f5b22c1967e93d5abcfb7fb",
+      "version": 3,
+      "supersedes_candidate_id": "2b115439d7f4b1359fd84953",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "HOW DO YOU FUCK THIS ONE UP! ARE YOU FUCKING KIDDING ME? LOOK IT UP AND FIGURE IT THE FUCK OUT! THIS IS A FUCKING DOG SHIT RENDER",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:23:06.847561+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:23 PM PT (Sep 13, 2026 10:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "779253c8edb298d278bd74d9759f525c580b91b242454a9937fda7c8bff8b25c",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/1f5b22c1967e93d5abcfb7fb/master.png",
+          "sha256": "8d73d4fb35491bf93a65750b0a67eed8cfe654d70e0ea82a6ae4a0c5612a39c7",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1731452
+        },
+        "app": {
+          "path": "candidates/1f5b22c1967e93d5abcfb7fb/app.png",
+          "sha256": "85242cf8b28dfb2197f1a5bcaf4f8f55dfe3b182e2edbefc02f01bc45375c2f8",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 302779
+        },
+        "thumbnail": {
+          "path": "candidates/1f5b22c1967e93d5abcfb7fb/thumbnail.png",
+          "sha256": "8518293aed58a29d4ac911cd4705621eec23a1dd6b2ec1890763320008eaf6a8",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42195
+        }
+      },
+      "candidate_asset": "candidates/1f5b22c1967e93d5abcfb7fb/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T11:24:42.282409+00:00",
+          "reviewed_at_display": "Sep 14, 2026 04:24 AM PT (Sep 14, 2026 07:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8d73d4fb35491bf93a65750b0a67eed8cfe654d70e0ea82a6ae4a0c5612a39c7",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T04:04:18.863571+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Edit this single movement-art image with ONE precise framing correction. Preserve the athlete, pose, movement technique, head direction, all correct hands/grips, strap tension, equipment topology, material detail, dark studio lighting, and purple rim exactly. Move the camera back enough to fit the ENTIRE existing rig. The current highest upright top is cut off at the upper image edge; reconstruct its short capped end above its existing high bar and include both post tops, the entire single high bar and its fasteners, both bases, and both shoes fully INSIDE the square with at least 5% clear margin on every edge. Keep real full-height overhead bar at the same physical height and every perspective relationship; do NOT lower the bar or shorten the rack to make it fit. Do not add a post, brace, duplicate crossbar, or new equipment. Slightly widen the view by about 15% and extend only the consistent near-black background/floor to fit. Same premium exact art; retain crisp facial, finger, ring/handle and steel details. No text.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/227/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "rings on separate rack straps",
+        "grip": "neutral shoulder-width",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "inclined supine",
+        "owner_feedback": "HOW DO YOU FUCK THIS ONE UP! ARE YOU FUCKING KIDDING ME? LOOK IT UP AND FIGURE IT THE FUCK OUT! THIS IS A FUCKING DOG SHIT RENDER",
+        "preflight_notes": "Rebuilt against a real ring-row demonstration: grounded feet, braced backward lean, elbows beside ribs, neutral ring grips, taut straps toward the forward overhead anchors. Second attempt fixes the clipped highest post; complete two-post station visible."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T11:24:42.282409+00:00",
+        "reviewed_at_display": "Sep 14, 2026 04:24 AM PT (Sep 14, 2026 07:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8d73d4fb35491bf93a65750b0a67eed8cfe654d70e0ea82a6ae4a0c5612a39c7",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 228,
+      "key": "accessory_suspension_trainer_row",
+      "movement_name": "Suspension-Trainer Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "bodyweight",
+      "implement": "suspension trainer and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_228_attempt02",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "f093f5d9ceb35671958198a2",
+      "version": 3,
+      "supersedes_candidate_id": "d283ccc5098514f61ee88ac0",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "FUCKING THIS ONE TOO! LOOK UP HOW IT IS SUPPOSED TO FUCKING LOOK! PISS FUCKING POOR! THIS IS AN OBVIOUS FAIL THAT SHOULDNT EVEN MAKE IT TO ME",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:23:39.928374+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:23 PM PT (Sep 13, 2026 10:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "fe148990d727a79c7b65dce8f5208058d77eb5fe9769e3f6dbd1487d0c03f6c8",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/f093f5d9ceb35671958198a2/master.png",
+          "sha256": "4008665cfe8f6c5fa601d35c614dba1b574c601849419446995697a084a27fb8",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1848100
+        },
+        "app": {
+          "path": "candidates/f093f5d9ceb35671958198a2/app.png",
+          "sha256": "6736fd722c64329a13671b41750a665128c1df1d3c7f065a192c90a18e43e9e1",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 322700
+        },
+        "thumbnail": {
+          "path": "candidates/f093f5d9ceb35671958198a2/thumbnail.png",
+          "sha256": "982b743a30f2636b0335d409cd1ed67b0f9ff7b8428e6d2363eec32a9895481b",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45113
+        }
+      },
+      "candidate_asset": "candidates/f093f5d9ceb35671958198a2/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T11:24:46.090436+00:00",
+          "reviewed_at_display": "Sep 14, 2026 04:24 AM PT (Sep 14, 2026 07:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "4008665cfe8f6c5fa601d35c614dba1b574c601849419446995697a084a27fb8",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T04:04:19.128134+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Edit this single movement-art image with ONE precise framing correction. Preserve the athlete, pose, movement technique, head direction, all correct hands/grips, strap tension, equipment topology, material detail, dark studio lighting, and purple rim exactly. Move the camera back enough to fit the ENTIRE existing rig. The current highest upright top is cut off at the upper image edge; reconstruct its short capped end above its existing high bar and include both post tops, the entire single high bar and its fasteners, both bases, and both shoes fully INSIDE the square with at least 5% clear margin on every edge. Keep real full-height overhead bar at the same physical height and every perspective relationship; do NOT lower the bar or shorten the rack to make it fit. Do not add a post, brace, duplicate crossbar, or new equipment. Slightly widen the view by about 15% and extend only the consistent near-black background/floor to fit. Same premium exact art; retain crisp facial, finger, ring/handle and steel details. No text.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/228/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "suspension trainer and rack",
+        "grip": "neutral handles",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "inclined supine",
+        "owner_feedback": "FUCKING THIS ONE TOO! LOOK UP HOW IT IS SUPPOSED TO FUCKING LOOK! PISS FUCKING POOR! THIS IS AN OBVIOUS FAIL THAT SHOULDNT EVEN MAKE IT TO ME",
+        "preflight_notes": "Rebuilt against the equipment maker's low-row demonstration: forward overhead Y-anchor, two equal adjustable branches, triangular webbing and cylindrical handles, closed neutral grips, feet planted. Second attempt includes the complete highest post and bar."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T11:24:46.090436+00:00",
+        "reviewed_at_display": "Sep 14, 2026 04:24 AM PT (Sep 14, 2026 07:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "4008665cfe8f6c5fa601d35c614dba1b574c601849419446995697a084a27fb8",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 229,
+      "key": "accessory_scapular_inverted_row",
+      "movement_name": "Scapular Inverted Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "bodyweight",
+      "implement": "fixed low bar and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_229_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "8f211d32576af340d91c0572",
+      "version": 3,
+      "supersedes_candidate_id": "aaae0cbc2f164dcc8a045422",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "ASSYMETRIC BARBELL AND USER IS NOT CENTERED ON THE BAR! FUCK!",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:23:58.102571+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:23 PM PT (Sep 13, 2026 10:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "dd78d42e27f348e30d2f32db35f67ff4585585cb977581c914c01fe94e397659",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/8f211d32576af340d91c0572/master.png",
+          "sha256": "a2ce037fe63a6912d2ef48ebf209ee51688cda1957c1dec7750c1f99dc84322f",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1864744
+        },
+        "app": {
+          "path": "candidates/8f211d32576af340d91c0572/app.png",
+          "sha256": "5c42c2992d82d43eacfe4edc554ed49790704f28bcfceb7423f0e1d8efcfbd6a",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 330861
+        },
+        "thumbnail": {
+          "path": "candidates/8f211d32576af340d91c0572/thumbnail.png",
+          "sha256": "3785e81fc6a0c723733809fe8be588bd9478e6b64c3936087c5688802b2581f8",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45781
+        }
+      },
+      "candidate_asset": "candidates/8f211d32576af340d91c0572/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T11:24:50.590760+00:00",
+          "reviewed_at_display": "Sep 14, 2026 04:24 AM PT (Sep 14, 2026 07:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a2ce037fe63a6912d2ef48ebf209ee51688cda1957c1dec7750c1f99dc84322f",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T04:04:17.657235+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Recompose Scapular Inverted Row into a clear CENTERED FRONT VIEW FROM THE FOOT END to fix the asymmetric barbell and off-center athlete. Image 1 is rejected subject, image 2 same athlete/style baseline. Square premium dark studio image. Camera exactly on the body's and rack's centerline; no lateral three-quarter perspective. A complete straight symmetrical unloaded Olympic barbell spans horizontally across the image. Its left and right chrome sleeves have IDENTICAL visible lengths and diameters, matching collars, equal spacing beyond the two upright posts. Symmetric real J-cups project toward camera in front of both post faces; the shaft rests on their padded open shelves with a clear gap to the posts and does not pierce either post. Man centered precisely on the middle knurl: head, sternum and pelvis on the midpoint line, both hands equally distant either side of midpoint, OVERHAND pronated grip. The athlete performs a SCAPULAR inverted row with BOTH ELBOWS STRAIGHT, shoulders drawn back, rigid trunk/legs extending toward the camera, heels on rubber floor at bottom of frame. Not a bent-elbow row. Natural head follows torso gaze upward at bar, no sideways glance. Two matched freestanding low squat stands with T-feet, no extra scaffold. Full bar ends, both hands, both elbows, head, feet, all floor contacts visible. Same adult man, full-length graphite tank over plain black shorts, black shoes, neutral light and subtle violet right rim. No labels or logos.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/229/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "fixed low bar and rack",
+        "grip": "pronated; straight elbows",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "inclined supine",
+        "owner_feedback": "ASSYMETRIC BARBELL AND USER IS NOT CENTERED ON THE BAR! FUCK!",
+        "preflight_notes": "Recomposed from the foot end to center the athlete beneath the bar. Matched sleeves/collars and hand spacing; same overhand grip on both hands, straight elbows for scapular row. Close movement framing retains upright extensions beyond the top edge."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T11:24:50.590760+00:00",
+        "reviewed_at_display": "Sep 14, 2026 04:24 AM PT (Sep 14, 2026 07:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a2ce037fe63a6912d2ef48ebf209ee51688cda1957c1dec7750c1f99dc84322f",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 288,
+      "key": "accessory_ring_curl",
+      "movement_name": "Ring Curl",
+      "primary_muscle_group": "biceps",
+      "equipment_type": "bodyweight",
+      "implement": "wooden rings and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_288_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "5382767a20828c9cfb77937d",
+      "version": 3,
+      "supersedes_candidate_id": "e240981e557783fee0a50602",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE FUCKING CROSSBAR IS TOO SHORT FOR THE RING ANCHOR! USE A STANDARD FUCKING HEIGHT! THIS IS FUCKING BULLSHIT THAT WE HAVE REPEAT FAILS",
+        "tags": [
+          "equipment",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:24:52.989062+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:24 PM PT (Sep 13, 2026 10:24 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "69240072a725c2d3acd94244c1aca9b76bb581b12a8fd535c717152e2151dccc",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/5382767a20828c9cfb77937d/master.png",
+          "sha256": "c4685130c9df2cf879964fda0c4924cb50c9c3c9d7ed95b4c944a9e1f357f555",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1783550
+        },
+        "app": {
+          "path": "candidates/5382767a20828c9cfb77937d/app.png",
+          "sha256": "aebfe10d036746503cb75638f337f56e089cd43f4619f64fe4368dea83f094b6",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 306705
+        },
+        "thumbnail": {
+          "path": "candidates/5382767a20828c9cfb77937d/thumbnail.png",
+          "sha256": "7a0a2ca7f8206b23572a46bec7cec8cb070d8b707cdfbe33234f9b5ebe75e239",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43538
+        }
+      },
+      "candidate_asset": "candidates/5382767a20828c9cfb77937d/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T11:25:30.463193+00:00",
+          "reviewed_at_display": "Sep 14, 2026 04:25 AM PT (Sep 14, 2026 07:25 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "c4685130c9df2cf879964fda0c4924cb50c9c3c9d7ed95b4c944a9e1f357f555",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T04:04:18.275584+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Generate one corrected Strength Ledger movement artwork, square 1254px or higher. Match the approved style reference: same athletic muscular adult man with short brown hair, full-length dark graphite sleeveless tank covering waist, black shorts, black training shoes, premium realistic anatomy and skin, near-black studio and rubber floor, soft white key light and restrained violet rim from right. No text or labels. Show believable real equipment and force-bearing contact, anatomically coherent hands wrapping the actual implement, neutral head aligned with torso rather than looking sideways at camera. Correct RING CURL. Rebuild the equipment at a REAL standard overhead pull-up height, not a short mini-rack. Exactly TWO 240cm tall square steel uprights floor-bolted on realistic square baseplates, ONE straight horizontal overhead bar connecting their tops, nothing above it, no duplicate bars. Bar is well above this 180cm man's standing reach. Two individual black straps wrap around that single high bar with secure buckle loops, descend long and taut to two complete wooden rings at approximately 145cm height. Athlete feet on floor toward left under/near anchor, torso leans backward toward right about 35 degrees away from vertical, heels planted, knees soft, body in line. Show a biceps CURL with upper arms angled forward at shoulder height and held still, elbows flexed bringing rings toward temples/forehead, palms facing toward own face, wrists aligned. Neither elbows tucked beside ribs like a row nor chin-up. Ring centers separated shoulder width, hands visibly close around lower arcs with normal fingers and thumbs. Head neutral along torso. Show the full height from both baseplates to single top bar within frame with margin. Preserve approved studio/athlete appearance; correct original low anchor, long straps, hands and hardware. No cropped equipment.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/288/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "movement_family": "accessory_biceps",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "wooden rings and rack",
+        "grip": "supinated palms toward face",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "inclined supine",
+        "owner_feedback": "THE FUCKING CROSSBAR IS TOO SHORT FOR THE RING ANCHOR! USE A STANDARD FUCKING HEIGHT! THIS IS FUCKING BULLSHIT THAT WE HAVE REPEAT FAILS",
+        "preflight_notes": "Rebuilt single overhead bar at adult pull-up height with long independent ring straps. Rings near forehead and elbows flexed for the curl; complete upright tops and floor-bolted bases visible. Inspected both ring grips and shoe contact."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T11:25:30.463193+00:00",
+        "reviewed_at_display": "Sep 14, 2026 04:25 AM PT (Sep 14, 2026 07:25 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "c4685130c9df2cf879964fda0c4924cb50c9c3c9d7ed95b4c944a9e1f357f555",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 346,
       "key": "accessory_towel_dead_hang",
       "movement_name": "Towel Dead Hang",
@@ -19887,6 +20390,131 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "2a1a54f3ab212d08d34bb88bb71422eaf86b191bd2bf11a8ad299804e403d83a",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 183,
+      "key": "accessory_neutral_grip_pull_up",
+      "movement_name": "Neutral-Grip Pull-Up",
+      "primary_muscle_group": "lats",
+      "equipment_type": "bodyweight",
+      "implement": "rack with parallel pull-up handles",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_183_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "9ccfb34c076f0a8f05503849",
+      "version": 3,
+      "supersedes_candidate_id": "04a6199bdd5c6e2bf7295e8d",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "I ALREADY FUCKING TOLD YOU TO HAVE THE FUCKING USER FACE THE RACK! I FUCKING TOLD YOU AREADY AND YOU DISREGARDED WHAT I FUCKING SAID! FUCK YOU",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:25:59.341232+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "674f0b12a483d42d8c2bcca3c3d65b9641324533005eca70b7b2f96899d23970",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/9ccfb34c076f0a8f05503849/master.png",
+          "sha256": "05a65fecb689bc7b84659d252bba7e32f40f77c9c80509fa51fbcd596fe610e7",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1861632
+        },
+        "app": {
+          "path": "candidates/9ccfb34c076f0a8f05503849/app.png",
+          "sha256": "989a294196f96bb596f78f7cbeb667296b6b74636e516a922545272e2205df1d",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 325765
+        },
+        "thumbnail": {
+          "path": "candidates/9ccfb34c076f0a8f05503849/thumbnail.png",
+          "sha256": "f4bdab82465620786c28b5c02650beb3043174df275a349d4e1debc161a94993",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46322
+        }
+      },
+      "candidate_asset": "candidates/9ccfb34c076f0a8f05503849/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T11:26:03.129746+00:00",
+          "reviewed_at_display": "Sep 14, 2026 04:26 AM PT (Sep 14, 2026 07:26 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "05a65fecb689bc7b84659d252bba7e32f40f77c9c80509fa51fbcd596fe610e7",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T04:04:16.618364+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Create a corrected square Neutral-Grip Pull-Up artwork from image 1; image 2 supplies the same athlete/clothing/dark studio style. The athlete MUST FACE INTO THE RACK, away from the viewer. Rotate his ENTIRE body 180 degrees from image 1, including shoulders, hips, knees, feet and head. Camera sees the man's BACK and backs of arms and calves in a clear rear three-quarter view. No face turned back toward camera. He looks straight into the open center of the station. His hands grip two parallel horizontal neutral-grip handles which project forward out from the station's high beam, with palms facing each other and thumbs securely wrapped. He pulls in the clear space in FRONT of the support beam: head and chest face the rack and have ample empty clearance between handles. Show exactly TWO straight vertical square rack posts, one sturdy high mounting beam at a realistic 2.35m height, two matched handles securely bolted to that beam, two long ground-level feet connected by one rear floor crossmember. Full station and soles visible. Top half of a strict neutral pull-up, elbows bent naturally down/back, feet suspended comfortably above floor. Maintain original adult male proportions, charcoal full-length tank over plain black shorts, black trainers, near-black background, textured rubber floor, neutral key light and restrained purple right rim. High-quality real equipment photography; no extra uprights, clipped hardware, intersecting tubes, sideways glances or text.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/183/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "rack with parallel pull-up handles",
+        "grip": "neutral palms facing",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "vertical hanging",
+        "owner_feedback": "I ALREADY FUCKING TOLD YOU TO HAVE THE FUCKING USER FACE THE RACK! I FUCKING TOLD YOU AREADY AND YOU DISREGARDED WHAT I FUCKING SAID! FUCK YOU",
+        "preflight_notes": "Athlete now faces into the rack with back toward camera; two hands grasp parallel neutral handles. Complete two-post station and both airborne feet visible. No head/rack intersection observed."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T11:26:03.129746+00:00",
+        "reviewed_at_display": "Sep 14, 2026 04:26 AM PT (Sep 14, 2026 07:26 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "05a65fecb689bc7b84659d252bba7e32f40f77c9c80509fa51fbcd596fe610e7",
         "source": "human_review_ui"
       }
     },
@@ -21674,6 +22302,126 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "e5557e9d9e73e72bd8a80ae2c0cfd0b492295084aaff1dccfcb089dad6484ef6",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 490,
+      "key": "accessory_bent_knee_calf_raise",
+      "movement_name": "Bent-Knee Calf Raise",
+      "primary_muscle_group": "calves",
+      "equipment_type": "bodyweight",
+      "implement": "floor and support rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_490_attempt02",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "9f70024d2811ce4d7453c526",
+      "version": 3,
+      "supersedes_candidate_id": "a279736f463bcabeafd926c7",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHY DOES THE RACK HACE 3 POSTS! FUCKING LOCK THE FUCK IN! YOU ARE GIVIING ME SIT IMAGES!!!!!!!",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:33.547954+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b950bf58f23169b6555f41aee4a68c8a24b7fcea949ec396003c18e002f83504",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/9f70024d2811ce4d7453c526/master.png",
+          "sha256": "b7fffe19d6497c6e829cf613f6eb1470b111edf4c4c0ce6a2c70a4ed330e65de",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1704366
+        },
+        "app": {
+          "path": "candidates/9f70024d2811ce4d7453c526/app.png",
+          "sha256": "f4bf320f8215d9ceb7a64e37f111c92db5aaeedba509d97af2fd775f438d6ddd",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 306670
+        },
+        "thumbnail": {
+          "path": "candidates/9f70024d2811ce4d7453c526/thumbnail.png",
+          "sha256": "713084c7fbd9adf660b1e0fae18cc6d2f3787f9cf2aad4a23406124c0c606f77",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43443
+        }
+      },
+      "candidate_asset": "candidates/9f70024d2811ce4d7453c526/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T11:26:08.729128+00:00",
+          "reviewed_at_display": "Sep 14, 2026 04:26 AM PT (Sep 14, 2026 07:26 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b7fffe19d6497c6e829cf613f6eb1470b111edf4c4c0ce6a2c70a4ed330e65de",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T04:04:16.869553+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Edit this single movement-art image with ONE precise framing correction. Preserve the athlete, pose, movement technique, head direction, all correct hands/grips, strap tension, equipment topology, material detail, dark studio lighting, and purple rim exactly. Move the camera back enough to fit the ENTIRE existing rig. The current highest upright top is cut off at the upper image edge; reconstruct its short capped end above its existing high bar and include both post tops, the entire single high bar and its fasteners, both bases, and both shoes fully INSIDE the square with at least 5% clear margin on every edge. Keep real full-height overhead bar at the same physical height and every perspective relationship; do NOT lower the bar or shorten the rack to make it fit. Do not add a post, brace, duplicate crossbar, or new equipment. Slightly widen the view by about 15% and extend only the consistent near-black background/floor to fit. Same premium exact art; retain crisp facial, finger, ring/handle and steel details. No text.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/490/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_calves",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "light hand balance only",
+        "equipment": "floor and support rack",
+        "grip": "both toes grounded; knees bent",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "standing shallow squat",
+        "owner_feedback": "WHY DOES THE RACK HACE 3 POSTS! FUCKING LOCK THE FUCK IN! YOU ARE GIVIING ME SIT IMAGES!!!!!!!",
+        "preflight_notes": "Replaced malformed three-post rack with two continuous uprights, two feet and a low rear connector. Preserved bent knees and raised heels. Second attempt includes both capped post tops without changing the pose."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T11:26:08.729128+00:00",
+        "reviewed_at_display": "Sep 14, 2026 04:26 AM PT (Sep 14, 2026 07:26 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b7fffe19d6497c6e829cf613f6eb1470b111edf4c4c0ce6a2c70a4ed330e65de",
         "source": "human_review_ui"
       }
     },
@@ -26465,6 +27213,131 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "a80d253a02206147e95238632dee37bb849670d6cc3bb0927cf69a551856801b",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 186,
+      "key": "accessory_sternum_chin_up",
+      "movement_name": "Sternum Chin-Up",
+      "primary_muscle_group": "lats",
+      "equipment_type": "bodyweight",
+      "implement": "straight pull-up bar and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_186_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "a89b95f52d65454a1326bee9",
+      "version": 3,
+      "supersedes_candidate_id": "5ecb30c31c2e2e04ff160981",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "ARE YOU FUCKIGN KIDDING ME MAN? THIS IS SHIT QUALITY! IT LOOKS LIKE FUCKING SHIT! WHY IS THERE 2 CROSS BARS! FUCK YOU",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:28:12.813119+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:28 PM PT (Sep 13, 2026 10:28 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1a7a32acbdd8271951081d90b361a55f4adc552050d2b89f605f57bdc57a5a2a",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/a89b95f52d65454a1326bee9/master.png",
+          "sha256": "3a5565bd58f2cc6d5bb268ea2a5044ce3ed0d5202d3798f12fc6bf5d112abc57",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1590260
+        },
+        "app": {
+          "path": "candidates/a89b95f52d65454a1326bee9/app.png",
+          "sha256": "2c0a628e047027be9e17d048cdd08a02120d6a192814602949bf8166389ec632",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 291863
+        },
+        "thumbnail": {
+          "path": "candidates/a89b95f52d65454a1326bee9/thumbnail.png",
+          "sha256": "2ca6ff83feca60aa3c529105280dabdc5e3a30e54c1f99641072dc64b6b0a087",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42938
+        }
+      },
+      "candidate_asset": "candidates/a89b95f52d65454a1326bee9/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T11:27:00.941020+00:00",
+          "reviewed_at_display": "Sep 14, 2026 04:27 AM PT (Sep 14, 2026 07:27 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3a5565bd58f2cc6d5bb268ea2a5044ce3ed0d5202d3798f12fc6bf5d112abc57",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T04:04:16.333839+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Edit this ONE square movement-art image. Repair ONLY the pull-up station. Preserve the athlete's exact sternum chin-up pose, arched/bent trunk, bent elbows, underhand grips, sternum contact point, face, full-length graphite tank, black shorts, shoes, lighting, framing and existing height above the floor. The single bar he is ALREADY GRIPPING must be the ONLY horizontal bar, at the TOP of this tall two-post station. DELETE the extra unused bar above his head entirely. SHORTEN BOTH POST TOPS to end immediately above the existing gripped bar's mounting plates. Keep the gripped bar at exactly its current elevated height; do NOT lower the athlete or gripped bar. Two straight parallel square uprights, one left and one right, each floor-bolted through a square base plate. One consistent-diameter black pull-up tube joins these uprights at the current sternum/grip height, with clear realistic flange attachments, not penetrating solid posts. There must be empty dark background above the athlete's head and no second crossbar anywhere. Improve hardware finish and fasteners to look like an actual precision-built pull-up rig, not warped generated scaffolding. No text, logos or new objects.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/186/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "straight pull-up bar and rack",
+        "grip": "supinated medium grip",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "backward-arched torso; hips and legs descending in free hang",
+        "owner_feedback": "ARE YOU FUCKIGN KIDDING ME MAN? THIS IS SHIT QUALITY! IT LOOKS LIKE FUCKING SHIT! WHY IS THERE 2 CROSS BARS! FUCK YOU",
+        "preflight_notes": "Removed the unused second crossbar while retaining the owner-corrected arched torso and elevated sternum pull. One gripped bar, two full upright tops and bases; both feet visibly above floor."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T11:27:00.941020+00:00",
+        "reviewed_at_display": "Sep 14, 2026 04:27 AM PT (Sep 14, 2026 07:27 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3a5565bd58f2cc6d5bb268ea2a5044ce3ed0d5202d3798f12fc6bf5d112abc57",
         "source": "human_review_ui"
       }
     }
