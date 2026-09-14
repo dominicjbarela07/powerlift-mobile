@@ -1,3 +1,4 @@
+import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { InlineSessionReorder } from './InlineSessionReorder';
 import { AthleteCoachingScratchpadTrigger } from './AthleteCoachingScratchpad';
 import { clearAuthoringJournal, readAuthoringJournal, writeAuthoringJournal } from '@/lib/session-authoring-journal';
@@ -5,23 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  AppState,
-  Animated,
-  BackHandler,
-  Keyboard,
-  KeyboardAvoidingView,
-  LayoutAnimation,
-  Platform,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { ActivityIndicator, AppState, Animated, BackHandler, Keyboard, LayoutAnimation, Platform, Pressable, RefreshControl, StyleSheet, Switch, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SLButton } from '@/components/ui/sl-button';
@@ -756,7 +741,7 @@ export function SessionEditingWorkspace(props: Props) {
         <Text accessibilityLiveRegion="polite" style={[authorStyles.saveState, { color: saveFailed ? palette.red : sessionDirty ? SLColors.accentMagenta : SLColors.success }]}>{savingSession ? 'Saving…' : saveFailed ? 'Couldn’t save' : sessionDirty ? 'Changed locally' : 'Saved'}</Text>
         <Pressable accessibilityRole="button" accessibilityLabel="Session actions" onPress={() => setToolkitExpanded(true)} style={authorStyles.overflow}><Ionicons name="ellipsis-horizontal" size={23} color={palette.text} /></Pressable>
       </View>
-      <ScrollView scrollEnabled={!draggingOrder} automaticallyAdjustKeyboardInsets ref={listScrollRef} style={styles.scroll} contentContainerStyle={[styles.content, useAccessibilityReflow && styles.contentAccessibility]} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={props.onRefresh} tintColor={palette.muted} />} keyboardShouldPersistTaps="handled" scrollEventThrottle={100} onScroll={(event) => { scrollYRef.current = event.nativeEvent.contentOffset.y; }}>
+      <ScrollView focusClearance={76} scrollEnabled={!draggingOrder} ref={listScrollRef} style={styles.scroll} contentContainerStyle={[styles.content, useAccessibilityReflow && styles.contentAccessibility]} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={props.onRefresh} tintColor={palette.muted} />} keyboardShouldPersistTaps="handled" scrollEventThrottle={100} onScroll={(event) => { scrollYRef.current = event.nativeEvent.contentOffset.y; }}>
         <View style={authorStyles.identity}>
           {props.entryMode !== 'self' && athleteName ? <Text style={authorStyles.subject}>{props.entryMode === 'workspace' ? 'ATHLETE WORKSPACE · ' : ''}{athleteName}</Text> : null}
           <Pressable accessibilityRole="button" accessibilityLabel="Rename Session" disabled={!capabilities.can_rename} onPress={() => { setRenameDraft(sessionDraft.title); setRenaming(true); }}><Text style={authorStyles.title}>{sessionDraft.title}</Text></Pressable>

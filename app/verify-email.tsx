@@ -1,15 +1,6 @@
+import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import React, { useCallback, useState } from 'react';
-import {
-  Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { Image, Keyboard, Platform, Pressable, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLButton } from '@/components/ui/sl-button';
 import { useFocusEffect } from '@react-navigation/native';

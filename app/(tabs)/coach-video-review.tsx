@@ -1,14 +1,6 @@
+import { KeyboardModal as Modal } from '@/components/keyboard/KeyboardSurface';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  Keyboard,
-  Modal,
-  Pressable,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Image, Keyboard, Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';

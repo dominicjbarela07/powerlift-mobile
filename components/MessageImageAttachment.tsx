@@ -1,14 +1,7 @@
+import { KeyboardModal as Modal } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  Modal,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Image, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
 
 import { MessengerAttachment, getAttachmentDownloadUrl } from '@/lib/api';

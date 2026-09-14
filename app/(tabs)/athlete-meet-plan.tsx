@@ -1,17 +1,8 @@
+import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 // app/(tabs)/athlete-meet-plan.tsx
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, Platform, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -1325,7 +1316,6 @@ export default function AthleteMeetPlanScreen() {
         >
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 18 : 0}
             style={styles.detailsModalKeyboardWrap}
           >
             <View style={styles.detailsModalBackdrop}>
@@ -1903,7 +1893,6 @@ export default function AthleteMeetPlanScreen() {
         >
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 18 : 0}
             style={styles.detailsModalKeyboardWrap}
           >
             <View style={styles.detailsModalBackdrop}>
@@ -2520,7 +2509,6 @@ export default function AthleteMeetPlanScreen() {
           <StrengthLedgerSheetModalAdapter transparent animationType="fade" visible onRequestClose={() => setAttemptDraft(null)}>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              keyboardVerticalOffset={Platform.OS === 'ios' ? 18 : 0}
               style={styles.modalKeyboardWrap}
             >
               <View style={styles.modalBackdrop}>
@@ -2577,7 +2565,6 @@ export default function AthleteMeetPlanScreen() {
           <StrengthLedgerSheetModalAdapter transparent animationType="fade" visible={!!attemptDraft} onRequestClose={() => setAttemptDraft(null)}>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              keyboardVerticalOffset={Platform.OS === 'ios' ? 18 : 0}
               style={styles.modalKeyboardWrap}
             >
               <View style={styles.modalBackdrop}>

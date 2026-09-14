@@ -1,8 +1,9 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { StrengthLedgerBottomSheet, type StrengthLedgerBottomSheetHandle } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { SLMotionPressable } from '@/components/ui';

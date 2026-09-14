@@ -1,6 +1,7 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import { StrengthLedgerBottomSheet, type StrengthLedgerBottomSheetHandle } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { SLButton } from '@/components/ui/sl-button';

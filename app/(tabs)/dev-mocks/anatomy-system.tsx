@@ -1,7 +1,8 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MuscleMap } from '@/components/anatomy/MuscleMap';

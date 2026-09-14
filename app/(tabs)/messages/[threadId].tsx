@@ -1,18 +1,9 @@
+import { KeyboardComposer } from '@/components/keyboard/KeyboardComposer';
+import { KeyboardAvoidingView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState} from 'react';
-import {
-  ActionSheetIOS,
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  KeyboardAvoidingView,
-  Linking,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { ActionSheetIOS, ActivityIndicator, Alert, FlatList, Linking, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 
 import { MessageImageAttachment } from '@/components/MessageImageAttachment';
@@ -672,7 +663,6 @@ export function ThreadScreen({
       <KeyboardAvoidingView
         style={styles.keyboardWrap}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 115 : 0}
       >
         {!embedded ? <View style={styles.header}>
           <Pressable
@@ -848,7 +838,7 @@ export function ThreadScreen({
           }}
         />
 
-        <View style={styles.composerWrap}>
+        <KeyboardComposer style={styles.composerWrap}>
           {!!selectedAttachment && (
             <AttachmentPreviewChip
               attachment={selectedAttachment}
@@ -896,7 +886,7 @@ export function ThreadScreen({
               )}
             </Pressable>
           </View>
-        </View>
+        </KeyboardComposer>
       </KeyboardAvoidingView>
     </ThemedView>
   );

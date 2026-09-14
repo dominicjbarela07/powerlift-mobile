@@ -1,3 +1,5 @@
+import { useKeyboardState } from '@/components/keyboard/keyboard-state';
+import { KeyboardAvoidingView, KeyboardModal as Modal, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { StrengthLedgerSheetGestureSurface, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -7,19 +9,7 @@ import * as VideoThumbnails from 'expo-video-thumbnails';
 import { File, Paths } from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
-import {
-  ActivityIndicator,
-  Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  Modal,
-  PanResponder,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Image, Keyboard, PanResponder, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/AuthContext';
@@ -323,7 +313,7 @@ export default function SetVideoPlayerModal({
   const [video, setVideo] = useState<SetVideoSummary | null>(initialVideo || null);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [reviewSheetOpen, setReviewSheetOpen] = useState(false);
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const { visible: keyboardVisible } = useKeyboardState();
   const [feedbackSheetOpen, setFeedbackSheetOpen] = useState(false);
   const [toolMenuOpen, setToolMenuOpen] = useState(false);
   const [loadingUrl, setLoadingUrl] = useState(false);
@@ -413,7 +403,7 @@ export default function SetVideoPlayerModal({
       setUrlError(null);
       setLoadingUrl(false);
       setReviewSheetOpen(false);
-      setKeyboardVisible(false);
+      Keyboard.dismiss();
       setFeedbackSheetOpen(false);
       setToolMenuOpen(false);
       setExportSheetOpen(false);
@@ -460,16 +450,6 @@ export default function SetVideoPlayerModal({
       player.play();
     } catch {}
   }, [player, playerStatus?.status, visible]);
-
-  useEffect(() => {
-    if (!visible) return undefined;
-    const showSub = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
-    const hideSub = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, [visible]);
 
   const closePlayer = useCallback(() => {
     try {
@@ -1277,7 +1257,6 @@ export default function SetVideoPlayerModal({
               <KeyboardAvoidingView
                 pointerEvents="box-none"
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? Math.max(insets.top, 12) : 0}
                 style={styles.reviewKeyboardAvoider}
               >
                 <StrengthLedgerSheetGestureSurface onRequestClose={() => { Keyboard.dismiss(); setReviewSheetOpen(false); }} style={[styles.reviewSheet, keyboardVisible && styles.reviewSheetKeyboardOpen]}>
@@ -1307,7 +1286,7 @@ export default function SetVideoPlayerModal({
                     style={[styles.reviewPanel, keyboardVisible && styles.reviewPanelKeyboardOpen]}
                     contentContainerStyle={[
                       styles.reviewPanelContent,
-                      keyboardVisible && { paddingBottom: Math.max(insets.bottom, 16) + 72 },
+                      keyboardVisible && { paddingBottom: 16 },
                     ]}
                     keyboardShouldPersistTaps="handled"
                     keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'none'}

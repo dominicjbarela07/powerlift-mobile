@@ -1,12 +1,7 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import * as Haptics from 'expo-haptics';
 import React, { useEffect, useRef } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { SLTactileOpacity as TouchableOpacity } from '@/components/ui/sl-motion';
 
 import { Text } from '@/components/ui/sl-text';

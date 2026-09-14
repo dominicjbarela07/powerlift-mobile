@@ -1,12 +1,6 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import React from 'react';
-import {
-  RefreshControl,
-  ScrollView,
-  ScrollViewProps,
-  StyleSheet,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
+import { RefreshControl, ScrollViewProps, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 
 import { SLColors } from '@/constants/theme';
 

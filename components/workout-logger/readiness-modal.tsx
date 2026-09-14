@@ -1,11 +1,6 @@
+import { KeyboardAvoidingView } from '@/components/keyboard/KeyboardSurface';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Animated,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Animated, Platform, StyleSheet, View } from 'react-native';
 import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLButton } from '@/components/ui/sl-button';

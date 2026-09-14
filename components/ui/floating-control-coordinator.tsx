@@ -1,3 +1,4 @@
+import { useKeyboardState } from '@/components/keyboard/keyboard-state';
 import { Ionicons } from '@expo/vector-icons';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
@@ -119,6 +120,8 @@ export function FloatingControlStack({
   style?: StyleProp<ViewStyle>;
 }) {
   const insets = useSafeAreaInsets();
+  const keyboard = useKeyboardState();
+  if (keyboard.visible) return null;
   return (
     <View
       pointerEvents="box-none"

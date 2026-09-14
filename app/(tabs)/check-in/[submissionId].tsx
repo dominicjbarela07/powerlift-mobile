@@ -1,6 +1,7 @@
+import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { StandaloneCheckInFormScreen } from '@/components/AthleteCheckInExperience';
 import { useAuth } from '@/context/AuthContext';

@@ -25,7 +25,7 @@ assert.deepEqual(audit.prior_coverage, {Push:51, Pull:47});
 assert.equal(audit.initial_decisions['NEEDS NEW ART'], 100);
 assert.deepEqual(audit.blocked_ids, [343]);
 const human = json('artwork-review/review-state.json');
-const withdrawn = new Set(human.catalog_exclusions.map(row => row.movement_definition_id));
+const withdrawn = new Set(human.catalog_exclusions.filter(row => historicalConfirmed.some(item => item.id === row.movement_definition_id)).map(row => row.movement_definition_id));
 assert.deepEqual([...withdrawn].sort((a,b)=>a-b), [38,395,561,569]);
 const confirmed = [...historicalConfirmed.filter(row => !withdrawn.has(row.id)), {
   id:646, key:'accessory_ankle_weight_psoas_march', family:'accessory_hip_flexors',

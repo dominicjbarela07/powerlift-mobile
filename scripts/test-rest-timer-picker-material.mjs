@@ -31,7 +31,7 @@ assert.match(modal, /startRestTimer\(REST_TIMER_OPTIONS\[nearestRestTimerIndex\(
 assert.match(modal, /onClose\('selected'\)/);
 
 assert.match(sharedSheet, /backgroundColor:\s*SLColors\.canvasRaised/);
-assert.match(sharedSheet, /paddingBottom:\s*Math\.max\(insets\.bottom, 10\)/);
+assert.match(sharedSheet, /paddingBottom:\s*keyboard\.visible \? 10 : Math\.max\(insets\.bottom, 10\)/);
 assert.match(sharedSheet, /Swipe down to close \$\{accessibilityLabel\}/);
 assert.match(sharedSheet, /Close \$\{accessibilityLabel\}/);
 

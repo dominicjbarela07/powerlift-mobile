@@ -1,7 +1,8 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, StyleSheet, View } from 'react-native';
 
 import { CoachAnalyticsTrend } from '@/components/coach-mobile/CoachAnalyticsTrend';
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';

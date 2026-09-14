@@ -1,16 +1,7 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import React, { createContext, useCallback, useContext, useEffect, useRef } from 'react';
-import {
-  Animated,
-  ImageBackground,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-  type ImageSourcePropType,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { Animated, ImageBackground, Pressable, StyleSheet, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLCompactTabRail } from '@/components/ui/sl-contextual-header';

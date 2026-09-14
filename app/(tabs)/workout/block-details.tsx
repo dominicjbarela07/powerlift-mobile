@@ -1,5 +1,6 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';

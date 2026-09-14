@@ -1,5 +1,6 @@
+import { KeyboardModal as Modal } from '@/components/keyboard/KeyboardSurface';
 import React from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { SLButton } from '@/components/ui/sl-button';
 import { Text } from '@/components/ui/sl-text';

@@ -1,17 +1,8 @@
+import { KeyboardModal as Modal, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { shouldCaptureBottomSheetDismissGesture, shouldDismissBottomSheet, BOTTOM_SHEET_DRAG_REGION_HEIGHT } from '@/lib/bottom-sheet-gesture';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  AccessibilityInfo,
-  Animated,
-  Modal,
-  PanResponder,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { AccessibilityInfo, Animated, PanResponder, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui/sl-text';

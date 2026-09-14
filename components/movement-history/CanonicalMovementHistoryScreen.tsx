@@ -1,16 +1,10 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import { Canvas, Circle, Line, vec } from '@shopify/react-native-skia';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import {
-  Image,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Image, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { AnalyticalHistoryChart } from '@/components/movement-history/AnalyticalHistoryChart';
 import { ChartAxisModeToggle } from '@/components/charts/ChartAxisModeToggle';

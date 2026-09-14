@@ -182,7 +182,7 @@ assert.match(workspace, /minHeight: 44/, 'touch targets retain the mobile minimu
 assert.match(workspace, /SLControlSize\.minimumTouchTarget/, 'compact controls use the canonical minimum touch target');
 assert.match(workspace, /paddingHorizontal: GUTTER/, 'workspace owns one canonical horizontal gutter');
 assert.match(workspace, /KeyboardAvoidingView/, 'the workspace retains a keyboard-safe persistent action region');
-assert.match(workspace, /automaticallyAdjustKeyboardInsets/, 'the route scroll region follows native keyboard insets');
+assert.match(workspace, /KeyboardScrollView as ScrollView/, 'the route scroll region uses measured shared keyboard reveal');
 assert.match(workspace, /inlineActionBarLayer:[\s\S]*justifyContent: 'flex-end'/, 'persistent movement actions stay anchored to the workspace bottom');
 assert.match(workspace, /MovementCardMaterial/, 'inline and collapsed movement cards reuse the canonical Session Logger surface treatment');
 assert.doesNotMatch(workspace, /PlateVisualizationSection|Plate Visualization|LoggerPlateStackVisual|resolveLoggerPlateStackForDisplayWeight/, 'the rejected Plate Visualization section is removed completely');

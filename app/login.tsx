@@ -1,15 +1,7 @@
+import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 // app/login.tsx
 import React, { ComponentType, useEffect, useState } from 'react';
-import {
-  View,
-  Pressable,
-  StyleSheet,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Linking,
-} from 'react-native';
+import { View, Pressable, StyleSheet, Image, Platform, Linking } from 'react-native';
 import { TextInput, Text } from '@/components/ui/sl-text';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';

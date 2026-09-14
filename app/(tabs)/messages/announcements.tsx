@@ -1,19 +1,8 @@
+import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  KeyboardAvoidingView,
-  Linking,
-  Platform,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Linking, Platform, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLContextualHeader } from '@/components/ui';
 
@@ -407,7 +396,6 @@ function CoachAnnouncementHub() {
           <KeyboardAvoidingView
             style={styles.modalKeyboardAvoider}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={0}
           >
             <View style={styles.editorCard}>
               <View style={styles.modalHeader}>

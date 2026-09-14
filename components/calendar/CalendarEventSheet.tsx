@@ -1,21 +1,11 @@
+import { KeyboardAvoidingView, KeyboardModal as Modal, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  TextInput,
-  View,
-} from 'react-native';
+import { Alert, Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 
 import type { AthleteCalendarPersonalEvent } from '@/components/calendar/AthleteCalendarExperience';
-import { Text } from '@/components/ui/sl-text';
+import { TextInput, Text  } from '@/components/ui/sl-text';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 import {
   CALENDAR_ALERT_OPTIONS,

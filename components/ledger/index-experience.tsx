@@ -1,18 +1,11 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { useLedgerResource } from './use-ledger-resource';
 import { useAthleteLedgerSubject } from './athlete-ledger-subject';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
-import {
-  Image,
-  ImageBackground,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-  type ImageSourcePropType,
-} from 'react-native';
+import { Image, ImageBackground, Pressable, StyleSheet, View, type ImageSourcePropType } from 'react-native';
 import Svg, { Circle, Line, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';

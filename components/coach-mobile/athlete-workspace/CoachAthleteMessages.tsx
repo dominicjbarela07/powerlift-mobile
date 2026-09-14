@@ -60,7 +60,7 @@ export function CoachAthleteMessages() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, paddingBottom: 88 },
+  screen: { flex: 1 },
   intro: { paddingHorizontal: SLLayout.screenGutter, paddingTop: 16, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: COACH_V2.border },
   kicker: { color: COACH_V2.violetBright, fontSize: 11, letterSpacing: 1.5 },
   title: { color: COACH_V2.text, fontFamily: SLFontFamilies.display, fontSize: 32, marginTop: 5 },

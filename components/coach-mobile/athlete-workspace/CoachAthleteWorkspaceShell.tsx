@@ -1,3 +1,4 @@
+import { useKeyboardState } from '@/components/keyboard/keyboard-state';
 import { Ionicons } from '@expo/vector-icons';
 import { usePathname, useRouter } from 'expo-router';
 import React, { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
@@ -41,12 +42,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
   const workspace = useCoachAthleteWorkspace();
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
-  useEffect(() => {
-    const show = Keyboard.addListener('keyboardWillShow', () => setKeyboardVisible(true));
-    const hide = Keyboard.addListener('keyboardWillHide', () => setKeyboardVisible(false));
-    return () => { show.remove(); hide.remove(); };
-  }, []);
+  const { visible: keyboardVisible } = useKeyboardState();
   const [overflowOpen, setOverflowOpen] = useState(false);
   const [toolkitOpen, setToolkitOpen] = useState(false);
   const selected = workspaceDestination(pathname);

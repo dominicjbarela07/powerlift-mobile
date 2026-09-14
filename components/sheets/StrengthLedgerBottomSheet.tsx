@@ -1,24 +1,13 @@
+import { KeyboardModal as ReactNativeModal, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import React, { createContext, forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import {
-  AccessibilityInfo,
-  Animated,
-  Easing,
-  Keyboard,
-  Modal as ReactNativeModal,
-  type ModalProps,
-  ScrollView,
-  type ScrollViewProps,
-  type ViewProps,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { AccessibilityInfo, Animated, Easing, Keyboard, type ModalProps, type ScrollViewProps, type ViewProps, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { Text } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useKeyboardState } from '@/components/keyboard/keyboard-state';
 import { useSLReducedMotion } from '@/lib/motion';
 import { SLColors, SLShadows } from '@/constants/theme';
 import { STRENGTH_LEDGER_APP_HEADER } from '@/components/navigation/StrengthLedgerAppHeader';
@@ -195,6 +184,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   visible,
 }, ref) {
   const insets = useSafeAreaInsets();
+  const keyboard = useKeyboardState();
   const { height } = useWindowDimensions();
   const reduceMotion = useSLReducedMotion();
   const translateY = useRef(new Animated.Value(height)).current;
@@ -205,6 +195,8 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   const onPresentRef = useRef(onPresent);
   onPresentRef.current = onPresent;
   const blockedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const presentationHeight = useRef(height);
+  if (!visible) presentationHeight.current = height;
   const [blockedNotice, setBlockedNotice] = useState<string | null>(null);
   const topBoundary = presentationBoundary === 'app-shell'
     ? insets.top + STRENGTH_LEDGER_APP_HEADER.contentHeight
@@ -296,7 +288,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
       onPresentRef.current?.();
       return;
     }
-    translateY.setValue(Math.max(height, 640));
+    translateY.setValue(Math.max(presentationHeight.current, 640));
     backdropOpacity.setValue(0);
     Animated.parallel([
       Animated.timing(backdropOpacity, {
@@ -322,7 +314,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
     ]).start(({ finished }) => {
       if (finished) onPresentRef.current?.();
     });
-  }, [backdropOpacity, deliberateMotion, height, reduceMotion, translateY, visible]);
+  }, [backdropOpacity, deliberateMotion, reduceMotion, translateY, visible]);
 
   useEffect(() => () => {
     if (blockedTimerRef.current) clearTimeout(blockedTimerRef.current);
@@ -358,7 +350,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
                 styles.sheet,
                 {
                   height: sheetHeight,
-                  paddingBottom: Math.max(insets.bottom, 10),
+                  paddingBottom: keyboard.visible ? 10 : Math.max(insets.bottom, 10),
                   transform: [{ translateY }],
                 },
               ]}
@@ -384,7 +376,7 @@ const styles = StyleSheet.create({
   gestureModalRoot: { flex: 1 },
   stage: { flex: 1, justifyContent: 'flex-end' },
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.72)' },
-  sheet: { width: '100%', overflow: 'hidden', borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderBottomWidth: 0, borderColor: SLColors.borderStrong, backgroundColor: SLColors.canvasRaised, ...SLShadows.shadowSheet },
+  sheet: { flexShrink: 1, minHeight: 0, maxHeight: '100%', width: '100%', overflow: 'hidden', borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderBottomWidth: 0, borderColor: SLColors.borderStrong, backgroundColor: SLColors.canvasRaised, ...SLShadows.shadowSheet },
   chrome: { position: 'relative', height: BOTTOM_SHEET_DRAG_REGION_HEIGHT, flexShrink: 0, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 8 },
   legacyChrome: { minHeight: BOTTOM_SHEET_DRAG_REGION_HEIGHT, flexShrink: 0, alignSelf: 'stretch', justifyContent: 'center' },
   dragHandle: { width: 46, height: 5, borderRadius: 3, backgroundColor: '#5C6070' },

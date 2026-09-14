@@ -1,7 +1,8 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { RestTimerClockText } from './session-clock-text';
 import type { ActiveRestTimer } from '@/lib/rest-timer-completion-core';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';

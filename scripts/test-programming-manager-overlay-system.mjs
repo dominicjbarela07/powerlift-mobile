@@ -78,6 +78,6 @@ assert.match(canonicalSheet, /Swipe down to close/);
 assert.match(canonicalSheet, /shouldDismissBottomSheet/);
 assert.doesNotMatch(canonicalSheet, /bodyDismissGesture|Gesture\.Simultaneous|scrollOffsetY/, 'body scrolling never participates in dismissal');
 assert.doesNotMatch(canonicalSheet, /PanResponder/);
-assert.match(canonicalSheet, /paddingBottom: Math\.max\(insets\.bottom, 10\)/);
+assert.match(canonicalSheet, /paddingBottom: keyboard\.visible \? 10 : Math\.max\(insets\.bottom, 10\)/);
 
 console.log('Programming Manager canonical overlay, copy workflow, tactile, and dismissal contracts passed.');

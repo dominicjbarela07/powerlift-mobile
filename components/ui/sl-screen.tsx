@@ -1,12 +1,7 @@
+import { useKeyboardState } from '@/components/keyboard/keyboard-state';
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import React, { type ReactNode } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  type ScrollViewProps,
-  type StyleProp,
-  type ViewProps,
-  type ViewStyle,
-} from 'react-native';
+import { StyleSheet, type ScrollViewProps, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { SLLayout } from '@/constants/theme';
@@ -29,7 +24,8 @@ type SLScrollScreenProps = ScrollViewProps & {
   contentStyle?: StyleProp<ViewStyle>;
 };
 
-function safeEdges(edges: ScreenEdges) {
+function safeEdges(edges: ScreenEdges, keyboardVisible: boolean) {
+  if (keyboardVisible) return edges === 'top' || edges === 'both' ? ['top'] as const : [] as const;
   if (edges === 'top') return ['top'] as const;
   if (edges === 'bottom') return ['bottom'] as const;
   if (edges === 'none') return [] as const;
@@ -45,8 +41,9 @@ export function SLScreen({
   disableEntranceMotion = false,
   ...props
 }: SLScreenProps) {
+  const keyboard = useKeyboardState();
   return (
-    <SafeAreaView edges={safeEdges(edges)} style={[style, styles.safe]} {...props}>
+    <SafeAreaView edges={safeEdges(edges, keyboard.visible)} style={[style, styles.safe]} {...props}>
       <SLMotionEntrance disabled={disableEntranceMotion} style={[styles.content, padded ? styles.padded : null, contentStyle]}>{children}</SLMotionEntrance>
     </SafeAreaView>
   );
@@ -62,8 +59,9 @@ export function SLScrollScreen({
   keyboardShouldPersistTaps = 'handled',
   ...props
 }: SLScrollScreenProps) {
+  const keyboard = useKeyboardState();
   return (
-    <SafeAreaView edges={safeEdges(edges)} style={[style, styles.safe]}>
+    <SafeAreaView edges={safeEdges(edges, keyboard.visible)} style={[style, styles.safe]}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={[

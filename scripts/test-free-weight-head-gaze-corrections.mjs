@@ -19,7 +19,7 @@ assert.equal(audit.corrected_count, 22);
 assert.equal(audit.kept_count, 176);
 assert.equal(new Set(audit.movements.map(row => row.id)).size, 198);
 assert.deepEqual(sortedIds(audit.movements), sortedIds(before.movements));
-const withdrawn = new Set(humanState.catalog_exclusions.map(row=>row.movement_definition_id));
+const withdrawn = new Set(humanState.catalog_exclusions.filter(row=>before.movements.some(item=>item.id===row.movement_definition_id)).map(row=>row.movement_definition_id));
 assert.deepEqual([...withdrawn].sort((a,b)=>a-b),[38,395,561,569]);
 assert.deepEqual(sortedIds(current.movements), [...sortedIds(before.movements.filter(row=>!withdrawn.has(row.id))),646].sort((a,b)=>a-b), 'current human-approved catalog supersedes the historical audit without erasing its provenance');
 assert.deepEqual(sortedIds(audit.movements.filter(row => row.decision === 'CORRECT')), expected);

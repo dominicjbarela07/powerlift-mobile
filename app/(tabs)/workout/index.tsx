@@ -1,3 +1,4 @@
+import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { evidenceReadCache } from '@/lib/evidence-read-cache';
 import { ProgrammingReuseLibrary } from '@/components/coach-mobile/ProgrammingReuseLibrary';
@@ -5,19 +6,7 @@ import { FocusedSessionAuthoring } from '@/components/coach-mobile/FocusedSessio
 import { useOptionalCoachAthleteWorkspace } from '@/components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceContext';
 import { assertProgrammingResponseSubject, programmingSubjectRoute, resolveProgrammingSubject } from '@/lib/programming-subject';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Animated,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, Animated, Image, Platform, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -3111,7 +3100,6 @@ function ProgrammingManagerSheet({
     >
       <KeyboardAvoidingView
         behavior={keyboardAware && Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={0}
         style={styles.programmingSheetKeyboard}
       >
         <View style={styles.programmingSheetHeader}>

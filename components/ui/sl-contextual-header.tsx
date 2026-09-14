@@ -1,15 +1,7 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import React, { type ReactNode } from 'react';
-import {
-  ImageBackground,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-  type ImageSourcePropType,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { ImageBackground, Pressable, StyleSheet, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
 
 import { SLColors, SLFontFamilies, SLLayout } from '@/constants/theme';
 import { Text } from './sl-text';

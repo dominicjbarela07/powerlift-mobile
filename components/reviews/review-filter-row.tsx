@@ -1,5 +1,6 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import React from 'react';
-import { ScrollView, StyleSheet, Pressable } from 'react-native';
+import { StyleSheet, Pressable } from 'react-native';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';

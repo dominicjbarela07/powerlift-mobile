@@ -1,20 +1,9 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  AccessibilityInfo,
-  ActivityIndicator,
-  Animated,
-  Easing,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, Animated, Easing, Pressable, RefreshControl, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -24,7 +13,7 @@ import {
   SLTabRowControlLabel,
   SLTabRowControlShell,
 } from '@/components/navigation/sl-tab-row-control';
-import { Text } from '@/components/ui/sl-text';
+import { TextInput, Text  } from '@/components/ui/sl-text';
 import {
   SLColors,
   SLLayout,

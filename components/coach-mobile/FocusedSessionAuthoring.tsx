@@ -1,5 +1,6 @@
+import { KeyboardModal as Modal } from '@/components/keyboard/KeyboardSurface';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { Modal, Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import type { StrengthLedgerBottomSheetHandle } from '@/components/sheets/StrengthLedgerBottomSheet';

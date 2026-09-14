@@ -115,7 +115,7 @@ assert.doesNotMatch(workspace, /accessibilityLabel="Approved Substitutions"[\s\S
 assert.match(workspace, /chooseApprovedSubstitution[\s\S]*props\.onChangeAccessory[\s\S]*movementDefinitionId[\s\S]*approvedSubstitutions/, 'approved substitutions retain governed movement IDs from the picker');
 assert.match(workspace, /patch\.approved_subs = movement\.approvedSubstitutions\.map[\s\S]*movement_definition_id: row\.movementDefinitionId/, 'approved substitutions serialize stable governed identities');
 assert.match(editor, /approved_sub_identities[\s\S]*movement_identity[\s\S]*movementDefinitionId/, 'persisted approved substitutions rehydrate from canonical identity payloads');
-assert.match(workspace, /automaticallyAdjustKeyboardInsets[\s\S]*keyboardShouldPersistTaps="handled"/, 'the inline workspace remains keyboard safe');
+assert.match(workspace, /KeyboardScrollView as ScrollView[\s\S]*keyboardShouldPersistTaps="handled"/, 'the inline workspace remains keyboard safe');
 assert.match(workspace, /if \(!success\) \{[\s\S]*acceptIncomingSessionRef\.current = false;[\s\S]*return false/, 'failed saves keep the local draft authoritative');
 assert.match(workspace, /if \(!journalReady \|\| savingSession \|\| \(sessionDirty && !acceptIncomingSessionRef\.current\)\) return;[\s\S]*setPersistedSession\(next\)/, 'only accepted server state can replace the dirty draft');
 assert.match(route, /Your Session edits are still available\./, 'failed saves preserve the local Accessory draft');

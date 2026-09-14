@@ -1,21 +1,11 @@
+import { KeyboardAvoidingView, KeyboardModal as Modal, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { sessionExposureCache } from '@/lib/session-exposure-cache';
 import { ProgrammingReuseLibrary } from '@/components/coach-mobile/ProgrammingReuseLibrary';
 import { sessionAuthoringCommand } from '@/lib/session-authoring-command';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useOptionalCoachAthleteWorkspace } from '@/components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceContext';
 import { assertProgrammingMutationSubject, assertProgrammingResponseSubject, resolveProgrammingSubject } from '@/lib/programming-subject';
-import {
-  AccessibilityInfo,
-  ActivityIndicator,
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, Alert, Image, Platform, StyleSheet, View } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';

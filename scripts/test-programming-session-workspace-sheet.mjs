@@ -34,7 +34,7 @@ assert.match(route, /registerDismissRequest=\{props\.registerDismissRequest\}/, 
 assert.doesNotMatch(route, /programmingWeekContext|programmingWorkspaceSheet|programmingWorkspaceHandle/, 'the reusable workspace must not stack a second Week header or sheet inside the outer sheet.');
 
 assert.match(editor, /registerDismissRequest\?\.\(\(\) => resolveDirty\(onCloseWorkspace\)\)/, 'backdrop, close, and drag dismissal must protect unsaved changes.');
-assert.match(editor, /automaticallyAdjustKeyboardInsets/, 'workspace scrolling must continue to own keyboard adjustment.');
+assert.match(editor, /KeyboardScrollView as ScrollView/, 'workspace scrolling must use the shared keyboard-adjusted viewport.');
 assert.match(editor, /keyboardShouldPersistTaps="handled"/, 'keyboard interaction must not steal workspace controls.');
 assert.match(editor, /authorStyles\.toolbar[\s\S]*insets\.bottom/, 'the authoring bar respects the home indicator');
 assert.match(editor, /setSessionEditorOverlayOpen\(true\)/, 'the workspace must suppress competing navigation for its entire mounted lifecycle.');

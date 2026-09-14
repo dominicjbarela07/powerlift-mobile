@@ -1,3 +1,4 @@
+import { KeyboardModal as Modal } from '@/components/keyboard/KeyboardSurface';
 // app/_layout.tsx
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';
@@ -10,7 +11,7 @@ import Constants from 'expo-constants';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import type { NotificationResponse } from 'expo-notifications';
-import { ActivityIndicator, Alert, AppState, Modal, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Keyboard, ActivityIndicator, Alert, AppState, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { API_BASE, registerPushToken } from '@/lib/api';
@@ -18,6 +19,7 @@ import { isUpdateReloadSafe, subscribeUpdateSafety } from '@/lib/updateSafety';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
 import { Text } from '@/components/ui/sl-text';
 import { AppShell } from '@/components/AppShell';
+import { KeyboardViewport } from '@/components/keyboard/KeyboardSurface';
 import { RestTimerCompletionPresenter } from '@/components/rest-timer-completion-presenter';
 import { isRestTimerNotification } from '@/lib/rest-timer-completion-core';
 import { acknowledgeGlobalRestTimerCompletion } from '@/lib/rest-timer-completion';
@@ -205,6 +207,11 @@ function RootStack() {
   const { authReady, user, activeMobileMode } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const keyboardPath = useRef(pathname);
+  useEffect(() => {
+    if (keyboardPath.current !== pathname) Keyboard.dismiss();
+    keyboardPath.current = pathname;
+  }, [pathname]);
   const registeredPushTokenRef = useRef<string | null>(null);
   const [authWaitExpired, setAuthWaitExpired] = useState(false);
   const isIndividual = activeMobileMode === 'individual';
@@ -426,7 +433,7 @@ function RootStack() {
 
   return (
     <>
-      <Stack screenOptions={{ contentStyle: styles.transparentScene }}>
+      <Stack screenLayout={({ children }) => <KeyboardViewport independent>{children}</KeyboardViewport>} screenOptions={{ contentStyle: styles.transparentScene }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

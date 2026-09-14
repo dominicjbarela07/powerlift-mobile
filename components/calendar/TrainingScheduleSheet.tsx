@@ -1,18 +1,11 @@
+import { KeyboardAvoidingView, KeyboardModal as Modal } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import type { AthleteCalendarSession } from '@/components/calendar/AthleteCalendarExperience';
-import { Text } from '@/components/ui/sl-text';
+import { TextInput, Text  } from '@/components/ui/sl-text';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 
 export type TrainingScheduleMutation = { start_time: string | null };

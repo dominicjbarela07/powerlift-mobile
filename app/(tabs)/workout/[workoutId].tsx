@@ -1,5 +1,7 @@
-// app/(tabs)/workout/[workoutId].tsx
 // @ts-nocheck
+import { KeyboardScrollView as ScrollView, KeyboardModal as Modal, KeyboardAvoidingView } from '@/components/keyboard/KeyboardSurface';
+// app/(tabs)/workout/[workoutId].tsx
+
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createLoggerJournal } from '@/lib/session-logger-journal';
@@ -16,25 +18,7 @@ import { ApprovedSubstitutionPicker } from '@/components/workout-logger/approved
 
 
 import React, { useCallback, useEffect, useMemo, useReducer, useState, useRef, useSyncExternalStore } from 'react';
-import {
-  View,
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Alert,
-  Modal,
-  AppState,
-  Animated,
-  Easing,
-  AccessibilityInfo,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
-  findNodeHandle,
-  UIManager,
-  LayoutAnimation,
-} from 'react-native';
+import { View, ActivityIndicator, StyleSheet, TouchableWithoutFeedback, Alert, AppState, Animated, Easing, AccessibilityInfo, Platform, Keyboard, findNodeHandle, UIManager, LayoutAnimation } from 'react-native';
 import { SLMotionPressable as Pressable, SLTactileOpacity as TouchableOpacity } from '@/components/ui/sl-motion';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Text, TextInput } from '@/components/ui/sl-text';
@@ -9935,7 +9919,6 @@ export default function WorkoutViewerScreen() {
         <KeyboardAvoidingView
           style={styles.coreWheelBackdrop}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={0}
         >
           <TouchableWithoutFeedback onPress={closeIdentityPicker}><View style={styles.coreWheelBackdropHit} /></TouchableWithoutFeedback>
           <View
@@ -10224,7 +10207,6 @@ export default function WorkoutViewerScreen() {
         <KeyboardAvoidingView
           style={styles.editSetKeyboardAvoider}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 0}
         >
           <View style={styles.coreWheelBackdrop}>
             <TouchableWithoutFeedback onPress={() => {
@@ -10371,7 +10353,6 @@ export default function WorkoutViewerScreen() {
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 24 : 0}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={[styles.modalBackdrop, styles.postSessionBackdrop]}>

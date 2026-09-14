@@ -1,3 +1,4 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,18 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import {
-  AccessibilityInfo,
-  Alert,
-  FlatList,
-  Platform,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { AccessibilityInfo, Alert, FlatList, Platform, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,7 +20,7 @@ import {
   SLTabRowControlShell,
 } from '@/components/navigation/sl-tab-row-control';
 import { SLAthleteAvatar, SLButton, SLCompactDropdown, SLErrorState, SLLoadingState, SLScreen } from '@/components/ui';
-import { Text } from '@/components/ui/sl-text';
+import { TextInput, Text  } from '@/components/ui/sl-text';
 import { SLColors, SLLayout, SLSpacing, SLStatusTones, type SLStatusTone } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
 import { resolveCalendarSessionStatus } from '@/lib/calendar-session-status';
@@ -1827,7 +1817,7 @@ function CalendarAgendaRow({ entry, onSessionPress, onMeetPress, onCustomPress }
 }
 
 function Sheet({ children, onClose, title, visible, height = 'auto' }: { children: React.ReactNode; onClose: () => void; title: string; visible: boolean; height?: number | 'auto' }) {
-  return <StrengthLedgerSheetModalAdapter animationType="fade" onRequestClose={onClose} transparent visible={visible}><View style={styles.modalOverlay}><Pressable onPress={onClose} style={StyleSheet.absoluteFill} /><View style={[styles.sheet, height !== 'auto' && { maxHeight: height }]}><StrengthLedgerSheetDragRegion><View style={styles.sheetHeader}><Text style={styles.sheetTitle}>{title}</Text><Pressable accessibilityLabel={`Close ${title}`} onPress={onClose} style={styles.sheetClose}><Ionicons color={SLColors.text} name="close" size={21} /></Pressable></View></StrengthLedgerSheetDragRegion>{children}</View></View></StrengthLedgerSheetModalAdapter>;
+  return <StrengthLedgerSheetModalAdapter animationType="fade" onRequestClose={onClose} transparent visible={visible}><View style={styles.modalOverlay}><Pressable onPress={onClose} style={StyleSheet.absoluteFill} /><View style={[styles.sheet, height !== 'auto' && { height }, { flexShrink: 1, minHeight: 0, maxHeight: '100%' }]}><StrengthLedgerSheetDragRegion><View style={styles.sheetHeader}><Text style={styles.sheetTitle}>{title}</Text><Pressable accessibilityLabel={`Close ${title}`} onPress={onClose} style={styles.sheetClose}><Ionicons color={SLColors.text} name="close" size={21} /></Pressable></View></StrengthLedgerSheetDragRegion>{children}</View></View></StrengthLedgerSheetModalAdapter>;
 }
 
 function CreateModal({ visible, draft, setDraft, athletes, onClose, onSession, onCustom }: { visible: boolean; draft: ItemDraft; setDraft: React.Dispatch<React.SetStateAction<ItemDraft>>; athletes: CalendarAthlete[]; onClose: () => void; onSession: () => void; onCustom: () => void }) {

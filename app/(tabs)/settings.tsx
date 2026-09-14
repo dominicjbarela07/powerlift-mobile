@@ -1,19 +1,8 @@
+import { useKeyboardState } from '@/components/keyboard/keyboard-state';
+import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Keyboard,
-  KeyboardAvoidingView,
-  Linking,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Keyboard, Linking, Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -315,6 +304,7 @@ function supportedTimezones(deviceTimezone: string | null) {
 export default function SettingsScreen() {
   const router = useRouter();
   const { height: viewportHeight } = useWindowDimensions();
+  const keyboard = useKeyboardState();
   const auth = useAuth() as any;
   const refreshAccountState = auth?.refreshAccountState;
   const applyAccountStatePayload = auth?.applyAccountStatePayload;
@@ -2127,19 +2117,19 @@ export default function SettingsScreen() {
           <KeyboardAvoidingView
             style={styles.keyboardModalRoot}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={0}
           >
-            <Pressable style={[styles.modalBackdrop, styles.feedbackModalBackdrop]} onPress={Keyboard.dismiss}>
+            <Pressable accessible={false} style={[styles.modalBackdrop, styles.feedbackModalBackdrop]} onPress={Keyboard.dismiss}>
               <Pressable
+                accessible={false}
                 style={[styles.modalSheet, styles.feedbackModalSheet, { height: feedbackModalHeight }]}
                 onPress={(event) => event.stopPropagation()}
               >
               <StrengthLedgerSheetDragRegion><View style={styles.modalHeader}>
                 <View style={styles.modalTitleWrap}>
                   <ThemedText style={styles.modalTitle}>Send Feedback</ThemedText>
-                  <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
+                  {!keyboard.visible ? <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
                     Report a bug, request a feature, or share what would make Strength Ledger better.
-                  </ThemedText>
+                  </ThemedText> : null}
                 </View>
                 <Pressable style={styles.modalClose} onPress={() => setFeedbackModalOpen(false)} disabled={feedbackSubmitting}>
                   <Ionicons name="close" size={22} color={SLColors.text} />
@@ -2314,7 +2304,6 @@ export default function SettingsScreen() {
           <KeyboardAvoidingView
             style={styles.keyboardModalRoot}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={0}
           >
             <Pressable style={styles.modalBackdrop} onPress={Keyboard.dismiss}>
               <Pressable style={[styles.modalSheet, styles.upgradeModalSheet]} onPress={(event) => event.stopPropagation()}>
@@ -3413,6 +3402,10 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   feedbackModalSheet: {
+    backgroundColor: SLColors.surfaceRaised,
+    minHeight: 0,
+    maxHeight: '100%',
+    flexShrink: 1,
     width: '100%',
     maxWidth: 620,
     alignSelf: 'center',

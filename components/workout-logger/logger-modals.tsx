@@ -1,14 +1,9 @@
 // @ts-nocheck
+import { KeyboardAvoidingView, KeyboardModal as Modal, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
+
 
 import React from 'react';
-import {
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SLTactileOpacity as TouchableOpacity } from '@/components/ui/sl-motion';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLConfirmationModal } from '@/components/ui/sl-confirmation-modal';

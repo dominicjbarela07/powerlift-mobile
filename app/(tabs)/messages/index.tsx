@@ -1,19 +1,9 @@
+import { KeyboardComposer } from '@/components/keyboard/KeyboardComposer';
+import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActionSheetIOS,
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Linking,
-  Platform,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { ActionSheetIOS, ActivityIndicator, Alert, Linking, Platform, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 
 import { MessageImageAttachment } from '@/components/MessageImageAttachment';
@@ -836,7 +826,6 @@ function AthleteMessagesScreen() {
       <KeyboardAvoidingView
         style={styles.screenKeyboardWrap}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 115 : 0}
       >
         <View style={styles.athletePinnedHeader}>
           {!!error && (
@@ -1061,7 +1050,7 @@ function AthleteMessagesScreen() {
         </View>
 
         {activeThread && (
-          <View style={styles.composerWrap}>
+          <KeyboardComposer style={styles.composerWrap}>
             {hasMissedSessionDraft && (
               <View style={styles.contextDraftChip}>
                 <Ionicons name="alert-circle-outline" size={15} color={SLColors.danger} />
@@ -1115,7 +1104,7 @@ function AthleteMessagesScreen() {
                 )}
               </Pressable>
             </View>
-          </View>
+          </KeyboardComposer>
         )}
       </KeyboardAvoidingView>
 

@@ -1,3 +1,4 @@
+import { useKeyboardState } from '@/components/keyboard/keyboard-state';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import {
@@ -93,6 +94,7 @@ export function SLFloatingNavigationDock({
   items: SLFloatingNavigationDockItem[];
 }) {
   const { width: viewportWidth } = useWindowDimensions();
+  const keyboard = useKeyboardState();
   const [reduceTransparency, setReduceTransparency] = useState(false);
   const usesNativeLiquidGlass = supportsNativeLiquidGlass() && !reduceTransparency;
   const expandedWidth = Math.max(
@@ -117,6 +119,8 @@ export function SLFloatingNavigationDock({
       subscription.remove();
     };
   }, []);
+
+  if (keyboard.visible) return null;
 
   return (
     <View
