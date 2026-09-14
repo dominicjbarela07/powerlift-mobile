@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 781,
+  "revision": 871,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-14T16:39:30.267025+00:00",
-  "updated_at_display": "Sep 14, 2026 09:39 AM PT (Sep 14, 2026 12:39 PM Eastern)",
+  "updated_at": "2026-09-14T18:15:15.683740+00:00",
+  "updated_at_display": "Sep 14, 2026 11:15 AM PT (Sep 14, 2026 02:15 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -47,6 +47,46 @@
     },
     "canonical_bodyweight_accessories": {
       "label": "Bodyweight Accessories",
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "test_only": false,
+      "baseline": {
+        "movement_definition_id": 33,
+        "key": "accessory_incline_dumbbell_bench_press",
+        "movement_name": "Incline Dumbbell Bench Press",
+        "candidate_asset": "candidates/existing-33-e05a3bf38fa7/master.png",
+        "files": {
+          "master": {
+            "path": "candidates/existing-33-e05a3bf38fa7/master.png",
+            "dimensions": [
+              1254,
+              1254
+            ],
+            "bytes": 1871026,
+            "sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe"
+          },
+          "app": {
+            "path": "candidates/existing-33-e05a3bf38fa7/app.png",
+            "dimensions": [
+              512,
+              512
+            ],
+            "bytes": 317984,
+            "sha256": "14df7b7e03afa5cc37074a53a00117f7da58771821873de5ec0f94fa3e7d60a4"
+          },
+          "thumbnail": {
+            "path": "candidates/existing-33-e05a3bf38fa7/thumbnail.png",
+            "dimensions": [
+              192,
+              192
+            ],
+            "bytes": 46716,
+            "sha256": "741dde3985a23db10a37e71fed4aec03292f95d92758f657e71cea860c4e6cf1"
+          }
+        }
+      }
+    },
+    "canonical_machine_accessories": {
+      "label": "Machine Accessories",
       "baseline_candidate_id": "existing-33-e05a3bf38fa7",
       "test_only": false,
       "baseline": {
@@ -17723,6 +17763,134 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "cefd2f01479525962936a4da9a5206e269ef47ed5586dd01475c0868666800ec",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 102,
+      "key": "accessory_handstand_push_up",
+      "movement_name": "Handstand Push-Up",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "bodyweight",
+      "implement": "wall and floor",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review10_20260914_102_back_to_wall_attempt03",
+      "generation_batch": "handstand-review-round-10-2026-09-14",
+      "candidate_id": "b5ee29c48e06185f9cca481f",
+      "version": 5,
+      "supersedes_candidate_id": "b1174495be3fda62068fbf66",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "LOOK UP A FUCKING REFERENCE FOR THIS! THE BODY IS ALL FUCKED UP",
+        "tags": [
+          "human_anatomy"
+        ],
+        "reviewed_at": "2026-09-14T16:32:03.003118+00:00",
+        "reviewed_at_display": "Sep 14, 2026 09:32 AM PT (Sep 14, 2026 12:32 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b64cf8c574cf1fb868355300d5622ad330ac54aff4a7262ee53aa753b297386f",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/b5ee29c48e06185f9cca481f/master.png",
+          "sha256": "db1f5b4755c54a735f73d93d86376e2e14fa5113e6dabd19b5bddfa8e7332391",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1926342
+        },
+        "app": {
+          "path": "candidates/b5ee29c48e06185f9cca481f/app.png",
+          "sha256": "406fa33c5c6acd95f517ec9fd6ccfab9ed5ff033b42425130ceb54200e8e7b48",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 330858
+        },
+        "thumbnail": {
+          "path": "candidates/b5ee29c48e06185f9cca481f/thumbnail.png",
+          "sha256": "c8571e34915ede0ccd68105a041a6c2b5b5ab6230b22ada31479f5b74298f93f",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42378
+        }
+      },
+      "candidate_asset": "candidates/b5ee29c48e06185f9cca481f/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T16:43:18.950103+00:00",
+          "reviewed_at_display": "Sep 14, 2026 09:43 AM PT (Sep 14, 2026 12:43 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "db1f5b4755c54a735f73d93d86376e2e14fa5113e6dabd19b5bddfa8e7332391",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T16:39:30.266411+00:00",
+      "created_at_display": "Sep 14, 2026 09:39 AM PT (Sep 14, 2026 12:39 PM Eastern)",
+      "generation_prompt": "Use case: style-transfer. Restyle REFERENCE 1 into a single square Strength Ledger movement illustration while preserving its exact photographed BACK-TO-WALL HANDSTAND PUSH-UP anatomy, pose and camera angle. Reference 1 is the real pose target and is the authority for every joint, palm, shoulder, knee, ankle, foot and head direction. Replace the female demonstrator with the original male athlete and dark studio treatment from Reference 2. Reference 2 controls ONLY athlete identity, clothes and rendering style, never pose. Keep reference 1's back-to-wall orientation: heels/back side toward wall, front torso facing room, legs straight together; copy the actual shape and orientation of both upside-down feet. Preserve the photograph's naturally turned-out hands and elbows exactly. Head and neck MUST also follow Reference 1: neutral neck, forehead/face on room side, back of skull on wall side; do not turn head toward the wall or twist it relative to torso. The room-facing visible torso is the FRONT: believable pectoral and abdominal contour under the tank, not shoulder blades/spine. Keep the exact continuous front/back orientation from the face through chest, pelvis, kneecaps and toes. Both bent arms support a controlled bottom position with head just above floor, as in real reference. Male athlete: short brown hair, graphite sleeveless full-length athletic tank covering waist and black shorts, black trainers. Dark near-black wall, textured black rubber floor, soft neutral key and restrained purple right rim. Replace original gym floor graphics/clutter with clean dark studio. Preserve normal realistic proportions rather than enlarging muscles. Widen the canvas to square by extending dark environment; preserve full body including all fingers and heels, modest top/bottom margins. No text, labels, logos, equipment, triptych or other people. Do not reinvent or reinterpret the real pose; faithfully preserve its anatomy and spatial relationships.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/handstand-review-round-10-2026-09-14/102/attempt-03.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "movement_family": "accessory_front_delts",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "wall and floor",
+        "grip": "palms flat, slightly wider than shoulders",
+        "orientation": "Back-to-wall handstand push-up, per explicit owner correction",
+        "owner_feedback": "LOOK UP A FUCKING REFERENCE FOR THIS! THE BODY IS ALL FUCKED UP",
+        "owner_followup": "NO LETS DO BACK TO WALL HANDSTAND PUSHUP!",
+        "pose_reference": "https://games.crossfit.com/workouts/open/2016/4",
+        "pose_reference_image": "https://games-assets.crossfit.com/s3fs-public/HSPUBottom-2016012723041824_DMR_AT5Y0814.JPG",
+        "preflight_notes": "Rebuilt full body from real back-to-wall reference. Back/glutes/heel backs face wall; chest and knees face room, toes project away from wall. Head orientation matches torso and real photo. Both palms and complete feet in frame. Previous chest-to-wall attempt superseded by owner's explicit direction; only this selected back-to-wall candidate enters Pending.",
+        "inspection": "Full master inspected against real pose and approved style. Agent inspection is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T16:43:18.950103+00:00",
+        "reviewed_at_display": "Sep 14, 2026 09:43 AM PT (Sep 14, 2026 12:43 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "db1f5b4755c54a735f73d93d86376e2e14fa5113e6dabd19b5bddfa8e7332391",
         "source": "human_review_ui"
       }
     },
