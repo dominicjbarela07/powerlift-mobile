@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['initial hydration equals same-movement Swap identity', ['scripts/test-initial-hydration-movement-identity.mjs']],
   ['entire governed catalog retains artwork through thin payloads', ['scripts/test-governed-movement-art-taxonomy.mjs']],
   ['Programming exact Last Exposure and subject isolation', ['scripts/test-programming-last-exposure.mjs', 'scripts/test-programming-workspace-subject.mjs']],
   ['bottom sheets reserve dismissal for top chrome', ['scripts/test-bottom-sheet-gestures.mjs', 'scripts/test-bottom-sheet-consumer-convergence.mjs']],

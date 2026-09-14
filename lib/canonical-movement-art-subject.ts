@@ -1,4 +1,5 @@
 import { governedAccessoryArtworkTaxonomy, governedCoreArtworkTaxonomy } from './governed-movement-art-taxonomy';
+import { normalizeWorkoutItemMovementReferences } from './workout-item-movement-references';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, RETIRED_ACCESSORY_ARTWORK_IDENTITIES } from './canonical-accessory-artwork-identities';
 import { focusedAccessoryMuscleRegionKey, type FocusedAccessoryMuscleRegionKey } from './accessory-muscle-group';
 
@@ -134,7 +135,7 @@ export function canonicalArtworkInputFromDefinition(definition?: MovementArtDefi
 /** One read-only subject for every artwork consumer. No labels, fuzzy matching or artwork policy. */
 export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | null): CanonicalMovementArtSubject {
   if (input && 'artSubjectVersion' in input) return input;
-  const row: CanonicalMovementArtworkInput = input || {};
+  const row: CanonicalMovementArtworkInput = normalizeWorkoutItemMovementReferences(input || {});
   const base: CanonicalMovementArtSubject = {
     artSubjectVersion: 1, domain: null, canonicalIdentityId: null, canonicalKey: null,
     movementDefinitionId: positiveId(row.movement_definition_id || row.movement_identity?.id),

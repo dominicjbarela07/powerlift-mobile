@@ -4,6 +4,7 @@ import {
   type EquipmentIdentityLike,
 } from '@/lib/equipment-selection';
 import { normalizeCanonicalMovementArtSubject, type CanonicalMovementArtSubject, type CanonicalMovementArtworkInput } from '@/lib/canonical-movement-art-subject';
+import { normalizeWorkoutItemMovementReferences, conflictingWorkoutMovementReferences } from './workout-item-movement-references';
 
 export type LoggerIdentityReference = EquipmentIdentityLike & {
   kind?: string | null;
@@ -23,6 +24,11 @@ export type LoggerIdentityReference = EquipmentIdentityLike & {
 };
 
 export type LoggerMovementIdentityItem = EquipmentAwareWorkoutItem & {
+  movement_identity?: LoggerIdentityReference | null;
+  performed_movement_identity?: LoggerIdentityReference | null;
+  movement_definition_id?: number | null;
+  effective_movement_definition_id?: number | null;
+  performed_canonical_movement_definition_id?: number | null;
   lift?: string | null;
   variant?: string | null;
   is_substituted?: boolean | null;
@@ -64,8 +70,9 @@ function withId(
 
 /** One authoritative movement subject; programmed intent and equipment stay separate. */
 export function resolveLoggerMovementIdentity(
-  item: LoggerMovementIdentityItem,
+  input: LoggerMovementIdentityItem,
 ): LoggerMovementIdentity {
+  const item = normalizeWorkoutItemMovementReferences(input, true);
   const performedCore = withId(item.performed_core_movement);
   const programmedCore = withId(item.core_movement);
   if (performedCore || programmedCore) {
@@ -98,7 +105,8 @@ export function resolveLoggerMovementIdentity(
   const programmed = withId(
     item.movement_identity as LoggerIdentityReference | null,
   );
-  const effective = serverEffective || performedCanonical || performedMovement || (
+  const conflicting = conflictingWorkoutMovementReferences(item);
+  const effective = conflicting ? null : serverEffective || performedCanonical || performedMovement || (
     item.is_substituted ? null : legacyEffective || programmed
   );
 

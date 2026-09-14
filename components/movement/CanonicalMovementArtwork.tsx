@@ -61,6 +61,8 @@ export function CanonicalMovementArtwork({ movement, size = 72, style, testID, s
       movementDefinitionId: subject.movementDefinitionId,
       canonicalId: subject.canonicalIdentityId, effectiveId: subject.effectiveMovementDefinitionId,
       performedId: subject.performedMovementDefinitionId, movementKey: subject.canonicalKey || reference?.key, source: subject.source,
+      legacyEffectiveId: movement?.legacy?.effective_movement_definition_id,
+      secondaryMuscles: subject.secondaryMuscleGroups,
       family: subject.family || reference?.family || catalog?.family,
       primaryMuscle: subject.primaryMuscleGroup || reference?.primary_muscle_group || catalog?.primary_muscle_group,
       taxonomyPresent, taxonomySource: subject.taxonomySource,
