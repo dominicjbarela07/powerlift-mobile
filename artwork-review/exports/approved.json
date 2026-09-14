@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 715,
+  "revision": 758,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-14T02:12:36.757291+00:00",
-  "updated_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+  "updated_at": "2026-09-14T04:04:19.373434+00:00",
+  "updated_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -16597,6 +16597,132 @@
       }
     },
     {
+      "movement_definition_id": 11,
+      "key": "pull_up_bodyweight",
+      "movement_name": "Pull-Up",
+      "primary_muscle_group": "lats",
+      "equipment_type": "bodyweight",
+      "implement": "rack-mounted straight pull-up bar",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_11_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "be36121d3167e5a28423fdd3",
+      "version": 2,
+      "supersedes_candidate_id": "60cbc2f5c7f5991e666c60b8",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "The pull-up bar should be about a foot higher. ",
+        "tags": [
+          "equipment",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T00:15:24.357585+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:15 PM PT (Sep 13, 2026 08:15 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "04391af9a4a2a52db16b60a1a4707aa2795069e6740b29fc233f5dce86e4e58c",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/be36121d3167e5a28423fdd3/master.png",
+          "sha256": "f8c1fa0e798a79afee0dcd72cc4ded5d1d9b7d55aa0bad106ced8ad8b99f7547",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1769162
+        },
+        "app": {
+          "path": "candidates/be36121d3167e5a28423fdd3/app.png",
+          "sha256": "39ae106d0c9ceea5acfe5e8aff2a323d3d31264432869fb870539ad8b88c40b7",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 307556
+        },
+        "thumbnail": {
+          "path": "candidates/be36121d3167e5a28423fdd3/thumbnail.png",
+          "sha256": "dfe38b5fc9b76f646ea757625ca023cbae91d2bf90941bbb05e9fb8ea45630a6",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44022
+        }
+      },
+      "candidate_asset": "candidates/be36121d3167e5a28423fdd3/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:21:31.876659+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:21 PM PT (Sep 13, 2026 10:21 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f8c1fa0e798a79afee0dcd72cc4ded5d1d9b7d55aa0bad106ced8ad8b99f7547",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:10:19.800349+00:00",
+      "created_at_display": "Sep 13, 2026 07:10 PM PT (Sep 13, 2026 10:10 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Raise the pull-up bar AND athlete by a full 35cm relative to the floor, extending the two rack uprights below him. There must now be a large clearly visible 50-60cm gap between shoes and floor during this TOP-position pull-up, not the tiny gap in image 1. Show whole 2.4m-tall realistic bolted rack and grounded bases by zooming out; bar at standard adult pull-up height. Preserve both pronated grips slightly wider than shoulders, chin slightly above bar, wrapped thumbs, mildly bent hanging legs, neutral forward neck. Correct physical height is mandatory.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/11/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "rack-mounted straight pull-up bar",
+        "grip": "pronated, slightly wider than shoulders",
+        "orientation": "vertical hanging",
+        "preflight_notes": "Raised pull-up bar and athlete with visible foot clearance; matched supported bar and wrapped grips.",
+        "owner_feedback": "The pull-up bar should be about a foot higher. ",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:21:31.876659+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:21 PM PT (Sep 13, 2026 10:21 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f8c1fa0e798a79afee0dcd72cc4ded5d1d9b7d55aa0bad106ced8ad8b99f7547",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 67,
       "key": "accessory_push_up",
       "movement_name": "Push-Up",
@@ -16921,6 +17047,132 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "520351a3a0cefaacb1ef1b337ce20a5b97e0e979589d79b6f2f7387198c52b60",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 69,
+      "key": "accessory_ring_push_up",
+      "movement_name": "Ring Push-Up",
+      "primary_muscle_group": "chest",
+      "equipment_type": "bodyweight",
+      "implement": "wooden gymnastic rings and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_69_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "14ca058bf52aacf317ed11de",
+      "version": 2,
+      "supersedes_candidate_id": "27cd2d392396c14034e437e5",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the anchor for the rings is far too low! generally its anchored to the bar at pull-up bar height! should be taller than the average man",
+        "tags": [
+          "equipment",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T00:16:15.686141+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:16 PM PT (Sep 13, 2026 08:16 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "720004039c502d606052cd945d943ab2515943d64fef2c6457379d56a4edae24",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/14ca058bf52aacf317ed11de/master.png",
+          "sha256": "75323dbafda71dfdcafe4d4004d79777bb7dba2671f241787a63a4aa73051008",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1684705
+        },
+        "app": {
+          "path": "candidates/14ca058bf52aacf317ed11de/app.png",
+          "sha256": "d4462a30e73080b55afb471f38974f38b20452cc5d2c64b277a5fdc5342bba23",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 296152
+        },
+        "thumbnail": {
+          "path": "candidates/14ca058bf52aacf317ed11de/thumbnail.png",
+          "sha256": "e74f31931466e0a7807a9d4c7cd8d14a4cd474ad9f9eeff7e75dfea81bdaab79",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42203
+        }
+      },
+      "candidate_asset": "candidates/14ca058bf52aacf317ed11de/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:21:36.767138+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:21 PM PT (Sep 13, 2026 10:21 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "75323dbafda71dfdcafe4d4004d79777bb7dba2671f241787a63a4aa73051008",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:28.543991+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Replace the miniature rack with a physically standard 2.4m tall steel pull-up rack, much taller than a standing adult. Both wooden rings are suspended from the HIGH overhead pull-up bar by long taut vertical black straps about 2.05m long, ending with rings ~25cm above floor. Full standard rack top and grounded bases visible. Wider/zoomed-out square composition is required to show real height; do not compress rack height to fit. Athlete performs low ring push-up with chest between rings, elbows bent, both hands fully wrapped around bottom ring arcs, toes grounded, body in straight plank. Neutral neck looking at floor ahead, not upward toward camera.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/69/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "movement_family": "accessory_chest",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.55,
+        "thumbnailFocalY": 0.78,
+        "thumbnailScale": 1.5,
+        "cropMode": "focal"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "wooden gymnastic rings and rack",
+        "grip": "neutral shoulder-width",
+        "orientation": "prone plank",
+        "preflight_notes": "Tall rack anchor and long taut ring straps; full-length overhead supports now visible. Thumbnail focuses lower athlete/ring contact; master retains complete frame.",
+        "owner_feedback": "the anchor for the rings is far too low! generally its anchored to the bar at pull-up bar height! should be taller than the average man",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:21:36.767138+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:21 PM PT (Sep 13, 2026 10:21 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "75323dbafda71dfdcafe4d4004d79777bb7dba2671f241787a63a4aa73051008",
         "source": "human_review_ui"
       }
     },
@@ -17475,6 +17727,252 @@
       }
     },
     {
+      "movement_definition_id": 184,
+      "key": "accessory_wide_grip_pull_up",
+      "movement_name": "Wide-Grip Pull-Up",
+      "primary_muscle_group": "lats",
+      "equipment_type": "bodyweight",
+      "implement": "straight pull-up bar and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_184_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "3a503fdd1c4126e86230a588",
+      "version": 2,
+      "supersedes_candidate_id": "b01fca75b6ca4fe740779b9d",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "pull-up bar not high enough",
+        "tags": [],
+        "reviewed_at": "2026-09-14T00:17:44.817080+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:17 PM PT (Sep 13, 2026 08:17 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a6ea3cfab8dd71ae35b2ccf276603e261efb99a1c1be8b1978c69de8769d3cec",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/3a503fdd1c4126e86230a588/master.png",
+          "sha256": "d1ed8ae9f92b18a53ffe5061d87bb9845bb1217853b4cc9e35322353f5652303",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1713627
+        },
+        "app": {
+          "path": "candidates/3a503fdd1c4126e86230a588/app.png",
+          "sha256": "670bd0173205c8aab835bc4746757a286970537328ed32730716be2e8c57aacc",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 300035
+        },
+        "thumbnail": {
+          "path": "candidates/3a503fdd1c4126e86230a588/thumbnail.png",
+          "sha256": "56e889981497aede1c0d4923f8c7ceafcc5177e70462b766402dcd2de731ab72",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42297
+        }
+      },
+      "candidate_asset": "candidates/3a503fdd1c4126e86230a588/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:22:04.522358+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d1ed8ae9f92b18a53ffe5061d87bb9845bb1217853b4cc9e35322353f5652303",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:29.693596+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct the height only: the wide-grip pull-up crossbar and suspended athlete must be 40cm HIGHER above floor. Standard full 2.4m tall rack grounded with two bolted uprights and stable longitudinal bases. Zoom out to fit full structure. Clearly visible 50cm or greater gap beneath shoes in the flexed-elbow pull-up position. Preserve WIDE grip about 1.6x shoulder width, BOTH palms pronated away from athlete, thumb wraps. Forearms near vertical, chin near bar, symmetrical unweighted legs hanging. No change to identity/style.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/184/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "straight pull-up bar and rack",
+        "grip": "pronated wide",
+        "orientation": "vertical hanging",
+        "preflight_notes": "Raised supported bar, wide pronated grip, full suspended body and clear space beneath shoes.",
+        "owner_feedback": "pull-up bar not high enough",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:22:04.522358+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d1ed8ae9f92b18a53ffe5061d87bb9845bb1217853b4cc9e35322353f5652303",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 185,
+      "key": "accessory_chin_up",
+      "movement_name": "Chin-Up",
+      "primary_muscle_group": "lats",
+      "equipment_type": "bodyweight",
+      "implement": "straight pull-up bar and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_185_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "2da2a53dc3cd0abca54f0361",
+      "version": 2,
+      "supersedes_candidate_id": "0947cdaf4c8ba54f0880ffa4",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "pull-up bar not at standard height",
+        "tags": [],
+        "reviewed_at": "2026-09-14T00:17:55.136885+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:17 PM PT (Sep 13, 2026 08:17 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1e439b9f1bb53fdc81bbe254711e5884fa01b1111aca1d6ffa8d7d0ddd284ef0",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/2da2a53dc3cd0abca54f0361/master.png",
+          "sha256": "41eeaabfdfb6f49ef52dd8c35718be3b60ca125dc1f7b9c7684e90971552f9da",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1702854
+        },
+        "app": {
+          "path": "candidates/2da2a53dc3cd0abca54f0361/app.png",
+          "sha256": "8ac9f03b886cf277f929b9b05f747e70bf7efef22e3e6bb963c192f225c6766f",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 295385
+        },
+        "thumbnail": {
+          "path": "candidates/2da2a53dc3cd0abca54f0361/thumbnail.png",
+          "sha256": "31dcde670a5ee4c186114b8de5972faa2e612b43c3cdfaf1c080206f4af3758d",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41509
+        }
+      },
+      "candidate_asset": "candidates/2da2a53dc3cd0abca54f0361/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:22:06.494631+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "41eeaabfdfb6f49ef52dd8c35718be3b60ca125dc1f7b9c7684e90971552f9da",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:29.954276+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct CHIN-UP height: raise bar and athlete 40cm above floor relative to rejected image, extending rack below athlete. Full 2.4m tall adult pull-up rack, visible grounded bases, one straight real bolted overhead bar. Chin above bar, hands SHOULDER WIDTH and BOTH SUPINATED palms facing athlete, fingers and thumbs fully wrapped, elbows bent in front/down. Show at least 50-60cm clear space below hanging shoes at the top. Frame full hardware and full athlete with realistic proportions. Don't substitute pronated pull-up.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/185/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "straight pull-up bar and rack",
+        "grip": "supinated shoulder-width",
+        "orientation": "vertical hanging",
+        "preflight_notes": "Raised standard-height chin-up bar; supinated hands and suspended feet.",
+        "owner_feedback": "pull-up bar not at standard height",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:22:06.494631+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "41eeaabfdfb6f49ef52dd8c35718be3b60ca125dc1f7b9c7684e90971552f9da",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 187,
       "key": "accessory_scapular_pull_up",
       "movement_name": "Scapular Pull-Up",
@@ -17913,6 +18411,129 @@
       }
     },
     {
+      "movement_definition_id": 347,
+      "key": "accessory_false_grip_hang",
+      "movement_name": "False-Grip Hang",
+      "primary_muscle_group": "forearms",
+      "equipment_type": "bodyweight",
+      "implement": "rings and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_347_attempt03",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "81e23a2228847bf98cb09537",
+      "version": 2,
+      "supersedes_candidate_id": "74c4c004039fe05e95df9d6c",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the fucking hands are not even holding the rings",
+        "tags": [
+          "human_anatomy",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T00:21:39.501998+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:21 PM PT (Sep 13, 2026 08:21 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "7494af410c1b75d23dc2b6bcd1730fa230c48cc574b7b9a21ed1aeea16ff6e6c",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/81e23a2228847bf98cb09537/master.png",
+          "sha256": "b8b111823023fac727a76e223898f8a7c4c68f86b7b58acd08cc12061487ab93",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1531443
+        },
+        "app": {
+          "path": "candidates/81e23a2228847bf98cb09537/app.png",
+          "sha256": "98d1480473e487dd49478d4a49dc878bdf847ef4f347a27cb1091e2430b10cf6",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 282268
+        },
+        "thumbnail": {
+          "path": "candidates/81e23a2228847bf98cb09537/thumbnail.png",
+          "sha256": "1e611eac0fe15a3d289cd4a338b5a6d33bab0956cf4bd52613f6c0111b37fefc",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41820
+        }
+      },
+      "candidate_asset": "candidates/81e23a2228847bf98cb09537/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:25:02.104434+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b8b111823023fac727a76e223898f8a7c4c68f86b7b58acd08cc12061487ab93",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:32.532115+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct ONLY the head orientation. This is a rear view false-grip ring hang. His head must face straight forward in SAME direction as the breastbone and pelvis, between both rings. Show back of skull centered between shoulders, ears roughly symmetric, NO visible side face or profile and no rotation toward right shoulder. Eyes forward/slightly upward through space BETWEEN the rings. Preserve both detailed false grips with wrists curled over wood, both arms, apparatus, body, clothes, lighting and crop unchanged.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/347/attempt-03.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_forearms",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "rings and rack",
+        "grip": "false grip wrist over lower ring",
+        "orientation": "vertical hanging",
+        "preflight_notes": "Closed false grips with heels of wrists rolled over wood; final edit centers back of head with torso, removing sideways glance.",
+        "owner_feedback": "the fucking hands are not even holding the rings",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:25:02.104434+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b8b111823023fac727a76e223898f8a7c4c68f86b7b58acd08cc12061487ab93",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 316,
       "key": "accessory_triceps_dip",
       "movement_name": "Triceps Dip",
@@ -18242,6 +18863,256 @@
       }
     },
     {
+      "movement_definition_id": 409,
+      "key": "accessory_assisted_nordic_hamstring_curl",
+      "movement_name": "Assisted Nordic Hamstring Curl",
+      "primary_muscle_group": "hamstrings",
+      "equipment_type": "bodyweight",
+      "implement": "Nordic bench and low hand support",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_409_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "4f9422288b2bf60bf6fbbf9f",
+      "version": 2,
+      "supersedes_candidate_id": "881e5b0542dc4d18e6dcc7c6",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the dudes feet are clipping through the apparatus!",
+        "tags": [
+          "biomechanics",
+          "equipment"
+        ],
+        "reviewed_at": "2026-09-14T00:22:37.199571+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:22 PM PT (Sep 13, 2026 08:22 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b942e51233ec82751f36d83d024dcdbfb6b2939af2ff8213e87bee96bca9c3ac",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/4f9422288b2bf60bf6fbbf9f/master.png",
+          "sha256": "77f44d1d797869d51ff263925eead1518fad6a21d1c1435d9c2dc03ac4f709eb",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1782991
+        },
+        "app": {
+          "path": "candidates/4f9422288b2bf60bf6fbbf9f/app.png",
+          "sha256": "f655c22b3303121b31f152b2839ffa5472981bc761c45c0ee53dea1ad5eef457",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 311946
+        },
+        "thumbnail": {
+          "path": "candidates/4f9422288b2bf60bf6fbbf9f/thumbnail.png",
+          "sha256": "fa3f43b5699b4029282b4ef8099530a408fb872426e6ee834be813d17c14bad0",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44287
+        }
+      },
+      "candidate_asset": "candidates/4f9422288b2bf60bf6fbbf9f/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:25:07.980325+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "77f44d1d797869d51ff263925eead1518fad6a21d1c1435d9c2dc03ac4f709eb",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:33.416148+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Repair Nordic ankle fixation without body or shoe clipping. Use a real low Nordic bench with knee pad and rear horizontal padded cylindrical roller resting ON TOP of the Achilles/low calves, just above shoe heels. Two black shoes extend BEHIND roller, both toes/shoe uppers visibly clear of every metal upright and lower brace. The roller is supported by external posts OUTSIDE either ankle, never a center upright inside a foot. Side-three-quarter viewpoint makes both feet, roller contact, and supports visibly separate. Athlete kneels on pad and leans forward from knees with straight knee-hip-shoulder line; palms assist on low padded box in front. Same pose/style otherwise. Show the entire full apparatus and feet, no hidden intersections.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/409/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "movement_family": "accessory_hamstrings",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "hands assist against low support",
+        "equipment": "Nordic bench and low hand support",
+        "grip": "knees padded ankles restrained",
+        "orientation": "kneeling forward lean",
+        "preflight_notes": "Ankle roller and side supports separated from shoes; knees on pad, hands assist against box.",
+        "owner_feedback": "the dudes feet are clipping through the apparatus!",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:25:07.980325+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "77f44d1d797869d51ff263925eead1518fad6a21d1c1435d9c2dc03ac4f709eb",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 378,
+      "key": "accessory_reverse_nordic",
+      "movement_name": "Reverse Nordic",
+      "primary_muscle_group": "quads",
+      "equipment_type": "bodyweight",
+      "implement": "knee mat",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_378_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "5caec17eb41dd70b96fe56f4",
+      "version": 2,
+      "supersedes_candidate_id": "9a74ad445821dd5d5200a735",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "make him lean back more in the lengthened position to sell the movement more",
+        "tags": [
+          "human_anatomy"
+        ],
+        "reviewed_at": "2026-09-14T00:22:58.298348+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:22 PM PT (Sep 13, 2026 08:22 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f75b0a80f07fc7e6277316fd57c4d3d55decff150127d158d5da25758f46dba7",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/5caec17eb41dd70b96fe56f4/master.png",
+          "sha256": "f1261e8168afbdfb695d12c6103aa0fb708e2e671dbf85e9474c3fa03dcb2ebc",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1636792
+        },
+        "app": {
+          "path": "candidates/5caec17eb41dd70b96fe56f4/app.png",
+          "sha256": "984301677f480bed4ddee210ceb4af6d9940f5061c8a398b26d6d0439dd09f34",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 299475
+        },
+        "thumbnail": {
+          "path": "candidates/5caec17eb41dd70b96fe56f4/thumbnail.png",
+          "sha256": "12dbd38f1062b63f33624c6c6ce2652207b60a421fc3731357cc57f4bf8d2d87",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41956
+        }
+      },
+      "candidate_asset": "candidates/5caec17eb41dd70b96fe56f4/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:25:10.300766+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f1261e8168afbdfb695d12c6103aa0fb708e2e671dbf85e9474c3fa03dcb2ebc",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:32.839490+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Deepen REVERSE NORDIC to a visibly LENGTHENED position. Pivot the whole straight thighs-hips-torso unit farther backward at the KNEES until knees-to-shoulders line is about 35 degrees ABOVE HORIZONTAL (55deg backward from vertical). Hips fully extended, no sitting on heels and no waist fold. Knees remain grounded on mat, shins and tops of shoes lying flat behind knees. Shoulder line visibly much lower/closer to ground than in input. Arms folded chest, head NEUTRAL aligned with leaning torso so face gazes upward along torso angle, no chin cranking. Preserve side-three-quarter camera and full body/floor.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/378/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "movement_family": "accessory_quads",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "knee mat",
+        "grip": "knees hip-width shins grounded",
+        "orientation": "kneeling backward lean",
+        "preflight_notes": "Increased backward lean in lengthened kneeling position while preserving extended hips and knee support.",
+        "owner_feedback": "make him lean back more in the lengthened position to sell the movement more",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:25:10.300766+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f1261e8168afbdfb695d12c6103aa0fb708e2e671dbf85e9474c3fa03dcb2ebc",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 318,
       "key": "accessory_bodyweight_skull_crusher",
       "movement_name": "Bodyweight Skull Crusher",
@@ -18567,6 +19438,129 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "bb678e3a6f953c107478a48b0cba6e69d5572fa1aee2806cbbfd15fc2e0895ba",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 74,
+      "key": "accessory_chest_dip",
+      "movement_name": "Chest Dip",
+      "primary_muscle_group": "chest",
+      "equipment_type": "bodyweight",
+      "implement": "parallel dip station",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_74_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "06f99d39d99905f3e06453c2",
+      "version": 2,
+      "supersedes_candidate_id": "51aa9bd01eb7d817e660b8c4",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the lifter needs more forward lean to target the chest more",
+        "tags": [],
+        "reviewed_at": "2026-09-14T00:23:43.843190+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:23 PM PT (Sep 13, 2026 08:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "03d061276fed0d31a67397b538cf54e516b322184044b41dc7f829f48ea21824",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/06f99d39d99905f3e06453c2/master.png",
+          "sha256": "ea6262ccba29301bed3cd04d747641b3c8e387ea313534c42e56ffb27d530eb5",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1803200
+        },
+        "app": {
+          "path": "candidates/06f99d39d99905f3e06453c2/app.png",
+          "sha256": "a950724c464968d848783096103af4a565980f13a883fae84ce8eadc4fc9b2f7",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 315080
+        },
+        "thumbnail": {
+          "path": "candidates/06f99d39d99905f3e06453c2/thumbnail.png",
+          "sha256": "ae378633e2491bdf165ae07ca9360eae74ac80368a0cd4f700be7092ecb9a0ee",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45063
+        }
+      },
+      "candidate_asset": "candidates/06f99d39d99905f3e06453c2/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:25:27.749800+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ea6262ccba29301bed3cd04d747641b3c8e387ea313534c42e56ffb27d530eb5",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:28.843069+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Increase CHEST DIP forward torso lean visibly. Tilt whole torso about 40 degrees FORWARD from vertical, chest and head ahead of the hands, elbows flexed and moderately out, shoulders down. Knees bend behind athlete with feet suspended. Neutral neck follows torso with eyes directed down ahead, no crank-up or sideways look. Preserve real paired parallel dip bars with four solid supports and grounded bases, hands gripping tops naturally, full body/frame. Forward lean is the major requested visible change.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/74/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "movement_family": "accessory_chest",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "parallel dip station",
+        "grip": "neutral parallel handles",
+        "orientation": "suspended upright forward lean",
+        "preflight_notes": "Forward torso lean with shoulders ahead of hands, paired parallel bars and chest-dip arm position.",
+        "owner_feedback": "the lifter needs more forward lean to target the chest more",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:25:27.749800+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ea6262ccba29301bed3cd04d747641b3c8e387ea313534c42e56ffb27d530eb5",
         "source": "human_review_ui"
       }
     },
@@ -19222,6 +20216,253 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "382850acf02616dfb46feeee432cb5634bcc00a84069673d06455eb955182076",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 382,
+      "key": "accessory_spanish_squat",
+      "movement_name": "Spanish Squat",
+      "primary_muscle_group": "quads",
+      "equipment_type": "bodyweight",
+      "implement": "wide support strap and fixed rack upright",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_382_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "7d212cd50c621c5a9714a93a",
+      "version": 2,
+      "supersedes_candidate_id": "8e791bb97592c5532ec8da5b",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the balance is off. witht he torso leaning back like that he would fall",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T00:25:10.563441+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:25 PM PT (Sep 13, 2026 08:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "61323a908e6a477265663b4a63016df35388de40e8d0294b6f1f99d006d3dfbf",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/7d212cd50c621c5a9714a93a/master.png",
+          "sha256": "8dc4310f1975d5a52eb7a0c9773f16f7152db6289d478aa6c7f80ab15567179c",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1846899
+        },
+        "app": {
+          "path": "candidates/7d212cd50c621c5a9714a93a/app.png",
+          "sha256": "786c556c7b8708bc6e4b220cdc793820291594b2a9f932105e66964396ebe320",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 332360
+        },
+        "thumbnail": {
+          "path": "candidates/7d212cd50c621c5a9714a93a/thumbnail.png",
+          "sha256": "f74c483d2e776203919181fe84deed77df10822a002ccdddd10633b3775996c9",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46949
+        }
+      },
+      "candidate_asset": "candidates/7d212cd50c621c5a9714a93a/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:01.366005+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8dc4310f1975d5a52eb7a0c9773f16f7152db6289d478aa6c7f80ab15567179c",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:33.123902+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct SPANISH SQUAT balance. Maintain deeply bent knees about 90deg and broad strap anchored in front to real rack upright at knee level, looped behind BOTH knees. Torso now exactly UPRIGHT VERTICAL, shoulders stacked directly above hips, no backward torso lean. Knees over ankles with near-vertical shins and heels planted. Hips sit back as strap tension counterbalances; chest doesn't fall behind pelvis. Arms extended forward for balance, neutral head looking forward in same plane as torso. Strap must visibly pass BEHIND knees and be taut toward front anchor. Realistic normal rack, not new fantasy structure.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/382/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "movement_family": "accessory_quads",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "non-elastic strap support behind knees",
+        "equipment": "wide support strap and fixed rack upright",
+        "grip": "hip-width flat feet",
+        "orientation": "upright deep squat",
+        "preflight_notes": "Upright torso with arms counterbalancing; taut strap behind knees attached to rack ahead.",
+        "owner_feedback": "the balance is off. witht he torso leaning back like that he would fall",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:01.366005+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8dc4310f1975d5a52eb7a0c9773f16f7152db6289d478aa6c7f80ab15567179c",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 414,
+      "key": "accessory_45_degree_back_extension_hamstring_bias",
+      "movement_name": "45-Degree Back Extension (Hamstring Bias)",
+      "primary_muscle_group": "hamstrings",
+      "equipment_type": "bodyweight",
+      "implement": "45-degree Roman chair",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_414_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "f99b39df272be0a70ad6b744",
+      "version": 2,
+      "supersedes_candidate_id": "ca0a07633f9c4055ef2f2d01",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "poor 45 degree extension apperatus",
+        "tags": [],
+        "reviewed_at": "2026-09-14T00:25:29.644059+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:25 PM PT (Sep 13, 2026 08:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "c7c3a17cbcedb2258b48d333c08dc346ba587a664dcba88b50840361b5ff8732",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/f99b39df272be0a70ad6b744/master.png",
+          "sha256": "e4e8fb199f085a9a2e6b5b30325148ecef85f3f89c861a2cd9fdd450766f5a9a",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1858453
+        },
+        "app": {
+          "path": "candidates/f99b39df272be0a70ad6b744/app.png",
+          "sha256": "8ec3bb9f0d7d3cda94f1fc7cfb8efae0c827784b07739c8b85bb85bc6a8a4612",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 324873
+        },
+        "thumbnail": {
+          "path": "candidates/f99b39df272be0a70ad6b744/thumbnail.png",
+          "sha256": "cb0ecdfd2a8a35ef5ca8aa2d9398704bbe984de88d45e7f39e3871dc1ac6dddc",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45702
+        }
+      },
+      "candidate_asset": "candidates/f99b39df272be0a70ad6b744/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:05.887879+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e4e8fb199f085a9a2e6b5b30325148ecef85f3f89c861a2cd9fdd450766f5a9a",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:33.708918+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Rebuild HAMSTRING-BIAS 45-DEGREE BACK EXTENSION apparatus. Use a TRUE SIDE PROFILE camera (only slight three-quarter depth) to make 45-degree geometry unmistakable. Main telescoping steel rail runs at EXACTLY 45 degrees above HORIZONTAL floor, from low left ankle station to high right thigh pad; equal rise and run. This is a real commercial Roman chair: H-shaped grounded base, ONE diagonal telescoping rail with pin, ONE rear diagonal support, two split rectangular thick thigh pads on upper end below hip crease, a wide diamond-plate foot platform perpendicular to leg axis and horizontal padded ankle rollers just behind Achilles. No rods pass through shoes. Entire chair and all base feet in frame. Athlete's knees straight, soles on plate, thighs supported below crease, hips hinge; torso at top follows leg axis neutrally without lumbar overextension, arms folded. Neutral neck in same axis as spine, eyes follow down-forward. No 60-degree incline and no fanciful three-way pivot.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/414/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "movement_family": "accessory_hamstrings",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "45-degree Roman chair",
+        "grip": "feet narrow knees nearly straight",
+        "orientation": "prone 45-degree hip hinge",
+        "preflight_notes": "45-degree frame with connected bracing, footplate and ankle rollers; visible shoe/plate contact.",
+        "owner_feedback": "poor 45 degree extension apperatus",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:05.887879+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e4e8fb199f085a9a2e6b5b30325148ecef85f3f89c861a2cd9fdd450766f5a9a",
         "source": "human_review_ui"
       }
     },
@@ -20315,6 +21556,250 @@
       }
     },
     {
+      "movement_definition_id": 489,
+      "key": "accessory_single_leg_calf_raise",
+      "movement_name": "Single-Leg Calf Raise",
+      "primary_muscle_group": "calves",
+      "equipment_type": "bodyweight",
+      "implement": "low calf step and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_489_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "1161f6529f8f9af62c3e8300",
+      "version": 2,
+      "supersedes_candidate_id": "fafaec68cd81d409f452d25d",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "poor rendering of the rack! look totally fake",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T00:26:46.669254+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:26 PM PT (Sep 13, 2026 08:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d554646a1ac399dc9922b6b5af77ed4528089204a4af82a485df4bae9dc8f03b",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/1161f6529f8f9af62c3e8300/master.png",
+          "sha256": "e5557e9d9e73e72bd8a80ae2c0cfd0b492295084aaff1dccfcb089dad6484ef6",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1794910
+        },
+        "app": {
+          "path": "candidates/1161f6529f8f9af62c3e8300/app.png",
+          "sha256": "264cdbecc394a6c83e363e4ac633005bbf3f3c67d8b0f0fa70335bcf2026f69e",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 321664
+        },
+        "thumbnail": {
+          "path": "candidates/1161f6529f8f9af62c3e8300/thumbnail.png",
+          "sha256": "2387e6c805496a8dfdf69a1ca646a7a9e9ddb7d69c9cb83aa42d754561ac2bc4",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44653
+        }
+      },
+      "candidate_asset": "candidates/1161f6529f8f9af62c3e8300/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:09.403162+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e5557e9d9e73e72bd8a80ae2c0cfd0b492295084aaff1dccfcb089dad6484ef6",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:34.552608+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Replace the fake rack with a normal real 75mm square-steel POWER RACK, entire front upright and visible rear upright connected by plausible horizontal top/bottom side crossmembers, straight aligned edges and evenly spaced holes, normal bolted gussets, all grounded. Show full 2.3m rack without cropping upper mounting; zoom out as needed but athlete readable. Preserve SINGLE-LEG CALF RAISE: one straight working knee with forefoot on flat-topped 10cm step, heel fully lifted and free beyond step edge; opposite foot raised behind with knee bent. One hand lightly contacts rack at chest height, other on hip. No lower crossbar through shoes. Neutral head with torso.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/489/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_calves",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "unilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "light hand balance only",
+        "equipment": "low calf step and rack",
+        "grip": "one forefoot supported",
+        "orientation": "standing on one leg",
+        "preflight_notes": "Real connected rack uprights/crossmembers with stable floor mounts; single forefoot support and elevated heel.",
+        "owner_feedback": "poor rendering of the rack! look totally fake",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:09.403162+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e5557e9d9e73e72bd8a80ae2c0cfd0b492295084aaff1dccfcb089dad6484ef6",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 491,
+      "key": "accessory_donkey_calf_raise",
+      "movement_name": "Donkey Calf Raise",
+      "primary_muscle_group": "calves",
+      "equipment_type": "bodyweight",
+      "implement": "commercial flat bench and low calf block",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_491_attempt02",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "e4cff2d874911ad7c071f58c",
+      "version": 2,
+      "supersedes_candidate_id": "a10c1c276db4f6602f7fbaba",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "why is the bench not a standard height",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T00:27:12.331811+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:27 PM PT (Sep 13, 2026 08:27 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "aa4528ac4c56d875d5a7ec0d4a50f565444db0dab5617eda0a80b25e90d37d08",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/e4cff2d874911ad7c071f58c/master.png",
+          "sha256": "1ba9d0c26b3028ae1e322dc612d14a7788533b56dc9d1c3bd9ec4a050f830bb2",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1784833
+        },
+        "app": {
+          "path": "candidates/e4cff2d874911ad7c071f58c/app.png",
+          "sha256": "3670183e1f60177dc106d3a3f65f7d0f9f27d60410ad8e0b551fdc3eabe35158",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 313670
+        },
+        "thumbnail": {
+          "path": "candidates/e4cff2d874911ad7c071f58c/thumbnail.png",
+          "sha256": "b9431a5b86590eae92dc7260386d78125111aee4bb433b93ecc242f9d1c6aa9a",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43927
+        }
+      },
+      "candidate_asset": "candidates/e4cff2d874911ad7c071f58c/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:36.878280+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1ba9d0c26b3028ae1e322dc612d14a7788533b56dc9d1c3bd9ec4a050f830bb2",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:35.085459+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Create ONE NEW square photorealistic Strength Ledger artwork. Reference is ONLY the same male athlete, clothing and studio STYLE, not the pose or equipment. Same short brown hair, full-length graphite tank, plain black shorts/trainers, natural skin, near-black studio/rubber floor, neutral soft upper-left light and subdued purple right rim. Full body and all critical contact points. No text, no logos, no panels. Head aligned with task/torso. Exact exercise donkey calf raise with FOREARMS ON A STANDARD LOW FLAT BENCH. True side view, athlete faces left. Bench pad surface ONLY 43 cm above floor, BELOW standing knee-cap height; vertical bench supports are 30cm, short stocky rectangular steel legs with connected base. Bench is conventional low gym bench, NOT a table or tall support. Athlete forefeet on small 8cm block at right, both heels raised high and unsupported, knees almost straight. Hips flexed about 100 degrees; torso descends diagonally toward low bench, both elbows/forearms visibly rest on top of the low pad. Hips high, shoulders lower than hips, relaxed neutral neck eyes at bench. Both feet and hands fully visible. Side orthographic-like normal photograph, no exaggerated near objects. Keep low bench unmistakably below knees.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/491/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_calves",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "bench supports torso only",
+        "equipment": "commercial flat bench and low calf block",
+        "grip": "forearms on bench; forefeet on block",
+        "orientation": "standing hinged torso",
+        "preflight_notes": "Recomposed conventional low flat bench, shorter vertical supports and lower forearm support; straight knees and elevated heels.",
+        "owner_feedback": "why is the bench not a standard height",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:36.878280+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1ba9d0c26b3028ae1e322dc612d14a7788533b56dc9d1c3bd9ec4a050f830bb2",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 492,
       "key": "accessory_tibialis_raise",
       "movement_name": "Tibialis Raise",
@@ -20854,6 +22339,130 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "f3e0502dcdae7efc83351c2ea28c5e6525af22172acdcb76922f34b652cc4587",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 510,
+      "key": "accessory_hanging_knee_raise",
+      "movement_name": "Hanging Knee Raise",
+      "primary_muscle_group": "abs",
+      "equipment_type": "bodyweight",
+      "implement": "rack-mounted straight pull-up bar",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_510_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "aeb8888e2520cedeb4a8fa62",
+      "version": 2,
+      "supersedes_candidate_id": "208ad89b5730b1ee5cf10865",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "why is he raising his knees off center? looks like shit",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T00:28:07.611629+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:28 PM PT (Sep 13, 2026 08:28 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d6a08619057653c0d855121c11137548742d679ebb11351080d1aea8068019a4",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/aeb8888e2520cedeb4a8fa62/master.png",
+          "sha256": "0a65b469562df8c546ca6dca77c27b86637c9919051abb0665c60cf4a80d9152",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1741868
+        },
+        "app": {
+          "path": "candidates/aeb8888e2520cedeb4a8fa62/app.png",
+          "sha256": "491b7385b14f2b1d8db77be11dd7bc2fea41d41f2ff59279875a4dba99ea0da2",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 312909
+        },
+        "thumbnail": {
+          "path": "candidates/aeb8888e2520cedeb4a8fa62/thumbnail.png",
+          "sha256": "826732646fc8c0b2ac9c410e13c39717d01b0900f6cfe6528af8c3bb97549a79",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45377
+        }
+      },
+      "candidate_asset": "candidates/aeb8888e2520cedeb4a8fa62/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:46.132922+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "0a65b469562df8c546ca6dca77c27b86637c9919051abb0665c60cf4a80d9152",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:35.347228+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct hanging knee raise to be exactly centered. Straight-on FRONT view, body midline, nose/sternum/navel centered between rack uprights. Both shoulders and hips square with no torso twist. Two knees together raised SYMMETRICALLY straight forward directly in front of the hips, equal height left/right; gap between knees lies exactly on torso midline. Shins drop down, feet together below knees, no lateral swing. Straight overhead arms, shoulder-width pronated grips on standard 2.4m overhead rack bar with normal grounded structure. No knee pulled toward one side. Same athlete clothing and studio.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/510/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "movement_family": "accessory_abs",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "rack-mounted straight pull-up bar",
+        "grip": "pronated shoulder-width",
+        "orientation": "vertical hanging with bent knees raised",
+        "preflight_notes": "Knees now centered symmetrically in front of torso; hands and shoulders remain square.",
+        "owner_feedback": "why is he raising his knees off center? looks like shit",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:46.132922+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0a65b469562df8c546ca6dca77c27b86637c9919051abb0665c60cf4a80d9152",
         "source": "human_review_ui"
       }
     },
@@ -22058,6 +23667,252 @@
       }
     },
     {
+      "movement_definition_id": 552,
+      "key": "accessory_sorenson_hold",
+      "movement_name": "Sorenson Hold",
+      "primary_muscle_group": "lower_back",
+      "equipment_type": "bodyweight",
+      "implement": "horizontal Roman chair / GHD",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_552_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "e21c848e6ab7cb9cb109efd5",
+      "version": 2,
+      "supersedes_candidate_id": "75c86841cd4b5df871529b40",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "poor GHR apparatus!",
+        "tags": [],
+        "reviewed_at": "2026-09-14T00:29:03.732671+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:29 PM PT (Sep 13, 2026 08:29 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "46e619cb5ae0d89e2ffc250f783d63b49f9abe60b795a52531ebd1170477520a",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/e21c848e6ab7cb9cb109efd5/master.png",
+          "sha256": "69f170dd9bfa1413a0b4c01b246966b3e061f6f9fc531c710c2358493c1c0448",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1830038
+        },
+        "app": {
+          "path": "candidates/e21c848e6ab7cb9cb109efd5/app.png",
+          "sha256": "c0362b1d0eed9007b744868ffdaa54d88a4c7275b89dbab33899841b42096a63",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 322502
+        },
+        "thumbnail": {
+          "path": "candidates/e21c848e6ab7cb9cb109efd5/thumbnail.png",
+          "sha256": "14b96ba9e0b33abd233056d590ade9352082d4a46767a86eb26d48e4abea89bc",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44979
+        }
+      },
+      "candidate_asset": "candidates/e21c848e6ab7cb9cb109efd5/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:51.850415+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "69f170dd9bfa1413a0b4c01b246966b3e061f6f9fc531c710c2358493c1c0448",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:36.183263+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Replace malformed GHR with a mechanically correct commercial GHD for SORENSON HOLD. New three-quarter SIDE composition with whole black steel GHD fully in frame. Real GHD: broad stable H-shaped floor base, robust front upright carrying TWO large adjacent rounded half-cylinder hip pads, longitudinal HORIZONTAL adjustable telescoping rail leading backward to separate ankle station, vertical broad rectangular footplate behind shoes, two horizontal roller pairs sandwiching ankles above and below (four pads total), feet soles press rear plate. No footplate beside shins, no metal piercing feet. Athlete lies face down with hips/upper thighs supported on front pad, torso extends unsupported in a straight HORIZONTAL line, legs straight back to padded ankles at same level, arms crossed chest. Neutral head inline torso looking down, no neck flexion. Keep natural scale: pad not miniature, long enough rail fits actual leg length. Not a 45degree chair.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/552/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "movement_family": "accessory_lower_back",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "horizontal Roman chair / GHD",
+        "grip": "feet secured; arms crossed",
+        "orientation": "horizontal prone isometric hold",
+        "preflight_notes": "Complete horizontal GHD with connected adjustment rail, split hip pad, ankle rollers and footplate.",
+        "owner_feedback": "poor GHR apparatus!",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:51.850415+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "69f170dd9bfa1413a0b4c01b246966b3e061f6f9fc531c710c2358493c1c0448",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 553,
+      "key": "accessory_bird_dog_back_extension",
+      "movement_name": "Bird Dog Back Extension",
+      "primary_muscle_group": "lower_back",
+      "equipment_type": "bodyweight",
+      "implement": "floor mat",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_553_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "0eb9934f56f5777f096d473c",
+      "version": 2,
+      "supersedes_candidate_id": "72cb6407e4c62498d0391e12",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the down arm is fucing unnatural, why is his tricep on the inside! bad",
+        "tags": [],
+        "reviewed_at": "2026-09-14T00:29:28.847730+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:29 PM PT (Sep 13, 2026 08:29 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "7112fd7234b6da7fba6f78d0ee17f0ed5f79207900888a0fac312f3ff9d9ff9b",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/0eb9934f56f5777f096d473c/master.png",
+          "sha256": "0693708d89f35d49a18396d1d92ca517ec95f2d00ba6e135a05185f874c8733e",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1775356
+        },
+        "app": {
+          "path": "candidates/0eb9934f56f5777f096d473c/app.png",
+          "sha256": "859137488342bc014708fac6b14017b1a3e870ac42ee29d4a2e7062fc1315c0d",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 312051
+        },
+        "thumbnail": {
+          "path": "candidates/0eb9934f56f5777f096d473c/thumbnail.png",
+          "sha256": "431b1cc8772c16c65df7d3f275b9b9593ac80265f08914b351898029e95fb8f3",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43872
+        }
+      },
+      "candidate_asset": "candidates/0eb9934f56f5777f096d473c/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:58.695178+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "0693708d89f35d49a18396d1d92ca517ec95f2d00ba6e135a05185f874c8733e",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:36.471141+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Rebuild Bird Dog with anatomically correct supporting arm. Use clear FRONT THREE-QUARTER VIEW facing athlete's chest side, not rejected rear view. Athlete faces image LEFT on all fours, his RIGHT palm and LEFT knee support body. RIGHT supporting arm vertical shoulder over palm, elbow straight with elbow pit/biceps on anterior side toward head, triceps on posterior side toward hip, forearm pronated with palm flat/fingers forward. LEFT arm reaches straight forward at shoulder height; RIGHT leg extends straight backward at hip height. Spine horizontal neutral, head aligned looking down between hands, pelvis square. Four distinct correctly attached limbs, normal joints, no twisted humerus or inverted triceps. Full body on dark rubber floor no equipment.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/553/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "movement_family": "accessory_lower_back",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "floor mat",
+        "grip": "opposite palm and knee support",
+        "orientation": "quadruped opposite reach, posterior view",
+        "preflight_notes": "Recomposed three-quarter view clarifies normal supporting arm anatomy and opposite raised arm/leg.",
+        "owner_feedback": "the down arm is fucing unnatural, why is his tricep on the inside! bad",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:58.695178+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0693708d89f35d49a18396d1d92ca517ec95f2d00ba6e135a05185f874c8733e",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 554,
       "key": "accessory_superman_hold",
       "movement_name": "Superman Hold",
@@ -22383,6 +24238,128 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "12eee38846b8c99cdce6087f95a45f6eaa5eb87c810f92a88a8010174d5304d8",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 446,
+      "key": "accessory_45_degree_back_extension_glute_bias",
+      "movement_name": "45-Degree Back Extension (Glute Bias)",
+      "primary_muscle_group": "glutes",
+      "equipment_type": "bodyweight",
+      "implement": "45-degree Roman chair",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_446_attempt01",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "1d399caba95162fb2adb9bef",
+      "version": 2,
+      "supersedes_candidate_id": "31f2f7e61751f428a68c67ea",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the movement says 45 degrees but the bench is at like fucking 60 degrees!",
+        "tags": [],
+        "reviewed_at": "2026-09-14T00:29:57.922043+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:29 PM PT (Sep 13, 2026 08:29 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0fc7597340180a65a470d0fd31bf2b4c08e436c3cb38508620ea2297575c6e31",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/1d399caba95162fb2adb9bef/master.png",
+          "sha256": "51f3c0210a24aa568fd98171cb61eb4e525136a2624559fefb2cd3f78ba3460f",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1926507
+        },
+        "app": {
+          "path": "candidates/1d399caba95162fb2adb9bef/app.png",
+          "sha256": "697b12deded60d311b554de113c2e9a228b79f7f2a33aad12941cf6052cf1c3d",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 342337
+        },
+        "thumbnail": {
+          "path": "candidates/1d399caba95162fb2adb9bef/thumbnail.png",
+          "sha256": "33163883d4722796a559c08e08a56b087808eae76a7738ab419a952e4f5e4f7a",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47431
+        }
+      },
+      "candidate_asset": "candidates/1d399caba95162fb2adb9bef/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:27:03.701912+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "51f3c0210a24aa568fd98171cb61eb4e525136a2624559fefb2cd3f78ba3460f",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:33.989550+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct GLUTE-BIAS 45-DEGREE BACK EXTENSION: change apparatus main diagonal rail to EXACTLY 45 degrees ABOVE HORIZONTAL FLOOR, equal horizontal run and vertical rise, visibly shallower than rejected steep 60-degree chair. Recompose camera to true side view with slight depth; perspective must not hide slope. Real Roman chair with full H-shaped grounded base, diagonal telescoping 45degree rail and locking pin, split thick thigh pads supporting upper thighs just below hips, matching ankle rollers behind Achilles, broad diamond-plate footrest perpendicular to leg axis. Both feet fully supported with no shoe clipping. Athlete knees softly unlocked, hips extend while upper back remains mildly rounded for glute-bias, arms crossed, head follows gently rounded spine looking down. Whole apparatus and body frame visible. Keep realistic material and baseline model.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/446/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "movement_family": "accessory_glutes",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "45-degree Roman chair",
+        "grip": "feet slightly turned out; knees soft",
+        "orientation": "prone 45-degree extension",
+        "preflight_notes": "Shallower 45-degree frame replacing steep support; upper hip pad and complete grounded structure.",
+        "owner_feedback": "the movement says 45 degrees but the bench is at like fucking 60 degrees!",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:27:03.701912+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "51f3c0210a24aa568fd98171cb61eb4e525136a2624559fefb2cd3f78ba3460f",
         "source": "human_review_ui"
       }
     },
@@ -22819,6 +24796,250 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "c6ba5d4dc45f8b43fec048541c57910b5effa538ecc7f8a63e6021707ec377ce",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 470,
+      "key": "accessory_side_plank_hip_abduction",
+      "movement_name": "Side Plank Hip Abduction",
+      "primary_muscle_group": "abductors",
+      "equipment_type": "bodyweight",
+      "implement": "floor mat",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_470_attempt02",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "27f02664b08e156f30d8cdf0",
+      "version": 2,
+      "supersedes_candidate_id": "3f44646848a74e5c430d417b",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the fuck is with the neck/head! make it fucking neutral",
+        "tags": [],
+        "reviewed_at": "2026-09-14T00:30:32.777637+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:30 PM PT (Sep 13, 2026 08:30 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "7ae2157cd39ba98331629988b188b222ff0184f005dda6e153ad5290336e369f",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/27f02664b08e156f30d8cdf0/master.png",
+          "sha256": "5d3879fcda855ef352e9c4b2f89bda73af9075645e45c4e14b602fb092ac0afc",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1632190
+        },
+        "app": {
+          "path": "candidates/27f02664b08e156f30d8cdf0/app.png",
+          "sha256": "e29a5e067c5287c3b23e3ab9fe68e85f84bde3d3ed9cfb41e9d07e3db32e5a87",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 313993
+        },
+        "thumbnail": {
+          "path": "candidates/27f02664b08e156f30d8cdf0/thumbnail.png",
+          "sha256": "d25b38a31faaae2e073bff2005654cda8d7a800d30b0cec5fb9dfefdb29c2cce",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47432
+        }
+      },
+      "candidate_asset": "candidates/27f02664b08e156f30d8cdf0/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:27:08.250033+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5d3879fcda855ef352e9c4b2f89bda73af9075645e45c4e14b602fb092ac0afc",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:34.266511+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct ONLY head and neck in first image. It is a side plank: body is lying sideways, so his head must ALSO lie sideways. Roll the entire skull about 60 degrees clockwise in the image plane so crown points to image right and chin points to image left/down toward sternum, his eye-to-eye line almost vertical, face facing camera in same plane as chest. Extend crown directly along the thoracic-spine long axis; ears equally distant from shoulders. This is NOT a standing upright portrait head. NO forward bow looking down at floor, NO side turning nose away. Preserve the supporting elbow, lifted pelvis, hip abduction, extended feet and entire rest of image exactly. Anatomically relaxed neutral cervical spine continuing the sideways torso.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/470/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "movement_family": "accessory_abductors",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "floor mat",
+        "grip": "forearm and lower foot support",
+        "orientation": "side plank with top leg abducted",
+        "preflight_notes": "Head rolls with sideways body and continues spinal axis; leg abduction and forearm support preserved.",
+        "owner_feedback": "the fuck is with the neck/head! make it fucking neutral",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:27:08.250033+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5d3879fcda855ef352e9c4b2f89bda73af9075645e45c4e14b602fb092ac0afc",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 537,
+      "key": "accessory_copenhagen_side_plank",
+      "movement_name": "Copenhagen Side Plank",
+      "primary_muscle_group": "obliques",
+      "equipment_type": "bodyweight",
+      "implement": "commercial flat bench",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_537_attempt03",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "6d6bc1fabaa7eb46a6bcbece",
+      "version": 2,
+      "supersedes_candidate_id": "2e6fadb429dc075debb4c8ca",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "same fucking thing, make the neck/head neutral to the fuckign spine! what the fuck! this is trivial shit\n",
+        "tags": [],
+        "reviewed_at": "2026-09-14T00:30:56.380010+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:30 PM PT (Sep 13, 2026 08:30 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "c5c60132ab5a72fdfd668d3fc134d24518bcc263704e3575828bdf41983e6dd0",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/6d6bc1fabaa7eb46a6bcbece/master.png",
+          "sha256": "8494aa73bd74f36c7b77f3e22776775a43bd94eea8db6be34c7507ac033345ee",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1555027
+        },
+        "app": {
+          "path": "candidates/6d6bc1fabaa7eb46a6bcbece/app.png",
+          "sha256": "7daf317de6166c004fdc49b7e07b9c77437294c0d975ae4102d67d28a214f0e2",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 301960
+        },
+        "thumbnail": {
+          "path": "candidates/6d6bc1fabaa7eb46a6bcbece/thumbnail.png",
+          "sha256": "f8a464d174dec3967fcd097a4025082d87aae97dfe3e413dc0c75bf3cd075a70",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46077
+        }
+      },
+      "candidate_asset": "candidates/6d6bc1fabaa7eb46a6bcbece/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:27:09.650319+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8494aa73bd74f36c7b77f3e22776775a43bd94eea8db6be34c7507ac033345ee",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:35.611242+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Edit FIRST image, the Copenhagen side plank. SECOND image is an exact HEAD ALIGNMENT reference only (side plank hip abduction with correct neutral head). Transfer that neutral HEAD AND NECK orientation, face direction, and eye gaze to the first athlete: sideways head extending straight along torso, facing same plane as chest, nose and eyes forward. Remove the downward bow and neck twist. Keep the FIRST image's entire body, bent lower knee, straight upper ankle on bench, supporting forearm, clothing, lighting and apparatus unchanged. Do not change the movement or copy second image legs. Only correct first image head/neck to the neutral second image alignment. Same person.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/537/attempt-03.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "movement_family": "accessory_obliques",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "commercial flat bench",
+        "grip": "forearm and top ankle support",
+        "orientation": "side plank on elevated ankle",
+        "preflight_notes": "Final head-only correction matches neutral sideways head to torso; top ankle remains on bench and lower knee floats.",
+        "owner_feedback": "same fucking thing, make the neck/head neutral to the fuckign spine! what the fuck! this is trivial shit\n",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:27:09.650319+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8494aa73bd74f36c7b77f3e22776775a43bd94eea8db6be34c7507ac033345ee",
         "source": "human_review_ui"
       }
     },
@@ -23685,6 +25906,128 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "1bb296d7185c00abaf9decb37fe0e7bbb242467ad7a228915ef98eee72fe04c1",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 539,
+      "key": "accessory_cross_body_mountain_climber",
+      "movement_name": "Cross-Body Mountain Climber",
+      "primary_muscle_group": "obliques",
+      "equipment_type": "bodyweight",
+      "implement": "floor mat",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review7_20260913_539_attempt03",
+      "generation_batch": "bodyweight-review-round-7-2026-09-13",
+      "candidate_id": "2ea93a2f09118fc4276bb25a",
+      "version": 2,
+      "supersedes_candidate_id": "6ed7d0abfa52764b94e71782",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the knee is not corded the body for the cross body fuckign movement! poor!",
+        "tags": [],
+        "reviewed_at": "2026-09-14T00:32:47.183687+00:00",
+        "reviewed_at_display": "Sep 13, 2026 05:32 PM PT (Sep 13, 2026 08:32 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9a706008c639e24b09f90f93017a75a96bdaae93c44c78139a86c12546931c90",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/2ea93a2f09118fc4276bb25a/master.png",
+          "sha256": "fd8fd5793fafb7e06bcfb3ad5d64ca9b521e3aa58dac6a601bccbd6b5289cab6",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1732537
+        },
+        "app": {
+          "path": "candidates/2ea93a2f09118fc4276bb25a/app.png",
+          "sha256": "1062bd6986b66791f1aca1d7424b8d4096a5b8d89b8477fd8e521ed1d6b22a9b",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 307452
+        },
+        "thumbnail": {
+          "path": "candidates/2ea93a2f09118fc4276bb25a/thumbnail.png",
+          "sha256": "bbc8e4652a2002295a248d75518c7267f1c5eb97c56e26b47678ea8925c9b11a",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44271
+        }
+      },
+      "candidate_asset": "candidates/2ea93a2f09118fc4276bb25a/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:27:42.709097+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "fd8fd5793fafb7e06bcfb3ad5d64ca9b521e3aa58dac6a601bccbd6b5289cab6",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T02:12:35.896361+00:00",
+      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+      "generation_prompt": "Create one square photorealistic Strength Ledger CROSS-BODY MOUNTAIN CLIMBER. Image 1 is movement POSE REFERENCE ONLY: copy the body geometry and camera side, including the FAR LEG crossing toward the NEAR ARM, near leg extended back. Image 2 governs the athlete, clothing and studio ONLY. Same muscular adult man short brown hair, full graphite tank overlapping black shorts, black trainers, near-black rubber floor studio, neutral upper-left key light, subtle purple right rim. No outdoor scenery, cap, blue clothing, text or logos. Crucial motion: athlete's FAR KNEE moves UNDER the abdomen, ACROSS body's sagittal midline, TOWARD the NEAR SIDE OPPOSITE ELBOW. His near leg remains straight backward, near toes support floor. Rotate pelvis subtly to bring far knee within 5cm of inside of opposite near elbow. Knee stays INSIDE arms, never outside same-side elbow (that would be Spiderman). Hands shoulder width, both arms straight, full body in frame. Show this contralateral crossover unmistakably in three-quarter side view like pose reference. Neutral head looking floor ahead of hands, not to camera.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/539/attempt-03.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "movement_family": "accessory_obliques",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "floor mat",
+        "grip": "palms planted; opposite knee toward elbow",
+        "orientation": "high plank cross-body knee drive",
+        "preflight_notes": "Recomposed using coach pose reference: far leg crosses beneath abdomen toward opposite near arm while near leg extends; no same-side outside-elbow drive.",
+        "owner_feedback": "the knee is not corded the body for the cross body fuckign movement! poor!",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:27:42.709097+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "fd8fd5793fafb7e06bcfb3ad5d64ca9b521e3aa58dac6a601bccbd6b5289cab6",
         "source": "human_review_ui"
       }
     },

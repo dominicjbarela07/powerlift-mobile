@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": 715,
-  "updated_at": "2026-09-14T02:12:36.757291+00:00",
-  "updated_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
+  "revision": 758,
+  "updated_at": "2026-09-14T04:04:19.373434+00:00",
+  "updated_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -38588,12 +38588,25 @@
         }
       },
       "candidate_asset": "candidates/be36121d3167e5a28423fdd3/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:21:31.876659+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:21 PM PT (Sep 13, 2026 10:21 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f8c1fa0e798a79afee0dcd72cc4ded5d1d9b7d55aa0bad106ced8ad8b99f7547",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:10:19.800349+00:00",
       "created_at_display": "Sep 13, 2026 07:10 PM PT (Sep 13, 2026 10:10 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Raise the pull-up bar AND athlete by a full 35cm relative to the floor, extending the two rack uprights below him. There must now be a large clearly visible 50-60cm gap between shoes and floor during this TOP-position pull-up, not the tiny gap in image 1. Show whole 2.4m-tall realistic bolted rack and grounded bases by zooming out; bar at standard adult pull-up height. Preserve both pronated grips slightly wider than shoulders, chin slightly above bar, wrapped thumbs, mildly bent hanging legs, neutral forward neck. Correct physical height is mandatory.",
@@ -38628,6 +38641,18 @@
         "preflight_notes": "Raised pull-up bar and athlete with visible foot clearance; matched supported bar and wrapped grips.",
         "owner_feedback": "The pull-up bar should be about a foot higher. ",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:21:31.876659+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:21 PM PT (Sep 13, 2026 10:21 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f8c1fa0e798a79afee0dcd72cc4ded5d1d9b7d55aa0bad106ced8ad8b99f7547",
+        "source": "human_review_ui"
       }
     },
     {
@@ -38689,12 +38714,25 @@
         }
       },
       "candidate_asset": "candidates/14ca058bf52aacf317ed11de/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:21:36.767138+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:21 PM PT (Sep 13, 2026 10:21 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "75323dbafda71dfdcafe4d4004d79777bb7dba2671f241787a63a4aa73051008",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:28.543991+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Replace the miniature rack with a physically standard 2.4m tall steel pull-up rack, much taller than a standing adult. Both wooden rings are suspended from the HIGH overhead pull-up bar by long taut vertical black straps about 2.05m long, ending with rings ~25cm above floor. Full standard rack top and grounded bases visible. Wider/zoomed-out square composition is required to show real height; do not compress rack height to fit. Athlete performs low ring push-up with chest between rings, elbows bent, both hands fully wrapped around bottom ring arcs, toes grounded, body in straight plank. Neutral neck looking at floor ahead, not upward toward camera.",
@@ -38729,6 +38767,18 @@
         "preflight_notes": "Tall rack anchor and long taut ring straps; full-length overhead supports now visible. Thumbnail focuses lower athlete/ring contact; master retains complete frame.",
         "owner_feedback": "the anchor for the rings is far too low! generally its anchored to the bar at pull-up bar height! should be taller than the average man",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:21:36.767138+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:21 PM PT (Sep 13, 2026 10:21 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "75323dbafda71dfdcafe4d4004d79777bb7dba2671f241787a63a4aa73051008",
+        "source": "human_review_ui"
       }
     },
     {
@@ -38787,12 +38837,25 @@
         }
       },
       "candidate_asset": "candidates/06f99d39d99905f3e06453c2/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:25:27.749800+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ea6262ccba29301bed3cd04d747641b3c8e387ea313534c42e56ffb27d530eb5",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:28.843069+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Increase CHEST DIP forward torso lean visibly. Tilt whole torso about 40 degrees FORWARD from vertical, chest and head ahead of the hands, elbows flexed and moderately out, shoulders down. Knees bend behind athlete with feet suspended. Neutral neck follows torso with eyes directed down ahead, no crank-up or sideways look. Preserve real paired parallel dip bars with four solid supports and grounded bases, hands gripping tops naturally, full body/frame. Forward lean is the major requested visible change.",
@@ -38827,6 +38890,18 @@
         "preflight_notes": "Forward torso lean with shoulders ahead of hands, paired parallel bars and chest-dip arm position.",
         "owner_feedback": "the lifter needs more forward lean to target the chest more",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:25:27.749800+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ea6262ccba29301bed3cd04d747641b3c8e387ea313534c42e56ffb27d530eb5",
+        "source": "human_review_ui"
       }
     },
     {
@@ -38887,12 +38962,29 @@
         }
       },
       "candidate_asset": "candidates/ee8182724fec0591b884a8c7/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "how do you fuck up the feet twice! do you see the fucking problem?",
+      "tags": [
+        "human_anatomy"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "how do you fuck up the feet twice! do you see the fucking problem?",
+          "tags": [
+            "human_anatomy"
+          ],
+          "reviewed_at": "2026-09-14T02:22:00.667070+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d84f0df7509cb6336d13f8bea0862a39cace07117dbe7ef6e8eba125171aa9ff",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:29.138638+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Recompose handstand push-up into a strict SIDE PROFILE so whole inverted anatomy is coherent. Wall is vertical on image RIGHT. Athlete faces LEFT, his BACK toward wall, heels touch wall at right, all toes point LEFT away from wall. Kneecaps, chest, face and shoe toes all orient left. Hands shoulder width on floor ~25cm from wall, palms flat and fingers forward left. Bottom of handstand push-up: elbows bent, head close to floor, body stacked nearly vertical parallel to wall from shoulders through hips and ankles. Natural straight feet attached anatomically, no reversed shoes, no twisted knees, no diagonal wall. Full body and wall-floor corner clear. Head naturally looks slightly down between hands, not toward camera. Graphite tank remains tucked over waist.",
@@ -38927,6 +39019,20 @@
         "preflight_notes": "Back-to-wall vertical handstand, both shoes face the same direction as the knees; hands support floor.",
         "owner_feedback": "Bros feet are backwards, and he's like all diagonal vs the wall! poor quality render",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "how do you fuck up the feet twice! do you see the fucking problem?",
+        "tags": [
+          "human_anatomy"
+        ],
+        "reviewed_at": "2026-09-14T02:22:00.667070+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d84f0df7509cb6336d13f8bea0862a39cace07117dbe7ef6e8eba125171aa9ff",
+        "source": "human_review_ui"
       }
     },
     {
@@ -38987,12 +39093,29 @@
         }
       },
       "candidate_asset": "candidates/04a6199bdd5c6e2bf7295e8d/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "I ALREADY FUCKING TOLD YOU TO HAVE THE FUCKING USER FACE THE RACK! I FUCKING TOLD YOU AREADY AND YOU DISREGARDED WHAT I FUCKING SAID! FUCK YOU",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "I ALREADY FUCKING TOLD YOU TO HAVE THE FUCKING USER FACE THE RACK! I FUCKING TOLD YOU AREADY AND YOU DISREGARDED WHAT I FUCKING SAID! FUCK YOU",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-14T02:25:59.341232+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "674f0b12a483d42d8c2bcca3c3d65b9641324533005eca70b7b2f96899d23970",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:29.430312+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Fix NEUTRAL-GRIP PULL-UP by reversing athlete relative to rack. Recompose from a true side-three-quarter viewpoint: crossbeam behind athlete, two PARALLEL FORE-AFT HANDLES extend 45cm OUTWARD in front of rack at 2.4m height. Athlete faces OUT into the clear room, away from rack, grips outer projecting ends with palms facing each other. Whole head and chest are at least 30cm in front of rear crossbeam, cannot collide with it. Back of head toward rear rack, face looks out in direction of both handle tips. Show at top with elbows flexed down, chin at handle height, torso vertical, feet suspended 50cm above floor. Both full joined handles, attachment plates, standard height uprights and grounded full bases visible. No bar across face or rear of skull.",
@@ -39027,6 +39150,20 @@
         "preflight_notes": "Forward-projecting parallel handles; head clears the rear crossbeam, both hands wrap independent handles.",
         "owner_feedback": "the lifter's head looks like its crashing into the fucking rack! he needs to be facing the other way relative to the rack",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "I ALREADY FUCKING TOLD YOU TO HAVE THE FUCKING USER FACE THE RACK! I FUCKING TOLD YOU AREADY AND YOU DISREGARDED WHAT I FUCKING SAID! FUCK YOU",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:25:59.341232+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "674f0b12a483d42d8c2bcca3c3d65b9641324533005eca70b7b2f96899d23970",
+        "source": "human_review_ui"
       }
     },
     {
@@ -39085,12 +39222,25 @@
         }
       },
       "candidate_asset": "candidates/3a503fdd1c4126e86230a588/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:22:04.522358+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d1ed8ae9f92b18a53ffe5061d87bb9845bb1217853b4cc9e35322353f5652303",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:29.693596+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct the height only: the wide-grip pull-up crossbar and suspended athlete must be 40cm HIGHER above floor. Standard full 2.4m tall rack grounded with two bolted uprights and stable longitudinal bases. Zoom out to fit full structure. Clearly visible 50cm or greater gap beneath shoes in the flexed-elbow pull-up position. Preserve WIDE grip about 1.6x shoulder width, BOTH palms pronated away from athlete, thumb wraps. Forearms near vertical, chin near bar, symmetrical unweighted legs hanging. No change to identity/style.",
@@ -39125,6 +39275,18 @@
         "preflight_notes": "Raised supported bar, wide pronated grip, full suspended body and clear space beneath shoes.",
         "owner_feedback": "pull-up bar not high enough",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:22:04.522358+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d1ed8ae9f92b18a53ffe5061d87bb9845bb1217853b4cc9e35322353f5652303",
+        "source": "human_review_ui"
       }
     },
     {
@@ -39183,12 +39345,25 @@
         }
       },
       "candidate_asset": "candidates/2da2a53dc3cd0abca54f0361/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:22:06.494631+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "41eeaabfdfb6f49ef52dd8c35718be3b60ca125dc1f7b9c7684e90971552f9da",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:29.954276+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct CHIN-UP height: raise bar and athlete 40cm above floor relative to rejected image, extending rack below athlete. Full 2.4m tall adult pull-up rack, visible grounded bases, one straight real bolted overhead bar. Chin above bar, hands SHOULDER WIDTH and BOTH SUPINATED palms facing athlete, fingers and thumbs fully wrapped, elbows bent in front/down. Show at least 50-60cm clear space below hanging shoes at the top. Frame full hardware and full athlete with realistic proportions. Don't substitute pronated pull-up.",
@@ -39223,6 +39398,18 @@
         "preflight_notes": "Raised standard-height chin-up bar; supinated hands and suspended feet.",
         "owner_feedback": "pull-up bar not at standard height",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:22:06.494631+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "41eeaabfdfb6f49ef52dd8c35718be3b60ca125dc1f7b9c7684e90971552f9da",
+        "source": "human_review_ui"
       }
     },
     {
@@ -39281,12 +39468,29 @@
         }
       },
       "candidate_asset": "candidates/5ecb30c31c2e2e04ff160981/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "ARE YOU FUCKIGN KIDDING ME MAN? THIS IS SHIT QUALITY! IT LOOKS LIKE FUCKING SHIT! WHY IS THERE 2 CROSS BARS! FUCK YOU",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "ARE YOU FUCKIGN KIDDING ME MAN? THIS IS SHIT QUALITY! IT LOOKS LIKE FUCKING SHIT! WHY IS THERE 2 CROSS BARS! FUCK YOU",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-14T02:28:12.813119+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:28 PM PT (Sep 13, 2026 10:28 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1a7a32acbdd8271951081d90b361a55f4adc552050d2b89f605f57bdc57a5a2a",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:30.222198+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONLY equipment height and overall framing. The user's explicit instruction: 'you corrected the actual movement, just fix the bar height'. Preserve the EXACT ATHLETE POSE, arched/bent sternum chin-up, bar contact on central chest, arm and hand geometry, head position, full-length tank and plain shorts. Translate this whole unchanged bar-and-athlete arrangement UPWARD 45cm above the floor. Extend rack uprights below athlete, so the crossbar is at a standard 2.4m pull-up height and his shoes are now clearly 65-75cm off the floor. Zoom out just enough to contain whole taller rack from visible tops to grounded baseplates AND the athlete's head above bar. Feet not touching floor. Do not change any relative position between bar and chest/hands. Same dark studio lighting and realism.",
@@ -39321,6 +39525,20 @@
         "preflight_notes": "Preserved corrected arched sternum-pull pose and full-length shirt; raised pull-up bar/athlete and added clear floor clearance per latest owner instruction.",
         "owner_feedback": "why does he have a fucking crop top! also its a pull to the fucking sternum! not the upper abdomen! fucking idiot!",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "ARE YOU FUCKIGN KIDDING ME MAN? THIS IS SHIT QUALITY! IT LOOKS LIKE FUCKING SHIT! WHY IS THERE 2 CROSS BARS! FUCK YOU",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:28:12.813119+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:28 PM PT (Sep 13, 2026 10:28 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1a7a32acbdd8271951081d90b361a55f4adc552050d2b89f605f57bdc57a5a2a",
+        "source": "human_review_ui"
       }
     },
     {
@@ -39382,12 +39600,29 @@
         }
       },
       "candidate_asset": "candidates/677411d6a1407da54df61f9c/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "the barbell is clipping trough the rock! fuclking have it sit In the j-cups like a fucking normal shit!",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "the barbell is clipping trough the rock! fuclking have it sit In the j-cups like a fucking normal shit!",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-14T02:22:32.081505+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e18ad8ee66fea76b07a374057c4f9bbccaec0f64b80f78b00e808513652a0789",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:30.487228+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Repair the Feet-Elevated Inverted Row hardware. Replace the truncated pole with ONE complete straight 220cm Olympic barbell: uninterrupted knurled 28mm shaft between hands, visible collars and thick chrome sleeves protruding OUTSIDE both rack uprights at both ends. Both 75mm rack uprights have matching J-CUPS at equal 100cm floor height supporting shaft, no bar cut off at cups. Zoom out enough for BOTH barbell ends, full rack grounded base and whole standard 43cm flat bench. Athlete heels supported on bench, straight trunk/legs suspended, chest pulling toward bar, BOTH grips pronated overhand with thumbs wrapped, elbow and forearm orientation coherent. Do not hide bar ends behind crop.",
@@ -39423,6 +39658,20 @@
         "preflight_notes": "Complete straight barbell with both sleeves/collars supported by J-cups; heels remain on bench.",
         "owner_feedback": "the barbell that he's doing the inverted row on is incomplete! it should be a barbell on j-cups that is being used for the row",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the barbell is clipping trough the rock! fuclking have it sit In the j-cups like a fucking normal shit!",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:22:32.081505+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e18ad8ee66fea76b07a374057c4f9bbccaec0f64b80f78b00e808513652a0789",
+        "source": "human_review_ui"
       }
     },
     {
@@ -39481,12 +39730,29 @@
         }
       },
       "candidate_asset": "candidates/2b115439d7f4b1359fd84953/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "HOW DO YOU FUCK THIS ONE UP! ARE YOU FUCKING KIDDING ME? LOOK IT UP AND FIGURE IT THE FUCK OUT! THIS IS A FUCKING DOG SHIT RENDER",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "HOW DO YOU FUCK THIS ONE UP! ARE YOU FUCKING KIDDING ME? LOOK IT UP AND FIGURE IT THE FUCK OUT! THIS IS A FUCKING DOG SHIT RENDER",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-14T02:23:06.847561+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:23 PM PT (Sep 13, 2026 10:23 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "779253c8edb298d278bd74d9759f525c580b91b242454a9937fda7c8bff8b25c",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:30.779364+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct Ring Row force direction by MOVING OVERHEAD ANCHORS toward athlete's FEET side (image LEFT). Both straps must angle UP AND LEFT from hands to anchors, directly opposing the athlete's backward-downward lean to image RIGHT. Current up-right straps are wrong; do not preserve that. Build real full-height 2.4m rack with both overhead strap loops attached to single crossbar, rack positioned above the feet/left, full stable bases. Whole athlete in inclined straight-body ring row, heels on floor toward left, shoulders behind/right of heels, neutral head in line with torso. Both wooden rings at sides of lower chest, neutral palms facing each other, completely wrapped fingers and thumb around lower arcs. Elbows bent back beside ribs. Taut continuous straps from each ring toward high anchor left, no crossing body.",
@@ -39522,6 +39788,20 @@
         "preflight_notes": "Taut straps slope toward high anchor over foot end; force direction now supports leaned-back row.",
         "owner_feedback": "the ring straps are the wrong direction for the pulling force vectors. looks unnatural",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "HOW DO YOU FUCK THIS ONE UP! ARE YOU FUCKING KIDDING ME? LOOK IT UP AND FIGURE IT THE FUCK OUT! THIS IS A FUCKING DOG SHIT RENDER",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:23:06.847561+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:23 PM PT (Sep 13, 2026 10:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "779253c8edb298d278bd74d9759f525c580b91b242454a9937fda7c8bff8b25c",
+        "source": "human_review_ui"
       }
     },
     {
@@ -39580,12 +39860,29 @@
         }
       },
       "candidate_asset": "candidates/d283ccc5098514f61ee88ac0/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "FUCKING THIS ONE TOO! LOOK UP HOW IT IS SUPPOSED TO FUCKING LOOK! PISS FUCKING POOR! THIS IS AN OBVIOUS FAIL THAT SHOULDNT EVEN MAKE IT TO ME",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "FUCKING THIS ONE TOO! LOOK UP HOW IT IS SUPPOSED TO FUCKING LOOK! PISS FUCKING POOR! THIS IS AN OBVIOUS FAIL THAT SHOULDNT EVEN MAKE IT TO ME",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-14T02:23:39.928374+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:23 PM PT (Sep 13, 2026 10:23 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "fe148990d727a79c7b65dce8f5208058d77eb5fe9769e3f6dbd1487d0c03f6c8",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:31.067128+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Fully rebuild the suspension trainer row equipment with real proportions. A normal 2.4m-high two-upright rack on the RIGHT, straight bolted overhead crossbar, wide stable full-depth floor bases. Single webbing anchor loop wrapped around crossbar midpoint with metal carabiner and equalizer loop; two equal black straps descend diagonally DOWN LEFT to TWO compact triangular webbing handles with cylindrical rubber hand grips. Hands completely close around grips, thumbs opposed, neutral palms face each other, no giant handles. Athlete is to LEFT of rack facing RIGHT, leaning backward with straight line shoulders-hips-ankles about 45deg above floor, heels planted nearer rack, row TOP with handles beside lower ribs, elbows bending back. Both taut straps pull upward/right against bodyweight. Full body, full physically adult-height rack; no miniature frame. Realistic torso and limb proportions.",
@@ -39621,6 +39918,20 @@
         "preflight_notes": "Connected high anchor/equalizer, matched taut straps and triangular handles; body leans away with both hands gripping.",
         "owner_feedback": "the fuck is even this? are you fucking kidding me? all of this if wrong proportions, wrong placement, its dog shit! I can believe you handed this off",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "FUCKING THIS ONE TOO! LOOK UP HOW IT IS SUPPOSED TO FUCKING LOOK! PISS FUCKING POOR! THIS IS AN OBVIOUS FAIL THAT SHOULDNT EVEN MAKE IT TO ME",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:23:39.928374+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:23 PM PT (Sep 13, 2026 10:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "fe148990d727a79c7b65dce8f5208058d77eb5fe9769e3f6dbd1487d0c03f6c8",
+        "source": "human_review_ui"
       }
     },
     {
@@ -39681,12 +39992,29 @@
         }
       },
       "candidate_asset": "candidates/aaae0cbc2f164dcc8a045422/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "ASSYMETRIC BARBELL AND USER IS NOT CENTERED ON THE BAR! FUCK!",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "ASSYMETRIC BARBELL AND USER IS NOT CENTERED ON THE BAR! FUCK!",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-14T02:23:58.102571+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:23 PM PT (Sep 13, 2026 10:23 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "dd78d42e27f348e30d2f32db35f67ff4585585cb977581c914c01fe94e397659",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:31.355037+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Create ONE NEW square photorealistic Strength Ledger artwork. Reference is ONLY the same male athlete, clothing and studio STYLE, not the pose or equipment. Same short brown hair, full-length graphite tank, plain black shorts/trainers, natural skin, near-black studio/rubber floor, neutral soft upper-left light and subdued purple right rim. Full body and all critical contact points. No text, no logos, no panels. Head aligned with task/torso. Photograph a SCAPULAR INVERTED ROW in LEFT SIDE PROFILE with a slight FRONT angle to reveal grip. Low straight Olympic barbell in J-cups at waist height. Athlete lies face-up diagonally below it, heels on floor, torso/hips/legs straight, both arms fully straight rising to bar, shoulder blades retracted. BOTH HANDS OVERHAND/PRONATED: fingers hook OVER THE TOP and the four fingers' middle segments are visible on the near/front surface, thumb underneath, exactly like an overhand pull-up grip. Backs of hands face away from athlete's FACE. Rotate BOTH forearms into pronation; elbow pits must remain anatomically coherent with humeri. Not palms toward face, no underhand grip. Show clear five-finger closed grips, full bar with sleeves beyond two uprights, stable real squat-stand bases. Body head left, feet right. Don't crop bar ends.",
@@ -39722,6 +40050,20 @@
         "preflight_notes": "Recomposed matching pronated hands on complete supported bar; both shoulder-elbow-wrist chains straight.",
         "owner_feedback": "are we fucking pronated or supinated? the fucking arms are fucked up",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "ASSYMETRIC BARBELL AND USER IS NOT CENTERED ON THE BAR! FUCK!",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:23:58.102571+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:23 PM PT (Sep 13, 2026 10:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "dd78d42e27f348e30d2f32db35f67ff4585585cb977581c914c01fe94e397659",
+        "source": "human_review_ui"
       }
     },
     {
@@ -39784,12 +40126,31 @@
         }
       },
       "candidate_asset": "candidates/a4f0857c8e7c657ef1c872ba/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "USE A FUCKING BARBELL IN A J-CUP FOR THIS!!!!!",
+      "tags": [
+        "equipment",
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "USE A FUCKING BARBELL IN A J-CUP FOR THIS!!!!!",
+          "tags": [
+            "equipment",
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-14T02:24:16.453793+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:24 PM PT (Sep 13, 2026 10:24 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "6d48e7e7808b6fc0c5e4d69bb9b93193f12a9dab7e52a3ca5d6251aa3d0009f7",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:31.726735+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct bodyweight curl finish. Keep feet planted and inclined body supported by hands on fixed bar. Move chin toward bar until bar sits directly in front of and slightly below CHIN, never in front of forehead. Both elbows flexed with upper arms raised forward, both wrists supinated, palms toward face, close fully wrapped grip shoulder-width. Keep head neutral following trunk, avoid craning chin or pressing head into bar. Clean believable head silhouette and equal limb proportions. Fully visible real fixed bar bolted to both rack uprights with grounded feet. Curl using elbow flexion, no hanging vertical chin-up.",
@@ -39823,6 +40184,21 @@
         "preflight_notes": "Bar approaches chin rather than forehead; head intact, supinated grip, straight inclined body.",
         "owner_feedback": "poor generation of the head. the chin should be approaching the bar, not the forehead! ",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "USE A FUCKING BARBELL IN A J-CUP FOR THIS!!!!!",
+        "tags": [
+          "equipment",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:24:16.453793+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:24 PM PT (Sep 13, 2026 10:24 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6d48e7e7808b6fc0c5e4d69bb9b93193f12a9dab7e52a3ca5d6251aa3d0009f7",
+        "source": "human_review_ui"
       }
     },
     {
@@ -39884,12 +40260,31 @@
         }
       },
       "candidate_asset": "candidates/e240981e557783fee0a50602/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "THE FUCKING CROSSBAR IS TOO SHORT FOR THE RING ANCHOR! USE A STANDARD FUCKING HEIGHT! THIS IS FUCKING BULLSHIT THAT WE HAVE REPEAT FAILS",
+      "tags": [
+        "equipment",
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "THE FUCKING CROSSBAR IS TOO SHORT FOR THE RING ANCHOR! USE A STANDARD FUCKING HEIGHT! THIS IS FUCKING BULLSHIT THAT WE HAVE REPEAT FAILS",
+          "tags": [
+            "equipment",
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-14T02:24:52.989062+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:24 PM PT (Sep 13, 2026 10:24 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "69240072a725c2d3acd94244c1aca9b76bb581b12a8fd535c717152e2151dccc",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:32.005634+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Recompose RING BICEPS CURL with mechanically correct hands and elbows, not a row. Full-body three-quarter SIDE view. Heels planted toward front/rack, athlete leans backward in straight shoulder-hip-ankle line at about 55deg above floor, facing anchor. Upper arms raised forward at shoulder height, elbows remain out IN FRONT of torso. Elbows strongly flexed; hands curl back beside temples, palms face the man's face in a supinated grip. TWO wooden rings held by closed fingers and wrapped thumbs around bottom arcs; palms contact wood, wrists don't melt or penetrate rings. Rings about 5cm outside either temple without hitting head. Long taut straps pull up/forward from rings toward loops visibly anchored to 2.4m full-height bolted rack above FEET side. Realistic closed grips and tension path, neutral head follows torso without extra chin lift. Do not reuse flawed raised-overhead hand position in old target.",
@@ -39923,6 +40318,21 @@
         "preflight_notes": "Inspected enlarged complete arm chains and ring contact; closed grips, high elbows, hands near temples in ring curl.",
         "owner_feedback": "fucking poor rendering! look up how its supposed to fucking look!",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE FUCKING CROSSBAR IS TOO SHORT FOR THE RING ANCHOR! USE A STANDARD FUCKING HEIGHT! THIS IS FUCKING BULLSHIT THAT WE HAVE REPEAT FAILS",
+        "tags": [
+          "equipment",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:24:52.989062+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:24 PM PT (Sep 13, 2026 10:24 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "69240072a725c2d3acd94244c1aca9b76bb581b12a8fd535c717152e2151dccc",
+        "source": "human_review_ui"
       }
     },
     {
@@ -39981,12 +40391,25 @@
         }
       },
       "candidate_asset": "candidates/daafb017e77af66e92e9bb44/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "I HAVE NO WORDS... ARE YOU FUCKING SERIOUS?\n",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "I HAVE NO WORDS... ARE YOU FUCKING SERIOUS?\n",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:25:23.208030+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "55486eb6f50ca81ab9dc7b849d3aad7e522136b6156245d27604e002e3376f8f",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:32.267197+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Completely repair ring TRICEPS EXTENSION arms and grips. Three-quarter SIDE view: athlete's feet toward LEFT, body leans forward toward RIGHT facing down toward floor, torso straight from ankles to shoulders. Upper arms elevated forward roughly in line with trunk, elbows point FORWARD RIGHT, not down beside ribs; elbows flex 90 degrees so FOREARMS fold BACK toward sides of head. Each hand tightly grips bottom of its own wooden ring beside temples, palm and thumb wrapped with anatomically normal wrist, no arm crosses/merges. Both rings remain distinctly separated shoulder width with solid wooden arcs, long taut straps go upward-right to separate loops on standard 2.4m rack crossbar. Head neutral in spinal line, no sideways gaze. Toes on ground, heels lifted; full realistic rack hardware and body visible.",
@@ -40021,6 +40444,18 @@
         "preflight_notes": "Inspected enlarged both arm/ring interfaces; fingers wrap wood, paired elbow flexion and forward body lean.",
         "owner_feedback": "everything is fucked up in the arms and the hand/ring interface",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "I HAVE NO WORDS... ARE YOU FUCKING SERIOUS?\n",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:25:23.208030+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "55486eb6f50ca81ab9dc7b849d3aad7e522136b6156245d27604e002e3376f8f",
+        "source": "human_review_ui"
       }
     },
     {
@@ -40082,12 +40517,25 @@
         }
       },
       "candidate_asset": "candidates/81e23a2228847bf98cb09537/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:25:02.104434+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b8b111823023fac727a76e223898f8a7c4c68f86b7b58acd08cc12061487ab93",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:32.532115+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct ONLY the head orientation. This is a rear view false-grip ring hang. His head must face straight forward in SAME direction as the breastbone and pelvis, between both rings. Show back of skull centered between shoulders, ears roughly symmetric, NO visible side face or profile and no rotation toward right shoulder. Eyes forward/slightly upward through space BETWEEN the rings. Preserve both detailed false grips with wrists curled over wood, both arms, apparatus, body, clothes, lighting and crop unchanged.",
@@ -40119,6 +40567,18 @@
         "preflight_notes": "Closed false grips with heels of wrists rolled over wood; final edit centers back of head with torso, removing sideways glance.",
         "owner_feedback": "the fucking hands are not even holding the rings",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:25:02.104434+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b8b111823023fac727a76e223898f8a7c4c68f86b7b58acd08cc12061487ab93",
+        "source": "human_review_ui"
       }
     },
     {
@@ -40179,12 +40639,25 @@
         }
       },
       "candidate_asset": "candidates/5caec17eb41dd70b96fe56f4/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:25:10.300766+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f1261e8168afbdfb695d12c6103aa0fb708e2e671dbf85e9474c3fa03dcb2ebc",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:32.839490+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Deepen REVERSE NORDIC to a visibly LENGTHENED position. Pivot the whole straight thighs-hips-torso unit farther backward at the KNEES until knees-to-shoulders line is about 35 degrees ABOVE HORIZONTAL (55deg backward from vertical). Hips fully extended, no sitting on heels and no waist fold. Knees remain grounded on mat, shins and tops of shoes lying flat behind knees. Shoulder line visibly much lower/closer to ground than in input. Arms folded chest, head NEUTRAL aligned with leaning torso so face gazes upward along torso angle, no chin cranking. Preserve side-three-quarter camera and full body/floor.",
@@ -40218,6 +40691,18 @@
         "preflight_notes": "Increased backward lean in lengthened kneeling position while preserving extended hips and knee support.",
         "owner_feedback": "make him lean back more in the lengthened position to sell the movement more",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:25:10.300766+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f1261e8168afbdfb695d12c6103aa0fb708e2e671dbf85e9474c3fa03dcb2ebc",
+        "source": "human_review_ui"
       }
     },
     {
@@ -40278,12 +40763,25 @@
         }
       },
       "candidate_asset": "candidates/7d212cd50c621c5a9714a93a/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:01.366005+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8dc4310f1975d5a52eb7a0c9773f16f7152db6289d478aa6c7f80ab15567179c",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:33.123902+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct SPANISH SQUAT balance. Maintain deeply bent knees about 90deg and broad strap anchored in front to real rack upright at knee level, looped behind BOTH knees. Torso now exactly UPRIGHT VERTICAL, shoulders stacked directly above hips, no backward torso lean. Knees over ankles with near-vertical shins and heels planted. Hips sit back as strap tension counterbalances; chest doesn't fall behind pelvis. Arms extended forward for balance, neutral head looking forward in same plane as torso. Strap must visibly pass BEHIND knees and be taut toward front anchor. Realistic normal rack, not new fantasy structure.",
@@ -40317,6 +40815,18 @@
         "preflight_notes": "Upright torso with arms counterbalancing; taut strap behind knees attached to rack ahead.",
         "owner_feedback": "the balance is off. witht he torso leaning back like that he would fall",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:01.366005+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8dc4310f1975d5a52eb7a0c9773f16f7152db6289d478aa6c7f80ab15567179c",
+        "source": "human_review_ui"
       }
     },
     {
@@ -40378,12 +40888,25 @@
         }
       },
       "candidate_asset": "candidates/4f9422288b2bf60bf6fbbf9f/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:25:07.980325+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "77f44d1d797869d51ff263925eead1518fad6a21d1c1435d9c2dc03ac4f709eb",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:33.416148+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Repair Nordic ankle fixation without body or shoe clipping. Use a real low Nordic bench with knee pad and rear horizontal padded cylindrical roller resting ON TOP of the Achilles/low calves, just above shoe heels. Two black shoes extend BEHIND roller, both toes/shoe uppers visibly clear of every metal upright and lower brace. The roller is supported by external posts OUTSIDE either ankle, never a center upright inside a foot. Side-three-quarter viewpoint makes both feet, roller contact, and supports visibly separate. Athlete kneels on pad and leans forward from knees with straight knee-hip-shoulder line; palms assist on low padded box in front. Same pose/style otherwise. Show the entire full apparatus and feet, no hidden intersections.",
@@ -40418,6 +40941,18 @@
         "preflight_notes": "Ankle roller and side supports separated from shoes; knees on pad, hands assist against box.",
         "owner_feedback": "the dudes feet are clipping through the apparatus!",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:25:07.980325+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "77f44d1d797869d51ff263925eead1518fad6a21d1c1435d9c2dc03ac4f709eb",
+        "source": "human_review_ui"
       }
     },
     {
@@ -40476,12 +41011,25 @@
         }
       },
       "candidate_asset": "candidates/f99b39df272be0a70ad6b744/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:05.887879+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e4e8fb199f085a9a2e6b5b30325148ecef85f3f89c861a2cd9fdd450766f5a9a",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:33.708918+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Rebuild HAMSTRING-BIAS 45-DEGREE BACK EXTENSION apparatus. Use a TRUE SIDE PROFILE camera (only slight three-quarter depth) to make 45-degree geometry unmistakable. Main telescoping steel rail runs at EXACTLY 45 degrees above HORIZONTAL floor, from low left ankle station to high right thigh pad; equal rise and run. This is a real commercial Roman chair: H-shaped grounded base, ONE diagonal telescoping rail with pin, ONE rear diagonal support, two split rectangular thick thigh pads on upper end below hip crease, a wide diamond-plate foot platform perpendicular to leg axis and horizontal padded ankle rollers just behind Achilles. No rods pass through shoes. Entire chair and all base feet in frame. Athlete's knees straight, soles on plate, thighs supported below crease, hips hinge; torso at top follows leg axis neutrally without lumbar overextension, arms folded. Neutral neck in same axis as spine, eyes follow down-forward. No 60-degree incline and no fanciful three-way pivot.",
@@ -40516,6 +41064,18 @@
         "preflight_notes": "45-degree frame with connected bracing, footplate and ankle rollers; visible shoe/plate contact.",
         "owner_feedback": "poor 45 degree extension apperatus",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:05.887879+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e4e8fb199f085a9a2e6b5b30325148ecef85f3f89c861a2cd9fdd450766f5a9a",
+        "source": "human_review_ui"
       }
     },
     {
@@ -40574,12 +41134,25 @@
         }
       },
       "candidate_asset": "candidates/1d399caba95162fb2adb9bef/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:27:03.701912+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "51f3c0210a24aa568fd98171cb61eb4e525136a2624559fefb2cd3f78ba3460f",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:33.989550+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct GLUTE-BIAS 45-DEGREE BACK EXTENSION: change apparatus main diagonal rail to EXACTLY 45 degrees ABOVE HORIZONTAL FLOOR, equal horizontal run and vertical rise, visibly shallower than rejected steep 60-degree chair. Recompose camera to true side view with slight depth; perspective must not hide slope. Real Roman chair with full H-shaped grounded base, diagonal telescoping 45degree rail and locking pin, split thick thigh pads supporting upper thighs just below hips, matching ankle rollers behind Achilles, broad diamond-plate footrest perpendicular to leg axis. Both feet fully supported with no shoe clipping. Athlete knees softly unlocked, hips extend while upper back remains mildly rounded for glute-bias, arms crossed, head follows gently rounded spine looking down. Whole apparatus and body frame visible. Keep realistic material and baseline model.",
@@ -40613,6 +41186,18 @@
         "preflight_notes": "Shallower 45-degree frame replacing steep support; upper hip pad and complete grounded structure.",
         "owner_feedback": "the movement says 45 degrees but the bench is at like fucking 60 degrees!",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:27:03.701912+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "51f3c0210a24aa568fd98171cb61eb4e525136a2624559fefb2cd3f78ba3460f",
+        "source": "human_review_ui"
       }
     },
     {
@@ -40671,12 +41256,25 @@
         }
       },
       "candidate_asset": "candidates/27f02664b08e156f30d8cdf0/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:27:08.250033+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5d3879fcda855ef352e9c4b2f89bda73af9075645e45c4e14b602fb092ac0afc",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:34.266511+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct ONLY head and neck in first image. It is a side plank: body is lying sideways, so his head must ALSO lie sideways. Roll the entire skull about 60 degrees clockwise in the image plane so crown points to image right and chin points to image left/down toward sternum, his eye-to-eye line almost vertical, face facing camera in same plane as chest. Extend crown directly along the thoracic-spine long axis; ears equally distant from shoulders. This is NOT a standing upright portrait head. NO forward bow looking down at floor, NO side turning nose away. Preserve the supporting elbow, lifted pelvis, hip abduction, extended feet and entire rest of image exactly. Anatomically relaxed neutral cervical spine continuing the sideways torso.",
@@ -40710,6 +41308,18 @@
         "preflight_notes": "Head rolls with sideways body and continues spinal axis; leg abduction and forearm support preserved.",
         "owner_feedback": "the fuck is with the neck/head! make it fucking neutral",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:27:08.250033+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5d3879fcda855ef352e9c4b2f89bda73af9075645e45c4e14b602fb092ac0afc",
+        "source": "human_review_ui"
       }
     },
     {
@@ -40770,12 +41380,25 @@
         }
       },
       "candidate_asset": "candidates/1161f6529f8f9af62c3e8300/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:09.403162+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e5557e9d9e73e72bd8a80ae2c0cfd0b492295084aaff1dccfcb089dad6484ef6",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:34.552608+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Replace the fake rack with a normal real 75mm square-steel POWER RACK, entire front upright and visible rear upright connected by plausible horizontal top/bottom side crossmembers, straight aligned edges and evenly spaced holes, normal bolted gussets, all grounded. Show full 2.3m rack without cropping upper mounting; zoom out as needed but athlete readable. Preserve SINGLE-LEG CALF RAISE: one straight working knee with forefoot on flat-topped 10cm step, heel fully lifted and free beyond step edge; opposite foot raised behind with knee bent. One hand lightly contacts rack at chest height, other on hip. No lower crossbar through shoes. Neutral head with torso.",
@@ -40807,6 +41430,18 @@
         "preflight_notes": "Real connected rack uprights/crossmembers with stable floor mounts; single forefoot support and elevated heel.",
         "owner_feedback": "poor rendering of the rack! look totally fake",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:09.403162+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e5557e9d9e73e72bd8a80ae2c0cfd0b492295084aaff1dccfcb089dad6484ef6",
+        "source": "human_review_ui"
       }
     },
     {
@@ -40865,12 +41500,25 @@
         }
       },
       "candidate_asset": "candidates/a279736f463bcabeafd926c7/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "WHY DOES THE RACK HACE 3 POSTS! FUCKING LOCK THE FUCK IN! YOU ARE GIVIING ME SIT IMAGES!!!!!!!",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "WHY DOES THE RACK HACE 3 POSTS! FUCKING LOCK THE FUCK IN! YOU ARE GIVIING ME SIT IMAGES!!!!!!!",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:33.547954+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b950bf58f23169b6555f41aee4a68c8a24b7fcea949ec396003c18e002f83504",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:34.827148+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Repair the rack: replace partial fake geometry with a standard real squat rack made of straight 75mm square steel, 2.3m tall front and rear uprights connected with horizontal top/bottom side rails, evenly spaced hole rows, proper bolt heads and gussets, broad grounded bases. Show complete rack enough to make structure unambiguous, zoom out as needed. Preserve BENT-KNEE CALF RAISE position: both knees flexed about 35deg, torso upright, balls of both feet grounded and heels visibly raised, one palm lightly on upright for balance. Normal neutral neck and proportions, no ankle distortion.",
@@ -40902,6 +41550,18 @@
         "preflight_notes": "Connected rack hardware with consistent upright spacing; bent-knee plantarflexed calf raise.",
         "owner_feedback": "poor rack rendering",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHY DOES THE RACK HACE 3 POSTS! FUCKING LOCK THE FUCK IN! YOU ARE GIVIING ME SIT IMAGES!!!!!!!",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:33.547954+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b950bf58f23169b6555f41aee4a68c8a24b7fcea949ec396003c18e002f83504",
+        "source": "human_review_ui"
       }
     },
     {
@@ -40962,12 +41622,25 @@
         }
       },
       "candidate_asset": "candidates/e4cff2d874911ad7c071f58c/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:36.878280+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1ba9d0c26b3028ae1e322dc612d14a7788533b56dc9d1c3bd9ec4a050f830bb2",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:35.085459+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Create ONE NEW square photorealistic Strength Ledger artwork. Reference is ONLY the same male athlete, clothing and studio STYLE, not the pose or equipment. Same short brown hair, full-length graphite tank, plain black shorts/trainers, natural skin, near-black studio/rubber floor, neutral soft upper-left light and subdued purple right rim. Full body and all critical contact points. No text, no logos, no panels. Head aligned with task/torso. Exact exercise donkey calf raise with FOREARMS ON A STANDARD LOW FLAT BENCH. True side view, athlete faces left. Bench pad surface ONLY 43 cm above floor, BELOW standing knee-cap height; vertical bench supports are 30cm, short stocky rectangular steel legs with connected base. Bench is conventional low gym bench, NOT a table or tall support. Athlete forefeet on small 8cm block at right, both heels raised high and unsupported, knees almost straight. Hips flexed about 100 degrees; torso descends diagonally toward low bench, both elbows/forearms visibly rest on top of the low pad. Hips high, shoulders lower than hips, relaxed neutral neck eyes at bench. Both feet and hands fully visible. Side orthographic-like normal photograph, no exaggerated near objects. Keep low bench unmistakably below knees.",
@@ -40999,6 +41672,18 @@
         "preflight_notes": "Recomposed conventional low flat bench, shorter vertical supports and lower forearm support; straight knees and elevated heels.",
         "owner_feedback": "why is the bench not a standard height",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:36.878280+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1ba9d0c26b3028ae1e322dc612d14a7788533b56dc9d1c3bd9ec4a050f830bb2",
+        "source": "human_review_ui"
       }
     },
     {
@@ -41059,12 +41744,25 @@
         }
       },
       "candidate_asset": "candidates/aeb8888e2520cedeb4a8fa62/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:46.132922+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "0a65b469562df8c546ca6dca77c27b86637c9919051abb0665c60cf4a80d9152",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:35.347228+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Correct hanging knee raise to be exactly centered. Straight-on FRONT view, body midline, nose/sternum/navel centered between rack uprights. Both shoulders and hips square with no torso twist. Two knees together raised SYMMETRICALLY straight forward directly in front of the hips, equal height left/right; gap between knees lies exactly on torso midline. Shins drop down, feet together below knees, no lateral swing. Straight overhead arms, shoulder-width pronated grips on standard 2.4m overhead rack bar with normal grounded structure. No knee pulled toward one side. Same athlete clothing and studio.",
@@ -41098,6 +41796,18 @@
         "preflight_notes": "Knees now centered symmetrically in front of torso; hands and shoulders remain square.",
         "owner_feedback": "why is he raising his knees off center? looks like shit",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:46.132922+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0a65b469562df8c546ca6dca77c27b86637c9919051abb0665c60cf4a80d9152",
+        "source": "human_review_ui"
       }
     },
     {
@@ -41156,12 +41866,25 @@
         }
       },
       "candidate_asset": "candidates/6d6bc1fabaa7eb46a6bcbece/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:27:09.650319+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8494aa73bd74f36c7b77f3e22776775a43bd94eea8db6be34c7507ac033345ee",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:35.611242+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit FIRST image, the Copenhagen side plank. SECOND image is an exact HEAD ALIGNMENT reference only (side plank hip abduction with correct neutral head). Transfer that neutral HEAD AND NECK orientation, face direction, and eye gaze to the first athlete: sideways head extending straight along torso, facing same plane as chest, nose and eyes forward. Remove the downward bow and neck twist. Keep the FIRST image's entire body, bent lower knee, straight upper ankle on bench, supporting forearm, clothing, lighting and apparatus unchanged. Do not change the movement or copy second image legs. Only correct first image head/neck to the neutral second image alignment. Same person.",
@@ -41195,6 +41918,18 @@
         "preflight_notes": "Final head-only correction matches neutral sideways head to torso; top ankle remains on bench and lower knee floats.",
         "owner_feedback": "same fucking thing, make the neck/head neutral to the fuckign spine! what the fuck! this is trivial shit\n",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:27:09.650319+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8494aa73bd74f36c7b77f3e22776775a43bd94eea8db6be34c7507ac033345ee",
+        "source": "human_review_ui"
       }
     },
     {
@@ -41253,12 +41988,25 @@
         }
       },
       "candidate_asset": "candidates/2ea93a2f09118fc4276bb25a/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:27:42.709097+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "fd8fd5793fafb7e06bcfb3ad5d64ca9b521e3aa58dac6a601bccbd6b5289cab6",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:35.896361+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Create one square photorealistic Strength Ledger CROSS-BODY MOUNTAIN CLIMBER. Image 1 is movement POSE REFERENCE ONLY: copy the body geometry and camera side, including the FAR LEG crossing toward the NEAR ARM, near leg extended back. Image 2 governs the athlete, clothing and studio ONLY. Same muscular adult man short brown hair, full graphite tank overlapping black shorts, black trainers, near-black rubber floor studio, neutral upper-left key light, subtle purple right rim. No outdoor scenery, cap, blue clothing, text or logos. Crucial motion: athlete's FAR KNEE moves UNDER the abdomen, ACROSS body's sagittal midline, TOWARD the NEAR SIDE OPPOSITE ELBOW. His near leg remains straight backward, near toes support floor. Rotate pelvis subtly to bring far knee within 5cm of inside of opposite near elbow. Knee stays INSIDE arms, never outside same-side elbow (that would be Spiderman). Hands shoulder width, both arms straight, full body in frame. Show this contralateral crossover unmistakably in three-quarter side view like pose reference. Neutral head looking floor ahead of hands, not to camera.",
@@ -41292,6 +42040,18 @@
         "preflight_notes": "Recomposed using coach pose reference: far leg crosses beneath abdomen toward opposite near arm while near leg extends; no same-side outside-elbow drive.",
         "owner_feedback": "the knee is not corded the body for the cross body fuckign movement! poor!",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:27:42.709097+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "fd8fd5793fafb7e06bcfb3ad5d64ca9b521e3aa58dac6a601bccbd6b5289cab6",
+        "source": "human_review_ui"
       }
     },
     {
@@ -41350,12 +42110,25 @@
         }
       },
       "candidate_asset": "candidates/e21c848e6ab7cb9cb109efd5/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:51.850415+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "69f170dd9bfa1413a0b4c01b246966b3e061f6f9fc531c710c2358493c1c0448",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:36.183263+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Replace malformed GHR with a mechanically correct commercial GHD for SORENSON HOLD. New three-quarter SIDE composition with whole black steel GHD fully in frame. Real GHD: broad stable H-shaped floor base, robust front upright carrying TWO large adjacent rounded half-cylinder hip pads, longitudinal HORIZONTAL adjustable telescoping rail leading backward to separate ankle station, vertical broad rectangular footplate behind shoes, two horizontal roller pairs sandwiching ankles above and below (four pads total), feet soles press rear plate. No footplate beside shins, no metal piercing feet. Athlete lies face down with hips/upper thighs supported on front pad, torso extends unsupported in a straight HORIZONTAL line, legs straight back to padded ankles at same level, arms crossed chest. Neutral head inline torso looking down, no neck flexion. Keep natural scale: pad not miniature, long enough rail fits actual leg length. Not a 45degree chair.",
@@ -41390,6 +42163,18 @@
         "preflight_notes": "Complete horizontal GHD with connected adjustment rail, split hip pad, ankle rollers and footplate.",
         "owner_feedback": "poor GHR apparatus!",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:51.850415+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "69f170dd9bfa1413a0b4c01b246966b3e061f6f9fc531c710c2358493c1c0448",
+        "source": "human_review_ui"
       }
     },
     {
@@ -41448,12 +42233,25 @@
         }
       },
       "candidate_asset": "candidates/0eb9934f56f5777f096d473c/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T02:26:58.695178+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "0693708d89f35d49a18396d1d92ca517ec95f2d00ba6e135a05185f874c8733e",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:36.471141+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Rebuild Bird Dog with anatomically correct supporting arm. Use clear FRONT THREE-QUARTER VIEW facing athlete's chest side, not rejected rear view. Athlete faces image LEFT on all fours, his RIGHT palm and LEFT knee support body. RIGHT supporting arm vertical shoulder over palm, elbow straight with elbow pit/biceps on anterior side toward head, triceps on posterior side toward hip, forearm pronated with palm flat/fingers forward. LEFT arm reaches straight forward at shoulder height; RIGHT leg extends straight backward at hip height. Spine horizontal neutral, head aligned looking down between hands, pelvis square. Four distinct correctly attached limbs, normal joints, no twisted humerus or inverted triceps. Full body on dark rubber floor no equipment.",
@@ -41488,6 +42286,18 @@
         "preflight_notes": "Recomposed three-quarter view clarifies normal supporting arm anatomy and opposite raised arm/leg.",
         "owner_feedback": "the down arm is fucing unnatural, why is his tricep on the inside! bad",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:58.695178+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0693708d89f35d49a18396d1d92ca517ec95f2d00ba6e135a05185f874c8733e",
+        "source": "human_review_ui"
       }
     },
     {
@@ -41546,12 +42356,29 @@
         }
       },
       "candidate_asset": "candidates/cfefcece21172d81170d4107/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [],
+      "reason": "THE SQUAT RACK IS BAD QUALITY IN THIS!!! HOW DO YOU KEEP MAKING THE SAME MISTAKES",
+      "tags": [
+        "visual_quality"
+      ],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "THE SQUAT RACK IS BAD QUALITY IN THIS!!! HOW DO YOU KEEP MAKING THE SAME MISTAKES",
+          "tags": [
+            "visual_quality"
+          ],
+          "reviewed_at": "2026-09-14T02:27:35.775949+00:00",
+          "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "bc5770d33a6ee8100e154e3a2f50defc1b8f3076d91f127cf26119f85df982a1",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-14T02:12:36.757201+00:00",
       "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
       "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Rebuild hanging knee raise ISO HOLD rack with standard real proportions. Two identical 75mm square steel front uprights, straight 32mm pull-up bar at 2.4m height with clearly matching bolted end plates. Two rear uprights connect by straight equal-depth top and bottom side crossmembers; four posts form a consistent rectangular cuboid. Real evenly spaced holes and bolts, no skinny spliced towers or perspective-changing rail ends. Full stable grounded rectangular base and full overhead mounting visible. Athlete hangs arms straight in top knee-raise isometric hold: symmetrical knees drawn straight forward above hip height, feet together, shoulders square, neutral head. Both pronated hands wrap bar with thumbs underneath. Keep athlete comfortably inside open front, no frame intersection with feet or limbs.",
@@ -41585,6 +42412,1216 @@
         "preflight_notes": "Rebuilt connected four-post rack, mounted straight bar and rectangular base; centered hanging knee hold and wrapped grips.",
         "owner_feedback": "the fucking squat rack properties are fuckng terrible! this sit cannot happen any more",
         "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE SQUAT RACK IS BAD QUALITY IN THIS!!! HOW DO YOU KEEP MAKING THE SAME MISTAKES",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:27:35.775949+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "bc5770d33a6ee8100e154e3a2f50defc1b8f3076d91f127cf26119f85df982a1",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 186,
+      "key": "accessory_sternum_chin_up",
+      "movement_name": "Sternum Chin-Up",
+      "primary_muscle_group": "lats",
+      "equipment_type": "bodyweight",
+      "implement": "straight pull-up bar and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_186_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "a89b95f52d65454a1326bee9",
+      "version": 3,
+      "supersedes_candidate_id": "5ecb30c31c2e2e04ff160981",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "ARE YOU FUCKIGN KIDDING ME MAN? THIS IS SHIT QUALITY! IT LOOKS LIKE FUCKING SHIT! WHY IS THERE 2 CROSS BARS! FUCK YOU",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:28:12.813119+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:28 PM PT (Sep 13, 2026 10:28 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1a7a32acbdd8271951081d90b361a55f4adc552050d2b89f605f57bdc57a5a2a",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/a89b95f52d65454a1326bee9/master.png",
+          "sha256": "3a5565bd58f2cc6d5bb268ea2a5044ce3ed0d5202d3798f12fc6bf5d112abc57",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1590260
+        },
+        "app": {
+          "path": "candidates/a89b95f52d65454a1326bee9/app.png",
+          "sha256": "2c0a628e047027be9e17d048cdd08a02120d6a192814602949bf8166389ec632",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 291863
+        },
+        "thumbnail": {
+          "path": "candidates/a89b95f52d65454a1326bee9/thumbnail.png",
+          "sha256": "2ca6ff83feca60aa3c529105280dabdc5e3a30e54c1f99641072dc64b6b0a087",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42938
+        }
+      },
+      "candidate_asset": "candidates/a89b95f52d65454a1326bee9/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-14T04:04:16.333839+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Edit this ONE square movement-art image. Repair ONLY the pull-up station. Preserve the athlete's exact sternum chin-up pose, arched/bent trunk, bent elbows, underhand grips, sternum contact point, face, full-length graphite tank, black shorts, shoes, lighting, framing and existing height above the floor. The single bar he is ALREADY GRIPPING must be the ONLY horizontal bar, at the TOP of this tall two-post station. DELETE the extra unused bar above his head entirely. SHORTEN BOTH POST TOPS to end immediately above the existing gripped bar's mounting plates. Keep the gripped bar at exactly its current elevated height; do NOT lower the athlete or gripped bar. Two straight parallel square uprights, one left and one right, each floor-bolted through a square base plate. One consistent-diameter black pull-up tube joins these uprights at the current sternum/grip height, with clear realistic flange attachments, not penetrating solid posts. There must be empty dark background above the athlete's head and no second crossbar anywhere. Improve hardware finish and fasteners to look like an actual precision-built pull-up rig, not warped generated scaffolding. No text, logos or new objects.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/186/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "straight pull-up bar and rack",
+        "grip": "supinated medium grip",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "backward-arched torso; hips and legs descending in free hang",
+        "owner_feedback": "ARE YOU FUCKIGN KIDDING ME MAN? THIS IS SHIT QUALITY! IT LOOKS LIKE FUCKING SHIT! WHY IS THERE 2 CROSS BARS! FUCK YOU",
+        "preflight_notes": "Removed the unused second crossbar while retaining the owner-corrected arched torso and elevated sternum pull. One gripped bar, two full upright tops and bases; both feet visibly above floor."
+      }
+    },
+    {
+      "movement_definition_id": 183,
+      "key": "accessory_neutral_grip_pull_up",
+      "movement_name": "Neutral-Grip Pull-Up",
+      "primary_muscle_group": "lats",
+      "equipment_type": "bodyweight",
+      "implement": "rack with parallel pull-up handles",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_183_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "9ccfb34c076f0a8f05503849",
+      "version": 3,
+      "supersedes_candidate_id": "04a6199bdd5c6e2bf7295e8d",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "I ALREADY FUCKING TOLD YOU TO HAVE THE FUCKING USER FACE THE RACK! I FUCKING TOLD YOU AREADY AND YOU DISREGARDED WHAT I FUCKING SAID! FUCK YOU",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:25:59.341232+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "674f0b12a483d42d8c2bcca3c3d65b9641324533005eca70b7b2f96899d23970",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/9ccfb34c076f0a8f05503849/master.png",
+          "sha256": "05a65fecb689bc7b84659d252bba7e32f40f77c9c80509fa51fbcd596fe610e7",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1861632
+        },
+        "app": {
+          "path": "candidates/9ccfb34c076f0a8f05503849/app.png",
+          "sha256": "989a294196f96bb596f78f7cbeb667296b6b74636e516a922545272e2205df1d",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 325765
+        },
+        "thumbnail": {
+          "path": "candidates/9ccfb34c076f0a8f05503849/thumbnail.png",
+          "sha256": "f4bdab82465620786c28b5c02650beb3043174df275a349d4e1debc161a94993",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46322
+        }
+      },
+      "candidate_asset": "candidates/9ccfb34c076f0a8f05503849/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-14T04:04:16.618364+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Create a corrected square Neutral-Grip Pull-Up artwork from image 1; image 2 supplies the same athlete/clothing/dark studio style. The athlete MUST FACE INTO THE RACK, away from the viewer. Rotate his ENTIRE body 180 degrees from image 1, including shoulders, hips, knees, feet and head. Camera sees the man's BACK and backs of arms and calves in a clear rear three-quarter view. No face turned back toward camera. He looks straight into the open center of the station. His hands grip two parallel horizontal neutral-grip handles which project forward out from the station's high beam, with palms facing each other and thumbs securely wrapped. He pulls in the clear space in FRONT of the support beam: head and chest face the rack and have ample empty clearance between handles. Show exactly TWO straight vertical square rack posts, one sturdy high mounting beam at a realistic 2.35m height, two matched handles securely bolted to that beam, two long ground-level feet connected by one rear floor crossmember. Full station and soles visible. Top half of a strict neutral pull-up, elbows bent naturally down/back, feet suspended comfortably above floor. Maintain original adult male proportions, charcoal full-length tank over plain black shorts, black trainers, near-black background, textured rubber floor, neutral key light and restrained purple right rim. High-quality real equipment photography; no extra uprights, clipped hardware, intersecting tubes, sideways glances or text.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/183/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "rack with parallel pull-up handles",
+        "grip": "neutral palms facing",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "vertical hanging",
+        "owner_feedback": "I ALREADY FUCKING TOLD YOU TO HAVE THE FUCKING USER FACE THE RACK! I FUCKING TOLD YOU AREADY AND YOU DISREGARDED WHAT I FUCKING SAID! FUCK YOU",
+        "preflight_notes": "Athlete now faces into the rack with back toward camera; two hands grasp parallel neutral handles. Complete two-post station and both airborne feet visible. No head/rack intersection observed."
+      }
+    },
+    {
+      "movement_definition_id": 490,
+      "key": "accessory_bent_knee_calf_raise",
+      "movement_name": "Bent-Knee Calf Raise",
+      "primary_muscle_group": "calves",
+      "equipment_type": "bodyweight",
+      "implement": "floor and support rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_490_attempt02",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "9f70024d2811ce4d7453c526",
+      "version": 3,
+      "supersedes_candidate_id": "a279736f463bcabeafd926c7",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHY DOES THE RACK HACE 3 POSTS! FUCKING LOCK THE FUCK IN! YOU ARE GIVIING ME SIT IMAGES!!!!!!!",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:26:33.547954+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b950bf58f23169b6555f41aee4a68c8a24b7fcea949ec396003c18e002f83504",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/9f70024d2811ce4d7453c526/master.png",
+          "sha256": "b7fffe19d6497c6e829cf613f6eb1470b111edf4c4c0ce6a2c70a4ed330e65de",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1704366
+        },
+        "app": {
+          "path": "candidates/9f70024d2811ce4d7453c526/app.png",
+          "sha256": "f4bf320f8215d9ceb7a64e37f111c92db5aaeedba509d97af2fd775f438d6ddd",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 306670
+        },
+        "thumbnail": {
+          "path": "candidates/9f70024d2811ce4d7453c526/thumbnail.png",
+          "sha256": "713084c7fbd9adf660b1e0fae18cc6d2f3787f9cf2aad4a23406124c0c606f77",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43443
+        }
+      },
+      "candidate_asset": "candidates/9f70024d2811ce4d7453c526/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-14T04:04:16.869553+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Edit this single movement-art image with ONE precise framing correction. Preserve the athlete, pose, movement technique, head direction, all correct hands/grips, strap tension, equipment topology, material detail, dark studio lighting, and purple rim exactly. Move the camera back enough to fit the ENTIRE existing rig. The current highest upright top is cut off at the upper image edge; reconstruct its short capped end above its existing high bar and include both post tops, the entire single high bar and its fasteners, both bases, and both shoes fully INSIDE the square with at least 5% clear margin on every edge. Keep real full-height overhead bar at the same physical height and every perspective relationship; do NOT lower the bar or shorten the rack to make it fit. Do not add a post, brace, duplicate crossbar, or new equipment. Slightly widen the view by about 15% and extend only the consistent near-black background/floor to fit. Same premium exact art; retain crisp facial, finger, ring/handle and steel details. No text.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/490/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_calves",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "light hand balance only",
+        "equipment": "floor and support rack",
+        "grip": "both toes grounded; knees bent",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "standing shallow squat",
+        "owner_feedback": "WHY DOES THE RACK HACE 3 POSTS! FUCKING LOCK THE FUCK IN! YOU ARE GIVIING ME SIT IMAGES!!!!!!!",
+        "preflight_notes": "Replaced malformed three-post rack with two continuous uprights, two feet and a low rear connector. Preserved bent knees and raised heels. Second attempt includes both capped post tops without changing the pose."
+      }
+    },
+    {
+      "movement_definition_id": 102,
+      "key": "accessory_handstand_push_up",
+      "movement_name": "Handstand Push-Up",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "bodyweight",
+      "implement": "wall and floor",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_102_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "68f644eef1768a79b1b3f133",
+      "version": 3,
+      "supersedes_candidate_id": "ee8182724fec0591b884a8c7",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "how do you fuck up the feet twice! do you see the fucking problem?",
+        "tags": [
+          "human_anatomy"
+        ],
+        "reviewed_at": "2026-09-14T02:22:00.667070+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d84f0df7509cb6336d13f8bea0862a39cace07117dbe7ef6e8eba125171aa9ff",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/68f644eef1768a79b1b3f133/master.png",
+          "sha256": "50a3a9c030cc88b8814877e426dc0b15d4bcdb0b38189498520b1605abce46e6",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1832840
+        },
+        "app": {
+          "path": "candidates/68f644eef1768a79b1b3f133/app.png",
+          "sha256": "42ec4c7040a835dbf215130a22fec27f20e7754b6dd761737925c2e6bf5d3a4b",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 319584
+        },
+        "thumbnail": {
+          "path": "candidates/68f644eef1768a79b1b3f133/thumbnail.png",
+          "sha256": "27f77f2dfcc7e94a76f987ea5869b5bb5431c5166f55a96334bc2017278806ce",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42356
+        }
+      },
+      "candidate_asset": "candidates/68f644eef1768a79b1b3f133/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-14T04:04:17.117891+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. This is a rejected handstand push-up artwork because the lower legs and shoes are anatomically backward. Rebuild BOTH LOWER LEGS AND BOTH FEET as a coherent inverted human body. Keep the chest facing LEFT and the athlete's BACK facing the wall at RIGHT. The FRONT OF BOTH KNEES and shin ridges must face LEFT with his chest, and the calf bellies/Achilles must face RIGHT toward the wall. He is completely upside down, so BOTH black shoe SOLES FACE THE CEILING, both toe boxes extend LEFT away from the wall, and the backs of BOTH heels touch the wall at RIGHT. The ankle cuffs are BELOW the soles, not above them. Render actual upside-down footwear, not upright shoes pasted onto upside-down legs. Show the nearest shoe in unmistakable clean side profile, forefoot left and heel right. Preserve this same adult man, charcoal full-length tank securely covering waist, black shorts, bent elbows in bottom half of wall handstand push-up, fingers facing left on floor. Straight hips/legs vertical parallel to wall, slight natural shoulder shift to support head off floor. Same dark studio, rubber floor and understated purple rim. Recompose slightly if needed to show both correctly aligned leg chains and shoes without overlaps that conceal an error. No text or diagrams.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/102/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "movement_family": "accessory_front_delts",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "wall and floor",
+        "grip": "shoulder-width palms",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "inverted vertical",
+        "owner_feedback": "how do you fuck up the feet twice! do you see the fucking problem?",
+        "preflight_notes": "Rebuilt inverted shoes and lower legs. Checked the master and a 180-degree inspection crop: toe boxes face the athlete's front, heels face the wall, soles face the ceiling in the original image. Both palms contact floor; head remains neutral."
+      }
+    },
+    {
+      "movement_definition_id": 226,
+      "key": "accessory_feet_elevated_inverted_row",
+      "movement_name": "Feet-Elevated Inverted Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "bodyweight",
+      "implement": "low rack bar and flat bench",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_226_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "cf240c407493feafc75bb8a5",
+      "version": 3,
+      "supersedes_candidate_id": "677411d6a1407da54df61f9c",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the barbell is clipping trough the rock! fuclking have it sit In the j-cups like a fucking normal shit!",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:22:32.081505+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:22 PM PT (Sep 13, 2026 10:22 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e18ad8ee66fea76b07a374057c4f9bbccaec0f64b80f78b00e808513652a0789",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/cf240c407493feafc75bb8a5/master.png",
+          "sha256": "ce7753dd3f72ececc7e30b7d1388bb76fe7ae8be510f7ef6eb88815e3c6ec0cf",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1994177
+        },
+        "app": {
+          "path": "candidates/cf240c407493feafc75bb8a5/app.png",
+          "sha256": "35746bc8605a8f2229319e96ab92e686a932168468fd28c849082ebad2a8a8f7",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 348069
+        },
+        "thumbnail": {
+          "path": "candidates/cf240c407493feafc75bb8a5/thumbnail.png",
+          "sha256": "7344cd4e949b5bd5837ae35fd7787bdd309360bc118a60ffdaea9d662640255a",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49189
+        }
+      },
+      "candidate_asset": "candidates/cf240c407493feafc75bb8a5/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-14T04:04:17.407094+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Repair this Feet-Elevated Inverted Row photograph's BARBELL/J-CUP INTERFACES. The barbell must rest in front of both posts in real J-cups; it must NOT go through either square upright. Keep this athlete, overhand grip, suspended rigid body, heels on the flat bench, head aligned, graphite tank/black shorts, full dark studio style. Rebuild the rack/bar so BOTH uprights stand clearly BEHIND the bar's shaft. Mount matching J-cups on the camera-facing flat faces of the square uprights. Each J-cup visibly projects 12cm FORWARD from its post, with an open-top lined shelf below the shaft and small upward retaining lip at front. A visible gap separates the bar shaft from both post faces. The continuous straight 220cm Olympic barbell rests on BOTH projecting shelves at equal height, and its two matched chrome collars and 41cm sleeves extend beyond BOTH posts. Do not conceal either junction with an upright or hand. Make both shaft-to-sleeve transitions coherent, both collars equally sized, two complete matching T-base squat stands with proportionate uprights and ground contact. Slight front three-quarter camera angle makes clear foreground bar / J-cup / background post layering. Whole bench, barbell ends and feet visible; no cut-off hardware, floating hooks, bar-through-post clipping or extra uprights. Prioritize actual construction geometry.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/226/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "low rack bar and flat bench",
+        "grip": "overhand; heels elevated",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "supine horizontal",
+        "owner_feedback": "the barbell is clipping trough the rock! fuclking have it sit In the j-cups like a fucking normal shit!",
+        "preflight_notes": "Rebuilt a continuous unloaded Olympic barbell supported on projecting J-cup shelves, with visible lips and matched sleeves. Bar overlays the fronts of the posts rather than passing through upright holes. Both heels rest on bench. Tall uprights continue outside this close movement framing."
+      }
+    },
+    {
+      "movement_definition_id": 229,
+      "key": "accessory_scapular_inverted_row",
+      "movement_name": "Scapular Inverted Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "bodyweight",
+      "implement": "fixed low bar and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_229_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "8f211d32576af340d91c0572",
+      "version": 3,
+      "supersedes_candidate_id": "aaae0cbc2f164dcc8a045422",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "ASSYMETRIC BARBELL AND USER IS NOT CENTERED ON THE BAR! FUCK!",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:23:58.102571+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:23 PM PT (Sep 13, 2026 10:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "dd78d42e27f348e30d2f32db35f67ff4585585cb977581c914c01fe94e397659",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/8f211d32576af340d91c0572/master.png",
+          "sha256": "a2ce037fe63a6912d2ef48ebf209ee51688cda1957c1dec7750c1f99dc84322f",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1864744
+        },
+        "app": {
+          "path": "candidates/8f211d32576af340d91c0572/app.png",
+          "sha256": "5c42c2992d82d43eacfe4edc554ed49790704f28bcfceb7423f0e1d8efcfbd6a",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 330861
+        },
+        "thumbnail": {
+          "path": "candidates/8f211d32576af340d91c0572/thumbnail.png",
+          "sha256": "3785e81fc6a0c723733809fe8be588bd9478e6b64c3936087c5688802b2581f8",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45781
+        }
+      },
+      "candidate_asset": "candidates/8f211d32576af340d91c0572/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-14T04:04:17.657235+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Recompose Scapular Inverted Row into a clear CENTERED FRONT VIEW FROM THE FOOT END to fix the asymmetric barbell and off-center athlete. Image 1 is rejected subject, image 2 same athlete/style baseline. Square premium dark studio image. Camera exactly on the body's and rack's centerline; no lateral three-quarter perspective. A complete straight symmetrical unloaded Olympic barbell spans horizontally across the image. Its left and right chrome sleeves have IDENTICAL visible lengths and diameters, matching collars, equal spacing beyond the two upright posts. Symmetric real J-cups project toward camera in front of both post faces; the shaft rests on their padded open shelves with a clear gap to the posts and does not pierce either post. Man centered precisely on the middle knurl: head, sternum and pelvis on the midpoint line, both hands equally distant either side of midpoint, OVERHAND pronated grip. The athlete performs a SCAPULAR inverted row with BOTH ELBOWS STRAIGHT, shoulders drawn back, rigid trunk/legs extending toward the camera, heels on rubber floor at bottom of frame. Not a bent-elbow row. Natural head follows torso gaze upward at bar, no sideways glance. Two matched freestanding low squat stands with T-feet, no extra scaffold. Full bar ends, both hands, both elbows, head, feet, all floor contacts visible. Same adult man, full-length graphite tank over plain black shorts, black shoes, neutral light and subtle violet right rim. No labels or logos.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/229/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "fixed low bar and rack",
+        "grip": "pronated; straight elbows",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "inclined supine",
+        "owner_feedback": "ASSYMETRIC BARBELL AND USER IS NOT CENTERED ON THE BAR! FUCK!",
+        "preflight_notes": "Recomposed from the foot end to center the athlete beneath the bar. Matched sleeves/collars and hand spacing; same overhand grip on both hands, straight elbows for scapular row. Close movement framing retains upright extensions beyond the top edge."
+      }
+    },
+    {
+      "movement_definition_id": 319,
+      "key": "accessory_ring_triceps_extension",
+      "movement_name": "Ring Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "bodyweight",
+      "implement": "rings and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_319_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "775a4109a867d7c21aba1878",
+      "version": 3,
+      "supersedes_candidate_id": "daafb017e77af66e92e9bb44",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "I HAVE NO WORDS... ARE YOU FUCKING SERIOUS?\n",
+        "tags": [],
+        "reviewed_at": "2026-09-14T02:25:23.208030+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:25 PM PT (Sep 13, 2026 10:25 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "55486eb6f50ca81ab9dc7b849d3aad7e522136b6156245d27604e002e3376f8f",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/775a4109a867d7c21aba1878/master.png",
+          "sha256": "1491a4cb30056cc7379404c3bdfc46b529d0bfd2210c9a0c1ed9a8e55343bcab",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1885408
+        },
+        "app": {
+          "path": "candidates/775a4109a867d7c21aba1878/app.png",
+          "sha256": "c3f3dcac2056be58e0a569a60f8a1756921c398918de4b4cc55f2642a19b06bb",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 322530
+        },
+        "thumbnail": {
+          "path": "candidates/775a4109a867d7c21aba1878/thumbnail.png",
+          "sha256": "809099660c177d90a68a227c8fb5ecd90465bafd079c532256c87324b58d98ed",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43541
+        }
+      },
+      "candidate_asset": "candidates/775a4109a867d7c21aba1878/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-14T04:04:17.955059+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Generate one corrected Strength Ledger movement artwork, square 1254px or higher. Match the approved style reference: same athletic muscular adult man with short brown hair, full-length dark graphite sleeveless tank covering waist, black shorts, black training shoes, premium realistic anatomy and skin, near-black studio and rubber floor, soft white key light and restrained violet rim from right. No text or labels. Show believable real equipment and force-bearing contact, anatomically coherent hands wrapping the actual implement, neutral head aligned with torso rather than looking sideways at camera. FIRST REFERENCE IS THE ACTUAL REQUIRED EXERCISE POSE ONLY; SECOND REFERENCE IS ATHLETE/STYLE ONLY. Recreate the first reference's Ring Triceps Extension, bent-elbow phase, in our dark studio with baseline male athlete. Side three-quarter view. Body faces down toward floor, shoulders through hips to ankles held in a single forward plank diagonal, feet at right supported on toes and forefeet, heels raised. Head to left, rings beside forehead, both elbows bent about 90 degrees, upper arms continue forward from shoulders beside ears and elbows stay shoulder-width, both forearms bend back up to the ring grips. This is a suspended skullcrusher, NOT a row or dip or press with elbows behind torso. Two independent complete wooden gymnastic rings, one firmly held in each closed hand; fingers wrap lower inside arc, thumbs oppose fingers, wrists neutral, no rings passing through flesh. Follow actual reference elbow and strap geometry closely. Rings at approximately 90cm height. Two long straight taut black webbing straps rise near vertically from each ring to two distinct anchor loops on ONE straight single horizontal pull-up bar at 240cm height. Render that bar on exactly TWO square steel uprights, each floor-bolted with realistic baseplates. Single bar only, no duplicated beam, no low crossbar, no extra posts. Both base plates and complete overhead bar visible in full square composition with 5% breathing room. The high bar must look above standing reach; straps long, NOT short. Camera slightly elevated side view so both hand-ring contacts can be inspected. No beach, ocean, pier, or reference person's clothing.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/319/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "movement_family": "accessory_triceps",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "rings and rack",
+        "grip": "neutral narrow ring grip",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "inclined prone",
+        "owner_feedback": "I HAVE NO WORDS... ARE YOU FUCKING SERIOUS?\n",
+        "preflight_notes": "Rebuilt the bent-elbow ring triceps extension from an exercise demonstration: forward plank supported on toes, rings beside head, elbows bent, upper arms alongside head, long near-vertical taut straps. Both hands hold complete ring arcs; single high bar and two full floor-bolted posts."
+      }
+    },
+    {
+      "movement_definition_id": 288,
+      "key": "accessory_ring_curl",
+      "movement_name": "Ring Curl",
+      "primary_muscle_group": "biceps",
+      "equipment_type": "bodyweight",
+      "implement": "wooden rings and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_288_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "5382767a20828c9cfb77937d",
+      "version": 3,
+      "supersedes_candidate_id": "e240981e557783fee0a50602",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE FUCKING CROSSBAR IS TOO SHORT FOR THE RING ANCHOR! USE A STANDARD FUCKING HEIGHT! THIS IS FUCKING BULLSHIT THAT WE HAVE REPEAT FAILS",
+        "tags": [
+          "equipment",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:24:52.989062+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:24 PM PT (Sep 13, 2026 10:24 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "69240072a725c2d3acd94244c1aca9b76bb581b12a8fd535c717152e2151dccc",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/5382767a20828c9cfb77937d/master.png",
+          "sha256": "c4685130c9df2cf879964fda0c4924cb50c9c3c9d7ed95b4c944a9e1f357f555",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1783550
+        },
+        "app": {
+          "path": "candidates/5382767a20828c9cfb77937d/app.png",
+          "sha256": "aebfe10d036746503cb75638f337f56e089cd43f4619f64fe4368dea83f094b6",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 306705
+        },
+        "thumbnail": {
+          "path": "candidates/5382767a20828c9cfb77937d/thumbnail.png",
+          "sha256": "7a0a2ca7f8206b23572a46bec7cec8cb070d8b707cdfbe33234f9b5ebe75e239",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43538
+        }
+      },
+      "candidate_asset": "candidates/5382767a20828c9cfb77937d/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-14T04:04:18.275584+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Generate one corrected Strength Ledger movement artwork, square 1254px or higher. Match the approved style reference: same athletic muscular adult man with short brown hair, full-length dark graphite sleeveless tank covering waist, black shorts, black training shoes, premium realistic anatomy and skin, near-black studio and rubber floor, soft white key light and restrained violet rim from right. No text or labels. Show believable real equipment and force-bearing contact, anatomically coherent hands wrapping the actual implement, neutral head aligned with torso rather than looking sideways at camera. Correct RING CURL. Rebuild the equipment at a REAL standard overhead pull-up height, not a short mini-rack. Exactly TWO 240cm tall square steel uprights floor-bolted on realistic square baseplates, ONE straight horizontal overhead bar connecting their tops, nothing above it, no duplicate bars. Bar is well above this 180cm man's standing reach. Two individual black straps wrap around that single high bar with secure buckle loops, descend long and taut to two complete wooden rings at approximately 145cm height. Athlete feet on floor toward left under/near anchor, torso leans backward toward right about 35 degrees away from vertical, heels planted, knees soft, body in line. Show a biceps CURL with upper arms angled forward at shoulder height and held still, elbows flexed bringing rings toward temples/forehead, palms facing toward own face, wrists aligned. Neither elbows tucked beside ribs like a row nor chin-up. Ring centers separated shoulder width, hands visibly close around lower arcs with normal fingers and thumbs. Head neutral along torso. Show the full height from both baseplates to single top bar within frame with margin. Preserve approved studio/athlete appearance; correct original low anchor, long straps, hands and hardware. No cropped equipment.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/288/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "movement_family": "accessory_biceps",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "wooden rings and rack",
+        "grip": "supinated palms toward face",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "inclined supine",
+        "owner_feedback": "THE FUCKING CROSSBAR IS TOO SHORT FOR THE RING ANCHOR! USE A STANDARD FUCKING HEIGHT! THIS IS FUCKING BULLSHIT THAT WE HAVE REPEAT FAILS",
+        "preflight_notes": "Rebuilt single overhead bar at adult pull-up height with long independent ring straps. Rings near forehead and elbows flexed for the curl; complete upright tops and floor-bolted bases visible. Inspected both ring grips and shoe contact."
+      }
+    },
+    {
+      "movement_definition_id": 577,
+      "key": "accessory_hanging_knee_raise_iso_hold",
+      "movement_name": "Hanging Knee Raise Iso-Hold",
+      "primary_muscle_group": "hip_flexors",
+      "equipment_type": "bodyweight",
+      "implement": "rack-mounted pull-up bar",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_577_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "7910064052682ce03eef0d9c",
+      "version": 3,
+      "supersedes_candidate_id": "cfefcece21172d81170d4107",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE SQUAT RACK IS BAD QUALITY IN THIS!!! HOW DO YOU KEEP MAKING THE SAME MISTAKES",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:27:35.775949+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:27 PM PT (Sep 13, 2026 10:27 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "bc5770d33a6ee8100e154e3a2f50defc1b8f3076d91f127cf26119f85df982a1",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/7910064052682ce03eef0d9c/master.png",
+          "sha256": "c8e0a4fa9cfe205683240bf3d74a082eafe3dd46dd43cfc24a5c3ef16595f765",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1765453
+        },
+        "app": {
+          "path": "candidates/7910064052682ce03eef0d9c/app.png",
+          "sha256": "e1d11132a7a25ed1473db9a1c78ab3c3efb05941664eede6a2c783c24d7138cd",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 307327
+        },
+        "thumbnail": {
+          "path": "candidates/7910064052682ce03eef0d9c/thumbnail.png",
+          "sha256": "ad910d8eb8652afebcb6aba8f797ba26e69c7c78d8c62094c9834f21f5b2ae37",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43024
+        }
+      },
+      "candidate_asset": "candidates/7910064052682ce03eef0d9c/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-14T04:04:18.565422+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Generate one corrected Strength Ledger movement artwork, square 1254px or higher. Match the approved style reference: same athletic muscular adult man with short brown hair, full-length dark graphite sleeveless tank covering waist, black shorts, black training shoes, premium realistic anatomy and skin, near-black studio and rubber floor, soft white key light and restrained violet rim from right. No text or labels. Show believable real equipment and force-bearing contact, anatomically coherent hands wrapping the actual implement, neutral head aligned with torso rather than looking sideways at camera. Precisely repair this Hanging Knee Raise Iso-Hold image's malformed rack while retaining the athlete's correct hanging knee-up position. Replace ALL old rack hardware with the simplest real coherent pull-up station: exactly TWO parallel vertical black square steel posts, each one continuous straight post with one square 4-bolt floor baseplate, one SINGLE straight steel pull-up bar bolted between the posts at about 235cm height. Consistent perspective, identical post thickness and evenly spaced holes, real simple end brackets. No third or fourth upright, no diagonals or invented pipes, no extra crossbar, no T-foot mashups, no floating hardware. Subject hangs centered between uprights, both hands overhand gripping that one bar shoulder-width, straight elbows, shoulders engaged, BOTH knees bent and raised in front at hip height, shins vertical, ankles below knees, feet clearly floating above floor. Preserve natural torso/head facing forward along body, full-length shirt, no sideways head pose. Full single bar and both post tops, baseplates, athlete and generous floor clearance visible inside square frame with 5% margins. Make believable scale: a full upright standing person fits below the bar. Improve detail of hand-to-bar grips without adding fingers.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/577/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "movement_family": "accessory_hip_flexors",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "rack-mounted pull-up bar",
+        "grip": "pronated shoulder-width; bent knees held high",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "vertical hanging knee raise hold",
+        "owner_feedback": "THE SQUAT RACK IS BAD QUALITY IN THIS!!! HOW DO YOU KEEP MAKING THE SAME MISTAKES",
+        "preflight_notes": "Replaced malformed rack with two continuous matching floor-bolted uprights and one straight high pull-up bar. Both hands overhand on same bar, elbows extended, both knees held up, feet clear of floor. Full apparatus inside frame."
+      }
+    },
+    {
+      "movement_definition_id": 227,
+      "key": "accessory_ring_row",
+      "movement_name": "Ring Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "bodyweight",
+      "implement": "rings on separate rack straps",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_227_attempt02",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "1f5b22c1967e93d5abcfb7fb",
+      "version": 3,
+      "supersedes_candidate_id": "2b115439d7f4b1359fd84953",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "HOW DO YOU FUCK THIS ONE UP! ARE YOU FUCKING KIDDING ME? LOOK IT UP AND FIGURE IT THE FUCK OUT! THIS IS A FUCKING DOG SHIT RENDER",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:23:06.847561+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:23 PM PT (Sep 13, 2026 10:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "779253c8edb298d278bd74d9759f525c580b91b242454a9937fda7c8bff8b25c",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/1f5b22c1967e93d5abcfb7fb/master.png",
+          "sha256": "8d73d4fb35491bf93a65750b0a67eed8cfe654d70e0ea82a6ae4a0c5612a39c7",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1731452
+        },
+        "app": {
+          "path": "candidates/1f5b22c1967e93d5abcfb7fb/app.png",
+          "sha256": "85242cf8b28dfb2197f1a5bcaf4f8f55dfe3b182e2edbefc02f01bc45375c2f8",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 302779
+        },
+        "thumbnail": {
+          "path": "candidates/1f5b22c1967e93d5abcfb7fb/thumbnail.png",
+          "sha256": "8518293aed58a29d4ac911cd4705621eec23a1dd6b2ec1890763320008eaf6a8",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42195
+        }
+      },
+      "candidate_asset": "candidates/1f5b22c1967e93d5abcfb7fb/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-14T04:04:18.863571+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Edit this single movement-art image with ONE precise framing correction. Preserve the athlete, pose, movement technique, head direction, all correct hands/grips, strap tension, equipment topology, material detail, dark studio lighting, and purple rim exactly. Move the camera back enough to fit the ENTIRE existing rig. The current highest upright top is cut off at the upper image edge; reconstruct its short capped end above its existing high bar and include both post tops, the entire single high bar and its fasteners, both bases, and both shoes fully INSIDE the square with at least 5% clear margin on every edge. Keep real full-height overhead bar at the same physical height and every perspective relationship; do NOT lower the bar or shorten the rack to make it fit. Do not add a post, brace, duplicate crossbar, or new equipment. Slightly widen the view by about 15% and extend only the consistent near-black background/floor to fit. Same premium exact art; retain crisp facial, finger, ring/handle and steel details. No text.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/227/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "rings on separate rack straps",
+        "grip": "neutral shoulder-width",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "inclined supine",
+        "owner_feedback": "HOW DO YOU FUCK THIS ONE UP! ARE YOU FUCKING KIDDING ME? LOOK IT UP AND FIGURE IT THE FUCK OUT! THIS IS A FUCKING DOG SHIT RENDER",
+        "preflight_notes": "Rebuilt against a real ring-row demonstration: grounded feet, braced backward lean, elbows beside ribs, neutral ring grips, taut straps toward the forward overhead anchors. Second attempt fixes the clipped highest post; complete two-post station visible."
+      }
+    },
+    {
+      "movement_definition_id": 228,
+      "key": "accessory_suspension_trainer_row",
+      "movement_name": "Suspension-Trainer Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "bodyweight",
+      "implement": "suspension trainer and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_228_attempt02",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "f093f5d9ceb35671958198a2",
+      "version": 3,
+      "supersedes_candidate_id": "d283ccc5098514f61ee88ac0",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "FUCKING THIS ONE TOO! LOOK UP HOW IT IS SUPPOSED TO FUCKING LOOK! PISS FUCKING POOR! THIS IS AN OBVIOUS FAIL THAT SHOULDNT EVEN MAKE IT TO ME",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:23:39.928374+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:23 PM PT (Sep 13, 2026 10:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "fe148990d727a79c7b65dce8f5208058d77eb5fe9769e3f6dbd1487d0c03f6c8",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/f093f5d9ceb35671958198a2/master.png",
+          "sha256": "4008665cfe8f6c5fa601d35c614dba1b574c601849419446995697a084a27fb8",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1848100
+        },
+        "app": {
+          "path": "candidates/f093f5d9ceb35671958198a2/app.png",
+          "sha256": "6736fd722c64329a13671b41750a665128c1df1d3c7f065a192c90a18e43e9e1",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 322700
+        },
+        "thumbnail": {
+          "path": "candidates/f093f5d9ceb35671958198a2/thumbnail.png",
+          "sha256": "982b743a30f2636b0335d409cd1ed67b0f9ff7b8428e6d2363eec32a9895481b",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45113
+        }
+      },
+      "candidate_asset": "candidates/f093f5d9ceb35671958198a2/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-14T04:04:19.128134+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "Edit this single movement-art image with ONE precise framing correction. Preserve the athlete, pose, movement technique, head direction, all correct hands/grips, strap tension, equipment topology, material detail, dark studio lighting, and purple rim exactly. Move the camera back enough to fit the ENTIRE existing rig. The current highest upright top is cut off at the upper image edge; reconstruct its short capped end above its existing high bar and include both post tops, the entire single high bar and its fasteners, both bases, and both shoes fully INSIDE the square with at least 5% clear margin on every edge. Keep real full-height overhead bar at the same physical height and every perspective relationship; do NOT lower the bar or shorten the rack to make it fit. Do not add a post, brace, duplicate crossbar, or new equipment. Slightly widen the view by about 15% and extend only the consistent near-black background/floor to fit. Same premium exact art; retain crisp facial, finger, ring/handle and steel details. No text.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/228/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "suspension trainer and rack",
+        "grip": "neutral handles",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "inclined supine",
+        "owner_feedback": "FUCKING THIS ONE TOO! LOOK UP HOW IT IS SUPPOSED TO FUCKING LOOK! PISS FUCKING POOR! THIS IS AN OBVIOUS FAIL THAT SHOULDNT EVEN MAKE IT TO ME",
+        "preflight_notes": "Rebuilt against the equipment maker's low-row demonstration: forward overhead Y-anchor, two equal adjustable branches, triangular webbing and cylindrical handles, closed neutral grips, feet planted. Second attempt includes the complete highest post and bar."
+      }
+    },
+    {
+      "movement_definition_id": 287,
+      "key": "accessory_bodyweight_curl",
+      "movement_name": "Bodyweight Curl",
+      "primary_muscle_group": "biceps",
+      "equipment_type": "bodyweight",
+      "implement": "fixed rack bar",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review8_20260913_287_attempt01",
+      "generation_batch": "bodyweight-review-round-8-2026-09-13",
+      "candidate_id": "5fde4698416027ce2782d076",
+      "version": 3,
+      "supersedes_candidate_id": "a4f0857c8e7c657ef1c872ba",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "USE A FUCKING BARBELL IN A J-CUP FOR THIS!!!!!",
+        "tags": [
+          "equipment",
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T02:24:16.453793+00:00",
+        "reviewed_at_display": "Sep 13, 2026 07:24 PM PT (Sep 13, 2026 10:24 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6d48e7e7808b6fc0c5e4d69bb9b93193f12a9dab7e52a3ca5d6251aa3d0009f7",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/5fde4698416027ce2782d076/master.png",
+          "sha256": "a97a3397401a2ae3cb54602a3be3a51e5c7029c9a91dabc437c17f371374b1dd",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1867475
+        },
+        "app": {
+          "path": "candidates/5fde4698416027ce2782d076/app.png",
+          "sha256": "142e090da86637a556b193a4925bfb3da68d66683a34e1001574fc77d6fadfa1",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 323431
+        },
+        "thumbnail": {
+          "path": "candidates/5fde4698416027ce2782d076/thumbnail.png",
+          "sha256": "d1d2569ffb5835f5ff2dab8b7cb3faba2d9b4e959787b3f9163b3bdc21ef26f9",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46292
+        }
+      },
+      "candidate_asset": "candidates/5fde4698416027ce2782d076/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-14T04:04:19.373369+00:00",
+      "created_at_display": "Sep 13, 2026 09:04 PM PT (Sep 14, 2026 12:04 AM Eastern)",
+      "generation_prompt": "One premium square realistic Strength Ledger movement illustration, matching the approved baseline male athlete and dark studio style: muscular adult man, short brown hair, full-length charcoal tank covering waist, black shorts and trainers, neutral soft key light with subtle purple edge, black rubber floor and near-black studio. No text, no logos. Crisp believable anatomy and physically real equipment. Head aligned with torso and movement, not turned toward camera. Correct BODYWEIGHT CURL. Mandatory equipment: a REAL unloaded Olympic BARBELL resting in two J-CUPS, absolutely NOT a fixed low crossbar. Render two simple short squat stands, EACH one steel post ending just above its J-cup, each with a stable T-shaped base. Matched J-cups locked at waist-height project 12cm in front of posts, black protective pads form shelf and small raised front lip. One straight complete Olympic barbell shaft rests ON BOTH projecting padded shelves IN FRONT OF posts with visible gap; shaft does not pass through post or upright holes. Equal chrome sleeves/collars at both ends, all ends visible inside frame with margin. Camera near-front three-quarter side to see both J-cup contacts and underhand grip. Athlete under bar, heels planted out in front, braced straight sloping body, arms shoulder-width and SUPINATED underhand grip. Upper arms remain angled forward from shoulders while elbows flex, pulling CHIN toward bar at top of bodyweight biceps curl. Bar in front of chin, not forehead; head neutral continuing torso without neck craning, face naturally toward bar. Body centered between both J-cups and on middle of symmetrical bar; equal hand distances from center, both palms face own face, thumbs opposed, no mixed grip. Keep whole athlete including heels, both supports, entire barbell, clean matched hardware, and tank covering waist. This is not a pull-up, not an overhand inverted row. Rebuild equipment carefully rather than reproducing the original fixed bar.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-8-2026-09-13/287/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "movement_family": "accessory_biceps",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "fixed rack bar",
+        "grip": "supinated; elbows high",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "inclined supine",
+        "owner_feedback": "USE A FUCKING BARBELL IN A J-CUP FOR THIS!!!!!",
+        "preflight_notes": "Replaced fixed crossbar with unloaded barbell on a matched pair of projecting J-cups and short capped squat stands. Chin approaches bar, both hands supinated, heels planted, full bar ends and stand bases visible."
       }
     }
   ],
