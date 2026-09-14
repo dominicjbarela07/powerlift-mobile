@@ -1,0 +1,60 @@
+[
+  {
+    "id": 186,
+    "attempt": 4,
+    "edit_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-2dda4b5c-4daf-4ca4-a539-688cba84311c.png",
+    "pose": "Edit SECOND image. Keep same athlete, rack, suspended feet, dark studio. Correct sternum chin-up at top: move athlete UP relative to bar, reclining his torso much farther about60deg from vertical, bringing LOWER STERNUM into the bar. Fixed bar touches chest clearly BELOW the pectoral muscles. Both elbows drawn below and behind ribcage with supinated grips; head neck shoulders all above bar, neck neutral along torso, no chin poke. Feet remain entirely off floor. First image style reference only."
+  },
+  {
+    "id": 538,
+    "orientation": "supine diagonal crunch",
+    "equipment": "floor mat",
+    "grip": "hands lightly at temples; opposite elbow/knee",
+    "assistance": "unassisted",
+    "pose": "Edit SECOND image to show unmistakable opposite elbow/knee bicycle crunch. Athlete's LEFT bent knee toward chest, RIGHT elbow and shoulder curled diagonally across to nearly TOUCH LEFT knee. Other elbow open away and RIGHT leg long hovering low. Entire upper torso and head rotate together, neck aligned. Show high front three-quarter view where left knee and right elbow visibly meet across midline. Preserve body/clothing/dark studio and complete limbs. First reference style only.",
+    "attempt": 2,
+    "edit_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-378c0538-da7b-4260-8bfd-18b68d10e54e.png"
+  },
+  {
+    "id": 539,
+    "orientation": "high plank cross-body knee drive",
+    "equipment": "floor mat",
+    "grip": "palms planted; opposite knee toward elbow",
+    "assistance": "unassisted",
+    "pose": "Edit SECOND image cross-body mountain climber: bent knee MUST travel diagonally UNDER belly to the OPPOSITE elbow, inside space BETWEEN forearms, not outside near same-side arm. Left hip flexed and adducted across midline, left knee near right elbow; right leg extends back. Both planted palms straight arms, neutral head looking floor. Change camera to elevated frontal view so the CROSS-BODY diagonal is unmistakable. Complete limbs. First image style only.",
+    "attempt": 2,
+    "edit_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-8dc2327b-77f6-4552-8b35-6a6c22c87b6a.png"
+  },
+  {
+    "id": 540,
+    "orientation": "supine with legs rotated laterally",
+    "equipment": "floor mat",
+    "grip": "arms wide palms down; legs together straight",
+    "assistance": "unassisted",
+    "pose": "Edit SECOND image into clear windshield wiper. Supine, arms T and shoulders flat. BOTH straight legs together, hips flexed90degrees (legs start perpendicular to torso), then both legs rotate sideways45degrees as a unit, feet elevated well above floor beside hip rather than along trunk. Pelvis rotates, shoulders grounded. Oblique overhead view showing T arms, trunk, sharply flexed hips and straight lateral legs. Head faces up ceiling with chest. All limbs complete. First image style only.",
+    "attempt": 2,
+    "edit_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-a850c8e9-0415-4c47-b4b5-ebbcfbf382e9.png"
+  },
+  {
+    "id": 551,
+    "orientation": "horizontal prone hip hinge",
+    "equipment": "horizontal Roman chair / GHD",
+    "grip": "feet secured; arms crossed",
+    "assistance": "unassisted",
+    "pose": "Edit SECOND image horizontal back extension. Preserve horizontal legs, ankle rollers, thigh pads and frame. Rotate torso DOWN at hip crease35degrees below horizontal so head clearly LOWER than hip pad, arms crossed chest, straight neutral spine and head looks floor. Thighs stay fully supported and feet securely rear rollers. This must show lowered hinge phase, NOT straight horizontal Sorenson hold. Full equipment in frame. First image style only.",
+    "attempt": 2,
+    "edit_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-30f7248c-3b6b-40d4-ba82-3481c824437e.png"
+  },
+  {
+    "id": 457,
+    "orientation": "side plank on ankle support",
+    "equipment": "flat bench and floor",
+    "grip": "forearm support; top ankle on bench",
+    "assistance": "unassisted",
+    "pose": "Edit SECOND image ONLY framing and foot clearance. Keep correct long-lever Copenhagen plank pose and neutral head facing same direction as chest. Zoom OUT20percent so entire bench including both ends and ALL feet visible with margin. Top inner ankle alone supported on bench top. Bottom straight leg hovers10cm below bench edge, bottom shoe clearly in air and separated from metal bench supports. Preserve grounded elbow, straight trunk, dark studio. First image style only.",
+    "prompt": "Create ONE square photorealistic exact-movement artwork candidate, no panels/text/arrows/logos. Reference image is the immutable ART STYLE AND SAME ATHLETE reference only, NOT the exercise pose or bench. Preserve its believable athletic adult man, short brown hair, charcoal graphite sleeveless tank, black shorts and trainers; neutral natural skin, dark near-black seamless studio and textured rubber floor, neutral soft key upper-left and restrained violet rim rear-right. Same commercial photography, normal-to-short-telephoto perspective, clean materials, no stylization or dramatic neon. Full body, full essential equipment/contact points, sensible margins for square mobile thumbnail and wide hero crops. Equipment must be recognizable real gym hardware, visibly supported and plausible proportional steel, no fantasy mechanisms. Head/gaze ALWAYS aligned with torso and task, no sideways head turn or glance at camera. Anatomically correct hands, feet and joints. Movement-specific instruction: LONG LEVER Copenhagen adduction at top: side plank with lower elbow and forearm grounded under shoulder, TOP leg completely straight, inner TOP ANKLE rests on flat bench pad edge43cm high. BOTTOM leg also straight lifted up to meet upper ankle under the bench edge, both knees extended. Hips high and whole body in one diagonal line. Free hand on hip. Full side view reveals long straight legs and ankle-only bench contact, no knee support. Neutral head, grounded simple steel bench with proportional pad.",
+    "source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-b5b5628b-7b5f-4885-bcda-d8d420795c98.png",
+    "attempt": 3,
+    "edit_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-f142a312-c481-4ad7-b349-ed3999916066.png"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "id": 186,
+    "orientation": "backward-arched torso; hips and legs descending in free hang",
+    "equipment": "straight pull-up bar and rack",
+    "grip": "supinated medium grip",
+    "assistance": "unassisted",
+    "pose": "Sternum chin-up finish following the user supplied pose: curved torso, chest elevated, lower sternum at the bar, head extended with the arch, two underhand grips, elbows down/back, feet suspended.",
+    "attempt": 12,
+    "prompt": "Edit image 1. Keep the same man, clothing, studio and equipment. Correct only the sternum chin-up finish.\nThe bar is incorrectly at his COLLARBONES. Put the bar against his LOWER STERNUM, at the bottom edge of the rib cage. Move the bar and both gripping hands downward together to that chest contact point. Both elbows remain below and behind the bar, strongly bent. Both hands stay securely supinated around the single continuous supported bar.\nLet his body bend much more: use image 2's backward CURVE. Arch the upper torso backward until the upper chest faces upward, head follows backward, abdomen visibly bows, while pelvis and legs continue dropping toward the floor. The torso is curved like a bow, not a straight diagonal. Do not merely tilt the whole straight body. This pronounced bend lets the lower sternum reach the bar. Keep the legs freely hanging and the feet clear of the floor.\nThe camera clearly sees both hands, the lower sternum-to-bar contact and the arched side profile. Full man including head, fingers and feet, with rack bases inside the image and modest margins. Photorealistic, same restrained dark and violet family styling, no text.",
+    "reference_images": [
+      "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-512b5c70-ca12-4875-8858-bc505d09b3d9.png",
+      "/Users/dominic/powerlifting_app_dev/powerlift_mobile/docs/validation/bodyweight-art-2026-09-13/user-sternum-pose-reference.png"
+    ],
+    "source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-3438ad65-339d-4a0e-a375-f987af488f4a.png"
+  }
+]

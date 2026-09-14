@@ -1,0 +1,29 @@
+[
+  {
+    "id": 538,
+    "orientation": "supine diagonal crunch",
+    "equipment": "floor mat",
+    "grip": "hands lightly at temples; opposite elbow/knee",
+    "assistance": "unassisted",
+    "pose": "BICYCLE CRUNCH as a premium photographic image from DIRECT OVERHEAD looking straight down; athlete head near imageTOP, feet near imageBOTTOM. Athlete on BACK, pelvis/lower back grounded. Anatomical LEFT knee (on imageRIGHT) bent up toward left chest, anatomical RIGHT leg (on imageLEFT) fully extended down frame with heel hovering. Anatomical RIGHT ELBOW (originates imageLEFT shoulder) crosses the midline DIAGONALLY all the way to meet the LEFT knee on imageRIGHT. RIGHT shoulder blade lifted off mat and right upper torso rolled toward left knee. LEFT elbow open out to imageRIGHT side. Fingertips at temples, head rotates exactly with upper torso, no isolated twist. This crossed elbow/knee contact must be visually unmistakable, with one long straight leg and other bent leg. Show full arms/legs with natural hands and correct joint connections. No weights/equipment.",
+    "attempt": 3,
+    "source": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-2026-09-13/538/attempt-03.png",
+    "prompt": "Create ONE square photorealistic exact-movement artwork candidate, no panels/text/arrows/logos. Reference image is the immutable ART STYLE AND SAME ATHLETE reference only, NOT the exercise pose or bench. Preserve its believable athletic adult man, short brown hair, charcoal graphite sleeveless tank, black shorts and trainers; neutral natural skin, dark near-black seamless studio and textured rubber floor, neutral soft key upper-left and restrained violet rim rear-right. Same commercial photography, normal-to-short-telephoto perspective, clean materials, no stylization or dramatic neon. Full body, full essential equipment/contact points, sensible margins for square mobile thumbnail and wide hero crops. Equipment must be recognizable real gym hardware, visibly supported and plausible proportional steel, no fantasy mechanisms. Head/gaze ALWAYS aligned with torso and task, no sideways head turn or glance at camera. Anatomically correct hands, feet and joints. Movement-specific instruction: BICYCLE CRUNCH as a premium photographic image from DIRECT OVERHEAD looking straight down; athlete head near imageTOP, feet near imageBOTTOM. Athlete on BACK, pelvis/lower back grounded. Anatomical LEFT knee (on imageRIGHT) bent up toward left chest, anatomical RIGHT leg (on imageLEFT) fully extended down frame with heel hovering. Anatomical RIGHT ELBOW (originates imageLEFT shoulder) crosses the midline DIAGONALLY all the way to meet the LEFT knee on imageRIGHT. RIGHT shoulder blade lifted off mat and right upper torso rolled toward left knee. LEFT elbow open out to imageRIGHT side. Fingertips at temples, head rotates exactly with upper torso, no isolated twist. This crossed elbow/knee contact must be visually unmistakable, with one long straight leg and other bent leg. Show full arms/legs with natural hands and correct joint connections. No weights/equipment.",
+    "tool_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-4250c68d-9c9c-475f-9431-392802ce0e6b.png",
+    "key": "accessory_bicycle_crunch",
+    "generation_id": "bw_20260913_538_attempt03",
+    "preflight_notes": "Overhead view now makes right elbow crossing toward left bent knee unmistakable; opposite leg extended, trunk and head rotate together, full limbs visible.",
+    "preflight_status": "ready_for_human_review",
+    "presentation": {
+      "focalX": 0.5,
+      "focalY": 0.52,
+      "scale": 1,
+      "biasX": -0.04,
+      "biasY": 0,
+      "thumbnailFocalX": 0.5,
+      "thumbnailFocalY": 0.5,
+      "thumbnailScale": 1,
+      "cropMode": "contain"
+    }
+  }
+]

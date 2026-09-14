@@ -1,0 +1,29 @@
+[
+  {
+    "id": 186,
+    "orientation": "reclined hanging",
+    "equipment": "straight pull-up bar and rack",
+    "grip": "supinated medium grip",
+    "assistance": "unassisted",
+    "pose": "STERNUM CHIN-UP in characteristic high contracted phase: underhand supinated grip medium width, lean entire straight torso BACK roughly35 degrees, lift lower chest/sternum toward straight fixed bar, elbows pulled down/back. Legs extend diagonally slightly ahead to counterbalance, no enormous lumbar bend. Head follows upper spine/torso, gaze up along chest direction. Side-three-quarter camera shows difference from vertical ordinary chinup. Stable real rack with mounted bar and grounded bases, all extremities.",
+    "attempt": 8,
+    "prompt": "Edit SECOND image. Preserve the athlete's strongly reclined face-up torso, backward head orientation with NO sideways twist, bent knees, feet suspended in air, bent elbows drawn below/behind chest, and UNDERHAND grips at lower sternum. Preserve same man/clothes/dark studio style from FIRST image. Fix camera obstruction: orbit camera 25 degrees toward the athlete's front so NEITHER rack upright covers a hand, forearm, chest or bar contact. Frame two ordinary rack uprights at far LEFT and far RIGHT margins, connected by one continuous straight 30mm bar. The bar clearly touches the LOWER CHEST at the BOTTOM of the pectorals, close to upper abdomen, much lower than collarbones. Both supinated hands should be visibly wrapped around this same straight bar beside lower rib cage. Athletic upper torso remains nearly horizontal, shoulder-neck-head extend back AWAY from bar on same sagittal plane. Do not raise bar contact toward neck or stand torso upright. Full body and complete grounded rack feet with 5percent margin. No fantasy handle projections, no extra bars, no body intersections. This is the same mechanical pose from a clearer camera, not a new exercise.",
+    "source": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-2026-09-13/186/attempt-08.png",
+    "tool_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-644d7452-56b6-4bbc-8ae8-ae26a7fa206e.png",
+    "key": "accessory_sternum_chin_up",
+    "generation_id": "bw_20260913_186_attempt08",
+    "preflight_notes": "WITHHELD: Rigid diagonal trunk and bar at upper chest; does not match the user supplied arched torso with descending hips and legs. Superseded by the explicit user pose reference.",
+    "preflight_status": "withheld_for_refinement",
+    "presentation": {
+      "focalX": 0.5,
+      "focalY": 0.52,
+      "scale": 1,
+      "biasX": -0.04,
+      "biasY": 0,
+      "thumbnailFocalX": 0.5,
+      "thumbnailFocalY": 0.5,
+      "thumbnailScale": 1,
+      "cropMode": "contain"
+    }
+  }
+]

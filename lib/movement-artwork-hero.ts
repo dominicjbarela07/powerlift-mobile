@@ -1,5 +1,7 @@
 import { approvedArtRuntimeEnabled } from './approved-art-runtime';
 import policy from '@/artwork-review/runtime-policy.json';
+import { DEFAULT_FOCAL, thumbnailGeometry, type Presentation } from './movement-artwork-geometry.mjs';
+export { movementHeroGeometry } from './movement-artwork-geometry.mjs';
 import { normalizeCanonicalMovementArtSubject, resolveCanonicalMovementArtwork, type CanonicalMovementArtworkInput, type MovementArtInput, type CanonicalAccessoryArtworkKey } from './canonical-movement-artwork';
 
 export type ApprovedExactArtwork = Readonly<{
@@ -10,7 +12,7 @@ export type ApprovedExactArtwork = Readonly<{
 }>;
 type ApprovalPolicy = Readonly<{
   denied_keys: readonly string[];
-  approved_exact_artwork?: readonly Readonly<{ key: string; movement_definition_id: number; candidate_id: string; app_sha256: string }>[];
+  approved_exact_artwork?: readonly Readonly<{ key: string; movement_definition_id: number; candidate_id: string; app_sha256: string; presentation?: Presentation }>[];
 }>;
 
 /** Positive receipt for the exact currently mapped candidate. A filename,
@@ -71,7 +73,6 @@ export function resolveMovementArtworkPresentation(movement: MovementArtInput | 
 }
 
 export type MovementHeroFocal = Readonly<{ focalX: number; focalY: number; scale: number; biasX: number; biasY: number }>;
-const DEFAULT_FOCAL: MovementHeroFocal = Object.freeze({ focalX: 0.5, focalY: 0.46, scale: 1, biasX: 0, biasY: 0 });
 // One presentation owner; stable artwork keys, never display-name matching.
 // These coordinates describe composition only and do not grant eligibility.
 const FOCAL_BY_ARTWORK: Readonly<Partial<Record<CanonicalAccessoryArtworkKey, MovementHeroFocal & { thumbnailScale?: number; thumbnailFocalY?: number }>>> = {
@@ -81,28 +82,17 @@ const FOCAL_BY_ARTWORK: Readonly<Partial<Record<CanonicalAccessoryArtworkKey, Mo
   accessory_standing_dumbbell_curl: { focalX: 0.51, focalY: 0.43, scale: 1, biasX: 0, biasY: 0 },
   accessory_bulgarian_split_squat: { focalX: 0.53, focalY: 0.45, scale: 1, biasX: 0, biasY: 0, thumbnailScale: 1.08 },
 };
+function approvedPresentation(key: CanonicalAccessoryArtworkKey, approvals: ApprovalPolicy = policy) {
+  if (approvals.denied_keys.includes(key)) return undefined;
+  return approvals.approved_exact_artwork?.find(row => row.key === key)?.presentation;
+}
 export function movementHeroFocal(key: CanonicalAccessoryArtworkKey): MovementHeroFocal {
-  return FOCAL_BY_ARTWORK[key] || DEFAULT_FOCAL;
+  return approvedPresentation(key) || FOCAL_BY_ARTWORK[key] || DEFAULT_FOCAL;
 }
 
 /** Modest square crop prioritizes the action at card size, using the same focal
  * owner and source as the hero. No stretching or consumer-owned crop offsets. */
 export function movementThumbnailGeometry(size: number, key: CanonicalAccessoryArtworkKey) {
   const focal = movementHeroFocal(key);
-  const preset = FOCAL_BY_ARTWORK[key];
-  const edge = size * (preset?.thumbnailScale || 1);
-  return { width: edge, height: edge,
-    left: Math.min(0, Math.max(size - edge, size * 0.5 - edge * focal.focalX)),
-    top: Math.min(0, Math.max(size - edge, size * 0.48 - edge * (preset?.thumbnailFocalY ?? focal.focalY))) };
-}
-
-/** Bounded square-source placement around the right-hand subject target.
- * Absolute composition never adds height to the foreground's layout.
- */
-export function movementHeroGeometry(width: number, height: number, focal: MovementHeroFocal) {
-  const clamp = (n: number, low: number, high: number) => Math.min(high, Math.max(low, Number.isFinite(n) ? n : low));
-  const size = Math.min(360, height * 1.08) * clamp(focal.scale, 0.8, 1.25);
-  const x = width * (0.77 + clamp(focal.biasX, -0.12, 0.12));
-  const y = height * (0.68 + clamp(focal.biasY, -0.12, 0.12));
-  return { width: size, height: size, left: x - size * clamp(focal.focalX, 0.2, 0.8), top: y - size * clamp(focal.focalY, 0.2, 0.8) };
+  return thumbnailGeometry(size, focal, approvedPresentation(key) || FOCAL_BY_ARTWORK[key]);
 }

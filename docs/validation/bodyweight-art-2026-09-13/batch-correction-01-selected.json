@@ -1,0 +1,56 @@
+[
+  {
+    "id": 74,
+    "orientation": "suspended upright forward lean",
+    "equipment": "parallel dip station",
+    "grip": "neutral parallel handles",
+    "assistance": "unassisted",
+    "pose": "CHEST DIP on two freestanding tall U-shaped dip bars, like two commercial 100cm-high parallettes. EACH long horizontal rail runs FRONT-TO-BACK, parallel with the other rail, exactly55cm apart, each supported by TWO vertical legs ending in broadfootbases. Athlete between rails at bottom dip, elbows90deg, torsoleanforward30deg, knees bentback, feetclearlyOFFfloor. Neutral grip palms face eachother, handsgrasp rails pointingfore-aft, NOT lateral inward stubs. Camera SIDE THREE-QUARTER to clearly reveal long parallel rails and both grounded supports perrail. Headalignedwith leanedtorso, gaze downwardahead. All equipment inframe.",
+    "attempt": 2,
+    "prompt": "Create ONE square photorealistic exact-movement artwork candidate, no panels/text/arrows/logos. Reference image is the immutable ART STYLE AND SAME ATHLETE reference only, NOT the exercise pose or bench. Preserve its believable athletic adult man, short brown hair, charcoal graphite sleeveless tank, black shorts and trainers; neutral natural skin, dark near-black seamless studio and textured rubber floor, neutral soft key upper-left and restrained violet rim rear-right. Same commercial photography, normal-to-short-telephoto perspective, clean materials, no stylization or dramatic neon. Full body, full essential equipment/contact points, sensible margins for square mobile thumbnail and wide hero crops. Equipment must be recognizable real gym hardware, visibly supported and plausible proportional steel, no fantasy mechanisms. Head/gaze ALWAYS aligned with torso and task, no sideways head turn or glance at camera. Anatomically correct hands, feet and joints. Movement-specific instruction: CHEST DIP on two freestanding tall U-shaped dip bars, like two commercial 100cm-high parallettes. EACH long horizontal rail runs FRONT-TO-BACK, parallel with the other rail, exactly55cm apart, each supported by TWO vertical legs ending in broadfootbases. Athlete between rails at bottom dip, elbows90deg, torsoleanforward30deg, knees bentback, feetclearlyOFFfloor. Neutral grip palms face eachother, handsgrasp rails pointingfore-aft, NOT lateral inward stubs. Camera SIDE THREE-QUARTER to clearly reveal long parallel rails and both grounded supports perrail. Headalignedwith leanedtorso, gaze downwardahead. All equipment inframe.",
+    "source": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-2026-09-13/74/attempt-02.png",
+    "tool_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-a04b5b48-8a5f-497d-8647-ac6b9f170b3a.png",
+    "key": "accessory_chest_dip",
+    "generation_id": "bw_20260913_74_attempt02",
+    "preflight_notes": "Parallel fore-aft dip rails now have four grounded supports; forward torso lean, wrapped neutral grip and feet off floor are visible.",
+    "preflight_status": "ready_for_human_review",
+    "presentation": {
+      "focalX": 0.5,
+      "focalY": 0.52,
+      "scale": 1,
+      "biasX": -0.04,
+      "biasY": 0,
+      "thumbnailFocalX": 0.5,
+      "thumbnailFocalY": 0.5,
+      "thumbnailScale": 1,
+      "cropMode": "contain"
+    }
+  },
+  {
+    "id": 183,
+    "orientation": "vertical hanging",
+    "equipment": "rack with parallel pull-up handles",
+    "grip": "neutral palms facing",
+    "assistance": "unassisted",
+    "pose": "NEUTRAL GRIP PULL-UP, side-threequarter camera showing TWO HORIZONTAL PARALLEL round pull-up handles projecting FORE-AFT toward camera from a groundedrack top crossbeam. Handles30mm diameter and35cm long, samehorizontalheight220cm and50cmapart. NO VERTICAL HANDLE GRIPS. End caps point towardcamera, palmsfaceeachother, wristsparallel. Two thumbs nearrear ends, handswrappedaroundfront half. Athlete near top bodyvertical, elbowsflexeddown, headbetweenhandles, feetofffloor. Full rack with visiblebolted mounts/feet andwhole athlete. Neutralhead faceaheadalongchest.",
+    "attempt": 2,
+    "prompt": "Create ONE square photorealistic exact-movement artwork candidate, no panels/text/arrows/logos. Reference image is the immutable ART STYLE AND SAME ATHLETE reference only, NOT the exercise pose or bench. Preserve its believable athletic adult man, short brown hair, charcoal graphite sleeveless tank, black shorts and trainers; neutral natural skin, dark near-black seamless studio and textured rubber floor, neutral soft key upper-left and restrained violet rim rear-right. Same commercial photography, normal-to-short-telephoto perspective, clean materials, no stylization or dramatic neon. Full body, full essential equipment/contact points, sensible margins for square mobile thumbnail and wide hero crops. Equipment must be recognizable real gym hardware, visibly supported and plausible proportional steel, no fantasy mechanisms. Head/gaze ALWAYS aligned with torso and task, no sideways head turn or glance at camera. Anatomically correct hands, feet and joints. Movement-specific instruction: NEUTRAL GRIP PULL-UP, side-threequarter camera showing TWO HORIZONTAL PARALLEL round pull-up handles projecting FORE-AFT toward camera from a groundedrack top crossbeam. Handles30mm diameter and35cm long, samehorizontalheight220cm and50cmapart. NO VERTICAL HANDLE GRIPS. End caps point towardcamera, palmsfaceeachother, wristsparallel. Two thumbs nearrear ends, handswrappedaroundfront half. Athlete near top bodyvertical, elbowsflexeddown, headbetweenhandles, feetofffloor. Full rack with visiblebolted mounts/feet andwhole athlete. Neutralhead faceaheadalongchest.",
+    "source": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-2026-09-13/183/attempt-02.png",
+    "tool_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-768ae7d7-2ff0-414a-b6ae-c7ae75e58ded.png",
+    "key": "accessory_neutral_grip_pull_up",
+    "generation_id": "bw_20260913_183_attempt02",
+    "preflight_notes": "Horizontal fore-aft handles and palms-facing grip are corrected; supported mounts and suspended body are coherent.",
+    "preflight_status": "ready_for_human_review",
+    "presentation": {
+      "focalX": 0.5,
+      "focalY": 0.52,
+      "scale": 1,
+      "biasX": -0.04,
+      "biasY": 0,
+      "thumbnailFocalX": 0.5,
+      "thumbnailFocalY": 0.5,
+      "thumbnailScale": 1,
+      "cropMode": "contain"
+    }
+  }
+]

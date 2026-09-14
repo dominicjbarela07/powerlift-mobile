@@ -20,7 +20,8 @@ export function approvedExactArtworkPolicy(state) {
         || row.human_approved !== true || row.review?.candidate_sha256 !== row.files.master.sha256
         || !['master', 'app', 'thumbnail'].every(role => active.files[role].sha256 === row.files[role].sha256)) return [];
     return [{ key: active.key, movement_definition_id: active.movement_definition_id,
-      candidate_id: row.candidate_id, app_sha256: active.files.app.sha256 }];
+      candidate_id: row.candidate_id, app_sha256: active.files.app.sha256,
+      ...(row.presentation ? {presentation: row.presentation} : {}) }];
   }).sort((a, b) => a.key.localeCompare(b.key));
 }
 

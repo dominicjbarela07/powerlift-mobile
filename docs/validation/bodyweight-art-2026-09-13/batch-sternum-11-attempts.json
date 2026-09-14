@@ -1,0 +1,29 @@
+[
+  {
+    "id": 186,
+    "orientation": "arched hanging torso with descending hips and legs",
+    "equipment": "straight pull-up bar and rack",
+    "grip": "supinated medium grip",
+    "assistance": "unassisted",
+    "pose": "Curved torso as in owner reference; lower sternum to bar, two visible underhand contacts, hips and legs descending.",
+    "attempt": 11,
+    "prompt": "Correct this single exercise photograph. Keep its athlete, wardrobe, dark studio lighting, real bolted rack, freely hanging legs, and especially its visibly BENT/ARCHED torso. The chest rises while the hips drop; preserve this curved body shape.\nMake the pulling action complete and anatomically visible: show TWO arms and TWO hands, each securely wrapped in an UNDERHAND grip around the one continuous straight fixed bar, roughly shoulder-width apart. Bring the far arm and hand into view by turning the camera modestly toward the front of his chest while keeping a side-three-quarter view that clearly shows the torso arch. Lift his arched chest farther into the finished STERNUM CHIN-UP so the bar actually touches the lower sternum, well below the neck. Both elbows are strongly bent and drawn down/back beside the ribs. The head tips naturally back with the spinal arch.\nThis is the top of a sternum-to-bar pull, not an ordinary chin-over-bar pull and not a straight-body inverted row. Keep the hips and legs descending below the bending torso, feet completely off the floor. Show both complete hand-to-bar contacts clearly, without occlusion by a shoulder. Full body and rack bases inside the square frame with small clear margins. Maintain the original photorealistic quality; no text.",
+    "source": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-2026-09-13/186/attempt-11.png",
+    "tool_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-512b5c70-ca12-4875-8858-bc505d09b3d9.png",
+    "key": "accessory_sternum_chin_up",
+    "generation_id": "bw_20260913_186_attempt11",
+    "preflight_notes": "WITHHELD: Both grips are now visible, but contact is still at the clavicles rather than the lower sternum and the torso bend remains insufficient. Correct contact height and arch together.",
+    "preflight_status": "withheld_for_refinement",
+    "presentation": {
+      "focalX": 0.5,
+      "focalY": 0.52,
+      "scale": 1,
+      "biasX": -0.04,
+      "biasY": 0,
+      "thumbnailFocalX": 0.5,
+      "thumbnailFocalY": 0.5,
+      "thumbnailScale": 1,
+      "cropMode": "contain"
+    }
+  }
+]

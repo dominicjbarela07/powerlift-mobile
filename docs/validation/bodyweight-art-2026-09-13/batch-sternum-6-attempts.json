@@ -1,0 +1,29 @@
+[
+  {
+    "id": 186,
+    "orientation": "reclined hanging",
+    "equipment": "straight pull-up bar and rack",
+    "grip": "supinated medium grip",
+    "assistance": "unassisted",
+    "pose": "Photograph a suspended bodyweight row at the very top, with the athlete's UPPER TORSO FACE-UP AND HORIZONTAL, chest arched strongly toward ceiling, LOWER BREASTBONE touching a fixed pull-up bar. Side view: head to LEFT of frame at same HEIGHT as lower chest; hips to RIGHT and lower than chest; knees bent down, shoes airborne. The bar passes across the body at the junction of lower pectorals and upper abdomen. His HANDS grip that bar UNDERHAND on either side of his lower rib cage, elbows maximally pulled DOWN behind his back. Head tips BACK following the thoracic arch, face toward ceiling, never rotated sideways. This is the true top position of a Gironda sternum chin-up, effectively a face-up horizontal upper-body row suspended high in the air. Use a normal thin straight rack bar and full real grounded squat rack with sensible proportions. Camera far enough to see full athlete, bar mounting and grounded feet of rack. No weights, no support under athlete, no bench. PRIORITY: FACE-UP HORIZONTAL UPPER TORSO and LOWER CHEST CONTACT. Do not make a vertical standard chin-up.",
+    "attempt": 6,
+    "prompt": "Create ONE square premium photorealistic movement-art candidate. First reference sets the SAME ATHLETE, charcoal tank, black shorts/shoes, natural skin, dark studio rubber floor, soft neutral upper-left key and restrained violet rim. Preserve that visual family. No text, logos or graphic overlay. Photograph a suspended bodyweight row at the very top, with the athlete's UPPER TORSO FACE-UP AND HORIZONTAL, chest arched strongly toward ceiling, LOWER BREASTBONE touching a fixed pull-up bar. Side view: head to LEFT of frame at same HEIGHT as lower chest; hips to RIGHT and lower than chest; knees bent down, shoes airborne. The bar passes across the body at the junction of lower pectorals and upper abdomen. His HANDS grip that bar UNDERHAND on either side of his lower rib cage, elbows maximally pulled DOWN behind his back. Head tips BACK following the thoracic arch, face toward ceiling, never rotated sideways. This is the true top position of a Gironda sternum chin-up, effectively a face-up horizontal upper-body row suspended high in the air. Use a normal thin straight rack bar and full real grounded squat rack with sensible proportions. Camera far enough to see full athlete, bar mounting and grounded feet of rack. No weights, no support under athlete, no bench. PRIORITY: FACE-UP HORIZONTAL UPPER TORSO and LOWER CHEST CONTACT. Do not make a vertical standard chin-up.",
+    "source": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-2026-09-13/186/attempt-06.png",
+    "tool_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-73614c6c-dfb1-49d5-960a-9692e5b9f32b.png",
+    "key": "accessory_sternum_chin_up",
+    "generation_id": "bw_20260913_186_attempt06",
+    "preflight_notes": "WITHHELD: Torso more reclined but bar remains high and far bar mounting becomes implausible.",
+    "preflight_status": "withheld_for_refinement",
+    "presentation": {
+      "focalX": 0.5,
+      "focalY": 0.52,
+      "scale": 1,
+      "biasX": -0.04,
+      "biasY": 0,
+      "thumbnailFocalX": 0.5,
+      "thumbnailFocalY": 0.5,
+      "thumbnailScale": 1,
+      "cropMode": "contain"
+    }
+  }
+]

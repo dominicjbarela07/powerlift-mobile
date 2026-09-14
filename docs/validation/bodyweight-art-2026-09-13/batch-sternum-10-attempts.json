@@ -1,0 +1,29 @@
+[
+  {
+    "id": 186,
+    "orientation": "arched hanging torso with descending hips and legs",
+    "equipment": "straight pull-up bar and rack",
+    "grip": "supinated medium grip",
+    "assistance": "unassisted",
+    "pose": "Follow the user supplied curved torso pose. Chest elevated, abdomen arched, head extended in sagittal plane, hips and legs descending freely. Both hands on the same supported bar.",
+    "attempt": 10,
+    "prompt": "Edit reference image 1 into a Strength Ledger exercise photo. Reference 1 is the user's exact STERNUM CHIN-UP POSE: KEEP THE BODY BENDING BACKWARD, with the chest pushed up, abdomen visibly arched, head dropped back, hips and legs hanging down. Preserve this pose's curved torso, not a straight torso. Preserve the geometry of both arms and the genuine hand contacts on the continuous bar. Both hands must visibly grasp the SAME fixed pull-up bar with an underhand grip. Show the torso arch clearly from the low side view of the reference. Do not hide a hand behind the shoulder or invent a disconnected grip. The head extends back above the arched spine, not rotated sideways.\nReference image 2 supplies ONLY the male athlete appearance, charcoal tank, black shorts/trainers, dark studio photographic style and soft neutral light with subtle purple rim. Replace the person in image 1 with this athletic adult man, keeping image 1's body pose. Replace the busy gym with the approved dark studio; no signs or logos. Use the real bolted steel rack geometry from the pose photo, simplified to one straight fixed chin-up bar between two posts. Widen the frame just enough to show full legs and shoes hanging freely, and a little floor underneath. One square premium photorealistic image. Do not straighten the upper and lower torso into a rigid line.",
+    "source": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-2026-09-13/186/attempt-10.png",
+    "tool_source": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-80136a3a-80e7-43aa-b963-83bc1e630600.png",
+    "key": "accessory_sternum_chin_up",
+    "generation_id": "bw_20260913_186_attempt10",
+    "preflight_notes": "WITHHELD: Torso now bends toward the user reference, but far hand and arm contact cannot be checked and sternum is still below the bar. Refine visible two-hand contact and final chest height before human queue.",
+    "preflight_status": "withheld_for_refinement",
+    "presentation": {
+      "focalX": 0.5,
+      "focalY": 0.52,
+      "scale": 1,
+      "biasX": -0.04,
+      "biasY": 0,
+      "thumbnailFocalX": 0.5,
+      "thumbnailFocalY": 0.5,
+      "thumbnailScale": 1,
+      "cropMode": "contain"
+    }
+  }
+]
