@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 775,
+  "revision": 781,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-14T11:47:25.582830+00:00",
-  "updated_at_display": "Sep 14, 2026 04:47 AM PT (Sep 14, 2026 07:47 AM Eastern)",
+  "updated_at": "2026-09-14T16:39:30.267025+00:00",
+  "updated_at_display": "Sep 14, 2026 09:39 AM PT (Sep 14, 2026 12:39 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -18194,6 +18194,132 @@
       }
     },
     {
+      "movement_definition_id": 226,
+      "key": "accessory_feet_elevated_inverted_row",
+      "movement_name": "Feet-Elevated Inverted Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "bodyweight",
+      "implement": "low rack bar and flat bench",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review9_20260914_226_attempt02",
+      "generation_batch": "bodyweight-review-round-9-2026-09-14",
+      "candidate_id": "1a5058828f72a3b6c5d846dc",
+      "version": 4,
+      "supersedes_candidate_id": "cf240c407493feafc75bb8a5",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE FUCKIGN BARBELL IS NOT IN THE LEFT J-CUP AGAIN!!! GET IT FUCKIG RIGHT! IM TIRED OF REPEATING MYSELF",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T11:24:34.504114+00:00",
+        "reviewed_at_display": "Sep 14, 2026 04:24 AM PT (Sep 14, 2026 07:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ce7753dd3f72ececc7e30b7d1388bb76fe7ae8be510f7ef6eb88815e3c6ec0cf",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/1a5058828f72a3b6c5d846dc/master.png",
+          "sha256": "babaa5649d6931b1f231eb14a0338b30d6f9fa7d75dfeb97bbaecd4510c3b786",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1845436
+        },
+        "app": {
+          "path": "candidates/1a5058828f72a3b6c5d846dc/app.png",
+          "sha256": "738e82f4f8e2ca1a6d4d470a8c5aa3bc8b2ae7bb3b0c9ecb451b96a4b362c6a4",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 338082
+        },
+        "thumbnail": {
+          "path": "candidates/1a5058828f72a3b6c5d846dc/thumbnail.png",
+          "sha256": "397fd6f4052800b83d53acfe32460a1d0dd89c3d3bb281bc468b755b4e1996f0",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 51185
+        }
+      },
+      "candidate_asset": "candidates/1a5058828f72a3b6c5d846dc/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T16:32:05.845290+00:00",
+          "reviewed_at_display": "Sep 14, 2026 09:32 AM PT (Sep 14, 2026 12:32 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "babaa5649d6931b1f231eb14a0338b30d6f9fa7d75dfeb97bbaecd4510c3b786",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T11:47:25.022977+00:00",
+      "created_at_display": "Sep 14, 2026 04:47 AM PT (Sep 14, 2026 07:47 AM Eastern)",
+      "generation_prompt": "Precise correction of barbell continuity and true J-cup support. Current LEFT junction is impossible: tall pad hides bar and the shaft terminates in a visible circular cut end in front of it. There must be ONE UNBROKEN CHROME SHAFT extending continuously from left sleeve/collar ACROSS THE FRONT OF BOTH POST BACKPLATES to right sleeve/collar, gripped by man. REMOVE the false cut end near LEFT cup and redraw continuous shaft all the way through in front. Use LEFT photo of reference2 for bar IN FRONT of padded backplate sitting ON bottom pad. Move left upright/cup backward in physical depth enough to sit BEHIND the bar, so shaft visibly occludes the backplate at its crossing. BOTH Jcups: tall backplate wholly BEHIND shaft, low concave padded shelf BELOW shaft and touching its underside, small front lip ahead overlapping only bottom edge. NO gap under shaft, no shaft end inside rack, no shaft piercing post, no sleeve resting in cup. Both sleeve collars must lie entirely OUTSIDE the left/right cups, separated from cups by a short visible stretch of skinny continuous shaft. Rebuild both bar/cup intersections convincingly. Preserve athlete's feet-elevated inverted-row pose, bench support, full clothing, head position, overhand grips, lighting/background. No labels, circles, highlights, new objects or extra bar.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-9-2026-09-14/226/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "low rack bar and flat bench",
+        "grip": "overhand; heels elevated",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "supine horizontal",
+        "owner_feedback": "THE FUCKIGN BARBELL IS NOT IN THE LEFT J-CUP AGAIN!!! GET IT FUCKIG RIGHT! IM TIRED OF REPEATING MYSELF",
+        "preflight_notes": "Both cup contact regions inspected at 2x against a real manufacturer photograph. Final thin shaft is continuous across both backplates and rests inside the padded cradles; collars lie outside the cups. Withheld attempt 1 because the left shaft was interrupted behind a backplate and had a false cut end."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T16:32:05.845290+00:00",
+        "reviewed_at_display": "Sep 14, 2026 09:32 AM PT (Sep 14, 2026 12:32 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "babaa5649d6931b1f231eb14a0338b30d6f9fa7d75dfeb97bbaecd4510c3b786",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 227,
       "key": "accessory_ring_row",
       "movement_name": "Ring Row",
@@ -18568,6 +18694,130 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "a2ce037fe63a6912d2ef48ebf209ee51688cda1957c1dec7750c1f99dc84322f",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 287,
+      "key": "accessory_bodyweight_curl",
+      "movement_name": "Bodyweight Curl",
+      "primary_muscle_group": "biceps",
+      "equipment_type": "bodyweight",
+      "implement": "fixed rack bar",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review9_20260914_287_attempt04",
+      "generation_batch": "bodyweight-review-round-9-2026-09-14",
+      "candidate_id": "f65d2a4af15a1149c6cbdcb2",
+      "version": 4,
+      "supersedes_candidate_id": "5fde4698416027ce2782d076",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE FUCKIGN BARBELL IS NOT PROPERLY IN THE J-CUP!!! FUCKING LOOK UP HOW ITS SUPPOSED TO OOK! IM TIRED OF SEIGN THE SAME SHIT!",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T11:25:19.017095+00:00",
+        "reviewed_at_display": "Sep 14, 2026 04:25 AM PT (Sep 14, 2026 07:25 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a97a3397401a2ae3cb54602a3be3a51e5c7029c9a91dabc437c17f371374b1dd",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/f65d2a4af15a1149c6cbdcb2/master.png",
+          "sha256": "dc8b78d85a18ecfbf93b0a25042d84761ede4d4404d3eecf77eb8c8156395c80",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1635298
+        },
+        "app": {
+          "path": "candidates/f65d2a4af15a1149c6cbdcb2/app.png",
+          "sha256": "2e4f6bdc0c23c8c6d8424b3b42aa279ba36d66a1ffd5a837b9597a700ac19183",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 312626
+        },
+        "thumbnail": {
+          "path": "candidates/f65d2a4af15a1149c6cbdcb2/thumbnail.png",
+          "sha256": "200f50f21fad80ae32181d9e962655628f87934ef5145538e8019397a66df867",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49119
+        }
+      },
+      "candidate_asset": "candidates/f65d2a4af15a1149c6cbdcb2/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T16:32:08.202423+00:00",
+          "reviewed_at_display": "Sep 14, 2026 09:32 AM PT (Sep 14, 2026 12:32 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "dc8b78d85a18ecfbf93b0a25042d84761ede4d4404d3eecf77eb8c8156395c80",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T11:47:25.309618+00:00",
+      "created_at_display": "Sep 14, 2026 04:47 AM PT (Sep 14, 2026 07:47 AM Eastern)",
+      "generation_prompt": "Tiny precise hardware finishing edit only. Keep the entire image, especially both correctly seated thin barbell shafts IN the J-cup cradles, identical. Add the normal small matching polished steel inner flange collar to EACH thick Olympic loading sleeve at its inner junction with skinny shaft. LEFT flange is at the existing sleeve-to-shaft transition around image x200, well OUTSIDE/LEFT of left upright and cup aroundx260. RIGHT flange at right sleeve-to-shaft transition just OUTSIDE/RIGHT of right cup aroundx910. Both flanges are the SAME design, physically plausible perspective, and neither touches or rests on Jcup. They prevent plates sliding inward onto skinny shaft. Do not move sleeves or stands, do not lengthen left sleeve, do not change the cup support geometry, do not add a ring around shaft inside either cup. The cup-contact sections remain thin continuous chrome shaft directly on pad in front of backplate. Preserve person/face/body/curl/feet/clothing and existing camera/lighting exactly. No text.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-9-2026-09-14/287/attempt-04.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "movement_family": "accessory_biceps",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "fixed rack bar",
+        "grip": "supinated; elbows high",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "inclined supine",
+        "owner_feedback": "THE FUCKIGN BARBELL IS NOT PROPERLY IN THE J-CUP!!! FUCKING LOOK UP HOW ITS SUPPOSED TO OOK! IM TIRED OF SEIGN THE SAME SHIT!",
+        "preflight_notes": "Both final cup contacts inspected at 2x against the manufacturer photograph. Thin shaft sits on pads in front of the backplates; sleeves and flanges are outside the supports. Withheld attempts 1-3: backplate occlusion, sleeve/collar sitting in the left cup, then missing sleeve flanges. Preserved chin-to-bar curl and supinated grips."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T16:32:08.202423+00:00",
+        "reviewed_at_display": "Sep 14, 2026 09:32 AM PT (Sep 14, 2026 12:32 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "dc8b78d85a18ecfbf93b0a25042d84761ede4d4404d3eecf77eb8c8156395c80",
         "source": "human_review_ui"
       }
     },
@@ -19941,6 +20191,131 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "bb678e3a6f953c107478a48b0cba6e69d5572fa1aee2806cbbfd15fc2e0895ba",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 319,
+      "key": "accessory_ring_triceps_extension",
+      "movement_name": "Ring Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "bodyweight",
+      "implement": "rings and rack",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review9_20260914_319_attempt02",
+      "generation_batch": "bodyweight-review-round-9-2026-09-14",
+      "candidate_id": "40fedb6d95218d504d523bd0",
+      "version": 4,
+      "supersedes_candidate_id": "775a4109a867d7c21aba1878",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHY THE FUCK IS HE SIDEWAYS COIMPARED TO THE UPRIGHTS!!! WHAT THE FUCK IS YOUR PROBLEM! THIS IS ANOTHER THAT SHOULDVE BEEN CAUGHT BEFORE I SAW IT!!!!!",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T11:25:58.933035+00:00",
+        "reviewed_at_display": "Sep 14, 2026 04:25 AM PT (Sep 14, 2026 07:25 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1491a4cb30056cc7379404c3bdfc46b529d0bfd2210c9a0c1ed9a8e55343bcab",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/40fedb6d95218d504d523bd0/master.png",
+          "sha256": "aa4422a9e010162c9d632fff1d5815d9c85808426f6f57c0cf47818506ea6068",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1858150
+        },
+        "app": {
+          "path": "candidates/40fedb6d95218d504d523bd0/app.png",
+          "sha256": "207d7f9b50815314fec57927def8c629af2204b350d1aa08d0d512a511e4b51e",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 321283
+        },
+        "thumbnail": {
+          "path": "candidates/40fedb6d95218d504d523bd0/thumbnail.png",
+          "sha256": "06b3d3112bfc2991d5ec8a4ed5fc6ddb664c63a8b5aa3167102b5b93430c980e",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45022
+        }
+      },
+      "candidate_asset": "candidates/40fedb6d95218d504d523bd0/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T16:32:12.966515+00:00",
+          "reviewed_at_display": "Sep 14, 2026 09:32 AM PT (Sep 14, 2026 12:32 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "aa4422a9e010162c9d632fff1d5815d9c85808426f6f57c0cf47818506ea6068",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T11:47:25.582752+00:00",
+      "created_at_display": "Sep 14, 2026 04:47 AM PT (Sep 14, 2026 07:47 AM Eastern)",
+      "generation_prompt": "Precise spatial alignment correction to Ring Triceps Extension. Preserve correct bent elbows/rings beside forehead/forward plank and dark studio athlete styling. Make entire image STRICT CENTERED FRONT VIEW, including rack and athlete in same camera. Rack is a portal with exactly two equally tall uprights at equal camera depth, horizontal single top bar, both complete capped tops inside frame with 5% margin and both floor baseplates. Athlete moves DIRECTLY THROUGH CENTER of this portal TOWARD CAMERA. Head, sternum, navel, pelvis and midpoint of feet all project on the SAME VERTICAL IMAGE CENTERLINE exactly halfway between posts. NO diagonal lean left/right or yaw; both shoulders equal height and camera distance, elbows symmetrical, knees/feet side-by-side centered behind body. His body is a forward plank foreshortened in depth away from camera, not extending diagonally across image. Camera elevated slightly to see his complete torso and feet behind, with neutral head looking down. Two ring anchors shoulder-width around crossbar MIDPOINT directly over corresponding left/right hands, independent long taut straps uncrossed, ring grips symmetrical beside forehead. Arms bent for triceps skullcrusher, upper arms by ears, hands really wrap lower ring arcs. Do not turn this into ring push-up or kneeling exercise. Point toes on floor with heels raised, no pike. Center athlete and rig as one coherent symmetrical scene. Maintain natural realistic anatomy, single high bar, no cropped rig tops, no text.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-9-2026-09-14/319/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "movement_family": "accessory_triceps",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "rings and rack",
+        "grip": "neutral narrow ring grip",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "Forward plank through rack center, perpendicular to the crossbar; strict centered front view",
+        "owner_feedback": "WHY THE FUCK IS HE SIDEWAYS COIMPARED TO THE UPRIGHTS!!! WHAT THE FUCK IS YOUR PROBLEM! THIS IS ANOTHER THAT SHOULDVE BEEN CAUGHT BEFORE I SAW IT!!!!!",
+        "preflight_notes": "Recomposed the athlete through the center of the rack, perpendicular to the overhead bar. Strict front composition centers ring anchors, head, sternum, hips and feet; symmetric bent-elbow ring extension, long independent straps and full rack. Withheld first new attempt because a diagonal composition and clipped upright tops left alignment ambiguous."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T16:32:12.966515+00:00",
+        "reviewed_at_display": "Sep 14, 2026 09:32 AM PT (Sep 14, 2026 12:32 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "aa4422a9e010162c9d632fff1d5815d9c85808426f6f57c0cf47818506ea6068",
         "source": "human_review_ui"
       }
     },
@@ -26333,6 +26708,130 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "3a53174af0ddcd3077576aa2a347bb40c95e128a985ea7b95280a8ca940b6575",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 577,
+      "key": "accessory_hanging_knee_raise_iso_hold",
+      "movement_name": "Hanging Knee Raise Iso-Hold",
+      "primary_muscle_group": "hip_flexors",
+      "equipment_type": "bodyweight",
+      "implement": "rack-mounted pull-up bar",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "bw_review9_20260914_577_attempt01",
+      "generation_batch": "bodyweight-review-round-9-2026-09-14",
+      "candidate_id": "9f9cf4783ed13b956fb9f465",
+      "version": 4,
+      "supersedes_candidate_id": "7910064052682ce03eef0d9c",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "AGAIN, THE RACK IS ORTHAGONAL TO THE CAMERA BUT HES LIFTING HIS KNEES OFF TO THE SIDE IN A DIAGONAL DIRECTION!!! FUCK YOU! YOU ARE NOT LISTENING TO MY FEEDBACK YOU PRICK",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-14T11:26:57.161943+00:00",
+        "reviewed_at_display": "Sep 14, 2026 04:26 AM PT (Sep 14, 2026 07:26 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "c8e0a4fa9cfe205683240bf3d74a082eafe3dd46dd43cfc24a5c3ef16595f765",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/9f9cf4783ed13b956fb9f465/master.png",
+          "sha256": "507647ede5fd71883a06fd3cc2db40989601528ddeaf8349582109ab40e94ccc",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1666313
+        },
+        "app": {
+          "path": "candidates/9f9cf4783ed13b956fb9f465/app.png",
+          "sha256": "f3b8810ddca38915812792467d6ad45080b366b3fe0316b636e9ad515a6e985f",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 294260
+        },
+        "thumbnail": {
+          "path": "candidates/9f9cf4783ed13b956fb9f465/thumbnail.png",
+          "sha256": "d435eb5a154a9104bd6a931fc42fb3903a549d72bff6e4754ea23449e1c08931",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42659
+        }
+      },
+      "candidate_asset": "candidates/9f9cf4783ed13b956fb9f465/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T16:32:17.210596+00:00",
+          "reviewed_at_display": "Sep 14, 2026 09:32 AM PT (Sep 14, 2026 12:32 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "507647ede5fd71883a06fd3cc2db40989601528ddeaf8349582109ab40e94ccc",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T11:47:24.716159+00:00",
+      "created_at_display": "Sep 14, 2026 04:47 AM PT (Sep 14, 2026 07:47 AM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Repair ONLY athlete alignment in this Hanging Knee Raise Iso-Hold. Keep exact full-height two-post single-bar rack, camera dead-center STRAIGHT FRONT orthogonal to rack, dark studio, lighting, physique, hair and clothing. Athlete must face DEAD STRAIGHT TOWARD CAMERA and square to the rack, centered midway between posts. Nose, sternum, navel and midpoint between knees/shoes all lie on rack's vertical centerline. Shoulders, pelvis, two kneecaps, two ankles and toes remain bilaterally symmetrical about that line. Both arms straight overhead, equal-height shoulders and matching overhand grips equally spaced from middle of bar. Hold BOTH thighs lifted directly forward TOWARD CAMERA, never diagonal left/right, knees at equal height and equally distant from camera, shins vertical and parallel, two feet equally facing front. Show matching front faces of both kneecaps and both shoe toe boxes; no side-on thigh visible because pelvis is rotated; pelvis/torso/head must not yaw. Head looks directly forward, ears symmetrical, neutral neck; no looking off to the side. Full head-to-foot and entire existing station visible. Camera/rack already correct; rotate and recenter athlete into same straight-on geometry rather than rotating camera or rack. Realistic coherent limbs, no mirrored-texture gimmick or extra fingers. No text.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-9-2026-09-14/577/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "movement_family": "accessory_hip_flexors",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "assistance": "unassisted",
+        "equipment": "rack-mounted pull-up bar",
+        "grip": "pronated shoulder-width; bent knees held high",
+        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval.",
+        "orientation": "Centered straight-front hanging knee hold, knees lifted equally toward camera",
+        "owner_feedback": "AGAIN, THE RACK IS ORTHAGONAL TO THE CAMERA BUT HES LIFTING HIS KNEES OFF TO THE SIDE IN A DIAGONAL DIRECTION!!! FUCK YOU! YOU ARE NOT LISTENING TO MY FEEDBACK YOU PRICK",
+        "preflight_notes": "Rotated and centered the athlete to the same straight-front view as the rack. Head, torso, pelvis and midpoint of knees/feet share the rack centerline. Both knees project toward camera equally; no diagonal leg lift or side-looking head. Full master, enlarged alignment detail and thumbnail previews inspected."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T16:32:17.210596+00:00",
+        "reviewed_at_display": "Sep 14, 2026 09:32 AM PT (Sep 14, 2026 12:32 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "507647ede5fd71883a06fd3cc2db40989601528ddeaf8349582109ab40e94ccc",
         "source": "human_review_ui"
       }
     },
