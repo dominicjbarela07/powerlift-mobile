@@ -28,7 +28,9 @@ function MeasuredViewport({ children, style, onLayout, viewportRef, ...props }: 
   const overlap = keyboardOverlap(frame, keyboard.frame);
   return <View {...props} ref={instance => { outer.current = instance; if (typeof viewportRef === 'function') viewportRef(instance); else if (viewportRef) viewportRef.current = instance; }} collapsable={false} style={[styles.viewport, style]} onLayout={event => { measure(); onLayout?.(event); }}>
     <View style={[styles.viewport, { paddingBottom: overlap }]}>
-      <ViewportContext.Provider value={Math.max(0, frame.height - overlap)}>{children}</ViewportContext.Provider>
+      <ViewportContext.Provider value={Math.max(0, frame.height - overlap)}>
+        <KeyboardFocusContext.Provider value={null}>{children}</KeyboardFocusContext.Provider>
+      </ViewportContext.Provider>
     </View>
   </View>;
 }

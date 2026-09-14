@@ -1834,20 +1834,6 @@
       "core_kind": null
     },
     {
-      "id": 152,
-      "key": "accessory_archer_row",
-      "kind": "accessory",
-      "family": "accessory_rear_delts",
-      "primary_muscle_group": "rear_delts",
-      "secondary_muscle_groups": [
-        "upper_back",
-        "lats"
-      ],
-      "equipment_type": "bodyweight",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 153,
       "key": "accessory_meadows_row",
       "kind": "accessory",

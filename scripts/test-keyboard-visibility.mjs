@@ -41,6 +41,7 @@ measured.props.ref({measureInWindow:fn=>fn(0,0,375,667)});
 measured.props.onLayout({});
 assert.equal(measured.props.children[0].props.style[1].paddingBottom,267);
 assert.equal(measured.props.children[0].props.children[0].props.value,400);
+assert.equal(measured.props.children[0].props.children[0].props.children[0].props.value,null,'native presentations cannot scroll an underlying form through inherited focus context');
 
 const scrolls=[];let callerScrolls=0,callerLayouts=0,callerSizes=0;const forwarded={current:null};
 const tree=exports.KeyboardScrollView({keyboardShouldPersistTaps:'always',contentContainerStyle:{paddingBottom:24},onScroll:()=>callerScrolls++,onLayout:()=>callerLayouts++,onContentSizeChange:()=>callerSizes++,children:'field'},forwarded);
