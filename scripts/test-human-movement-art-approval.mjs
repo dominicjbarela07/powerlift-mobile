@@ -31,7 +31,7 @@ try {
   write('artwork-review/review-state.json', fixture);
   write('artwork-review/runtime-policy.json', {denied_keys: [], approved_exact_artwork: approvedExactArtworkPolicy(fixture)});
   write('lib/canonical-accessory-artwork-identities.ts', `  33: { key: '${original.key}', primary: 'chest' },`);
-  const mapping = `export const fixture = {\n  ${original.key}: {\n    source: require('@/${original.files.app.path}'),\n    thumbnail: require('@/${original.files.thumbnail.path}'),\n  },\n};`;
+  const mapping = `export const fixture = {\n  ${original.key}: {\n    source: require('@/${original.files.app.path}'),\n  },\n};`;
   write('lib/canonical-movement-artwork-assets.ts', mapping);
   for (const role of ['master', 'app', 'thumbnail']) {
     for (const relative of [original.files[role].path, `artwork-review/${candidate.files[role].path}`]) {
@@ -40,6 +40,11 @@ try {
     }
   }
   assert.equal(assertHumanArtworkGate(temporary).canonical, 1);
+  for (const role of ['thumbnail', 'master']) {
+    write('lib/canonical-movement-artwork-assets.ts', mapping + `\nrequire('@/${original.files[role].path}');`);
+    assert.throws(() => assertHumanArtworkGate(temporary), /exactly one approved app image/);
+  }
+  write('lib/canonical-movement-artwork-assets.ts', mapping);
   fixture.items[0].status = 'pending'; fixture.items[0].human_approved = false;
   fixture.canonical_assets[0].approval_source = 'human_review_ui';
   fixture.canonical_assets[0].review = {decision: 'pending', source: 'automation'};

@@ -57,7 +57,7 @@ export function assertHumanArtworkGate(root = defaultRoot) {
     }
     const block = mapping.match(new RegExp(`^  ${active.key}: \\{([\\s\\S]*?)^  \\},`, 'm'))?.[1];
     assert.ok(block, 'each canonical identity needs its own mapping');
-    for (const [property, role] of [['source', 'app'], ['thumbnail', 'thumbnail']]) {
+    for (const [property, role] of [['source', 'app']]) {
       assert.ok(block.includes(`${property}: require('@/${active.files[role].path}')`), 'canonical mapping must bind the correct identity and exact approved file');
     }
     if (candidate.status === 'rejected' || (candidate.status === 'pending' && candidate.review_history.length)) denied.push(active.key);
@@ -70,11 +70,11 @@ export function assertHumanArtworkGate(root = defaultRoot) {
       assert.ok(fs.realpathSync(candidateFile).startsWith(reviewRoot + path.sep));
       assert.equal(hash(candidateFile), candidate.files[role].sha256, 'reviewed candidate bytes are immutable');
       assert.equal(asset.sha256, candidate.files[role].sha256, 'mapped bytes must be the reviewed bytes');
-      allowedPaths.add(asset.path);
+      if (role === 'app') allowedPaths.add(asset.path);
     }
   }
   const mappedPaths = [...mapping.matchAll(/require\(['"]@\/(assets\/images\/movement-artwork\/[^'"]+)['"]\)/g)].map(match => match[1]);
-  assert.equal(mappedPaths.length, state.canonical_assets.length * 2, 'all governed artwork mappings need approval provenance');
+  assert.equal(mappedPaths.length, state.canonical_assets.length, 'exactly one approved app image per governed runtime mapping');
   for (const file of mappedPaths) assert.ok(allowedPaths.has(file), `Unreviewed mapping: ${file}`);
   assert.ok(!mapping.includes('artwork-review/candidates'), 'candidate storage must never be bundled as canonical artwork');
   const policy = JSON.parse(fs.readFileSync(path.join(reviewRoot, 'runtime-policy.json'), 'utf8'));

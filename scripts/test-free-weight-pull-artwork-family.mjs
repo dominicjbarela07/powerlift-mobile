@@ -68,7 +68,7 @@ for (const row of audit.qualifying) {
     if (role !== 'master') assert.deepEqual(file.dimensions, role==='app' ? [512,512] : [192,192]);
   }
   assert.ok(mappingSource.includes(`require('@/${asset.files.app.path}')`));
-  assert.ok(mappingSource.includes(`require('@/${asset.files.thumbnail.path}')`));
+  assert.ok(!mappingSource.includes(`require('@/${asset.files.thumbnail.path}')`), 'review thumbnails stay outside the runtime bundle');
 }
 assert.equal(uniqueAppFiles.size, audit.count, 'separate IDs must not silently reuse one generic image');
 const searchGroups = JSON.parse(read('docs/validation/free-weight-pull-family-2026-09-11/qa-search-serialized.json'));

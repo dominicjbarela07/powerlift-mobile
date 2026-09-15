@@ -58,7 +58,7 @@ for(const receipt of policy.approved_exact_artwork){
  const mapping=state.canonical_assets.find(a=>a.key===key);
  assert.ok(mapping);
  const asset=assets.CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[key];assert.ok(asset);
- assert.equal(asset.source,`@/${mapping.files.app.path}`);assert.equal(asset.thumbnail,`@/${mapping.files.thumbnail.path}`);
+ assert.equal(asset.source,`@/${mapping.files.app.path}`);assert.equal(asset.thumbnail,undefined);
  for(const active of [false,true]){
   const compact=renderSingle(id,false,active);assertCue(compact,true,key);assert.equal(nodes(compact,'MovementArtworkHero').length,0);
   for(let remount=0;remount<2;remount++){
@@ -70,7 +70,7 @@ for(const receipt of policy.approved_exact_artwork){
   const selected=renderGroup([id,120],id,phase);assert.equal(nodes(selected,'CanonicalMovementArtwork')[0].props.accessoryPresentation,'muscle-focus');assert.equal(nodes(selected,'MovementArtworkHero')[0].props.artworkKey,key);
   const uncovered=renderGroup([id,120],120,phase);assert.equal(nodes(uncovered,'MovementArtworkHero').length,0);assert.equal(nodes(uncovered,'CanonicalMovementArtwork')[0].props.accessoryPresentation,'movement');
  }
- for(const size of [40,44,64,80]){const box=art.movementThumbnailGeometry(size,key);assert.equal(box.width,box.height);assert.ok(box.left<=0&&box.top<=0&&box.left+box.width>=size&&box.top+box.height>=size,'bounded crop covers frame without stretching');}
+ for(const size of [40,44,64,80]){const rendered=thumbnail({movement:subject(id),size,accessoryPresentation:'movement'});assert.equal(nodes(rendered,'Image')[0].props.source,asset.source,'all row sizes reuse the approved app image');const box=art.movementThumbnailGeometry(size,key);assert.equal(box.width,box.height);assert.ok(box.left<=0&&box.top<=0&&box.left+box.width>=size&&box.top+box.height>=size,'bounded crop covers frame without stretching');}
 }
 for(const mode of ['pending','rejected','missing']){
  const key=policy.approved_exact_artwork.find(r=>r.movement_definition_id===253).key;
