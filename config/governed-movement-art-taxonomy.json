@@ -7460,39 +7460,6 @@
       "core_kind": null
     },
     {
-      "id": 583,
-      "key": "accessory_neck_flexion_machine",
-      "kind": "accessory",
-      "family": "accessory_neck",
-      "primary_muscle_group": "neck",
-      "secondary_muscle_groups": [],
-      "equipment_type": "machine",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 584,
-      "key": "accessory_neck_extension_machine",
-      "kind": "accessory",
-      "family": "accessory_neck",
-      "primary_muscle_group": "neck",
-      "secondary_muscle_groups": [],
-      "equipment_type": "machine",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 585,
-      "key": "accessory_four_way_neck_machine",
-      "kind": "accessory",
-      "family": "accessory_neck",
-      "primary_muscle_group": "neck",
-      "secondary_muscle_groups": [],
-      "equipment_type": "machine",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 586,
       "key": "accessory_neck_bridge",
       "kind": "accessory",
