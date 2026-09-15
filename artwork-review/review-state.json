@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": 1230,
-  "updated_at": "2026-09-15T12:14:25.758430+00:00",
-  "updated_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+  "revision": 1251,
+  "updated_at": "2026-09-15T16:25:08.962017+00:00",
+  "updated_at_display": "Sep 15, 2026 09:25 AM PT (Sep 15, 2026 12:25 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -72836,12 +72836,25 @@
         }
       },
       "candidate_asset": "candidates/f26e0aa35bd389c265e7a390/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:05:18.782847+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5701e7b92bc2c4b838f5bda62b6d417b7169d65c277fa95a9f9bf8dcf7c8b0dc",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:19.651677+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Precise localized correction of BOTH HANDS and forearm rotation only. This is a rear view of a man performing a machine Y-raise. Keep the exact machine geometry, symmetric lever arms, shoulder-height cams, cables, handles, athlete silhouette and extended Y position, camera and light. Rotate both forearms/grips so the BACKS OF THE HANDS and knuckles face the rear camera; palms face FORWARD toward the machine, away from the viewer. Both hands naturally wrap around the existing short angled handles with thumbs securely closed, five anatomical fingers per hand. Elbows stay almost straight; don't twist wrists independently or reverse thumbs. No palm surface facing camera. Change no machine parts, no new handles, no detached fingertips, no text. Preserve everything else.",
@@ -72876,6 +72889,18 @@
         "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/6972480ad390ca19edb141c9/master.png\"]",
         "reference_machine": "Existing multi-flight machine retained, owner-requested grip correction",
         "reference_source": "https://www.panattasport.com/en/fit-evo/standing-multi-flight/"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:18.782847+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5701e7b92bc2c4b838f5bda62b6d417b7169d65c277fa95a9f9bf8dcf7c8b0dc",
+        "source": "human_review_ui"
       }
     },
     {
@@ -72936,12 +72961,25 @@
         }
       },
       "candidate_asset": "candidates/69d6729659cf1e3929de84a1/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:04:37.567161+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:04 AM PT (Sep 15, 2026 12:04 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "0ef47d810945dae8a3ac16226531e89253084d65283396626bea7ce2876bc466",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:20.000718+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Precise cleanup only. Remove the small white manufacturer logo/sticker on the left moving vertical lever and ALL remaining markings. Replace the horizontal wall slats with a smooth nearly black studio background, retaining subtle purple rim light. Freeze all machine geometry, both matched moving levers, both pivots, plates, all grip connections, athlete pose and clothing. Do not change any hardware or anatomy. Single polished unbranded photograph.",
@@ -72977,6 +73015,18 @@
         "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-80f8bc10-7b13-40e9-acdf-0e4edbbb9611.png\"]",
         "reference_machine": "Hammer Strength Iso-Lateral Bench Press",
         "reference_source": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-iso-lateral-bench-press"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:04:37.567161+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:04 AM PT (Sep 15, 2026 12:04 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0ef47d810945dae8a3ac16226531e89253084d65283396626bea7ce2876bc466",
+        "source": "human_review_ui"
       }
     },
     {
@@ -73035,12 +73085,25 @@
         }
       },
       "candidate_asset": "candidates/10f382b2708f7c5ba6e807cc/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:06:31.995711+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "420abfaac5bba7653314603afc7acad87769ed3491f90d807378dd33c3a65949",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:20.451692+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Precise correction of load placement only on this Ground Base Multi-Squat. The handgrips are now properly connected and must stay exactly unchanged. Add one realistic black 20-kg plate to EACH of the two moving lever loading sleeves beside the athlete's hands. The nearer silver sleeve points toward viewer from the triangular handle bracket beside his thigh; thread the plate center onto that exact sleeve and secure with a collar, leaving chrome protruding coaxially. Add matching load on far-side moving sleeve, naturally occluded by athlete. Keep plates on the rear storage horns as they are. Moving weights must be attached to the lever that the hands lift, suspended above ground with visible clearance. All round discs are perpendicular to their sleeves, equal diameter, no clipping into hand or leg. Preserve exact frame, attached handgrips, rear pivot, split stance, body anatomy, supported rear foot, grounded front foot, camera, dark studio. No labels or new mechanisms.",
@@ -73076,6 +73139,18 @@
         "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-e632b342-4363-41e0-982c-4fb1ccffebdd.png\"]",
         "reference_machine": "Hammer Strength Ground Base Multi-Squat",
         "reference_source": "https://shop.lifefitness.com/products/hammer-strength-ground-base-multi-squat"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:31.995711+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "420abfaac5bba7653314603afc7acad87769ed3491f90d807378dd33c3a65949",
+        "source": "human_review_ui"
       }
     },
     {
@@ -73134,12 +73209,25 @@
         }
       },
       "candidate_asset": "candidates/f39156778d7e8111993259cd/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:05:15.451147+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "cbcd682a60cd3a5db08fd8c86b773883468e559a1dae005b3171a154d51b808d",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:20.847089+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Faithful studio recreation of the real lateral raise machine shown in the operator reference. Machine FIRST: keep the exact two matched lever arms pivoting beside shoulders, paired padded contact blocks on the OUTSIDE of the upper arms just above elbows, handles ahead of elbows, chest support, seat, stack shroud and cable route. The pads press inward against the OUTER sides of the man's upper arms, like the real woman's setup. Replace woman with athletic adult man in charcoal tank, black shorts and shoes, centered in seat, arms DOWN and only slightly out at the beginning of the lateral raise, elbows bent, hands naturally on existing handles. It is vital there is a clear uninterrupted upper arm from shoulder to elbow INSIDE each pad. The pad does not sit underneath a forearm, on top of an arm, through an arm, or between arm and torso. Keep real rear three-quarter camera. Remove all logos and text, no diagrams. Full person and whole machine in near-black studio with subtle purple rim light. Do not alter real pad mounting or machine model.",
@@ -73174,6 +73262,18 @@
         "reference_files": "[\"/Users/dominic/powerlifting_app_dev/docs/validation/machine-art-review-round-3-2026-09-15/references/lateral-operator.jpg\", \"/Users/dominic/powerlifting_app_dev/docs/validation/machine-art-review-round-3-2026-09-15/references/lateral-0.jpg\"]",
         "reference_machine": "Life Fitness Insignia Lateral Raise SS-LR",
         "reference_source": "https://www.youtube.com/watch?v=MsV4ftrusPQ"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:15.451147+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "cbcd682a60cd3a5db08fd8c86b773883468e559a1dae005b3171a154d51b808d",
+        "source": "human_review_ui"
       }
     },
     {
@@ -73234,12 +73334,25 @@
         }
       },
       "candidate_asset": "candidates/103c6882d99b663e5653fe9d/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:04:51.527479+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:04 AM PT (Sep 15, 2026 12:04 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "6fc4bfd290231c6212c62ca2bb83e59d7d1888cc07247a2ef5622126153c7871",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:21.284812+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Edit image 1 ONLY to repair the Smith-machine hardware; DO NOT change the athlete, his supported head, the flat bench, camera angle or framing. Image 2 supplies the correct real Smith guide-and-carriage design, NOT a new athlete pose. In image 1 install TWO clearly visible continuous smooth polished chrome cylindrical guide rods immediately inside the left and right structural uprights. Each runs from top frame to bottom frame. A black cylindrical linear-bearing carriage must WRAP AROUND each guide rod at the athlete's EXISTING bar height, with that ONE pressing bar rigidly attached to both carriages. Rod must be visible above AND below both carriages. Bar and plate sleeves must form one straight coaxial line in the existing photographed perspective. Keep current bar height, wrist positions, equal plates and correct supine head contact. Racking pegs remain on separate uprights; guide rods have no pegs. The result must clearly be a working Smith machine with sliding bearings, not a bar bolted to two square posts. No extra pressing bars; no change to body or flat bench; no text.",
@@ -73275,6 +73388,18 @@
         "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/71a7844982b7981441964c14/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/59226a6b58ac95ba4b19185b/master.png\"]",
         "reference_machine": "Owner-approved Smith frame, movement #57",
         "reference_source": "powerlift_mobile/artwork-review/candidates/59226a6b58ac95ba4b19185b/master.png"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:04:51.527479+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:04 AM PT (Sep 15, 2026 12:04 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6fc4bfd290231c6212c62ca2bb83e59d7d1888cc07247a2ef5622126153c7871",
+        "source": "human_review_ui"
       }
     },
     {
@@ -73335,12 +73460,25 @@
         }
       },
       "candidate_asset": "candidates/0c23ffc7d5c203734174c2f0/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "MACHINE IS NOT SYMMETRICAL!",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "MACHINE IS NOT SYMMETRICAL!",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:05:04.745016+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d5654857c74079fbceff273ac40348afdbf3ac70996979bf98dd0b9cba36dac9",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:21.715780+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Repair ONLY the machine around the athlete in image 1, preserving his correct decline-bench pose, head resting on pad, negative bench angle, ankle rollers and exact existing oblique camera. Image 2 is reference for correct Smith GUIDE RODS and cylindrical sliding carriages. Remove the erroneous SECOND horizontal black beam immediately above the pressing bar, and remove the stray chrome rod standing in the middle of the machine opening. There must be exactly TWO continuous polished guide rods, one immediately beside each side upright, and a black cylindrical linear-bearing carriage wrapped around each. The athlete holds ONE straight pressing bar connected at both ends to these two carriages, with equal plates on coaxial sleeves outside. Show each rod above and below its carriage all the way to base/top; no guide rod in the center opening. Preserve all athlete/bench pixels and hand/bar contact. Don't rotate or relocate the athlete. Don't add a second bar or change his head. The only goal is correct two-rail Smith hardware in the same photo.",
@@ -73376,6 +73514,18 @@
         "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/d16598ad81d2410831a3f37b/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/59226a6b58ac95ba4b19185b/master.png\"]",
         "reference_machine": "Owner-approved Smith frame, movement #57",
         "reference_source": "powerlift_mobile/artwork-review/candidates/59226a6b58ac95ba4b19185b/master.png"
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "MACHINE IS NOT SYMMETRICAL!",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:04.745016+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d5654857c74079fbceff273ac40348afdbf3ac70996979bf98dd0b9cba36dac9",
+        "source": "human_review_ui"
       }
     },
     {
@@ -73434,12 +73584,25 @@
         }
       },
       "candidate_asset": "candidates/cb6821c72b9c7cdaae88199e/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:06:01.594633+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b19f05105c317999e57ef986f3d015b2f23a2db30b7f1570ffaeeb030ffa65ea",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:22.130532+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Precise minimal edit of this OWNER-APPROVED high-row machine. Machine frame, chest pad, leg restraint, both overhead lever arms, their pivots, correctly placed weights, both attached handles, perspective and lighting MUST remain unchanged. Make this a SINGLE-ARM high-row starting position: keep the nearer arm extended and its hand gripping the existing nearer overhead handle EXACTLY where it is now. Release only the FAR hand from the other overhead handle, and place that far hand gently on the side of the chest-support pad. The unused handle and its entire lever stay in their original elevated resting position, intact. Head and torso face the machine as before, no twisting. Do not lower either machine lever or alter any weight/hinge/frame geometry. No additional handles, no anatomy clipping, no branding. One working hand visibly grasps one actual machine handle; the other hand clearly rests on support.",
@@ -73476,6 +73639,18 @@
         "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/66f9857fcbe74c63bff5e459/master.png\"]",
         "reference_machine": "Owner-approved Machine High Row #217, same frame and load position",
         "reference_source": "powerlift_mobile/artwork-review/candidates/66f9857fcbe74c63bff5e459/master.png"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:01.594633+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b19f05105c317999e57ef986f3d015b2f23a2db30b7f1570ffaeeb030ffa65ea",
+        "source": "human_review_ui"
       }
     },
     {
@@ -73534,12 +73709,25 @@
         }
       },
       "candidate_asset": "candidates/a73d708d80773d16071e85ea/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:06:08.444069+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "db9cd95aab1f15842dd47b761e9ca4ff051c8070c94f029c2e2f16a98edb4a79",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:22.499673+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Make a faithful unbranded studio version of the actual T-BAR ROW machine exercise in image 1. Preserve the machine EXACTLY: ONE long central pivoting lever below the chest pad, one plate sleeve at its forward end COAXIAL with that lever, the welded rectangular two-hand grip frame, inclined chest pad on its separate fixed support, rear diamond foot platform, front rest cradle and wide fixed base. Image 2 shows unloaded structure for clarity; do not change the occupied image's three-quarter camera or working raised lever angle. Keep the man chest-supported, feet firmly on rear footplate, elbows pulled back in the squeezed row, neck aligned looking naturally down. The loaded lever and SINGLE round plate stay visibly LIFTED well above the front rest as in real photo. Replace blue plate with one unbranded black plate, exactly perpendicular to its sleeve with collar. Man in charcoal sleeveless shirt, black shorts and black shoes; realistic complete legs and arms. Remove other gym equipment and all logos, near-black studio with subtle purple rim. Do not invent dual plate horns or random handles; retain the actual machine's simple load path.",
@@ -73576,6 +73764,18 @@
         "reference_files": "[\"/Users/dominic/powerlifting_app_dev/docs/validation/machine-art-review-round-3-2026-09-15/references/titan-tbar-3.jpg\", \"/Users/dominic/powerlifting_app_dev/docs/validation/machine-art-review-round-3-2026-09-15/references/titan-tbar-1.jpg\"]",
         "reference_machine": "Titan Chest Supported T-Bar Row 401007",
         "reference_source": "https://titan.fitness/products/chest-supported-t-bar-row-machine-adjustable"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:08.444069+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "db9cd95aab1f15842dd47b761e9ca4ff051c8070c94f029c2e2f16a98edb4a79",
+        "source": "human_review_ui"
       }
     },
     {
@@ -73636,12 +73836,25 @@
         }
       },
       "candidate_asset": "candidates/5f24dfacad0092642fc6a25f/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "HES NOT EVEN STRAIGHT RELATIVE TO THE MACHINE",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "HES NOT EVEN STRAIGHT RELATIVE TO THE MACHINE",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:06:48.787622+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "c3da9d9d0e9d53bf0361496dbc7f584f8a9c115132a79d8d1f285400643f23ce",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:22.890648+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Faithfully recreate this exact real abdominal/oblique crunch machine and seated exercise setup as one unbranded studio artwork. Preserve the authentic machine photographed here, its compact curved side frames, TWO real separate pivot systems, upper-back moving pad connected to the paired handles, small fixed lower-back pad, rotary adjustable SEAT under the hips, paired lower-leg roller pads, the two real loaded lever sleeves and horizontal base. DO NOT add metal members or lengthen its levers. Replace woman with an athletic adult man in charcoal tank and black shorts/shoes, seated in the SAME supported position, both hands on the EXISTING handles beside temples, shoulders gently starting a crunch only 10 degrees forward, knees bent with ankles behind the actual lower rollers. Maintain exact three-quarter side camera and realistic human scale. The frame and mechanism must be a precise photographic copy, not a redesign; smooth natural joints, clear space around body. Erase ALL brands/stickers and replace surroundings with near-black studio and subtle purple rim. No exaggerated seat tilt, no leg-curl hybrid, no new bars across chest or neck, no floating hardware.",
@@ -73676,6 +73889,18 @@
         "reference_files": "[\"/Users/dominic/powerlifting_app_dev/docs/validation/machine-art-review-round-2-2026-09-14/references/rotary-real-4.jpg\"]",
         "reference_machine": "Hammer Strength Plate-Loaded Abdominal/Oblique Crunch",
         "reference_source": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-abdominal-oblique-crunch-1"
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "HES NOT EVEN STRAIGHT RELATIVE TO THE MACHINE",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:48.787622+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "c3da9d9d0e9d53bf0361496dbc7f584f8a9c115132a79d8d1f285400643f23ce",
+        "source": "human_review_ui"
       }
     },
     {
@@ -73736,12 +73961,25 @@
         }
       },
       "candidate_asset": "candidates/258907fdda943bc09aaae4ae/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "MACHINE GEOMETRY IS STILL SHIT",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "MACHINE GEOMETRY IS STILL SHIT",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:05:35.229400+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f57334005d674833d1145a5e5d4ac404990fb8409ad15d870ad41a2f6872ecd6",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:23.316706+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Correct ONLY the seat in this rear-delt row illustration. The black seat currently projects EMPTY toward the foreground between the man's knees, while his pelvis is behind it. Move the SAME single seat pad BACK along its support so it sits directly beneath and supports his BUTTOCKS. Remove the empty projecting cushion from in front of his knees. Show the cushion edge touching the undersides of his shorts under his hips, with its sturdy connected seat-support bracket. He must clearly be SITTING on the real seat, not hovering behind an empty seat. Preserve the man’s centered torso against chest pad, wide elbows, both overhand grips and all existing machine levers, low pivots, loaded sleeves, footrests, base and camera. No new seat, no added machine parts.",
@@ -73776,6 +74014,18 @@
         "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-b1135a02-f10d-4723-81ec-a857a2271783.png\"]",
         "reference_machine": "Hammer Strength Plate-Loaded Iso-Lateral Row, upper overhand grip",
         "reference_source": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-iso-lateral-row"
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "MACHINE GEOMETRY IS STILL SHIT",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:35.229400+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f57334005d674833d1145a5e5d4ac404990fb8409ad15d870ad41a2f6872ecd6",
+        "source": "human_review_ui"
       }
     },
     {
@@ -73834,12 +74084,25 @@
         }
       },
       "candidate_asset": "candidates/ae5e0058b265c2916a2bdf75/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:06:33.999530+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "2677559042dc4ce3159a4a9d934b55cbb7127b33107721cc79a7e41b7ea813eb",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:23.756111+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Restore exactly ONE small black handgrip INSIDE the far hand on the left end of this reverse hyper machine. The nearer hand already wraps its intact handle at image-left; don't alter it. The FAR hand, slightly higher/right behind the nearer forearm, is currently grasping empty space. Add a short upright black rubber grip there, with its top protruding visibly above that fist and lower end connected by a bent steel bracket to the front frame underneath the pad. Two hands, exactly TWO grasped handles total. There must NOT be a third unused grip between them. Preserve the athlete, all fingers except natural closure around far grip, pad, legs, weights, ankle strap and whole frame unchanged. No other additions or removals.",
@@ -73874,6 +74137,18 @@
         "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-90f95c4a-36df-4d9d-aeac-730081e18eae.png\"]",
         "reference_machine": "Rogue RH-2 reference, unused handles removed per owner",
         "reference_source": "https://www.roguefitness.com/rogue-reverse-hyper-2"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:33.999530+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2677559042dc4ce3159a4a9d934b55cbb7127b33107721cc79a7e41b7ea813eb",
+        "source": "human_review_ui"
       }
     },
     {
@@ -73932,12 +74207,25 @@
         }
       },
       "candidate_asset": "candidates/676628c3b75a58ed74c4bbf9/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:06:51.401555+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "84779ba86a822e80642950584c8faf26411aa98f41c4deb5aba5aeaa32322d0f",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:24.191758+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Image 1 is the edit target. Image 2 supplies the correct reverse-hyper PLATE AND AXLE geometry only. Replace the unnatural tilted plate assembly in image 1 with the same mechanically correct round near-side plates, centered sleeve/collar and pendulum attachment as image 2. The near plate's flat circular face must face the viewer in the same perspective as the SIDE of the machine frame, its hole centered on a straight sleeve projecting toward the viewer. No shaft may project sideways from the back of the plate. Both ends of the axle remain connected to the same swinging pendulum. The short ankle webbing must visibly connect from the ankles to that same load axle with no open gap. Keep image 1's man, pose, two existing grasped handles, frame, padding, camera and lighting unchanged. Do NOT copy image 2's additional unused handgrips. Only repair the load assembly and strap connection. Real circular black plates, no text.",
@@ -73973,6 +74261,18 @@
         "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/8dc0e2a961d5fdce47d72a5e/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/99e38449474b702a7a45dcca/master.png\"]",
         "reference_machine": "Rogue RH-2 pendulum and transverse plate axle reference",
         "reference_source": "https://www.roguefitness.com/rogue-reverse-hyper-2"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:51.401555+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "84779ba86a822e80642950584c8faf26411aa98f41c4deb5aba5aeaa32322d0f",
+        "source": "human_review_ui"
       }
     },
     {
@@ -74033,12 +74333,25 @@
         }
       },
       "candidate_asset": "candidates/3e5244cd2e58e2469014be51/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:05:57.687011+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f451a792541116c245ed630a467656760c41c45b9da4e65873f9b804224a3bc1",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:24.583588+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Remove all remaining lettering, trademarks and printed markings from every weight plate and machine surface in this image. Preserve ALL geometry, parts, colors, the man's anatomy and exact pullover pose, two elbow pads contacting his arms, hands on overhead bar, side pivots, moving weights and studio lighting unchanged. Precise unbranding only; do not redesign or move anything.",
@@ -74074,6 +74387,18 @@
         "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-2ae5a78d-7ca1-4fd9-8606-2dc30557a384.png\"]",
         "reference_machine": "Hammer Strength Plate-Loaded Pullover",
         "reference_source": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-pullover"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:57.687011+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f451a792541116c245ed630a467656760c41c45b9da4e65873f9b804224a3bc1",
+        "source": "human_review_ui"
       }
     },
     {
@@ -74132,12 +74457,25 @@
         }
       },
       "candidate_asset": "candidates/7e6b58433245cc2f9e5daea0/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "THE WEIGHT IS LITERALLY ON THE PIVOT POINT STILL!!!",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "THE WEIGHT IS LITERALLY ON THE PIVOT POINT STILL!!!",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:05:50.326268+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3ef7fba1e28b6283e6b65ec5a82f385f763f6fcb407bd2457c0bcb91469b5ec8",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:24.980711+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Create the Chest-Supported Rear-Delt Machine Row movement illustration by carefully editing this supplied corrected machine image. Treat the existing machine as fixed real hardware: KEEP its paired curved rowing levers, low bolted pivots, plate-loaded side sleeves, welded base, footrests, chest support, and the single SEAT DIRECTLY UNDER THE BUTTOCKS. Keep identical black studio, lighting, lifter anatomy, framing, camera, equipment symmetry and crisp finish. Show an earlier MID-PULL, with elbows flexed approximately 65 degrees on the SAME wide horizontal overhand grips. Keep elbows flared out near shoulder level so this clearly reads as a rear-delt/high-elbow ROW with bent elbows, never a straight-arm fly or tucked-elbow lat row. The wrists and hands must stay naturally attached and wrapped around the actual original welded handles. Move both connected levers about their existing LOW PIVOTS by a small equal amount forward to follow the hands, including their original attached weight sleeves/plates; do not detach grips or invent hardware. Chest remains firmly against its pad; buttocks remain seated. Feet stay on original footrests. Keep the head facing the movement direction. Preserve all geometry outside the arms and moving levers. No new seat, added handles, labels, logos, text, arrows, floating parts, body clipping or new machine model. One finished image.",
@@ -74172,6 +74510,18 @@
         "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-15dd96ef-df40-477a-a777-2798ebe22254.png\"]",
         "reference_machine": "Hammer Strength Plate-Loaded Iso-Lateral Row, upper overhand grip",
         "reference_source": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-iso-lateral-row"
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE WEIGHT IS LITERALLY ON THE PIVOT POINT STILL!!!",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:50.326268+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3ef7fba1e28b6283e6b65ec5a82f385f763f6fcb407bd2457c0bcb91469b5ec8",
+        "source": "human_review_ui"
       }
     },
     {
@@ -74230,12 +74580,25 @@
         }
       },
       "candidate_asset": "candidates/00e92d8f8f8359083fe68eb2/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "THIS SPECIFIC MACHINE YOU CANT GET RIGHT",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "THIS SPECIFIC MACHINE YOU CANT GET RIGHT",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:06:21.282940+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b0c28825f31bb2fef96873d65b63512c5281cb2f277c37c1541b0a04febd6591",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:25.343715+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Create the Wide-Elbow Machine Row movement illustration by carefully editing this supplied corrected machine image. Treat the existing machine as fixed real hardware: KEEP its paired curved rowing levers, low bolted pivots, plate-loaded side sleeves, welded base, footrests, chest support, and the single SEAT DIRECTLY UNDER THE BUTTOCKS. Keep identical black studio, lighting, lifter anatomy, framing, camera, equipment symmetry and crisp finish. Show an earlier loaded pull, with elbows flexed approximately 45 degrees on the SAME wide horizontal overhand grips. Keep elbows flared out near shoulder level so this clearly reads as a rear-delt/high-elbow ROW with bent elbows, never a straight-arm fly or tucked-elbow lat row. The wrists and hands must stay naturally attached and wrapped around the actual original welded handles. Move both connected levers about their existing LOW PIVOTS by a small equal amount forward to follow the hands, including their original attached weight sleeves/plates; do not detach grips or invent hardware. Chest remains firmly against its pad; buttocks remain seated. Feet stay on original footrests. Keep the head facing the movement direction. Preserve all geometry outside the arms and moving levers. No new seat, added handles, labels, logos, text, arrows, floating parts, body clipping or new machine model. One finished image.",
@@ -74272,6 +74635,18 @@
         "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-15dd96ef-df40-477a-a777-2798ebe22254.png\"]",
         "reference_machine": "Hammer Strength Plate-Loaded Iso-Lateral Row, upper overhand grip",
         "reference_source": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-iso-lateral-row"
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THIS SPECIFIC MACHINE YOU CANT GET RIGHT",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:21.282940+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b0c28825f31bb2fef96873d65b63512c5281cb2f277c37c1541b0a04febd6591",
+        "source": "human_review_ui"
       }
     },
     {
@@ -74330,12 +74705,25 @@
         }
       },
       "candidate_asset": "candidates/77b30ae05f3f77f4732300b3/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:05:13.174584+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3ccab176950b37642f8e12428e2cdf33d7b10e75f696bc1e8bcace40a8aad789",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-15T12:14:25.758346+00:00",
       "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
       "generation_prompt": "Precise hardware-height correction ONLY. In this image the man's shoulder joint is centered around y=215, while the center silver axle of the visible round rotary cam is at y=250. Raise the complete pair of circular cam assemblies AND their central axles approximately 45 pixels up the existing chrome guide posts, until each AXLE CENTER is on the SAME HORIZONTAL LEVEL as the man's shoulder joint. Shorten/rotate the attached rigid lever slightly to keep its existing held grip exactly inside the existing closed hand. Preserve the existing hand position, fully extended working arm, correct front-raise pose, lifter, platform, stack, both chrome guide posts, camera, framing, lighting. ONLY change rotary cam/axle HEIGHT upward and join the existing lever seamlessly to the raised axle and held grip. No added parts, no elbow pads, no body changes. The visible cam's center must be level with the SHOULDER, not the chest.",
@@ -74371,6 +74759,522 @@
         "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-aa17e76f-aa4a-49dd-988e-358686eda113.png\"]",
         "reference_machine": "Panatta Fit Evo Standing Multi Flight 1FE028, exercise 5, carriage adjusted for shoulder height",
         "reference_source": "https://www.panattasport.com/en/fit-evo/standing-multi-flight/"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:13.174584+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3ccab176950b37642f8e12428e2cdf33d7b10e75f696bc1e8bcace40a8aad789",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 506,
+      "key": "accessory_rotary_ab_crunch_machine",
+      "movement_name": "Rotary Ab Crunch Machine",
+      "primary_muscle_group": "abs",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r4_20260915_506_1",
+      "generation_batch": "machine-review-round-4-2026-09-15",
+      "candidate_id": "d3bd0ff90ee81e5bfb4f2101",
+      "version": 5,
+      "supersedes_candidate_id": "5f24dfacad0092642fc6a25f",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "HES NOT EVEN STRAIGHT RELATIVE TO THE MACHINE",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:48.787622+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "c3da9d9d0e9d53bf0361496dbc7f584f8a9c115132a79d8d1f285400643f23ce",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/d3bd0ff90ee81e5bfb4f2101/master.png",
+          "sha256": "c70896698daf261dd3b2b92f9a7c681213e1e153e53b249621dfd9a084cc2f74",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1803888
+        },
+        "app": {
+          "path": "candidates/d3bd0ff90ee81e5bfb4f2101/app.png",
+          "sha256": "f879ba2ed5fffe62c40c5f30a6ffe7bf1feb76302b2b03a384518037e764d5ea",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 334107
+        },
+        "thumbnail": {
+          "path": "candidates/d3bd0ff90ee81e5bfb4f2101/thumbnail.png",
+          "sha256": "163ca0dd61070e13110b28c75d68ba3fa79fe00f6ee5fc3e5271fd7d94a96aa6",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 51153
+        }
+      },
+      "candidate_asset": "candidates/d3bd0ff90ee81e5bfb4f2101/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-15T16:25:07.294529+00:00",
+      "created_at_display": "Sep 15, 2026 09:25 AM PT (Sep 15, 2026 12:25 PM Eastern)",
+      "generation_prompt": "Correct the BODY-TO-MACHINE ALIGNMENT in IMAGE 1 of the seated rotary ab crunch, using IMAGE 2's REAL operator setup as authoritative geometry. Keep image 1's male athlete, charcoal tank/black shorts, coherent complete Hammer abdominal machine, near-black studio and restrained purple edge light. The generated man currently appears twisted toward the viewer relative to the seat, back pad and machine. Rotate his entire seated body into the machine's true forward direction, toward image RIGHT, approximately 25 degrees farther away from the viewer: BOTH hips, ribcage, shoulders, knees and gaze must face the same forward axis as the base rails and seat. His shoulder line and hip line must be parallel to the transverse shin-roller axle in world space. He must sit squarely centered on the seat with both buttocks fully supported; spine centered against the backrest; shoulders level and equally close to the two attached grips. Each hand holds its real existing grip, not his head. Both knees directly above their corresponding roller and both shins contacting rollers at equal height, ankles/feet aligned. Do NOT make one leg point at camera and the other along the machine. Use the real photo's operator's body orientation exactly. Preserve all original machine geometry, two lever mechanisms, plate sleeves, pivots, frame, rollers and perspective. No duplicate grips or limbs; no bars clipping through body; no random hardware. This is a straight-ahead symmetric abdominal crunch setup, not a torso-twisting pose. One finished illustration.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-701a83b6-4cbf-47a5-80d5-06722df75bd6.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "movement_family": "accessory_abs",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine correction of five latest owner rejections, September 15, 2026",
+        "owner_rejection": "HES NOT EVEN STRAIGHT RELATIVE TO THE MACHINE",
+        "preflight_notes": "Body rotated into machine plane: pelvis centered on seat, torso/spine follows back pad, paired shins meet corresponding roller pads, shoulders and knees face same forward direction. Original connected machine preserved.",
+        "corrected_defect": "Body rotated into machine plane: pelvis centered on seat, torso/spine follows back pad, paired shins meet corresponding roller pads, shoulders and knees face same forward direction. Original connected machine preserved.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/5f24dfacad0092642fc6a25f/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/machine-art-review-round-2-2026-09-14/references/rotary-real-4.jpg\"]",
+        "reference_machine": "Hammer Strength Plate-Loaded Abdominal/Oblique Crunch",
+        "reference_source": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-abdominal-oblique-crunch-1",
+        "operator_reference": "docs/validation/machine-art-review-round-2-2026-09-14/references/rotary-real-4.jpg",
+        "reference_observation": "Real operator pelvis, shoulders and knees align with the seat/backrest/roller plane; generated man's prior twist toward viewer removed."
+      }
+    },
+    {
+      "movement_definition_id": 136,
+      "key": "accessory_rear_delt_row_machine",
+      "movement_name": "Rear-Delt Row Machine",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r4_20260915_136_1",
+      "generation_batch": "machine-review-round-4-2026-09-15",
+      "candidate_id": "ef2eb540910327574a8e3ff9",
+      "version": 6,
+      "supersedes_candidate_id": "258907fdda943bc09aaae4ae",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "MACHINE GEOMETRY IS STILL SHIT",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:35.229400+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f57334005d674833d1145a5e5d4ac404990fb8409ad15d870ad41a2f6872ecd6",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/ef2eb540910327574a8e3ff9/master.png",
+          "sha256": "b3269382a6f6f564c1c8113f9357e10e69e8ebfb4396517a5b2625e7e7302fb7",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1875865
+        },
+        "app": {
+          "path": "candidates/ef2eb540910327574a8e3ff9/app.png",
+          "sha256": "113cf952025bee4811c06fdb0dc1673e42c4437ec874c9c7d3614dff5b65e7be",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 329768
+        },
+        "thumbnail": {
+          "path": "candidates/ef2eb540910327574a8e3ff9/thumbnail.png",
+          "sha256": "0c87bfe891f6d0d2a2a3f7a262cbf62ae1af726c439337c9c7d6dc25eaa329b6",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48275
+        }
+      },
+      "candidate_asset": "candidates/ef2eb540910327574a8e3ff9/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-15T16:25:07.712911+00:00",
+      "created_at_display": "Sep 15, 2026 09:25 AM PT (Sep 15, 2026 12:25 PM Eastern)",
+      "generation_prompt": "Create one Strength Ledger REAR-DELT ROW MACHINE illustration. IMAGE 1 is the REAL manufacturer's operator setup and camera; IMAGE 2 shows the exact actual machine's full construction; IMAGE 3 supplies ONLY the approved male model, charcoal tank/black shorts, photorealistic finish and black studio with faint purple light. Build from the REAL selectorized Insignia row machine in images 1/2, not any plate-loaded row. Preserve its original complete machine geometry: one tall enclosed weight-stack tower, low attached cable/cam mechanism, two connected curved pivoting rowing arms, their actual multi-position grips, adjustable seat and narrow upright CHEST PAD. No weight plates or loading horns anywhere. Show a large crisp full machine plus athlete with uncropped feet/base, square composition, dark black studio and subtle purple rim, no text, no labels, no logos. Camera from the same REAR THREE-QUARTER SIDE as image1, shifted slightly more to the side to clearly see torso contact, seat and grip connections; do not use a centered straight-back/front camera. The masculine man sits squarely facing the tower with chest pressed to chest pad, pelvis resting on the real single seat and feet on the real low support. Show a rear-delt biased ROW at MID-CONTRACTION: hands take the upper diagonal/pronated portions of the machine's existing grips, wrists straight, BOTH elbows flared out roughly 70-80 degrees away from ribs at upper-chest height and bent about 90 degrees. Raise/lower the adjustable seat appropriately so grips align with upper chest for this high-elbow row. Do not depict elbows tucked down by waist. Both grip ends must remain visibly bolted/welded to the SAME original curved moving arms running all the way to their original low pivots and stack cable linkage. Matched bilateral pull phase. Whole shoulder-elbow-wrist chains complete and equally proportioned. Head faces same direction as chest, never back toward camera. Athlete, seat, chest support and machine centerline MUST line up with no twist. Do not invent handles or foot supports. The selected stack carries the load; small low machine pulleys are pulleys, never weight plates. Final family-style photograph, retain real hardware fidelity first.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-a6cb045c-afa5-445e-a0ab-cfc38dd94cb0.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "movement_family": "accessory_rear_delts",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine correction of five latest owner rejections, September 15, 2026",
+        "owner_rejection": "MACHINE GEOMETRY IS STILL SHIT",
+        "preflight_notes": "Rebuilt from actual Insignia operator and equipment photos. Paired connected rowing arms drive low cable/cam mechanism and enclosed stack; no loading plates on pivot. Chest pad, seated pelvis, feet and machine axis aligned; high elbows on attached grips.",
+        "corrected_defect": "Rebuilt from actual Insignia operator and equipment photos. Paired connected rowing arms drive low cable/cam mechanism and enclosed stack; no loading plates on pivot. Chest pad, seated pelvis, feet and machine axis aligned; high elbows on attached grips.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/powerlifting_app_dev/docs/validation/machine-art-review-round-4-2026-09-15/references/insignia-row-operator.jpg\", \"/Users/dominic/powerlifting_app_dev/docs/validation/machine-art-review-round-4-2026-09-15/references/insignia-row-0.jpg\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\"]",
+        "reference_machine": "Life Fitness Insignia Series Row SS-RW, selectorized",
+        "reference_source": "https://www.lifefitness.com/en-us/catalog/strength-training/selectorized/insignia-series-row",
+        "operator_reference": "https://www.youtube.com/watch?v=5VqeNOZt2ok",
+        "reference_observation": "Actual manufacturer operator setup has chest against front pad and pelvis on seat; curved bilateral arms connect to low cable/cam mechanism and enclosed stack. No exercise-loading horns.",
+        "original_baseline": "powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png"
+      }
+    },
+    {
+      "movement_definition_id": 58,
+      "key": "accessory_decline_smith_machine_bench_press",
+      "movement_name": "Decline Smith-Machine Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r4_20260915_58_3",
+      "generation_batch": "machine-review-round-4-2026-09-15",
+      "candidate_id": "8fbbeb77652be1ad4867e036",
+      "version": 6,
+      "supersedes_candidate_id": "0c23ffc7d5c203734174c2f0",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "MACHINE IS NOT SYMMETRICAL!",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:04.745016+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d5654857c74079fbceff273ac40348afdbf3ac70996979bf98dd0b9cba36dac9",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/8fbbeb77652be1ad4867e036/master.png",
+          "sha256": "9096431df97971eed9d4ef8e68fced5dfd0f1cd04dbfee33ab51176bd59b52c5",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1558865
+        },
+        "app": {
+          "path": "candidates/8fbbeb77652be1ad4867e036/app.png",
+          "sha256": "d73d9ef993e02115ba1e1aedb4deccc7a5b39d14ab23376eb3b384852bb55498",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 308784
+        },
+        "thumbnail": {
+          "path": "candidates/8fbbeb77652be1ad4867e036/thumbnail.png",
+          "sha256": "da6881d481b9fb664a94e0e0b300155375a3dfe93a834fb7ff0df85770fe2b66",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 51343
+        }
+      },
+      "candidate_asset": "candidates/8fbbeb77652be1ad4867e036/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-15T16:25:08.136671+00:00",
+      "created_at_display": "Sep 15, 2026 09:25 AM PT (Sep 15, 2026 12:25 PM Eastern)",
+      "generation_prompt": "Correct ONE missing structural section in this Smith-machine image. The FAR/LEFT Smith upright at image x approximately 520 currently disappears behind the man's body and bench, and its lower section and floor foot are missing. A real symmetrical machine MUST have TWO uprights reaching the floor. Reconstruct the LOWER PART of that far/left upright as the exact matching black steel column plus chrome guide rod, continuing vertically on the SAME x=520 line below its occlusion by the body and bench until it reaches the floor at approximately y=890. It must emerge visibly beneath/behind the bench, ending in the same black bolted bottom bearing mount and matching grounded base foot as the near/right tower, scaled correctly by perspective. Show the far base foot extending along the floor away from the column, parallel in world space to the near/right Smith base foot, with perspective matching. This far Smith support is separate from the bench support; do not mistake the bench's center brace for the Smith upright. Preserve the existing decline bench and all body/bench contacts, single straight loaded bar, matching cylindrical carriages, matching inward peg rows, near/right upright and base, camera, crop, lighting. Do not move the far upright sideways or add a third upright. The far upright remains continuous behind any bench occlusion and visibly reaches its own floor foot. No new hardware beyond the missing lower far upright, guide rod and matching base.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-828b077e-dbdf-4196-a67a-7813833549cb.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "movement_family": "accessory_chest",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine correction of five latest owner rejections, September 15, 2026",
+        "owner_rejection": "MACHINE IS NOT SYMMETRICAL!",
+        "preflight_notes": "Matching cylindrical carriages and inward peg ladders; duplicate outer pegs removed. Restored far guide/upright through its occluded lower section to a matching grounded foot. Straight bar axis, supported decline pose and bench alignment preserved.",
+        "corrected_defect": "Matching cylindrical carriages and inward peg ladders; duplicate outer pegs removed. Restored far guide/upright through its occluded lower section to a matching grounded foot. Straight bar axis, supported decline pose and bench alignment preserved.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-1de3d0ae-34b6-47fe-a8d9-04b2553de57a.png\"]",
+        "reference_machine": "Owner-approved Smith #56 mirrored guide/carriage construction",
+        "reference_source": "powerlift_mobile/artwork-review/candidates/103c6882d99b663e5653fe9d/master.png"
+      }
+    },
+    {
+      "movement_definition_id": 137,
+      "key": "accessory_chest_supported_rear_delt_machine_row",
+      "movement_name": "Chest-Supported Rear-Delt Machine Row",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r4_20260915_137_1",
+      "generation_batch": "machine-review-round-4-2026-09-15",
+      "candidate_id": "4b5657f21f41cbb4c17e2f25",
+      "version": 6,
+      "supersedes_candidate_id": "7e6b58433245cc2f9e5daea0",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE WEIGHT IS LITERALLY ON THE PIVOT POINT STILL!!!",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:50.326268+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3ef7fba1e28b6283e6b65ec5a82f385f763f6fcb407bd2457c0bcb91469b5ec8",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/4b5657f21f41cbb4c17e2f25/master.png",
+          "sha256": "a4bf48008d16df76ebc761eb22fc87705a95097234414b8d5ebdb3092a9fd6ee",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1746947
+        },
+        "app": {
+          "path": "candidates/4b5657f21f41cbb4c17e2f25/app.png",
+          "sha256": "4fe0cf26d8a03277f986f3eb11f71a2610ed5aad083f68c7ce4002568219503d",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 312691
+        },
+        "thumbnail": {
+          "path": "candidates/4b5657f21f41cbb4c17e2f25/thumbnail.png",
+          "sha256": "f9a087c2622b72be6d5dd68eec3a9bc6c0af4c456d3d88fcb8275d1dd647be45",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47419
+        }
+      },
+      "candidate_asset": "candidates/4b5657f21f41cbb4c17e2f25/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-15T16:25:08.574548+00:00",
+      "created_at_display": "Sep 15, 2026 09:25 AM PT (Sep 15, 2026 12:25 PM Eastern)",
+      "generation_prompt": "Edit this inspected real selectorized row illustration to depict CHEST-SUPPORTED REAR-DELT MACHINE ROW. Keep the EXACT same actual Insignia machine, its intact weight-stack tower, chest pad, single seated support, low cable/cam mechanism, connected paired curved moving arms and original attached upper grip pieces. No plate loading, no new hardware. Maintain this same dark studio, masculine model/clothes, camera from rear three-quarter SIDE, full grounded frame and crisp photographic style. Move the man into a slightly later contraction: upper arms flared almost horizontally to the sides and elbows bent a little beyond 90 degrees, pulling the original upper grips closer to the chest. BOTH hands stay closed naturally over the attached pronated/diagonal grip portions, wrists straight. Move both existing curved machine arms by the corresponding small equal angle around their unchanged original low pivot axes so their grips stay attached inside his hands; keep cable linkage continuous. This must read as a bent-elbow high-wide row, never a straight-arm reverse fly or tucked-elbow lat row. Keep the pelvis completely seated, chest against its actual pad, feet on same supports and head facing exactly along the torso axis toward the front of the machine. Do not rotate the head to show the face. Preserve matching complete shoulder-elbow-wrist chains, each visible hand has one actual connected handle. Do not change the machine design or add parts. One finished image.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-8a267bb4-8d78-43d9-9a82-2f7b1fc7dae4.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "movement_family": "accessory_rear_delts",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine correction of five latest owner rejections, September 15, 2026",
+        "owner_rejection": "THE WEIGHT IS LITERALLY ON THE PIVOT POINT STILL!!!",
+        "preflight_notes": "Actual selectorized row construction retained: paired grips connect through curved arms to low pivots/cam and enclosed stack. No plate-on-pivot geometry. Chest support, single seat and high-elbow contracted row aligned.",
+        "corrected_defect": "Actual selectorized row construction retained: paired grips connect through curved arms to low pivots/cam and enclosed stack. No plate-on-pivot geometry. Chest support, single seat and high-elbow contracted row aligned.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-a6cb045c-afa5-445e-a0ab-cfc38dd94cb0.png\"]",
+        "reference_machine": "Life Fitness Insignia Series Row SS-RW, selectorized",
+        "reference_source": "https://www.lifefitness.com/en-us/catalog/strength-training/selectorized/insignia-series-row",
+        "operator_reference": "https://www.youtube.com/watch?v=5VqeNOZt2ok",
+        "reference_observation": "Actual manufacturer operator setup has chest against front pad and pelvis on seat; curved bilateral arms connect to low cable/cam mechanism and enclosed stack. No exercise-loading horns.",
+        "original_baseline": "powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png"
+      }
+    },
+    {
+      "movement_definition_id": 224,
+      "key": "accessory_wide_elbow_machine_row",
+      "movement_name": "Wide-Elbow Machine Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r4_20260915_224_1",
+      "generation_batch": "machine-review-round-4-2026-09-15",
+      "candidate_id": "9ad0087f466a0ac21c4db51b",
+      "version": 6,
+      "supersedes_candidate_id": "00e92d8f8f8359083fe68eb2",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THIS SPECIFIC MACHINE YOU CANT GET RIGHT",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:21.282940+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b0c28825f31bb2fef96873d65b63512c5281cb2f277c37c1541b0a04febd6591",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/9ad0087f466a0ac21c4db51b/master.png",
+          "sha256": "612d790128675b28085dc3ebf244010b21f6871b425613b93e62c9f283241f93",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1746733
+        },
+        "app": {
+          "path": "candidates/9ad0087f466a0ac21c4db51b/app.png",
+          "sha256": "c8db9b8464d13e4abdda4174f43b86cca9463ccb569a27fdab4a582b296f990f",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 315792
+        },
+        "thumbnail": {
+          "path": "candidates/9ad0087f466a0ac21c4db51b/thumbnail.png",
+          "sha256": "1d94e8ba46dacda6cb19c64185430fd60aafd3b3dc737e786dd8789ecd97a580",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47961
+        }
+      },
+      "candidate_asset": "candidates/9ad0087f466a0ac21c4db51b/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-15T16:25:08.961940+00:00",
+      "created_at_display": "Sep 15, 2026 09:25 AM PT (Sep 15, 2026 12:25 PM Eastern)",
+      "generation_prompt": "Edit this inspected real selectorized row illustration to depict WIDE-ELBOW MACHINE ROW. Keep the EXACT same actual Insignia machine, its intact weight-stack tower, chest pad, single seated support, low cable/cam mechanism, connected paired curved moving arms and original attached upper grip pieces. No plate loading, no new hardware. Maintain this same dark studio, masculine model/clothes, camera from rear three-quarter SIDE, full grounded frame and crisp photographic style. Move the man into a slightly earlier mid-pull: upper arms still flared wide at upper-chest height but elbows bent approximately 65 degrees, holding the original upper grips slightly farther forward. BOTH hands stay closed naturally over the attached pronated/diagonal grip portions, wrists straight. Move both existing curved machine arms by the corresponding small equal angle around their unchanged original low pivot axes so their grips stay attached inside his hands; keep cable linkage continuous. This must read as a bent-elbow high-wide row, never a straight-arm reverse fly or tucked-elbow lat row. Keep the pelvis completely seated, chest against its actual pad, feet on same supports and head facing exactly along the torso axis toward the front of the machine. Do not rotate the head to show the face. Preserve matching complete shoulder-elbow-wrist chains, each visible hand has one actual connected handle. Do not change the machine design or add parts. One finished image.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-7b31f39b-8b07-451e-bf00-44a0093a0d15.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine correction of five latest owner rejections, September 15, 2026",
+        "owner_rejection": "THIS SPECIFIC MACHINE YOU CANT GET RIGHT",
+        "preflight_notes": "Replaced rejected plate-loaded machine with real selectorized row. Paired attached grips/arms, cam/stack resistance, supported pelvis/chest and matched wide-elbow row phase inspected. No loose plates or added hardware.",
+        "corrected_defect": "Replaced rejected plate-loaded machine with real selectorized row. Paired attached grips/arms, cam/stack resistance, supported pelvis/chest and matched wide-elbow row phase inspected. No loose plates or added hardware.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-a6cb045c-afa5-445e-a0ab-cfc38dd94cb0.png\"]",
+        "reference_machine": "Life Fitness Insignia Series Row SS-RW, selectorized",
+        "reference_source": "https://www.lifefitness.com/en-us/catalog/strength-training/selectorized/insignia-series-row",
+        "operator_reference": "https://www.youtube.com/watch?v=5VqeNOZt2ok",
+        "reference_observation": "Actual manufacturer operator setup has chest against front pad and pelvis on seat; curved bilateral arms connect to low cable/cam mechanism and enclosed stack. No exercise-loading horns.",
+        "original_baseline": "powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png"
       }
     }
   ],

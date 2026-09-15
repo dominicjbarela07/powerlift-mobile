@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 1230,
+  "revision": 1251,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-15T12:14:25.758430+00:00",
-  "updated_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+  "updated_at": "2026-09-15T16:25:08.962017+00:00",
+  "updated_at_display": "Sep 15, 2026 09:25 AM PT (Sep 15, 2026 12:25 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -28800,6 +28800,132 @@
       }
     },
     {
+      "movement_definition_id": 53,
+      "key": "accessory_converging_chest_press",
+      "movement_name": "Converging Chest Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r3_20260915_53_2",
+      "generation_batch": "machine-review-round-3-2026-09-15",
+      "candidate_id": "69d6729659cf1e3929de84a1",
+      "version": 5,
+      "supersedes_candidate_id": "c3b906802782562145b5b494",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "AGAIN, THE MACHINE IS NOT FUCKING SYTMMETRICAL",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-15T11:07:45.962585+00:00",
+        "reviewed_at_display": "Sep 15, 2026 04:07 AM PT (Sep 15, 2026 07:07 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6a36962c4054b29721e2fc42b4d6ba8bcac42cceae05cd02eb39e33347fc5824",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/69d6729659cf1e3929de84a1/master.png",
+          "sha256": "0ef47d810945dae8a3ac16226531e89253084d65283396626bea7ce2876bc466",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1947792
+        },
+        "app": {
+          "path": "candidates/69d6729659cf1e3929de84a1/app.png",
+          "sha256": "a5422acd560e9659784011e1ff6542c509274e026bcb56e5de45be8c8dcf3292",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 374786
+        },
+        "thumbnail": {
+          "path": "candidates/69d6729659cf1e3929de84a1/thumbnail.png",
+          "sha256": "a593246524b693dafe97e8e7e2f614b850f96b292698363c361664b42b6992ba",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 57146
+        }
+      },
+      "candidate_asset": "candidates/69d6729659cf1e3929de84a1/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:04:37.567161+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:04 AM PT (Sep 15, 2026 12:04 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "0ef47d810945dae8a3ac16226531e89253084d65283396626bea7ce2876bc466",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T12:14:20.000718+00:00",
+      "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+      "generation_prompt": "Precise cleanup only. Remove the small white manufacturer logo/sticker on the left moving vertical lever and ALL remaining markings. Replace the horizontal wall slats with a smooth nearly black studio background, retaining subtle purple rim light. Freeze all machine geometry, both matched moving levers, both pivots, plates, all grip connections, athlete pose and clothing. Do not change any hardware or anatomy. Single polished unbranded photograph.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-a0accebe-7cd4-47b4-85b2-b303638b1c35.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "movement_family": "accessory_chest",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine-first correction of 16 owner rejections, September 15, 2026",
+        "owner_rejection": "AGAIN, THE MACHINE IS NOT FUCKING SYTMMETRICAL",
+        "preflight_notes": "Real chest-press reference retained: matched pivot brackets, levers and plate sleeves, attached inward grips, centered supported athlete. Residual branding removed.",
+        "corrected_defect": "Real chest-press reference retained: matched pivot brackets, levers and plate sleeves, attached inward grips, centered supported athlete. Residual branding removed.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-80f8bc10-7b13-40e9-acdf-0e4edbbb9611.png\"]",
+        "reference_machine": "Hammer Strength Iso-Lateral Bench Press",
+        "reference_source": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-iso-lateral-bench-press"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:04:37.567161+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:04 AM PT (Sep 15, 2026 12:04 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0ef47d810945dae8a3ac16226531e89253084d65283396626bea7ce2876bc466",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 54,
       "key": "accessory_iso_lateral_chest_press",
       "movement_name": "Iso-Lateral Chest Press",
@@ -29034,6 +29160,132 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "79867c69a845aac5f2c0233812ed31ffaec444f912339cbe60434839fb2562c2",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 56,
+      "key": "accessory_smith_machine_bench_press",
+      "movement_name": "Smith-Machine Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r3_20260915_56_3",
+      "generation_batch": "machine-review-round-3-2026-09-15",
+      "candidate_id": "103c6882d99b663e5653fe9d",
+      "version": 5,
+      "supersedes_candidate_id": "71a7844982b7981441964c14",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "YIU LITERALLY GOT RID OF THE SMITH MACHINE RAILS!!!!N I ASKED YOU TO ONLY CHANGE THE FUCKING ANGLE! YOU FUCKING BASTARD",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-15T11:08:12.532086+00:00",
+        "reviewed_at_display": "Sep 15, 2026 04:08 AM PT (Sep 15, 2026 07:08 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ee7210e891cc8b291c60b7bfc7de3080ce58ed869751f5b69b655cfd80d5aa69",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/103c6882d99b663e5653fe9d/master.png",
+          "sha256": "6fc4bfd290231c6212c62ca2bb83e59d7d1888cc07247a2ef5622126153c7871",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1719625
+        },
+        "app": {
+          "path": "candidates/103c6882d99b663e5653fe9d/app.png",
+          "sha256": "ebdd670fceedd7c0dbbe5c30fa78a54c603a25d2483476989f6455c8dcff2124",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 324348
+        },
+        "thumbnail": {
+          "path": "candidates/103c6882d99b663e5653fe9d/thumbnail.png",
+          "sha256": "5b46169d8674fed7036588151b404292c576f84b072b82568603c2aefe9301b6",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 50299
+        }
+      },
+      "candidate_asset": "candidates/103c6882d99b663e5653fe9d/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:04:51.527479+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:04 AM PT (Sep 15, 2026 12:04 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "6fc4bfd290231c6212c62ca2bb83e59d7d1888cc07247a2ef5622126153c7871",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T12:14:21.284812+00:00",
+      "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+      "generation_prompt": "Edit image 1 ONLY to repair the Smith-machine hardware; DO NOT change the athlete, his supported head, the flat bench, camera angle or framing. Image 2 supplies the correct real Smith guide-and-carriage design, NOT a new athlete pose. In image 1 install TWO clearly visible continuous smooth polished chrome cylindrical guide rods immediately inside the left and right structural uprights. Each runs from top frame to bottom frame. A black cylindrical linear-bearing carriage must WRAP AROUND each guide rod at the athlete's EXISTING bar height, with that ONE pressing bar rigidly attached to both carriages. Rod must be visible above AND below both carriages. Bar and plate sleeves must form one straight coaxial line in the existing photographed perspective. Keep current bar height, wrist positions, equal plates and correct supine head contact. Racking pegs remain on separate uprights; guide rods have no pegs. The result must clearly be a working Smith machine with sliding bearings, not a bar bolted to two square posts. No extra pressing bars; no change to body or flat bench; no text.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-09224bd5-9c55-42bf-ac50-735a8b945f8e.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "movement_family": "accessory_chest",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine-first correction of 16 owner rejections, September 15, 2026",
+        "owner_rejection": "YIU LITERALLY GOT RID OF THE SMITH MACHINE RAILS!!!!N I ASKED YOU TO ONLY CHANGE THE FUCKING ANGLE! YOU FUCKING BASTARD",
+        "preflight_notes": "Original flat-press pose and full head support retained. Two smooth chrome rods now visible with separate bearing carriages attached to the single bar; each rod visible above and below carriage. Racking pegs separate.",
+        "corrected_defect": "Original flat-press pose and full head support retained. Two smooth chrome rods now visible with separate bearing carriages attached to the single bar; each rod visible above and below carriage. Racking pegs separate.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/71a7844982b7981441964c14/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/59226a6b58ac95ba4b19185b/master.png\"]",
+        "reference_machine": "Owner-approved Smith frame, movement #57",
+        "reference_source": "powerlift_mobile/artwork-review/candidates/59226a6b58ac95ba4b19185b/master.png"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:04:51.527479+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:04 AM PT (Sep 15, 2026 12:04 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6fc4bfd290231c6212c62ca2bb83e59d7d1888cc07247a2ef5622126153c7871",
         "source": "human_review_ui"
       }
     },
@@ -29532,6 +29784,376 @@
       }
     },
     {
+      "movement_definition_id": 94,
+      "key": "accessory_machine_front_raise",
+      "movement_name": "Machine Front Raise",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r3_20260915_94_3",
+      "generation_batch": "machine-review-round-3-2026-09-15",
+      "candidate_id": "77b30ae05f3f77f4732300b3",
+      "version": 5,
+      "supersedes_candidate_id": "e15f0fb08315bc68e41398e1",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "MACHINE FRONT RAISE NEEDS TO BE WITH THE FUCKING HAND WITH AN EXTENDED ARM!!!!",
+        "tags": [],
+        "reviewed_at": "2026-09-15T11:08:48.571935+00:00",
+        "reviewed_at_display": "Sep 15, 2026 04:08 AM PT (Sep 15, 2026 07:08 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "861ba46b8471cfabaaee0b8600b2485271df81bea3db62e1a00450ae1a38b1c3",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/77b30ae05f3f77f4732300b3/master.png",
+          "sha256": "3ccab176950b37642f8e12428e2cdf33d7b10e75f696bc1e8bcace40a8aad789",
+          "dimensions": [
+            1374,
+            1145
+          ],
+          "bytes": 1438934
+        },
+        "app": {
+          "path": "candidates/77b30ae05f3f77f4732300b3/app.png",
+          "sha256": "58dc6004502be509de3825c779bb4902e9f9ea8873c4ed47ae67d0598d058d31",
+          "dimensions": [
+            512,
+            427
+          ],
+          "bytes": 230494
+        },
+        "thumbnail": {
+          "path": "candidates/77b30ae05f3f77f4732300b3/thumbnail.png",
+          "sha256": "f90eb4dfc7551656bfe19fd1d106a38a0c27f1656660466e38988ba8b992ad57",
+          "dimensions": [
+            192,
+            160
+          ],
+          "bytes": 35090
+        }
+      },
+      "candidate_asset": "candidates/77b30ae05f3f77f4732300b3/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:05:13.174584+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3ccab176950b37642f8e12428e2cdf33d7b10e75f696bc1e8bcace40a8aad789",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T12:14:25.758346+00:00",
+      "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+      "generation_prompt": "Precise hardware-height correction ONLY. In this image the man's shoulder joint is centered around y=215, while the center silver axle of the visible round rotary cam is at y=250. Raise the complete pair of circular cam assemblies AND their central axles approximately 45 pixels up the existing chrome guide posts, until each AXLE CENTER is on the SAME HORIZONTAL LEVEL as the man's shoulder joint. Shorten/rotate the attached rigid lever slightly to keep its existing held grip exactly inside the existing closed hand. Preserve the existing hand position, fully extended working arm, correct front-raise pose, lifter, platform, stack, both chrome guide posts, camera, framing, lighting. ONLY change rotary cam/axle HEIGHT upward and join the existing lever seamlessly to the raised axle and held grip. No added parts, no elbow pads, no body changes. The visible cam's center must be level with the SHOULDER, not the chest.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-440d0a23-cf82-40be-9429-7eea2c111536.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "movement_family": "accessory_front_delts",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine-first correction of 16 owner rejections, September 15, 2026",
+        "owner_rejection": "MACHINE FRONT RAISE NEEDS TO BE WITH THE FUCKING HAND WITH AN EXTENDED ARM!!!!",
+        "preflight_notes": "Front raise uses the hand on a connected rigid lever with the arm extended forward. Both adjustable cam centers now at shoulder height; guide posts, stack and support platform continuous.",
+        "corrected_defect": "Front raise uses the hand on a connected rigid lever with the arm extended forward. Both adjustable cam centers now at shoulder height; guide posts, stack and support platform continuous.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-aa17e76f-aa4a-49dd-988e-358686eda113.png\"]",
+        "reference_machine": "Panatta Fit Evo Standing Multi Flight 1FE028, exercise 5, carriage adjusted for shoulder height",
+        "reference_source": "https://www.panattasport.com/en/fit-evo/standing-multi-flight/"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:13.174584+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3ccab176950b37642f8e12428e2cdf33d7b10e75f696bc1e8bcace40a8aad789",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 121,
+      "key": "accessory_machine_lateral_raise",
+      "movement_name": "Machine Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r3_20260915_121_1",
+      "generation_batch": "machine-review-round-3-2026-09-15",
+      "candidate_id": "f39156778d7e8111993259cd",
+      "version": 5,
+      "supersedes_candidate_id": "c2142734b177aee320d55a38",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE FUCING PADS NEED TO BE ON THE OUTER PART OF THE ARM11!!! YOUVE FUCKED THIS UP 4 TIMES IN A FUCKING ROW",
+        "tags": [],
+        "reviewed_at": "2026-09-15T11:09:17.320759+00:00",
+        "reviewed_at_display": "Sep 15, 2026 04:09 AM PT (Sep 15, 2026 07:09 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "cb230b257f2b90cabc48681c1795e0cf23feb8153fc764cb1b75e27c8ee761fe",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/f39156778d7e8111993259cd/master.png",
+          "sha256": "cbcd682a60cd3a5db08fd8c86b773883468e559a1dae005b3171a154d51b808d",
+          "dimensions": [
+            1310,
+            1200
+          ],
+          "bytes": 1738583
+        },
+        "app": {
+          "path": "candidates/f39156778d7e8111993259cd/app.png",
+          "sha256": "51c2d4295c948c9596b1e8ddced0912d8d8929cea9fca447123b87ac798af7b0",
+          "dimensions": [
+            512,
+            469
+          ],
+          "bytes": 276902
+        },
+        "thumbnail": {
+          "path": "candidates/f39156778d7e8111993259cd/thumbnail.png",
+          "sha256": "076bdd69a3549d9c4ffae8317cd2aaaf3204a9ef239ad39d1288f145b3080efe",
+          "dimensions": [
+            192,
+            176
+          ],
+          "bytes": 41592
+        }
+      },
+      "candidate_asset": "candidates/f39156778d7e8111993259cd/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:05:15.451147+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "cbcd682a60cd3a5db08fd8c86b773883468e559a1dae005b3171a154d51b808d",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T12:14:20.847089+00:00",
+      "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+      "generation_prompt": "Faithful studio recreation of the real lateral raise machine shown in the operator reference. Machine FIRST: keep the exact two matched lever arms pivoting beside shoulders, paired padded contact blocks on the OUTSIDE of the upper arms just above elbows, handles ahead of elbows, chest support, seat, stack shroud and cable route. The pads press inward against the OUTER sides of the man's upper arms, like the real woman's setup. Replace woman with athletic adult man in charcoal tank, black shorts and shoes, centered in seat, arms DOWN and only slightly out at the beginning of the lateral raise, elbows bent, hands naturally on existing handles. It is vital there is a clear uninterrupted upper arm from shoulder to elbow INSIDE each pad. The pad does not sit underneath a forearm, on top of an arm, through an arm, or between arm and torso. Keep real rear three-quarter camera. Remove all logos and text, no diagrams. Full person and whole machine in near-black studio with subtle purple rim light. Do not alter real pad mounting or machine model.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-43cbf41b-e7ad-499c-ba2f-b5c083f2e131.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "traps"
+      ],
+      "movement_family": "accessory_side_delts",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine-first correction of 16 owner rejections, September 15, 2026",
+        "owner_rejection": "THE FUCING PADS NEED TO BE ON THE OUTER PART OF THE ARM11!!! YOUVE FUCKED THIS UP 4 TIMES IN A FUCKING ROW",
+        "preflight_notes": "Operator-reference setup: pads outside upper arms just above elbows; continuous bare upper arms inside pads, no clipping. Both pads attached to matched levers.",
+        "corrected_defect": "Operator-reference setup: pads outside upper arms just above elbows; continuous bare upper arms inside pads, no clipping. Both pads attached to matched levers.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/powerlifting_app_dev/docs/validation/machine-art-review-round-3-2026-09-15/references/lateral-operator.jpg\", \"/Users/dominic/powerlifting_app_dev/docs/validation/machine-art-review-round-3-2026-09-15/references/lateral-0.jpg\"]",
+        "reference_machine": "Life Fitness Insignia Lateral Raise SS-LR",
+        "reference_source": "https://www.youtube.com/watch?v=MsV4ftrusPQ"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:15.451147+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "cbcd682a60cd3a5db08fd8c86b773883468e559a1dae005b3171a154d51b808d",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 122,
+      "key": "accessory_machine_y_raise",
+      "movement_name": "Machine Y-Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r3_20260915_122_1",
+      "generation_batch": "machine-review-round-3-2026-09-15",
+      "candidate_id": "f26e0aa35bd389c265e7a390",
+      "version": 5,
+      "supersedes_candidate_id": "6972480ad390ca19edb141c9",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHY THE FUCK ARE THE PALMS FACING ME!!!! FUCK YOU",
+        "tags": [],
+        "reviewed_at": "2026-09-15T11:09:36.820862+00:00",
+        "reviewed_at_display": "Sep 15, 2026 04:09 AM PT (Sep 15, 2026 07:09 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1cd030be6b88f0c368ebef60675084b32dde47e9cc8eb8e2ec92ac8dd12d4840",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/f26e0aa35bd389c265e7a390/master.png",
+          "sha256": "5701e7b92bc2c4b838f5bda62b6d417b7169d65c277fa95a9f9bf8dcf7c8b0dc",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1493213
+        },
+        "app": {
+          "path": "candidates/f26e0aa35bd389c265e7a390/app.png",
+          "sha256": "17d47f954f46c8d53471dc777ca446c2640e4949160dd2ebf4660ca4b11d49db",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 290963
+        },
+        "thumbnail": {
+          "path": "candidates/f26e0aa35bd389c265e7a390/thumbnail.png",
+          "sha256": "e52ae8e69d15a940a8a588321cbca8ce8b85d2ea17db7d39dee1ab9335086dc3",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46963
+        }
+      },
+      "candidate_asset": "candidates/f26e0aa35bd389c265e7a390/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:05:18.782847+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5701e7b92bc2c4b838f5bda62b6d417b7169d65c277fa95a9f9bf8dcf7c8b0dc",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T12:14:19.651677+00:00",
+      "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+      "generation_prompt": "Precise localized correction of BOTH HANDS and forearm rotation only. This is a rear view of a man performing a machine Y-raise. Keep the exact machine geometry, symmetric lever arms, shoulder-height cams, cables, handles, athlete silhouette and extended Y position, camera and light. Rotate both forearms/grips so the BACKS OF THE HANDS and knuckles face the rear camera; palms face FORWARD toward the machine, away from the viewer. Both hands naturally wrap around the existing short angled handles with thumbs securely closed, five anatomical fingers per hand. Elbows stay almost straight; don't twist wrists independently or reverse thumbs. No palm surface facing camera. Change no machine parts, no new handles, no detached fingertips, no text. Preserve everything else.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-a13fbf14-f155-4cae-a1f0-e350c0b4e94c.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "traps"
+      ],
+      "movement_family": "accessory_side_delts",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine-first correction of 16 owner rejections, September 15, 2026",
+        "owner_rejection": "WHY THE FUCK ARE THE PALMS FACING ME!!!! FUCK YOU",
+        "preflight_notes": "Backs of both hands now face rear viewer, thumbs wrap the existing grips. Paired cams, levers, cable runs and platform preserved; neither hand intersects a handle.",
+        "corrected_defect": "Backs of both hands now face rear viewer, thumbs wrap the existing grips. Paired cams, levers, cable runs and platform preserved; neither hand intersects a handle.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/6972480ad390ca19edb141c9/master.png\"]",
+        "reference_machine": "Existing multi-flight machine retained, owner-requested grip correction",
+        "reference_source": "https://www.panattasport.com/en/fit-evo/standing-multi-flight/"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:18.782847+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5701e7b92bc2c4b838f5bda62b6d417b7169d65c277fa95a9f9bf8dcf7c8b0dc",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 134,
       "key": "accessory_reverse_pec_deck",
       "movement_name": "Reverse Pec Deck",
@@ -29767,6 +30389,132 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "be33cd36caa9297b15f32934356171399fcacb7d8f8d92a1e8d3d891d0eadc44",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 178,
+      "key": "accessory_machine_pullover",
+      "movement_name": "Machine Pullover",
+      "primary_muscle_group": "lats",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r3_20260915_178_2",
+      "generation_batch": "machine-review-round-3-2026-09-15",
+      "candidate_id": "3e5244cd2e58e2469014be51",
+      "version": 5,
+      "supersedes_candidate_id": "e1461f6b22182ef024318dda",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHY IS PART FO THE MACHINE GOING OVER HIS SHOULDR",
+        "tags": [
+          "visual_quality"
+        ],
+        "reviewed_at": "2026-09-15T11:10:31.005324+00:00",
+        "reviewed_at_display": "Sep 15, 2026 04:10 AM PT (Sep 15, 2026 07:10 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8dadb0ebf89480fab1661b2e2951aaa941229bb0a777e396c57a3b39b3ceb2a9",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/3e5244cd2e58e2469014be51/master.png",
+          "sha256": "f451a792541116c245ed630a467656760c41c45b9da4e65873f9b804224a3bc1",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1802618
+        },
+        "app": {
+          "path": "candidates/3e5244cd2e58e2469014be51/app.png",
+          "sha256": "78fa54d1c2b461dba6d550ad0899f3f18e78f3e4e65500859fd2ab93e5eece9b",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 342811
+        },
+        "thumbnail": {
+          "path": "candidates/3e5244cd2e58e2469014be51/thumbnail.png",
+          "sha256": "5561238c0b2c1e16f98bfffe13daafc6559ced5c4ede01c6a5380fa287ee3093",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 52333
+        }
+      },
+      "candidate_asset": "candidates/3e5244cd2e58e2469014be51/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:05:57.687011+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f451a792541116c245ed630a467656760c41c45b9da4e65873f9b804224a3bc1",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T12:14:24.583588+00:00",
+      "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+      "generation_prompt": "Remove all remaining lettering, trademarks and printed markings from every weight plate and machine surface in this image. Preserve ALL geometry, parts, colors, the man's anatomy and exact pullover pose, two elbow pads contacting his arms, hands on overhead bar, side pivots, moving weights and studio lighting unchanged. Precise unbranding only; do not redesign or move anything.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-92c96c1c-9ac8-47cf-8309-ae9bcac95a67.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine-first correction of 16 owner rejections, September 15, 2026",
+        "owner_rejection": "WHY IS PART FO THE MACHINE GOING OVER HIS SHOULDR",
+        "preflight_notes": "Real Hammer pullover geometry retained from manufacturer operator reference. Both elbows contact attached pads, hands on overhead grip clear of shoulders, visible rear moving load, supported seat/back, no residual plate lettering.",
+        "corrected_defect": "Real Hammer pullover geometry retained from manufacturer operator reference. Both elbows contact attached pads, hands on overhead grip clear of shoulders, visible rear moving load, supported seat/back, no residual plate lettering.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-2ae5a78d-7ca1-4fd9-8606-2dc30557a384.png\"]",
+        "reference_machine": "Hammer Strength Plate-Loaded Pullover",
+        "reference_source": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-pullover"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:05:57.687011+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f451a792541116c245ed630a467656760c41c45b9da4e65873f9b804224a3bc1",
         "source": "human_review_ui"
       }
     },
@@ -30678,6 +31426,256 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "2522d30964c99661aa9ce4c2a1a6bd3a633e5847098b71f4df50ba74554c16ac",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 219,
+      "key": "accessory_single_arm_machine_high_row",
+      "movement_name": "Single-Arm Machine High Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r3_20260915_219_1",
+      "generation_batch": "machine-review-round-3-2026-09-15",
+      "candidate_id": "cb6821c72b9c7cdaae88199e",
+      "version": 5,
+      "supersedes_candidate_id": "a81ee2c88f743345ad87f89d",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE MACHINE SUCKS",
+        "tags": [],
+        "reviewed_at": "2026-09-15T11:11:08.005037+00:00",
+        "reviewed_at_display": "Sep 15, 2026 04:11 AM PT (Sep 15, 2026 07:11 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f57d23820146e6bcc0b6670d322554b4f747e6629015898fc4fa7a1040fb4544",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/cb6821c72b9c7cdaae88199e/master.png",
+          "sha256": "b19f05105c317999e57ef986f3d015b2f23a2db30b7f1570ffaeeb030ffa65ea",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1727299
+        },
+        "app": {
+          "path": "candidates/cb6821c72b9c7cdaae88199e/app.png",
+          "sha256": "237cf8225c92f454f28956accc12a5db7eb37ad3f9e4cf3643810c5955f00f93",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 318631
+        },
+        "thumbnail": {
+          "path": "candidates/cb6821c72b9c7cdaae88199e/thumbnail.png",
+          "sha256": "3d594e82f70300364843dd85b2e933b41a156f49f052b05cf4de9d34f823b5bf",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49711
+        }
+      },
+      "candidate_asset": "candidates/cb6821c72b9c7cdaae88199e/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:06:01.594633+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b19f05105c317999e57ef986f3d015b2f23a2db30b7f1570ffaeeb030ffa65ea",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T12:14:22.130532+00:00",
+      "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+      "generation_prompt": "Precise minimal edit of this OWNER-APPROVED high-row machine. Machine frame, chest pad, leg restraint, both overhead lever arms, their pivots, correctly placed weights, both attached handles, perspective and lighting MUST remain unchanged. Make this a SINGLE-ARM high-row starting position: keep the nearer arm extended and its hand gripping the existing nearer overhead handle EXACTLY where it is now. Release only the FAR hand from the other overhead handle, and place that far hand gently on the side of the chest-support pad. The unused handle and its entire lever stay in their original elevated resting position, intact. Head and torso face the machine as before, no twisting. Do not lower either machine lever or alter any weight/hinge/frame geometry. No additional handles, no anatomy clipping, no branding. One working hand visibly grasps one actual machine handle; the other hand clearly rests on support.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-b808b308-85cb-4b90-9f1f-3b11cfb83e70.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "MACHINE",
+      "sidedness": "unilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine-first correction of 16 owner rejections, September 15, 2026",
+        "owner_rejection": "THE MACHINE SUCKS",
+        "preflight_notes": "Owner-approved #217 machine preserved. One working hand on original overhead grip, far hand on chest pad; unused lever and weights unchanged. Full connected frame and pad placement retained.",
+        "corrected_defect": "Owner-approved #217 machine preserved. One working hand on original overhead grip, far hand on chest pad; unused lever and weights unchanged. Full connected frame and pad placement retained.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/66f9857fcbe74c63bff5e459/master.png\"]",
+        "reference_machine": "Owner-approved Machine High Row #217, same frame and load position",
+        "reference_source": "powerlift_mobile/artwork-review/candidates/66f9857fcbe74c63bff5e459/master.png"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:01.594633+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b19f05105c317999e57ef986f3d015b2f23a2db30b7f1570ffaeeb030ffa65ea",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 220,
+      "key": "accessory_machine_t_bar_row",
+      "movement_name": "Machine T-Bar Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r3_20260915_220_1",
+      "generation_batch": "machine-review-round-3-2026-09-15",
+      "candidate_id": "a73d708d80773d16071e85ea",
+      "version": 4,
+      "supersedes_candidate_id": "ef2e226e86b5917ade002617",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "HOW DO YOU KEEP FUCKING UP A SIMPLE MACHINE",
+        "tags": [],
+        "reviewed_at": "2026-09-15T11:11:21.333990+00:00",
+        "reviewed_at_display": "Sep 15, 2026 04:11 AM PT (Sep 15, 2026 07:11 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9a5fe09692dd39a580064895d3b387fe715ce8f24be047246077b83b361a50d0",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/a73d708d80773d16071e85ea/master.png",
+          "sha256": "db9cd95aab1f15842dd47b761e9ca4ff051c8070c94f029c2e2f16a98edb4a79",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1941432
+        },
+        "app": {
+          "path": "candidates/a73d708d80773d16071e85ea/app.png",
+          "sha256": "3b821cca1b674c6f2157beb79c5bff70be2faa4979dc73010ea80d5ed53e8870",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 326943
+        },
+        "thumbnail": {
+          "path": "candidates/a73d708d80773d16071e85ea/thumbnail.png",
+          "sha256": "f289e0648c6f2d96b6ca6a822bb454a5b3fdb7c3f6f912ee700a0c6040f2e4ff",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46100
+        }
+      },
+      "candidate_asset": "candidates/a73d708d80773d16071e85ea/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:06:08.444069+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "db9cd95aab1f15842dd47b761e9ca4ff051c8070c94f029c2e2f16a98edb4a79",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T12:14:22.499673+00:00",
+      "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+      "generation_prompt": "Make a faithful unbranded studio version of the actual T-BAR ROW machine exercise in image 1. Preserve the machine EXACTLY: ONE long central pivoting lever below the chest pad, one plate sleeve at its forward end COAXIAL with that lever, the welded rectangular two-hand grip frame, inclined chest pad on its separate fixed support, rear diamond foot platform, front rest cradle and wide fixed base. Image 2 shows unloaded structure for clarity; do not change the occupied image's three-quarter camera or working raised lever angle. Keep the man chest-supported, feet firmly on rear footplate, elbows pulled back in the squeezed row, neck aligned looking naturally down. The loaded lever and SINGLE round plate stay visibly LIFTED well above the front rest as in real photo. Replace blue plate with one unbranded black plate, exactly perpendicular to its sleeve with collar. Man in charcoal sleeveless shirt, black shorts and black shoes; realistic complete legs and arms. Remove other gym equipment and all logos, near-black studio with subtle purple rim. Do not invent dual plate horns or random handles; retain the actual machine's simple load path.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-75ef7b85-05ee-4028-81a1-086c7fe4aff8.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine-first correction of 16 owner rejections, September 15, 2026",
+        "owner_rejection": "HOW DO YOU KEEP FUCKING UP A SIMPLE MACHINE",
+        "preflight_notes": "Actual Titan T-bar geometry copied: one long rear-pivoting lever, welded grip assembly, coaxial plate sleeve, fixed chest/foot support. Contracted row clearly lifts load above empty rest cradle.",
+        "corrected_defect": "Actual Titan T-bar geometry copied: one long rear-pivoting lever, welded grip assembly, coaxial plate sleeve, fixed chest/foot support. Contracted row clearly lifts load above empty rest cradle.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/powerlifting_app_dev/docs/validation/machine-art-review-round-3-2026-09-15/references/titan-tbar-3.jpg\", \"/Users/dominic/powerlifting_app_dev/docs/validation/machine-art-review-round-3-2026-09-15/references/titan-tbar-1.jpg\"]",
+        "reference_machine": "Titan Chest Supported T-Bar Row 401007",
+        "reference_source": "https://titan.fitness/products/chest-supported-t-bar-row-machine-adjustable"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:08.444069+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "db9cd95aab1f15842dd47b761e9ca4ff051c8070c94f029c2e2f16a98edb4a79",
         "source": "human_review_ui"
       }
     },
@@ -33103,6 +34101,130 @@
       }
     },
     {
+      "movement_definition_id": 373,
+      "key": "accessory_machine_split_squat",
+      "movement_name": "Machine Split Squat",
+      "primary_muscle_group": "quads",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r3_20260915_373_2",
+      "generation_batch": "machine-review-round-3-2026-09-15",
+      "candidate_id": "10f382b2708f7c5ba6e807cc",
+      "version": 5,
+      "supersedes_candidate_id": "05614c1fb69c14c5f7d1d6fc",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "HANDLES ARE NOT CONNECTGED TO MACHINE",
+        "tags": [],
+        "reviewed_at": "2026-09-15T11:15:10.095737+00:00",
+        "reviewed_at_display": "Sep 15, 2026 04:15 AM PT (Sep 15, 2026 07:15 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f48772a51ff24286fda6bbbd09f8d4606482c92bb521857cb598ad3e447bf6b7",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/10f382b2708f7c5ba6e807cc/master.png",
+          "sha256": "420abfaac5bba7653314603afc7acad87769ed3491f90d807378dd33c3a65949",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1700063
+        },
+        "app": {
+          "path": "candidates/10f382b2708f7c5ba6e807cc/app.png",
+          "sha256": "53d5ed7838644a880979a3da281b1661bf775e506fbfc1f90fe3666593ccd49e",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 313144
+        },
+        "thumbnail": {
+          "path": "candidates/10f382b2708f7c5ba6e807cc/thumbnail.png",
+          "sha256": "469b436877a112cd6ede2adcaca2046be47bce2494eb835eee03b61bb81aabe3",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49510
+        }
+      },
+      "candidate_asset": "candidates/10f382b2708f7c5ba6e807cc/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:06:31.995711+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "420abfaac5bba7653314603afc7acad87769ed3491f90d807378dd33c3a65949",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T12:14:20.451692+00:00",
+      "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+      "generation_prompt": "Precise correction of load placement only on this Ground Base Multi-Squat. The handgrips are now properly connected and must stay exactly unchanged. Add one realistic black 20-kg plate to EACH of the two moving lever loading sleeves beside the athlete's hands. The nearer silver sleeve points toward viewer from the triangular handle bracket beside his thigh; thread the plate center onto that exact sleeve and secure with a collar, leaving chrome protruding coaxially. Add matching load on far-side moving sleeve, naturally occluded by athlete. Keep plates on the rear storage horns as they are. Moving weights must be attached to the lever that the hands lift, suspended above ground with visible clearance. All round discs are perpendicular to their sleeves, equal diameter, no clipping into hand or leg. Preserve exact frame, attached handgrips, rear pivot, split stance, body anatomy, supported rear foot, grounded front foot, camera, dark studio. No labels or new mechanisms.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-e4892081-3fea-4cf0-ae3d-2e96ad11c488.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "movement_family": "accessory_quads",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine-first correction of 16 owner rejections, September 15, 2026",
+        "owner_rejection": "HANDLES ARE NOT CONNECTGED TO MACHINE",
+        "preflight_notes": "Two grasped lower handles are welded to triangular moving brackets; levers connect to rear pivots. Equal plates now on moving sleeves, separate rear storage weights; feet and stance supported.",
+        "corrected_defect": "Two grasped lower handles are welded to triangular moving brackets; levers connect to rear pivots. Equal plates now on moving sleeves, separate rear storage weights; feet and stance supported.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-e632b342-4363-41e0-982c-4fb1ccffebdd.png\"]",
+        "reference_machine": "Hammer Strength Ground Base Multi-Squat",
+        "reference_source": "https://shop.lifefitness.com/products/hammer-strength-ground-base-multi-squat"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:31.995711+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "420abfaac5bba7653314603afc7acad87769ed3491f90d807378dd33c3a65949",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 374,
       "key": "accessory_machine_sissy_squat",
       "movement_name": "Machine Sissy Squat",
@@ -34852,6 +35974,129 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "285dfd291497b98add4cb039e0c424f6865d5106d67fdaffe205860b98eb4ef2",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 435,
+      "key": "accessory_reverse_hyperextension",
+      "movement_name": "Reverse Hyperextension",
+      "primary_muscle_group": "glutes",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r3_20260915_435_2",
+      "generation_batch": "machine-review-round-3-2026-09-15",
+      "candidate_id": "ae5e0058b265c2916a2bdf75",
+      "version": 3,
+      "supersedes_candidate_id": "99e38449474b702a7a45dcca",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THERE IS STILL RNADOM HANDLES",
+        "tags": [],
+        "reviewed_at": "2026-09-15T11:15:56.647751+00:00",
+        "reviewed_at_display": "Sep 15, 2026 04:15 AM PT (Sep 15, 2026 07:15 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "65304029290592aa0aebc5788c900ad2488e063f12bc87593da8f89b8dfd580a",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/ae5e0058b265c2916a2bdf75/master.png",
+          "sha256": "2677559042dc4ce3159a4a9d934b55cbb7127b33107721cc79a7e41b7ea813eb",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1605585
+        },
+        "app": {
+          "path": "candidates/ae5e0058b265c2916a2bdf75/app.png",
+          "sha256": "268a011db5a1c930e9be1e0f41d490530458ee136ed8b92eafc7f80d613d0c64",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 298264
+        },
+        "thumbnail": {
+          "path": "candidates/ae5e0058b265c2916a2bdf75/thumbnail.png",
+          "sha256": "5f1dacc2a154e7a5d3ee8afe16d038617e418c2d552785c345bce1ed7fc810ab",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46432
+        }
+      },
+      "candidate_asset": "candidates/ae5e0058b265c2916a2bdf75/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:06:33.999530+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "2677559042dc4ce3159a4a9d934b55cbb7127b33107721cc79a7e41b7ea813eb",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T12:14:23.756111+00:00",
+      "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+      "generation_prompt": "Restore exactly ONE small black handgrip INSIDE the far hand on the left end of this reverse hyper machine. The nearer hand already wraps its intact handle at image-left; don't alter it. The FAR hand, slightly higher/right behind the nearer forearm, is currently grasping empty space. Add a short upright black rubber grip there, with its top protruding visibly above that fist and lower end connected by a bent steel bracket to the front frame underneath the pad. Two hands, exactly TWO grasped handles total. There must NOT be a third unused grip between them. Preserve the athlete, all fingers except natural closure around far grip, pad, legs, weights, ankle strap and whole frame unchanged. No other additions or removals.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-911df687-7a9c-435e-b890-fb694ab09410.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "movement_family": "accessory_glutes",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine-first correction of 16 owner rejections, September 15, 2026",
+        "owner_rejection": "THERE IS STILL RNADOM HANDLES",
+        "preflight_notes": "Exactly two working grips, each connected to front frame and held by a hand. Unused handles removed. Matched circular plates coaxial on transverse pendulum sleeve; ankle strap continuous.",
+        "corrected_defect": "Exactly two working grips, each connected to front frame and held by a hand. Unused handles removed. Matched circular plates coaxial on transverse pendulum sleeve; ankle strap continuous.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-90f95c4a-36df-4d9d-aeac-730081e18eae.png\"]",
+        "reference_machine": "Rogue RH-2 reference, unused handles removed per owner",
+        "reference_source": "https://www.roguefitness.com/rogue-reverse-hyper-2"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:33.999530+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2677559042dc4ce3159a4a9d934b55cbb7127b33107721cc79a7e41b7ea813eb",
         "source": "human_review_ui"
       }
     },
@@ -36657,6 +37902,130 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "768fd1a8b2d9a7b3172e9ecfdb027a82969959db0dbf22be58af3f46f33e90d0",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 556,
+      "key": "accessory_reverse_hyperextension_machine",
+      "movement_name": "Reverse Hyperextension Machine",
+      "primary_muscle_group": "lower_back",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine_r3_20260915_556_2",
+      "generation_batch": "machine-review-round-3-2026-09-15",
+      "candidate_id": "676628c3b75a58ed74c4bbf9",
+      "version": 4,
+      "supersedes_candidate_id": "8dc0e2a961d5fdce47d72a5e",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THE WEIGHT LOOKS UN NATURA",
+        "tags": [],
+        "reviewed_at": "2026-09-15T11:17:06.626522+00:00",
+        "reviewed_at_display": "Sep 15, 2026 04:17 AM PT (Sep 15, 2026 07:17 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "c51c8686f7a44a6572962e0aa89caf510713fd7af19070ded7885f6203470353",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/676628c3b75a58ed74c4bbf9/master.png",
+          "sha256": "84779ba86a822e80642950584c8faf26411aa98f41c4deb5aba5aeaa32322d0f",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1809884
+        },
+        "app": {
+          "path": "candidates/676628c3b75a58ed74c4bbf9/app.png",
+          "sha256": "e536d998c8c5e26d9e3d891c21477faf4c9f89c23da98cdfc340bf733e5ecbe8",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 318506
+        },
+        "thumbnail": {
+          "path": "candidates/676628c3b75a58ed74c4bbf9/thumbnail.png",
+          "sha256": "149993531cf2d45db13b5b45458519b5dc377c9d021623ce43cb10e1a43dccc6",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47268
+        }
+      },
+      "candidate_asset": "candidates/676628c3b75a58ed74c4bbf9/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T16:06:51.401555+00:00",
+          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "84779ba86a822e80642950584c8faf26411aa98f41c4deb5aba5aeaa32322d0f",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T12:14:24.191758+00:00",
+      "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
+      "generation_prompt": "Image 1 is the edit target. Image 2 supplies the correct reverse-hyper PLATE AND AXLE geometry only. Replace the unnatural tilted plate assembly in image 1 with the same mechanically correct round near-side plates, centered sleeve/collar and pendulum attachment as image 2. The near plate's flat circular face must face the viewer in the same perspective as the SIDE of the machine frame, its hole centered on a straight sleeve projecting toward the viewer. No shaft may project sideways from the back of the plate. Both ends of the axle remain connected to the same swinging pendulum. The short ankle webbing must visibly connect from the ankles to that same load axle with no open gap. Keep image 1's man, pose, two existing grasped handles, frame, padding, camera and lighting unchanged. Do NOT copy image 2's additional unused handgrips. Only repair the load assembly and strap connection. Real circular black plates, no text.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-a0e6e31a-fb6a-40f3-9086-e5e9bc4de387.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "movement_family": "accessory_lower_back",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "review_round": "Machine-first correction of 16 owner rejections, September 15, 2026",
+        "owner_rejection": "THE WEIGHT LOOKS UN NATURA",
+        "preflight_notes": "Rebuilt plate stack from correct reverse-hyper reference: circular parallel plates, hub and sleeve on one transverse axis, short continuous strap attachment to ankles. Two held handles, connected pendulum and frame.",
+        "corrected_defect": "Rebuilt plate stack from correct reverse-hyper reference: circular parallel plates, hub and sleeve on one transverse axis, short continuous strap attachment to ankles. Two held handles, connected pendulum and frame.",
+        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
+        "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/8dc0e2a961d5fdce47d72a5e/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/99e38449474b702a7a45dcca/master.png\"]",
+        "reference_machine": "Rogue RH-2 pendulum and transverse plate axle reference",
+        "reference_source": "https://www.roguefitness.com/rogue-reverse-hyper-2"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T16:06:51.401555+00:00",
+        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "84779ba86a822e80642950584c8faf26411aa98f41c4deb5aba5aeaa32322d0f",
         "source": "human_review_ui"
       }
     },
