@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 871,
+  "revision": 949,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-14T18:15:15.683740+00:00",
-  "updated_at_display": "Sep 14, 2026 11:15 AM PT (Sep 14, 2026 02:15 PM Eastern)",
+  "updated_at": "2026-09-15T00:11:38.731894+00:00",
+  "updated_at_display": "Sep 14, 2026 05:11 PM PT (Sep 14, 2026 08:11 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",

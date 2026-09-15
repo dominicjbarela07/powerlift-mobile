@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 871,
+  "revision": 949,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-14T18:15:15.683740+00:00",
-  "updated_at_display": "Sep 14, 2026 11:15 AM PT (Sep 14, 2026 02:15 PM Eastern)",
+  "updated_at": "2026-09-15T00:11:38.731894+00:00",
+  "updated_at_display": "Sep 14, 2026 05:11 PM PT (Sep 14, 2026 08:11 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -28005,6 +28005,453 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "3a5565bd58f2cc6d5bb268ea2a5044ce3ed0d5202d3798f12fc6bf5d112abc57",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 48,
+      "key": "accessory_machine_chest_press",
+      "movement_name": "Machine Chest Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine-2026-09-14-48-attempt-01",
+      "generation_batch": "machine-2026-09-14",
+      "candidate_id": "2a069920fe2167677134f601",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/2a069920fe2167677134f601/master.png",
+          "sha256": "308a04821a79f2d3201c33d33606ee42bb23dafbc98feae4387c09aafdeedcee",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2021217
+        },
+        "app": {
+          "path": "candidates/2a069920fe2167677134f601/app.png",
+          "sha256": "416b429e3b6374f469522537f8549678ddb5f824f7bff06878a7631ba2ac1712",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 363548
+        },
+        "thumbnail": {
+          "path": "candidates/2a069920fe2167677134f601/thumbnail.png",
+          "sha256": "c9173f191980b327c04b3e188445dba396d757df05c8604154d13e521ef0c566",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 53834
+        }
+      },
+      "candidate_asset": "candidates/2a069920fe2167677134f601/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T21:12:05.073198+00:00",
+          "reviewed_at_display": "Sep 14, 2026 02:12 PM PT (Sep 14, 2026 05:12 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "308a04821a79f2d3201c33d33606ee42bb23dafbc98feae4387c09aafdeedcee",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T18:14:52.210287+00:00",
+      "created_at_display": "Sep 14, 2026 11:14 AM PT (Sep 14, 2026 02:14 PM Eastern)",
+      "generation_prompt": "Use case: compositing. ONE square photorealistic Strength Ledger exact-movement artwork. Reference 1 is the REAL COMMERCIAL MACHINE: preserve its coherent frame, seat/back pads, pivots, lever arms, grips, loading horns and ground supports as one intact design. Move only its legitimate moving arms to the exercise phase; never add imaginary mechanisms or combine other machines. Reference 2 is STYLE AND ATHLETE ONLY: same original athletic adult man, short brown hair, graphite full-length sleeveless tank covering waist, plain black shorts, black trainers, natural skin/proportions. Near-black studio and rubber floor, neutral soft key, restrained purple rim; black equipment with modest steel highlights. Athlete actively performs the specified movement with anatomically coherent bilateral joints, hands wrapped around actual machine grips, realistic pad/body contact and both feet supported. Camera side/front three-quarter chosen for clear athlete-machine mechanics. Entire important machine, athlete, load and feet within square with tight but comfortable margins; prioritize movement clarity at thumbnail size. Brand-neutral: remove manufacturer logos and instruction decals; no text, arrows, collage or other people. Preserve actual geometry rather than inventing a simplified machine. Exact movement: Machine Chest Press. Use the exact Hammer Strength Iso-Lateral Bench Press machine in reference. Athlete SEATED with hips on its small seat and whole back against the near-upright long back pad; feet planted wide on floor. Both hands grasp the two forward machine handles at mid-chest level. Show the press halfway forward, elbows bent about 70 degrees and forearms aligned with handles. Levers pivot above/behind shoulders and matched plate loads remain attached to the moving horns. Camera sees his chest, both grips and genuine machine base.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-1170695c-f4fe-4326-9181-e685472900a7.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "movement_family": "accessory_chest",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "reference_manufacturer": "Hammer Strength",
+        "reference_model": "Hammer Strength Plate-Loaded Iso-Lateral Bench Press",
+        "reference_page": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-iso-lateral-bench-press",
+        "reference_image_url": "https://cdn.shopify.com/s/files/1/0538/8307/6805/files/Hammer_Strength_-_Plate_Loaded_-_Iso-Lateral_Bench_Press_IL-BP_-_Render_1.jpg?v=1765472427",
+        "orientation": "Side / three-quarter photographic view; full composition. Head follows torso and task direction.",
+        "equipment": "Hammer Strength Plate-Loaded Iso-Lateral Bench Press — representative art reference only; no equipment-specific artwork identity.",
+        "preflight_notes": "Supported seated chest press; both factory handles attached to independent levers; feet grounded."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T21:12:05.073198+00:00",
+        "reviewed_at_display": "Sep 14, 2026 02:12 PM PT (Sep 14, 2026 05:12 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "308a04821a79f2d3201c33d33606ee42bb23dafbc98feae4387c09aafdeedcee",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 54,
+      "key": "accessory_iso_lateral_chest_press",
+      "movement_name": "Iso-Lateral Chest Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine-2026-09-14-54-attempt-01",
+      "generation_batch": "machine-2026-09-14",
+      "candidate_id": "8857f89f27647ad57ce097f3",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/8857f89f27647ad57ce097f3/master.png",
+          "sha256": "260db3033a682a76a99aee6d3dc3553065d27c8a449c421edf21d39838c4e45f",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2049444
+        },
+        "app": {
+          "path": "candidates/8857f89f27647ad57ce097f3/app.png",
+          "sha256": "01a8df8b3786172c301114b9cf123dfec9b7bd72cfc611c53d524a75f2af074e",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 370410
+        },
+        "thumbnail": {
+          "path": "candidates/8857f89f27647ad57ce097f3/thumbnail.png",
+          "sha256": "6efdd977ca049ccd8a9e4b48af39fb3cb8ff5bdb1189ce8ba6ffb73f4f4f9137",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 55004
+        }
+      },
+      "candidate_asset": "candidates/8857f89f27647ad57ce097f3/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T21:13:48.119048+00:00",
+          "reviewed_at_display": "Sep 14, 2026 02:13 PM PT (Sep 14, 2026 05:13 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "260db3033a682a76a99aee6d3dc3553065d27c8a449c421edf21d39838c4e45f",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T18:14:53.827736+00:00",
+      "created_at_display": "Sep 14, 2026 11:14 AM PT (Sep 14, 2026 02:14 PM Eastern)",
+      "generation_prompt": "Bilateral independent Hammer Strength chest press; both factory grips, back supported, feet floor. Approved Strength Ledger dark studio athlete/style reference; real commercial machine reference.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-b843a12c-f4cd-41f6-af92-5358f174da18.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "movement_family": "accessory_chest",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "reference_manufacturer": "Hammer Strength",
+        "reference_model": "Hammer Strength Plate-Loaded Iso-Lateral Bench Press",
+        "reference_page": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-iso-lateral-bench-press",
+        "reference_image_url": "https://cdn.shopify.com/s/files/1/0538/8307/6805/files/Hammer_Strength_-_Plate_Loaded_-_Iso-Lateral_Bench_Press_IL-BP_-_Render_1.jpg?v=1765472427",
+        "orientation": "Side / three-quarter photographic view; full composition. Head follows torso and task direction.",
+        "equipment": "Hammer Strength Plate-Loaded Iso-Lateral Bench Press — representative art reference only; no equipment-specific artwork identity.",
+        "preflight_notes": "Independent bilateral chest press levers, symmetric grasp, back-pad contact and grounded feet."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T21:13:48.119048+00:00",
+        "reviewed_at_display": "Sep 14, 2026 02:13 PM PT (Sep 14, 2026 05:13 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "260db3033a682a76a99aee6d3dc3553065d27c8a449c421edf21d39838c4e45f",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 57,
+      "key": "accessory_incline_smith_machine_bench_press",
+      "movement_name": "Incline Smith-Machine Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine-2026-09-14-57-attempt-01",
+      "generation_batch": "machine-2026-09-14",
+      "candidate_id": "59226a6b58ac95ba4b19185b",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/59226a6b58ac95ba4b19185b/master.png",
+          "sha256": "b0676d4035f40219b8bcb651958195d7444694e4e72600bdde53da4d13257517",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1952679
+        },
+        "app": {
+          "path": "candidates/59226a6b58ac95ba4b19185b/app.png",
+          "sha256": "b8cc90a46e58d9520271f511a20ce3fb29f5e370fcf92fab41de4e5714767870",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 346372
+        },
+        "thumbnail": {
+          "path": "candidates/59226a6b58ac95ba4b19185b/thumbnail.png",
+          "sha256": "25f0260544c85e04abfb106fbc74754f72cd3950bfb4c54bffe363f254e37f91",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 50885
+        }
+      },
+      "candidate_asset": "candidates/59226a6b58ac95ba4b19185b/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T21:14:37.397259+00:00",
+          "reviewed_at_display": "Sep 14, 2026 02:14 PM PT (Sep 14, 2026 05:14 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b0676d4035f40219b8bcb651958195d7444694e4e72600bdde53da4d13257517",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T18:14:54.568914+00:00",
+      "created_at_display": "Sep 14, 2026 11:14 AM PT (Sep 14, 2026 02:14 PM Eastern)",
+      "generation_prompt": "Smith incline bench press; 35-degree bench with head/shoulders supported; guided straight bar above upper chest. Approved Strength Ledger dark studio athlete/style reference; real commercial machine reference.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-ddca4109-208c-4dac-8c79-07f51e710230.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "movement_family": "accessory_chest",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "reference_manufacturer": "Hammer Strength",
+        "reference_model": "Hammer Strength Plate Loaded Vertical Smith Machine",
+        "reference_page": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-vertical-smith-machine",
+        "reference_image_url": "https://cdn.shopify.com/s/files/1/0538/8307/6805/files/hammer-strength-plate-loaded-vertical-smith-machine-charcoal-1000x1000_81d642c2-60f4-48e8-bbce-e1dfb0af30f7.jpg?v=1748945162",
+        "orientation": "Side / three-quarter photographic view; full composition. Head follows torso and task direction.",
+        "equipment": "Hammer Strength Plate Loaded Vertical Smith Machine — representative art reference only; no equipment-specific artwork identity.",
+        "preflight_notes": "Incline Smith press: hinged incline bench, supported head, pronated bilateral hands and continuous guided bar."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T21:14:37.397259+00:00",
+        "reviewed_at_display": "Sep 14, 2026 02:14 PM PT (Sep 14, 2026 05:14 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b0676d4035f40219b8bcb651958195d7444694e4e72600bdde53da4d13257517",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 135,
+      "key": "accessory_machine_reverse_flye",
+      "movement_name": "Machine Reverse Fly",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "machine",
+      "implement": "machine",
+      "family": "canonical_machine_accessories",
+      "generation_id": "machine-2026-09-14-135-attempt-01",
+      "generation_batch": "machine-2026-09-14",
+      "candidate_id": "3f43ef70433f3a79728b5751",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/3f43ef70433f3a79728b5751/master.png",
+          "sha256": "be33cd36caa9297b15f32934356171399fcacb7d8f8d92a1e8d3d891d0eadc44",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2001428
+        },
+        "app": {
+          "path": "candidates/3f43ef70433f3a79728b5751/app.png",
+          "sha256": "c03f1d1c991e3683e6f498c8380241dd228282c8fce20c571e3bd3bb27494b73",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 356047
+        },
+        "thumbnail": {
+          "path": "candidates/3f43ef70433f3a79728b5751/thumbnail.png",
+          "sha256": "c1b8d25a66b19aa5b9b835bf02292744a2b164b99081b05567271d503882f476",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 50626
+        }
+      },
+      "candidate_asset": "candidates/3f43ef70433f3a79728b5751/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-14T21:17:16.767301+00:00",
+          "reviewed_at_display": "Sep 14, 2026 02:17 PM PT (Sep 14, 2026 05:17 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "be33cd36caa9297b15f32934356171399fcacb7d8f8d92a1e8d3d891d0eadc44",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-14T18:14:56.989433+00:00",
+      "created_at_display": "Sep 14, 2026 11:14 AM PT (Sep 14, 2026 02:14 PM Eastern)",
+      "generation_prompt": "Use case: compositing. ONE square photorealistic Strength Ledger exact-movement artwork. Reference 1 is the REAL COMMERCIAL MACHINE: preserve its coherent frame, seat/back pads, pivots, lever arms, grips, loading horns and ground supports as one intact design. Move only its legitimate moving arms to the exercise phase; never add imaginary mechanisms or combine other machines. Reference 2 is STYLE AND ATHLETE ONLY: same original athletic adult man, short brown hair, graphite full-length sleeveless tank covering waist, plain black shorts, black trainers, natural skin/proportions. Near-black studio and rubber floor, neutral soft key, restrained purple rim; black equipment with modest steel highlights. Athlete actively performs the specified movement with anatomically coherent bilateral joints, hands wrapped around actual machine grips, realistic pad/body contact and both feet supported. Camera side/front three-quarter chosen for clear athlete-machine mechanics. Entire important machine, athlete, load and feet within square with tight but comfortable margins; prioritize movement clarity at thumbnail size. Brand-neutral: remove manufacturer logos and instruction decals; no text, arrows, collage or other people. Preserve actual geometry rather than inventing a simplified machine. \nMOVEMENT ID 135: Machine Reverse Fly. Real geometry: Life Fitness Insignia Series Pectoral Fly/Rear Deltoid. Athlete seated FACING real rear-deltoid machine, chest on upright pad, hands on its actual rear-delt grips. At mid-opening phase both long arms spread to 60 degrees each from straight forward, elbows softly bent and directed backward/up, not rowing or shrugging. Elevated rear-side three-quarter camera shows handles mechanically connected to pivot arms overhead, chest contact, planted feet. Gaze toward machine, neutral neck, no sideways head turn.",
+      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-b23d753e-2852-4591-b1d5-2398b60b8b88.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "movement_family": "accessory_rear_delts",
+      "execution_family": "MACHINE",
+      "sidedness": "bilateral",
+      "loading_implementation": "machine_unspecified",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "reference_manufacturer": "Life Fitness",
+        "reference_model": "Insignia Series Pectoral Fly/Rear Deltoid",
+        "reference_page": "https://shop.lifefitness.com/products/insignia-series-pectoral-fly-rear-deltoid",
+        "reference_image_url": "https://cdn.shopify.com/s/files/1/0538/8307/6805/files/LFInsignia-DualFly-charcoal-black.jpg?v=1759853180",
+        "orientation": "Side / three-quarter photographic view; full composition. Head follows torso and task direction.",
+        "equipment": "Insignia Series Pectoral Fly/Rear Deltoid — representative art reference only; no equipment-specific artwork identity.",
+        "preflight_notes": "Machine reverse fly: supported chest, open arms, connected fly handles and stable seated foot contact."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-14T21:17:16.767301+00:00",
+        "reviewed_at_display": "Sep 14, 2026 02:17 PM PT (Sep 14, 2026 05:17 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "be33cd36caa9297b15f32934356171399fcacb7d8f8d92a1e8d3d891d0eadc44",
         "source": "human_review_ui"
       }
     }
