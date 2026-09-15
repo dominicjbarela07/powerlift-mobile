@@ -43,6 +43,7 @@ assert.deepEqual(resolveCanonicalMovementArtwork(initialHydration), {
   regionKey: 'triceps',
   primaryMuscleGroup: 'triceps',
   secondaryMuscleGroups: ['chest'],
+  artworkKey: 'accessory_machine_dip',
 });
 
 const legacyHydration = canonicalArtworkInputForLoggerItem({

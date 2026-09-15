@@ -15,6 +15,9 @@ const SUBJECTS = [
   { id: 33, title: 'Incline Dumbbell Bench Press' }, { id: 253, title: 'Dumbbell Curl' },
   { id: 154, title: 'One-Arm Dumbbell Row' }, { id: 256, title: 'Standing Dumbbell Curl' },
   { id: 354, title: 'Bulgarian Split Squat' },
+  { id: 186, title: 'Sternum Chin-Up' }, { id: 102, title: 'Handstand Push-Up' },
+  { id: 58, title: 'Decline Smith-Machine Bench Press' },
+  { id: 136, title: 'Rear-Delt Row Machine' },
   { id: 121, title: 'Machine Lateral Raise', key: 'accessory_machine_lateral_raise', primary: 'side_delts' },
   { id: 113, title: 'Cable Lateral Raise', key: 'accessory_cable_lateral_raise', primary: 'side_delts' },
 ];
@@ -54,7 +57,7 @@ export default function MovementArtHeroLab() {
           <Text style={s.studyTitle}>{entry.title}</Text>
           <View style={s.prescription}><Text style={s.kicker}>PRESCRIBED</Text><Text style={s.reps}>12–15</Text><Text style={s.effort}>reps · 1 RIR</Text></View>
         </View>
-        {(Object.keys(focal) as (keyof MovementHeroFocal)[]).map(key => <View key={key} style={s.control}>
+        {(['focalX', 'focalY', 'scale', 'biasX', 'biasY'] as const).map(key => <View key={key} style={s.control}>
           <Text style={s.note}>{key}: {focal[key].toFixed(2)}</Text>
           <Pressable accessibilityLabel={`Decrease ${key}`} style={s.button} onPress={() => setFocal(value => ({ ...value, [key]: value[key] - 0.02 }))}><Text style={s.link}>−</Text></Pressable>
           <Pressable accessibilityLabel={`Increase ${key}`} style={s.button} onPress={() => setFocal(value => ({ ...value, [key]: value[key] + 0.02 }))}><Text style={s.link}>+</Text></Pressable>

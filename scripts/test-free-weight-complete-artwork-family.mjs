@@ -33,7 +33,10 @@ const confirmed = [...historicalConfirmed.filter(row => !withdrawn.has(row.id)),
 }];
 assert.equal(confirmed.length,195);
 assert.deepEqual(ids(manifest.movements), ids(confirmed));
-assert.deepEqual(Object.keys(registry).map(Number).sort((a,b)=>a-b), ids(confirmed), 'exact full inventory, without family gaps or extra registrations');
+const otherApprovedFamilies = new Set(human.canonical_assets.filter(asset =>
+  ['canonical_bodyweight_accessories','canonical_machine_accessories'].includes(
+    human.items.find(item => item.candidate_id === asset.candidate_id)?.family)).map(asset => asset.movement_definition_id));
+assert.deepEqual(Object.keys(registry).map(Number).filter(id => !otherApprovedFamilies.has(id)).sort((a,b)=>a-b), ids(confirmed), 'exact free-weight inventory, without family gaps or ungoverned extra registrations');
 assert.deepEqual(manifest.uncovered_confirmed_ids, []);
 assert.equal(manifest.approved, 195);
 assert.equal(manifest.new, 100);
@@ -97,6 +100,12 @@ for (const row of confirmed) {
 assert.equal(uniqueFiles.size,195);
 assert.equal(uniqueMasters.size,195,'distinct definitions have independently generated masters');
 for(const row of audit.records.filter(row=>!confirmed.some(item=>item.id===row.id))) {
+  if (otherApprovedFamilies.has(row.id)) {
+    assert.ok(['BODYWEIGHT','MACHINE'].includes(row.execution_family), 'only separately approved families extend this historical inventory');
+    assert.equal(row.identity_status,'canonical');
+    assert.equal(registry[row.id].key,row.key);
+    continue;
+  }
   assert.equal(registry[row.id],undefined,'excluded/custom/retired/ambiguous IDs do not gain art');
 }
 for(const id of [4,5,6,7]) {
@@ -106,7 +115,8 @@ for(const id of [4,5,6,7]) {
   assert.equal(resolve({kind:'accessory',movement_definition_id:id,key:row.key,family:row.family}).artworkKey,row.key,'existing typed family adapter supports independent legacy identity');
 }
 for(const id of [546,548]) assert.equal(manifest.movements.find(row=>row.id===id).generation_batch,'Completion');
-for(const id of [321,342,343,344,499,595,603]) assert.equal(registry[id],undefined);
+for(const id of [321,342,343,344,595,603]) assert.equal(registry[id],undefined);
+assert.equal(registry[499]?.key, 'accessory_barbell_rollout', 'governed BODYWEIGHT rollout now has separately human-approved artwork');
 assert.equal(resolve({kind:'accessory',display_name:'Dumbbell Curl',equipment_type:'dumbbell',primary_muscle_group:'biceps'}).artworkKey,undefined,'labels/equipment/muscles cannot select an exact asset');
 assert.equal(resolve({kind:'core',core_movement_id:33,core_family:'bench'}).kind,'core');
 const search=json(doc+'qa-search-serialized.json');

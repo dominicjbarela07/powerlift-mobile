@@ -1,5 +1,5 @@
 import { approvedArtRuntimeEnabled } from './approved-art-runtime';
-import policy from '@/artwork-review/runtime-policy.json';
+import policyJson from '@/artwork-review/runtime-policy.json';
 import { DEFAULT_FOCAL, thumbnailGeometry, type Presentation } from './movement-artwork-geometry.mjs';
 export { movementHeroGeometry } from './movement-artwork-geometry.mjs';
 import { normalizeCanonicalMovementArtSubject, resolveCanonicalMovementArtwork, type CanonicalMovementArtworkInput, type MovementArtInput, type CanonicalAccessoryArtworkKey } from './canonical-movement-artwork';
@@ -14,6 +14,9 @@ type ApprovalPolicy = Readonly<{
   denied_keys: readonly string[];
   approved_exact_artwork?: readonly Readonly<{ key: string; movement_definition_id: number; candidate_id: string; app_sha256: string; presentation?: Presentation }>[];
 }>;
+// JSON imports widen cropMode to string. Registration validates its enum and
+// bounds; startup/export independently bind this projection to human receipts.
+const policy = policyJson as ApprovalPolicy;
 
 /** Positive receipt for the exact currently mapped candidate. A filename,
  * grandfathered DEV preview or broad Core family illustration is not approval.
@@ -72,7 +75,7 @@ export function resolveMovementArtworkPresentation(movement: MovementArtInput | 
   };
 }
 
-export type MovementHeroFocal = Readonly<{ focalX: number; focalY: number; scale: number; biasX: number; biasY: number }>;
+export type MovementHeroFocal = Readonly<{ focalX: number; focalY: number; scale: number; biasX: number; biasY: number; cropMode?: 'contain' | 'focal' }>;
 // One presentation owner; stable artwork keys, never display-name matching.
 // These coordinates describe composition only and do not grant eligibility.
 const FOCAL_BY_ARTWORK: Readonly<Partial<Record<CanonicalAccessoryArtworkKey, MovementHeroFocal & { thumbnailScale?: number; thumbnailFocalY?: number }>>> = {

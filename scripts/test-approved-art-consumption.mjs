@@ -14,6 +14,11 @@ const policy=JSON.parse(fs.readFileSync('artwork-review/runtime-policy.json'));
 const state=JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
 assertHumanArtworkGate();
 assert.deepEqual(policy.approved_exact_artwork,approvedExactArtworkPolicy(state));
+for (const [family, expected] of [['canonical_bodyweight_accessories',100],['canonical_machine_accessories',85]]) {
+ const mapped=state.canonical_assets.filter(a=>state.items.find(i=>i.candidate_id===a.candidate_id)?.family===family);
+ assert.equal(mapped.length,expected,`${family}: complete approved family mapped`);
+ for(const a of mapped) assert.ok(policy.approved_exact_artwork.some(r=>r.candidate_id===a.candidate_id),`${a.key}: positive human receipt`);
+}
 for(const runtime of [{dev:true,channel:''},{dev:false,channel:'testflight'}]) {
 let currentPolicy=policy;
 const react={createElement:(type,props,...children)=>({type,props:{...props,children}}),useEffect:callback=>callback(),useState:x=>[x,()=>{}],useCallback:f=>f,memo:f=>f};
@@ -61,9 +66,9 @@ for(const receipt of policy.approved_exact_artwork){
   }
  }
  for(const phase of ['pre','active']){
-  const compact=renderGroup([id,91],null,phase);const first=nodes(compact,'CanonicalMovementArtwork')[0];assert.equal(first.props.accessoryPresentation,'movement');
-  const selected=renderGroup([id,91],id,phase);assert.equal(nodes(selected,'CanonicalMovementArtwork')[0].props.accessoryPresentation,'muscle-focus');assert.equal(nodes(selected,'MovementArtworkHero')[0].props.artworkKey,key);
-  const machine=renderGroup([id,91],91,phase);assert.equal(nodes(machine,'MovementArtworkHero').length,0);assert.equal(nodes(machine,'CanonicalMovementArtwork')[0].props.accessoryPresentation,'movement');
+  const compact=renderGroup([id,120],null,phase);const first=nodes(compact,'CanonicalMovementArtwork')[0];assert.equal(first.props.accessoryPresentation,'movement');
+  const selected=renderGroup([id,120],id,phase);assert.equal(nodes(selected,'CanonicalMovementArtwork')[0].props.accessoryPresentation,'muscle-focus');assert.equal(nodes(selected,'MovementArtworkHero')[0].props.artworkKey,key);
+  const uncovered=renderGroup([id,120],120,phase);assert.equal(nodes(uncovered,'MovementArtworkHero').length,0);assert.equal(nodes(uncovered,'CanonicalMovementArtwork')[0].props.accessoryPresentation,'movement');
  }
  for(const size of [40,44,64,80]){const box=art.movementThumbnailGeometry(size,key);assert.equal(box.width,box.height);assert.ok(box.left<=0&&box.top<=0&&box.left+box.width>=size&&box.top+box.height>=size,'bounded crop covers frame without stretching');}
 }
@@ -71,16 +76,16 @@ for(const mode of ['pending','rejected','missing']){
  const key=policy.approved_exact_artwork.find(r=>r.movement_definition_id===253).key;
  currentPolicy={denied_keys:mode==='missing'?[]:[key],approved_exact_artwork:[]};
  for(const active of [false,true])for(const expanded of [false,true]){const tree=renderSingle(253,expanded,active);assertCue(tree,false,key);assert.equal(nodes(tree,'MovementArtworkHero').length,0,mode);}
- for(const phase of ['pre','active'])assert.equal(nodes(renderGroup([253,91],253,phase),'MovementArtworkHero').length,0);
+ for(const phase of ['pre','active'])assert.equal(nodes(renderGroup([253,120],253,phase),'MovementArtworkHero').length,0);
 }
 currentPolicy=policy;
-for(const id of [91,120])for(const active of [false,true])for(const expanded of [false,true]){const tree=renderSingle(id,expanded,active);assertCue(tree,false);assert.equal(nodes(tree,'MovementArtworkHero').length,0);}
+for(const id of [120])for(const active of [false,true])for(const expanded of [false,true]){const tree=renderSingle(id,expanded,active);assertCue(tree,false);assert.equal(nodes(tree,'MovementArtworkHero').length,0);}
 const warnings=[];const oldWarn=console.warn;console.warn=(...args)=>warnings.push(args);
 try{
  art.reportApprovedArtworkBypass(subject(253),null,`test:missing-registry:${runtime.channel}`,policy,true);
  art.reportApprovedArtworkBypass(subject(253),null,`test:missing-registry:${runtime.channel}`,policy,true);
  assert.equal(warnings.length,1,'deduplicated approved-but-missing consumer warning');assert.equal(warnings[0][1].movement_definition_id,253);
- art.reportApprovedArtworkBypass(subject(91),null,'test:uncovered',policy,true);
+ art.reportApprovedArtworkBypass(subject(120),null,'test:uncovered',policy,true);
  art.reportApprovedArtworkBypass(subject(253),null,'test:release',policy,false);
  art.reportApprovedArtworkBypass(subject(253),'accessory_dumbbell_curl','test:correct',policy,true);
  assert.equal(warnings.length,1,'no warning for uncovered, release or correct exact rendering');
@@ -89,6 +94,6 @@ try{
  const key='accessory_dumbbell_curl',asset=assets.CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[key];delete assets.CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[key];
  try{assert.equal(heroLayer({artworkKey:key,receiptId:'test',movementDefinitionId:253}),null);assert.equal(warnings.length,runtime.dev?2:1,'missing hero registry asset reports its approved canonical ID only in DEV');if(runtime.dev)assert.equal(warnings[1][1].movement_definition_id,253);}finally{assets.CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[key]=asset;}
 }finally{console.warn=oldWarn;}
-console.log(`Approved art consumption (${runtime.dev ? 'DEV' : 'TestFlight release'}): ${policy.approved_exact_artwork.length} human-approved asset chains; actual compact/expanded TSX, PRE/ACTIVE/remount, superset selection, pending/rejected/missing, independent machine/cable fallback, crops and diagnostics PASS`);
+console.log(`Approved art consumption (${runtime.dev ? 'DEV' : 'TestFlight release'}): ${policy.approved_exact_artwork.length} human-approved asset chains; actual compact/expanded TSX, PRE/ACTIVE/remount, superset selection, pending/rejected/missing, approved BW/machine coverage and independent cable fallback, crops and diagnostics PASS`);
 
 }

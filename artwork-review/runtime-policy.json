@@ -3,6 +3,125 @@
   "denied_keys": [],
   "approved_exact_artwork": [
     {
+      "key": "accessory_45_degree_back_extension_glute_bias",
+      "movement_definition_id": 446,
+      "candidate_id": "1d399caba95162fb2adb9bef",
+      "app_sha256": "697b12deded60d311b554de113c2e9a228b79f7f2a33aad12941cf6052cf1c3d",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_45_degree_back_extension_hamstring_bias",
+      "movement_definition_id": 414,
+      "candidate_id": "f99b39df272be0a70ad6b744",
+      "app_sha256": "8ec3bb9f0d7d3cda94f1fc7cfb8efae0c827784b07739c8b85bb85bc6a8a4612",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_45_degree_back_extension_lower_back_bias",
+      "movement_definition_id": 550,
+      "candidate_id": "c53c144a182a3f638ecc02dc",
+      "app_sha256": "8e9e9f593b00081086ce79b9299e0e7f718a5ebf2f520cc9403044a37cf9a5ad",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_ab_wheel_rollout",
+      "movement_definition_id": 514,
+      "candidate_id": "9665d2b1aa8d06282808e953",
+      "app_sha256": "d34bf8c3a2735c95339a4d779ca0893e45e46f439be02603fcf61433533f30cb",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_abdominal_crunch_machine",
+      "movement_definition_id": 505,
+      "candidate_id": "2fe43f2043f40af776d90b48",
+      "app_sha256": "3dd6da0fc7fc53b0bfd29286b8e0b1f17e069f07fa63cff56fe8916efd9bf2aa",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_adductor_machine",
+      "movement_definition_id": 451,
+      "candidate_id": "14b0b3a365f2f505147a6f20",
+      "app_sha256": "036d1376f89f412583642862279311f2f7ac76e979df7510d17b6915221f05ac",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_adductor_slide",
+      "movement_definition_id": 459,
+      "candidate_id": "fe86b8b96c07c89cf07d953c",
+      "app_sha256": "464fa8e324acc47e531e4253b4b1e9d3d3faad1ac519c00cecf68e1e8a221b19",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_alternating_dumbbell_curl",
       "movement_definition_id": 254,
       "candidate_id": "existing-254-beb0b79b3b11",
@@ -31,6 +150,23 @@
       "movement_definition_id": 81,
       "candidate_id": "existing-81-1cba1751a88e",
       "app_sha256": "b51e925e89790f079ec0a6c10a9e15ebd6d4bf08bc7deb323079b0288a6e25d6"
+    },
+    {
+      "key": "accessory_assisted_nordic_hamstring_curl",
+      "movement_definition_id": 409,
+      "candidate_id": "4f9422288b2bf60bf6fbbf9f",
+      "app_sha256": "f655c22b3303121b31f152b2839ffa5472981bc761c45c0ee53dea1ad5eef457",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_b_stance_hip_thrust",
@@ -105,6 +241,23 @@
       "app_sha256": "4fbbb1f19f287ab776d94a40d894142eb0df834287d67e02161ae4eb001c4782"
     },
     {
+      "key": "accessory_barbell_rollout",
+      "movement_definition_id": 499,
+      "candidate_id": "1e0c007eef28e278c5aed5f1",
+      "app_sha256": "93f3d57cbe6b5fe3f9ba4b4dcfeadef38f0a04bfc0622f55aa98c4601f81999f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_barbell_shrug",
       "movement_definition_id": 234,
       "candidate_id": "existing-234-1684e7f4e206",
@@ -147,6 +300,57 @@
       "app_sha256": "2f65a8dca94a9f75e20ed2f1241eb3b333ba104bf23c72c85ed65bedeacfaee0"
     },
     {
+      "key": "accessory_belt_squat",
+      "movement_definition_id": 371,
+      "candidate_id": "1867d11732557b0fe5c43d0c",
+      "app_sha256": "8fe869c7bc25d32495bbc392ffa83674738b5a0e9f8bced9e4ab4416eff0222d",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_bench_dip",
+      "movement_definition_id": 315,
+      "candidate_id": "ddf1814282c9c983ba52cb25",
+      "app_sha256": "a8a9be37c4071838f1618649949d13ee753cceebeb79fd03d9c77e181b799d35",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_bent_knee_calf_raise",
+      "movement_definition_id": 490,
+      "candidate_id": "9f70024d2811ce4d7453c526",
+      "app_sha256": "f4bf320f8215d9ceb7a64e37f111c92db5aaeedba509d97af2fd775f438d6ddd",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_bent_over_barbell_row",
       "movement_definition_id": 191,
       "candidate_id": "existing-191-25b5eca5e80f",
@@ -157,6 +361,176 @@
       "movement_definition_id": 126,
       "candidate_id": "existing-126-89a9558af12a",
       "app_sha256": "4e96a9a932c237b07c0f3f5c2c3ddf2f06831a4fe9ca9db3bf341e944df3d7bc"
+    },
+    {
+      "key": "accessory_bicycle_crunch",
+      "movement_definition_id": 538,
+      "candidate_id": "5b63deb679d89f7b25911575",
+      "app_sha256": "76e46058de270e1db19d8878ae1cb413edc064facfa598d484b360a26d459a11",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_bird_dog",
+      "movement_definition_id": 541,
+      "candidate_id": "8edd29af0a3b91a4136007df",
+      "app_sha256": "a6292675e816782909ac8a01af35368b0eee0b8c1bb721b717168e52db9ab86c",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_bird_dog_back_extension",
+      "movement_definition_id": 553,
+      "candidate_id": "0eb9934f56f5777f096d473c",
+      "app_sha256": "859137488342bc014708fac6b14017b1a3e870ac42ee29d4a2e7062fc1315c0d",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_body_saw",
+      "movement_definition_id": 515,
+      "candidate_id": "831d6c6522ccfd3dba9c9b32",
+      "app_sha256": "573cf8fc468b83697bc15d4850d6a3e487947249e87566ad3c60bf3c2ea5f49f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_bodyweight_curl",
+      "movement_definition_id": 287,
+      "candidate_id": "f65d2a4af15a1149c6cbdcb2",
+      "app_sha256": "2e4f6bdc0c23c8c6d8424b3b42aa279ba36d66a1ffd5a837b9597a700ac19183",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_bodyweight_glute_bridge",
+      "movement_definition_id": 442,
+      "candidate_id": "9983ae7a4cf7783a30dbc4c5",
+      "app_sha256": "0fba2b3b8f1244221752610facf586c5a0c3771698665b8b36160d5b2c91d1f7",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.6,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.6,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_bodyweight_glute_ham_raise",
+      "movement_definition_id": 412,
+      "candidate_id": "c7c6983b954ffbe92ce32e99",
+      "app_sha256": "90791d9b8119f34c479fd172999f85891a3b550436cd23659abcd639fad259eb",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_bodyweight_skull_crusher",
+      "movement_definition_id": 318,
+      "candidate_id": "5ba9a5676f414ac1f85d1f7e",
+      "app_sha256": "e3cdfdadb740cfe39934a09f47b4473546be6bdd968141d2bb284396fb16f09d",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_bodyweight_split_squat",
+      "movement_definition_id": 379,
+      "candidate_id": "b9d17803cfbb3aa9f2367d62",
+      "app_sha256": "194436e04bbbb38443ea4839cd4c7c23f3cd3bd5b41c7e7ea67af54b0ff490ad",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_bodyweight_walking_lunge",
+      "movement_definition_id": 380,
+      "candidate_id": "8dbac316058a60f22d4233b3",
+      "app_sha256": "6e6a514012d86e81e6a9b8881cce301d803dd3393120b0a3fdb7327c38b7bc69",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_bradford_press",
@@ -177,10 +551,44 @@
       "app_sha256": "6721b466406d867f70e1f9a1ff876a4434509f4219886b65220a620de0eda39e"
     },
     {
+      "key": "accessory_captain_s_chair_knee_raise",
+      "movement_definition_id": 512,
+      "candidate_id": "c0ab5823837ca494d72af453",
+      "app_sha256": "64d0f21f59a9373ccd4f76717e27b3f04d97fb0e06e411897b4ce54af90afd09",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_cheat_curl",
       "movement_definition_id": 268,
       "candidate_id": "existing-268-72bd33e4bd4a",
       "app_sha256": "7019d0bf52dc326bad28106f6deb120e91b26c974006b3745a578ae322b680ac"
+    },
+    {
+      "key": "accessory_chest_dip",
+      "movement_definition_id": 74,
+      "candidate_id": "06f99d39d99905f3e06453c2",
+      "app_sha256": "a950724c464968d848783096103af4a565980f13a883fae84ce8eadc4fc9b2f7",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_chest_supported_barbell_row",
@@ -207,6 +615,23 @@
       "app_sha256": "f898db1a8690961188fbf3d800aa7cb9a64f6ebb719f7edbe9c44a77713b2b78"
     },
     {
+      "key": "accessory_chest_supported_high_row",
+      "movement_definition_id": 223,
+      "candidate_id": "eaaaa71a62f3c249f2246581",
+      "app_sha256": "69e6025a7737182f53b79d2d98ce0399ab805cf1245826478efd8c87bb588153",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_chest_supported_kelso_row",
       "movement_definition_id": 205,
       "candidate_id": "709164d609f64a1a9546febb",
@@ -219,10 +644,61 @@
       "app_sha256": "afa0cc7615218c0e6c146aba595523f6e475ad7f970339f3bdce4ad8a10305ad"
     },
     {
+      "key": "accessory_chest_supported_machine_row",
+      "movement_definition_id": 216,
+      "candidate_id": "2bc172966d50e3616d50ace9",
+      "app_sha256": "6b0187ca20b243fe2de6d4eb014fa27aec2a839d81bdacf416af1f2e661d9f77",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_chest_supported_rear_delt_machine_row",
+      "movement_definition_id": 137,
+      "candidate_id": "4b5657f21f41cbb4c17e2f25",
+      "app_sha256": "4fe0cf26d8a03277f986f3eb11f71a2610ed5aad083f68c7ce4002568219503d",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_chest_supported_t_bar_row",
       "movement_definition_id": 199,
       "candidate_id": "6e7734eac43593177792d550",
       "app_sha256": "1fe9b9682e7a5d4a2d32671c719070b8fe99a71d4e992c340f1ceaa68cee0585"
+    },
+    {
+      "key": "accessory_chin_up",
+      "movement_definition_id": 185,
+      "candidate_id": "2da2a53dc3cd0abca54f0361",
+      "app_sha256": "8ac9f03b886cf277f929b9b05f747e70bf7efef22e3e6bb963c192f225c6766f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_close_grip_bench_press",
@@ -237,16 +713,135 @@
       "app_sha256": "ee040127e2ee08356ff4cc12a0e42d398b50ed435926affa102fae3ea683977c"
     },
     {
+      "key": "accessory_converging_chest_press",
+      "movement_definition_id": 53,
+      "candidate_id": "69d6729659cf1e3929de84a1",
+      "app_sha256": "a5422acd560e9659784011e1ff6542c509274e026bcb56e5de45be8c8dcf3292",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_copenhagen_adduction",
+      "movement_definition_id": 455,
+      "candidate_id": "8669dd7ce2d5342377643dc9",
+      "app_sha256": "6bb29b351880924215ca9377529e378e14e10d2b06fe5f98f955476eea5d11d8",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_copenhagen_side_plank",
+      "movement_definition_id": 537,
+      "candidate_id": "6d6bc1fabaa7eb46a6bcbece",
+      "app_sha256": "7daf317de6166c004fdc49b7e07b9c77437294c0d975ae4102d67d28a214f0e2",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_cross_body_hammer_curl",
       "movement_definition_id": 264,
       "candidate_id": "existing-264-272271214337",
       "app_sha256": "8c8fea6c93886f66e62153e1cf645700f3a2c575860bbc89b6f4f6d05ee02cdd"
     },
     {
+      "key": "accessory_cross_body_mountain_climber",
+      "movement_definition_id": 539,
+      "candidate_id": "2ea93a2f09118fc4276bb25a",
+      "app_sha256": "1062bd6986b66791f1aca1d7424b8d4096a5b8d89b8477fd8e521ed1d6b22a9b",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_crunch",
+      "movement_definition_id": 507,
+      "candidate_id": "207c6aa8e86931bcfc209501",
+      "app_sha256": "c75cf4edf04ad150de0c8d5a30b9bde6b0118014552943c1ab824a928c123b2a",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_cyclist_squat",
       "movement_definition_id": 352,
       "candidate_id": "existing-352-bc47de04f275",
       "app_sha256": "1458498f41f65d45e39103ba4f394c8da17b7ca1546e874d6ceaee7b9032c411"
+    },
+    {
+      "key": "accessory_dead_bug",
+      "movement_definition_id": 516,
+      "candidate_id": "310b47114b99f07847c956ef",
+      "app_sha256": "5be5b6ec7f8024dece92d8d9ec0ce9ceddc1a13349bab4573ae97eb605fd8ed0",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_dead_hang",
+      "movement_definition_id": 345,
+      "candidate_id": "2763cb51ded39c0313af01bc",
+      "app_sha256": "b49fa27368336104fee4424223b5efd5f79d47b17d6385a9d4af4a5337a9ed80",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_decline_dumbbell_bench_press",
@@ -261,16 +856,135 @@
       "app_sha256": "585a37f452e5a5e47380b1ae24d822d4c8d2afca1febb26d1d3a087e6fe5796c"
     },
     {
+      "key": "accessory_decline_machine_chest_press",
+      "movement_definition_id": 50,
+      "candidate_id": "bba6945dc45d7e402541ed1b",
+      "app_sha256": "a99351771428b4bc291da8875c7996f7fcdc7f2060ebe479cb289ab5e9f50afd",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_decline_push_up",
+      "movement_definition_id": 71,
+      "candidate_id": "abe8bb0026d2406a0b4e5c69",
+      "app_sha256": "49f0f1d8270e2f421245c2365f238fb6b275a7f56f7c8d54ac4806372f6d10f6",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.6,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.6,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_decline_sit_up",
+      "movement_definition_id": 509,
+      "candidate_id": "34fb440666ca961007d656f4",
+      "app_sha256": "7d06e5c3c7fc0523f7f8bceecd7c877f305c0319636efd3ba6164d6ce59e69e5",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_decline_skull_crusher",
       "movement_definition_id": 295,
       "candidate_id": "9511f6af6d5d3d9750ea1e5e",
       "app_sha256": "1fc4f24d3a77d9b0305224ba88248debf7466aafe44fef6e6450d14d1284d405"
     },
     {
+      "key": "accessory_decline_smith_machine_bench_press",
+      "movement_definition_id": 58,
+      "candidate_id": "8fbbeb77652be1ad4867e036",
+      "app_sha256": "d73d9ef993e02115ba1e1aedb4deccc7a5b39d14ab23376eb3b384852bb55498",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_deficit_push_up",
+      "movement_definition_id": 68,
+      "candidate_id": "cdae30a52fea961be3df70e6",
+      "app_sha256": "72b316a30ed4c61c3e65104901e9258a47ebdf250f33a03ec6c94bd53cd1aeb6",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_deficit_reverse_lunge",
       "movement_definition_id": 426,
       "candidate_id": "existing-426-b7e584fb1db8",
       "app_sha256": "2dc880e9ab9723b89a20eea79404eb646d98a5618fbf3115000dd7b83af4b006"
+    },
+    {
+      "key": "accessory_diamond_push_up",
+      "movement_definition_id": 317,
+      "candidate_id": "3be7960d1629df1e58467bd8",
+      "app_sha256": "86fe24da7be8764fcec0276c2868130bbf6663e5939d3ec8f67dac0b365304af",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_donkey_calf_raise",
+      "movement_definition_id": 491,
+      "candidate_id": "e4cff2d874911ad7c071f58c",
+      "app_sha256": "3670183e1f60177dc106d3a3f65f7d0f9f27d60410ad8e0b551fdc3eabe35158",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_donkey_calf_raise_with_weight",
@@ -453,6 +1167,23 @@
       "app_sha256": "46626b16fa7ddf54c75b9edf6a406e33fa54f12da501de73d8559542555af89c"
     },
     {
+      "key": "accessory_false_grip_hang",
+      "movement_definition_id": 347,
+      "candidate_id": "81e23a2228847bf98cb09537",
+      "app_sha256": "98d1480473e487dd49478d4a49dc878bdf847ef4f347a27cb1091e2430b10cf6",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_farmer_carry",
       "movement_definition_id": 240,
       "candidate_id": "existing-240-a23bf2200e2a",
@@ -465,6 +1196,40 @@
       "app_sha256": "38fef3866bbf1b5ecc4bd8733d67bd6cf39a0eb5fe0d7f9c2a3a2188953d3233"
     },
     {
+      "key": "accessory_feet_elevated_inverted_row",
+      "movement_definition_id": 226,
+      "candidate_id": "1a5058828f72a3b6c5d846dc",
+      "app_sha256": "738e82f4f8e2ca1a6d4d470a8c5aa3bc8b2ae7bb3b0c9ecb451b96a4b362c6a4",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_fire_hydrant",
+      "movement_definition_id": 468,
+      "candidate_id": "00eebad4548915629f76ceb0",
+      "app_sha256": "71bdf4fbac37d98900abf6f79a2abdcc01eb719ee4712eb6e59ec67a12225d7d",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_flat_dumbbell_bench_press",
       "movement_definition_id": 32,
       "candidate_id": "existing-32-de6e0e89daf1",
@@ -475,6 +1240,23 @@
       "movement_definition_id": 359,
       "candidate_id": "existing-359-fd7fce987c24",
       "app_sha256": "83636ad4c18f5eea440513db6b4f6b1064e5c29599da967886ab810149bf6fa6"
+    },
+    {
+      "key": "accessory_frog_pump",
+      "movement_definition_id": 444,
+      "candidate_id": "ba8ebe378b515dd05fe48b14",
+      "app_sha256": "6d05c161c4fc4dabdebd349fd3dd63492c58cd0c488311fcecd02093f1bd60e6",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_front_foot_elevated_split_squat",
@@ -493,6 +1275,40 @@
       "movement_definition_id": 428,
       "candidate_id": "existing-428-9c45cc0ee142",
       "app_sha256": "761c175c27b7c137b03111cb4faaf9f63e295d13861a7314f5f8d57eda904da6"
+    },
+    {
+      "key": "accessory_glute_drive_machine",
+      "movement_definition_id": 433,
+      "candidate_id": "e6eafa2076e23080eaa55806",
+      "app_sha256": "c481d1df0a64a0da3be19fac9b1cb63651ec1aec890e44c2f6f9f9608bbc0f88",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_glute_ham_raise",
+      "movement_definition_id": 403,
+      "candidate_id": "ca536ef31b1ae46671db1033",
+      "app_sha256": "5a7cbf0c326d3cad30eac166c5b362b3c03df56fcfe32d7c357b3f44f4ccca58",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_glute_ham_raise_with_weight",
@@ -525,6 +1341,40 @@
       "app_sha256": "576b2298b67d3ac331caeeb41b68b8818240144b1b3f00b66f912670a52f3f77"
     },
     {
+      "key": "accessory_hack_squat",
+      "movement_definition_id": 369,
+      "candidate_id": "3fdcb864e77b7327f2ebf66b",
+      "app_sha256": "bd232658c6da1bcb92e1b9060bf5e56fb0bbd12846b7ff52659b85175bace54e",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_hack_squat_calf_raise",
+      "movement_definition_id": 484,
+      "candidate_id": "959c1a01a34f5aaa58608791",
+      "app_sha256": "b187d8b0920c5f7cb3222844f653d86eaef3a30f23d45b0dbe7d2d1f6cc3db26",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_half_kneeling_landmine_press",
       "movement_definition_id": 87,
       "candidate_id": "9a198a3297f07211f8dcba5c",
@@ -535,6 +1385,74 @@
       "movement_definition_id": 263,
       "candidate_id": "existing-263-e71321a88df4",
       "app_sha256": "7f36e353fc7c0042b710ed312dcad7ecc84252dab91a892d1f4218b9deb89397"
+    },
+    {
+      "key": "accessory_handstand_push_up",
+      "movement_definition_id": 102,
+      "candidate_id": "b5ee29c48e06185f9cca481f",
+      "app_sha256": "406fa33c5c6acd95f517ec9fd6ccfab9ed5ff033b42425130ceb54200e8e7b48",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_hanging_knee_raise",
+      "movement_definition_id": 510,
+      "candidate_id": "aeb8888e2520cedeb4a8fa62",
+      "app_sha256": "491b7385b14f2b1d8db77be11dd7bc2fea41d41f2ff59279875a4dba99ea0da2",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_hanging_knee_raise_iso_hold",
+      "movement_definition_id": 577,
+      "candidate_id": "9f9cf4783ed13b956fb9f465",
+      "app_sha256": "f3b8810ddca38915812792467d6ad45080b366b3fe0316b636e9ad515a6e985f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_hanging_leg_raise",
+      "movement_definition_id": 511,
+      "candidate_id": "6d645cb2e1aa2459e201ab6f",
+      "app_sha256": "89969f5213a4ce4c96dcd00f3957c61d4a64283b3eef2ba060865fa21a6aab6f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_heel_elevated_goblet_squat",
@@ -559,6 +1477,74 @@
       "movement_definition_id": 349,
       "candidate_id": "35a3cef411c6353aa387316d",
       "app_sha256": "4e6ca5fd35ec70926c7e7b1fde4a61875db886106a37cc1c95645c44b59c165a"
+    },
+    {
+      "key": "accessory_hip_abductor_machine",
+      "movement_definition_id": 463,
+      "candidate_id": "b9ee423a7d06163ed2b72aaa",
+      "app_sha256": "7184b86456a6314c5f967b4adbcd07091a0c040b657feea11d172d5758218bfe",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_hip_flexion_machine",
+      "movement_definition_id": 573,
+      "candidate_id": "f5b1dd65207d056fb9d3a501",
+      "app_sha256": "c4463b47bf64882290ed80bb6d75d1c618bd4c9c561ed148943983dba25d3d97",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_hollow_body_hold",
+      "movement_definition_id": 517,
+      "candidate_id": "4ab87f8f6a6c7e8e3258e4f0",
+      "app_sha256": "cf497b9b0160401e692bbc2a886a8154a22f30b6963f845465f9cf5dee907d1a",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_horizontal_back_extension",
+      "movement_definition_id": 551,
+      "candidate_id": "5614edd0247b686b0888175c",
+      "app_sha256": "ddd50a6fc7cc7e90250815fccbd741ee457e5920bfb46ae3ff53d8e9a7be4d50",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_incline_bench_dumbbell_row",
@@ -597,10 +1583,197 @@
       "app_sha256": "a6e7eb0bb5957682a5e990f2b8e92676d0ae850e30c687712136fc1e2dbe8c6d"
     },
     {
+      "key": "accessory_incline_machine_chest_press",
+      "movement_definition_id": 49,
+      "candidate_id": "a8b4759ef9f0e43e9414ab59",
+      "app_sha256": "40e08b05c05af6e8adfffc093c92124e823e941da3ccd6dd18c41c92fd59e6f2",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_incline_push_up",
+      "movement_definition_id": 72,
+      "candidate_id": "ed10bfa575015e1b4cb26065",
+      "app_sha256": "1f577a8f85283c0196e140d53c234c1cdf16c38acebddb87c5c8fa0623efc53c",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.6,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.6,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_incline_skull_crusher",
       "movement_definition_id": 294,
       "candidate_id": "existing-294-b6f395239458",
       "app_sha256": "dfaa79be70a0abfc5a5041a190d13bfb945d8b517073846c2a3ee68aadc32c48"
+    },
+    {
+      "key": "accessory_incline_smith_machine_bench_press",
+      "movement_definition_id": 57,
+      "candidate_id": "59226a6b58ac95ba4b19185b",
+      "app_sha256": "b8cc90a46e58d9520271f511a20ce3fb29f5e370fcf92fab41de4e5714767870",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_inverted_row",
+      "movement_definition_id": 225,
+      "candidate_id": "eebfab8c5add111117ff46a5",
+      "app_sha256": "764785db3f3a7b17b21e1ea53396f09ded38920d5cb2b83ad92392af3f904cff",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_iso_lateral_chest_press",
+      "movement_definition_id": 54,
+      "candidate_id": "8857f89f27647ad57ce097f3",
+      "app_sha256": "01a8df8b3786172c301114b9cf123dfec9b7bd72cfc611c53d524a75f2af074e",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_iso_lateral_high_row",
+      "movement_definition_id": 218,
+      "candidate_id": "f9cc8ee8c9075270b3b0e02d",
+      "app_sha256": "91745c28831909c573818d978a6055e0398cc3b20618a08a962bcf37dca62b25",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_iso_lateral_lat_pulldown",
+      "movement_definition_id": 179,
+      "candidate_id": "de5bfaa1b25dbd41438a9f68",
+      "app_sha256": "2ac3119bfc120051dcf1a3f86d7c610e7def27303b0852c6a0248369030fee3e",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_iso_lateral_low_row",
+      "movement_definition_id": 180,
+      "candidate_id": "2090a98fd2fd6d5dafe4624b",
+      "app_sha256": "6db5b49824b6edbd2521aa731f0084dcb071a7f58fe72d0fffde7b75429f05a0",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_iso_lateral_shoulder_press",
+      "movement_definition_id": 92,
+      "candidate_id": "d241d381c5080630880e8de5",
+      "app_sha256": "6fbfe1e57fafa83325a98791f03d2d80c0b586f6f7d59f34576832e6c8002e68",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_isometric_neck_extension",
+      "movement_definition_id": 588,
+      "candidate_id": "4ffc5aac580f3943d196e704",
+      "app_sha256": "eccc6202de76bba569956456f835dba8cd25fcdd975ed547d444fbe4e82115e3",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_isometric_neck_flexion",
+      "movement_definition_id": 587,
+      "candidate_id": "3b065a0c0f4c1e36c65c5fe6",
+      "app_sha256": "3293c7b7624ce84be8674bc9bfe1b8121789ad070aaf29f8cbb8c6006946db16",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_jefferson_curl",
@@ -627,10 +1800,44 @@
       "app_sha256": "36cc64ed65ce1b28ac42f67e265d47ee639a771d011012f986ae551e02cb936e"
     },
     {
+      "key": "accessory_kneeling_leg_curl",
+      "movement_definition_id": 400,
+      "candidate_id": "db43d473970bfdfb771c9a5a",
+      "app_sha256": "689ae036e5b7893d94e8c8b1bf0133df8f58441f734284008ff741365e92bc3a",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_kroc_row",
       "movement_definition_id": 157,
       "candidate_id": "12fa54e079be66ef501596dd",
       "app_sha256": "565fc0d896d9124ebd555d048c7cf9139ec27a746942c1898a165cccffa1a00f"
+    },
+    {
+      "key": "accessory_l_sit",
+      "movement_definition_id": 576,
+      "candidate_id": "bc1b64424a5bd3d315a7d75c",
+      "app_sha256": "28f28807a8231e05a2a230a36bc54635dfa7526fd35c21a60917db779caefe2b",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_landmine_press",
@@ -675,10 +1882,78 @@
       "app_sha256": "b11a64b3eac71d0d427f8d872fde6f632b20e76c65fcc379dc2c82bb887a4e5a"
     },
     {
+      "key": "accessory_lateral_step_down",
+      "movement_definition_id": 469,
+      "candidate_id": "bb834f4fb03219d3f736bf20",
+      "app_sha256": "4bc8e30d9bf8e0b796b0ba27bfea346bbf8c39393376746f3a96bba02c70587f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_lean_away_dumbbell_lateral_raise",
       "movement_definition_id": 106,
       "candidate_id": "40d02b8114f15e28ef43dcbc",
       "app_sha256": "20063a2918670276a9ecbe1fecc73167bcc73ccb71f19d7eff9141139edc380d"
+    },
+    {
+      "key": "accessory_leg_extension",
+      "movement_definition_id": 365,
+      "candidate_id": "383cb23f97c816d471d75a2b",
+      "app_sha256": "a3845270d0da8b0ae9c94858ff842e4ced7d33b128a259f5db966b8111f6d777",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_leg_press",
+      "movement_definition_id": 367,
+      "candidate_id": "5fdca18ee08c21a1ca98285b",
+      "app_sha256": "36ba7121ece63165cb7adfde549ec730633077f31a3aed36e97a32dfdbd8288b",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_leg_press_calf_raise",
+      "movement_definition_id": 483,
+      "candidate_id": "544d9e44901b5d62c0e7ad71",
+      "app_sha256": "9517ea1192c6a5a467c2f6c019f5bbac47992891e6420c967288e0911c3dd10b",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_lever_bar_pronation",
@@ -691,6 +1966,23 @@
       "movement_definition_id": 335,
       "candidate_id": "existing-335-efc4390a7fda",
       "app_sha256": "f87e935263c511fea158a754dfca566c3d01a9113dad6c77a8c8d12dc6caee87"
+    },
+    {
+      "key": "accessory_long_lever_copenhagen_adduction",
+      "movement_definition_id": 457,
+      "candidate_id": "f4e894ea980f500408411270",
+      "app_sha256": "120463a7afed251fb6bbef883cd7ccd5187bd2970135823e20e452ef78eed0b1",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_long_stride_bulgarian_split_squat",
@@ -711,10 +2003,418 @@
       "app_sha256": "95c94c650a49d64932fedb821c694718fb15123aee3bd9ddc5733059560ef2ce"
     },
     {
+      "key": "accessory_lumbar_extension_machine",
+      "movement_definition_id": 555,
+      "candidate_id": "d0c2a157251b1d1b2abe0952",
+      "app_sha256": "05c4add75e9dd0be946040fe5c3f0d645172be980ad7db7755b8cdfb968d7a75",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_lying_dumbbell_lateral_raise",
       "movement_definition_id": 107,
       "candidate_id": "002fdea8869cefe72d636472",
       "app_sha256": "98524844205e4664eca28a84bfca9d45912da41a72aa7b0cb552fd3261c5fcc1"
+    },
+    {
+      "key": "accessory_lying_leg_curl",
+      "movement_definition_id": 398,
+      "candidate_id": "a83a1e8374c1a7e6743a4a69",
+      "app_sha256": "1d42c78e8c88974ab79d4224c7eee775e654de5d6aa14721c79415b93743a2b3",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_lying_leg_raise",
+      "movement_definition_id": 513,
+      "candidate_id": "5cf4a49042df9af93838ebb1",
+      "app_sha256": "02345280f1e50d25141a8970989803991a349706d9bb06090d709b88b66cf0e9",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_chest_flye",
+      "movement_definition_id": 51,
+      "candidate_id": "89de6b686aff5031fc64cf02",
+      "app_sha256": "2e85a053a0c8327df19ba72466e5628cd78289a05bba2da307ee9d44bcabb60a",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_chest_press",
+      "movement_definition_id": 48,
+      "candidate_id": "2a069920fe2167677134f601",
+      "app_sha256": "416b429e3b6374f469522537f8549678ddb5f824f7bff06878a7631ba2ac1712",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_dip",
+      "movement_definition_id": 314,
+      "candidate_id": "28b076c168e5f2129fbc912c",
+      "app_sha256": "6baebb85b1e2fb65798ae5d8c09e0dfed59deb35b58d00d7c20b9cdf6c3222b9",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_front_raise",
+      "movement_definition_id": 94,
+      "candidate_id": "77b30ae05f3f77f4732300b3",
+      "app_sha256": "58dc6004502be509de3825c779bb4902e9f9ea8873c4ed47ae67d0598d058d31",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_glute_bridge",
+      "movement_definition_id": 432,
+      "candidate_id": "86da56c6bca3024bbcc6ba0d",
+      "app_sha256": "49fbfaf2ab13b4cb9256c18dfcd8e7d8f9cec60f20b6ff3a1d67923aed0cdbd5",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_glute_kickback",
+      "movement_definition_id": 434,
+      "candidate_id": "f8ba437fe138064dee2937a9",
+      "app_sha256": "95b36ae7e74a64026b8528f182b3cced191c174fb351efacb0cece6a93c40c0b",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_hip_thrust",
+      "movement_definition_id": 431,
+      "candidate_id": "938e460a5274e6c242eb1f68",
+      "app_sha256": "1884393c26f11d9f508830f2934566d0fbda502bdc6665871706a91230713165",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_kelso_shrug",
+      "movement_definition_id": 245,
+      "candidate_id": "4831206a7f278dd05411909a",
+      "app_sha256": "a841316875cc8b97978866a6076d3eccfa18bf2d5a0f2d3795f1878059b501ce",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_lateral_raise",
+      "movement_definition_id": 121,
+      "candidate_id": "f39156778d7e8111993259cd",
+      "app_sha256": "51c2d4295c948c9596b1e8ddced0912d8d8929cea9fca447123b87ac798af7b0",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_low_row",
+      "movement_definition_id": 181,
+      "candidate_id": "5c86e1b02effadcb038c4da4",
+      "app_sha256": "5598c883cad67cf0d28aaae444af4e15d53bfbc3be06b87f0b0201dfb995c8d2",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_mid_row",
+      "movement_definition_id": 221,
+      "candidate_id": "eece78a3e59566292af2c061",
+      "app_sha256": "5f35398cfbea2e2bb19cddd4d578b85ee687e27b3f8c85bbac740e81c059f8c7",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_preacher_curl",
+      "movement_definition_id": 281,
+      "candidate_id": "247c95cb491beaae8dcfd6e4",
+      "app_sha256": "53a05f8bd2cbdeed24f885622f91b7582ccb13aa3515a7c7c26aea34f1f6f0e4",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_pullover",
+      "movement_definition_id": 178,
+      "candidate_id": "3e5244cd2e58e2469014be51",
+      "app_sha256": "78fa54d1c2b461dba6d550ad0899f3f18e78f3e4e65500859fd2ab93e5eece9b",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_reverse_flye",
+      "movement_definition_id": 135,
+      "candidate_id": "3f43ef70433f3a79728b5751",
+      "app_sha256": "c03f1d1c991e3683e6f498c8380241dd228282c8fce20c571e3bd3bb27494b73",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_shoulder_press",
+      "movement_definition_id": 91,
+      "candidate_id": "d12752a492bce76a24bee9ef",
+      "app_sha256": "83278911ebfcaa9df697bd2fc7949f20f8a1e8ff441550675a42dd82905fddd9",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_shrug",
+      "movement_definition_id": 243,
+      "candidate_id": "d58be6679b75b7fe3797459e",
+      "app_sha256": "4bcd883bb871c7e5426b7cbc9b2c86fc17e4c5882fcc969a4811742b5db1cc22",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_sissy_squat",
+      "movement_definition_id": 374,
+      "candidate_id": "f2ab50c2f5a6e0ed94f90fde",
+      "app_sha256": "8108b130f7cc5a498dbc421d1943ef9e3bfbb18951575a9c8da7deb6393af386",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_split_squat",
+      "movement_definition_id": 373,
+      "candidate_id": "10f382b2708f7c5ba6e807cc",
+      "app_sha256": "53d5ed7838644a880979a3da281b1661bf775e506fbfc1f90fe3666593ccd49e",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_t_bar_row",
+      "movement_definition_id": 220,
+      "candidate_id": "a73d708d80773d16071e85ea",
+      "app_sha256": "3b821cca1b674c6f2157beb79c5bff70be2faa4979dc73010ea80d5ed53e8870",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_triceps_extension",
+      "movement_definition_id": 313,
+      "candidate_id": "4ccb7273c2f5d066b025b8dd",
+      "app_sha256": "fae7dd3a2dc8a050bd3322a5b76796dd9501faa7df33cd409107aad121c108b8",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_machine_y_raise",
+      "movement_definition_id": 122,
+      "candidate_id": "f26e0aa35bd389c265e7a390",
+      "app_sha256": "17d47f954f46c8d53471dc777ca446c2640e4949160dd2ebf4660ca4b11d49db",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_meadows_row",
@@ -723,10 +2423,61 @@
       "app_sha256": "0e0d29857373961bb513edb3d53c9073d55366b2a41374bc8417aa25cde6e648"
     },
     {
+      "key": "accessory_neck_bridge",
+      "movement_definition_id": 586,
+      "candidate_id": "a4228d2580045243f1b53b54",
+      "app_sha256": "70d7857b09c76bf354bcc04e162c4fbcaa3babda9e7de103aaafeb47d27504ef",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_neutral_grip_dumbbell_bench_press",
       "movement_definition_id": 35,
       "candidate_id": "existing-35-296d401df6ee",
       "app_sha256": "ffef3444731556a1da8265d1648f7c27cb10edf05ffbaaa9dc31652b50b3751c"
+    },
+    {
+      "key": "accessory_neutral_grip_pull_up",
+      "movement_definition_id": 183,
+      "candidate_id": "9ccfb34c076f0a8f05503849",
+      "app_sha256": "989a294196f96bb596f78f7cbeb667296b6b74636e516a922545272e2205df1d",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_nordic_hamstring_curl",
+      "movement_definition_id": 408,
+      "candidate_id": "fcd907bde07da38df4ac2658",
+      "app_sha256": "4c0f932109187574829a2c32cc862c959b5e8fdcc41239de00d637ea5a6cd90c",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_one_arm_dumbbell_row",
@@ -753,16 +2504,67 @@
       "app_sha256": "c8ba7f6748c17c543520169a3cc466de25136c44df171d9dbd438ef089d1b42a"
     },
     {
+      "key": "accessory_pec_deck",
+      "movement_definition_id": 52,
+      "candidate_id": "5c13e1227ef9f7f033af3eab",
+      "app_sha256": "bebc8f8cc1aae75cab1d6be8fa907bffc2e02c3504250e20cb5d85e7838174a3",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_pendlay_row",
       "movement_definition_id": 192,
       "candidate_id": "existing-192-16367867218f",
       "app_sha256": "a4dc74abd8518bb6137238a9259375364360dcd909d9edf90b2ee39c66e5a399"
     },
     {
+      "key": "accessory_pendulum_squat",
+      "movement_definition_id": 370,
+      "candidate_id": "08450fdf3dc878b8f4acb8c9",
+      "app_sha256": "144be715e7621cbc6368c784e5c6c3a290e4fea06f058c6432f880fd46ab79d7",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_peterson_step_up",
       "movement_definition_id": 362,
       "candidate_id": "existing-362-87e596521883",
       "app_sha256": "1043b05c3b235a7fa135bf34f67e1abf9c4189e6a7549eb8ec43a5201aad8e84"
+    },
+    {
+      "key": "accessory_pike_push_up",
+      "movement_definition_id": 101,
+      "candidate_id": "ed2d2fd1984d3edd2dc4a362",
+      "app_sha256": "8dbbedfeaba2def2e54d60d393179e4da9608ddca6e283a640a7fe7a7ca77f65",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.6,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.6,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_pjr_pullover",
@@ -781,6 +2583,57 @@
       "movement_definition_id": 582,
       "candidate_id": "existing-582-da610d0ece13",
       "app_sha256": "43c517e3f4670de115e52338ce082432d8a47c0097bdae13c06c3eef9612fc86"
+    },
+    {
+      "key": "accessory_plate_loaded_biceps_curl",
+      "movement_definition_id": 283,
+      "candidate_id": "5779a6cf070388847016413a",
+      "app_sha256": "aee9d4fa6b3ffd6315b9a2b566efa943eb8f4cb4de9f654f32da548c4f2b6c0c",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_plate_loaded_high_row",
+      "movement_definition_id": 217,
+      "candidate_id": "66f9857fcbe74c63bff5e459",
+      "app_sha256": "e471f7c53314bbd290c1ab81b2ca94b9edbc6434297bf45824be0ea5667b8ee9",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_plate_loaded_seated_row",
+      "movement_definition_id": 222,
+      "candidate_id": "872e263f29c7215bfef13589",
+      "app_sha256": "003f49e5ffe9ed5e696152a71d8f873cff3b39ef1dc1743af4cbca2cda09bf8d",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_plate_neck_extension",
@@ -813,10 +2666,78 @@
       "app_sha256": "1fbcd65047fef36411470303108b4f8ae4b57637986abe93915b89232e360231"
     },
     {
+      "key": "accessory_push_up",
+      "movement_definition_id": 67,
+      "candidate_id": "eda302b9e0ff1a5dc410f3db",
+      "app_sha256": "9378572dbff50ece6fa07adba22f3ae911c6432769a3f89b2e32dc54ba267254",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.6,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.6,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_push_up_plus",
+      "movement_definition_id": 564,
+      "candidate_id": "1cac2adfa6a1ec061a0acb08",
+      "app_sha256": "47121673bae49b261f06577c04b535a52aa80cd169493373a29ac54165188793",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_quadruped_hip_extension",
+      "movement_definition_id": 445,
+      "candidate_id": "794297c900bfa44380183103",
+      "app_sha256": "6ad260da6e6c3de2b1c501415c9666bf4258f932d942baad04a1bd0d4133cb83",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_radial_deviation",
       "movement_definition_id": 336,
       "candidate_id": "existing-336-cbe5d1b92b44",
       "app_sha256": "2cf1e5f912e76563922530522dba1b1e6681dd5e309bf18b109d0eac61a2ad8e"
+    },
+    {
+      "key": "accessory_razor_curl",
+      "movement_definition_id": 413,
+      "candidate_id": "47e78d866863fa8fddfd5c69",
+      "app_sha256": "74857471f0e69887f90239a5f5883055db5067a298f2d4244032685dbbf1305b",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_rear_delt_barbell_row",
@@ -831,6 +2752,40 @@
       "app_sha256": "e0331a41a3fad843da766a8a81fbc396edf8f7ace91a4d53c92882ed1fe087fe"
     },
     {
+      "key": "accessory_rear_delt_row_machine",
+      "movement_definition_id": 136,
+      "candidate_id": "ef2eb540910327574a8e3ff9",
+      "app_sha256": "113cf952025bee4811c06fdb0dc1673e42c4437ec874c9c7d3614dff5b65e7be",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_reverse_crunch",
+      "movement_definition_id": 508,
+      "candidate_id": "2f02698c9846da7be5385563",
+      "app_sha256": "33405c8b9b491dd0e11a4856fee422f343efd1617fcaf1545ebc9aea1762b4be",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_reverse_curl",
       "movement_definition_id": 267,
       "candidate_id": "existing-267-36159aff26a1",
@@ -843,16 +2798,169 @@
       "app_sha256": "b8923d41d715429a876cbde33a25091f62d99885ea6ee71335ee9cb29eb15a0b"
     },
     {
+      "key": "accessory_reverse_hyperextension",
+      "movement_definition_id": 435,
+      "candidate_id": "ae5e0058b265c2916a2bdf75",
+      "app_sha256": "268a011db5a1c930e9be1e0f41d490530458ee136ed8b92eafc7f80d613d0c64",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_reverse_hyperextension_machine",
+      "movement_definition_id": 556,
+      "candidate_id": "676628c3b75a58ed74c4bbf9",
+      "app_sha256": "e536d998c8c5e26d9e3d891c21477faf4c9f89c23da98cdfc340bf733e5ecbe8",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_reverse_lunge",
       "movement_definition_id": 357,
       "candidate_id": "existing-357-4331a6453d49",
       "app_sha256": "5d21526c01226d375e183e966deead0b6943add7b427d10ab0aff8ce9379318d"
     },
     {
+      "key": "accessory_reverse_nordic",
+      "movement_definition_id": 378,
+      "candidate_id": "5caec17eb41dd70b96fe56f4",
+      "app_sha256": "984301677f480bed4ddee210ceb4af6d9940f5061c8a398b26d6d0439dd09f34",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_reverse_pec_deck",
+      "movement_definition_id": 134,
+      "candidate_id": "470f87395a16ed81a875e987",
+      "app_sha256": "9fd7f3e021ac22081855d13e89324d9c7f77f825286a3bb491c803a3b694dfcf",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_reverse_wrist_curl",
       "movement_definition_id": 328,
       "candidate_id": "existing-328-1604c10be0c2",
       "app_sha256": "150f1c1d7b81c69e05b76ca26fb8396f6ada59b08166c5c7b87af5e2adeed9fe"
+    },
+    {
+      "key": "accessory_ring_curl",
+      "movement_definition_id": 288,
+      "candidate_id": "5382767a20828c9cfb77937d",
+      "app_sha256": "aebfe10d036746503cb75638f337f56e089cd43f4619f64fe4368dea83f094b6",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_ring_dip",
+      "movement_definition_id": 75,
+      "candidate_id": "ee7e93a5c7515e7021b8f7e6",
+      "app_sha256": "0917d13d6673ce7057694099950b4ac0fd2561376cc362556e95ca8d9d61f0b5",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_ring_push_up",
+      "movement_definition_id": 69,
+      "candidate_id": "14ca058bf52aacf317ed11de",
+      "app_sha256": "d4462a30e73080b55afb471f38974f38b20452cc5d2c64b277a5fdc5342bba23",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.55,
+        "thumbnailFocalY": 0.78,
+        "thumbnailScale": 1.5,
+        "cropMode": "focal"
+      }
+    },
+    {
+      "key": "accessory_ring_row",
+      "movement_definition_id": 227,
+      "candidate_id": "1f5b22c1967e93d5abcfb7fb",
+      "app_sha256": "85242cf8b28dfb2197f1a5bcaf4f8f55dfe3b182e2edbefc02f01bc45375c2f8",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_ring_triceps_extension",
+      "movement_definition_id": 319,
+      "candidate_id": "40fedb6d95218d504d523bd0",
+      "app_sha256": "207d7f9b50815314fec57927def8c629af2204b350d1aa08d0d512a511e4b51e",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_rolling_dumbbell_triceps_extension",
@@ -867,16 +2975,101 @@
       "app_sha256": "b40bd7faf76a792a368b59765ef5662ac35a1a012ac609a4c5e233b484033b14"
     },
     {
+      "key": "accessory_rotary_ab_crunch_machine",
+      "movement_definition_id": 506,
+      "candidate_id": "d3bd0ff90ee81e5bfb4f2101",
+      "app_sha256": "f879ba2ed5fffe62c40c5f30a6ffe7bf1feb76302b2b03a384518037e764d5ea",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_russian_twist_with_weight",
       "movement_definition_id": 527,
       "candidate_id": "existing-527-531bf6460b2e",
       "app_sha256": "7576cf1734cbe0269499314cd9ce25142d68b9bfbc6cf2905e2d5432eb06338f"
     },
     {
+      "key": "accessory_scapular_inverted_row",
+      "movement_definition_id": 229,
+      "candidate_id": "8f211d32576af340d91c0572",
+      "app_sha256": "5c42c2992d82d43eacfe4edc554ed49790704f28bcfceb7423f0e1d8efcfbd6a",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_scapular_pull_up",
+      "movement_definition_id": 187,
+      "candidate_id": "3b6c825bb8ca5b527099e73f",
+      "app_sha256": "d8516d1a329c513fbe4cdf1690b21992f6b6ece4e6cd752c952fdad8f0824697",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_scapular_push_up",
+      "movement_definition_id": 565,
+      "candidate_id": "5d0fce6e8af01561c6510840",
+      "app_sha256": "c7c042afe7f9b95704dc5f3edff72de90cf8b39e2f45d63359ff680397c648f3",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_seal_row",
       "movement_definition_id": 193,
       "candidate_id": "dc93962ff2ba57a922540910",
       "app_sha256": "cb8cf084ee7633451d57df66612e86bbf43aa0da66c46e2206cfd67ba6c39db1"
+    },
+    {
+      "key": "accessory_seated_calf_raise_machine",
+      "movement_definition_id": 482,
+      "candidate_id": "44ac57c94b9e94a05cfa9872",
+      "app_sha256": "5fe9890bb88f0133081e3dc07d80b546959a65227abf9eb5c39a2fd2c0120dcf",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_seated_dumbbell_calf_raise",
@@ -909,6 +3102,125 @@
       "app_sha256": "7d99df6c2438e55d33fb957744fdb034aa280e20056c08f962d1948a47a57bdc"
     },
     {
+      "key": "accessory_seated_leg_curl",
+      "movement_definition_id": 397,
+      "candidate_id": "57fcf9369f31bb3950bc6d1d",
+      "app_sha256": "0519adee958c58dc29d97515c657c85337c62a567f07354f2ac95b7b4900bb18",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_seated_leg_lift",
+      "movement_definition_id": 575,
+      "candidate_id": "8ba994e64f6a1ec1748a876c",
+      "app_sha256": "35bd384570a817e612882f73254e56ac2a2facff83ac8f66aa46f540841b4009",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_short_lever_copenhagen_adduction",
+      "movement_definition_id": 456,
+      "candidate_id": "593d43e89aa82b51cd75811b",
+      "app_sha256": "bc5735e15011f2fe0bbaa05c907cba56ce97e471786354978f7fc7a56e31ef1f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_side_lying_hip_abduction",
+      "movement_definition_id": 467,
+      "candidate_id": "6babf89e5d8932782cae7f5f",
+      "app_sha256": "f37e24db2cb181205441293b6cf4de2267ad75499bcf3a4edff609539ae6d517",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_side_lying_hip_adduction",
+      "movement_definition_id": 458,
+      "candidate_id": "65f23b00a9386e215789fcb4",
+      "app_sha256": "91278a22817966d0fc0e384324a007c1481f2e505729a73e9076931eb375f8f0",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_side_plank",
+      "movement_definition_id": 536,
+      "candidate_id": "6ef99496f4a0c27024bfd86d",
+      "app_sha256": "7880170a4d707540dd9f6fa56d635bc252c4a4f542e551fb688a9091428eaeb0",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.6,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.6,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_side_plank_hip_abduction",
+      "movement_definition_id": 470,
+      "candidate_id": "27f02664b08e156f30d8cdf0",
+      "app_sha256": "e29a5e067c5287c3b23e3ab9fe68e85f84bde3d3ed9cfb41e9d07e3db32e5a87",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_single_arm_dumbbell_overhead_triceps_extension",
       "movement_definition_id": 297,
       "candidate_id": "existing-297-e6e959450dfa",
@@ -921,10 +3233,129 @@
       "app_sha256": "4b9948d466ac3ac99c19cd3d8611acdb9cde0090f27243e197e93a54a58ee4e3"
     },
     {
+      "key": "accessory_single_arm_machine_chest_press",
+      "movement_definition_id": 55,
+      "candidate_id": "648eeea8985dc0b3cd4be60f",
+      "app_sha256": "5fd85ff8789f943a92f60bf542f913f64222aaf8563e1bc18c432d50aa6d9fb4",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_single_arm_machine_high_row",
+      "movement_definition_id": 219,
+      "candidate_id": "cb6821c72b9c7cdaae88199e",
+      "app_sha256": "237cf8225c92f454f28956accc12a5db7eb37ad3f9e4cf3643810c5955f00f93",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_single_arm_machine_low_row",
+      "movement_definition_id": 182,
+      "candidate_id": "81bba1119c63ef4469747773",
+      "app_sha256": "174ec26f011fc9c89f5df70638ac1a1d19db4f906041431239a55842b0ef7d86",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_single_arm_machine_preacher_curl",
+      "movement_definition_id": 282,
+      "candidate_id": "9f8f9ad9d16f2a2ac4a66986",
+      "app_sha256": "bb3fe0e58be9a208fc3f4c686db3ad76d96d838894083fd7e4bb2f26ecec8583",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_single_arm_preacher_curl",
       "movement_definition_id": 259,
       "candidate_id": "existing-259-816cb8157f5b",
       "app_sha256": "20817ca982bd645e6d1f8a4f58641256b35f9f4796cb84eb5f34b34d9bde2019"
+    },
+    {
+      "key": "accessory_single_leg_adductor_machine",
+      "movement_definition_id": 452,
+      "candidate_id": "b86e71d64e99fdfabfd29576",
+      "app_sha256": "bf07701dc571e0c17f3610db78c8c8f72a74ede8237c08e35804691934530bde",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_single_leg_calf_raise",
+      "movement_definition_id": 489,
+      "candidate_id": "1161f6529f8f9af62c3e8300",
+      "app_sha256": "264cdbecc394a6c83e363e4ac633005bbf3f3c67d8b0f0fa70335bcf2026f69e",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_single_leg_calf_raise_machine",
+      "movement_definition_id": 486,
+      "candidate_id": "89d2255c7fbfad2f577e01d7",
+      "app_sha256": "970bd1bde5a375a05b8452dce281d2b7c4b1c52916702e490ea9392540a17fd8",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_single_leg_dumbbell_calf_raise",
@@ -933,16 +3364,254 @@
       "app_sha256": "1f7d09285857ee9d9b9c3b110110af8eb411f2909a59678e5ca6fe73b3cd537a"
     },
     {
+      "key": "accessory_single_leg_glute_bridge",
+      "movement_definition_id": 443,
+      "candidate_id": "eedf773aa5c6c6d8577234de",
+      "app_sha256": "ff38e98a14a1aa3182303900b94e6c03ae03e01a603fb391667057da5e8c6ce4",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_single_leg_hip_thrust",
       "movement_definition_id": 422,
       "candidate_id": "21258909b16cd32a763f1ea6",
       "app_sha256": "598a1f30b8fe810a74ac3dd25f6b474861e18c1454b7b0000ec9a3ab6419122a"
     },
     {
+      "key": "accessory_single_leg_leg_extension",
+      "movement_definition_id": 366,
+      "candidate_id": "ba58d0b8037856101378c271",
+      "app_sha256": "2446ea3596033c985819387c4cc8dd8addf5d75b1355fb9b28f693526a9d5d9f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_single_leg_leg_press",
+      "movement_definition_id": 368,
+      "candidate_id": "eeb70b452fcf9361be8d24bc",
+      "app_sha256": "1145e4426c1d93ee165133b72cdbe5921a809cf8e39ebe1dcbf0ff49ab9f2c0b",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_single_leg_lying_leg_curl",
+      "movement_definition_id": 402,
+      "candidate_id": "3e009c6e86a2da2ce32f617c",
+      "app_sha256": "22258554b07553f354e4ff79ba17332de00c7eefccb744598b05f9b003fa98d7",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_single_leg_romanian_deadlift",
       "movement_definition_id": 389,
       "candidate_id": "existing-389-0c102bf69628",
       "app_sha256": "bfdffcf3a8354561f5aa02092cd032b89658507251fcdcca88cc59edd3b385eb"
+    },
+    {
+      "key": "accessory_single_leg_seated_leg_curl",
+      "movement_definition_id": 401,
+      "candidate_id": "7ff708a012eeece93bc3a336",
+      "app_sha256": "aa336529bf63e105bdeac5346e6460b4120eed73a4f3486da986912c66e4c26f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_sissy_squat",
+      "movement_definition_id": 377,
+      "candidate_id": "36d4f39ce77b2ee5a3d19271",
+      "app_sha256": "ae84c0017862cfffb12c158e7bc2b62a88f70debf951610fd740e17ec3fdc4a2",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_sliding_leg_curl",
+      "movement_definition_id": 410,
+      "candidate_id": "ebef1a9b77b7c4083eaf4c8d",
+      "app_sha256": "555f39af3b1807dc0a58aac307b4d94db84f62c5776b1d7a1f217e4f2aca2388",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_smith_machine_bench_press",
+      "movement_definition_id": 56,
+      "candidate_id": "103c6882d99b663e5653fe9d",
+      "app_sha256": "ebdd670fceedd7c0dbbe5c30fa78a54c603a25d2483476989f6455c8dcff2124",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_smith_machine_calf_raise",
+      "movement_definition_id": 485,
+      "candidate_id": "09544f13836f250c39867843",
+      "app_sha256": "1aeadf747f8cc07868f0ee1793e7169a927bba938fe3931b855f329508acdc37",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_smith_machine_hip_thrust",
+      "movement_definition_id": 436,
+      "candidate_id": "b926558d9f76867a701531a8",
+      "app_sha256": "bc040a6cdf509c1b0998064ff57bfb680401b707a5cc6669caced084ede7df97",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_smith_machine_shoulder_press",
+      "movement_definition_id": 93,
+      "candidate_id": "15f7e85fe7cb2eeb151753ad",
+      "app_sha256": "eeb66b89fde52d7e4ff2794e003e8320c5b52d9829fb96f1b2f70cdab5555095",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_smith_machine_shrug",
+      "movement_definition_id": 244,
+      "candidate_id": "8c16078e6bb5571e79e37a25",
+      "app_sha256": "73a9b1b8cc78d6ced4588eaa2fb7816cb6f699ef5b2769fb6411fd2b864f0f98",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_smith_machine_split_squat",
+      "movement_definition_id": 376,
+      "candidate_id": "590075f40aeb89b1eceb2878",
+      "app_sha256": "28ab382e6fb58630873c8803b1ea8fb28e4cabeff324e5d071b171bdcb7a5f82",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_smith_machine_squat",
+      "movement_definition_id": 375,
+      "candidate_id": "609cf117d0a70d55cdff554f",
+      "app_sha256": "787177ecfc0b0eb55144a5d53a309a2b867e179e473e38340f52b7332f38517b",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_snatch_grip_barbell_row",
@@ -963,6 +3632,40 @@
       "app_sha256": "f008b979c65bcf893d0690acebc7252ffea0a9f434745bbd85fa18916a71d003"
     },
     {
+      "key": "accessory_sorenson_hold",
+      "movement_definition_id": 552,
+      "candidate_id": "e21c848e6ab7cb9cb109efd5",
+      "app_sha256": "c0362b1d0eed9007b744868ffdaa54d88a4c7275b89dbab33899841b42096a63",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_spanish_squat",
+      "movement_definition_id": 382,
+      "candidate_id": "7d212cd50c621c5a9714a93a",
+      "app_sha256": "786c556c7b8708bc6e4b220cdc793820291594b2a9f932105e66964396ebe320",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_spanish_squat_with_weight",
       "movement_definition_id": 364,
       "candidate_id": "existing-364-2c985a5a9f3c",
@@ -979,6 +3682,57 @@
       "movement_definition_id": 43,
       "candidate_id": "existing-43-8003415d5f8e",
       "app_sha256": "03963dfeeea67f6091637c1b041b51a779a5e7377a1984ad69ef129e11710465"
+    },
+    {
+      "key": "accessory_stability_ball_leg_curl",
+      "movement_definition_id": 411,
+      "candidate_id": "e1e4f602ca246bef335d13ae",
+      "app_sha256": "841672bb68d2c28dd9dc235fd02f656cc88635a5724e3da7bcdd2820789e80cc",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_standing_calf_raise",
+      "movement_definition_id": 488,
+      "candidate_id": "c1a92e7a8ffdd6b40a4b4e45",
+      "app_sha256": "ed294f86f8b7c7a78b8238d0ffc4e4ff62c8f63b9c9b16e7090f7d7c18211dc1",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_standing_calf_raise_machine",
+      "movement_definition_id": 481,
+      "candidate_id": "d408782dff49a63f7af5724e",
+      "app_sha256": "8cc0e4f7896a1d7d95633539e6d08d1116018aeaae449e77e7043d0ef2812c26",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_standing_dumbbell_calf_raise",
@@ -999,10 +3753,95 @@
       "app_sha256": "aa2e404013582e7d10a022694ff26f87ac030f33d1795d79eb9ab76f67700767"
     },
     {
+      "key": "accessory_standing_hip_abductor_machine",
+      "movement_definition_id": 464,
+      "candidate_id": "9ed3298914b6db9d9481fff9",
+      "app_sha256": "41ef646f90f38d2ec53ad7d6bdea217916af23a15af9984e6468e06fe53d6e7c",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_standing_hip_flexor_march",
+      "movement_definition_id": 574,
+      "candidate_id": "0f4be46edd7a975c1b141d54",
+      "app_sha256": "2e7b360a94f1973ffbc48a8c24e6b7d849b816967f1be9cc4a793b1d2380dede",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_standing_single_leg_curl",
+      "movement_definition_id": 399,
+      "candidate_id": "f1c3a1053dd189495730e0db",
+      "app_sha256": "d8d3a0912d37011df504f51446804c55c5d7656f33fcb6a761b075d4cdbc3ab6",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_step_down",
+      "movement_definition_id": 383,
+      "candidate_id": "526dda7557cff8af2ae74713",
+      "app_sha256": "c6c405d9ee4900a73b75434e43d4ff499c4bd792441805a2d3a0f2dcc92127ae",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_step_up",
       "movement_definition_id": 361,
       "candidate_id": "existing-361-3ce930d18ae8",
       "app_sha256": "7624d129ecaa12a50b04f0dada78cda1e567da6f35ecdf335d22f03f0379e318"
+    },
+    {
+      "key": "accessory_sternum_chin_up",
+      "movement_definition_id": 186,
+      "candidate_id": "a89b95f52d65454a1326bee9",
+      "app_sha256": "2c0a628e047027be9e17d048cdd08a02120d6a192814602949bf8166389ec632",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_stiff_leg_deadlift",
@@ -1029,6 +3868,57 @@
       "app_sha256": "622ed79eaca0e8c131c5ae8401902e0af5f360acb58dcee17a7446c7bd7b674c"
     },
     {
+      "key": "accessory_sumo_squat_hold",
+      "movement_definition_id": 460,
+      "candidate_id": "85b3e041fa01354c5dfaf273",
+      "app_sha256": "f5dce7e2f459f318549f074681d48f0ac23c058c8aa6ba1b8441d6d49e361937",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_superman_hold",
+      "movement_definition_id": 554,
+      "candidate_id": "d93c14ad970f6cdd908375e6",
+      "app_sha256": "cd08b74cf28408462efbdd3156988f62fad927c4b067c74feedbf3f202f9ee36",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_suspension_trainer_row",
+      "movement_definition_id": 228,
+      "candidate_id": "f093f5d9ceb35671958198a2",
+      "app_sha256": "6736fd722c64329a13671b41750a665128c1df1d3c7f065a192c90a18e43e9e1",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_t_bar_row",
       "movement_definition_id": 197,
       "candidate_id": "3ba704aa187db2f7eb9d2d29",
@@ -1047,10 +3937,95 @@
       "app_sha256": "e6839f11ff7c87a2ef518875f797ced571faac87acba6bddc473fe9d04230be7"
     },
     {
+      "key": "accessory_tibialis_raise",
+      "movement_definition_id": 492,
+      "candidate_id": "ea18de2e357133d15d4be20c",
+      "app_sha256": "a8db838dcd65f784f7e53275121587d6f5fd6b72bc398353855a28d840464e8e",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_tibialis_raise_machine",
+      "movement_definition_id": 487,
+      "candidate_id": "b4e75390a9ed01017b8e3e78",
+      "app_sha256": "bd152f3d3728493c18169c60d3dd53c7ef84afc4163ff6639b1af4f86582a98f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_toe_touch",
+      "movement_definition_id": 519,
+      "candidate_id": "89bf3ee9bbf3703eb4eda604",
+      "app_sha256": "c72443a23aaa2b78672f305c4fb0ae214cc9032358176f67297e0d179466435f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_towel_dead_hang",
+      "movement_definition_id": 346,
+      "candidate_id": "0ce7c231a1a7013946b1c5b6",
+      "app_sha256": "00c2fb195a5b0e702a0a126bb2d9b40f3cdd0b27e7acdb614eff660b4c934f15",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_trap_bar_shrug",
       "movement_definition_id": 236,
       "candidate_id": "existing-236-eb306eb32df2",
       "app_sha256": "e0cb22d0633d5b2454887b13084257609be41e1f4f8659930f617e894cdc11f4"
+    },
+    {
+      "key": "accessory_triceps_dip",
+      "movement_definition_id": 316,
+      "candidate_id": "8270220a3c649cca81d82fd8",
+      "app_sha256": "40796db6933f310e357a99af07b430af1b8ce81d76846387f251e1aa4cac5c1a",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_ulnar_deviation",
@@ -1059,10 +4034,78 @@
       "app_sha256": "2febb81d209be664237444ec8183796d8955e4a90f7eedaf77e1c5cae11ae025"
     },
     {
+      "key": "accessory_v_squat",
+      "movement_definition_id": 372,
+      "candidate_id": "027f74d363e703f5c3708f67",
+      "app_sha256": "f5d4da6b9d357c913eab8b64c87fa0b680438fc4ffdefe2b67c3f6d26b77f705",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_v_up",
+      "movement_definition_id": 518,
+      "candidate_id": "4af589d374eea0f2157a7542",
+      "app_sha256": "9dbc859e1b8f900b145fb353b81ec86e5b757bc9d2862b98c0206adf5108385e",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_walking_lunge",
       "movement_definition_id": 358,
       "candidate_id": "existing-358-7ca159d51b82",
       "app_sha256": "a5bb727a728dbb803a0f87afed876f0aa83729ae03eac89dae8c545a6c8cf634"
+    },
+    {
+      "key": "accessory_wall_sit",
+      "movement_definition_id": 381,
+      "candidate_id": "9355619d9094ecf044691322",
+      "app_sha256": "0cc65841f9ba7b6d79be35e456109403bed49bd81e8bb6926c0e00096c1aaabb",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_wall_slide_with_reach",
+      "movement_definition_id": 566,
+      "candidate_id": "bcc40091fd41534a6e91a364",
+      "app_sha256": "f41425ed1438dffae98367697b6c91d5cf652c1ce291acd001da0999bfeb194f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_weighted_crunch",
@@ -1101,6 +4144,23 @@
       "app_sha256": "f6e7c56fb6565dd2c58eed67d05c386cf226cdaf049f3d3c61c05686aec49b93"
     },
     {
+      "key": "accessory_wide_elbow_machine_row",
+      "movement_definition_id": 224,
+      "candidate_id": "9ad0087f466a0ac21c4db51b",
+      "app_sha256": "c8db9b8464d13e4abdda4174f43b86cca9463ccb569a27fdab4a582b296f990f",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_wide_grip_barbell_upright_row",
       "movement_definition_id": 112,
       "candidate_id": "existing-112-8068777ce78a",
@@ -1113,10 +4173,61 @@
       "app_sha256": "c19e961be53eedaff0325aa818f3f959b31a5c83c4082d1c4aa79726394382ba"
     },
     {
+      "key": "accessory_wide_grip_pull_up",
+      "movement_definition_id": 184,
+      "candidate_id": "3a503fdd1c4126e86230a588",
+      "app_sha256": "670bd0173205c8aab835bc4746757a286970537328ed32730716be2e8c57aacc",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_wide_grip_push_up",
+      "movement_definition_id": 70,
+      "candidate_id": "ec083e2abacfc5785194bf6f",
+      "app_sha256": "350b70a1ffd0f4cebfcaf53914115e08683d45daee03246000d899adb8c64928",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.6,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.6,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_wide_grip_t_bar_row",
       "movement_definition_id": 198,
       "candidate_id": "45d0e073e62f8e7c2c833447",
       "app_sha256": "d26aedf1e43f76fd298de50b679969e07ed05942ab4f61f6cf221f6dbaa5785f"
+    },
+    {
+      "key": "accessory_windshield_wiper",
+      "movement_definition_id": 540,
+      "candidate_id": "fb731284c932fce3a8f0fa9c",
+      "app_sha256": "87bd7b0391b0d02a98f56f96b46276584878b08c3c7425742f6d494ebcf71aed",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.52,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "accessory_wrist_roller",
@@ -1165,6 +4276,40 @@
       "movement_definition_id": 7,
       "candidate_id": "existing-7-abc9f534ae00",
       "app_sha256": "557188f6c2404074eda7f40eedd0bf89c474a1f46a3217b204aa0cb84c24937a"
+    },
+    {
+      "key": "machine_lat_pulldown_broad",
+      "movement_definition_id": 15,
+      "candidate_id": "f7280bea2f233afb92750518",
+      "app_sha256": "938af41702c7f92bd91821fb8db9aa0dbe41966507fb0dbe2ae93a5829c8a19e",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "pull_up_bodyweight",
+      "movement_definition_id": 11,
+      "candidate_id": "be36121d3167e5a28423fdd3",
+      "app_sha256": "39ae106d0c9ceea5acfe5e8aff2a323d3d31264432869fb870539ad8b88c40b7",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.48,
+        "scale": 1,
+        "biasX": -0.04,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
     },
     {
       "key": "single_arm_dumbbell_row",

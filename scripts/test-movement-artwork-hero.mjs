@@ -44,6 +44,15 @@ for(const id of [33,253,154,256,354]) for(const width of [288,343,393]) for(cons
   assert.equal(box.width,box.height,'square source is not stretched');
 }
 const read=path=>fs.readFileSync(path,'utf8');
+for(const receipt of policy.approved_exact_artwork.filter(row=>row.presentation?.cropMode==='contain')) {
+  for(const width of [288,343,393,430]) for(const height of [140,220,300]) {
+    const box=movementHeroGeometry(width,height,movementHeroFocal(receipt.key));
+    assert.equal(box.width,box.height,'approved square remains undistorted');
+    assert.ok(box.left>=0 && box.top>=0 && box.left+box.width<=width && box.top+box.height<=height,
+      `${receipt.key}: contain retains all head/hand/foot and machine contact points inside the hero`);
+    assert.ok(box.left>=width*.4,'contained artwork preserves left prescription space');
+  }
+}
 const hero=read('components/movement/MovementArtworkHero.tsx');
 assert.match(hero,/memo\(function MovementArtworkHero/);
 assert.match(hero,/StyleSheet.absoluteFillObject/,'hero must not add layout height');

@@ -1000,6 +1000,931 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Record<
     thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/single-arm-dumbbell-row-v1-thumb.png'),
     label: 'Athlete performing single-arm dumbbell row',
   },
+  pull_up_bodyweight: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/pull_up_bodyweight-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/pull_up_bodyweight-v2-thumb.png'),
+    label: "Athlete performing Pull-Up",
+  },
+  machine_lat_pulldown_broad: {
+    source: require('@/assets/images/movement-artwork/machine-v1/machine_lat_pulldown_broad-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/machine_lat_pulldown_broad-v3-thumb.png'),
+    label: "Athlete performing Machine Lat Pulldown",
+  },
+  accessory_machine_chest_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_chest_press-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_chest_press-v1-thumb.png'),
+    label: "Athlete performing Machine Chest Press",
+  },
+  accessory_incline_machine_chest_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_incline_machine_chest_press-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_incline_machine_chest_press-v2-thumb.png'),
+    label: "Athlete performing Incline Machine Chest Press",
+  },
+  accessory_decline_machine_chest_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_decline_machine_chest_press-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_decline_machine_chest_press-v2-thumb.png'),
+    label: "Athlete performing Decline Machine Chest Press",
+  },
+  accessory_machine_chest_flye: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_chest_flye-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_chest_flye-v2-thumb.png'),
+    label: "Athlete performing Machine Chest Fly",
+  },
+  accessory_pec_deck: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_pec_deck-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_pec_deck-v2-thumb.png'),
+    label: "Athlete performing Pec Deck",
+  },
+  accessory_converging_chest_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_converging_chest_press-v5.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_converging_chest_press-v5-thumb.png'),
+    label: "Athlete performing Converging Chest Press",
+  },
+  accessory_iso_lateral_chest_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_iso_lateral_chest_press-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_iso_lateral_chest_press-v1-thumb.png'),
+    label: "Athlete performing Iso-Lateral Chest Press",
+  },
+  accessory_single_arm_machine_chest_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_single_arm_machine_chest_press-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_single_arm_machine_chest_press-v2-thumb.png'),
+    label: "Athlete performing Single-Arm Machine Chest Press",
+  },
+  accessory_smith_machine_bench_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_bench_press-v5.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_bench_press-v5-thumb.png'),
+    label: "Athlete performing Smith-Machine Bench Press",
+  },
+  accessory_incline_smith_machine_bench_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_incline_smith_machine_bench_press-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_incline_smith_machine_bench_press-v1-thumb.png'),
+    label: "Athlete performing Incline Smith-Machine Bench Press",
+  },
+  accessory_decline_smith_machine_bench_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_decline_smith_machine_bench_press-v6.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_decline_smith_machine_bench_press-v6-thumb.png'),
+    label: "Athlete performing Decline Smith-Machine Bench Press",
+  },
+  accessory_push_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_push_up-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_push_up-v1-thumb.png'),
+    label: "Athlete performing Push-Up",
+  },
+  accessory_deficit_push_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_deficit_push_up-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_deficit_push_up-v1-thumb.png'),
+    label: "Athlete performing Deficit Push-Up",
+  },
+  accessory_ring_push_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_ring_push_up-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_ring_push_up-v2-thumb.png'),
+    label: "Athlete performing Ring Push-Up",
+  },
+  accessory_wide_grip_push_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_wide_grip_push_up-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_wide_grip_push_up-v1-thumb.png'),
+    label: "Athlete performing Wide-Grip Push-Up",
+  },
+  accessory_decline_push_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_decline_push_up-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_decline_push_up-v1-thumb.png'),
+    label: "Athlete performing Decline Push-Up",
+  },
+  accessory_incline_push_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_incline_push_up-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_incline_push_up-v1-thumb.png'),
+    label: "Athlete performing Incline Push-Up",
+  },
+  accessory_chest_dip: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_chest_dip-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_chest_dip-v2-thumb.png'),
+    label: "Athlete performing Chest Dip",
+  },
+  accessory_ring_dip: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_ring_dip-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_ring_dip-v1-thumb.png'),
+    label: "Athlete performing Ring Dip",
+  },
+  accessory_machine_shoulder_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_shoulder_press-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_shoulder_press-v2-thumb.png'),
+    label: "Athlete performing Machine Shoulder Press",
+  },
+  accessory_iso_lateral_shoulder_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_iso_lateral_shoulder_press-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_iso_lateral_shoulder_press-v2-thumb.png'),
+    label: "Athlete performing Iso-Lateral Shoulder Press",
+  },
+  accessory_smith_machine_shoulder_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_shoulder_press-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_shoulder_press-v2-thumb.png'),
+    label: "Athlete performing Smith-Machine Shoulder Press",
+  },
+  accessory_machine_front_raise: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_front_raise-v5.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_front_raise-v5-thumb.png'),
+    label: "Athlete performing Machine Front Raise",
+  },
+  accessory_pike_push_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_pike_push_up-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_pike_push_up-v1-thumb.png'),
+    label: "Athlete performing Pike Push-Up",
+  },
+  accessory_handstand_push_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_handstand_push_up-v5.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_handstand_push_up-v5-thumb.png'),
+    label: "Athlete performing Handstand Push-Up",
+  },
+  accessory_machine_lateral_raise: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_lateral_raise-v5.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_lateral_raise-v5-thumb.png'),
+    label: "Athlete performing Machine Lateral Raise",
+  },
+  accessory_machine_y_raise: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_y_raise-v5.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_y_raise-v5-thumb.png'),
+    label: "Athlete performing Machine Y-Raise",
+  },
+  accessory_reverse_pec_deck: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_reverse_pec_deck-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_reverse_pec_deck-v4-thumb.png'),
+    label: "Athlete performing Reverse Pec Deck",
+  },
+  accessory_machine_reverse_flye: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_reverse_flye-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_reverse_flye-v1-thumb.png'),
+    label: "Athlete performing Machine Reverse Fly",
+  },
+  accessory_rear_delt_row_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_rear_delt_row_machine-v6.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_rear_delt_row_machine-v6-thumb.png'),
+    label: "Athlete performing Rear-Delt Row Machine",
+  },
+  accessory_chest_supported_rear_delt_machine_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_chest_supported_rear_delt_machine_row-v6.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_chest_supported_rear_delt_machine_row-v6-thumb.png'),
+    label: "Athlete performing Chest-Supported Rear-Delt Machine Row",
+  },
+  accessory_machine_pullover: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_pullover-v5.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_pullover-v5-thumb.png'),
+    label: "Athlete performing Machine Pullover",
+  },
+  accessory_iso_lateral_lat_pulldown: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_iso_lateral_lat_pulldown-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_iso_lateral_lat_pulldown-v3-thumb.png'),
+    label: "Athlete performing Iso-Lateral Lat Pulldown",
+  },
+  accessory_iso_lateral_low_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_iso_lateral_low_row-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_iso_lateral_low_row-v3-thumb.png'),
+    label: "Athlete performing Iso-Lateral Low Row",
+  },
+  accessory_machine_low_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_low_row-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_low_row-v2-thumb.png'),
+    label: "Athlete performing Machine Low Row",
+  },
+  accessory_single_arm_machine_low_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_single_arm_machine_low_row-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_single_arm_machine_low_row-v3-thumb.png'),
+    label: "Athlete performing Single-Arm Machine Low Row",
+  },
+  accessory_neutral_grip_pull_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_neutral_grip_pull_up-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_neutral_grip_pull_up-v3-thumb.png'),
+    label: "Athlete performing Neutral-Grip Pull-Up",
+  },
+  accessory_wide_grip_pull_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_wide_grip_pull_up-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_wide_grip_pull_up-v2-thumb.png'),
+    label: "Athlete performing Wide-Grip Pull-Up",
+  },
+  accessory_chin_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_chin_up-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_chin_up-v2-thumb.png'),
+    label: "Athlete performing Chin-Up",
+  },
+  accessory_sternum_chin_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_sternum_chin_up-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_sternum_chin_up-v3-thumb.png'),
+    label: "Athlete performing Sternum Chin-Up",
+  },
+  accessory_scapular_pull_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_scapular_pull_up-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_scapular_pull_up-v1-thumb.png'),
+    label: "Athlete performing Scapular Pull-Up",
+  },
+  accessory_chest_supported_machine_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_chest_supported_machine_row-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_chest_supported_machine_row-v4-thumb.png'),
+    label: "Athlete performing Chest-Supported Machine Row",
+  },
+  accessory_plate_loaded_high_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_plate_loaded_high_row-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_plate_loaded_high_row-v3-thumb.png'),
+    label: "Athlete performing Machine High Row",
+  },
+  accessory_iso_lateral_high_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_iso_lateral_high_row-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_iso_lateral_high_row-v3-thumb.png'),
+    label: "Athlete performing Iso-Lateral High Row",
+  },
+  accessory_single_arm_machine_high_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_single_arm_machine_high_row-v5.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_single_arm_machine_high_row-v5-thumb.png'),
+    label: "Athlete performing Single-Arm Machine High Row",
+  },
+  accessory_machine_t_bar_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_t_bar_row-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_t_bar_row-v4-thumb.png'),
+    label: "Athlete performing Machine T-Bar Row",
+  },
+  accessory_machine_mid_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_mid_row-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_mid_row-v4-thumb.png'),
+    label: "Athlete performing Machine Mid Row",
+  },
+  accessory_plate_loaded_seated_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_plate_loaded_seated_row-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_plate_loaded_seated_row-v4-thumb.png'),
+    label: "Athlete performing Machine Seated Row",
+  },
+  accessory_chest_supported_high_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_chest_supported_high_row-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_chest_supported_high_row-v4-thumb.png'),
+    label: "Athlete performing Chest-Supported High Row",
+  },
+  accessory_wide_elbow_machine_row: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_wide_elbow_machine_row-v6.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_wide_elbow_machine_row-v6-thumb.png'),
+    label: "Athlete performing Wide-Elbow Machine Row",
+  },
+  accessory_inverted_row: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_inverted_row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_inverted_row-v1-thumb.png'),
+    label: "Athlete performing Inverted Row",
+  },
+  accessory_feet_elevated_inverted_row: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_feet_elevated_inverted_row-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_feet_elevated_inverted_row-v4-thumb.png'),
+    label: "Athlete performing Feet-Elevated Inverted Row",
+  },
+  accessory_ring_row: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_ring_row-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_ring_row-v3-thumb.png'),
+    label: "Athlete performing Ring Row",
+  },
+  accessory_suspension_trainer_row: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_suspension_trainer_row-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_suspension_trainer_row-v3-thumb.png'),
+    label: "Athlete performing Suspension-Trainer Row",
+  },
+  accessory_scapular_inverted_row: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_scapular_inverted_row-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_scapular_inverted_row-v3-thumb.png'),
+    label: "Athlete performing Scapular Inverted Row",
+  },
+  accessory_machine_shrug: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_shrug-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_shrug-v3-thumb.png'),
+    label: "Athlete performing Machine Shrug",
+  },
+  accessory_smith_machine_shrug: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_shrug-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_shrug-v1-thumb.png'),
+    label: "Athlete performing Smith-Machine Shrug",
+  },
+  accessory_machine_kelso_shrug: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_kelso_shrug-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_kelso_shrug-v3-thumb.png'),
+    label: "Athlete performing Machine Kelso Shrug",
+  },
+  accessory_machine_preacher_curl: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_preacher_curl-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_preacher_curl-v4-thumb.png'),
+    label: "Athlete performing Machine Preacher Curl",
+  },
+  accessory_single_arm_machine_preacher_curl: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_single_arm_machine_preacher_curl-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_single_arm_machine_preacher_curl-v4-thumb.png'),
+    label: "Athlete performing Single-Arm Machine Preacher Curl",
+  },
+  accessory_plate_loaded_biceps_curl: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_plate_loaded_biceps_curl-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_plate_loaded_biceps_curl-v3-thumb.png'),
+    label: "Athlete performing Machine Biceps Curl",
+  },
+  accessory_bodyweight_curl: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_curl-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_curl-v4-thumb.png'),
+    label: "Athlete performing Bodyweight Curl",
+  },
+  accessory_ring_curl: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_ring_curl-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_ring_curl-v3-thumb.png'),
+    label: "Athlete performing Ring Curl",
+  },
+  accessory_machine_triceps_extension: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_triceps_extension-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_triceps_extension-v2-thumb.png'),
+    label: "Athlete performing Machine Triceps Extension",
+  },
+  accessory_machine_dip: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_dip-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_dip-v2-thumb.png'),
+    label: "Athlete performing Machine Dip",
+  },
+  accessory_bench_dip: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bench_dip-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bench_dip-v1-thumb.png'),
+    label: "Athlete performing Bench Dip",
+  },
+  accessory_triceps_dip: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_triceps_dip-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_triceps_dip-v1-thumb.png'),
+    label: "Athlete performing Triceps Dip",
+  },
+  accessory_diamond_push_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_diamond_push_up-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_diamond_push_up-v1-thumb.png'),
+    label: "Athlete performing Diamond Push-Up",
+  },
+  accessory_bodyweight_skull_crusher: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_skull_crusher-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_skull_crusher-v1-thumb.png'),
+    label: "Athlete performing Bodyweight Skull Crusher",
+  },
+  accessory_ring_triceps_extension: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_ring_triceps_extension-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_ring_triceps_extension-v4-thumb.png'),
+    label: "Athlete performing Ring Triceps Extension",
+  },
+  accessory_dead_hang: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_dead_hang-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_dead_hang-v1-thumb.png'),
+    label: "Athlete performing Dead Hang",
+  },
+  accessory_towel_dead_hang: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_towel_dead_hang-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_towel_dead_hang-v1-thumb.png'),
+    label: "Athlete performing Towel Dead Hang",
+  },
+  accessory_false_grip_hang: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_false_grip_hang-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_false_grip_hang-v2-thumb.png'),
+    label: "Athlete performing False-Grip Hang",
+  },
+  accessory_leg_extension: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_leg_extension-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_leg_extension-v3-thumb.png'),
+    label: "Athlete performing Leg Extension",
+  },
+  accessory_single_leg_leg_extension: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_single_leg_leg_extension-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_single_leg_leg_extension-v3-thumb.png'),
+    label: "Athlete performing Single-Leg Leg Extension",
+  },
+  accessory_leg_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_leg_press-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_leg_press-v1-thumb.png'),
+    label: "Athlete performing Leg Press",
+  },
+  accessory_single_leg_leg_press: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_single_leg_leg_press-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_single_leg_leg_press-v3-thumb.png'),
+    label: "Athlete performing Single-Leg Leg Press",
+  },
+  accessory_hack_squat: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_hack_squat-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_hack_squat-v3-thumb.png'),
+    label: "Athlete performing Hack Squat",
+  },
+  accessory_pendulum_squat: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_pendulum_squat-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_pendulum_squat-v3-thumb.png'),
+    label: "Athlete performing Pendulum Squat",
+  },
+  accessory_belt_squat: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_belt_squat-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_belt_squat-v3-thumb.png'),
+    label: "Athlete performing Belt Squat",
+  },
+  accessory_v_squat: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_v_squat-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_v_squat-v3-thumb.png'),
+    label: "Athlete performing V-Squat",
+  },
+  accessory_machine_split_squat: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_split_squat-v5.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_split_squat-v5-thumb.png'),
+    label: "Athlete performing Machine Split Squat",
+  },
+  accessory_machine_sissy_squat: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_sissy_squat-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_sissy_squat-v2-thumb.png'),
+    label: "Athlete performing Machine Sissy Squat",
+  },
+  accessory_smith_machine_squat: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_squat-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_squat-v1-thumb.png'),
+    label: "Athlete performing Smith-Machine Squat",
+  },
+  accessory_smith_machine_split_squat: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_split_squat-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_split_squat-v1-thumb.png'),
+    label: "Athlete performing Smith-Machine Split Squat",
+  },
+  accessory_sissy_squat: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_sissy_squat-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_sissy_squat-v1-thumb.png'),
+    label: "Athlete performing Sissy Squat",
+  },
+  accessory_reverse_nordic: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_reverse_nordic-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_reverse_nordic-v2-thumb.png'),
+    label: "Athlete performing Reverse Nordic",
+  },
+  accessory_bodyweight_split_squat: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_split_squat-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_split_squat-v1-thumb.png'),
+    label: "Athlete performing Bodyweight Split Squat",
+  },
+  accessory_bodyweight_walking_lunge: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_walking_lunge-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_walking_lunge-v1-thumb.png'),
+    label: "Athlete performing Bodyweight Walking Lunge",
+  },
+  accessory_wall_sit: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_wall_sit-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_wall_sit-v1-thumb.png'),
+    label: "Athlete performing Wall Sit",
+  },
+  accessory_spanish_squat: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_spanish_squat-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_spanish_squat-v2-thumb.png'),
+    label: "Athlete performing Spanish Squat",
+  },
+  accessory_step_down: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_step_down-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_step_down-v1-thumb.png'),
+    label: "Athlete performing Step-Down",
+  },
+  accessory_seated_leg_curl: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_seated_leg_curl-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_seated_leg_curl-v2-thumb.png'),
+    label: "Athlete performing Seated Leg Curl",
+  },
+  accessory_lying_leg_curl: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_lying_leg_curl-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_lying_leg_curl-v2-thumb.png'),
+    label: "Athlete performing Lying Leg Curl",
+  },
+  accessory_standing_single_leg_curl: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_standing_single_leg_curl-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_standing_single_leg_curl-v3-thumb.png'),
+    label: "Athlete performing Standing Single-Leg Curl",
+  },
+  accessory_kneeling_leg_curl: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_kneeling_leg_curl-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_kneeling_leg_curl-v3-thumb.png'),
+    label: "Athlete performing Kneeling Leg Curl",
+  },
+  accessory_single_leg_seated_leg_curl: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_single_leg_seated_leg_curl-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_single_leg_seated_leg_curl-v2-thumb.png'),
+    label: "Athlete performing Single-Leg Seated Leg Curl",
+  },
+  accessory_single_leg_lying_leg_curl: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_single_leg_lying_leg_curl-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_single_leg_lying_leg_curl-v2-thumb.png'),
+    label: "Athlete performing Single-Leg Lying Leg Curl",
+  },
+  accessory_glute_ham_raise: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_glute_ham_raise-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_glute_ham_raise-v1-thumb.png'),
+    label: "Athlete performing Glute-Ham Raise",
+  },
+  accessory_nordic_hamstring_curl: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_nordic_hamstring_curl-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_nordic_hamstring_curl-v1-thumb.png'),
+    label: "Athlete performing Nordic Hamstring Curl",
+  },
+  accessory_assisted_nordic_hamstring_curl: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_assisted_nordic_hamstring_curl-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_assisted_nordic_hamstring_curl-v2-thumb.png'),
+    label: "Athlete performing Assisted Nordic Hamstring Curl",
+  },
+  accessory_sliding_leg_curl: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_sliding_leg_curl-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_sliding_leg_curl-v1-thumb.png'),
+    label: "Athlete performing Sliding Leg Curl",
+  },
+  accessory_stability_ball_leg_curl: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_stability_ball_leg_curl-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_stability_ball_leg_curl-v1-thumb.png'),
+    label: "Athlete performing Stability-Ball Leg Curl",
+  },
+  accessory_bodyweight_glute_ham_raise: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_glute_ham_raise-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_glute_ham_raise-v1-thumb.png'),
+    label: "Athlete performing Bodyweight Glute-Ham Raise",
+  },
+  accessory_razor_curl: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_razor_curl-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_razor_curl-v1-thumb.png'),
+    label: "Athlete performing Razor Curl",
+  },
+  accessory_45_degree_back_extension_hamstring_bias: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_45_degree_back_extension_hamstring_bias-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_45_degree_back_extension_hamstring_bias-v2-thumb.png'),
+    label: "Athlete performing 45-Degree Back Extension (Hamstring Bias)",
+  },
+  accessory_machine_hip_thrust: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_hip_thrust-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_hip_thrust-v3-thumb.png'),
+    label: "Athlete performing Machine Hip Thrust",
+  },
+  accessory_machine_glute_bridge: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_glute_bridge-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_glute_bridge-v3-thumb.png'),
+    label: "Athlete performing Machine Glute Bridge",
+  },
+  accessory_glute_drive_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_glute_drive_machine-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_glute_drive_machine-v2-thumb.png'),
+    label: "Athlete performing Glute Drive Machine",
+  },
+  accessory_machine_glute_kickback: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_glute_kickback-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_machine_glute_kickback-v3-thumb.png'),
+    label: "Athlete performing Machine Glute Kickback",
+  },
+  accessory_reverse_hyperextension: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_reverse_hyperextension-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_reverse_hyperextension-v3-thumb.png'),
+    label: "Athlete performing Reverse Hyperextension",
+  },
+  accessory_smith_machine_hip_thrust: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_hip_thrust-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_hip_thrust-v3-thumb.png'),
+    label: "Athlete performing Smith-Machine Hip Thrust",
+  },
+  accessory_bodyweight_glute_bridge: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_glute_bridge-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_glute_bridge-v1-thumb.png'),
+    label: "Athlete performing Bodyweight Glute Bridge",
+  },
+  accessory_single_leg_glute_bridge: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_single_leg_glute_bridge-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_single_leg_glute_bridge-v1-thumb.png'),
+    label: "Athlete performing Single-Leg Glute Bridge",
+  },
+  accessory_frog_pump: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_frog_pump-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_frog_pump-v1-thumb.png'),
+    label: "Athlete performing Frog Pump",
+  },
+  accessory_quadruped_hip_extension: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_quadruped_hip_extension-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_quadruped_hip_extension-v1-thumb.png'),
+    label: "Athlete performing Quadruped Hip Extension",
+  },
+  accessory_45_degree_back_extension_glute_bias: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_45_degree_back_extension_glute_bias-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_45_degree_back_extension_glute_bias-v2-thumb.png'),
+    label: "Athlete performing 45-Degree Back Extension (Glute Bias)",
+  },
+  accessory_adductor_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_adductor_machine-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_adductor_machine-v2-thumb.png'),
+    label: "Athlete performing Adductor Machine",
+  },
+  accessory_single_leg_adductor_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_single_leg_adductor_machine-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_single_leg_adductor_machine-v3-thumb.png'),
+    label: "Athlete performing Single-Leg Adductor Machine",
+  },
+  accessory_copenhagen_adduction: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_copenhagen_adduction-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_copenhagen_adduction-v1-thumb.png'),
+    label: "Athlete performing Copenhagen Adduction",
+  },
+  accessory_short_lever_copenhagen_adduction: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_short_lever_copenhagen_adduction-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_short_lever_copenhagen_adduction-v1-thumb.png'),
+    label: "Athlete performing Short-Lever Copenhagen Adduction",
+  },
+  accessory_long_lever_copenhagen_adduction: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_long_lever_copenhagen_adduction-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_long_lever_copenhagen_adduction-v1-thumb.png'),
+    label: "Athlete performing Long-Lever Copenhagen Adduction",
+  },
+  accessory_side_lying_hip_adduction: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_side_lying_hip_adduction-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_side_lying_hip_adduction-v1-thumb.png'),
+    label: "Athlete performing Side-Lying Hip Adduction",
+  },
+  accessory_adductor_slide: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_adductor_slide-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_adductor_slide-v1-thumb.png'),
+    label: "Athlete performing Adductor Slide",
+  },
+  accessory_sumo_squat_hold: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_sumo_squat_hold-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_sumo_squat_hold-v1-thumb.png'),
+    label: "Athlete performing Sumo Squat Hold",
+  },
+  accessory_hip_abductor_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_hip_abductor_machine-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_hip_abductor_machine-v3-thumb.png'),
+    label: "Athlete performing Hip Abductor Machine",
+  },
+  accessory_standing_hip_abductor_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_standing_hip_abductor_machine-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_standing_hip_abductor_machine-v2-thumb.png'),
+    label: "Athlete performing Standing Hip Abductor Machine",
+  },
+  accessory_side_lying_hip_abduction: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_side_lying_hip_abduction-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_side_lying_hip_abduction-v1-thumb.png'),
+    label: "Athlete performing Side-Lying Hip Abduction",
+  },
+  accessory_fire_hydrant: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_fire_hydrant-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_fire_hydrant-v1-thumb.png'),
+    label: "Athlete performing Fire Hydrant",
+  },
+  accessory_lateral_step_down: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_lateral_step_down-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_lateral_step_down-v1-thumb.png'),
+    label: "Athlete performing Lateral Step-Down",
+  },
+  accessory_side_plank_hip_abduction: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_side_plank_hip_abduction-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_side_plank_hip_abduction-v2-thumb.png'),
+    label: "Athlete performing Side Plank Hip Abduction",
+  },
+  accessory_standing_calf_raise_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_standing_calf_raise_machine-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_standing_calf_raise_machine-v2-thumb.png'),
+    label: "Athlete performing Standing Calf Raise Machine",
+  },
+  accessory_seated_calf_raise_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_seated_calf_raise_machine-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_seated_calf_raise_machine-v3-thumb.png'),
+    label: "Athlete performing Seated Calf Raise Machine",
+  },
+  accessory_leg_press_calf_raise: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_leg_press_calf_raise-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_leg_press_calf_raise-v3-thumb.png'),
+    label: "Athlete performing Leg-Press Calf Raise",
+  },
+  accessory_hack_squat_calf_raise: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_hack_squat_calf_raise-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_hack_squat_calf_raise-v2-thumb.png'),
+    label: "Athlete performing Hack-Squat Calf Raise",
+  },
+  accessory_smith_machine_calf_raise: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_calf_raise-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_smith_machine_calf_raise-v2-thumb.png'),
+    label: "Athlete performing Smith-Machine Calf Raise",
+  },
+  accessory_single_leg_calf_raise_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_single_leg_calf_raise_machine-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_single_leg_calf_raise_machine-v2-thumb.png'),
+    label: "Athlete performing Single-Leg Calf Raise Machine",
+  },
+  accessory_tibialis_raise_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_tibialis_raise_machine-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_tibialis_raise_machine-v2-thumb.png'),
+    label: "Athlete performing Tibialis Raise Machine",
+  },
+  accessory_standing_calf_raise: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_standing_calf_raise-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_standing_calf_raise-v1-thumb.png'),
+    label: "Athlete performing Standing Calf Raise",
+  },
+  accessory_single_leg_calf_raise: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_single_leg_calf_raise-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_single_leg_calf_raise-v2-thumb.png'),
+    label: "Athlete performing Single-Leg Calf Raise",
+  },
+  accessory_bent_knee_calf_raise: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bent_knee_calf_raise-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bent_knee_calf_raise-v3-thumb.png'),
+    label: "Athlete performing Bent-Knee Calf Raise",
+  },
+  accessory_donkey_calf_raise: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_donkey_calf_raise-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_donkey_calf_raise-v2-thumb.png'),
+    label: "Athlete performing Donkey Calf Raise",
+  },
+  accessory_tibialis_raise: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_tibialis_raise-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_tibialis_raise-v1-thumb.png'),
+    label: "Athlete performing Tibialis Raise",
+  },
+  accessory_barbell_rollout: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_barbell_rollout-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_barbell_rollout-v1-thumb.png'),
+    label: "Athlete performing Barbell Rollout",
+  },
+  accessory_abdominal_crunch_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_abdominal_crunch_machine-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_abdominal_crunch_machine-v3-thumb.png'),
+    label: "Athlete performing Abdominal Crunch Machine",
+  },
+  accessory_rotary_ab_crunch_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_rotary_ab_crunch_machine-v5.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_rotary_ab_crunch_machine-v5-thumb.png'),
+    label: "Athlete performing Rotary Ab Crunch Machine",
+  },
+  accessory_crunch: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_crunch-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_crunch-v1-thumb.png'),
+    label: "Athlete performing Crunch",
+  },
+  accessory_reverse_crunch: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_reverse_crunch-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_reverse_crunch-v1-thumb.png'),
+    label: "Athlete performing Reverse Crunch",
+  },
+  accessory_decline_sit_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_decline_sit_up-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_decline_sit_up-v1-thumb.png'),
+    label: "Athlete performing Decline Sit-Up",
+  },
+  accessory_hanging_knee_raise: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_hanging_knee_raise-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_hanging_knee_raise-v2-thumb.png'),
+    label: "Athlete performing Hanging Knee Raise",
+  },
+  accessory_hanging_leg_raise: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_hanging_leg_raise-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_hanging_leg_raise-v1-thumb.png'),
+    label: "Athlete performing Hanging Leg Raise",
+  },
+  accessory_captain_s_chair_knee_raise: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_captain_s_chair_knee_raise-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_captain_s_chair_knee_raise-v1-thumb.png'),
+    label: "Athlete performing Captain's-Chair Knee Raise",
+  },
+  accessory_lying_leg_raise: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_lying_leg_raise-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_lying_leg_raise-v1-thumb.png'),
+    label: "Athlete performing Lying Leg Raise",
+  },
+  accessory_ab_wheel_rollout: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_ab_wheel_rollout-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_ab_wheel_rollout-v1-thumb.png'),
+    label: "Athlete performing Ab Wheel Rollout",
+  },
+  accessory_body_saw: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_body_saw-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_body_saw-v1-thumb.png'),
+    label: "Athlete performing Body Saw",
+  },
+  accessory_dead_bug: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_dead_bug-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_dead_bug-v1-thumb.png'),
+    label: "Athlete performing Dead Bug",
+  },
+  accessory_hollow_body_hold: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_hollow_body_hold-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_hollow_body_hold-v1-thumb.png'),
+    label: "Athlete performing Hollow-Body Hold",
+  },
+  accessory_v_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_v_up-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_v_up-v1-thumb.png'),
+    label: "Athlete performing V-Up",
+  },
+  accessory_toe_touch: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_toe_touch-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_toe_touch-v1-thumb.png'),
+    label: "Athlete performing Toe Touch",
+  },
+  accessory_side_plank: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_side_plank-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_side_plank-v1-thumb.png'),
+    label: "Athlete performing Side Plank",
+  },
+  accessory_copenhagen_side_plank: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_copenhagen_side_plank-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_copenhagen_side_plank-v2-thumb.png'),
+    label: "Athlete performing Copenhagen Side Plank",
+  },
+  accessory_bicycle_crunch: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bicycle_crunch-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bicycle_crunch-v1-thumb.png'),
+    label: "Athlete performing Bicycle Crunch",
+  },
+  accessory_cross_body_mountain_climber: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_cross_body_mountain_climber-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_cross_body_mountain_climber-v2-thumb.png'),
+    label: "Athlete performing Cross-Body Mountain Climber",
+  },
+  accessory_windshield_wiper: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_windshield_wiper-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_windshield_wiper-v1-thumb.png'),
+    label: "Athlete performing Windshield Wiper",
+  },
+  accessory_bird_dog: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bird_dog-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bird_dog-v1-thumb.png'),
+    label: "Athlete performing Bird Dog",
+  },
+  accessory_45_degree_back_extension_lower_back_bias: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_45_degree_back_extension_lower_back_bias-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_45_degree_back_extension_lower_back_bias-v1-thumb.png'),
+    label: "Athlete performing 45-Degree Back Extension (Lower-Back Bias)",
+  },
+  accessory_horizontal_back_extension: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_horizontal_back_extension-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_horizontal_back_extension-v1-thumb.png'),
+    label: "Athlete performing Horizontal Back Extension",
+  },
+  accessory_sorenson_hold: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_sorenson_hold-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_sorenson_hold-v2-thumb.png'),
+    label: "Athlete performing Sorenson Hold",
+  },
+  accessory_bird_dog_back_extension: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bird_dog_back_extension-v2.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_bird_dog_back_extension-v2-thumb.png'),
+    label: "Athlete performing Bird Dog Back Extension",
+  },
+  accessory_superman_hold: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_superman_hold-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_superman_hold-v1-thumb.png'),
+    label: "Athlete performing Superman Hold",
+  },
+  accessory_lumbar_extension_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_lumbar_extension_machine-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_lumbar_extension_machine-v3-thumb.png'),
+    label: "Athlete performing Lumbar Extension Machine",
+  },
+  accessory_reverse_hyperextension_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_reverse_hyperextension_machine-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_reverse_hyperextension_machine-v4-thumb.png'),
+    label: "Athlete performing Reverse Hyperextension Machine",
+  },
+  accessory_push_up_plus: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_push_up_plus-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_push_up_plus-v1-thumb.png'),
+    label: "Athlete performing Push-Up Plus",
+  },
+  accessory_scapular_push_up: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_scapular_push_up-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_scapular_push_up-v1-thumb.png'),
+    label: "Athlete performing Scapular Push-Up",
+  },
+  accessory_wall_slide_with_reach: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_wall_slide_with_reach-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_wall_slide_with_reach-v1-thumb.png'),
+    label: "Athlete performing Wall Slide with Reach",
+  },
+  accessory_hip_flexion_machine: {
+    source: require('@/assets/images/movement-artwork/machine-v1/accessory_hip_flexion_machine-v3.png'),
+    thumbnail: require('@/assets/images/movement-artwork/machine-v1/accessory_hip_flexion_machine-v3-thumb.png'),
+    label: "Athlete performing Hip Flexion Machine",
+  },
+  accessory_standing_hip_flexor_march: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_standing_hip_flexor_march-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_standing_hip_flexor_march-v1-thumb.png'),
+    label: "Athlete performing Standing Hip-Flexor March",
+  },
+  accessory_seated_leg_lift: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_seated_leg_lift-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_seated_leg_lift-v1-thumb.png'),
+    label: "Athlete performing Seated Leg Lift",
+  },
+  accessory_l_sit: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_l_sit-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_l_sit-v1-thumb.png'),
+    label: "Athlete performing L-Sit",
+  },
+  accessory_hanging_knee_raise_iso_hold: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_hanging_knee_raise_iso_hold-v4.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_hanging_knee_raise_iso_hold-v4-thumb.png'),
+    label: "Athlete performing Hanging Knee Raise Iso-Hold",
+  },
+  accessory_neck_bridge: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_neck_bridge-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_neck_bridge-v1-thumb.png'),
+    label: "Athlete performing Neck Bridge",
+  },
+  accessory_isometric_neck_flexion: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_isometric_neck_flexion-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_isometric_neck_flexion-v1-thumb.png'),
+    label: "Athlete performing Isometric Neck Flexion",
+  },
+  accessory_isometric_neck_extension: {
+    source: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_isometric_neck_extension-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/bodyweight-v1/accessory_isometric_neck_extension-v1-thumb.png'),
+    label: "Athlete performing Isometric Neck Extension",
+  },
 } : {} as Readonly<Record<CanonicalAccessoryArtworkKey, Readonly<{ source: ImageSourcePropType; thumbnail: ImageSourcePropType; label: string }>>>;
 
 export function canonicalMovementArtworkSource(

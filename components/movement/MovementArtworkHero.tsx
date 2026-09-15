@@ -38,17 +38,26 @@ export const MovementArtworkHero = memo(function MovementArtworkHero({
   if (!asset) return null;
   const rgb = surface === 'superset' ? '13,11,18' : '0,0,0';
   const shade = (alpha: number) => `rgba(${rgb},${alpha})`;
+  const composition = focal || movementHeroFocal(artworkKey);
+  const contained = composition.cropMode === 'contain';
+  const imageBox = movementHeroGeometry(bounds.width, bounds.height, composition);
   return <View pointerEvents="none" accessible={false} importantForAccessibility="no-hide-descendants"
     onLayout={onLayout} style={s.layer} testID="active-movement-art-hero">
     {bounds.width > 0 && bounds.height > 0 ? <Image
-      source={asset.source} style={[s.image, movementHeroGeometry(bounds.width, bounds.height, focal || movementHeroFocal(artworkKey))]}
+      source={asset.source} style={[s.image, imageBox]}
       contentFit="contain" cachePolicy="memory-disk" recyclingKey={receiptId}
       transition={reduceMotion ? 0 : 160} accessibilityIgnoresInvertColors /> : null}
+    {contained ? <>
+      <LinearGradient pointerEvents="none" style={[s.image, imageBox]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+        colors={[shade(1), shade(0), shade(0), shade(1)]} locations={[0, 0.035, 0.965, 1]} />
+      <LinearGradient pointerEvents="none" style={[s.image, imageBox]}
+        colors={[shade(1), shade(0), shade(0), shade(1)]} locations={[0, 0.035, 0.965, 1]} />
+    </> : null}
     <LinearGradient pointerEvents="none" style={s.fill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
       colors={[shade(1), shade(1), shade(0.85), shade(0.08), shade(0), shade(0.9)]}
       locations={[0, 0.36, 0.52, 0.68, 0.86, 1]} />
     <LinearGradient pointerEvents="none" style={s.fill} colors={[shade(1), shade(0.96), shade(0), shade(0), shade(1)]}
-      locations={[0, 0.26, 0.46, 0.78, 1]} />
+      locations={contained ? [0, 0.26, 0.34, 0.96, 1] : [0, 0.26, 0.46, 0.78, 1]} />
   </View>;
 });
 const s = StyleSheet.create({

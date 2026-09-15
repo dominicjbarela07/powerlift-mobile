@@ -97,6 +97,7 @@ assert.deepEqual(
   {
     kind: 'accessory',
     canonicalIdentityId: 222,
+    artworkKey: 'accessory_plate_loaded_seated_row',
     regionKey: 'upper_back',
     primaryMuscleGroup: 'upper_back',
     secondaryMuscleGroups: ['lats', 'rear_delts', 'biceps'],
