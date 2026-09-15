@@ -77,7 +77,7 @@ for (const row of confirmed) {
   uniqueFiles.add(asset.files.app.path);
   uniqueMasters.add(asset.files.master.sha256);
   assert.ok(mappings.includes("require('@/" + asset.files.app.path + "')"));
-  assert.ok(mappings.includes("require('@/" + asset.files.thumbnail.path + "')"));
+  assert.ok(!mappings.includes("require('@/" + asset.files.thumbnail.path + "')"), 'review thumbnails stay outside the runtime bundle');
   const canonical = human.canonical_assets.find(item => item.movement_definition_id === row.id);
   const candidate = human.items.find(item => item.candidate_id === canonical.candidate_id);
   assert.ok(['approved','approved_existing'].includes(candidate.status));

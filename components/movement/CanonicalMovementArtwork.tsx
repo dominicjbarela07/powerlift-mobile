@@ -76,7 +76,7 @@ export function CanonicalMovementArtwork({ movement, size = 72, style, testID, s
     if (exactAsset && approved) {
       return (
         <View accessibilityLabel={exactAsset.label} accessibilityRole="image" style={[styles.frame, { width: size, height: size, borderRadius: Math.min(SLRadius.lg, size * 0.16) }, style]} testID={testID}>
-          <Image accessibilityIgnoresInvertColors resizeMode="contain" source={size <= 48 ? exactAsset.thumbnail : exactAsset.source} style={[styles.exactImage, size <= 80 ? movementThumbnailGeometry(size, approved.key) : { width: size, height: size }]} />
+          <Image accessibilityIgnoresInvertColors resizeMode="contain" source={exactAsset.source} style={[styles.exactImage, size <= 80 ? movementThumbnailGeometry(size, approved.key) : { width: size, height: size }]} />
         </View>
       );
     }

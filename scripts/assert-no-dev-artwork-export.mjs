@@ -31,7 +31,7 @@ export function assertApprovedArtworkExport(exported, { root = process.cwd(), ch
     assert.ok(!runtime.denied_keys.includes(receipt.key));
     const mapping = state.canonical_assets.find(row => row.key === receipt.key && row.candidate_id === receipt.candidate_id);
     assert.ok(mapping, 'only currently approved mapped derivatives may ship');
-    allowed.add(mapping.files.app.sha256); allowed.add(mapping.files.thumbnail.sha256);
+    allowed.add(mapping.files.app.sha256);
   }
   if (testflight) for (const row of equipment) {
     const bytes = fs.readFileSync(path.join(root, row.files.app.path));
@@ -49,10 +49,10 @@ export function assertArtworkExportBytes(exported, {knownHashes: allKnown, allow
   const seen = new Set();
   for (const file of walk(exported)) {
     const hash=crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-    assert.ok(!allKnown.has(hash) || allowed.has(hash), `Unapproved candidate/master or DEV-only artwork in export: ${file}`);
+    assert.ok(!allKnown.has(hash) || allowed.has(hash), `Unapproved candidate/master, redundant thumbnail or DEV-only artwork in export: ${file}`);
     if(allowed.has(hash))seen.add(hash);
   }
-  assert.deepEqual([...allowed].filter(hash=>!seen.has(hash)),[], 'approved mapped app/thumbnail bytes are missing from the TestFlight OTA');
+  assert.deepEqual([...allowed].filter(hash=>!seen.has(hash)),[], 'approved mapped app bytes are missing from the TestFlight OTA');
   return seen;
 }
 if(process.argv[1] && import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href) {

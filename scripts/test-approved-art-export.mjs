@@ -11,22 +11,20 @@ const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'approved-art-export-test-'));
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const assets = {app:'approved app bytes',thumbnail:'approved thumbnail bytes',pending:'pending bytes',rejected:'rejected bytes',master:'master bytes'};
 const knownHashes = new Set(Object.values(assets).map(hash));
-const allowedHashes = new Set([hash(assets.app),hash(assets.thumbnail)]);
+const allowedHashes = new Set([hash(assets.app)]);
 try {
   fs.writeFileSync(path.join(dir,'bundle.hbc'),'ordinary bundle');
   const check = () => assertArtworkExportBytes(dir,{knownHashes,allowedHashes});
   assert.throws(check,/missing/,'a TestFlight flag without actual OTA assets must fail');
   fs.writeFileSync(path.join(dir,'app'),assets.app);
-  assert.throws(check,/missing/,'both actual derivatives are required');
-  fs.writeFileSync(path.join(dir,'thumbnail'),assets.thumbnail);
-  assert.equal(check().size,2);
-  for (const key of ['pending','rejected','master']) {
+  assert.equal(check().size,1);
+  for (const key of ['pending','rejected','master','thumbnail']) {
     fs.writeFileSync(path.join(dir,'leak'),assets[key]);
     assert.throws(check,/Unapproved/,'candidate/master bytes must fail even beside approved derivatives');
     fs.unlinkSync(path.join(dir,'leak'));
   }
   assert.throws(()=>assertArtworkExportBytes(dir,{knownHashes,allowedHashes:new Set()}),/Unapproved/,'ordinary release context cannot include the family');
-  fs.unlinkSync(path.join(dir,'app'));fs.unlinkSync(path.join(dir,'thumbnail'));
+  fs.unlinkSync(path.join(dir,'app'));
   assert.equal(assertArtworkExportBytes(dir,{knownHashes,allowedHashes:new Set()}).size,0);
 } finally { fs.rmSync(dir,{recursive:true,force:true}); }
 
