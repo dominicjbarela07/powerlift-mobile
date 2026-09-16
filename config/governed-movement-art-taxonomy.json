@@ -635,19 +635,6 @@
       "core_kind": null
     },
     {
-      "id": 64,
-      "key": "accessory_mid_cable_flye",
-      "kind": "accessory",
-      "family": "accessory_chest",
-      "primary_muscle_group": "chest",
-      "secondary_muscle_groups": [
-        "front_delts"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 65,
       "key": "accessory_single_arm_cable_flye",
       "kind": "accessory",
@@ -1091,34 +1078,6 @@
       "core_kind": null
     },
     {
-      "id": 97,
-      "key": "accessory_cable_shoulder_press",
-      "kind": "accessory",
-      "family": "accessory_front_delts",
-      "primary_muscle_group": "front_delts",
-      "secondary_muscle_groups": [
-        "side_delts",
-        "triceps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 98,
-      "key": "accessory_single_arm_cable_shoulder_press",
-      "kind": "accessory",
-      "family": "accessory_front_delts",
-      "primary_muscle_group": "front_delts",
-      "secondary_muscle_groups": [
-        "side_delts",
-        "triceps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 99,
       "key": "accessory_band_front_raise",
       "kind": "accessory",
@@ -1357,20 +1316,6 @@
     {
       "id": 116,
       "key": "accessory_behind_the_back_cable_lateral_raise",
-      "kind": "accessory",
-      "family": "accessory_side_delts",
-      "primary_muscle_group": "side_delts",
-      "secondary_muscle_groups": [
-        "front_delts",
-        "traps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 117,
-      "key": "accessory_cuffed_cable_lateral_raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1688,50 +1633,8 @@
       "core_kind": null
     },
     {
-      "id": 141,
-      "key": "accessory_cable_rear_delt_row",
-      "kind": "accessory",
-      "family": "accessory_rear_delts",
-      "primary_muscle_group": "rear_delts",
-      "secondary_muscle_groups": [
-        "upper_back",
-        "traps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 142,
-      "key": "accessory_high_cable_rear_delt_row",
-      "kind": "accessory",
-      "family": "accessory_rear_delts",
-      "primary_muscle_group": "rear_delts",
-      "secondary_muscle_groups": [
-        "upper_back",
-        "traps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 143,
       "key": "accessory_cable_face_pull",
-      "kind": "accessory",
-      "family": "accessory_rear_delts",
-      "primary_muscle_group": "rear_delts",
-      "secondary_muscle_groups": [
-        "upper_back",
-        "traps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 144,
-      "key": "accessory_rope_face_pull",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -2064,34 +1967,6 @@
     {
       "id": 170,
       "key": "accessory_straight_arm_cable_pulldown",
-      "kind": "accessory",
-      "family": "accessory_lats",
-      "primary_muscle_group": "lats",
-      "secondary_muscle_groups": [
-        "biceps",
-        "upper_back"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 171,
-      "key": "accessory_rope_straight_arm_pulldown",
-      "kind": "accessory",
-      "family": "accessory_lats",
-      "primary_muscle_group": "lats",
-      "secondary_muscle_groups": [
-        "biceps",
-        "upper_back"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 172,
-      "key": "accessory_cable_pullover",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2642,21 +2517,6 @@
     {
       "id": 211,
       "key": "accessory_cable_high_row",
-      "kind": "accessory",
-      "family": "accessory_upper_back",
-      "primary_muscle_group": "upper_back",
-      "secondary_muscle_groups": [
-        "lats",
-        "rear_delts",
-        "biceps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 212,
-      "key": "accessory_rope_cable_row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -3458,19 +3318,6 @@
       "core_kind": null
     },
     {
-      "id": 270,
-      "key": "accessory_rope_cable_curl",
-      "kind": "accessory",
-      "family": "accessory_biceps",
-      "primary_muscle_group": "biceps",
-      "secondary_muscle_groups": [
-        "forearms"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 271,
       "key": "accessory_bayesian_cable_curl",
       "kind": "accessory",
@@ -3536,32 +3383,6 @@
       "core_kind": null
     },
     {
-      "id": 276,
-      "key": "accessory_dual_high_cable_curl",
-      "kind": "accessory",
-      "family": "accessory_biceps",
-      "primary_muscle_group": "biceps",
-      "secondary_muscle_groups": [
-        "forearms"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 277,
-      "key": "accessory_hercules_cable_curl",
-      "kind": "accessory",
-      "family": "accessory_biceps",
-      "primary_muscle_group": "biceps",
-      "secondary_muscle_groups": [
-        "forearms"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 278,
       "key": "accessory_single_arm_cable_curl",
       "kind": "accessory",
@@ -3577,19 +3398,6 @@
     {
       "id": 279,
       "key": "accessory_cable_hammer_curl",
-      "kind": "accessory",
-      "family": "accessory_biceps",
-      "primary_muscle_group": "biceps",
-      "secondary_muscle_groups": [
-        "forearms"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 280,
-      "key": "accessory_behind_the_back_cable_curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3884,39 +3692,6 @@
       "core_kind": null
     },
     {
-      "id": 302,
-      "key": "accessory_rope_triceps_pressdown",
-      "kind": "accessory",
-      "family": "accessory_triceps",
-      "primary_muscle_group": "triceps",
-      "secondary_muscle_groups": [],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 303,
-      "key": "accessory_straight_bar_triceps_pressdown",
-      "kind": "accessory",
-      "family": "accessory_triceps",
-      "primary_muscle_group": "triceps",
-      "secondary_muscle_groups": [],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 304,
-      "key": "accessory_v_bar_triceps_pressdown",
-      "kind": "accessory",
-      "family": "accessory_triceps",
-      "primary_muscle_group": "triceps",
-      "secondary_muscle_groups": [],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 305,
       "key": "accessory_reverse_grip_triceps_pressdown",
       "kind": "accessory",
@@ -3941,17 +3716,6 @@
     {
       "id": 307,
       "key": "accessory_cable_overhead_triceps_extension",
-      "kind": "accessory",
-      "family": "accessory_triceps",
-      "primary_muscle_group": "triceps",
-      "secondary_muscle_groups": [],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 308,
-      "key": "accessory_rope_overhead_triceps_extension",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -5181,19 +4945,6 @@
       "core_kind": null
     },
     {
-      "id": 405,
-      "key": "accessory_standing_cable_leg_curl",
-      "kind": "accessory",
-      "family": "accessory_hamstrings",
-      "primary_muscle_group": "hamstrings",
-      "secondary_muscle_groups": [
-        "glutes"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 406,
       "key": "accessory_cable_romanian_deadlift",
       "kind": "accessory",
@@ -5606,19 +5357,6 @@
     {
       "id": 437,
       "key": "accessory_cable_glute_kickback",
-      "kind": "accessory",
-      "family": "accessory_glutes",
-      "primary_muscle_group": "glutes",
-      "secondary_muscle_groups": [
-        "hamstrings"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 438,
-      "key": "accessory_standing_cable_hip_extension",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -6390,19 +6128,6 @@
       "core_kind": null
     },
     {
-      "id": 502,
-      "key": "accessory_kneeling_cable_crunch",
-      "kind": "accessory",
-      "family": "accessory_abs",
-      "primary_muscle_group": "abs",
-      "secondary_muscle_groups": [
-        "hip_flexors"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 503,
       "key": "accessory_standing_cable_crunch",
       "kind": "accessory",
@@ -6767,19 +6492,6 @@
       "core_kind": null
     },
     {
-      "id": 532,
-      "key": "accessory_high_to_low_cable_chop",
-      "kind": "accessory",
-      "family": "accessory_obliques",
-      "primary_muscle_group": "obliques",
-      "secondary_muscle_groups": [
-        "abs"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 533,
       "key": "accessory_low_to_high_cable_chop",
       "kind": "accessory",
@@ -6795,19 +6507,6 @@
     {
       "id": 534,
       "key": "accessory_cable_side_bend",
-      "kind": "accessory",
-      "family": "accessory_obliques",
-      "primary_muscle_group": "obliques",
-      "secondary_muscle_groups": [
-        "abs"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 535,
-      "key": "accessory_cable_lift",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -7106,20 +6805,6 @@
     {
       "id": 557,
       "key": "accessory_cable_good_morning",
-      "kind": "accessory",
-      "family": "accessory_lower_back",
-      "primary_muscle_group": "lower_back",
-      "secondary_muscle_groups": [
-        "hamstrings",
-        "glutes"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 558,
-      "key": "accessory_cable_pull_through_back_extension",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
