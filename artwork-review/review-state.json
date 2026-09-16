@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": 1864,
-  "updated_at": "2026-09-16T22:37:09.283720+00:00",
-  "updated_at_display": "Sep 16, 2026 03:37 PM PT (Sep 16, 2026 06:37 PM Eastern)",
+  "revision": 1869,
+  "updated_at": "2026-09-16T23:12:39.166768+00:00",
+  "updated_at_display": "Sep 16, 2026 04:12 PM PT (Sep 16, 2026 07:12 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -117954,6 +117954,371 @@
         "rig": "approved dual-column rig v1",
         "inspection": "Full master, enlarged pulley/hand contacts, and 192px/80px views inspected; pending owner review.",
         "generator_file": "exec-0c0fdba6-c4a8-4cb9-b13b-5ed8cbaff5ab.png"
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16"
+    },
+    {
+      "movement_definition_id": 114,
+      "key": "accessory_single_arm_cable_lateral_raise",
+      "movement_name": "Single-Arm Cable Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-second-five-114-20260916",
+      "generation_batch": "cable-rig-second-five-2026-09-16",
+      "candidate_id": "e63859a598870aa7e7c77b07",
+      "version": 4,
+      "supersedes_candidate_id": "ff78e78a4c518b7b6be5f139",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/e63859a598870aa7e7c77b07/master.png",
+          "sha256": "c64c492bb76ce61eceb8d370a226b1fa14e670002dacc271443688f7a25fdd43",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1791810
+        },
+        "app": {
+          "path": "candidates/e63859a598870aa7e7c77b07/app.png",
+          "sha256": "5f05239f6fc3fefa482be5c26ccadd9558197dd1ad6f2bb051f1074c7d96fc5f",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 346729
+        },
+        "thumbnail": {
+          "path": "candidates/e63859a598870aa7e7c77b07/thumbnail.png",
+          "sha256": "21e37cf0148216e0d6b5d5bb95ade40910e50a2aa37f2060e1817f10b86eef86",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 56368
+        }
+      },
+      "candidate_asset": "candidates/e63859a598870aa7e7c77b07/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-16T23:12:37.564756+00:00",
+      "created_at_display": "Sep 16, 2026 04:12 PM PT (Sep 16, 2026 07:12 PM Eastern)",
+      "generation_prompt": "Create one realistic square Strength Ledger photograph: SINGLE-ARM CABLE LATERAL RAISE, governed movement114.\nImage1 is the exact approved two-column cable rig and dark violet gym. Image2 is a real one-arm lateral raise pose reference only. Use the original rig dimensions, two stacks, rails, crossbar and feet from image1. Do NOT copy image2's athlete position inside the towers.\nFull rig on LEFT, full-body adult female athlete on RIGHT, ENTIRELY OUTSIDE the rig and IN FRONT of the nearest/right pulley. Both shoes on open floor beyond the machine's foremost base foot. She stands side-on to the working station, facing camera at a natural three-quarter front angle. Her machine-side shoulder is nearest the pulley; her OUTSIDE arm is the ONLY working arm. Plain charcoal tee, dark gray leggings, trainers, natural proportions. Rig2.3m, adult1.7m.\nPose from real reference: torso upright with NO leaning away, knees soft, shoulders level without shrugging. Raise the outside arm LATERALLY to shoulder height with a modest soft elbow bend and neutral wrist, gripping one D-handle securely. This is one complete connected working shoulder, arm, forearm and hand. Free hand rests naturally on her hip, clearly empty. No two-hand or bilateral raise.\nMove the nearest/right column's SINGLE original adjustable pulley carriage DOWN its chrome rail to ankle height. The original high carriage position becomes bare rail; do not retain a duplicate high carriage. Fixed upper return pulley remains. Exactly ONE taut steel cable reeves around the low sheave groove, exits tangentially UP toward the working hand, and clips to its one D-handle's eye. Cable passes in open air IN FRONT of her hips/abdomen, clear of torso and legs; never goes through skin/clothing or behind and through a leg. Keep visible connection at low sheave and hand. Internal reeving runs vertically along machine, no external diagonal wire from top, no mid-air junction. Other column idle D-handle and resting stack. A few selected plates slightly raised, all other plates resting. Full machine and shoes visible, no text/labels.\n\nNEXT GENERATION STEP\n\nMake a localized mechanical correction to this exact lateral-raise photo. Preserve athlete, natural single-arm raise, hand holding D-handle, free hand on hip, rig, both stacks, lighting, floor and dimensions.\nAt the active LOW PULLEY near her shin, REMOVE the small carabiner and black stopper currently drawn against the circular side cover. No clip belongs at the machine. Replace that false connection with a thin continuous steel cable properly REEVED THROUGH the pulley: incoming cable vertical along the machine rail, curving around the sheave in the narrow groove BETWEEN the two guard plates, then leaving tangentially toward the athlete's raised hand. The single outgoing wire runs unobstructed to the existing hand-side carabiner/D-handle. One continuous moving cable, not a wire clipped to the machine's side plate. The ONLY carabiner and black stop on the external span are already at the HAND, not the machine. Show the groove and tangent exit clearly; no new brackets or extra pulley. Do not alter human pose or add wires.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/single-arm-cable-lateral-raise-114-v1.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "movement_family": "accessory_side_delts",
+      "execution_family": "CABLE",
+      "sidedness": "unilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "generation_context": {
+        "method": "built-in image generation",
+        "rig": "approved dual-column rig v1",
+        "inspection": "Full master, enlarged pulley/hand contacts, and 192px/80px views inspected; pending owner review.",
+        "generator_file": "exec-7e67adaa-f679-4d89-b861-fae783e3aba3.png"
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16"
+    },
+    {
+      "movement_definition_id": 501,
+      "key": "accessory_cable_crunch",
+      "movement_name": "Cable Crunch",
+      "primary_muscle_group": "abs",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-second-five-501-20260916",
+      "generation_batch": "cable-rig-second-five-2026-09-16",
+      "candidate_id": "6763e13f1035e781aed78af9",
+      "version": 4,
+      "supersedes_candidate_id": "e0de5b7151a3647ea4804b29",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/6763e13f1035e781aed78af9/master.png",
+          "sha256": "b015efdaf02c9683f487c6c0956f2ba7a237e20dd6183aad1098d3c90c6f0213",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1835683
+        },
+        "app": {
+          "path": "candidates/6763e13f1035e781aed78af9/app.png",
+          "sha256": "aadd1dabca85be2869884f4b5eb81201d0ca1ee3b0b94d5e61ce0a236cbb7c14",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 338216
+        },
+        "thumbnail": {
+          "path": "candidates/6763e13f1035e781aed78af9/thumbnail.png",
+          "sha256": "b0bb7bb76767beab440e4872158da9b386cd51764ffbb88c8b0b773f3d18a6e4",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 54979
+        }
+      },
+      "candidate_asset": "candidates/6763e13f1035e781aed78af9/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-16T23:12:37.936140+00:00",
+      "created_at_display": "Sep 16, 2026 04:12 PM PT (Sep 16, 2026 07:12 PM Eastern)",
+      "generation_prompt": "Create one square photorealistic Strength Ledger exercise image: KNEELING CABLE CRUNCH, canonical movement501.\nImage1 is the exact approved dual-column Life Fitness rig and dark violet gym specification. Image2 is the actual cable-crunch body mechanics reference only. Preserve image1 equipment shape, proportions, both stacks and rails; no different machine.\nFull machine LEFT; ONE adult athlete kneels on a small plain dark mat on the open floor RIGHT, ENTIRELY OUTSIDE and IN FRONT OF the nearest/right active high pulley, facing it. Knees and feet well outside the frame, clear open-floor gap at least0.6m to the machine base. Full human body and rig visible. Natural real scale: standing adult would be1.75m against2.3m machine; flexed kneeling athlete height about0.8m, never enlarge kneeling body to standing height. Camera three-quarter front/side so both knees, continuous arms and hand contacts are legible. Charcoal fitted tee, dark gray shorts, black trainers.\nPose based on real reference: knees hip width on mat, lower legs on floor behind, hips stay above/near knees rather than sitting back onto heels. Spine and ribcage visibly curl toward pelvis in a controlled abdominal crunch; neck follows naturally without cranking. Moderate contracted position with torso leaning/rounding forward, head well above floor, elbows descending toward thighs. BOTH hands hold the two ends of ONE split rope beside temples/ears, keeping the rope fixed by the head; do not turn this into an arm pushdown. Exactly two connected arms and two hands, ordinary rope rubber stops beyond grips. No rope wrapped around the neck.\nOnly nearest/right HIGH pulley active. ONE taut steel cable travels from INSIDE that actual sheave's groove through its proper tangent outlet directly to the rope's central eye and ONE carabiner just above/in front of athlete's head. Cable clear in the open space ahead of crown, never through face/neck/arms. Rope splits from that center eye toward the two separate hand grips outside each side of the head. Do not clip wire to machine bracket/sideplate. Opposite D-handle hangs idle, other stack resting; a modest selected top group on active stack raised, remaining plates on base. Full knees and feet visible, no extra cables or limbs, no text.\n\nNEXT GENERATION STEP\n\nRepair only the high working pulley and its cable routing in image1 (kneeling cable crunch). Preserve the entire man, kneeling position fully in front/outside the machine, rounded crunch posture, rope attachment at head, both hands, whole dual-column rig, exact overall size/perspective, lighting, mat and framing. Replace image1's mechanically false silver eye/vertical cover-edge cable at the active top-right pulley with EXACTLY the correct working pulley construction and cable groove routing shown in image2 (approved standing pushdown): a thin continuous cable visibly runs in the rotating sheave's peripheral groove and exits the lower-right edge of that sheave smoothly downward toward the existing rope center eye above the kneeling man. It must follow the circumference and be tangent at the exit, as in image2. DO NOT run a cable over or along the front cover edge, DO NOT anchor it to a bracket, bolt, metal loop, cover or guard. Delete the false silver protruding eye currently around x742,y234. No clip/ball/carabiner at the machine; the only cable stop and carabiner are at the rope attachment near the athlete. Match image2's working-pulley hardware geometry and reeving faithfully, adapting the exiting line to the crunch athlete's existing attachment. Keep all other image1 content unchanged, full square photo, one active cable, parked other cable.\n\nNEXT GENERATION STEP\n\nEdit the APPROVED machine photograph in reference1 to show KNEELING CABLE CRUNCH #501. Preserve its EXACT dual-column rig and right-side HIGH WORKING PULLEY hardware, its size and correct grooved cable exit. This is the mechanically approved reference: do not redraw the active pulley, change its cover shape or put any silver loop on it. Preserve camera, whole-machine proportions and dark violet gym lighting. Change the exercise only. Replace the standing man/bar with a realistically proportioned athletic man in charcoal shirt and gray shorts KNEELING on a small mat entirely OUTSIDE and IN FRONT OF the machine's right working station, well to screen right, facing toward that pulley. All knees, shins and feet lie forward of the machine's front floor plane, never inside its columns. Use reference2 ONLY as pose mechanics: hips approximately over knees, strong visible spinal flexion, ribs curl down toward pelvis, head lowered with neck following spine, elbows point down, both hands firmly hold the two rope ends beside his ears. Show a natural midway crunch with clearly rounded torso, no hip-hinge-only pose. Two complete arms/hands, no detached or hidden-fused limbs. Exact scale: kneeling athlete's head much lower than standing athlete reference1; machine remains about 2.3m, standing equivalent athlete 1.78m. ONE active cable: keep the reference1 high pulley outlet exactly and connect its same continuous taut cable to ONE centered carabiner/rope eye above and in front of athlete's head, with TWO rope branches, one to each hand, exactly TWO rubber end stops. Cable must exit the actual reference1 pulley groove, no attachment on pulley guard, no extra loop or wire. Opposite cable parked exactly as reference1. Keep real equipment and human scale, all body below/correctly forward of that pulley, no cropped feet. One square photographic movement illustration, no labels, no arrows, no text, no collage. Reference2 machine/gym must NOT be copied. Preserve approved reference1's machinery faithfully; only its athlete/attachment and cable length change.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-crunch-501-v1.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "movement_family": "accessory_abs",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "generation_context": {
+        "method": "built-in image generation",
+        "rig": "approved dual-column rig v1",
+        "inspection": "Full master, enlarged pulley/hand contacts, and 192px/80px views inspected; pending owner review.",
+        "generator_file": "exec-f91fdd52-ac94-4cf8-8517-3bf168a01974.png"
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16"
+    },
+    {
+      "movement_definition_id": 439,
+      "key": "accessory_cable_pull_through",
+      "movement_name": "Cable Pull-Through",
+      "primary_muscle_group": "glutes",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-second-five-439-20260916",
+      "generation_batch": "cable-rig-second-five-2026-09-16",
+      "candidate_id": "0bb0420fce12dda93d7f10ad",
+      "version": 4,
+      "supersedes_candidate_id": "7613b814b35ae5e54e953708",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/0bb0420fce12dda93d7f10ad/master.png",
+          "sha256": "482ee0d555abccf36bae81a257688cb3a07bd15bb394312aeb263bc7eb03b86e",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1885926
+        },
+        "app": {
+          "path": "candidates/0bb0420fce12dda93d7f10ad/app.png",
+          "sha256": "a76b93339facd4af8be768fa0188f309147148b7d4de0b120f91402fcff18f4c",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 354505
+        },
+        "thumbnail": {
+          "path": "candidates/0bb0420fce12dda93d7f10ad/thumbnail.png",
+          "sha256": "d5734d3805321ea3931525f9e86a81cea4ad42cd8f41f1214d9c868e5bb22c22",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 56838
+        }
+      },
+      "candidate_asset": "candidates/0bb0420fce12dda93d7f10ad/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-16T23:12:38.303109+00:00",
+      "created_at_display": "Sep 16, 2026 04:12 PM PT (Sep 16, 2026 07:12 PM Eastern)",
+      "generation_prompt": "Create one square photorealistic Strength Ledger photograph: CABLE PULL-THROUGH, governed movement439. Image1 is the exact approved full-size dual-column Life Fitness rig and dark violet-lit gym. Image2 shows real pull-through hip-hinge mechanics only. Keep the approved rig proportions, two stacks, original rails, crossbar and hardware.\nRig LEFT; adult female athlete RIGHT on open floor, standing ENTIRELY OUTSIDE and IN FRONT OF the nearest/right low-pulley station, FACING AWAY from it toward image right. Both feet beyond the machine's front base with clear separation; she has walked forward about1m to tension cable. Full rig and full body/shoes visible, actual adult1.7m versus rig2.3m. Camera three-quarter front-side enough to see two complete arms/hands and the open space BETWEEN her legs. Plain charcoal shirt, dark gray leggings, trainers.\nShow a natural hip hinge like real photo: feet shoulder-width, knees softly bent20degrees, hips pushed back, long neutral spine, torso tipped forward about50degrees, neck aligned with spine and gaze down-forward. Weight balanced over feet, not a squat. BOTH arms hang naturally downward from shoulders, both hands grip separate ends of ONE ordinary split rope between upper legs near knee level. Exactly two connected arms/two hands, neutral wrists, rope end stops beyond each grip.\nOnly nearest/right station active. Its ONE original adjustable carriage is moved to LOW ankle/shin height; original upper position is bare rail, top fixed return pulley remains. ONE steel cable exits the low sheave groove tangentially and runs straight through EMPTY AIR BETWEEN her legs to the rope CENTER eye behind/between her knees. Short rope branches continue forward between thighs to the two hand grips. Cable must stay visibly in the open leg gap, never intersect a calf, thigh, groin or torso. One carabiner at rope's center eye, NONE at machine outlet. Cable reeves around actual groove, not clipped to a plate or axle. No duplicated upper carriage, no wire hanging from top. Opposite column idle handle hanging; realistic original stacks with only selected top plates slightly lifted. No text or diagrams.\n\nNEXT GENERATION STEP\n\nRefine this pull-through photo without changing athlete, hands, posture, feet, rig dimensions, camera or background. Fix ONLY the cable system and rope details:\n1. The right station must have ONE adjustable carriage at LOW height. Remove its obsolete UPPER adjustable carriage and dangling clip completely; leave bare chrome rail above the low carriage. Keep the very top FIXED return sheave and original frame.\n2. At the low carriage, remove the false silver ring/clip attached to its outer face. The thin steel cable must run in the actual sheave groove BETWEEN guards and leave tangentially from the forward outlet. It is a continuous moving cable, not clipped to the machine. Keep its single straight span to the existing rope-center carabiner behind/between athlete's knees. No second wire or mid-air junction.\n3. Exactly ONE ordinary split rope with TWO rubber end stops total, one stop beyond EACH gripping hand. Remove the extra third rubber ball visible above/behind her left-image hand near her inner thigh. Both hand grips must enclose the two real rope ends, joined only at the existing central metal eye behind knees. Keep rope passing through empty space BETWEEN thighs, not through a leg.\nPreserve two anatomically connected arms/hands, natural hip hinge and both feet beyond frame. Modest selected top weight group on active stack, other stack idle.\n\nNEXT GENERATION STEP\n\nMake a precision correction to image 1 only: keep this exact dual-column rig, woman, hinge pose, framing, proportions, cable height, feet and shadows. Correct just TWO tiny mechanical defects. (1) The rope attachment in her hands currently has THREE black rubber end stops: delete the extra black bulb visible between her thighs just above/beside the nearer hand (around x965,y800 in the 1254px image). A real rope attachment has exactly TWO rope branches from one center eye, one branch held by each hand, and exactly TWO rubber end stops, one below each fist. Keep the two correct stops below her fists and the silver center eye behind her knees. The center eye and branches pass freely between her legs, occlusion behind her nearer leg is fine. Replace the extra bulb with the natural fabric/background appropriate there. Do not add any handle or grip. (2) At the machine's low working pulley, remove the false silver clip/spur between the wheel and taut wire (around x705,y875). The single continuous black cable must lie IN the sheave's circumferential groove and emerge smoothly tangentially toward the rope eye behind the woman's knees. NO connector, ball, loop, hook or rigid anchor AT the pulley; the only carabiner belongs at the rope eye by the athlete. Use reference 2 for actual clean grooved low-pulley and continuous cable construction. Preserve every other detail in image1 including bare upper section of the active rail, other parked cable, full feet outside/front of machine, natural anatomy. One square polished photographic image, no text or collage.\n\nNEXT GENERATION STEP\n\nEdit the FULL photograph in reference1 and return the same full square framing. Reference2 is an enlarged detail to show the exact defect, NOT the output composition. Replace ONLY the small rope-and-hands region between the woman's thighs. There is an erroneous THIRD rounded rubber stopper just above the woman's near/left fist, next to the inner thigh: visible as the black horizontal bean at x550,y180 in reference2's crop. It still exists and MUST be completely removed. Reconstruct this small attachment naturally: two braided rope branches pass from the existing metal center eye behind her knees forward BETWEEN her thighs; one branch leads into each hand; each hand is a true wrapped grip; exactly ONE rubber stop below each fist, TWO rubber stops total. No other round black shapes between her inner thighs, no third end, no blob above the fist. The nearer hand may move a few centimeters forward and the hands may separate slightly to expose the two straight braided rope shafts above their grips. Make the corrected connection visually unambiguous. Preserve her body, both arms, hinge angle, feet, clothing, rig scale and placement, continuous low pulley cable, lighting, background and all other content. Do not create another cable. Do not crop. Only one complete photographic image showing the full machine and entire woman as in image1.\n\nNEXT GENERATION STEP\n\nCreate a CABLE PULL-THROUGH #439 exercise photo by editing reference1's exact dual-column rig scene. Reference1 is the correct rig, low-pulley configuration, cable hardware and dark violet photographic style: keep all of that faithfully, including the bare upper portion of active right rail and SINGLE low working pulley. Reference2 is REAL HUMAN HIP-HINGE AND ROPE POSITION only, do not copy its equipment or background. Replace reference1's curl man and bar with an athletic woman in charcoal t-shirt, gray leggings and black trainers performing a cable pull-through. Entire woman stands on open floor in front of the active right pulley, OUTSIDE the machine footprint. Her back is toward the working pulley, head/body face screen right away from it; feet shoulder width with full shoes visible. Copy the real demonstrator's hinge: knees slightly bent, hips back, long neutral back with torso about 35 degrees above horizontal, natural head/neck aligned, arms hang down and back BETWEEN THIGHS. Machine height 2.3m, woman's equivalent standing height 1.7m. Full dual-column machine on left, full woman on right, clear scale and alignment to active pulley.\nONE cable from the existing correct low working sheave, REEVED in its groove like reference1 with NO connector at machine, runs along a clean taut line toward woman's midline from behind. The cable ends in a carabiner and the CENTRAL METAL EYE of ONE normal rope attachment just behind her knees. Exactly TWO separate braided rope branches run FORWARD between her legs, one to each hand. TWO hands with wrapped neutral grips and straight natural wrists; hold rope ends separately with a small clear space between the fists. Exactly TWO rubber stoppers total, one BELOW each hand. All rope other than those two stops is uniform braided cord with NO bulbs, spare ends or knots. Choose camera visibility so both hands and their ONLY TWO terminal rubber stops can be counted, with center eye behind knees connected to the single cable. Pose like real reference2, naturally extended arms carrying rope backward between legs, no cable through human tissue, no arbitrary rope lump between thighs. Opposite column idle/parked unchanged. Do not add an upper active carriage, spare wire, third rope end, third stop, extra limb, text, arrows or collage. One clean square photorealistic full scene.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-pull-through-439-v1.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "movement_family": "accessory_glutes",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "generation_context": {
+        "method": "built-in image generation",
+        "rig": "approved dual-column rig v1",
+        "inspection": "Full master, enlarged pulley/hand contacts, and 192px/80px views inspected; pending owner review.",
+        "generator_file": "exec-aa6ebd75-a946-48d3-90f4-8a9f825d9cf1.png"
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16"
+    },
+    {
+      "movement_definition_id": 305,
+      "key": "accessory_reverse_grip_triceps_pressdown",
+      "movement_name": "Reverse-Grip Triceps Pressdown",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-second-five-305-20260916",
+      "generation_batch": "cable-rig-second-five-2026-09-16",
+      "candidate_id": "7adf4f10871b5c4858a80994",
+      "version": 4,
+      "supersedes_candidate_id": "910a0a2857440693d5042a07",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/7adf4f10871b5c4858a80994/master.png",
+          "sha256": "0ee9bb9dfc42a57fdcd55957ea6486cf1e24a3ab83ac0f71363b4ff30791f30e",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1854058
+        },
+        "app": {
+          "path": "candidates/7adf4f10871b5c4858a80994/app.png",
+          "sha256": "1096395bfb390fbb68c29d995650758f16246a77cabfed5f72ae9c9134ac0b7c",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 343648
+        },
+        "thumbnail": {
+          "path": "candidates/7adf4f10871b5c4858a80994/thumbnail.png",
+          "sha256": "6b897b7438c548afb3cfe605406eabf4a495f8595c95ed4dd122b8d8a54fe0c1",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 56161
+        }
+      },
+      "candidate_asset": "candidates/7adf4f10871b5c4858a80994/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-16T23:12:38.723533+00:00",
+      "created_at_display": "Sep 16, 2026 04:12 PM PT (Sep 16, 2026 07:12 PM Eastern)",
+      "generation_prompt": "Create the distinct REVERSE-GRIP TRICEPS PUSHDOWN, canonical movement305, by carefully editing image1. Image1 is the approved standard pushdown and exact rig/proportions/athlete placement specification. Image2 shows REAL UNDERHAND reverse-grip mechanics; use its grip ONLY, not its rear camera or machine.\nKeep image1's exact dual-column machine, correct high pulley cable routing, one active cable, idle opposite station, gym lighting, full body, open floor gap and athlete OUTSIDE/IN FRONT of the nearest pulley. Keep the same FRONT three-quarter camera showing both arms/hands.\nChange BOTH forearms and grips to SUPINATED UNDERHAND: palm side faces UP and slightly toward camera, inner wrists and inner forearms visibly face forward/up. Fingers curl upward from UNDER the straight bar, with thumbs wrapping around it; the backs of the hands must NOT face upward as in an overhand pressdown. This supinated grip is the defining visible difference from image1 and must be unmistakable.\nUpper arms stay down beside ribs, shoulders relaxed, elbows nearly straight but softly unlocked, with the straight bar just in front of upper thighs. Small natural forward lean, neutral spine and wrists. TWO complete anatomically continuous arms, exactly TWO hands with correct thumbs, one grip on each side of the bar's CENTER EYE. A single central carabiner remains visible BETWEEN hands and connects the one taut wire from the ORIGINAL working high pulley groove. Preserve its existing approved sheave/outlet arrangement. No extra hand, no floating fingers, no extra wire. Natural realistic photo, no labels or overlays.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/reverse-grip-triceps-pushdown-305-v1.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_triceps",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "generation_context": {
+        "method": "built-in image generation",
+        "rig": "approved dual-column rig v1",
+        "inspection": "Full master, enlarged pulley/hand contacts, and 192px/80px views inspected; pending owner review.",
+        "generator_file": "exec-7081c842-4b9d-410f-9829-07fdaaf61ab6.png"
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16"
+    },
+    {
+      "movement_definition_id": 175,
+      "key": "accessory_single_arm_cable_low_row",
+      "movement_name": "Single-Arm Cable Low Row",
+      "primary_muscle_group": "lats",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-second-five-175-20260916",
+      "generation_batch": "cable-rig-second-five-2026-09-16",
+      "candidate_id": "0e0e8d5b04fd34003553b0de",
+      "version": 4,
+      "supersedes_candidate_id": "94276312bcb15a869fb10fa1",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/0e0e8d5b04fd34003553b0de/master.png",
+          "sha256": "dfc57b1ec6e6e052e61705686ee696e3e26307edd2b66c1bec6b0f56224734e9",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1854121
+        },
+        "app": {
+          "path": "candidates/0e0e8d5b04fd34003553b0de/app.png",
+          "sha256": "661697b5778c50a8138c67687acd6b2bb4179bbea1111455df5d16d59a6c81d2",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 357323
+        },
+        "thumbnail": {
+          "path": "candidates/0e0e8d5b04fd34003553b0de/thumbnail.png",
+          "sha256": "77e3bb202c729da48709af2e1e8f8ff9d3ae0ce3676be87f45c575f66d5b196f",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 58344
+        }
+      },
+      "candidate_asset": "candidates/0e0e8d5b04fd34003553b0de/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-16T23:12:39.166698+00:00",
+      "created_at_display": "Sep 16, 2026 04:12 PM PT (Sep 16, 2026 07:12 PM Eastern)",
+      "generation_prompt": "Create one square photorealistic Strength Ledger exercise image: SINGLE-ARM CABLE LOW ROW, governed movement175.\nImage1 specifies the exact approved two-column cable machine, its realistic proportions, two stacks/chrome rails/crossbar/bases and dark violet gym. Image2 is a real standing single-arm cable low row pose reference ONLY. Do not copy its extra bands, altered handle, other machines, text or people.\nFull rig on LEFT, one adult male athlete on RIGHT, facing the nearest/right low pulley and standing ENTIRELY OUTSIDE/IN FRONT OF it. Stable modest staggered stance on open floor, leading shoe well beyond machine base, clear floor gap. Full body and whole rig visible. Rig2.3m versus adult1.8m. Plain charcoal tee, gray shorts, trainers. Camera THREE-QUARTER FRONT view that clearly exposes the entire WORKING ARM nearest camera.\nNatural row contraction: slight hip hinge about15–20degrees, soft knees, long neutral spine and balanced stance, no extreme lean or torso twist. Working shoulder down/back; working upper arm tracks close beside ribs, elbow pulled back alongside the lower ribs, forearm leads forward from elbow to ONE D-handle held beside the same-side hip/lower ribs. The complete shoulder-upper arm-elbow-forearm-wrist-hand chain is visible. Hand wraps the D-handle with NEUTRAL grip, thumb around handle. Free hand rests on front thigh for balance, clearly empty. Exactly two arms/hands, only one hand gripping equipment. No two-hand bar, no shrug or biceps curl pose.\nThe right column's SINGLE original adjustable carriage is SLID DOWN to ankle/low shin height; leave bare chrome rail where it previously stood up high. Top fixed return pulley stays. ONE taut steel cable emerges directly from the real low sheave groove through its tangent outlet, extends diagonally upwards through empty air in front of knees, and clips through ONE carabiner to the held D-handle eye. No clip at machine outlet, no wire attached to axle or solid sideplate, no diagonal wire from top, no second movable carriage. Internal reeving vertical along rail. Far/left station has idle D-handle and resting stack; right stack selected few top plates lifted slightly, remaining plates resting. Natural correct scale, full feet, no overlays.\n\nNEXT GENERATION STEP\n\nImage1 is the single-arm low-row photo to correct. Image2 demonstrates the already-refined LOW-PULLEY configuration of the same approved dual-column rig.\nKeep image1's exact athlete, complete working arm, hand on D-handle, free hand, stance, full body, machine proportions and gym unchanged. Correct its RIGHT working station to match image2's mechanical configuration: ONE original adjustable pulley carriage at LOW shin height, NO upper adjustable carriage remaining. Remove image1's obsolete high movable carriage beside the athlete's head and leave uninterrupted bare chrome adjustment rail, while preserving the fixed return sheave at the crossbar.\nAt image1's low working pulley, REMOVE the false silver carabiner currently hanging directly on its housing. The cable must run around the sheave circumference groove between guard plates, then leave directly and TANGENTIALLY as one thin taut wire toward the existing D-handle carabiner in the athlete's hand. It must not attach to the side cover or axle. Match image2's credible direct sheave-to-hand wire arrangement. Only the hand-side carabiner stays. No other external wire, no junction, no duplicate carriage. Small selected top plate group lifted on right stack, left stack and idle handle unchanged. Keep wire physically in front of and clear of free forearm and knee.\n\nNEXT GENERATION STEP\n\nPrecision repair of image1, change ONLY the tiny cable exit at the active low pulley near x705,y880. Keep the man, his row pose, arms, hands, D handle, cable line, entire dual-column machine, bare upper active rail, lifted stack, all floor positions and photo style exactly. DELETE the silver oval loop currently connecting the working cable to the machine. That silver loop is mechanically false. A moving cable is never clipped to a pulley. Replace it with ONE uninterrupted thin dark flexible cable that is visibly reeved inside the black pulley wheel's peripheral groove, curling around that wheel behind its side guard and emerging smoothly toward the D handle held at the man's hip. The cable follows the wheel rim, NEVER connects to the center bolt, NEVER clips onto the cover/side plate, has no silver loop, carabiner, swivel, ball or rigid connector at the machine. The only carabiner is the existing correct one by the athlete's hand. Use image2 as reference for the physically correct continuous cable at a low pulley. No other alterations. One complete square photographic image.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/single-arm-cable-low-row-175-v1.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "CABLE",
+      "sidedness": "unilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "generation_context": {
+        "method": "built-in image generation",
+        "rig": "approved dual-column rig v1",
+        "inspection": "Full master, enlarged pulley/hand contacts, and 192px/80px views inspected; pending owner review.",
+        "generator_file": "exec-b9c5e6e5-db92-4b21-8d9c-ba8cf9cbf899.png"
       },
       "rebuild_id": "cable-cleanup-2026-09-16"
     }
