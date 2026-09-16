@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 1435,
+  "revision": 1602,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-15T21:00:27.626049+00:00",
-  "updated_at_display": "Sep 15, 2026 02:00 PM PT (Sep 15, 2026 05:00 PM Eastern)",
+  "updated_at": "2026-09-16T02:11:03.074644+00:00",
+  "updated_at_display": "Sep 15, 2026 07:11 PM PT (Sep 15, 2026 10:11 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -38822,6 +38822,3158 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "8cabfa2f682a964ef596285bf8f7bc3e49ac48eebdda4b99f3b6b0ad1ef9a187",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 100,
+      "key": "accessory_band_shoulder_press",
+      "movement_name": "Band Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-100-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "a39e31cedfe583bedde733dc",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/a39e31cedfe583bedde733dc/master.png",
+          "sha256": "684d15fc26062d1035f90783d91c9d5e8504f56caac13973783cd3e6443d73a0",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1706677
+        },
+        "app": {
+          "path": "candidates/a39e31cedfe583bedde733dc/app.png",
+          "sha256": "d7722309f20cdb4cab20f8a1ffe970d7ffcc7d4d1a21d732a0b56ad6f757ffa0",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 296828
+        },
+        "thumbnail": {
+          "path": "candidates/a39e31cedfe583bedde733dc/thumbnail.png",
+          "sha256": "87a0f1aab17216c9b828843bc6084801f1ac9715654ea4627dd6d05326eab888",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41730
+        }
+      },
+      "candidate_asset": "candidates/a39e31cedfe583bedde733dc/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:45:05.411570+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:45 PM PT (Sep 15, 2026 05:45 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "684d15fc26062d1035f90783d91c9d5e8504f56caac13973783cd3e6443d73a0",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:17:29.299240+00:00",
+      "created_at_display": "Sep 15, 2026 11:17 AM PT (Sep 15, 2026 02:17 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: Canonical ID100 accessory_band_shoulder_press. Bilateral BAND SHOULDER PRESS near the overhead finish. Front three-quarter camera. Stand tall, ribs down, feet hip-width firmly anchoring the bottom of ONE long RED flat closed-loop band under both shoes. The loop's top is held in two closed hands above shoulders. Both arms nearly extended overhead in the scapular plane with a modest natural elbow bend, wrists above elbows, palms forward. Clearly trace the two tensioned red lateral band lengths from the outer sides of the grips down OUTSIDE the body to the soles; a short band bridge connects the hands overhead. Band must NOT pass through forearms, face, torso or legs. Equal plausible arms, no dumbbells, cables, rack or random handle. Whole overhead hands and band-to-foot contacts visible.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/100/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "side_delts"
+      ],
+      "movement_family": "accessory_front_delts",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Symmetric overhead press and continuous red loop pinned below shoes; grips, shoulder chains and band clearance visible.",
+        "thumbnail_inspection": "Inspected 192px and 80px previews: full pose, red band path and defining joint/grip arrangement remain readable; safe whole-square hero presentation.",
+        "reference_pages": "https://www.roguefitness.com/rogue-monster-bands ; https://www.acefitness.org/continuing-education/certified/july-2025/8897/the-ace-workout-builder-for-resistance-band-workouts/",
+        "setup": "Canonical ID100 accessory_band_shoulder_press. Bilateral BAND SHOULDER PRESS near the overhead finish. Front three-quarter camera. Stand tall, ribs down, feet hip-width firmly anchoring the bottom of ONE long RED flat closed-loop band under both shoes. The loop's top is held in two closed hands above shoulders. Both arms nearly extended overhead in the scapular plane with a modest natural elbow bend, wrists above elbows, palms forward. Clearly trace the two tensioned red lateral band lengths from the outer sides of the grips down OUTSIDE the body to the soles; a short band bridge connects the hands overhead. Band must NOT pass through forearms, face, torso or legs. Equal plausible arms, no dumbbells, cables, rack or random handle. Whole overhead hands and band-to-foot contacts visible.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:45:05.411570+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:45 PM PT (Sep 15, 2026 05:45 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "684d15fc26062d1035f90783d91c9d5e8504f56caac13973783cd3e6443d73a0",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 123,
+      "key": "accessory_band_lateral_raise",
+      "movement_name": "Band Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-123-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "7e41a27b0426c24f0729a59c",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/7e41a27b0426c24f0729a59c/master.png",
+          "sha256": "f4dfb6743dd0e4d49ba7165e855a9f4cd0575816cc21515a4223e65240df7cfa",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1733269
+        },
+        "app": {
+          "path": "candidates/7e41a27b0426c24f0729a59c/app.png",
+          "sha256": "570e0a36a611ab5496c7a1871acd6fad737abc87274d464880f72f411b27af52",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 309359
+        },
+        "thumbnail": {
+          "path": "candidates/7e41a27b0426c24f0729a59c/thumbnail.png",
+          "sha256": "1349c065406bf019207392b38b1030185a5c2694e82a6c15937d0bf9344c26f2",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44067
+        }
+      },
+      "candidate_asset": "candidates/7e41a27b0426c24f0729a59c/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:45:22.114976+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:45 PM PT (Sep 15, 2026 05:45 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f4dfb6743dd0e4d49ba7165e855a9f4cd0575816cc21515a4223e65240df7cfa",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:17:29.579147+00:00",
+      "created_at_display": "Sep 15, 2026 11:17 AM PT (Sep 15, 2026 02:17 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: ID123 accessory_band_lateral_raise, side-delts primary, bilateral BAND LATERAL RAISE near shoulder height. Front three-quarter view, standing upright feet hip-width. Two matching commercial RED flat loop resistance bands, one trapped beneath EACH shoe, the corresponding hand grasping both strands of its own band's upper end. Exactly two bands are needed here to allow independent bilateral arm raises. Raise BOTH nearly straight arms OUT TO THE SIDES approximately 75 degrees from torso, elbows slightly bent, palms toward floor, wrists neutral. Each red band traces visibly and continuously from its side's hand diagonally down to its corresponding shoe, outside torso. Do not connect the two hands with a horizontal band; that would add a pull-apart. No dumbbells or handles. Full fingertips, feet and band anchors in frame, equal natural arms, shoulders down.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/123/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "traps"
+      ],
+      "movement_family": "accessory_side_delts",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Two matching closed loops, one per shoe/hand, both abducted arms at matching height; correct independent lateral raise loading.",
+        "thumbnail_inspection": "Inspected 192px and 80px previews: full pose, red band path and defining joint/grip arrangement remain readable; safe whole-square hero presentation.",
+        "reference_pages": "https://www.roguefitness.com/rogue-monster-bands ; https://www.acefitness.org/continuing-education/certified/july-2025/8897/the-ace-workout-builder-for-resistance-band-workouts/",
+        "setup": "ID123 accessory_band_lateral_raise, side-delts primary, bilateral BAND LATERAL RAISE near shoulder height. Front three-quarter view, standing upright feet hip-width. Two matching commercial RED flat loop resistance bands, one trapped beneath EACH shoe, the corresponding hand grasping both strands of its own band's upper end. Exactly two bands are needed here to allow independent bilateral arm raises. Raise BOTH nearly straight arms OUT TO THE SIDES approximately 75 degrees from torso, elbows slightly bent, palms toward floor, wrists neutral. Each red band traces visibly and continuously from its side's hand diagonally down to its corresponding shoe, outside torso. Do not connect the two hands with a horizontal band; that would add a pull-apart. No dumbbells or handles. Full fingertips, feet and band anchors in frame, equal natural arms, shoulders down.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:45:22.114976+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:45 PM PT (Sep 15, 2026 05:45 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f4dfb6743dd0e4d49ba7165e855a9f4cd0575816cc21515a4223e65240df7cfa",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 125,
+      "key": "accessory_band_upright_row",
+      "movement_name": "Band Upright Row",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-125-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "f3eddf7222fa5268507ffd6a",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/f3eddf7222fa5268507ffd6a/master.png",
+          "sha256": "4a02480700a2575594b968171b968819b55b7878d2902dece3d97be415194d5f",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1750178
+        },
+        "app": {
+          "path": "candidates/f3eddf7222fa5268507ffd6a/app.png",
+          "sha256": "88d6bbac22099faa097b840c8ef8f55b650c017e27fe67b220d59f42eb67e1f9",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 303175
+        },
+        "thumbnail": {
+          "path": "candidates/f3eddf7222fa5268507ffd6a/thumbnail.png",
+          "sha256": "84711649c0b6d781e9d4a368e044e1baafe9341cbabd7b2c59989e4f7a93238f",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42425
+        }
+      },
+      "candidate_asset": "candidates/f3eddf7222fa5268507ffd6a/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:45:38.996070+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:45 PM PT (Sep 15, 2026 05:45 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "4a02480700a2575594b968171b968819b55b7878d2902dece3d97be415194d5f",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:17:30.226874+00:00",
+      "created_at_display": "Sep 15, 2026 11:17 AM PT (Sep 15, 2026 02:17 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: ID125 accessory_band_upright_row, side-delts primary, bilateral BAND UPRIGHT ROW. Front three-quarter view. Stand tall with two feet pinning the bottom of one long RED closed-loop flat band. Both hands grasp its upper section with an overhand shoulder-width grip in front of the lower sternum. ELBOWS lift outward and are visibly higher than the hands at lower-chest level, elbows below shoulder height, forearms sloping downward inward to the two fists. Wrists neutral. Two tensioned red lengths descend from the grips to the corresponding shoe anchors outside shins, plus a short connecting band bridge between fists. Clear bent-elbow upright-row pose, not straight-arm front raise or biceps curl. No leaning back, no cable, no metal bar, no dumbbells.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/125/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "traps"
+      ],
+      "movement_family": "accessory_side_delts",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Elbows lead above pronated hands in bilateral upright row; continuous red foot-anchored loop with clear grips.",
+        "thumbnail_inspection": "Inspected 192px and 80px previews: full pose, red band path and defining joint/grip arrangement remain readable; safe whole-square hero presentation.",
+        "reference_pages": "https://www.roguefitness.com/rogue-monster-bands ; https://www.acefitness.org/continuing-education/certified/july-2025/8897/the-ace-workout-builder-for-resistance-band-workouts/",
+        "setup": "ID125 accessory_band_upright_row, side-delts primary, bilateral BAND UPRIGHT ROW. Front three-quarter view. Stand tall with two feet pinning the bottom of one long RED closed-loop flat band. Both hands grasp its upper section with an overhand shoulder-width grip in front of the lower sternum. ELBOWS lift outward and are visibly higher than the hands at lower-chest level, elbows below shoulder height, forearms sloping downward inward to the two fists. Wrists neutral. Two tensioned red lengths descend from the grips to the corresponding shoe anchors outside shins, plus a short connecting band bridge between fists. Clear bent-elbow upright-row pose, not straight-arm front raise or biceps curl. No leaning back, no cable, no metal bar, no dumbbells.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:45:38.996070+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:45 PM PT (Sep 15, 2026 05:45 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "4a02480700a2575594b968171b968819b55b7878d2902dece3d97be415194d5f",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 146,
+      "key": "accessory_band_pull_apart",
+      "movement_name": "Band Pull-Apart",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-146-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "7d37b398050fbf704c3d166c",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/7d37b398050fbf704c3d166c/master.png",
+          "sha256": "f8e768630d1a8e4597176e8f9604f815244d5cbc3e63c663905e88c1b947464f",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1728051
+        },
+        "app": {
+          "path": "candidates/7d37b398050fbf704c3d166c/app.png",
+          "sha256": "2ab742022b87ae2952184a8e1da0966bbeeb6727248f6a9b06d6932e452329b4",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 302956
+        },
+        "thumbnail": {
+          "path": "candidates/7d37b398050fbf704c3d166c/thumbnail.png",
+          "sha256": "f736447ba1d4e044846bcde14fddc6141db750fd17448e0fafdb1af1bb2a4528",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42363
+        }
+      },
+      "candidate_asset": "candidates/7d37b398050fbf704c3d166c/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:45:41.314336+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:45 PM PT (Sep 15, 2026 05:45 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f8e768630d1a8e4597176e8f9604f815244d5cbc3e63c663905e88c1b947464f",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:17:30.591795+00:00",
+      "created_at_display": "Sep 15, 2026 11:17 AM PT (Sep 15, 2026 02:17 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square premium movement-library photograph for canonical movement ID 146, Band Pull-Apart. The attached image is ONLY the approved style/athlete/lighting reference, not the movement pose: same realistic short-brown-haired muscular adult man, charcoal tank top, black shorts and black trainers, near-black rubber-floor studio, soft upper-left key light, very restrained violet rim on the environment. Depict a standing bilateral resistance-band pull-apart near the end of the repetition, front three-quarter view with both complete arms clearly visible, arms lifted at chest height, elbows almost straight, hands spread wide apart to either side. A REAL FLAT RED latex resistance band is grasped in both hands and stretched horizontally across the FRONT of his chest, above the tank surface, not behind his neck or through his torso. The red strip continuously connects the two hands; short untensioned tails can extend beyond the grips. Palms downward, wrists neutral, shoulders symmetrical, body upright, both feet grounded hip-width apart. The band itself must remain clearly RED, never violet or black under the lighting. No rack, cable, dumbbells or other equipment. Gaze straight ahead in the same direction as his torso, no sideways head turn. Full head, hands, band and feet fit inside frame, compact composition with slight safe margins and no irrelevant empty area. Neutral anatomically plausible athletic proportions. No labels, logos, watermark, no diagram or collage. Pay particular attention to two connected shoulder-elbow-hand chains, believable fingers gripping band, continuous band tension.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/146/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "movement_family": "accessory_rear_delts",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Both nearly straight arms abduct horizontally; continuous red open strip gripped with plausible hands, body grounded and all contacts visible.",
+        "thumbnail_inspection": "Inspected 192px and 80px previews: full pose, red band path and defining joint/grip arrangement remain readable; safe whole-square hero presentation.",
+        "reference_pages": "https://www.roguefitness.com/rogue-monster-bands ; https://www.acefitness.org/continuing-education/certified/july-2025/8897/the-ace-workout-builder-for-resistance-band-workouts/",
+        "setup": "Use case: photorealistic-natural. Create one square premium movement-library photograph for canonical movement ID 146, Band Pull-Apart. The attached image is ONLY the approved style/athlete/lighting reference, not the movement pose: same realistic short-brown-haired muscular adult man, charcoal tank top, black shorts and black trainers, near-black rubber-floor studio, soft upper-left key light, very restrained violet rim on the environment. Depict a standing bilateral resistance-band pull-apart near the end of the repetition, front three-quarter view with both complete arms clearly visible, arms lifted at chest height, elbows almost straight, hands spread wide apart to either side. A REAL FLAT RED latex resistance band is grasped in both hands and stretched horizontally across the FRONT of his chest, above the tank surface, not behind his neck or through his torso. The red strip continuously connects the two hands; short untensioned tails can extend beyond the grips. Palms downward, wrists neutral, shoulders symmetrical, body upright, both feet grounded hip-width apart. The band itself must remain clearly RED, never violet or black under the lighting. No rack, cable, dumbbells or other equipment. Gaze straight ahead in the same direction as his torso, no sideways head turn. Full head, hands, band and feet fit inside frame, compact composition with slight safe margins and no irrelevant empty area. Neutral anatomically plausible athletic proportions. No labels, logos, watermark, no diagram or collage. Pay particular attention to two connected shoulder-elbow-hand chains, believable fingers gripping band, continuous band tension.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:45:41.314336+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:45 PM PT (Sep 15, 2026 05:45 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f8e768630d1a8e4597176e8f9604f815244d5cbc3e63c663905e88c1b947464f",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 284,
+      "key": "accessory_band_curl",
+      "movement_name": "Band Curl",
+      "primary_muscle_group": "biceps",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-284-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "5a395c10f282bdb1d810adb8",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/5a395c10f282bdb1d810adb8/master.png",
+          "sha256": "9f0b6d5030b71782a948654f29d5121b4d34219006c2c5a0785bb5eda3f1fd38",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1714464
+        },
+        "app": {
+          "path": "candidates/5a395c10f282bdb1d810adb8/app.png",
+          "sha256": "e1c69f59d0115e6cd51ac1fe66c996c74164ec50864e505d853c2b47ba0b4320",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 297180
+        },
+        "thumbnail": {
+          "path": "candidates/5a395c10f282bdb1d810adb8/thumbnail.png",
+          "sha256": "2e78f20ae9b8ca28f4ce37370a483970b704531e308760b8f716eb5f1818b313",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41343
+        }
+      },
+      "candidate_asset": "candidates/5a395c10f282bdb1d810adb8/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:55:13.104890+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:55 PM PT (Sep 15, 2026 05:55 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9f0b6d5030b71782a948654f29d5121b4d34219006c2c5a0785bb5eda3f1fd38",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:17:30.908830+00:00",
+      "created_at_display": "Sep 15, 2026 11:17 AM PT (Sep 15, 2026 02:17 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: Canonical ID284 accessory_band_curl. Bilateral standing BAND BICEPS CURL at mid-to-high curl. Front three-quarter camera. Feet hip-width, upright spine, head aligned forward. Both shoes firmly pin the lower segment of ONE long RED flat closed-loop resistance band to the floor. Upper arms stay alongside torso; BOTH elbows flex to approximately 100 degrees, palms SUPINATED toward shoulders, wrists straight. Fingers and thumbs wrap around the band's upper segment, hands in front of lower chest. Two tensioned red side lengths run from palms DOWN to the OUTSIDE of the corresponding shoe, with a short upper bridge between hands. No elbows lifted or shoulder front-raise, no hammer grip. Clearly visible band-to-shoe and band-in-hand contacts, complete continuous red rubber loop, no wires, dumbbells or machinery.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/284/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "movement_family": "accessory_biceps",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Supinated bilateral curl, upper arms alongside torso; both red tension paths connect hands to shoe anchors.",
+        "thumbnail_inspection": "Inspected 192px and 80px previews: full pose, red band path and defining joint/grip arrangement remain readable; safe whole-square hero presentation.",
+        "reference_pages": "https://www.roguefitness.com/rogue-monster-bands ; https://www.acefitness.org/continuing-education/certified/july-2025/8897/the-ace-workout-builder-for-resistance-band-workouts/",
+        "setup": "Canonical ID284 accessory_band_curl. Bilateral standing BAND BICEPS CURL at mid-to-high curl. Front three-quarter camera. Feet hip-width, upright spine, head aligned forward. Both shoes firmly pin the lower segment of ONE long RED flat closed-loop resistance band to the floor. Upper arms stay alongside torso; BOTH elbows flex to approximately 100 degrees, palms SUPINATED toward shoulders, wrists straight. Fingers and thumbs wrap around the band's upper segment, hands in front of lower chest. Two tensioned red side lengths run from palms DOWN to the OUTSIDE of the corresponding shoe, with a short upper bridge between hands. No elbows lifted or shoulder front-raise, no hammer grip. Clearly visible band-to-shoe and band-in-hand contacts, complete continuous red rubber loop, no wires, dumbbells or machinery.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:55:13.104890+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:55 PM PT (Sep 15, 2026 05:55 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9f0b6d5030b71782a948654f29d5121b4d34219006c2c5a0785bb5eda3f1fd38",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 285,
+      "key": "accessory_band_hammer_curl",
+      "movement_name": "Band Hammer Curl",
+      "primary_muscle_group": "biceps",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-285-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "eba863b9682e9987e1421901",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/eba863b9682e9987e1421901/master.png",
+          "sha256": "133a7422c96004a43117fa0970203494a8d7d26bf0f9a246585e310de58bde58",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1741121
+        },
+        "app": {
+          "path": "candidates/eba863b9682e9987e1421901/app.png",
+          "sha256": "3b890d3110e14797b4d271558af635d093290647aa3d6914563a9f42eeb5e87e",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 303555
+        },
+        "thumbnail": {
+          "path": "candidates/eba863b9682e9987e1421901/thumbnail.png",
+          "sha256": "6bdac540afa53c1fa2d109ad458519f84f7f765d063b7306eff2bebc3a8f79c7",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42256
+        }
+      },
+      "candidate_asset": "candidates/eba863b9682e9987e1421901/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:55:21.486555+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:55 PM PT (Sep 15, 2026 05:55 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "133a7422c96004a43117fa0970203494a8d7d26bf0f9a246585e310de58bde58",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:17:31.191747+00:00",
+      "created_at_display": "Sep 15, 2026 11:17 AM PT (Sep 15, 2026 02:17 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: ID285 accessory_band_hammer_curl. Bilateral standing BAND HAMMER CURL with neutral grips. One RED real commercial resistance tube with TWO BLACK NYLON D-HANDLES, center tube securely pinned beneath both shoes. Both hands grasp the handle grips with palms facing EACH OTHER and thumbs pointing up. Upper arms tucked beside torso, elbows flexed about 100 degrees, forearms rising vertically in front of lower chest. Red tube tension runs continuously from each handle's connected nylon attachment down outside corresponding leg to shoe anchor. Fully visible black handle frame, correctly connected tube, no fused hand or floating connection. Distinct HAMMER neutral hand orientation, NOT supinated biceps curl. Front diagonal camera, natural posture and gaze.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/285/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "movement_family": "accessory_biceps",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Neutral hammer grips, both connected nylon handles and tube lengths, grounded shoe anchors; upper arms remain alongside torso.",
+        "thumbnail_inspection": "Inspected 192px and 80px previews: exact exercise, full pose and red resistance/contact path remain readable with whole-square contained hero.",
+        "reference_pages": "https://www.roguefitness.com/rogue-tube-bands ; https://www.acefitness.org/continuing-education/certified/july-2025/8897/the-ace-workout-builder-for-resistance-band-workouts/ ; https://fitwill.app/exercise/9286/resistance-band-standing-y-raise/",
+        "setup": "ID285 accessory_band_hammer_curl. Bilateral standing BAND HAMMER CURL with neutral grips. One RED real commercial resistance tube with TWO BLACK NYLON D-HANDLES, center tube securely pinned beneath both shoes. Both hands grasp the handle grips with palms facing EACH OTHER and thumbs pointing up. Upper arms tucked beside torso, elbows flexed about 100 degrees, forearms rising vertically in front of lower chest. Red tube tension runs continuously from each handle's connected nylon attachment down outside corresponding leg to shoe anchor. Fully visible black handle frame, correctly connected tube, no fused hand or floating connection. Distinct HAMMER neutral hand orientation, NOT supinated biceps curl. Front diagonal camera, natural posture and gaze.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:55:21.486555+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:55 PM PT (Sep 15, 2026 05:55 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "133a7422c96004a43117fa0970203494a8d7d26bf0f9a246585e310de58bde58",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 99,
+      "key": "accessory_band_front_raise",
+      "movement_name": "Band Front Raise",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-99-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "b2dc833faefe005063b08274",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/b2dc833faefe005063b08274/master.png",
+          "sha256": "c37e76fe7618b18e8dc63cf6e649ca0c1a76039a6d515d04927e7b04431decd1",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1714280
+        },
+        "app": {
+          "path": "candidates/b2dc833faefe005063b08274/app.png",
+          "sha256": "48f813e00c90683aaf5a39b55dbb182a44038b94407eb765086c0518f5085b2d",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 300504
+        },
+        "thumbnail": {
+          "path": "candidates/b2dc833faefe005063b08274/thumbnail.png",
+          "sha256": "3d59f7f8840c27e1c62c44d535fbad935160ea901044231b6e4f28bf8d17982a",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42492
+        }
+      },
+      "candidate_asset": "candidates/b2dc833faefe005063b08274/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:55:57.454773+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:55 PM PT (Sep 15, 2026 05:55 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "c37e76fe7618b18e8dc63cf6e649ca0c1a76039a6d515d04927e7b04431decd1",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:17:31.836232+00:00",
+      "created_at_display": "Sep 15, 2026 11:17 AM PT (Sep 15, 2026 02:17 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: Canonical ID99 accessory_band_front_raise. Bilateral BAND FRONT RAISE at shoulder-height finish. Front-side three-quarter camera clearly shows arms extending FORWARD from the shoulders, not out sideways. Stand upright with feet hip-width, soles firmly pinning the bottom of ONE long RED flat closed-loop exercise band. Both almost-straight arms are lifted forward to shoulder height; overhand grip, palms downward and neutral wrists. Hold the upper band with hands shoulder-width apart; the two tensioned red side lengths visibly descend diagonally from hands to the band trapped beneath the corresponding shoes, clear of knees. Use a true continuous long-loop band, not free floating strings. No shrug, elbow curl, backward lean or overhead raise. Both arms at same forward elevation, each hand clearly grips red rubber.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/99/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "side_delts"
+      ],
+      "movement_family": "accessory_front_delts",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Both arms project forward with neutral pronated grips; uninterrupted red loop traces hands to both shoe anchors without body intersection.",
+        "thumbnail_inspection": "Inspected 192px and 80px previews: full pose, red band path and defining joint/grip arrangement remain readable; safe whole-square hero presentation.",
+        "reference_pages": "https://www.roguefitness.com/rogue-monster-bands ; https://www.acefitness.org/continuing-education/certified/july-2025/8897/the-ace-workout-builder-for-resistance-band-workouts/",
+        "setup": "Canonical ID99 accessory_band_front_raise. Bilateral BAND FRONT RAISE at shoulder-height finish. Front-side three-quarter camera clearly shows arms extending FORWARD from the shoulders, not out sideways. Stand upright with feet hip-width, soles firmly pinning the bottom of ONE long RED flat closed-loop exercise band. Both almost-straight arms are lifted forward to shoulder height; overhand grip, palms downward and neutral wrists. Hold the upper band with hands shoulder-width apart; the two tensioned red side lengths visibly descend diagonally from hands to the band trapped beneath the corresponding shoes, clear of knees. Use a true continuous long-loop band, not free floating strings. No shrug, elbow curl, backward lean or overhead raise. Both arms at same forward elevation, each hand clearly grips red rubber.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:55:57.454773+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:55 PM PT (Sep 15, 2026 05:55 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "c37e76fe7618b18e8dc63cf6e649ca0c1a76039a6d515d04927e7b04431decd1",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 472,
+      "key": "accessory_lateral_band_walk",
+      "movement_name": "Lateral Band Walk",
+      "primary_muscle_group": "abductors",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-472-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "65a21596210a99e4691c5ae3",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/65a21596210a99e4691c5ae3/master.png",
+          "sha256": "2d59a17a9c0f05e1d95b15ccb886b60811624c1fec0dd3dd847617d120d36cee",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1775115
+        },
+        "app": {
+          "path": "candidates/65a21596210a99e4691c5ae3/app.png",
+          "sha256": "0c76489aa014773365a5cd9c2af3bcc3e4c3e165158a5dae85001ad86b35fabf",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 308604
+        },
+        "thumbnail": {
+          "path": "candidates/65a21596210a99e4691c5ae3/thumbnail.png",
+          "sha256": "020911ad859cc722add6492a52883c597a25e47360aa41ede4c85ca6eb22ef1b",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43718
+        }
+      },
+      "candidate_asset": "candidates/65a21596210a99e4691c5ae3/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:56:03.984745+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "2d59a17a9c0f05e1d95b15ccb886b60811624c1fec0dd3dd847617d120d36cee",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:21:29.931602+00:00",
+      "created_at_display": "Sep 15, 2026 11:21 AM PT (Sep 15, 2026 02:21 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: ID472 LATERAL BAND WALK. Slight front three-quarter view, whole figure with a slight athletic hip hinge and quarter squat. A RED flat MINI LOOP band encircles BOTH lower legs just above ankles; exactly one short loop, front and rear stretches visibly connected around legs, comfortably taut. Athlete is taking a lateral step to his right, feet still facing forward and visibly spread wider than hips, knees track over toes. Right foot landing sideways, left foot supporting body. No crossed legs, no deep split squat, no external anchor. Hands lightly clasped near chest with ordinary fingers. Hips/shoulders face forward, level pelvis, neutral head. Full shoes and continuous red ankle-loop shown.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/472/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "movement_family": "accessory_abductors",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Lateral step with forward toes, supporting bent knee and taut continuous red ankle loop; balanced posture and visible contacts.",
+        "thumbnail_inspection": "192px and 80px: lateral step, squat posture and red ankle loop remain distinct.",
+        "reference_pages": "https://e3rehab.com/itband/ ; https://www.roguefitness.com/rogue-loop-bands",
+        "setup": "ID472 LATERAL BAND WALK. Slight front three-quarter view, whole figure with a slight athletic hip hinge and quarter squat. A RED flat MINI LOOP band encircles BOTH lower legs just above ankles; exactly one short loop, front and rear stretches visibly connected around legs, comfortably taut. Athlete is taking a lateral step to his right, feet still facing forward and visibly spread wider than hips, knees track over toes. Right foot landing sideways, left foot supporting body. No crossed legs, no deep split squat, no external anchor. Hands lightly clasped near chest with ordinary fingers. Hips/shoulders face forward, level pelvis, neutral head. Full shoes and continuous red ankle-loop shown.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:56:03.984745+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2d59a17a9c0f05e1d95b15ccb886b60811624c1fec0dd3dd847617d120d36cee",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 473,
+      "key": "accessory_monster_walk",
+      "movement_name": "Monster Walk",
+      "primary_muscle_group": "abductors",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-473-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "8e95f77f1956b37862b71a28",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/8e95f77f1956b37862b71a28/master.png",
+          "sha256": "10cd069d82d9e88f75511970bf46fe005dc502198b1b9c976bf15401789d143a",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1706173
+        },
+        "app": {
+          "path": "candidates/8e95f77f1956b37862b71a28/app.png",
+          "sha256": "e76702c9ac834398cc26ac5faed23278d658588e15a99d7e1c95b5278d952466",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 303113
+        },
+        "thumbnail": {
+          "path": "candidates/8e95f77f1956b37862b71a28/thumbnail.png",
+          "sha256": "172f4cfa7aa368a29d9a085e59ed038ec60cc8707684421604b4fbbf1ea2a99c",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43066
+        }
+      },
+      "candidate_asset": "candidates/8e95f77f1956b37862b71a28/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:56:09.188323+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "10cd069d82d9e88f75511970bf46fe005dc502198b1b9c976bf15401789d143a",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:21:30.213799+00:00",
+      "created_at_display": "Sep 15, 2026 11:21 AM PT (Sep 15, 2026 02:21 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: ID473 MONSTER WALK. Front-side three-quarter photograph of an athletic man in a modest quarter-squat taking a DIAGONAL FORWARD-OUTWARD step, with ONE RED flat mini-loop band around both ankles. Lead right foot forward and outward, trailing left foot stays wide behind; toes mostly forward, hips back, knees bent only around 25 degrees and tracking feet. Distinguish diagonal forward walking from a pure lateral step and from a deep lunge. Band forms one physically continuous taut loop around ankles with visible front and rear spans. Hands in front of chest with relaxed ordinary fingers, upright head/gaze same direction as torso. Full figure, both grounded/small-step feet, no machines/anchors.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/473/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "movement_family": "accessory_abductors",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Diagonal forward-outward step, quarter squat, red ankle loop tension; distinct step direction from lateral walk.",
+        "thumbnail_inspection": "192px and 80px: staggered diagonal advancing step and tensioned red ankle loop are visible.",
+        "reference_pages": "https://e3rehab.com/itband/ ; https://www.roguefitness.com/rogue-loop-bands",
+        "setup": "ID473 MONSTER WALK. Front-side three-quarter photograph of an athletic man in a modest quarter-squat taking a DIAGONAL FORWARD-OUTWARD step, with ONE RED flat mini-loop band around both ankles. Lead right foot forward and outward, trailing left foot stays wide behind; toes mostly forward, hips back, knees bent only around 25 degrees and tracking feet. Distinguish diagonal forward walking from a pure lateral step and from a deep lunge. Band forms one physically continuous taut loop around ankles with visible front and rear spans. Hands in front of chest with relaxed ordinary fingers, upright head/gaze same direction as torso. Full figure, both grounded/small-step feet, no machines/anchors.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:56:09.188323+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "10cd069d82d9e88f75511970bf46fe005dc502198b1b9c976bf15401789d143a",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 475,
+      "key": "accessory_standing_band_hip_abduction",
+      "movement_name": "Standing Band Hip Abduction",
+      "primary_muscle_group": "abductors",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-475-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "2e139b1cd1ab6d9388eecdc1",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/2e139b1cd1ab6d9388eecdc1/master.png",
+          "sha256": "ba30e1f12751f7e03d04dcdf4d838b7963a5c7170ccfe03d60123c2bec7939d2",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1723353
+        },
+        "app": {
+          "path": "candidates/2e139b1cd1ab6d9388eecdc1/app.png",
+          "sha256": "a041a1dd5df6f4ca94bd3d4a3e09d6d079bd8a8f57f03ef54e5614445b43b687",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 302254
+        },
+        "thumbnail": {
+          "path": "candidates/2e139b1cd1ab6d9388eecdc1/thumbnail.png",
+          "sha256": "17aa07f04225684a99d10af01ac7019aebb340f86d820d10b77c7909de4aecfc",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43465
+        }
+      },
+      "candidate_asset": "candidates/2e139b1cd1ab6d9388eecdc1/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:56:12.698216+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ba30e1f12751f7e03d04dcdf4d838b7963a5c7170ccfe03d60123c2bec7939d2",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:21:30.510385+00:00",
+      "created_at_display": "Sep 15, 2026 11:21 AM PT (Sep 15, 2026 02:21 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: ID475 STANDING BAND HIP ABDUCTION. Standing upright facing mostly forward; one hand lightly touches a real stable black rack upright for balance, other hand rests naturally on hip. A single RED flat MINI LOOP encircles both ankles. Left leg straight but soft knee, left shoe firmly on floor; RIGHT leg remains almost straight and lifts SIDEWAYS about 25 degrees at the hip, foot a few inches off floor, toes forward. Both shoulders/hips remain level, torso not leaning, no rear kickback and no high knee. Band stretches visibly from the grounded left ankle to the right ankle, both sides of continuous closed loop present and outside body. Full body, planted supporting shoe, lifted whole shoe and rack foot visible. Balanced front three-quarter camera.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/475/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "movement_family": "accessory_abductors",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Standing lateral hip raise with level torso, supporting shoe on floor and other foot elevated, red ankle loop and real rack contact visible.",
+        "thumbnail_inspection": "192px and 80px: straight side-raised leg, grounded support foot and red loop clearly read.",
+        "reference_pages": "https://e3rehab.com/itband/ ; https://www.roguefitness.com/rogue-loop-bands",
+        "setup": "ID475 STANDING BAND HIP ABDUCTION. Standing upright facing mostly forward; one hand lightly touches a real stable black rack upright for balance, other hand rests naturally on hip. A single RED flat MINI LOOP encircles both ankles. Left leg straight but soft knee, left shoe firmly on floor; RIGHT leg remains almost straight and lifts SIDEWAYS about 25 degrees at the hip, foot a few inches off floor, toes forward. Both shoulders/hips remain level, torso not leaning, no rear kickback and no high knee. Band stretches visibly from the grounded left ankle to the right ankle, both sides of continuous closed loop present and outside body. Full body, planted supporting shoe, lifted whole shoe and rack foot visible. Balanced front three-quarter camera.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:56:12.698216+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ba30e1f12751f7e03d04dcdf4d838b7963a5c7170ccfe03d60123c2bec7939d2",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 471,
+      "key": "accessory_band_hip_abduction",
+      "movement_name": "Band Hip Abduction",
+      "primary_muscle_group": "abductors",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-471-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "738bcb309a944dc4b3b9c536",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/738bcb309a944dc4b3b9c536/master.png",
+          "sha256": "8cda94b3489bcdab0a454fd2a696b783052dcee9b220bce95e47423f2970b772",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1829404
+        },
+        "app": {
+          "path": "candidates/738bcb309a944dc4b3b9c536/app.png",
+          "sha256": "2e377fb33f11aba34cdae8b1c87c94dd3e2518bb3714499e869a8e062a358d12",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 316834
+        },
+        "thumbnail": {
+          "path": "candidates/738bcb309a944dc4b3b9c536/thumbnail.png",
+          "sha256": "db6dbd0f3e904367e1efeac6c9e1e64cef03f2039d8bf134fe1926b9352170cf",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45935
+        }
+      },
+      "candidate_asset": "candidates/738bcb309a944dc4b3b9c536/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:56:16.559857+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8cda94b3489bcdab0a454fd2a696b783052dcee9b220bce95e47423f2970b772",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:26:55.098012+00:00",
+      "created_at_display": "Sep 15, 2026 11:26 AM PT (Sep 15, 2026 02:26 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND HIP ABDUCTION, seated bilateral variation. Sit near front of an ordinary solid flat padded gym bench, feet fully planted slightly wider than hips, knees bent90degrees. RED flat commercial mini-loop around both lower thighs just ABOVE the knees. Actively press knees outward at symmetric angles, stretching the loop sideways; feet remain planted. Torso modestly leaned forward, hands relaxed on bench edges beside hips, head neutral in torso plane. Front three-quarter camera makes both complete knees/feet, both arms, the closed red loop and grounded bench visible. A single loop, no cables or invented resistance machine.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/471/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "movement_family": "accessory_abductors",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Seated hip abduction with both grounded feet, spread knees and continuous red loop above knees; supported bench contacts and complete limbs visible.",
+        "thumbnail_inspection": "Inspected labeled 192px and 80px previews: complete pose, red resistance path, defining support and contacts remain visible; no distracting empty half.",
+        "reference_pages": "https://www.roguefitness.com/rogue-tube-bands ; https://bretcontreras.com/hip-thrust-wiki-page/ ; https://pmc.ncbi.nlm.nih.gov/articles/PMC3418110/",
+        "setup": "BAND HIP ABDUCTION, seated bilateral variation. Sit near front of an ordinary solid flat padded gym bench, feet fully planted slightly wider than hips, knees bent90degrees. RED flat commercial mini-loop around both lower thighs just ABOVE the knees. Actively press knees outward at symmetric angles, stretching the loop sideways; feet remain planted. Torso modestly leaned forward, hands relaxed on bench edges beside hips, head neutral in torso plane. Front three-quarter camera makes both complete knees/feet, both arms, the closed red loop and grounded bench visible. A single loop, no cables or invented resistance machine.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:56:16.559857+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8cda94b3489bcdab0a454fd2a696b783052dcee9b220bce95e47423f2970b772",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 474,
+      "key": "accessory_clamshell",
+      "movement_name": "Clamshell",
+      "primary_muscle_group": "abductors",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-474-a02",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "4889d76c350d4e600f13f3cc",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/4889d76c350d4e600f13f3cc/master.png",
+          "sha256": "154349e41a28d49f226338837ff022935d572a58e52aa523108b429827685677",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2304638
+        },
+        "app": {
+          "path": "candidates/4889d76c350d4e600f13f3cc/app.png",
+          "sha256": "757498f17485ba57adf0c603df25d2cfedc0cd4ac5445d1d35a71d6c51bf224f",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 426773
+        },
+        "thumbnail": {
+          "path": "candidates/4889d76c350d4e600f13f3cc/thumbnail.png",
+          "sha256": "e47f5fe8a7ecd9bd6fe9bd5171ee8cce9e2ebbd2887e14c25d8e35ebe1213617",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 58927
+        }
+      },
+      "candidate_asset": "candidates/4889d76c350d4e600f13f3cc/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:56:23.240824+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "154349e41a28d49f226338837ff022935d572a58e52aa523108b429827685677",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:26:55.381517+00:00",
+      "created_at_display": "Sep 15, 2026 11:26 AM PT (Sep 15, 2026 02:26 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: EDIT THIS CLAMSHELL PHOTO with TWO corrections only: (1) head must be neutral in line with the torso, nose points naturally forward in the same direction as sternum, NO upward glance or twist. (2) Camera elevated three-quarter diagonal composition so his full lying body fills the square, head towards upper-left and paired feet towards lower-right; eliminate giant blank upper half. Preserve the correct exercise: side-lying on lower side/forearm, hips stacked, knees bent about90degrees, upper knee opens upward against a RED flat mini-loop just above both knees; ankles/feet stay touching, lower knee stays grounded. Keep real anatomy, two legs two arms, exact red band loop and dark premium photographic style.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/474/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "movement_family": "accessory_abductors",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Clamshell now has aligned head, paired touching shoes, lower leg supported, upper knee open against continuous red loop. Elevated diagonal composition fills square.",
+        "thumbnail_inspection": "Inspected labeled 192px and 80px previews: complete pose, red resistance path, defining support and contacts remain visible; no distracting empty half.",
+        "reference_pages": "https://www.roguefitness.com/rogue-tube-bands ; https://bretcontreras.com/hip-thrust-wiki-page/ ; https://pmc.ncbi.nlm.nih.gov/articles/PMC3418110/",
+        "setup": "EDIT THIS CLAMSHELL PHOTO with TWO corrections only: (1) head must be neutral in line with the torso, nose points naturally forward in the same direction as sternum, NO upward glance or twist. (2) Camera elevated three-quarter diagonal composition so his full lying body fills the square, head towards upper-left and paired feet towards lower-right; eliminate giant blank upper half. Preserve the correct exercise: side-lying on lower side/forearm, hips stacked, knees bent about90degrees, upper knee opens upward against a RED flat mini-loop just above both knees; ankles/feet stay touching, lower knee stays grounded. Keep real anatomy, two legs two arms, exact red band loop and dark premium photographic style.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:56:23.240824+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "154349e41a28d49f226338837ff022935d572a58e52aa523108b429827685677",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 230,
+      "key": "accessory_band_row",
+      "movement_name": "Band Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-230-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "96715478d113e1f59a49db0d",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/96715478d113e1f59a49db0d/master.png",
+          "sha256": "d408027b60dd6935ee897275a33d2dac89ff638b71d6599ec23475cf8a94caa9",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2038933
+        },
+        "app": {
+          "path": "candidates/96715478d113e1f59a49db0d/app.png",
+          "sha256": "6deb63195e7b2ec9a3ff7ac7f07a31fef8d05f609fd4465a4b958b8b725b763f",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 359380
+        },
+        "thumbnail": {
+          "path": "candidates/96715478d113e1f59a49db0d/thumbnail.png",
+          "sha256": "e5533eaec900a6f434b7636f647a753ec674f17b682a510d0a89e55710417700",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 51447
+        }
+      },
+      "candidate_asset": "candidates/96715478d113e1f59a49db0d/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:56:43.079585+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d408027b60dd6935ee897275a33d2dac89ff638b71d6599ec23475cf8a94caa9",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:33:42.488191+00:00",
+      "created_at_display": "Sep 15, 2026 11:33 AM PT (Sep 15, 2026 02:33 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND ROW, floor seated bilateral row. Seated tall on black mat, legs forward, knees softly bent, toes upright. ONE long RED flat resistance band wraps around the SOLES of both shoes at mid-foot, each free end travels back to one hand. Neutral grips beside lower ribs at row contraction, both elbows pulled behind torso close to ribs. Clearly visible continuous red contact across front of shoe soles and both taut lengths to hands, no floating ankle anchor. Slightly elevated front-side three-quarter view, diagonal full body fills frame, neck neutral, no looking back at camera. No bench or metal machine.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/230/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Seated row shows clear band across both soles, two taut lengths to firmly gripping hands at ribs, flexed elbows, tall torso and complete legs.",
+        "thumbnail_inspection": "Inspected 192px and 80px previews: defining pose, red band and visible anchor/support contacts remain legible in dark square context.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf ; https://bretcontreras.com/frog-pumps-and-frog-thrusts/",
+        "setup": "BAND ROW, floor seated bilateral row. Seated tall on black mat, legs forward, knees softly bent, toes upright. ONE long RED flat resistance band wraps around the SOLES of both shoes at mid-foot, each free end travels back to one hand. Neutral grips beside lower ribs at row contraction, both elbows pulled behind torso close to ribs. Clearly visible continuous red contact across front of shoe soles and both taut lengths to hands, no floating ankle anchor. Slightly elevated front-side three-quarter view, diagonal full body fills frame, neck neutral, no looking back at camera. No bench or metal machine.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:56:43.079585+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d408027b60dd6935ee897275a33d2dac89ff638b71d6599ec23475cf8a94caa9",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 450,
+      "key": "accessory_band_frog_pump",
+      "movement_name": "Band Frog Pump",
+      "primary_muscle_group": "glutes",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-450-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "671d9300054aac47894872dd",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/671d9300054aac47894872dd/master.png",
+          "sha256": "79eb5ad38324e6ccc2de0df0cfe79bae74348fe1e951eeea840953d35418a337",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2460837
+        },
+        "app": {
+          "path": "candidates/671d9300054aac47894872dd/app.png",
+          "sha256": "2cadd178613749c1d2ffee13bf6f9e736a1c519b6205e183cdf540e9de949098",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 420854
+        },
+        "thumbnail": {
+          "path": "candidates/671d9300054aac47894872dd/thumbnail.png",
+          "sha256": "47c78ec8e46e8f68abc938abe8c24f18d5de08330aa29869df09bfeb47628691",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 57689
+        }
+      },
+      "candidate_asset": "candidates/671d9300054aac47894872dd/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:57:35.221117+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:57 PM PT (Sep 15, 2026 05:57 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "79eb5ad38324e6ccc2de0df0cfe79bae74348fe1e951eeea840953d35418a337",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:33:43.377577+00:00",
+      "created_at_display": "Sep 15, 2026 11:33 AM PT (Sep 15, 2026 02:33 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND FROG PUMP. On floor, supine frog-style glute bridge: head and upper back resting on mat, hips raised slightly, soles of BOTH shoes pressed together, heels close to pelvis, both knees bent and splayed out to sides in butterfly position. Light RED flat mini-loop encircles lower thighs just ABOVE both knees, taut from knees pressing outward. Two thighs, two shins and two touching feet all anatomically connected; no normal parallel-foot bridge. Arms rest on floor beside torso. Elevated three-quarter diagonal overhead angle clearly shows soles touching and knees out; entire body fits square tightly but safely, no giant empty half. Head neutral, gaze up aligned with torso, not turned sideways. Knee-banded variant documented by Bret Contreras; no bench.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/450/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "movement_family": "accessory_glutes",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Frog-pump pose has knees flared, feet touching in butterfly position, head and upper back supported, small hip lift and red thigh loop. Full diagonal body reads clearly.",
+        "thumbnail_inspection": "Inspected 192px and 80px previews: defining pose, red band and visible anchor/support contacts remain legible in dark square context.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf ; https://bretcontreras.com/frog-pumps-and-frog-thrusts/",
+        "setup": "BAND FROG PUMP. On floor, supine frog-style glute bridge: head and upper back resting on mat, hips raised slightly, soles of BOTH shoes pressed together, heels close to pelvis, both knees bent and splayed out to sides in butterfly position. Light RED flat mini-loop encircles lower thighs just ABOVE both knees, taut from knees pressing outward. Two thighs, two shins and two touching feet all anatomically connected; no normal parallel-foot bridge. Arms rest on floor beside torso. Elevated three-quarter diagonal overhead angle clearly shows soles touching and knees out; entire body fits square tightly but safely, no giant empty half. Head neutral, gaze up aligned with torso, not turned sideways. Knee-banded variant documented by Bret Contreras; no bench.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:57:35.221117+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:57 PM PT (Sep 15, 2026 05:57 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "79eb5ad38324e6ccc2de0df0cfe79bae74348fe1e951eeea840953d35418a337",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 147,
+      "key": "accessory_band_reverse_flye",
+      "movement_name": "Band Reverse Fly",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-147-a02",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "0cb7f73ac95fba542114fa73",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/0cb7f73ac95fba542114fa73/master.png",
+          "sha256": "f5cb0f263ac8465185edf61b8533e7e3906c0e7d952273f772f4932dc72548b9",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1867164
+        },
+        "app": {
+          "path": "candidates/0cb7f73ac95fba542114fa73/app.png",
+          "sha256": "5645d877cc4cf47fc5f16e1758c82905a36c73428e94e6f676dd5becaa26e98d",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 331906
+        },
+        "thumbnail": {
+          "path": "candidates/0cb7f73ac95fba542114fa73/thumbnail.png",
+          "sha256": "26688a4ac3ae0ff49568ba3da1a3a7081ca962df32adfad5e1404a8cc10584b9",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47957
+        }
+      },
+      "candidate_asset": "candidates/0cb7f73ac95fba542114fa73/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:57:41.731474+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:57 PM PT (Sep 15, 2026 05:57 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f5cb0f263ac8465185edf61b8533e7e3906c0e7d952273f772f4932dc72548b9",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:48:58.375337+00:00",
+      "created_at_display": "Sep 15, 2026 11:48 AM PT (Sep 15, 2026 02:48 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND REVERSE FLY, bent-over foot-anchored variation. Athlete hinges at hips to torso60degrees forward, spine and neck long with nose aimed at floor directly in front of toes, knees slightly bent. Both arms raised OUT SIDEWAYS in a T perpendicular to torso, elbows slightly soft, palms DOWN toward floor with mild humeral internal rotation, not external rotation or a thumbs-up Y. TWO separate RED closed flat loop bands, each secured UNDER its corresponding shoe and held in that same-side hand. Each loop's strands form a taut triangular path from shoe to hand completely in free space on that side, no elastic crossing or piercing torso. Front three-quarter elevated camera shows both whole arm chains, hip hinge, band-foot contacts and both shoes. No upright rack, no sideways glance. Distinct from upright lateral raise: clearly hinged torso and posterior shoulder horizontal abduction.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/147/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "movement_family": "accessory_rear_delts",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Bent-over reverse fly clearly shows horizontal arm abduction, palms down/internal rotation, neutral down-facing neck, two separate red shoe-anchored loops outside body.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark-surface previews: distinct movement posture and red resistance path remain readable, full subject and required contacts retained without clipping.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf ; https://www.roguefitness.com/rogue-monster-bands",
+        "setup": "BAND REVERSE FLY, bent-over foot-anchored variation. Athlete hinges at hips to torso60degrees forward, spine and neck long with nose aimed at floor directly in front of toes, knees slightly bent. Both arms raised OUT SIDEWAYS in a T perpendicular to torso, elbows slightly soft, palms DOWN toward floor with mild humeral internal rotation, not external rotation or a thumbs-up Y. TWO separate RED closed flat loop bands, each secured UNDER its corresponding shoe and held in that same-side hand. Each loop's strands form a taut triangular path from shoe to hand completely in free space on that side, no elastic crossing or piercing torso. Front three-quarter elevated camera shows both whole arm chains, hip hinge, band-foot contacts and both shoes. No upright rack, no sideways glance. Distinct from upright lateral raise: clearly hinged torso and posterior shoulder horizontal abduction.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:57:41.731474+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:57 PM PT (Sep 15, 2026 05:57 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f5cb0f263ac8465185edf61b8533e7e3906c0e7d952273f772f4932dc72548b9",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 149,
+      "key": "accessory_band_w_raise",
+      "movement_name": "Band W-Raise",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-149-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "6dd797d595be80974efd519a",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/6dd797d595be80974efd519a/master.png",
+          "sha256": "633b30802bc3d3790bfa20ffc4ef350e13b0499622353541ecf95272f3b9522d",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1735820
+        },
+        "app": {
+          "path": "candidates/6dd797d595be80974efd519a/app.png",
+          "sha256": "822f91e1b36e5dd1b0c6e66c256c4d1015ea2ada5ac5213053d53f66e7b30563",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 302876
+        },
+        "thumbnail": {
+          "path": "candidates/6dd797d595be80974efd519a/thumbnail.png",
+          "sha256": "d81d9217f81350970596a0bc756a69d2c1fc16d08d71d9d13406954232c510bc",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42819
+        }
+      },
+      "candidate_asset": "candidates/6dd797d595be80974efd519a/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:57:44.726690+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:57 PM PT (Sep 15, 2026 05:57 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "633b30802bc3d3790bfa20ffc4ef350e13b0499622353541ecf95272f3b9522d",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:48:58.725648+00:00",
+      "created_at_display": "Sep 15, 2026 11:48 AM PT (Sep 15, 2026 02:48 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND W-RAISE. Standing tall, red flat resistance strip gripped in both hands near shoulder height. Elbows bent90degrees, upper arms down/out around45degrees, forearms angle up/out so arms visibly form a W. External rotation pulls hands apart, taut red band crosses IN FRONT of chest connecting hands. Upper arms stay in scapular plane, wrists straight, complete visible hand/elbow contacts. Front three-quarter camera, shoulders square and nose aligned with sternum, no side glance. Both feet planted, no external anchor or machine needed. This is bent-elbow W external rotation, not a straight-arm T pull-apart.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/149/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "movement_family": "accessory_rear_delts",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Bent elbows form W with externally rotated forearms and red strip taut across front; grounded feet, intact hands and aligned head.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark-surface previews: distinct movement posture and red resistance path remain readable, full subject and required contacts retained without clipping.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf ; https://www.roguefitness.com/rogue-monster-bands",
+        "setup": "BAND W-RAISE. Standing tall, red flat resistance strip gripped in both hands near shoulder height. Elbows bent90degrees, upper arms down/out around45degrees, forearms angle up/out so arms visibly form a W. External rotation pulls hands apart, taut red band crosses IN FRONT of chest connecting hands. Upper arms stay in scapular plane, wrists straight, complete visible hand/elbow contacts. Front three-quarter camera, shoulders square and nose aligned with sternum, no side glance. Both feet planted, no external anchor or machine needed. This is bent-elbow W external rotation, not a straight-arm T pull-apart.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:57:44.726690+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:57 PM PT (Sep 15, 2026 05:57 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "633b30802bc3d3790bfa20ffc4ef350e13b0499622353541ecf95272f3b9522d",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 249,
+      "key": "accessory_band_shrug",
+      "movement_name": "Band Shrug",
+      "primary_muscle_group": "traps",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-249-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "d038faf79bd2cf0b3542042a",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/d038faf79bd2cf0b3542042a/master.png",
+          "sha256": "dc8464729272c592d7b815c74e5030388620d29d682278468078f4f862233c1a",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1698460
+        },
+        "app": {
+          "path": "candidates/d038faf79bd2cf0b3542042a/app.png",
+          "sha256": "41891809de61c7939887926789e894a72c9978e791e485f0b4f77c94f3c7a890",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 297774
+        },
+        "thumbnail": {
+          "path": "candidates/d038faf79bd2cf0b3542042a/thumbnail.png",
+          "sha256": "e0f91370b1e5122260c5e7c7b2943fbd21c91ea282347f57c4d550546181b51c",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41261
+        }
+      },
+      "candidate_asset": "candidates/d038faf79bd2cf0b3542042a/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:58:30.625654+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "dc8464729272c592d7b815c74e5030388620d29d682278468078f4f862233c1a",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:48:59.719146+00:00",
+      "created_at_display": "Sep 15, 2026 11:48 AM PT (Sep 15, 2026 02:48 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND SHRUG. Athlete stands with feet hip-width ON center of one long RED flat band, grasps its ends down at sides of thighs, arms fully straight. SHOULDERS visibly ELEVATED toward ears in a shrug, elbows remain straight, neck and face upright neutral toward chest direction. Red band strands are tensioned vertically outside legs from grounded shoes to closed hands, not through legs. Front three-quarter full-body composition clearly shows shoulders raised, both hands and both band-under-shoe anchors. No arm curl, no overhead press.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/249/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "movement_family": "accessory_traps",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Shoulders visibly shrugged upward with straight elbows, two red side strands from shoe anchors to low hands, complete grounded posture.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark-surface previews: distinct movement posture and red resistance path remain readable, full subject and required contacts retained without clipping.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf",
+        "setup": "BAND SHRUG. Athlete stands with feet hip-width ON center of one long RED flat band, grasps its ends down at sides of thighs, arms fully straight. SHOULDERS visibly ELEVATED toward ears in a shrug, elbows remain straight, neck and face upright neutral toward chest direction. Red band strands are tensioned vertically outside legs from grounded shoes to closed hands, not through legs. Front three-quarter full-body composition clearly shows shoulders raised, both hands and both band-under-shoe anchors. No arm curl, no overhead press.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:58:30.625654+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "dc8464729272c592d7b815c74e5030388620d29d682278468078f4f862233c1a",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 250,
+      "key": "accessory_band_overhead_shrug",
+      "movement_name": "Band Overhead Shrug",
+      "primary_muscle_group": "traps",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-250-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "c68ea8e9827a10cb0eb516bd",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/c68ea8e9827a10cb0eb516bd/master.png",
+          "sha256": "8801f9f85c2b482a1698f4fd402d617e5f8649e37704598cde48aaf923a97b51",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1688569
+        },
+        "app": {
+          "path": "candidates/c68ea8e9827a10cb0eb516bd/app.png",
+          "sha256": "d93607f309fef3a2ac47973db9c3fb42b6adc7628b3331d761fa11543ab59224",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 294921
+        },
+        "thumbnail": {
+          "path": "candidates/c68ea8e9827a10cb0eb516bd/thumbnail.png",
+          "sha256": "976fc9252a865e44fbee18a6bc668bb126a94cb05bd34d3942ece84c3885a25c",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41169
+        }
+      },
+      "candidate_asset": "candidates/c68ea8e9827a10cb0eb516bd/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:58:33.214187+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8801f9f85c2b482a1698f4fd402d617e5f8649e37704598cde48aaf923a97b51",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:49:00.033896+00:00",
+      "created_at_display": "Sep 15, 2026 11:49 AM PT (Sep 15, 2026 02:49 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND OVERHEAD SHRUG. Full-body front three-quarter view. Athlete stands on lower end of long RED loop with both shoes; both hands hold upper sides wider than shoulders, arms straight overhead in narrow Y. Elbows LOCKED straight and shoulders actively ELEVATED toward ears, visible upward scapular rotation. Red band's sides travel in unobstructed free air from outsides of shoes to elevated hands, upper bridge between hands visible. No bent elbows or pressing action, neck neutral and face same plane as torso. Feet firmly grounded, hands completely in frame. Long commercial red resistance loop plausible moderate stretch, no tiny miniband elongated impossibly.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/250/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "movement_family": "accessory_traps",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Straight overhead arms with elevated/upwardly rotated shoulders; continuous red loop from shoes to both hands and top bridge, no bent-elbow press.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark-surface previews: distinct movement posture and red resistance path remain readable, full subject and required contacts retained without clipping.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf ; https://www.roguefitness.com/rogue-monster-bands",
+        "setup": "BAND OVERHEAD SHRUG. Full-body front three-quarter view. Athlete stands on lower end of long RED loop with both shoes; both hands hold upper sides wider than shoulders, arms straight overhead in narrow Y. Elbows LOCKED straight and shoulders actively ELEVATED toward ears, visible upward scapular rotation. Red band's sides travel in unobstructed free air from outsides of shoes to elevated hands, upper bridge between hands visible. No bent elbows or pressing action, neck neutral and face same plane as torso. Feet firmly grounded, hands completely in frame. Long commercial red resistance loop plausible moderate stretch, no tiny miniband elongated impossibly.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:58:33.214187+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8801f9f85c2b482a1698f4fd402d617e5f8649e37704598cde48aaf923a97b51",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 323,
+      "key": "accessory_band_overhead_triceps_extension",
+      "movement_name": "Band Overhead Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-323-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "8e0849fe0a1e5b5bd7dd26bd",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/8e0849fe0a1e5b5bd7dd26bd/master.png",
+          "sha256": "72b949641006efc96b510a4b14f7003813a18d0c973c559749ca98cefda555ec",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1704607
+        },
+        "app": {
+          "path": "candidates/8e0849fe0a1e5b5bd7dd26bd/app.png",
+          "sha256": "8539f2e6aac011f4aa4ef522e7c792039877bceda5bbaec12a7a943cdfd495d1",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 298387
+        },
+        "thumbnail": {
+          "path": "candidates/8e0849fe0a1e5b5bd7dd26bd/thumbnail.png",
+          "sha256": "97fa8330887a6431b845fb473972acf4783e91ccf416986b1da898fa0b4d52cf",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41883
+        }
+      },
+      "candidate_asset": "candidates/8e0849fe0a1e5b5bd7dd26bd/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:58:41.189705+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "72b949641006efc96b510a4b14f7003813a18d0c973c559749ca98cefda555ec",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:49:00.366934+00:00",
+      "created_at_display": "Sep 15, 2026 11:49 AM PT (Sep 15, 2026 02:49 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND OVERHEAD TRICEPS EXTENSION. Standing split stance, one long RED flat loop pinned under REAR shoe and rising behind back to both hands held together OVERHEAD. Show mid-extension: upper arms vertical beside ears, elbows bent about40degrees, forearms slope up/back, hands above/just behind crown. Band runs from heel anchor outside back silhouette to hands, never through neck or body. Camera side three-quarter exposes rear shoe contact and complete band path; athlete torso and head neutral facing forward, gaze horizontal. Real long loop with realistic stretch, two hands firmly gripping band, no barbell, no anchor hardware. All feet and fingertips in frame.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/323/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_triceps",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Overhead elbows flexed mid-extension; joined grips above crown, red loop descends outside rear body to shoe anchor, clear continuous limb and band paths.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark-surface previews: distinct movement posture and red resistance path remain readable, full subject and required contacts retained without clipping.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf ; https://www.roguefitness.com/rogue-monster-bands",
+        "setup": "BAND OVERHEAD TRICEPS EXTENSION. Standing split stance, one long RED flat loop pinned under REAR shoe and rising behind back to both hands held together OVERHEAD. Show mid-extension: upper arms vertical beside ears, elbows bent about40degrees, forearms slope up/back, hands above/just behind crown. Band runs from heel anchor outside back silhouette to hands, never through neck or body. Camera side three-quarter exposes rear shoe contact and complete band path; athlete torso and head neutral facing forward, gaze horizontal. Real long loop with realistic stretch, two hands firmly gripping band, no barbell, no anchor hardware. All feet and fingertips in frame.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:58:41.189705+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "72b949641006efc96b510a4b14f7003813a18d0c973c559749ca98cefda555ec",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 324,
+      "key": "accessory_band_kickback",
+      "movement_name": "Band Kickback",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-324-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "de032ddeaeb5d9c8bcae2368",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/de032ddeaeb5d9c8bcae2368/master.png",
+          "sha256": "90f095f8987e9df0d6bcd2e3e5720de59bcce9dcafcb179962690340124defdd",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1835703
+        },
+        "app": {
+          "path": "candidates/de032ddeaeb5d9c8bcae2368/app.png",
+          "sha256": "4e150c8e3f12ed9cf7f545efe6a4956aa52a8c277c0711a46f4aca4cfc38a366",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 322645
+        },
+        "thumbnail": {
+          "path": "candidates/de032ddeaeb5d9c8bcae2368/thumbnail.png",
+          "sha256": "cb68128232313cc246cfcf0c1823ccd01f26f64e4230c4a1a46e1a25aecd3426",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46408
+        }
+      },
+      "candidate_asset": "candidates/de032ddeaeb5d9c8bcae2368/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:58:44.490286+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "90f095f8987e9df0d6bcd2e3e5720de59bcce9dcafcb179962690340124defdd",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:49:00.712457+00:00",
+      "created_at_display": "Sep 15, 2026 11:49 AM PT (Sep 15, 2026 02:49 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND TRICEPS KICKBACK, supported one-side execution. Hip-hinged athlete supports nonworking hand on front thigh. Working upper arm held parallel with torso, elbow extended back so working arm forms straight line to hand behind hip; not a rowing bent elbow. Red flat band securely under front/opposite shoe travels diagonally to working hand behind hip, taut entirely outside body. Staggered knees soft, straight back, eyes naturally toward floor aligned with torso. Side three-quarter camera shows hand grip, complete band and shoe anchor, both arms and both grounded legs. No glute kickback: BOTH feet stay grounded and the ELBOW extends.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/324/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_triceps",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Supported elbow kickback with extended working elbow, opposite hand on thigh, continuous red strip to front shoe; all limbs and contacts plausible.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark-surface previews: distinct movement posture and red resistance path remain readable, full subject and required contacts retained without clipping.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf ; https://www.roguefitness.com/rogue-monster-bands",
+        "setup": "BAND TRICEPS KICKBACK, supported one-side execution. Hip-hinged athlete supports nonworking hand on front thigh. Working upper arm held parallel with torso, elbow extended back so working arm forms straight line to hand behind hip; not a rowing bent elbow. Red flat band securely under front/opposite shoe travels diagonally to working hand behind hip, taut entirely outside body. Staggered knees soft, straight back, eyes naturally toward floor aligned with torso. Side three-quarter camera shows hand grip, complete band and shoe anchor, both arms and both grounded legs. No glute kickback: BOTH feet stay grounded and the ELBOW extends.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:58:44.490286+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "90f095f8987e9df0d6bcd2e3e5720de59bcce9dcafcb179962690340124defdd",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 416,
+      "key": "accessory_band_romanian_deadlift",
+      "movement_name": "Band Romanian Deadlift",
+      "primary_muscle_group": "hamstrings",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-416-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "98e0182b60e4f2b49961d607",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/98e0182b60e4f2b49961d607/master.png",
+          "sha256": "ce6466d54f9100a4091bd9933453c8cd65f7da99f08a8ab86af5b3105dd4ac56",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1751165
+        },
+        "app": {
+          "path": "candidates/98e0182b60e4f2b49961d607/app.png",
+          "sha256": "3bf8bfc1bef010ca491c5a53cc71f5d1bb162a7d7db7108ee82037b0f8f52dfe",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 307502
+        },
+        "thumbnail": {
+          "path": "candidates/98e0182b60e4f2b49961d607/thumbnail.png",
+          "sha256": "f7e97b49e25d44b960ea8cf932fd9430f5ce6f7bf14cef2d953cf5083f37ed37",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43420
+        }
+      },
+      "candidate_asset": "candidates/98e0182b60e4f2b49961d607/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:58:46.922776+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ce6466d54f9100a4091bd9933453c8cd65f7da99f08a8ab86af5b3105dd4ac56",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:49:01.070306+00:00",
+      "created_at_display": "Sep 15, 2026 11:49 AM PT (Sep 15, 2026 02:49 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND ROMANIAN DEADLIFT. Athlete stands on center of ONE long RED flat band with feet hip-width, holds ends in straight hanging arms just below knee height. Mid-bottom RDL hinge: hips pushed backward, knees softly bent only20degrees, back long flat, torso inclined about55degrees. Band rises from under each shoe directly to same-side closed hand alongside shin; no extra crossing loop, no band on neck. Side three-quarter view clearly distinguishes hip hinge from squat, neck aligned with spine with gaze down ahead of toes. Full head, both arm chains, band grips and both feet in compact dark square.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/416/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "movement_family": "accessory_hamstrings",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "RDL hip hinge with soft knees and straight arms; band captured under shoes and tensioned to closed hands, long neutral spine and complete contacts.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark-surface previews: distinct movement posture and red resistance path remain readable, full subject and required contacts retained without clipping.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf ; https://www.roguefitness.com/rogue-monster-bands",
+        "setup": "BAND ROMANIAN DEADLIFT. Athlete stands on center of ONE long RED flat band with feet hip-width, holds ends in straight hanging arms just below knee height. Mid-bottom RDL hinge: hips pushed backward, knees softly bent only20degrees, back long flat, torso inclined about55degrees. Band rises from under each shoe directly to same-side closed hand alongside shin; no extra crossing loop, no band on neck. Side three-quarter view clearly distinguishes hip hinge from squat, neck aligned with spine with gaze down ahead of toes. Full head, both arm chains, band grips and both feet in compact dark square.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:58:46.922776+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ce6466d54f9100a4091bd9933453c8cd65f7da99f08a8ab86af5b3105dd4ac56",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 447,
+      "key": "accessory_band_glute_bridge",
+      "movement_name": "Band Glute Bridge",
+      "primary_muscle_group": "glutes",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-447-a02",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "3adb56cdc9036745e6006305",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/3adb56cdc9036745e6006305/master.png",
+          "sha256": "7d4998bd0a674ce76b26770d9008bb1c489d1a9b2044da5a1fcde38ba5de7217",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2590909
+        },
+        "app": {
+          "path": "candidates/3adb56cdc9036745e6006305/app.png",
+          "sha256": "e3cde3910fbe25423bb9be72640f9c3731f9babcac420301761cfa8297e33fa2",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 451317
+        },
+        "thumbnail": {
+          "path": "candidates/3adb56cdc9036745e6006305/thumbnail.png",
+          "sha256": "f2dacc743297bd6c04f37922de6870805504fb60d3262e76c87a528f70238387",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 59086
+        }
+      },
+      "candidate_asset": "candidates/3adb56cdc9036745e6006305/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:58:49.061195+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "7d4998bd0a674ce76b26770d9008bb1c489d1a9b2044da5a1fcde38ba5de7217",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:49:01.399488+00:00",
+      "created_at_display": "Sep 15, 2026 11:49 AM PT (Sep 15, 2026 02:49 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: EDIT only camera/composition of this correct RED knee-banded GLUTE BRIDGE. View from much higher, nearly overhead three-quarter angle. Orient full body diagonally from head near upper-left to shoes near lower-right so head, hips, hands and shoes occupy most of the square rather than a thin horizontal strip. Remove the excessive empty upper third. Preserve anatomically correct bridge, both shoulders and head on floor, both feet flat, knees90deg, hips raised, red continuous mini-loop above knees. Keep both hands and shoes inside safe margins. Same realistic dark studio photograph; no changed equipment or exercise.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/447/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "movement_family": "accessory_glutes",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Elevated diagonal floor bridge fills square now; red thigh loop, raised hips, shoulder/head floor support and planted shoes remain correct.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark-surface previews: distinct movement posture and red resistance path remain readable, full subject and required contacts retained without clipping.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf ; https://www.roguefitness.com/rogue-monster-bands",
+        "setup": "EDIT only camera/composition of this correct RED knee-banded GLUTE BRIDGE. View from much higher, nearly overhead three-quarter angle. Orient full body diagonally from head near upper-left to shoes near lower-right so head, hips, hands and shoes occupy most of the square rather than a thin horizontal strip. Remove the excessive empty upper third. Preserve anatomically correct bridge, both shoulders and head on floor, both feet flat, knees90deg, hips raised, red continuous mini-loop above knees. Keep both hands and shoes inside safe margins. Same realistic dark studio photograph; no changed equipment or exercise.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:58:49.061195+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "7d4998bd0a674ce76b26770d9008bb1c489d1a9b2044da5a1fcde38ba5de7217",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 493,
+      "key": "accessory_band_calf_raise",
+      "movement_name": "Band Calf Raise",
+      "primary_muscle_group": "calves",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-493-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "994b48194a7644bae35209ab",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/994b48194a7644bae35209ab/master.png",
+          "sha256": "3a4131636d911fd55943500fa85babebe8d8558fc2dbcd4ee0b46c1cc2aa0438",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1705867
+        },
+        "app": {
+          "path": "candidates/994b48194a7644bae35209ab/app.png",
+          "sha256": "f90fc73d599ce1583dd0e096029b9bb4d5c45b82388ac22c801c0d99e9247d55",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 295271
+        },
+        "thumbnail": {
+          "path": "candidates/994b48194a7644bae35209ab/thumbnail.png",
+          "sha256": "8f5b7f8a8602a86d435965e8db05d00f67ad7286df8dc77256f47c9afce9b5f9",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 40122
+        }
+      },
+      "candidate_asset": "candidates/994b48194a7644bae35209ab/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:58:52.030670+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3a4131636d911fd55943500fa85babebe8d8558fc2dbcd4ee0b46c1cc2aa0438",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:49:01.721595+00:00",
+      "created_at_display": "Sep 15, 2026 11:49 AM PT (Sep 15, 2026 02:49 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND CALF RAISE, standing. Athlete upright rises onto balls of BOTH feet, heels visibly lifted5cm, straight knees and neutral balanced torso. Middle of a RED long flat band under both forefeet, ends gripped firmly at SHOULDER height to add downward resistance. Continuous two band strands outside body from toe-ball anchors to hands; hands stay fixed at shoulders, not overhead. Side three-quarter camera low enough to reveal gap under BOTH heels and band trapped under forefeet. Head forward aligned with sternum, all fingers and feet visible. No squat, no toe/dorsiflexion raise.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/493/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_calves",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Both heels elevated above forefeet with straight knees, band anchored under forefeet and held at shoulders. Visible red paths and whole limbs.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark-surface previews: distinct movement posture and red resistance path remain readable, full subject and required contacts retained without clipping.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf ; https://www.roguefitness.com/rogue-monster-bands",
+        "setup": "BAND CALF RAISE, standing. Athlete upright rises onto balls of BOTH feet, heels visibly lifted5cm, straight knees and neutral balanced torso. Middle of a RED long flat band under both forefeet, ends gripped firmly at SHOULDER height to add downward resistance. Continuous two band strands outside body from toe-ball anchors to hands; hands stay fixed at shoulders, not overhead. Side three-quarter camera low enough to reveal gap under BOTH heels and band trapped under forefeet. Head forward aligned with sternum, all fingers and feet visible. No squat, no toe/dorsiflexion raise.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:58:52.030670+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3a4131636d911fd55943500fa85babebe8d8558fc2dbcd4ee0b46c1cc2aa0438",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 148,
+      "key": "accessory_band_face_pull",
+      "movement_name": "Band Face Pull",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-148-a03",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "da113b47e138f1691ec71cd5",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/da113b47e138f1691ec71cd5/master.png",
+          "sha256": "e27d640d3cd5fdbf7e5d4643f3a8d64798ad8dcdda799c6f20e275068c0ee0b3",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1708386
+        },
+        "app": {
+          "path": "candidates/da113b47e138f1691ec71cd5/app.png",
+          "sha256": "ef8c903d2a5cc9b570828a5e612c4ef3cf18457fb904ee0428eb557f354a7a3c",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 314282
+        },
+        "thumbnail": {
+          "path": "candidates/da113b47e138f1691ec71cd5/thumbnail.png",
+          "sha256": "8fb8d62c0b31f4d40830e67983a5540a7666961b381e4d3677d89dc5137687b3",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45936
+        }
+      },
+      "candidate_asset": "candidates/da113b47e138f1691ec71cd5/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T21:58:56.323441+00:00",
+          "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e27d640d3cd5fdbf7e5d4643f3a8d64798ad8dcdda799c6f20e275068c0ee0b3",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:59:13.543147+00:00",
+      "created_at_display": "Sep 15, 2026 11:59 AM PT (Sep 15, 2026 02:59 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: Correct Band Face Pull reference. Athlete faces rack and performs MID-REP face pull: elbows flared at shoulder height and bent, BOTH HANDS AND HANDLES 25cm IN FRONT OF THE FACE, never beside/behind ears. Two independent red resistance tubes from ONE high rack anchor to two small D handles; all straps lie in clear space in front of forehead. Head, eyes, nose entirely unobstructed. NO strap behind skull, no strand across face. Front-side three-quarter camera exposes both grips. Rest same approved style and full body.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/148/attempt-03.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "movement_family": "accessory_rear_delts",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Both face-pull handles now remain ahead of forehead with no strap wrapping face or skull; elevated elbows bent in mid-pull, stable head and stance.",
+        "thumbnail_inspection": "Inspected 192px and 80px dark previews. Full athlete/contacts remain inside frame and red paths remain readable; distinct bent-elbow or straight-arm posture retained.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf",
+        "setup": "Correct Band Face Pull reference. Athlete faces rack and performs MID-REP face pull: elbows flared at shoulder height and bent, BOTH HANDS AND HANDLES 25cm IN FRONT OF THE FACE, never beside/behind ears. Two independent red resistance tubes from ONE high rack anchor to two small D handles; all straps lie in clear space in front of forehead. Head, eyes, nose entirely unobstructed. NO strap behind skull, no strand across face. Front-side three-quarter camera exposes both grips. Rest same approved style and full body.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T21:58:56.323441+00:00",
+        "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e27d640d3cd5fdbf7e5d4643f3a8d64798ad8dcdda799c6f20e275068c0ee0b3",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 415,
+      "key": "accessory_band_leg_curl",
+      "movement_name": "Band Leg Curl",
+      "primary_muscle_group": "hamstrings",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-415-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "3997dbb68fa08d46e6051887",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/3997dbb68fa08d46e6051887/master.png",
+          "sha256": "9e9390c210fa6054f125287cdff6c180d9348240e391ca961c33f3f1b37b1691",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2236990
+        },
+        "app": {
+          "path": "candidates/3997dbb68fa08d46e6051887/app.png",
+          "sha256": "5d9e0cb25bc510aaad48e06c8dcf53fff0d2531b131d5e12fb5879b2cd636eb7",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 398595
+        },
+        "thumbnail": {
+          "path": "candidates/3997dbb68fa08d46e6051887/thumbnail.png",
+          "sha256": "b8ec95b2935b5e88cf06566664f87321ec30b260837a42065228105f74cf76dc",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 55139
+        }
+      },
+      "candidate_asset": "candidates/3997dbb68fa08d46e6051887/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T22:08:55.034549+00:00",
+          "reviewed_at_display": "Sep 15, 2026 03:08 PM PT (Sep 15, 2026 06:08 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9e9390c210fa6054f125287cdff6c180d9348240e391ca961c33f3f1b37b1691",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:59:14.888233+00:00",
+      "created_at_display": "Sep 15, 2026 11:59 AM PT (Sep 15, 2026 02:59 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND LEG CURL, prone floor variation. Athlete lies face down on mat, hips and thighs supported, BOTH knees flexed90degrees and heels lifting toward buttocks. Lower legs elevated, not crossed. Red long resistance loop securely attaches to sturdy rack post at FLOOR height beyond athlete's feet; its two strands lead to black padded ankle cuffs on both ankles and pull ankles AWAY from hips. Clear free-air band path, no elastic through calves; real bolted post and anchor visible. Forearms folded under forehead, face toward mat in neutral neck, complete arms/hands. Elevated diagonal full-body camera: head lower-left, raised feet upper-right, anchor farther upper-right; body and anchored resistance fill square.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/415/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "movement_family": "accessory_hamstrings",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Prone body supported on floor with two connected bent legs, separate cuff-to-post red tubes oppose knee flexion; face neutral and complete equipment visible.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark previews. Movement posture, full subject, red band and support contacts remain distinct at both sizes.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf",
+        "setup": "BAND LEG CURL, prone floor variation. Athlete lies face down on mat, hips and thighs supported, BOTH knees flexed90degrees and heels lifting toward buttocks. Lower legs elevated, not crossed. Red long resistance loop securely attaches to sturdy rack post at FLOOR height beyond athlete's feet; its two strands lead to black padded ankle cuffs on both ankles and pull ankles AWAY from hips. Clear free-air band path, no elastic through calves; real bolted post and anchor visible. Forearms folded under forehead, face toward mat in neutral neck, complete arms/hands. Elevated diagonal full-body camera: head lower-left, raised feet upper-right, anchor farther upper-right; body and anchored resistance fill square.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T22:08:55.034549+00:00",
+        "reviewed_at_display": "Sep 15, 2026 03:08 PM PT (Sep 15, 2026 06:08 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9e9390c210fa6054f125287cdff6c180d9348240e391ca961c33f3f1b37b1691",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 449,
+      "key": "accessory_band_glute_kickback",
+      "movement_name": "Band Glute Kickback",
+      "primary_muscle_group": "glutes",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-449-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "ee59b42bc6d24abc0eacbba1",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/ee59b42bc6d24abc0eacbba1/master.png",
+          "sha256": "dbb5b2df0bcf8b4fe8e00d3745445b64bd5c0a286aa5746aa45e8027d364cadc",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1808926
+        },
+        "app": {
+          "path": "candidates/ee59b42bc6d24abc0eacbba1/app.png",
+          "sha256": "9cc4cf5adb3ea16ddfa5e9b6e9ce39b2da6c67de1aaeafdbb7c86834ac391134",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 321753
+        },
+        "thumbnail": {
+          "path": "candidates/ee59b42bc6d24abc0eacbba1/thumbnail.png",
+          "sha256": "fbc70b173333a58c2a7b3d3e70b1c9c230cb6de0426163a7eb3e70f4e53f42de",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45975
+        }
+      },
+      "candidate_asset": "candidates/ee59b42bc6d24abc0eacbba1/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T22:08:57.258449+00:00",
+          "reviewed_at_display": "Sep 15, 2026 03:08 PM PT (Sep 15, 2026 06:08 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "dbb5b2df0bcf8b4fe8e00d3745445b64bd5c0a286aa5746aa45e8027d364cadc",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:59:15.197196+00:00",
+      "created_at_display": "Sep 15, 2026 11:59 AM PT (Sep 15, 2026 02:59 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND GLUTE KICKBACK, standing. Athlete lightly supports both hands on real vertical rack post in front, torso slightly inclined forward. One straight working leg extends BEHIND hip around25degrees, opposite supporting foot fully grounded. A RED closed mini-loop around both ankles stretches between grounded ankle and backward raised ankle, believable moderate length. Entire working leg and normal knee/ankle visible; do not abduct leg sideways, do not bend into hamstring curl. Side three-quarter camera clearly shows backward movement, taut red band and both hand supports. Head and spine aligned, looking toward post/down naturally. Compact complete full-body framing.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/449/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "movement_family": "accessory_glutes",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Working leg extends behind hip against continuous red ankle loop; grounded support foot, hands on stable post, neutral torso and head.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark previews. Movement posture, full subject, red band and support contacts remain distinct at both sizes.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf",
+        "setup": "BAND GLUTE KICKBACK, standing. Athlete lightly supports both hands on real vertical rack post in front, torso slightly inclined forward. One straight working leg extends BEHIND hip around25degrees, opposite supporting foot fully grounded. A RED closed mini-loop around both ankles stretches between grounded ankle and backward raised ankle, believable moderate length. Entire working leg and normal knee/ankle visible; do not abduct leg sideways, do not bend into hamstring curl. Side three-quarter camera clearly shows backward movement, taut red band and both hand supports. Head and spine aligned, looking toward post/down naturally. Compact complete full-body framing.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T22:08:57.258449+00:00",
+        "reviewed_at_display": "Sep 15, 2026 03:08 PM PT (Sep 15, 2026 06:08 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "dbb5b2df0bcf8b4fe8e00d3745445b64bd5c0a286aa5746aa45e8027d364cadc",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 461,
+      "key": "accessory_band_hip_adduction",
+      "movement_name": "Band Hip Adduction",
+      "primary_muscle_group": "adductors",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-461-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "7bc8bbe5aedb4408c817fd30",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/7bc8bbe5aedb4408c817fd30/master.png",
+          "sha256": "0f3677f2d665df3881952775cebd54e0969ee31b8212c2a64dea35df7c4c470d",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1772458
+        },
+        "app": {
+          "path": "candidates/7bc8bbe5aedb4408c817fd30/app.png",
+          "sha256": "75f56a5cd2587e969f40a9dfe7d32291b8511d9c493db1012cbadd64cf26c318",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 309515
+        },
+        "thumbnail": {
+          "path": "candidates/7bc8bbe5aedb4408c817fd30/thumbnail.png",
+          "sha256": "bb2e9a9a1578ea9cdd6451eaf352745232d7d17ec07e4a36eab39cd6102f98df",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44284
+        }
+      },
+      "candidate_asset": "candidates/7bc8bbe5aedb4408c817fd30/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T22:08:59.491113+00:00",
+          "reviewed_at_display": "Sep 15, 2026 03:08 PM PT (Sep 15, 2026 06:08 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "0f3677f2d665df3881952775cebd54e0969ee31b8212c2a64dea35df7c4c470d",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:59:15.513017+00:00",
+      "created_at_display": "Sep 15, 2026 11:59 AM PT (Sep 15, 2026 02:59 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND HIP ADDUCTION. Athlete stands SIDE-ON to a real rack post with RED long flat loop anchored near floor, loop around the ankle NEAREST the post. Working leg draws across FRONT of planted far leg toward midline, roughly20degrees inward; planted knee softly straight, torso upright, hand lightly touches rack for balance. Tensioned red band goes from lateral low anchor to working ankle through clear air in FRONT of lower legs, not through planted shin. Front three-quarter camera reveals leg crossing direction toward opposite side, ankle loop and secure bolted post. Neck neutral in torso direction, no sideways glance toward anchor. Show both complete hands and feet.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/461/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_adductors",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Inside leg adducts across support leg against low rack-anchored red band; full ankle loop and anchor, two intact legs and rack contact.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark previews. Movement posture, full subject, red band and support contacts remain distinct at both sizes.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf",
+        "setup": "BAND HIP ADDUCTION. Athlete stands SIDE-ON to a real rack post with RED long flat loop anchored near floor, loop around the ankle NEAREST the post. Working leg draws across FRONT of planted far leg toward midline, roughly20degrees inward; planted knee softly straight, torso upright, hand lightly touches rack for balance. Tensioned red band goes from lateral low anchor to working ankle through clear air in FRONT of lower legs, not through planted shin. Front three-quarter camera reveals leg crossing direction toward opposite side, ankle loop and secure bolted post. Neck neutral in torso direction, no sideways glance toward anchor. Show both complete hands and feet.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T22:08:59.491113+00:00",
+        "reviewed_at_display": "Sep 15, 2026 03:08 PM PT (Sep 15, 2026 06:08 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0f3677f2d665df3881952775cebd54e0969ee31b8212c2a64dea35df7c4c470d",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 494,
+      "key": "accessory_band_tibialis_raise",
+      "movement_name": "Band Tibialis Raise",
+      "primary_muscle_group": "calves",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-494-a02",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "1483dc8e36ef435617fccf77",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/1483dc8e36ef435617fccf77/master.png",
+          "sha256": "5bf188cbeff7dcf60790125392617606428e18107999bf2da3ee827eba914d1c",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2086356
+        },
+        "app": {
+          "path": "candidates/1483dc8e36ef435617fccf77/app.png",
+          "sha256": "121f3dc01b1ab12cfb965f37111b0637a12a1b9c67338435420ac2adf0d4ed68",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 375871
+        },
+        "thumbnail": {
+          "path": "candidates/1483dc8e36ef435617fccf77/thumbnail.png",
+          "sha256": "6d0280e516c500f541b524166555af13ccb34117f822c4d31e521513708dd03c",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 52404
+        }
+      },
+      "candidate_asset": "candidates/1483dc8e36ef435617fccf77/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T22:09:01.919798+00:00",
+          "reviewed_at_display": "Sep 15, 2026 03:09 PM PT (Sep 15, 2026 06:09 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5bf188cbeff7dcf60790125392617606428e18107999bf2da3ee827eba914d1c",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:59:15.904081+00:00",
+      "created_at_display": "Sep 15, 2026 11:59 AM PT (Sep 15, 2026 02:59 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: Band seated Ankle Dorsiflexion. Keep correct red forefoot-loop-to-low-post and dorsiflexed ankle mechanics, same seated athlete and posture. WIDEN framing 20 percent so supporting LEFT HAND and ALL FINGERS are completely inside left margin, entire rack base and working shoe inside frame. More empty dark floor at sides, compact centered full-subject composition. Do not change band setup.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/494/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_calves",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Widened framing includes full supporting fingers, shoe and rack foot. Forefoot loop opposes dorsiflexion with visible uninterrupted red path.",
+        "thumbnail_inspection": "Inspected 192px and 80px dark previews. Full athlete/contacts remain inside frame and red paths remain readable; distinct bent-elbow or straight-arm posture retained.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf",
+        "setup": "Band seated Ankle Dorsiflexion. Keep correct red forefoot-loop-to-low-post and dorsiflexed ankle mechanics, same seated athlete and posture. WIDEN framing 20 percent so supporting LEFT HAND and ALL FINGERS are completely inside left margin, entire rack base and working shoe inside frame. More empty dark floor at sides, compact centered full-subject composition. Do not change band setup.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T22:09:01.919798+00:00",
+        "reviewed_at_display": "Sep 15, 2026 03:09 PM PT (Sep 15, 2026 06:09 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5bf188cbeff7dcf60790125392617606428e18107999bf2da3ee827eba914d1c",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 568,
+      "key": "accessory_band_wall_slide",
+      "movement_name": "Band Wall Slide",
+      "primary_muscle_group": "serratus",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "remaining-20260915-568-a01",
+      "generation_batch": "remaining-2026-09-15",
+      "candidate_id": "2646f38a9273f5a93495a37d",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/2646f38a9273f5a93495a37d/master.png",
+          "sha256": "90a286588759e05e380cbebe2290c74a85a7097a1fdce6b31dbd64f86bb1bb42",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1926262
+        },
+        "app": {
+          "path": "candidates/2646f38a9273f5a93495a37d/app.png",
+          "sha256": "4b5c2b03907c0550ab4383261a18ca2b396a6ca509e85838c48cab7fd53644b7",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 310543
+        },
+        "thumbnail": {
+          "path": "candidates/2646f38a9273f5a93495a37d/thumbnail.png",
+          "sha256": "eeb46704fcd38f7d93dff7825e7fd6d88dd705e6eae5c1ba14e290767b0c4e67",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41302
+        }
+      },
+      "candidate_asset": "candidates/2646f38a9273f5a93495a37d/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-15T22:09:03.821790+00:00",
+          "reviewed_at_display": "Sep 15, 2026 03:09 PM PT (Sep 15, 2026 06:09 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "90a286588759e05e380cbebe2290c74a85a7097a1fdce6b31dbd64f86bb1bb42",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-15T18:59:16.255163+00:00",
+      "created_at_display": "Sep 15, 2026 11:59 AM PT (Sep 15, 2026 02:59 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND WALL SLIDE. Athlete stands facing a plain dark wall, BOTH forearms contact wall parallel about shoulder-width, elbows bent90degrees, forearms now elevated with elbows at shoulder level mid upward slide. RED flat mini-loop around both wrists just above hands, taut from outward wrist pressure. Fingers point upward, palms face wall, no band around elbows. Torso upright, ribs down, feet30cm from wall, head neutral facing same wall. Rear three-quarter side camera shows both hands/forearms against wall, red wrist loop, body and feet. No machine, no invented frame. Full-body square with strong clear shoulder/arm arrangement.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/568/attempt-01.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "movement_family": "accessory_serratus",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "master_inspection": "Both forearms contact wall, visible outward-tension red wrist loop, connected bent arms and grounded feet; wall-slide setup legible.",
+        "thumbnail_inspection": "Inspected actual 192px and 80px dark previews. Movement posture, full subject, red band and support contacts remain distinct at both sizes.",
+        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf",
+        "setup": "BAND WALL SLIDE. Athlete stands facing a plain dark wall, BOTH forearms contact wall parallel about shoulder-width, elbows bent90degrees, forearms now elevated with elbows at shoulder level mid upward slide. RED flat mini-loop around both wrists just above hands, taut from outward wrist pressure. Fingers point upward, palms face wall, no band around elbows. Torso upright, ribs down, feet30cm from wall, head neutral facing same wall. Rear three-quarter side camera shows both hands/forearms against wall, red wrist loop, body and feet. No machine, no invented frame. Full-body square with strong clear shoulder/arm arrangement.",
+        "band_color": "RED"
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-15T22:09:03.821790+00:00",
+        "reviewed_at_display": "Sep 15, 2026 03:09 PM PT (Sep 15, 2026 06:09 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "90a286588759e05e380cbebe2290c74a85a7097a1fdce6b31dbd64f86bb1bb42",
         "source": "human_review_ui"
       }
     }
