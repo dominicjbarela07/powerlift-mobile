@@ -11,6 +11,13 @@ export const invalidatedArtwork = (state, row) => Boolean(row && (state.artwork_
   reset.movement_definition_ids.includes(row.movement_definition_id) && reset.invalidated_master_hashes.includes(row.files.master.sha256)));
 const catalogExcluded = (state, row) => (state.catalog_exclusions || []).some(exclusion =>
   exclusion.movement_definition_id === row.movement_definition_id && exclusion.family === row.family);
+const explicitOwnerChat = review => review?.source === 'explicit_owner_chat'
+  && typeof review.owner_instruction === 'string' && review.owner_instruction.trim().length > 0
+  && review.owner_instruction.trim().length <= 20000
+  && typeof review.conversation_id === 'string' && /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/.test(review.conversation_id)
+  && review.recorded_by === 'codex_at_owner_request';
+const humanSource = review => (review?.source === 'human_review_ui'
+  && Number.isInteger(review.reviewer_user_id) && review.reviewer_user_id > 0) || explicitOwnerChat(review);
 
 export function approvedExactArtworkPolicy(state) {
   return state.canonical_assets.flatMap(active => {
@@ -18,7 +25,7 @@ export function approvedExactArtworkPolicy(state) {
     if (invalidatedArtwork(state, row) || (row && catalogExcluded(state, row))) return [];
     const review = row?.review;
     const human = row?.status === 'approved' && review?.decision === 'approved'
-      && review.source === 'human_review_ui' && Number.isInteger(review.reviewer_user_id) && review.reviewer_user_id > 0
+      && humanSource(review)
       && row.review_history.some(event => JSON.stringify(event) === JSON.stringify(review));
     const prior = row?.status === 'approved_existing' && review?.decision === 'approved_existing'
       && review.source === 'documented_prior_user_approval';
@@ -53,11 +60,10 @@ export function assertHumanArtworkGate(root = defaultRoot) {
     if (active.approval_source === 'preserved_existing_dev_backfill') {
       assert.deepEqual(active, prior, 'backfill exception permits only the exact pre-gate asset triples');
     } else {
-      assert.equal(active.approval_source, 'human_review_ui');
       const approval = active.review;
       assert.equal(approval.decision, 'approved', 'pending/rejected images cannot be promoted');
-      assert.equal(approval.source, 'human_review_ui', 'automation cannot grant approval');
-      assert.ok(Number.isInteger(approval.reviewer_user_id) && approval.reviewer_user_id > 0);
+      assert.equal(active.approval_source, approval.source);
+      assert.ok(humanSource(approval), 'a UI decision or explicit owner message is required; QA cannot grant approval');
       assert.equal(approval.candidate_sha256, candidate.files.master.sha256);
       assert.ok(candidate.review_history.some(event => JSON.stringify(event) === JSON.stringify(approval)), 'promotion receipt must match a durable human decision');
     }

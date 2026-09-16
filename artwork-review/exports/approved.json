@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 1857,
+  "revision": 1864,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-16T16:40:34.006162+00:00",
-  "updated_at_display": "Sep 16, 2026 09:40 AM PT (Sep 16, 2026 12:40 PM Eastern)",
+  "updated_at": "2026-09-16T22:37:09.283720+00:00",
+  "updated_at_display": "Sep 16, 2026 03:37 PM PT (Sep 16, 2026 06:37 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -45412,6 +45412,104 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "f4dfafda6ea64b489003f540e83c9ec1bd916f6e07ed95b42ae5dd68d2204171",
         "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 301,
+      "key": "accessory_cable_triceps_pressdown",
+      "movement_name": "Cable Triceps Pressdown",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-301-approved-refinement-20260916",
+      "generation_batch": "cable-rig-next-five-2026-09-16",
+      "candidate_id": "549511391d895fffb245ee1b",
+      "version": 4,
+      "supersedes_candidate_id": "c5927df4dab8eff8583fd863",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/549511391d895fffb245ee1b/master.png",
+          "sha256": "4d054764fbe32a2d64291d6bb783290a7a97450ec8e9dc4eb65ad5ad41962742",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1980493
+        },
+        "app": {
+          "path": "candidates/549511391d895fffb245ee1b/app.png",
+          "sha256": "194e92e5600d4271bb5e7567c29dfaa0c895f88eb001f0100b0d745d8f31a978",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 355456
+        },
+        "thumbnail": {
+          "path": "candidates/549511391d895fffb245ee1b/thumbnail.png",
+          "sha256": "ab29e07b5cf58ec7be05d17f973006d011710dd0822c63f292daa81d94c60025",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 56151
+        }
+      },
+      "candidate_asset": "candidates/549511391d895fffb245ee1b/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "source": "explicit_owner_chat",
+          "owner_instruction": "ok go ahead and mark it as approved... do the next 5 most populat movements now\\... please use the same thuroughness",
+          "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+          "recorded_by": "codex_at_owner_request",
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "candidate_sha256": "4d054764fbe32a2d64291d6bb783290a7a97450ec8e9dc4eb65ad5ad41962742",
+          "reviewer": "owner_via_chat",
+          "reviewed_at": "2026-09-16T22:16:07.992875+00:00",
+          "reviewed_at_display": "Sep 16, 2026 03:16 PM PT (Sep 16, 2026 06:16 PM Eastern)"
+        }
+      ],
+      "created_at": "2026-09-16T22:16:07.737955+00:00",
+      "created_at_display": "Sep 16, 2026 03:16 PM PT (Sep 16, 2026 06:16 PM Eastern)",
+      "generation_prompt": "Create one realistic Strength Ledger photograph of a two-handed straight-bar cable triceps pushdown. Use image 1 for the EXACT dual-column cable machine, its proportions, hardware and dark violet-lit gym style. Use image 2 for the REAL human exercise pose and grip. Build this as a fresh photograph using these two references.\n\nComposition: complete dual-column machine on the LEFT; full-body adult athlete on the RIGHT, standing in open floor space in front of the nearest working pulley. There is a clearly visible gap of floor between his shoes and the machine's base. He stands entirely outside its footprint, not between columns. The rig is about 2.3 metres tall and the adult about 1.8 metres tall, naturally in scale. Show the athlete at the same three-quarter front angle as the real pose photo, so both arms and hands are visible. Plain charcoal T-shirt, dark shorts and training shoes.\n\nCopy the real pose's anatomically continuous TWO arms and TWO hands: upper arms down beside ribs, elbows almost straight, a slight natural forward lean, and both hands overhand on the straight bar in front of the upper thighs. Match the real reference's natural arm lengths, wrists and connected hand contacts. One grip on each side of the bar's CENTER eye. One straight bar, two hands, one central eye. His whole body and relaxed gaze face the chosen pulley.\n\nUse only the nearest/right column of the pictured dual machine. One uninterrupted taut cable runs from that column's existing high adjustable pulley, seated in its sheave groove and exiting its original outlet, to one carabiner at the bar's central eye BETWEEN the hands. The working wire is clear of his body. The other column remains unused with its handle hanging idle. Preserve the actual rig design from image 1, including both stacks and the idle station. The real photograph in image 2 is a pose reference only: do not use its machine, extra equipment, bright gym, shirt lettering or background. Keep the full rig and athlete's feet visible. Natural photography; no overlays or annotations.\n",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-triceps-pushdown-301-refined-v1.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_triceps",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "generation_context": {
+        "method": "built-in image generation",
+        "rig": "approved dual-column rig v1"
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16",
+      "review": {
+        "source": "explicit_owner_chat",
+        "owner_instruction": "ok go ahead and mark it as approved... do the next 5 most populat movements now\\... please use the same thuroughness",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "recorded_by": "codex_at_owner_request",
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "candidate_sha256": "4d054764fbe32a2d64291d6bb783290a7a97450ec8e9dc4eb65ad5ad41962742",
+        "reviewer": "owner_via_chat",
+        "reviewed_at": "2026-09-16T22:16:07.992875+00:00",
+        "reviewed_at_display": "Sep 16, 2026 03:16 PM PT (Sep 16, 2026 06:16 PM Eastern)"
       }
     }
   ]
