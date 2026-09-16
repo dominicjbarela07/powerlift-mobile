@@ -40,8 +40,12 @@
       "key": "barbell_row",
       "kind": "accessory",
       "family": "horizontal_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
       "equipment_type": "barbell",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -51,8 +55,12 @@
       "key": "single_arm_dumbbell_row",
       "kind": "accessory",
       "family": "horizontal_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
       "equipment_type": "dumbbell",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -62,8 +70,11 @@
       "key": "incline_barbell_press",
       "kind": "accessory",
       "family": "horizontal_push",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
       "equipment_type": "barbell",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -73,8 +84,11 @@
       "key": "incline_dumbbell_press",
       "kind": "accessory",
       "family": "horizontal_push",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
       "equipment_type": "dumbbell",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -84,31 +98,13 @@
       "key": "cable_row",
       "kind": "accessory",
       "family": "horizontal_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
       "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 9,
-      "key": "selectorized_machine_row",
-      "kind": "accessory",
-      "family": "horizontal_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
-      "equipment_type": "selectorized_machine",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 10,
-      "key": "plate_loaded_machine_row",
-      "kind": "accessory",
-      "family": "horizontal_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
-      "equipment_type": "plate_loaded_machine",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -159,8 +155,10 @@
       "key": "plank_duration",
       "kind": "accessory",
       "family": "trunk",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "obliques"
+      ],
       "equipment_type": "bodyweight",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -184,8 +182,11 @@
       "key": "cable_lat_pulldown_unknown",
       "kind": "accessory",
       "family": "vertical_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
       "equipment_type": "cable",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -195,8 +196,11 @@
       "key": "unknown_machine_lat_pulldown",
       "kind": "accessory",
       "family": "vertical_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
       "equipment_type": "machine",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -2058,20 +2062,6 @@
       "core_kind": null
     },
     {
-      "id": 169,
-      "key": "accessory_kneeling_cable_lat_pulldown",
-      "kind": "accessory",
-      "family": "accessory_lats",
-      "primary_muscle_group": "lats",
-      "secondary_muscle_groups": [
-        "biceps",
-        "upper_back"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 170,
       "key": "accessory_straight_arm_cable_pulldown",
       "kind": "accessory",
@@ -2320,19 +2310,6 @@
         "upper_back"
       ],
       "equipment_type": "bodyweight",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 188,
-      "key": "accessory_band_lat_pulldown",
-      "kind": "accessory",
-      "family": "accessory_lats",
-      "primary_muscle_group": "lats",
-      "secondary_muscle_groups": [
-        "biceps"
-      ],
-      "equipment_type": "other",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5770,19 +5747,6 @@
       "core_kind": null
     },
     {
-      "id": 448,
-      "key": "accessory_band_hip_thrust",
-      "kind": "accessory",
-      "family": "accessory_glutes",
-      "primary_muscle_group": "glutes",
-      "secondary_muscle_groups": [
-        "hamstrings"
-      ],
-      "equipment_type": "other",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 449,
       "key": "accessory_band_glute_kickback",
       "kind": "accessory",
@@ -6662,19 +6626,6 @@
     {
       "id": 520,
       "key": "accessory_band_crunch",
-      "kind": "accessory",
-      "family": "accessory_abs",
-      "primary_muscle_group": "abs",
-      "secondary_muscle_groups": [
-        "hip_flexors"
-      ],
-      "equipment_type": "other",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 521,
-      "key": "accessory_band_reverse_crunch",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",

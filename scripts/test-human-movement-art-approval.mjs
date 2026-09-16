@@ -57,6 +57,17 @@ try {
   write('artwork-review/review-state.json', fixture);
   write('artwork-review/runtime-policy.json', {denied_keys: [], approved_exact_artwork: approvedExactArtworkPolicy(fixture)});
   assert.equal(assertHumanArtworkGate(temporary).canonical, 1, 'exact approved receipt enables governed mapping');
+  fixture.artwork_invalidations = [{rebuild_id: 'isolated-cable-reset',
+    movement_definition_ids: [candidate.movement_definition_id],
+    invalidated_master_hashes: [candidate.files.master.sha256]}];
+  write('artwork-review/review-state.json', fixture);
+  assert.deepEqual(approvedExactArtworkPolicy(fixture), [], 'family invalidation overrides an old exact human approval');
+  assert.throws(() => assertHumanArtworkGate(temporary), /runtime rejection policy/, 'stale approval manifest cannot re-enable invalidated bytes');
+  write('artwork-review/runtime-policy.json', {denied_keys: [original.key], approved_exact_artwork: []});
+  assert.equal(assertHumanArtworkGate(temporary).canonical, 1, 'retained historical mapping is safe only with current denial and no positive receipt');
+  delete fixture.artwork_invalidations;
+  write('artwork-review/review-state.json', fixture);
+  write('artwork-review/runtime-policy.json', {denied_keys: [], approved_exact_artwork: approvedExactArtworkPolicy(fixture)});
   write('lib/canonical-movement-artwork-assets.ts', mapping.replace(original.files.app.path, candidate.files.app.path));
   assert.throws(() => assertHumanArtworkGate(temporary), /correct identity/);
   write('lib/canonical-movement-artwork-assets.ts', mapping);

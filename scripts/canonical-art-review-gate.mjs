@@ -7,9 +7,15 @@ import { fileURLToPath } from 'node:url';
 const defaultRoot = fileURLToPath(new URL('../', import.meta.url));
 const hash = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 
+export const invalidatedArtwork = (state, row) => Boolean(row && (state.artwork_invalidations || []).some(reset =>
+  reset.movement_definition_ids.includes(row.movement_definition_id) && reset.invalidated_master_hashes.includes(row.files.master.sha256)));
+const catalogExcluded = (state, row) => (state.catalog_exclusions || []).some(exclusion =>
+  exclusion.movement_definition_id === row.movement_definition_id && exclusion.family === row.family);
+
 export function approvedExactArtworkPolicy(state) {
   return state.canonical_assets.flatMap(active => {
     const row = state.items.find(candidate => candidate.candidate_id === active.candidate_id);
+    if (invalidatedArtwork(state, row) || (row && catalogExcluded(state, row))) return [];
     const review = row?.review;
     const human = row?.status === 'approved' && review?.decision === 'approved'
       && review.source === 'human_review_ui' && Number.isInteger(review.reviewer_user_id) && review.reviewer_user_id > 0
@@ -60,7 +66,7 @@ export function assertHumanArtworkGate(root = defaultRoot) {
     for (const [property, role] of [['source', 'app']]) {
       assert.ok(block.includes(`${property}: require('@/${active.files[role].path}')`), 'canonical mapping must bind the correct identity and exact approved file');
     }
-    if (candidate.status === 'rejected' || (candidate.status === 'pending' && candidate.review_history.length)) denied.push(active.key);
+    if (invalidatedArtwork(state, candidate) || catalogExcluded(state, candidate) || candidate.status === 'rejected' || (candidate.status === 'pending' && candidate.review_history.length)) denied.push(active.key);
     for (const role of ['master', 'app', 'thumbnail']) {
       const asset = active.files[role];
       const file = path.resolve(root, asset.path);
