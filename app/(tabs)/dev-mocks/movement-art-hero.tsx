@@ -12,6 +12,10 @@ import { CANONICAL_ACCESSORY_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-a
 import { movementHeroFocal, resolveApprovedExactMovementArtwork, type MovementHeroFocal } from '@/lib/movement-artwork-hero';
 
 const SUBJECTS = [
+  { id: 197, title: 'T-Bar Row' }, { id: 49, title: 'Incline Machine Chest Press' },
+  { id: 79, title: 'Seated Dumbbell Shoulder Press' },
+  { id: 432, title: 'Machine Glute Bridge' }, { id: 94, title: 'Machine Front Raise' },
+  { id: 540, title: 'Windshield Wiper' },
   { id: 33, title: 'Incline Dumbbell Bench Press' }, { id: 253, title: 'Dumbbell Curl' },
   { id: 154, title: 'One-Arm Dumbbell Row' }, { id: 256, title: 'Standing Dumbbell Curl' },
   { id: 354, title: 'Bulgarian Split Squat' },

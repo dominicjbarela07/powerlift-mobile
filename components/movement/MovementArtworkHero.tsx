@@ -1,11 +1,12 @@
 import { approvedArtRuntimeEnabled } from '@/lib/approved-art-runtime';
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { Image as NativeImage, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CANONICAL_ACCESSORY_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-artwork-assets';
 import type { CanonicalAccessoryArtworkKey } from '@/lib/canonical-movement-artwork';
 import { movementHeroFocal, movementHeroGeometry, reportApprovedArtworkBypass, type MovementHeroFocal } from '@/lib/movement-artwork-hero';
+import { movementHeroSourceFrame } from '@/lib/movement-artwork-geometry.mjs';
 
 type LayerProps = Readonly<{
   artworkKey: CanonicalAccessoryArtworkKey;
@@ -40,24 +41,28 @@ export const MovementArtworkHero = memo(function MovementArtworkHero({
   const shade = (alpha: number) => `rgba(${rgb},${alpha})`;
   const composition = focal || movementHeroFocal(artworkKey);
   const contained = composition.cropMode === 'contain';
-  const imageBox = movementHeroGeometry(bounds.width, bounds.height, composition);
+  const sourceSize = NativeImage.resolveAssetSource(asset.source);
+  const imageBox = movementHeroSourceFrame(
+    movementHeroGeometry(bounds.width, bounds.height, composition), sourceSize?.width, sourceSize?.height);
   return <View pointerEvents="none" accessible={false} importantForAccessibility="no-hide-descendants"
     onLayout={onLayout} style={s.layer} testID="active-movement-art-hero">
     {bounds.width > 0 && bounds.height > 0 ? <Image
       source={asset.source} style={[s.image, imageBox]}
       contentFit="contain" cachePolicy="memory-disk" recyclingKey={receiptId}
       transition={reduceMotion ? 0 : 160} accessibilityIgnoresInvertColors /> : null}
+    {/* Contained rasters have interior edges; feather those edges into the same
+        canvas scrim used by focal art. No matte, border, blur or source edits. */}
     {contained ? <>
       <LinearGradient pointerEvents="none" style={[s.image, imageBox]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-        colors={[shade(1), shade(0), shade(0), shade(1)]} locations={[0, 0.035, 0.965, 1]} />
+        colors={[shade(1), shade(0), shade(0), shade(1)]} locations={[0, 0.14, 0.86, 1]} />
       <LinearGradient pointerEvents="none" style={[s.image, imageBox]}
-        colors={[shade(1), shade(0), shade(0), shade(1)]} locations={[0, 0.035, 0.965, 1]} />
+        colors={[shade(1), shade(0), shade(0), shade(1)]} locations={[0, 0.10, 0.84, 1]} />
     </> : null}
     <LinearGradient pointerEvents="none" style={s.fill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
       colors={[shade(1), shade(1), shade(0.85), shade(0.08), shade(0), shade(0.9)]}
       locations={[0, 0.36, 0.52, 0.68, 0.86, 1]} />
     <LinearGradient pointerEvents="none" style={s.fill} colors={[shade(1), shade(0.96), shade(0), shade(0), shade(1)]}
-      locations={contained ? [0, 0.26, 0.34, 0.96, 1] : [0, 0.26, 0.46, 0.78, 1]} />
+      locations={[0, 0.26, 0.46, 0.78, 1]} />
   </View>;
 });
 const s = StyleSheet.create({

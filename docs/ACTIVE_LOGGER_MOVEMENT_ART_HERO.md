@@ -1,9 +1,9 @@
 # Approved movement art in compact and expanded Logger views
 
-Canonical DEV currently has **195 exact approved free-weight assets**. The count
+Canonical DEV currently has **380 approved exact movement mappings**. The count
 comes from the positive human receipt projection, not filenames or automatic QA.
-The complete current audit is in
-[approved inventory](validation/movement-art-consumption-2026-09-13/approved-inventory.json).
+The current presentation audit covers every mapped app image in
+[asset compatibility](validation/logger-hero-2026-09-16/asset-audit.json).
 
 ## Ownership and eligibility
 
@@ -39,6 +39,16 @@ existing foreground header bounds. It adds no layout height. The same approved
 left prescription and title. The subject target sits center-right below the title;
 the lower figure fades out rather than extending the header. Sources are never
 modified or regenerated.
+
+T-Bar Row is the locked visual reference. Focal and contained compositions use
+the same horizontal/vertical canvas fades. Containment retains the whole source
+at a meaningful size (up to 60% of hero width / 76% of height); it no longer
+switches to a smaller photograph with a separate, nearly opaque floor. Interior
+raster edges feather into the canvas. Native source dimensions place this edge
+treatment on the actual photograph, including non-square approved exports.
+No movement-specific renderer branches or new asset variants are permitted.
+The September 16 native screenshot comparison confirms that T-Bar Row's hero
+pixels are unchanged. See [validation](validation/logger-hero-2026-09-16/README.md).
 
 Compact crops use `movementThumbnailGeometry`, from the same metadata owner.
 Dumbbell Curl gets a modest upper-body crop with head clearance; validated bench,
