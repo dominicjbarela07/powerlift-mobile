@@ -51,8 +51,8 @@ for(const receipt of policy.approved_exact_artwork.filter(row=>row.presentation?
     assert.equal(box.width,box.height,'approved square remains undistorted');
     assert.ok(box.left>=0 && box.top>=0 && box.left+box.width<=width && box.top+box.height<=height,
       `${receipt.key}: contain retains all head/hand/foot and machine contact points inside the hero`);
-    assert.ok(box.left>=width*.38-1e-9,'contained artwork preserves left prescription space under the shared canvas scrim');
-    assert.ok(box.width>=Math.min(width*.59,height*.75),'full compositions have meaningful hero weight');
+    assert.ok(box.left>=width*.30-1e-9,'contained artwork expands behind the shared prescription-protection scrim');
+    assert.ok(box.width>=Math.min(width*.67,height*.85),'full compositions fill the background at atmospheric scale');
   }
 }
 for (const row of state.canonical_assets) {
