@@ -1,0 +1,18 @@
+{
+  "swap-before": {
+    "encodedFramesInspected": 495,
+    "fps": 6.74,
+    "durationSeconds": 73.3,
+    "maxBroadWhiteRowsBelowHeader": 0,
+    "maxWhiteRowsAtBothAppEdges": 17,
+    "framesWithWhiteBackingSignature": 307
+  },
+  "swap-transition-final": {
+    "encodedFramesInspected": 199,
+    "fps": 32.75,
+    "durationSeconds": 6.07,
+    "maxBroadWhiteRowsBelowHeader": 0,
+    "maxWhiteRowsAtBothAppEdges": 0,
+    "framesWithWhiteBackingSignature": 0
+  }
+}

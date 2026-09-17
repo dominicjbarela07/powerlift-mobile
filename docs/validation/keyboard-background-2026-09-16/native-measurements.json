@@ -1,0 +1,222 @@
+{
+  "standard": {
+    "viewport": "402x874",
+    "keyboardVisible": false,
+    "checks": [
+      {
+        "label": "equipment-manufacturer-search",
+        "field": {
+          "x": 19,
+          "y": 370.0000114440918,
+          "width": 364,
+          "height": 46
+        },
+        "keyboard": {
+          "width": 402,
+          "screenX": 0,
+          "height": 335,
+          "screenY": 539
+        },
+        "fieldVisible": true
+      },
+      {
+        "label": "settings-feedback-title",
+        "field": {
+          "x": 31,
+          "y": 331,
+          "width": 340,
+          "height": 48
+        },
+        "keyboard": {
+          "width": 402,
+          "screenX": 0,
+          "height": 335,
+          "screenY": 539
+        },
+        "fieldVisible": true
+      },
+      {
+        "label": "settings-feedback-multiline-bottom-sheet",
+        "field": {
+          "x": 31,
+          "y": 313,
+          "width": 340,
+          "height": 104
+        },
+        "keyboard": {
+          "width": 402,
+          "screenX": 0,
+          "height": 335,
+          "screenY": 539
+        },
+        "fieldVisible": true
+      },
+      {
+        "label": "standard-swap-cycle-1",
+        "field": {
+          "x": 45,
+          "y": 148.3333330154419,
+          "width": 330,
+          "height": 23
+        },
+        "keyboard": {
+          "width": 402,
+          "screenX": 0,
+          "height": 335,
+          "screenY": 539
+        },
+        "fieldVisible": true
+      },
+      {
+        "label": "standard-swap-cycle-2",
+        "field": {
+          "x": 45,
+          "y": 148.3333330154419,
+          "width": 330,
+          "height": 23
+        },
+        "keyboard": {
+          "width": 402,
+          "screenX": 0,
+          "height": 335,
+          "screenY": 539
+        },
+        "fieldVisible": true
+      }
+    ]
+  },
+  "small": {
+    "viewport": "375x667",
+    "keyboardVisible": false,
+    "checks": [
+      {
+        "label": "small-messages-populated",
+        "field": {
+          "x": 54,
+          "y": 355,
+          "width": 267,
+          "height": 44
+        },
+        "keyboard": {
+          "width": 375,
+          "screenX": 0,
+          "height": 260,
+          "screenY": 407
+        },
+        "fieldVisible": true
+      },
+      {
+        "label": "small-athlete-workspace-messages",
+        "field": {
+          "x": 54,
+          "y": 355,
+          "width": 267,
+          "height": 44
+        },
+        "keyboard": {
+          "width": 375,
+          "screenX": 0,
+          "height": 260,
+          "screenY": 407
+        },
+        "fieldVisible": true
+      },
+      {
+        "label": "small-coach-notes",
+        "field": {
+          "x": 30,
+          "y": 200.5,
+          "width": 315,
+          "height": 146
+        },
+        "keyboard": {
+          "width": 375,
+          "screenX": 0,
+          "height": 260,
+          "screenY": 407
+        },
+        "fieldVisible": true
+      },
+      {
+        "label": "small-session-authoring-notes",
+        "field": {
+          "x": 16,
+          "y": 243,
+          "width": 343,
+          "height": 88
+        },
+        "keyboard": {
+          "width": 375,
+          "screenX": 0,
+          "height": 260,
+          "screenY": 407
+        },
+        "fieldVisible": true
+      },
+      {
+        "label": "small-movement-search",
+        "field": {
+          "x": 57,
+          "y": 158,
+          "width": 290,
+          "height": 42
+        },
+        "keyboard": {
+          "width": 375,
+          "screenX": 0,
+          "height": 260,
+          "screenY": 407
+        },
+        "fieldVisible": true
+      },
+      {
+        "label": "small-review-feedback-visible",
+        "field": {
+          "x": 13,
+          "y": 299,
+          "width": 349,
+          "height": 96
+        },
+        "keyboard": {
+          "width": 375,
+          "screenX": 0,
+          "height": 260,
+          "screenY": 407
+        },
+        "fieldVisible": true
+      },
+      {
+        "label": "small-messages-empty",
+        "field": {
+          "x": 54,
+          "y": 355,
+          "width": 267,
+          "height": 44
+        },
+        "keyboard": {
+          "width": 375,
+          "screenX": 0,
+          "height": 260,
+          "screenY": 407
+        },
+        "fieldVisible": true
+      },
+      {
+        "label": "small-settings-feedback",
+        "field": {
+          "x": 31,
+          "y": 181,
+          "width": 313,
+          "height": 104
+        },
+        "keyboard": {
+          "width": 375,
+          "screenX": 0,
+          "height": 260,
+          "screenY": 407
+        },
+        "fieldVisible": true
+      }
+    ]
+  }
+}
