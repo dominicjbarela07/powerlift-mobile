@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import * as identity from '../lib/canonical-movement-artwork.ts';
 import * as art from '../lib/movement-artwork-hero.ts';
+import * as geometry from '../lib/movement-artwork-geometry.mjs';
 import * as taxonomy from '../lib/governed-movement-art-taxonomy.ts';
 import { assertHumanArtworkGate, approvedExactArtworkPolicy } from './canonical-art-review-gate.mjs';
 
@@ -21,11 +22,16 @@ for (const [family, expected] of [['canonical_bodyweight_accessories',100],['can
 }
 for(const runtime of [{dev:true,channel:''},{dev:false,channel:'testflight'}]) {
 let currentPolicy=policy;
-const react={createElement:(type,props,...children)=>({type,props:{...props,children}}),useEffect:callback=>callback(),useState:x=>[x,()=>{}],useCallback:f=>f,memo:f=>f};
-const mocks={react,'react-native':{View:'View',Image:'Image',Pressable:'Pressable',ActivityIndicator:'ActivityIndicator',StyleSheet:{create:x=>x,hairlineWidth:1}},
+const NativeImage=Object.assign(function Image(){},{resolveAssetSource:source=>{
+ const png=fs.readFileSync(source.replace('@/', ''));
+ return {width:png.readUInt32BE(16),height:png.readUInt32BE(20)};
+}});
+const react={createElement:(type,props,...children)=>({type:type===NativeImage?'Image':type,props:{...props,children}}),useEffect:callback=>callback(),useState:x=>[x?.width===0&&x?.height===0?{width:393,height:250}:x,()=>{}],useCallback:f=>f,memo:f=>f};
+const mocks={react,'react-native':{View:'View',Image:NativeImage,Pressable:'Pressable',ActivityIndicator:'ActivityIndicator',StyleSheet:{create:x=>x,hairlineWidth:1}},
  '@expo/vector-icons':{Ionicons:'Ionicons'},'expo-image':{Image:'ExpoImage'},'expo-linear-gradient':{LinearGradient:'LinearGradient'},'@/components/ui/sl-text':{Text:'Text'},
  '@/constants/theme':{SLColors:{},SLRadius:{lg:18},SLFontFamilies:{}},
  '@/lib/canonical-movement-artwork':identity,
+ '@/lib/movement-artwork-geometry.mjs':geometry,
  '@/lib/governed-movement-art-taxonomy':taxonomy,
  '@/lib/movement-artwork-hero':{...art,reportApprovedArtworkBypass:(m,k,s)=>art.reportApprovedArtworkBypass(m,k,s,currentPolicy,true),resolveApprovedExactMovementArtwork:m=>art.resolveApprovedExactMovementArtwork(m,true,currentPolicy),resolveMovementArtworkPresentation:(m,e,c,s)=>art.resolveMovementArtworkPresentation(m,e,c,s,true,currentPolicy)},
  '@/lib/accessory-muscle-region-assets':{accessoryMuscleRegionAsset:region=>({label:region,source:`anatomy:${region}`})},
@@ -59,6 +65,13 @@ for(const receipt of policy.approved_exact_artwork){
  assert.ok(mapping);
  const asset=assets.CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[key];assert.ok(asset);
  assert.equal(asset.source,`@/${mapping.files.app.path}`);assert.equal(asset.thumbnail,undefined);
+ const layer=heroLayer({artworkKey:key,receiptId:receipt.candidate_id,movementDefinitionId:id,reduceMotion:true});
+ const raster=nodes(layer,'ExpoImage')[0];assert.ok(raster,'approved layer paints its real source after layout');
+ assert.equal(raster.props.source,asset.source);assert.equal(raster.props.contentFit,'contain');assert.equal(raster.props.transition,0);
+ const frame=raster.props.style[1],dimensions=NativeImage.resolveAssetSource(asset.source);
+ assert.ok(Math.abs(frame.width/frame.height-dimensions.width/dimensions.height)<1e-9,'actual hero respects PNG aspect ratio');
+ const canvasFades=nodes(layer,'LinearGradient').slice(-2);
+ assert.equal(JSON.stringify(canvasFades[1].props.locations),'[0,0.26,0.46,0.78,1]','every actual hero uses the locked T-Bar Row canvas fade');
  for(const active of [false,true]){
   const compact=renderSingle(id,false,active);assertCue(compact,true,key);assert.equal(nodes(compact,'MovementArtworkHero').length,0);
   for(let remount=0;remount<2;remount++){

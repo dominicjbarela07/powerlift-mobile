@@ -4,3 +4,4 @@ type Geometry = { width: number; height: number; left: number; top: number };
 export const DEFAULT_FOCAL: Focal;
 export function thumbnailGeometry(size: number, focal: Focal, preset?: Partial<Presentation>): Geometry;
 export function movementHeroGeometry(width: number, height: number, focal: Presentation): Geometry;
+export function movementHeroSourceFrame(box: Geometry, sourceWidth?: number, sourceHeight?: number): Geometry;

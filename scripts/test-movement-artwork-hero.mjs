@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { resolveApprovedExactMovementArtwork, movementHeroFocal, movementHeroGeometry } from '../lib/movement-artwork-hero.ts';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES } from '../lib/canonical-movement-artwork.ts';
+import { movementHeroSourceFrame } from '../lib/movement-artwork-geometry.mjs';
 import { approvedExactArtworkPolicy, assertHumanArtworkGate } from './canonical-art-review-gate.mjs';
 const state=JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
 const policy=JSON.parse(fs.readFileSync('artwork-review/runtime-policy.json'));
@@ -50,15 +51,28 @@ for(const receipt of policy.approved_exact_artwork.filter(row=>row.presentation?
     assert.equal(box.width,box.height,'approved square remains undistorted');
     assert.ok(box.left>=0 && box.top>=0 && box.left+box.width<=width && box.top+box.height<=height,
       `${receipt.key}: contain retains all head/hand/foot and machine contact points inside the hero`);
-    assert.ok(box.left>=width*.4,'contained artwork preserves left prescription space');
+    assert.ok(box.left>=width*.38-1e-9,'contained artwork preserves left prescription space under the shared canvas scrim');
+    assert.ok(box.width>=Math.min(width*.59,height*.75),'full compositions have meaningful hero weight');
   }
 }
+for (const row of state.canonical_assets) {
+  const [sourceWidth, sourceHeight] = row.files.app.dimensions;
+  const box=movementHeroGeometry(393,250,movementHeroFocal(row.key));
+  const frame=movementHeroSourceFrame(box,sourceWidth,sourceHeight);
+  assert.ok(Math.abs(frame.width/frame.height-sourceWidth/sourceHeight)<1e-9,`${row.key}: original aspect ratio`);
+  assert.ok(frame.left>=box.left-1e-9&&frame.top>=box.top-1e-9&&frame.left+frame.width<=box.left+box.width+1e-9&&frame.top+frame.height<=box.top+box.height+1e-9);
+  if(sourceWidth===sourceHeight) assert.deepEqual(frame,box,'square approved sources, including T-Bar Row, retain their exact geometry');
+}
+assert.deepEqual(movementHeroGeometry(393,250,movementHeroFocal('accessory_t_bar_row')),
+  {width:270,height:270,left:167.61,top:45.8},'locked T-Bar Row composition');
 const hero=read('components/movement/MovementArtworkHero.tsx');
 assert.match(hero,/memo\(function MovementArtworkHero/);
 assert.match(hero,/StyleSheet.absoluteFillObject/,'hero must not add layout height');
 assert.match(hero,/cachePolicy="memory-disk"/);
 assert.match(hero,/recyclingKey=\{receiptId\}/);
 assert.match(hero,/reduceMotion \? 0 : 160/);
+assert.match(hero,/locations=\{\[0, 0\.26, 0\.46, 0\.78, 1\]\}/,'one canvas fade for every composition');
+assert.doesNotMatch(hero,/locations=\{contained \?/,'containment must never switch back to the photo-tile fade');
 assert.doesNotMatch(hero,/setInterval|setTimeout|elapsedSeconds|elapsedMs|restRemaining|Date\.now|MuscleMap|help-outline|require\(/,'the image layer has no timer, fallback, identity guesses or independent asset paths');
 const single=read('components/workout-logger/session-v3-movement.tsx');
 assert.match(single,/resolveMovementArtworkPresentation\(visual\?\.movementArtworkInput, expanded, complete/);
