@@ -46,3 +46,14 @@ Expanded all contained compositions from 60% width / 76% height limits to 68% / 
 The baseline areas to refine were the limited footprint, empty separation from the prescription, and the subject's foreground-like staging. Inspected native before/after passes for Incline Machine Chest Press, the wider non-square Machine Glute Bridge, and T-Bar Row in canonical Metro. The first two now occupy more of the background while the text remains dominant; the full source still fits inside the hero. T-Bar Row's native hero remains pixel-identical. TypeScript and 222/222 accepted DEV contracts passed. Image bytes, approval receipts, thumbnails and movement identity are untouched.
 
 [Native before/after comparison](atmosphere-preview.png). Release IDs are recorded in the PT-first backend development ledger after OTA verification.
+
+## Owner follow-up — extend to the detail line (r25)
+
+The owner clarified that the image should almost reach the equipment manufacturer line on machine lifts, with similar reach on non-machine picker lifts. `SessionV3Movement` now owns an absolute artwork stage extending to the measured first detail row: equipment when present, otherwise history/picker context. The common fade ends at that row's midpoint, with a 52dp cap to prevent an expanded history panel extending artwork through historical records. It adds no space, does not move the row, and cannot intercept interaction. Existing source-fit rules and aspect ratios remain intact.
+
+The first pass identified three weaknesses: artwork stopping at the prescription, an arbitrary fixed extension failing to follow the actual equipment row, and the DEV composition fixture lacking that row. The correction anchors the stage to native layout, includes representative manufacturer/history rows in the DEV-only fixture, and caps the endpoint for expanded history. Second-pass native screenshots inspect the actual canonical component with machine and non-machine fixtures; these are composition checks, not live equipment-record assertions. The equipment name, prescription, history and Swap remain legible. The shared larger canvas also extends focal art; earlier zero-pixel-change claims apply to r23/r24, not this newly requested endpoint.
+
+- [Machine endpoint](machine-boundary.png)
+- [Non-machine endpoint](non-machine-boundary.png)
+
+No artwork, approval, identity, equipment selection, Session write, or compact-row behavior changes. TypeScript, actual TSX consumption across all 380 approved mappings in DEV/TestFlight, and the full accepted contract suite validate the refinement before release. The publisher independently checks critical invariants and OTA compatibility. Release receipt and Production fingerprints are recorded after publication.

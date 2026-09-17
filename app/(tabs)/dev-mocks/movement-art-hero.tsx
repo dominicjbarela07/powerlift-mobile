@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/sl-text';
 import { MovementArtworkHero } from '@/components/movement/MovementArtworkHero';
 import { SessionV3Movement } from '@/components/workout-logger/session-v3-movement';
+import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, type CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
 import { CANONICAL_ACCESSORY_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-artwork-assets';
 import { movementHeroFocal, resolveApprovedExactMovementArtwork, type MovementHeroFocal } from '@/lib/movement-artwork-hero';
@@ -51,6 +52,13 @@ export default function MovementArtHeroLab() {
     <Text style={s.status}>{approved ? 'Human-approved exact art' : asset ? 'PENDING HUMAN REVIEW · not hero eligible' : 'No exact movement art · compact fallback'}</Text>
     <View style={s.row}>{(['logger', 'crop', 'source'] as const).map(value => <Pressable key={value} onPress={() => setMode(value)} style={[s.button, mode === value && s.selected]}><Text style={s.link}>{value === 'logger' ? 'Actual Logger' : value === 'crop' ? 'Crop study' : 'Source'}</Text></Pressable>)}</View>
     {mode === 'logger' ? <SessionV3Movement title={entry.title} index={1} expanded complete={false} active reduceMotion onOpen={() => undefined}
+      equipment={[49, 432, 94, 136, 121, 58].includes(entry.id) ? <View style={s.equipment}>
+        <ManufacturerBrandMark compact manufacturerName="Life Fitness" />
+        <View style={{ flex: 1, gap: 2 }}><Text style={s.equipmentEyebrow}>CURRENT EQUIPMENT</Text>
+          <Text style={s.equipmentName}>Life Fitness</Text><Text style={s.equipmentMeta}>Life Fitness · Plate-loaded</Text></View>
+      </View> : null}
+      history={<View style={s.history}><Text style={s.link}>Movement history ↗</Text></View>}
+      actions={<Text style={s.link}>Swap</Text>}
       visual={{ liftLabel: entry.title, liftAccentColor: '#ab83e3', movementArtworkInput: movement }}
       focus={{ movementName: entry.title, currentSetLabel: 'Set 1', currentSetPositionLabel: 'SET 1 OF 3', currentSetRepsLabel: '12–15 reps', currentSetEffortLabel: '1 RIR', progressionLabel: '0 / 3', rail: [], canLog: false, canRepeat: false }} />
       : mode === 'source' ? asset ? <Image source={asset.source} contentFit="contain" style={s.study} cachePolicy="memory-disk" /> : <Text style={s.note}>No source image exists for this identity.</Text>
@@ -82,4 +90,9 @@ const s = StyleSheet.create({
   warning: { color: '#f1c58b', fontSize: 11, lineHeight: 18, marginTop: 8 },
   control: { flexDirection: 'row', alignItems: 'center', gap: 8 }, note: { color: '#b6abbe', fontSize: 12, lineHeight: 18, flex: 1, marginVertical: 5 },
   subjects: { marginTop: 10 }, subject: { minHeight: 44, justifyContent: 'center', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#2e2537' },
+  equipment: { marginTop: 16, marginHorizontal: 26, paddingVertical: 14, borderTopWidth: 1, borderBottomWidth: 1, borderColor: 'rgba(167,139,250,0.16)', flexDirection: 'row', alignItems: 'center', gap: 12 },
+  equipmentEyebrow: { color: '#b391ec', fontSize: 10, fontWeight: '900', letterSpacing: .7 },
+  equipmentName: { color: '#fff', fontSize: 14, lineHeight: 20, fontWeight: '900' },
+  equipmentMeta: { color: '#b7b0c2', fontSize: 12, lineHeight: 17 },
+  history: { paddingVertical: 14 },
 });

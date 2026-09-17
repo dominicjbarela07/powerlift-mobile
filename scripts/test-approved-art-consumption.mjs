@@ -22,11 +22,12 @@ for (const [family, expected] of [['canonical_bodyweight_accessories',100],['can
 }
 for(const runtime of [{dev:true,channel:''},{dev:false,channel:'testflight'}]) {
 let currentPolicy=policy;
+let measuredArtworkEnd=0;
 const NativeImage=Object.assign(function Image(){},{resolveAssetSource:source=>{
  const png=fs.readFileSync(source.replace('@/', ''));
  return {width:png.readUInt32BE(16),height:png.readUInt32BE(20)};
 }});
-const react={createElement:(type,props,...children)=>({type:type===NativeImage?'Image':type,props:{...props,children}}),useEffect:callback=>callback(),useState:x=>[x?.width===0&&x?.height===0?{width:393,height:250}:x,()=>{}],useCallback:f=>f,memo:f=>f};
+const react={createElement:(type,props,...children)=>({type:type===NativeImage?'Image':type,props:{...props,children}}),useEffect:callback=>callback(),useState:x=>x===0?[measuredArtworkEnd,update=>{measuredArtworkEnd=typeof update==='function'?update(measuredArtworkEnd):update;}]:[x?.width===0&&x?.height===0?{width:393,height:250}:x,()=>{}],useCallback:f=>f,memo:f=>f};
 const mocks={react,'react-native':{View:'View',Image:NativeImage,Pressable:'Pressable',ActivityIndicator:'ActivityIndicator',StyleSheet:{create:x=>x,hairlineWidth:1}},
  '@expo/vector-icons':{Ionicons:'Ionicons'},'expo-image':{Image:'ExpoImage'},'expo-linear-gradient':{LinearGradient:'LinearGradient'},'@/components/ui/sl-text':{Text:'Text'},
  '@/constants/theme':{SLColors:{},SLRadius:{lg:18},SLFontFamilies:{}},
@@ -57,6 +58,19 @@ const nodes=(tree,type)=>{const out=[];function walk(n){if(!n||typeof n!=='objec
 const subject=id=>{const row=identity.CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id] || ({91:{key:'accessory_machine_shoulder_press',primary:'front_delts'},120:{key:'accessory_cable_upright_row',primary:'side_delts'}})[id];return {identity_type:'accessory',movement_definition_id:id,key:row.key,primary_muscle_group:row.primary};};
 const renderSingle=(id,expanded,active)=>single({title:'Deliberately unrelated label',index:1,expanded,complete:false,active,onOpen:()=>{},visual:{movementArtworkInput:subject(id)},focus:{currentSetRepsLabel:'6–8 reps',currentSetEffortLabel:'1 RIR'}});
 const renderGroup=(ids,selected,phase)=>superset({groupLabel:'A',expanded:selected!=null,selectedItemId:selected,phase,canLog:phase==='active',swapActionForItem:()=>null,model:{status:'pending',roundCount:1,currentRoundIndex:1,completedRounds:0,rounds:[{index:1,entries:ids.map((id,position)=>({itemId:id,position:position+1}))}],movements:ids.map((id,position)=>({item:{id,title:'Unrelated label',prescription:'1×6–8',movementArtwork:subject(id)},position:position+1,requiredSets:1,loggedRequiredSets:0,nextSetIndex:1,complete:false}))}});
+for(const equipment of [null,{type:'View',props:{children:['Manufacturer']}}]) {
+ const props={title:'Boundary probe',index:1,expanded:true,complete:false,onOpen:()=>{},equipment,history:'Movement history',visual:{movementArtworkInput:subject(49)}};
+ const render=()=>single(props);
+ const anchors=nodes(render(),'View').filter(n=>n.props.onLayout);
+ assert.equal(anchors.length,1,'manufacturer owns the endpoint; otherwise the next detail row owns it');
+ anchors[0].props.onLayout({nativeEvent:{layout:{y:260,height:100}}});
+ const stage=()=>nodes(render(),'View').find(n=>n.props.pointerEvents==='none');
+ assert.equal(stage().props.style[1].height,302,'fade reaches the measured line after the prescription');
+ anchors[0].props.onLayout({nativeEvent:{layout:{y:260,height:400}}});
+ assert.equal(stage().props.style[1].height,304,'expanded history cannot drag art into historical records');
+ assert.equal(stage().props.pointerEvents,'none','background never intercepts equipment/picker interaction');
+}
+measuredArtworkEnd=0;
 function assertCue(tree,exact,key){const image=nodes(thumbnail(nodes(tree,'CanonicalMovementArtwork')[0].props),'Image')[0];assert.ok(image);assert.equal(image.props.source,exact?assets.CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[key].source:`anatomy:${identity.resolveCanonicalMovementArtwork(nodes(tree,'CanonicalMovementArtwork')[0].props.movement).regionKey}`);}
 for(const receipt of policy.approved_exact_artwork){
  const id=receipt.movement_definition_id,key=receipt.key;

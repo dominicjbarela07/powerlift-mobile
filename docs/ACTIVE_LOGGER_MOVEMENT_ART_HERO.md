@@ -32,12 +32,15 @@ writes are unchanged.
 
 ## Composition
 
-`MovementArtworkHero` owns one absolute, pointer-transparent layer and uses the
-existing foreground header bounds. It adds no layout height. The same approved
+`MovementArtworkHero` owns one absolute, pointer-transparent layer. The single
+movement Logger measures its first detail row to place the lower fade near the
+equipment manufacturer line, or the history/picker context on non-machine lifts.
+This background reaches beyond the title/prescription without moving the detail
+row or adding layout height. The same approved
 512px source is reused with stable artwork-key focal metadata in
 `lib/movement-artwork-hero.ts`. Horizontal and vertical black fades protect the
 left prescription and title. The subject target sits center-right below the title;
-the lower figure fades out rather than extending the header. Sources are never
+the lower figure fades out near the detail line. Sources are never
 modified or regenerated.
 
 T-Bar Row is the locked visual reference. Focal and contained compositions use
@@ -47,8 +50,10 @@ switches to a smaller photograph with a separate, nearly opaque floor. Interior
 raster edges feather into the canvas. Native source dimensions place this edge
 treatment on the actual photograph, including non-square approved exports.
 No movement-specific renderer branches or new asset variants are permitted.
-The September 16 native screenshot comparison confirms that T-Bar Row's hero
-pixels are unchanged. See [validation](validation/logger-hero-2026-09-16/README.md).
+The initial September 16 correction and r24 refinement preserved T-Bar Row's
+hero pixels. The subsequent owner request extends the shared single-movement
+canvas to the detail line, including focal compositions. See
+[validation](validation/logger-hero-2026-09-16/README.md).
 
 The owner's follow-up asks for a slightly larger, atmospheric background.
 Contained compositions therefore expand about 13% in each dimension from r23,
@@ -56,6 +61,12 @@ anchored at the same lower/right edge. They extend farther behind the existing
 title/prescription fade instead of gaining contrast, blur, a new backdrop, or
 layout height. Focal compositions, including T-Bar Row, retain their reference
 geometry. This applies to all contained approved artwork through the same rule.
+
+The later endpoint refinement measures the first detail row instead of applying
+a fixed downward offset. Its midpoint determines the fade endpoint, capped at
+52dp into the row so expanded history cannot draw artwork through its records.
+The foreground remains in normal layout and receives all touches. Selected
+superset members retain their existing member-bounded canvas.
 
 Compact crops use `movementThumbnailGeometry`, from the same metadata owner.
 Dumbbell Curl gets a modest upper-body crop with head clearance; validated bench,
