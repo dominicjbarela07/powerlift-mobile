@@ -37,3 +37,12 @@ Only presentation is modified. No movement-ID architecture, current identity, hi
 ## Release
 
 Canonical DEV commit/push and existing TestFlight OTA are authorized. No native build. Production unchanged. Publication IDs are recorded in the backend development ledger and task delivery receipt after the publisher verifies served bytes.
+
+
+## Owner follow-up — larger atmospheric presence (r24)
+
+Expanded all contained compositions from 60% width / 76% height limits to 68% / 86%, retaining the full-source fit and bottom/right anchor. This is about 13% larger per dimension, or 28% more image area in the checked Logger. The expanded source extends farther behind the existing title/prescription scrim, so equipment recedes into the background without brighter artwork, blur, extra gradients or added layout height. T-Bar Row and other focal compositions keep their established geometry.
+
+The baseline areas to refine were the limited footprint, empty separation from the prescription, and the subject's foreground-like staging. Inspected native before/after passes for Incline Machine Chest Press, the wider non-square Machine Glute Bridge, and T-Bar Row in canonical Metro. The first two now occupy more of the background while the text remains dominant; the full source still fits inside the hero. T-Bar Row's native hero remains pixel-identical. TypeScript and 222/222 accepted DEV contracts passed. Image bytes, approval receipts, thumbnails and movement identity are untouched.
+
+[Native before/after comparison](atmosphere-preview.png). Release IDs are recorded in the PT-first backend development ledger after OTA verification.

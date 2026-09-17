@@ -42,13 +42,20 @@ modified or regenerated.
 
 T-Bar Row is the locked visual reference. Focal and contained compositions use
 the same horizontal/vertical canvas fades. Containment retains the whole source
-at a meaningful size (up to 60% of hero width / 76% of height); it no longer
+at a meaningful size (up to 68% of hero width / 86% of height); it no longer
 switches to a smaller photograph with a separate, nearly opaque floor. Interior
 raster edges feather into the canvas. Native source dimensions place this edge
 treatment on the actual photograph, including non-square approved exports.
 No movement-specific renderer branches or new asset variants are permitted.
 The September 16 native screenshot comparison confirms that T-Bar Row's hero
 pixels are unchanged. See [validation](validation/logger-hero-2026-09-16/README.md).
+
+The owner's follow-up asks for a slightly larger, atmospheric background.
+Contained compositions therefore expand about 13% in each dimension from r23,
+anchored at the same lower/right edge. They extend farther behind the existing
+title/prescription fade instead of gaining contrast, blur, a new backdrop, or
+layout height. Focal compositions, including T-Bar Row, retain their reference
+geometry. This applies to all contained approved artwork through the same rule.
 
 Compact crops use `movementThumbnailGeometry`, from the same metadata owner.
 Dumbbell Curl gets a modest upper-body crop with head clearance; validated bench,
