@@ -1,0 +1,1563 @@
+{
+  "filesAudited": 242,
+  "inputRenderSites": 112,
+  "inputFiles": 42,
+  "sharedNativeInputOwners": [
+    {
+      "file": "components/ui/sl-text.tsx",
+      "line": 69,
+      "tag": "NativeTextInput",
+      "placeholder": null,
+      "multiline": false
+    }
+  ],
+  "keyboardAppearanceDeclarations": [
+    {
+      "file": "components/ui/sl-text.tsx",
+      "line": 69,
+      "value": "{props.keyboardAppearance ?? 'dark'}"
+    }
+  ],
+  "nativeImports": [
+    {
+      "file": "app/(tabs)/accessory-catalog-review.tsx",
+      "name": "FlatList",
+      "local": "FlatList"
+    },
+    {
+      "file": "app/(tabs)/coach-calendar.tsx",
+      "name": "FlatList",
+      "local": "FlatList"
+    },
+    {
+      "file": "app/(tabs)/messages/[threadId].tsx",
+      "name": "FlatList",
+      "local": "FlatList"
+    },
+    {
+      "file": "app/(tabs)/messages/announcements.tsx",
+      "name": "FlatList",
+      "local": "FlatList"
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "name": "FlatList",
+      "local": "FlatList"
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "name": "FlatList",
+      "local": "FlatList"
+    },
+    {
+      "file": "components/coach-mobile/CoachHomeV2.tsx",
+      "name": "FlatList",
+      "local": "FlatList"
+    },
+    {
+      "file": "components/keyboard/KeyboardSurface.tsx",
+      "name": "Modal",
+      "local": "NativeModal"
+    },
+    {
+      "file": "components/keyboard/KeyboardSurface.tsx",
+      "name": "ScrollView",
+      "local": "NativeScrollView"
+    },
+    {
+      "file": "components/training-hub/AthleteProgramTimeline.tsx",
+      "name": "FlatList",
+      "local": "FlatList"
+    },
+    {
+      "file": "components/ui/sl-text.tsx",
+      "name": "TextInput",
+      "local": "NativeTextInput"
+    }
+  ],
+  "fields": [
+    {
+      "file": "app/(tabs)/accessory-catalog-review.tsx",
+      "line": 344,
+      "tag": "TextInput",
+      "placeholder": null,
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/accessory-catalog-review.tsx",
+      "line": 360,
+      "tag": "TextInput",
+      "placeholder": "\"Why should this change?\"",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/accessory-catalog-review.tsx",
+      "line": 387,
+      "tag": "TextInput",
+      "placeholder": "\"Search movement name\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 1348,
+      "tag": "TextInput",
+      "placeholder": "\"Venue / city\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 1352,
+      "tag": "TextInput",
+      "placeholder": "\"A / Platform 1\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 1372,
+      "tag": "TextInput",
+      "placeholder": "{displayUnit === 'lb' ? '198' : '89.7'}",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 1412,
+      "tag": "TextInput",
+      "placeholder": "\"Add item\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 1924,
+      "tag": "TextInput",
+      "placeholder": "\"Venue / city\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 1934,
+      "tag": "TextInput",
+      "placeholder": "\"A / Platform 1\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 1944,
+      "tag": "TextInput",
+      "placeholder": "\"90kg\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 1960,
+      "tag": "TextInput",
+      "placeholder": "{displayUnit === 'lb' ? '198' : '89.7'}",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 1980,
+      "tag": "TextInput",
+      "placeholder": "\"11\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 2014,
+      "tag": "TextInput",
+      "placeholder": "\"14\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 2024,
+      "tag": "TextInput",
+      "placeholder": "\"8\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 2041,
+      "tag": "TextInput",
+      "placeholder": "\"Singlet\\nBelt\\nDeadlift socks\"",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 2532,
+      "tag": "TextInput",
+      "placeholder": "\"Optional note for coach\"",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 2679,
+      "tag": "TextInput",
+      "placeholder": "\"Optional note for coach\"",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/coach-calendar.tsx",
+      "line": 1855,
+      "tag": "TextInput",
+      "placeholder": "\"Calendar item title\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/coach-calendar.tsx",
+      "line": 1855,
+      "tag": "TextInput",
+      "placeholder": "\"HH:MM\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/coach-calendar.tsx",
+      "line": 1855,
+      "tag": "TextInput",
+      "placeholder": "\"Optional context\"",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/coach-invite-athlete.tsx",
+      "line": 207,
+      "tag": "TextInput",
+      "placeholder": null,
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/coach-video-archive.tsx",
+      "line": 378,
+      "tag": "TextInput",
+      "placeholder": "\"Search athlete, lift, session...\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/coach-video-archive.tsx",
+      "line": 505,
+      "tag": "TextInput",
+      "placeholder": "\"Search athletes\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/coach-video-archive.tsx",
+      "line": 596,
+      "tag": "TextInput",
+      "placeholder": "\"From YYYY-MM-DD\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/coach-video-archive.tsx",
+      "line": 605,
+      "tag": "TextInput",
+      "placeholder": "\"To YYYY-MM-DD\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/coach-video-review.tsx",
+      "line": 294,
+      "tag": "TextInput",
+      "placeholder": "\"Leave a quick coaching cue...\"",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/coach-video-review.tsx",
+      "line": 317,
+      "tag": "TextInput",
+      "placeholder": "\"Private programming thoughts...\"",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/create-workout.tsx",
+      "line": 227,
+      "tag": "TextInput",
+      "placeholder": "\"Untitled Session\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/messages/[threadId].tsx",
+      "line": 862,
+      "tag": "TextInput",
+      "placeholder": "{user?.is_coach ? 'Message athlete…' : 'Message your coach…'}",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/messages/announcements.tsx",
+      "line": 415,
+      "tag": "TextInput",
+      "placeholder": "\"Title\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/messages/announcements.tsx",
+      "line": 425,
+      "tag": "TextInput",
+      "placeholder": "\"Body\"",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/messages/announcements.tsx",
+      "line": 469,
+      "tag": "TextInput",
+      "placeholder": "\"Search athletes\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/messages/index.tsx",
+      "line": 1080,
+      "tag": "TextInput",
+      "placeholder": "\"Message your coach…\"",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/reflection.tsx",
+      "line": 569,
+      "tag": "TextInput",
+      "placeholder": "{index === 0 ? `${activeLiftMeta.label} priority` : 'Optional cue'}",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 1391,
+      "tag": "TextInput",
+      "placeholder": "{options?.placeholder || ''}",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 2369,
+      "tag": "TextInput",
+      "placeholder": "\"Enter beta code\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 2488,
+      "tag": "TextInput",
+      "placeholder": "\"Search Manila, Philippines, Sydney...\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 2565,
+      "tag": "TextInput",
+      "placeholder": "{auth?.user?.email || 'email@example.com'}",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/video-archive.tsx",
+      "line": 427,
+      "tag": "TextInput",
+      "placeholder": "\"Search film\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "line": 10134,
+      "tag": "TextInput",
+      "placeholder": "\"Search manufacturer or machine\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "line": 10575,
+      "tag": "TextInput",
+      "placeholder": "\"Anything worth remembering today?\\n\\nbench felt explosive\\nsleep was poor\\nshoulder tightened up\\ntechnique clicked today\"",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/workout/create-program.tsx",
+      "line": 444,
+      "tag": "TextInput",
+      "placeholder": "\"Program Name\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/create-program.tsx",
+      "line": 632,
+      "tag": "TextInput",
+      "placeholder": "\"12\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/create-program.tsx",
+      "line": 876,
+      "tag": "TextInput",
+      "placeholder": "{`Block ${index + 1}`}",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/create-program.tsx",
+      "line": 918,
+      "tag": "TextInput",
+      "placeholder": "\"Training focus\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/index.tsx",
+      "line": 1015,
+      "tag": "TextInput",
+      "placeholder": "\"Search your team\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/index.tsx",
+      "line": 2839,
+      "tag": "TextInput",
+      "placeholder": "\"Search athletes\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/index.tsx",
+      "line": 3784,
+      "tag": "TextInput",
+      "placeholder": null,
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/index.tsx",
+      "line": 4421,
+      "tag": "TextInput",
+      "placeholder": "\"What should the athlete accomplish this week?\"",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/workout/index.tsx",
+      "line": 4520,
+      "tag": "TextInput",
+      "placeholder": "\"Week template name\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/index.tsx",
+      "line": 4675,
+      "tag": "TextInput",
+      "placeholder": "\"Block template name\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/index.tsx",
+      "line": 5259,
+      "tag": "TextInput",
+      "placeholder": "{isIndividual ? 'Add private training context' : 'Add a note for your coach'}",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/workout/movement-history.tsx",
+      "line": 283,
+      "tag": "TextInput",
+      "placeholder": "\"Search movement, session, block\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/movement-history.tsx",
+      "line": 510,
+      "tag": "TextInput",
+      "placeholder": "\"Search accessories\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-history.tsx",
+      "line": 166,
+      "tag": "TextInput",
+      "placeholder": "\"Search title, movement, block\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-history.tsx",
+      "line": 356,
+      "tag": "TextInput",
+      "placeholder": "\"Search accessories\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 1597,
+      "tag": "TextInput",
+      "placeholder": "\"Search movements\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 1618,
+      "tag": "TextInput",
+      "placeholder": "\"Type custom variant\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 1640,
+      "tag": "TextInput",
+      "placeholder": null,
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 1641,
+      "tag": "TextInput",
+      "placeholder": null,
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 1702,
+      "tag": "TextInput",
+      "placeholder": "\"Add cue, setup note, or movement context...\"",
+      "multiline": true
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 2523,
+      "tag": "TextInput",
+      "placeholder": "\"Search all movements...\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 2623,
+      "tag": "TextInput",
+      "placeholder": "\"Search this movement scope\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 2753,
+      "tag": "TextInput",
+      "placeholder": "\"Single-Arm Cable Face-Away Curl\"",
+      "multiline": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 2855,
+      "tag": "TextInput",
+      "placeholder": "\"Optional movement definition notes\"",
+      "multiline": true
+    },
+    {
+      "file": "app/login.tsx",
+      "line": 397,
+      "tag": "TextInput",
+      "placeholder": "\"Alex\"",
+      "multiline": false
+    },
+    {
+      "file": "app/login.tsx",
+      "line": 409,
+      "tag": "TextInput",
+      "placeholder": "\"Carter\"",
+      "multiline": false
+    },
+    {
+      "file": "app/login.tsx",
+      "line": 425,
+      "tag": "TextInput",
+      "placeholder": "\"you@example.com\"",
+      "multiline": false
+    },
+    {
+      "file": "app/login.tsx",
+      "line": 441,
+      "tag": "TextInput",
+      "placeholder": "\"Access code\"",
+      "multiline": false
+    },
+    {
+      "file": "app/login.tsx",
+      "line": 455,
+      "tag": "TextInput",
+      "placeholder": "\"Password\"",
+      "multiline": false
+    },
+    {
+      "file": "app/login.tsx",
+      "line": 480,
+      "tag": "TextInput",
+      "placeholder": "\"Confirm password\"",
+      "multiline": false
+    },
+    {
+      "file": "app/login.tsx",
+      "line": 573,
+      "tag": "TextInput",
+      "placeholder": "\"Alex\"",
+      "multiline": false
+    },
+    {
+      "file": "app/login.tsx",
+      "line": 585,
+      "tag": "TextInput",
+      "placeholder": "\"Carter\"",
+      "multiline": false
+    },
+    {
+      "file": "app/login.tsx",
+      "line": 597,
+      "tag": "TextInput",
+      "placeholder": "\"Founder Beta Access Code\"",
+      "multiline": false
+    },
+    {
+      "file": "app/verify-email.tsx",
+      "line": 226,
+      "tag": "TextInput",
+      "placeholder": "\"123456\"",
+      "multiline": false
+    },
+    {
+      "file": "components/AthleteCheckInExperience.tsx",
+      "line": 540,
+      "tag": "TextInput",
+      "placeholder": null,
+      "multiline": true
+    },
+    {
+      "file": "components/AthleteCheckInExperience.tsx",
+      "line": 550,
+      "tag": "TextInput",
+      "placeholder": null,
+      "multiline": false
+    },
+    {
+      "file": "components/AthleteCheckInExperience.tsx",
+      "line": 597,
+      "tag": "TextInput",
+      "placeholder": "\"YYYY-MM-DD\"",
+      "multiline": false
+    },
+    {
+      "file": "components/AthleteCheckInExperience.tsx",
+      "line": 608,
+      "tag": "TextInput",
+      "placeholder": null,
+      "multiline": false
+    },
+    {
+      "file": "components/calendar/AthleteCalendarExperience.tsx",
+      "line": 392,
+      "tag": "TextInput",
+      "placeholder": "\"Search Calendar\"",
+      "multiline": false
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "line": 388,
+      "tag": "TextInput",
+      "placeholder": "\"Sessions, dates, movements, personal items\"",
+      "multiline": false
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "line": 1041,
+      "tag": "TextInput",
+      "placeholder": "\"YYYY-MM-DD\"",
+      "multiline": false
+    },
+    {
+      "file": "components/calendar/CalendarEventSheet.tsx",
+      "line": 173,
+      "tag": "TextInput",
+      "placeholder": "{placeholder}",
+      "multiline": true
+    },
+    {
+      "file": "components/calendar/CalendarEventSheet.tsx",
+      "line": 392,
+      "tag": "TextInput",
+      "placeholder": "\"120\"",
+      "multiline": false
+    },
+    {
+      "file": "components/calendar/TrainingScheduleSheet.tsx",
+      "line": 108,
+      "tag": "TextInput",
+      "placeholder": "\"17:30\"",
+      "multiline": false
+    },
+    {
+      "file": "components/coach-mobile/AthleteCoachingScratchpad.tsx",
+      "line": 163,
+      "tag": "TextInput",
+      "placeholder": "\"Capture priorities, follow-ups, programming context, and next steps…\"",
+      "multiline": true
+    },
+    {
+      "file": "components/coach-mobile/CoachActivityHome.tsx",
+      "line": 742,
+      "tag": "TextInput",
+      "placeholder": "\"Search your athletes\"",
+      "multiline": false
+    },
+    {
+      "file": "components/coach-mobile/CoachAthleteHubV2.tsx",
+      "line": 248,
+      "tag": "TextInput",
+      "placeholder": "\"Movement, muscle, or metric\"",
+      "multiline": false
+    },
+    {
+      "file": "components/coach-mobile/CoachCheckInsV2.tsx",
+      "line": 433,
+      "tag": "TextInput",
+      "placeholder": "{placeholder}",
+      "multiline": true
+    },
+    {
+      "file": "components/coach-mobile/CoachCheckInsV2.tsx",
+      "line": 434,
+      "tag": "TextInput",
+      "placeholder": "{placeholder}",
+      "multiline": false
+    },
+    {
+      "file": "components/coach-mobile/CoachHomeV2.tsx",
+      "line": 469,
+      "tag": "TextInput",
+      "placeholder": "\"Search your athletes\"",
+      "multiline": false
+    },
+    {
+      "file": "components/coach-mobile/CompletedSessionRecap.tsx",
+      "line": 1147,
+      "tag": "TextInput",
+      "placeholder": "\"Write actionable feedback…\"",
+      "multiline": true
+    },
+    {
+      "file": "components/coach-mobile/CompletedSessionRecap.tsx",
+      "line": 1147,
+      "tag": "TextInput",
+      "placeholder": "\"Private programming context…\"",
+      "multiline": true
+    },
+    {
+      "file": "components/coach-mobile/ProgrammingReuseLibrary.tsx",
+      "line": 102,
+      "tag": "TextInput",
+      "placeholder": "\"Find training to reuse\"",
+      "multiline": false
+    },
+    {
+      "file": "components/coach-mobile/SessionEditingWorkspace.tsx",
+      "line": 759,
+      "tag": "TextInput",
+      "placeholder": "\"Add Session notes\"",
+      "multiline": true
+    },
+    {
+      "file": "components/coach-mobile/SessionEditingWorkspace.tsx",
+      "line": 1182,
+      "tag": "TextInput",
+      "placeholder": null,
+      "multiline": false
+    },
+    {
+      "file": "components/coach-mobile/SessionEditingWorkspace.tsx",
+      "line": 1348,
+      "tag": "TextInput",
+      "placeholder": "\"Add notes for the athlete\"",
+      "multiline": true
+    },
+    {
+      "file": "components/coach-mobile/SessionEditingWorkspace.tsx",
+      "line": 1833,
+      "tag": "TextInput",
+      "placeholder": "\"Add movement-specific coaching notes\"",
+      "multiline": true
+    },
+    {
+      "file": "components/ledger/archive-foundation.tsx",
+      "line": 488,
+      "tag": "TextInput",
+      "placeholder": "\"Movement, session, meet, evidence…\"",
+      "multiline": false
+    },
+    {
+      "file": "components/ledger/archive-foundation.tsx",
+      "line": 529,
+      "tag": "TextInput",
+      "placeholder": "{placeholder}",
+      "multiline": false
+    },
+    {
+      "file": "components/meet-packet/AthleteMeetPacketV2.tsx",
+      "line": 395,
+      "tag": "TextInput",
+      "placeholder": "\"Add meet bag item\"",
+      "multiline": false
+    },
+    {
+      "file": "components/meet-packet/AthleteMeetPacketV2.tsx",
+      "line": 409,
+      "tag": "TextInput",
+      "placeholder": "\"TBD\"",
+      "multiline": false
+    },
+    {
+      "file": "components/movement/GovernedAccessoryPickerModal.tsx",
+      "line": 346,
+      "tag": "TextInput",
+      "placeholder": "\"Search names, aliases, or taxonomy\"",
+      "multiline": false
+    },
+    {
+      "file": "components/movement/GovernedAccessoryPickerModal.tsx",
+      "line": 369,
+      "tag": "TextInput",
+      "placeholder": "\"Movement name\"",
+      "multiline": false
+    },
+    {
+      "file": "components/movement/GovernedAccessoryPickerModal.tsx",
+      "line": 373,
+      "tag": "TextInput",
+      "placeholder": "\"Optional notes\"",
+      "multiline": true
+    },
+    {
+      "file": "components/ui/sl-field.tsx",
+      "line": 22,
+      "tag": "TextInput",
+      "placeholder": null,
+      "multiline": true
+    },
+    {
+      "file": "components/ui/sl-text.tsx",
+      "line": 69,
+      "tag": "NativeTextInput",
+      "placeholder": null,
+      "multiline": false
+    },
+    {
+      "file": "components/workout-logger/completed-session-correction.tsx",
+      "line": 69,
+      "tag": "TextInput",
+      "placeholder": "\"Anything worth remembering?\"",
+      "multiline": true
+    },
+    {
+      "file": "components/workout-logger/completed-session-correction.tsx",
+      "line": 70,
+      "tag": "TextInput",
+      "placeholder": null,
+      "multiline": true
+    },
+    {
+      "file": "components/workout-logger/completed-session-correction.tsx",
+      "line": 72,
+      "tag": "TextInput",
+      "placeholder": null,
+      "multiline": false
+    },
+    {
+      "file": "components/workout-logger/logger-modals.tsx",
+      "line": 51,
+      "tag": "TextInput",
+      "placeholder": "\"Reason\"",
+      "multiline": true
+    },
+    {
+      "file": "components/workout-logger/readiness-modal.tsx",
+      "line": 275,
+      "tag": "TextInput",
+      "placeholder": "{unit === 'kg' ? '90.0' : '198.4'}",
+      "multiline": false
+    },
+    {
+      "file": "components/workout-logger/smart-warmup-sheet.tsx",
+      "line": 140,
+      "tag": "TextInput",
+      "placeholder": "\"0\"",
+      "multiline": false
+    }
+  ],
+  "containers": [
+    {
+      "file": "app/(tabs)/accessory-catalog-review.tsx",
+      "line": 333,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/accessory-catalog-review.tsx",
+      "line": 369,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/accessory-catalog-review.tsx",
+      "line": 384,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/accessory-catalog-review.tsx",
+      "line": 389,
+      "tag": "FlatList",
+      "transparent": false
+    },
+    {
+      "file": "app/(tabs)/athlete-dashboard.tsx",
+      "line": 1208,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/athlete-dashboard.tsx",
+      "line": 1293,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 1311,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 1888,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 2509,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/athlete-meet-plan.tsx",
+      "line": 2565,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/coach-calendar.tsx",
+      "line": 1146,
+      "tag": "FlatList",
+      "transparent": false
+    },
+    {
+      "file": "app/(tabs)/coach-calendar.tsx",
+      "line": 1820,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/coach-video-archive.tsx",
+      "line": 475,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/coach-video-review.tsx",
+      "line": 538,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/messages/[threadId].tsx",
+      "line": 691,
+      "tag": "FlatList",
+      "transparent": false
+    },
+    {
+      "file": "app/(tabs)/messages/announcements.tsx",
+      "line": 314,
+      "tag": "FlatList",
+      "transparent": false
+    },
+    {
+      "file": "app/(tabs)/messages/announcements.tsx",
+      "line": 610,
+      "tag": "FlatList",
+      "transparent": false
+    },
+    {
+      "file": "app/(tabs)/reflection.tsx",
+      "line": 527,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 1836,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 1992,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 2116,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 2219,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 2303,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 2410,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 2474,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 2516,
+      "tag": "FlatList",
+      "transparent": false
+    },
+    {
+      "file": "app/(tabs)/settings.tsx",
+      "line": 2543,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/video-archive.tsx",
+      "line": 512,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "line": 9096,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "line": 9199,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "line": 9293,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "line": 9579,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "line": 9656,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "line": 9953,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "line": 10231,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "line": 10331,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/[workoutId].tsx",
+      "line": 10376,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/index.tsx",
+      "line": 3092,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "app/(tabs)/workout/index.tsx",
+      "line": 5236,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/movement-history.tsx",
+      "line": 447,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/session-history.tsx",
+      "line": 287,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 1545,
+      "tag": "Modal",
+      "transparent": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 2450,
+      "tag": "Modal",
+      "transparent": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 2955,
+      "tag": "Modal",
+      "transparent": false
+    },
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "line": 3323,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "app/_layout.tsx",
+      "line": 147,
+      "tag": "Modal",
+      "transparent": false
+    },
+    {
+      "file": "app/movement-history-sheet.tsx",
+      "line": 37,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/MessageImageAttachment.tsx",
+      "line": 93,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "components/SetVideoPlayerModal.tsx",
+      "line": 901,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "line": 414,
+      "tag": "FlatList",
+      "transparent": false
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "line": 780,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "line": 965,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "line": 1014,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/calendar/AthleteCalendarStoryboardV2.tsx",
+      "line": 1034,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "components/calendar/CalendarEventSheet.tsx",
+      "line": 88,
+      "tag": "Modal",
+      "transparent": false
+    },
+    {
+      "file": "components/calendar/CalendarEventSheet.tsx",
+      "line": 423,
+      "tag": "Modal",
+      "transparent": false
+    },
+    {
+      "file": "components/calendar/TrainingScheduleSheet.tsx",
+      "line": 66,
+      "tag": "Modal",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/AthleteCoachingScratchpad.tsx",
+      "line": 148,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/CoachActivityHome.tsx",
+      "line": 728,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/coach-mobile/CoachActivityHome.tsx",
+      "line": 733,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/coach-mobile/CoachActivityHome.tsx",
+      "line": 742,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/coach-mobile/CoachAthleteHubSheet.tsx",
+      "line": 456,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/CoachAthleteHubSheet.tsx",
+      "line": 688,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/coach-mobile/CoachAthleteHubV2.tsx",
+      "line": 246,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/CoachAthleteHubV2.tsx",
+      "line": 247,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/CoachAthleteHubV2.tsx",
+      "line": 248,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/CoachAthleteHubV2.tsx",
+      "line": 249,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/CoachAthleteHubV2.tsx",
+      "line": 250,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/CoachCheckInsV2.tsx",
+      "line": 286,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/CoachCheckInsV2.tsx",
+      "line": 329,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/CoachHomeV2.tsx",
+      "line": 450,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/coach-mobile/CoachHomeV2.tsx",
+      "line": 489,
+      "tag": "FlatList",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/CoachHomeV2.tsx",
+      "line": 564,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/coach-mobile/CompletedSessionRecap.tsx",
+      "line": 1619,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/coach-mobile/FocusedSessionAuthoring.tsx",
+      "line": 28,
+      "tag": "Modal",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/ProgrammingReuseLibrary.tsx",
+      "line": 97,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/ProgrammingSessionMoveModal.tsx",
+      "line": 79,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/SessionEditingWorkspace.tsx",
+      "line": 837,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/SessionEditingWorkspace.tsx",
+      "line": 846,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/SessionEditingWorkspace.tsx",
+      "line": 974,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/SessionEditingWorkspace.tsx",
+      "line": 1168,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/SessionEditingWorkspace.tsx",
+      "line": 1207,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/SessionEditingWorkspace.tsx",
+      "line": 1519,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/athlete-workspace/CoachAthletePerformance.tsx",
+      "line": 180,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx",
+      "line": 178,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx",
+      "line": 194,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/keyboard/KeyboardSurface.tsx",
+      "line": 56,
+      "tag": "NativeModal",
+      "transparent": false
+    },
+    {
+      "file": "components/ledger/AchievementsExperience.tsx",
+      "line": 735,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/ledger/CompetitiveStandingCard.tsx",
+      "line": 65,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/ledger/JourneyExperience.tsx",
+      "line": 323,
+      "tag": "Modal",
+      "transparent": false
+    },
+    {
+      "file": "components/meet-packet/AthleteMeetPacketV2.tsx",
+      "line": 404,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/meet-packet/AthleteMeetPacketV2.tsx",
+      "line": 406,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/meet-packet/AthleteMeetPacketV2.tsx",
+      "line": 407,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/meet-packet/AthleteMeetPacketV2.tsx",
+      "line": 408,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/movement/GovernedAccessoryPickerModal.tsx",
+      "line": 336,
+      "tag": "Modal",
+      "transparent": false
+    },
+    {
+      "file": "components/movement-history/CanonicalMovementHistoryScreen.tsx",
+      "line": 462,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/movement-history/CanonicalMovementHistoryScreen.tsx",
+      "line": 594,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/movement-history/CanonicalMovementHistoryScreen.tsx",
+      "line": 606,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/navigation/CoachMoreNavigationSheet.tsx",
+      "line": 98,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/training-hub/AthleteBlockDetailsSheet.tsx",
+      "line": 157,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/training-hub/AthleteProgramTimeline.tsx",
+      "line": 519,
+      "tag": "FlatList",
+      "transparent": false
+    },
+    {
+      "file": "components/training-hub/AthleteTrainingHubExperience.tsx",
+      "line": 492,
+      "tag": "Modal",
+      "transparent": false
+    },
+    {
+      "file": "components/training-hub/TrainingHubSessionPreviewSheet.tsx",
+      "line": 146,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "components/ui/sl-compact-dropdown.tsx",
+      "line": 96,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "components/ui/sl-confirmation-modal.tsx",
+      "line": 36,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "components/volume-achievements/VolumeAchievementExperience.tsx",
+      "line": 369,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/workout-logger/approved-substitution-picker.tsx",
+      "line": 24,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/workout-logger/completed-session-correction.tsx",
+      "line": 62,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/workout-logger/final-session-completion-presenter.tsx",
+      "line": 22,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "components/workout-logger/logger-modals.tsx",
+      "line": 41,
+      "tag": "Modal",
+      "transparent": true
+    },
+    {
+      "file": "components/workout-logger/logger-modals.tsx",
+      "line": 241,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/workout-logger/readiness-modal.tsx",
+      "line": 214,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/workout-logger/session-v3-shell.tsx",
+      "line": 56,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    },
+    {
+      "file": "components/workout-logger/smart-warmup-sheet.tsx",
+      "line": 412,
+      "tag": "StrengthLedgerBottomSheet",
+      "transparent": false
+    },
+    {
+      "file": "components/workout-logger/substitution-confirmation-sheet.tsx",
+      "line": 86,
+      "tag": "StrengthLedgerSheetModalAdapter",
+      "transparent": true
+    }
+  ]
+}

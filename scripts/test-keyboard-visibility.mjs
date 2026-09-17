@@ -32,7 +32,7 @@ const react={createElement:(type,props,...children)=>({type,props:{...props,...(
  forwardRef:fn=>fn,useContext:c=>c.current,useRef:value=>({current:value}),useState:value=>[value,()=>{}],useCallback:fn=>fn,useMemo:fn=>fn(),useEffect:()=>{}};
 const style={create:x=>x,flatten:x=>Array.isArray(x)?Object.assign({},...x.filter(Boolean)):x};
 const mocks={react,'react-native':{StyleSheet:style,ScrollView:'NativeScroll',View:'View',Modal:'NativeModal',Keyboard:{dismiss(){}},useWindowDimensions:()=>({width:375,height:667})},
- '@/lib/keyboard-layout':geometry,'./keyboard-state':{useKeyboardState:()=>context},'react-native-safe-area-context':{useSafeAreaInsets:()=>({top:20,bottom:0})}};
+ '@/constants/theme':{SLColors:{canvas:'#020205'}},'@/lib/keyboard-layout':geometry,'./keyboard-state':{useKeyboardState:()=>context},'react-native-safe-area-context':{useSafeAreaInsets:()=>({top:20,bottom:0})}};
 const exports={};vm.runInNewContext(ts.transpileModule(read('components/keyboard/KeyboardSurface.tsx'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.React,esModuleInterop:true,target:ts.ScriptTarget.ES2022}}).outputText,{exports,require:name=>{assert.ok(name in mocks,name);return mocks[name];},requestAnimationFrame:fn=>{tasks.push(fn);return tasks.length;},cancelAnimationFrame:()=>{}});
 // Execute the measured native viewport ref callback as well as the geometry helper.
 const boundary = exports.KeyboardViewport({independent:true,children:'composer'},null);
@@ -42,6 +42,17 @@ measured.props.onLayout({});
 assert.equal(measured.props.children[0].props.style[1].paddingBottom,267);
 assert.equal(measured.props.children[0].props.children[0].props.value,400);
 assert.equal(measured.props.children[0].props.children[0].props.children[0].props.value,null,'native presentations cannot scroll an underlying form through inherited focus context');
+
+// Native modal defaults are white; exposed padding/corners must be owned before,
+// during and after keyboard visibility, without making translucent sheets opaque.
+for(const visible of [false,true,false])for(const transparent of [false,true]){
+ context.visible=visible;
+ const modal=exports.KeyboardModal({visible:true,transparent,children:'search-and-results'});
+ assert.equal(modal.props.backdropColor,'#020205','opaque native backing never falls through to RN white');
+ const boundaryStyle=style.flatten(modal.props.children[0].props.style);
+ assert.equal(boundaryStyle.backgroundColor,transparent?undefined:'#020205','opaque viewport paints its full bounds; transparent sheets retain underlying app');
+}
+context.visible=true;
 
 const scrolls=[];let callerScrolls=0,callerLayouts=0,callerSizes=0;const forwarded={current:null};
 const tree=exports.KeyboardScrollView({keyboardShouldPersistTaps:'always',contentContainerStyle:{paddingBottom:24},onScroll:()=>callerScrolls++,onLayout:()=>callerLayouts++,onContentSizeChange:()=>callerSizes++,children:'field'},forwarded);
@@ -61,6 +72,8 @@ for(const p of paths){if(p.startsWith('components/keyboard/'))continue;const sou
  assert.doesNotMatch(source,/keyboardVerticalOffset=|automaticallyAdjustKeyboardInsets/,'consumers cannot double-inset or guess header offsets');}
 const root=read('app/_layout.tsx');assert.match(root,/screenLayout=\{[^\n]*<KeyboardViewport independent>/);assert.match(root,/keyboardPath\.current !== pathname\) Keyboard.dismiss\(\)/);
 const text=read('components/ui/sl-text.tsx');for(const handler of ['onFocus','onBlur','onContentSizeChange','onSelectionChange'])assert.match(text,new RegExp(`props\\.${handler}\\?\\.`),'caller handlers preserved');assert.match(text,/scrollEnabled=\{props.multiline \? true/);
+assert.match(text,/keyboardAppearance=\{props.keyboardAppearance \?\? 'dark'\}/,'all shared inputs request native dark appearance while preserving explicit platform overrides');
+assert.match(read('components/AppShell.tsx'),/shell:\s*\{[^}]*backgroundColor: SLColors.canvas/,'scene resizing always reveals canonical app backing');
 const sheet=read('components/sheets/StrengthLedgerBottomSheet.tsx');assert.match(sheet,/flexShrink: 1, minHeight: 0, maxHeight: '100%'/);
 for(const p of ['components/ui/floating-control-coordinator.tsx','components/navigation/sl-tab-row-control.tsx'])assert.match(read(p),/if \(keyboard.visible\) return null/);
 console.log(`Keyboard visibility: ${cases.length} device/frame geometries; actual focus transitions, refs/events, multiline caps, modal/sheet/navigation ownership and ${paths.length} consumer import contracts PASS`);

@@ -11,6 +11,16 @@ An editable field and its essential actions must fit inside the keyboard-adjuste
 - The canonical `SLTextInput` reports focus, blur, text-size and selection changes to that owner. Multiline input grows within a bounded fraction of the available presentation and then scrolls internally. Caller handlers and native refs remain intact.
 - `KeyboardComposer` keeps the input, attachment and Send controls together. At rest it clears the actual floating dock and bottom safe area. While typing it uses a compact gap above the measured keyboard boundary.
 
+## Background ownership
+
+App-owned space exposed by keyboard movement always has the canonical `SLColors.canvas` backing. `AppShell` paints its full native bounds, in addition to owning the existing workspace background; route, scroll and list layers remain transparent to that owner.
+
+Opaque native modals are a separate presentation and cannot inherit the app shell's backing. React Native 0.81.5 defaults their container to white. `KeyboardModal` therefore supplies the canonical `backdropColor` and paints the entire independent viewport, including avoidance padding. The backing exists while the keyboard is closed, animating, open and dismissing; its color never depends on keyboard visibility or a guessed height. Transparent sheets retain their existing scrim over the app canvas and are not converted into opaque full-screen panels.
+
+All editable inputs use `SLTextInput`, which already requests `keyboardAppearance={props.keyboardAppearance ?? 'dark'}`. This is the native appearance hint and preserves explicit platform overrides. There is no manual keyboard recoloring, new native dependency, fixed-height spacer or second inset owner.
+
+The September 16 background correction and native transition evidence are recorded in [keyboard background validation](validation/keyboard-background-2026-09-16/README.md).
+
 ## Sheets and navigation
 
 The existing `StrengthLedgerBottomSheet` remains the sheet/gesture owner. Its height is clamped to the available presentation; safe-area bottom padding is removed while the keyboard already occupies that edge. Keyboard-driven Android window resizing does not replay the sheet's entrance animation. The deliberate top-only dismissal region, thresholds and close guards are unchanged.

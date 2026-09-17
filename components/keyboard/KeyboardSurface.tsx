@@ -4,6 +4,7 @@ import { Keyboard, Modal as NativeModal, ScrollView as NativeScrollView, StyleSh
 import { focusedFieldScrollDelta, keyboardOverlap, type WindowRect } from '@/lib/keyboard-layout';
 import { useKeyboardState } from './keyboard-state';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SLColors } from '@/constants/theme';
 
 const ViewportContext = createContext<number | null>(null);
 export function useKeyboardViewportHeight() { return useContext(ViewportContext); }
@@ -49,9 +50,12 @@ export function KeyboardModal({ children, onRequestClose, onDismiss, visible, ..
     if (previouslyVisible.current && visible === false) Keyboard.dismiss();
     previouslyVisible.current = visible !== false;
   }, [visible]);
-  return <NativeModal {...props} visible={visible} onRequestClose={event => { Keyboard.dismiss(); onRequestClose?.(event); }}
+  // Opaque native modals default to white. Their backdrop must cover the entire
+  // presentation, including avoidance padding and the keyboard's rounded corners.
+  // Transparent sheets keep their existing backdrop over the app's canvas.
+  return <NativeModal {...props} backdropColor={SLColors.canvas} visible={visible} onRequestClose={event => { Keyboard.dismiss(); onRequestClose?.(event); }}
     onDismiss={onDismiss}>
-    <KeyboardViewport independent style={styles.viewport}>
+    <KeyboardViewport independent style={[styles.viewport, !props.transparent && styles.opaqueCanvas]}>
       <View style={[styles.viewport, props.transparent && keyboard.visible ? { paddingTop: insets.top } : null]}>{children}</View>
     </KeyboardViewport>
   </NativeModal>;
@@ -114,4 +118,7 @@ export const KeyboardScrollView = forwardRef<NativeScrollView, ScrollViewProps &
 
 // Retain the native instance type for existing imperative refs.
 export type KeyboardScrollView = NativeScrollView;
-const styles = StyleSheet.create({ viewport: { flex: 1, minHeight: 0 } });
+const styles = StyleSheet.create({
+  viewport: { flex: 1, minHeight: 0 },
+  opaqueCanvas: { backgroundColor: SLColors.canvas },
+});
