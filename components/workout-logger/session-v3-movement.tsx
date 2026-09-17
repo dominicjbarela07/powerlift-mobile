@@ -1,6 +1,6 @@
 import { approvedArtRuntimeEnabled } from '@/lib/approved-art-runtime';
-import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Pressable, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@/components/ui/sl-text';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
@@ -23,6 +23,16 @@ export function SessionV3Movement({ title, index, expanded, complete, prescripti
   history?: React.ReactNode; timeline?: React.ReactNode; onOpen: () => void;
 }) {
   const { hero, thumbnailPresentation } = resolveMovementArtworkPresentation(visual?.movementArtworkInput, expanded, complete, 'session-v3-movement');
+  const [artworkEnd, setArtworkEnd] = useState(0);
+  // The first detail row is the visual endpoint: manufacturer for machines,
+  // history/picker context for other lifts. Its measured middle puts the end
+  // of the fade at the line while the visible photograph recedes just above it.
+  const onArtworkBoundaryLayout = useCallback((event: LayoutChangeEvent) => {
+    const { y, height } = event.nativeEvent.layout;
+    // Expanded history must not pull the photograph down through its records.
+    const end = y + Math.min(height / 2, 52);
+    setArtworkEnd(previous => Math.abs(previous - end) < .5 ? previous : end);
+  }, []);
   if (!expanded) return <Pressable accessibilityRole="button" accessibilityLabel={`Expand ${title}`} onPress={onOpen} style={({ pressed }) => [s.row, pressed && s.pressed]}>
     <Text style={[s.index, complete && s.success]}>{complete ? '✓' : String(index).padStart(2, '0')}</Text>
     <CanonicalMovementArtwork surface="session-v3-movement" requireHumanApproval movement={visual?.movementArtworkInput} accessoryPresentation={thumbnailPresentation} size={approvedArtRuntimeEnabled() ? 64 : 42} />
@@ -35,8 +45,10 @@ export function SessionV3Movement({ title, index, expanded, complete, prescripti
   const loadParts = load.match(/^(.*?)\s*(kg|lb)$/i);
   const progress = prior || visual?.progress;
   return <View style={s.workspace}>
+    {hero ? <View pointerEvents="none" style={[s.artworkStage, { height: Math.max(0, artworkEnd - 8) }]}>
+      <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} movementDefinitionId={hero.movement_definition_id} reduceMotion={reduceMotion} />
+    </View> : null}
     <View style={s.activeHeader}>
-    {hero ? <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} movementDefinitionId={hero.movement_definition_id} reduceMotion={reduceMotion} /> : null}
     <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen} style={s.heading}>
       <CanonicalMovementArtwork surface="session-v3-movement" requireHumanApproval movement={visual?.movementArtworkInput} accessoryPresentation="muscle-focus" size={approvedArtRuntimeEnabled() ? 68 : 48} />
       <View style={s.copy}><Text numberOfLines={0} style={s.title}>{title}</Text><Text style={s.eyebrow}>{complete ? 'MOVEMENT COMPLETE' : focus?.currentSetPositionLabel || prescription}</Text></View>
@@ -58,13 +70,15 @@ export function SessionV3Movement({ title, index, expanded, complete, prescripti
       {visual?.physicalSetup ? <Text style={s.setup}>{visual.physicalSetup}</Text> : null}
     </> : null}
     </View>
-    {equipment}
+    {equipment ? <View onLayout={onArtworkBoundaryLayout}>{equipment}</View> : null}
     {note ? <Text style={s.note}>{note}</Text> : null}
+    <View onLayout={!equipment ? onArtworkBoundaryLayout : undefined}>
     {history || (progress ? <Pressable accessibilityRole="button" accessibilityLabel={`View ${title} movement history`} onPress={focus?.onViewHistory} style={s.evidence}>
       <View style={s.evidenceHeader}><Text style={s.evidenceLabel}>{prior?.kind === 'last_best' ? 'LAST COMPARABLE' : progress.eyebrow}</Text><Text style={s.detail}>{progress.supporting}</Text></View>
       <Text style={s.evidenceValue}>{progress.primary}</Text>
       <Text style={s.historyLink}>Movement history ↗</Text>
     </Pressable> : focus?.onViewHistory ? <Pressable onPress={focus.onViewHistory} accessibilityRole="button" style={s.emptyHistory}><Text style={s.historyLink}>Movement history ↗</Text></Pressable> : null)}
+    </View>
     <View style={s.tools}>{actions}</View>
     {timeline}
     {warmup}
@@ -77,6 +91,7 @@ const s = StyleSheet.create({
   copy: { flex: 1, minWidth: 0 }, rowTitle: { color: '#f8f6fb', fontFamily: SLFontFamilies.sansSemiBold, fontSize: 16 },
   detail: { color: '#b7b0c2', fontSize: 12, lineHeight: 17, marginTop: 3 },
   activeHeader: { position: 'relative' },
+  artworkStage: { position: 'absolute', top: 8, left: 0, right: 0 },
   workspace: { paddingVertical: 8 }, heading: { flexDirection: 'row', gap: 12, alignItems: 'center', paddingVertical: 8 },
   title: { color: '#faf7ff', fontFamily: SLFontFamilies.sansBold, fontSize: 26, lineHeight: 31 },
   eyebrow: { color: '#b391ec', fontFamily: SLFontFamilies.sansBold, fontSize: 10, letterSpacing: 1.2, marginTop: 7 },
