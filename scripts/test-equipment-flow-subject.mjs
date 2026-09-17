@@ -40,7 +40,7 @@ assert.throws(()=>equipmentFlowSubject(make(1,identity(3,'curl','Machine Curl','
 assert.throws(()=>equipmentFlowSubject({...a,performed_canonical_movement_identity:null}),'incomplete old substitution cannot be overwritten by equipment');
 assert.ok(equipmentFlowVariants(equipmentFlowSubject(b)).every(row=>row.label.endsWith('Cable Station')));
 for(const [equipment,allowed] of [['plate_loaded_machine','plate_loaded'],['selectorized_machine','selectorized']]) {
- const subject=equipmentFlowSubject(make(1,identity(41,equipment,equipment,equipment)));
+ const subject=equipmentFlowSubject(make(1,identity(70041,equipment,equipment,equipment)));
  assert.deepEqual(subject.allowedTypes,[allowed]);
  assert.throws(()=>equipmentFlowWrite(subject,'prime',allowed==='selectorized'?'plate_loaded':'selectorized'));
 }

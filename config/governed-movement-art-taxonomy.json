@@ -5,6 +5,7 @@
     {
       "id": 1,
       "key": "competition_squat",
+      "display_name": "Competition Squat",
       "kind": "core",
       "family": "squat",
       "primary_muscle_group": null,
@@ -16,6 +17,7 @@
     {
       "id": 2,
       "key": "competition_bench",
+      "display_name": "Competition Bench",
       "kind": "core",
       "family": "bench",
       "primary_muscle_group": null,
@@ -27,6 +29,7 @@
     {
       "id": 3,
       "key": "competition_deadlift",
+      "display_name": "Competition Deadlift",
       "kind": "core",
       "family": "deadlift",
       "primary_muscle_group": null,
@@ -38,10 +41,15 @@
     {
       "id": 4,
       "key": "barbell_row",
+      "display_name": "Barbell Row",
       "kind": "accessory",
       "family": "horizontal_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
       "equipment_type": "barbell",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -49,10 +57,15 @@
     {
       "id": 5,
       "key": "single_arm_dumbbell_row",
+      "display_name": "Single-Arm Dumbbell Row",
       "kind": "accessory",
       "family": "horizontal_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
       "equipment_type": "dumbbell",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -60,10 +73,14 @@
     {
       "id": 6,
       "key": "incline_barbell_press",
+      "display_name": "Incline Barbell Press",
       "kind": "accessory",
       "family": "horizontal_push",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
       "equipment_type": "barbell",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -71,10 +88,14 @@
     {
       "id": 7,
       "key": "incline_dumbbell_press",
+      "display_name": "Incline Dumbbell Press",
       "kind": "accessory",
       "family": "horizontal_push",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
       "equipment_type": "dumbbell",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -82,39 +103,23 @@
     {
       "id": 8,
       "key": "cable_row",
+      "display_name": "Cable Row",
       "kind": "accessory",
       "family": "horizontal_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
       "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 9,
-      "key": "selectorized_machine_row",
-      "kind": "accessory",
-      "family": "horizontal_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
-      "equipment_type": "selectorized_machine",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 10,
-      "key": "plate_loaded_machine_row",
-      "kind": "accessory",
-      "family": "horizontal_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
-      "equipment_type": "plate_loaded_machine",
       "core_movement_definition_id": null,
       "core_kind": null
     },
     {
       "id": 11,
       "key": "pull_up_bodyweight",
+      "display_name": "Pull-Up",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -129,6 +134,7 @@
     {
       "id": 12,
       "key": "pull_up_added_weight",
+      "display_name": "Weighted Pull-Up",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -143,6 +149,7 @@
     {
       "id": 13,
       "key": "pull_up_assisted",
+      "display_name": "Assisted Pull-Up",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -157,10 +164,13 @@
     {
       "id": 14,
       "key": "plank_duration",
+      "display_name": "Plank",
       "kind": "accessory",
       "family": "trunk",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "obliques"
+      ],
       "equipment_type": "bodyweight",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -168,6 +178,7 @@
     {
       "id": 15,
       "key": "machine_lat_pulldown_broad",
+      "display_name": "Machine Lat Pulldown",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -182,10 +193,14 @@
     {
       "id": 20,
       "key": "cable_lat_pulldown_unknown",
+      "display_name": "Cable Lat Pulldown",
       "kind": "accessory",
       "family": "vertical_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
       "equipment_type": "cable",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -193,10 +208,14 @@
     {
       "id": 21,
       "key": "unknown_machine_lat_pulldown",
+      "display_name": "Unknown Machine Lat Pulldown",
       "kind": "accessory",
       "family": "vertical_pull",
-      "primary_muscle_group": null,
-      "secondary_muscle_groups": [],
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
       "equipment_type": "machine",
       "core_movement_definition_id": null,
       "core_kind": null
@@ -204,6 +223,7 @@
     {
       "id": 32,
       "key": "accessory_flat_dumbbell_bench_press",
+      "display_name": "Flat Dumbbell Bench Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -218,6 +238,7 @@
     {
       "id": 33,
       "key": "accessory_incline_dumbbell_bench_press",
+      "display_name": "Incline Dumbbell Bench Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -232,6 +253,7 @@
     {
       "id": 34,
       "key": "accessory_decline_dumbbell_bench_press",
+      "display_name": "Decline Dumbbell Bench Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -246,6 +268,7 @@
     {
       "id": 35,
       "key": "accessory_neutral_grip_dumbbell_bench_press",
+      "display_name": "Neutral-Grip Dumbbell Bench Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -260,6 +283,7 @@
     {
       "id": 36,
       "key": "accessory_dumbbell_floor_press",
+      "display_name": "Dumbbell Floor Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -274,6 +298,7 @@
     {
       "id": 37,
       "key": "accessory_dumbbell_squeeze_press",
+      "display_name": "Dumbbell Squeeze Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -288,6 +313,7 @@
     {
       "id": 39,
       "key": "accessory_dumbbell_flye",
+      "display_name": "Dumbbell Fly",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -302,6 +328,7 @@
     {
       "id": 40,
       "key": "accessory_incline_dumbbell_flye",
+      "display_name": "Incline Dumbbell Fly",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -316,6 +343,7 @@
     {
       "id": 41,
       "key": "accessory_decline_dumbbell_flye",
+      "display_name": "Decline Dumbbell Flys",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -330,6 +358,7 @@
     {
       "id": 42,
       "key": "accessory_barbell_floor_press",
+      "display_name": "Barbell Floor Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -344,6 +373,7 @@
     {
       "id": 43,
       "key": "accessory_spoto_press",
+      "display_name": "Spoto Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -358,6 +388,7 @@
     {
       "id": 44,
       "key": "accessory_larsen_press",
+      "display_name": "Larsen Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -372,6 +403,7 @@
     {
       "id": 45,
       "key": "accessory_guillotine_press",
+      "display_name": "Guillotine Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -386,6 +418,7 @@
     {
       "id": 46,
       "key": "accessory_reverse_grip_bench_press",
+      "display_name": "Reverse-Grip Bench Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -400,6 +433,7 @@
     {
       "id": 47,
       "key": "accessory_cambered_bar_bench_press",
+      "display_name": "Cambered-Bar Bench Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -414,6 +448,7 @@
     {
       "id": 48,
       "key": "accessory_machine_chest_press",
+      "display_name": "Machine Chest Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -428,6 +463,7 @@
     {
       "id": 49,
       "key": "accessory_incline_machine_chest_press",
+      "display_name": "Incline Machine Chest Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -442,6 +478,7 @@
     {
       "id": 50,
       "key": "accessory_decline_machine_chest_press",
+      "display_name": "Decline Machine Chest Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -456,6 +493,7 @@
     {
       "id": 51,
       "key": "accessory_machine_chest_flye",
+      "display_name": "Machine Chest Fly",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -470,6 +508,7 @@
     {
       "id": 52,
       "key": "accessory_pec_deck",
+      "display_name": "Pec Deck",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -484,6 +523,7 @@
     {
       "id": 53,
       "key": "accessory_converging_chest_press",
+      "display_name": "Converging Chest Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -498,6 +538,7 @@
     {
       "id": 54,
       "key": "accessory_iso_lateral_chest_press",
+      "display_name": "Iso-Lateral Chest Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -512,6 +553,7 @@
     {
       "id": 55,
       "key": "accessory_single_arm_machine_chest_press",
+      "display_name": "Single-Arm Machine Chest Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -526,6 +568,7 @@
     {
       "id": 56,
       "key": "accessory_smith_machine_bench_press",
+      "display_name": "Smith-Machine Bench Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -540,6 +583,7 @@
     {
       "id": 57,
       "key": "accessory_incline_smith_machine_bench_press",
+      "display_name": "Incline Smith-Machine Bench Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -554,6 +598,7 @@
     {
       "id": 58,
       "key": "accessory_decline_smith_machine_bench_press",
+      "display_name": "Decline Smith-Machine Bench Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -568,6 +613,7 @@
     {
       "id": 59,
       "key": "accessory_standing_cable_chest_press",
+      "display_name": "Standing Cable Chest Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -581,6 +627,7 @@
     {
       "id": 60,
       "key": "accessory_single_arm_cable_chest_press",
+      "display_name": "Single-Arm Cable Chest Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -594,6 +641,7 @@
     {
       "id": 61,
       "key": "accessory_cable_chest_flye",
+      "display_name": "Cable Chest Fly",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -607,6 +655,7 @@
     {
       "id": 62,
       "key": "accessory_low_to_high_cable_flye",
+      "display_name": "Low-to-High Cable Fly",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -620,19 +669,7 @@
     {
       "id": 63,
       "key": "accessory_high_to_low_cable_flye",
-      "kind": "accessory",
-      "family": "accessory_chest",
-      "primary_muscle_group": "chest",
-      "secondary_muscle_groups": [
-        "front_delts"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 64,
-      "key": "accessory_mid_cable_flye",
+      "display_name": "High-to-Low Cable Fly",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -646,6 +683,7 @@
     {
       "id": 65,
       "key": "accessory_single_arm_cable_flye",
+      "display_name": "Single-Arm Cable Fly",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -659,6 +697,7 @@
     {
       "id": 66,
       "key": "accessory_cable_squeeze_press",
+      "display_name": "Cable Squeeze Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -672,6 +711,7 @@
     {
       "id": 67,
       "key": "accessory_push_up",
+      "display_name": "Push-Up",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -686,6 +726,7 @@
     {
       "id": 68,
       "key": "accessory_deficit_push_up",
+      "display_name": "Deficit Push-Up",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -700,6 +741,7 @@
     {
       "id": 69,
       "key": "accessory_ring_push_up",
+      "display_name": "Ring Push-Up",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -714,6 +756,7 @@
     {
       "id": 70,
       "key": "accessory_wide_grip_push_up",
+      "display_name": "Wide-Grip Push-Up",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -728,6 +771,7 @@
     {
       "id": 71,
       "key": "accessory_decline_push_up",
+      "display_name": "Decline Push-Up",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -742,6 +786,7 @@
     {
       "id": 72,
       "key": "accessory_incline_push_up",
+      "display_name": "Incline Push-Up",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -756,6 +801,7 @@
     {
       "id": 73,
       "key": "accessory_weighted_push_up",
+      "display_name": "Weighted Push-Up",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -770,6 +816,7 @@
     {
       "id": 74,
       "key": "accessory_chest_dip",
+      "display_name": "Chest Dip",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -784,6 +831,7 @@
     {
       "id": 75,
       "key": "accessory_ring_dip",
+      "display_name": "Ring Dip",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -798,6 +846,7 @@
     {
       "id": 76,
       "key": "accessory_band_chest_press",
+      "display_name": "Band Chest Press",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -811,6 +860,7 @@
     {
       "id": 77,
       "key": "accessory_band_chest_flye",
+      "display_name": "Band Chest Fly",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -824,6 +874,7 @@
     {
       "id": 78,
       "key": "accessory_band_push_up",
+      "display_name": "Band Push-Up",
       "kind": "accessory",
       "family": "accessory_chest",
       "primary_muscle_group": "chest",
@@ -837,6 +888,7 @@
     {
       "id": 79,
       "key": "accessory_seated_dumbbell_shoulder_press",
+      "display_name": "Seated Dumbbell Shoulder Press",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -851,6 +903,7 @@
     {
       "id": 80,
       "key": "accessory_standing_dumbbell_shoulder_press",
+      "display_name": "Standing Dumbbell Shoulder Press",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -865,6 +918,7 @@
     {
       "id": 81,
       "key": "accessory_arnold_press",
+      "display_name": "Arnold Press",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -879,6 +933,7 @@
     {
       "id": 82,
       "key": "accessory_dumbbell_front_raise",
+      "display_name": "Dumbbell Front Raise",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -893,6 +948,7 @@
     {
       "id": 83,
       "key": "accessory_alternating_dumbbell_front_raise",
+      "display_name": "Alternating Dumbbell Front Raise",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -907,6 +963,7 @@
     {
       "id": 84,
       "key": "accessory_plate_front_raise",
+      "display_name": "Plate Front Raise",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -921,6 +978,7 @@
     {
       "id": 85,
       "key": "accessory_barbell_front_raise",
+      "display_name": "Barbell Front Raise",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -935,6 +993,7 @@
     {
       "id": 86,
       "key": "accessory_landmine_press",
+      "display_name": "Landmine Press",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -949,6 +1008,7 @@
     {
       "id": 87,
       "key": "accessory_half_kneeling_landmine_press",
+      "display_name": "Half-Kneeling Landmine Press",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -963,6 +1023,7 @@
     {
       "id": 88,
       "key": "accessory_single_arm_landmine_press",
+      "display_name": "Single-Arm Landmine Press",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -977,6 +1038,7 @@
     {
       "id": 89,
       "key": "accessory_z_press",
+      "display_name": "Z Press",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -991,6 +1053,7 @@
     {
       "id": 90,
       "key": "accessory_bradford_press",
+      "display_name": "Bradford Press",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -1005,6 +1068,7 @@
     {
       "id": 91,
       "key": "accessory_machine_shoulder_press",
+      "display_name": "Machine Shoulder Press",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -1019,6 +1083,7 @@
     {
       "id": 92,
       "key": "accessory_iso_lateral_shoulder_press",
+      "display_name": "Iso-Lateral Shoulder Press",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -1033,6 +1098,7 @@
     {
       "id": 93,
       "key": "accessory_smith_machine_shoulder_press",
+      "display_name": "Smith-Machine Shoulder Press",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -1047,6 +1113,7 @@
     {
       "id": 94,
       "key": "accessory_machine_front_raise",
+      "display_name": "Machine Front Raise",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -1061,6 +1128,7 @@
     {
       "id": 95,
       "key": "accessory_cable_front_raise",
+      "display_name": "Cable Front Raise",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -1075,34 +1143,7 @@
     {
       "id": 96,
       "key": "accessory_single_arm_cable_front_raise",
-      "kind": "accessory",
-      "family": "accessory_front_delts",
-      "primary_muscle_group": "front_delts",
-      "secondary_muscle_groups": [
-        "side_delts",
-        "triceps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 97,
-      "key": "accessory_cable_shoulder_press",
-      "kind": "accessory",
-      "family": "accessory_front_delts",
-      "primary_muscle_group": "front_delts",
-      "secondary_muscle_groups": [
-        "side_delts",
-        "triceps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 98,
-      "key": "accessory_single_arm_cable_shoulder_press",
+      "display_name": "Single-Arm Cable Front Raise",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -1117,6 +1158,7 @@
     {
       "id": 99,
       "key": "accessory_band_front_raise",
+      "display_name": "Band Front Raise",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -1130,6 +1172,7 @@
     {
       "id": 100,
       "key": "accessory_band_shoulder_press",
+      "display_name": "Band Shoulder Press",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -1143,6 +1186,7 @@
     {
       "id": 101,
       "key": "accessory_pike_push_up",
+      "display_name": "Pike Push-Up",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -1157,6 +1201,7 @@
     {
       "id": 102,
       "key": "accessory_handstand_push_up",
+      "display_name": "Handstand Push-Up",
       "kind": "accessory",
       "family": "accessory_front_delts",
       "primary_muscle_group": "front_delts",
@@ -1171,6 +1216,7 @@
     {
       "id": 103,
       "key": "accessory_dumbbell_lateral_raise",
+      "display_name": "Dumbbell Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1185,6 +1231,7 @@
     {
       "id": 104,
       "key": "accessory_seated_dumbbell_lateral_raise",
+      "display_name": "Seated Dumbbell Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1199,6 +1246,7 @@
     {
       "id": 105,
       "key": "accessory_incline_dumbbell_lateral_raise",
+      "display_name": "Incline Dumbbell Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1213,6 +1261,7 @@
     {
       "id": 106,
       "key": "accessory_lean_away_dumbbell_lateral_raise",
+      "display_name": "Lean-Away Dumbbell Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1227,6 +1276,7 @@
     {
       "id": 107,
       "key": "accessory_lying_dumbbell_lateral_raise",
+      "display_name": "Lying Dumbbell Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1241,6 +1291,7 @@
     {
       "id": 108,
       "key": "accessory_chest_supported_dumbbell_lateral_raise",
+      "display_name": "Chest-Supported Dumbbell Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1255,6 +1306,7 @@
     {
       "id": 109,
       "key": "accessory_partial_dumbbell_lateral_raise",
+      "display_name": "Partial Dumbbell Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1269,6 +1321,7 @@
     {
       "id": 110,
       "key": "accessory_lu_raise",
+      "display_name": "Lu Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1283,6 +1336,7 @@
     {
       "id": 111,
       "key": "accessory_dumbbell_upright_row",
+      "display_name": "Dumbbell Upright Row",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1297,6 +1351,7 @@
     {
       "id": 112,
       "key": "accessory_wide_grip_barbell_upright_row",
+      "display_name": "Wide-Grip Barbell Upright Row",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1311,6 +1366,7 @@
     {
       "id": 113,
       "key": "accessory_cable_lateral_raise",
+      "display_name": "Cable Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1325,6 +1381,7 @@
     {
       "id": 114,
       "key": "accessory_single_arm_cable_lateral_raise",
+      "display_name": "Single-Arm Cable Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1339,6 +1396,7 @@
     {
       "id": 115,
       "key": "accessory_lean_away_cable_lateral_raise",
+      "display_name": "Lean-Away Cable Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1353,20 +1411,7 @@
     {
       "id": 116,
       "key": "accessory_behind_the_back_cable_lateral_raise",
-      "kind": "accessory",
-      "family": "accessory_side_delts",
-      "primary_muscle_group": "side_delts",
-      "secondary_muscle_groups": [
-        "front_delts",
-        "traps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 117,
-      "key": "accessory_cuffed_cable_lateral_raise",
+      "display_name": "Behind-the-Back Cable Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1381,6 +1426,7 @@
     {
       "id": 118,
       "key": "accessory_single_arm_cable_y_raise",
+      "display_name": "Single-Arm Cable Y-Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1395,6 +1441,7 @@
     {
       "id": 119,
       "key": "accessory_dual_cable_y_raise",
+      "display_name": "Dual Cable Y-Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1409,6 +1456,7 @@
     {
       "id": 120,
       "key": "accessory_cable_upright_row",
+      "display_name": "Cable Upright Row",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1423,6 +1471,7 @@
     {
       "id": 121,
       "key": "accessory_machine_lateral_raise",
+      "display_name": "Machine Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1436,6 +1485,7 @@
     {
       "id": 122,
       "key": "accessory_machine_y_raise",
+      "display_name": "Machine Y-Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1449,6 +1499,7 @@
     {
       "id": 123,
       "key": "accessory_band_lateral_raise",
+      "display_name": "Band Lateral Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1462,6 +1513,7 @@
     {
       "id": 124,
       "key": "accessory_band_y_raise",
+      "display_name": "Band Y-Raise",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1475,6 +1527,7 @@
     {
       "id": 125,
       "key": "accessory_band_upright_row",
+      "display_name": "Band Upright Row",
       "kind": "accessory",
       "family": "accessory_side_delts",
       "primary_muscle_group": "side_delts",
@@ -1488,6 +1541,7 @@
     {
       "id": 126,
       "key": "accessory_bent_over_dumbbell_reverse_flye",
+      "display_name": "Bent-Over Dumbbell Reverse Fly",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1501,6 +1555,7 @@
     {
       "id": 127,
       "key": "accessory_chest_supported_dumbbell_reverse_flye",
+      "display_name": "Chest-Supported Dumbbell Reverse Fly",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1514,6 +1569,7 @@
     {
       "id": 128,
       "key": "accessory_incline_bench_rear_delt_flye",
+      "display_name": "Incline-Bench Rear-Delt Fly",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1527,6 +1583,7 @@
     {
       "id": 129,
       "key": "accessory_rear_delt_dumbbell_row",
+      "display_name": "Rear-Delt Dumbbell Row",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1540,6 +1597,7 @@
     {
       "id": 130,
       "key": "accessory_wide_elbow_dumbbell_row",
+      "display_name": "Wide-Elbow Dumbbell Row",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1553,6 +1611,7 @@
     {
       "id": 131,
       "key": "accessory_rear_delt_barbell_row",
+      "display_name": "Rear-Delt Barbell Row",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1566,6 +1625,7 @@
     {
       "id": 132,
       "key": "accessory_wide_grip_chest_supported_rear_delt_row",
+      "display_name": "Wide-Grip Chest-Supported Rear-Delt Row",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1579,6 +1639,7 @@
     {
       "id": 133,
       "key": "accessory_prone_rear_delt_swing",
+      "display_name": "Prone Rear-Delt Swing",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1592,6 +1653,7 @@
     {
       "id": 134,
       "key": "accessory_reverse_pec_deck",
+      "display_name": "Reverse Pec Deck",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1605,6 +1667,7 @@
     {
       "id": 135,
       "key": "accessory_machine_reverse_flye",
+      "display_name": "Machine Reverse Fly",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1618,6 +1681,7 @@
     {
       "id": 136,
       "key": "accessory_rear_delt_row_machine",
+      "display_name": "Rear-Delt Row Machine",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1631,6 +1695,7 @@
     {
       "id": 137,
       "key": "accessory_chest_supported_rear_delt_machine_row",
+      "display_name": "Chest-Supported Rear-Delt Machine Row",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1644,6 +1709,7 @@
     {
       "id": 138,
       "key": "accessory_cable_reverse_flye",
+      "display_name": "Cable Reverse Fly",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1658,6 +1724,7 @@
     {
       "id": 139,
       "key": "accessory_single_arm_cable_reverse_flye",
+      "display_name": "Single-Arm Cable Reverse Fly",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1672,34 +1739,7 @@
     {
       "id": 140,
       "key": "accessory_cross_body_cable_rear_delt_flye",
-      "kind": "accessory",
-      "family": "accessory_rear_delts",
-      "primary_muscle_group": "rear_delts",
-      "secondary_muscle_groups": [
-        "upper_back",
-        "traps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 141,
-      "key": "accessory_cable_rear_delt_row",
-      "kind": "accessory",
-      "family": "accessory_rear_delts",
-      "primary_muscle_group": "rear_delts",
-      "secondary_muscle_groups": [
-        "upper_back",
-        "traps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 142,
-      "key": "accessory_high_cable_rear_delt_row",
+      "display_name": "Cross-Body Cable Rear-Delt Fly",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1714,20 +1754,7 @@
     {
       "id": 143,
       "key": "accessory_cable_face_pull",
-      "kind": "accessory",
-      "family": "accessory_rear_delts",
-      "primary_muscle_group": "rear_delts",
-      "secondary_muscle_groups": [
-        "upper_back",
-        "traps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 144,
-      "key": "accessory_rope_face_pull",
+      "display_name": "Cable Face Pull",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1742,6 +1769,7 @@
     {
       "id": 145,
       "key": "accessory_rope_face_pull_with_external_rotation",
+      "display_name": "Cable Face Pull with External Rotation",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1756,6 +1784,7 @@
     {
       "id": 146,
       "key": "accessory_band_pull_apart",
+      "display_name": "Band Pull-Apart",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1769,6 +1798,7 @@
     {
       "id": 147,
       "key": "accessory_band_reverse_flye",
+      "display_name": "Band Reverse Fly",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1782,6 +1812,7 @@
     {
       "id": 148,
       "key": "accessory_band_face_pull",
+      "display_name": "Band Face Pull",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1795,6 +1826,7 @@
     {
       "id": 149,
       "key": "accessory_band_w_raise",
+      "display_name": "Band W-Raise",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1808,6 +1840,7 @@
     {
       "id": 150,
       "key": "accessory_dumbbell_archer_row",
+      "display_name": "Dumbbell Archer Row",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1822,6 +1855,7 @@
     {
       "id": 151,
       "key": "accessory_cable_archer_row",
+      "display_name": "Cable Archer Row",
       "kind": "accessory",
       "family": "accessory_rear_delts",
       "primary_muscle_group": "rear_delts",
@@ -1836,6 +1870,7 @@
     {
       "id": 153,
       "key": "accessory_meadows_row",
+      "display_name": "Meadows Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -1850,6 +1885,7 @@
     {
       "id": 154,
       "key": "accessory_one_arm_dumbbell_row",
+      "display_name": "One-Arm Dumbbell Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -1864,6 +1900,7 @@
     {
       "id": 155,
       "key": "accessory_dumbbell_pullover",
+      "display_name": "Dumbbell Pullover",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -1878,6 +1915,7 @@
     {
       "id": 156,
       "key": "accessory_barbell_pullover",
+      "display_name": "Barbell Pullover",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -1892,6 +1930,7 @@
     {
       "id": 157,
       "key": "accessory_kroc_row",
+      "display_name": "Kroc Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -1906,6 +1945,7 @@
     {
       "id": 158,
       "key": "accessory_three_point_dumbbell_row",
+      "display_name": "Three-Point Dumbbell Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -1920,6 +1960,7 @@
     {
       "id": 159,
       "key": "accessory_landmine_row",
+      "display_name": "Landmine Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -1934,6 +1975,7 @@
     {
       "id": 160,
       "key": "accessory_one_arm_landmine_row",
+      "display_name": "One-Arm Landmine Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -1948,6 +1990,7 @@
     {
       "id": 161,
       "key": "accessory_lat_biased_dumbbell_row",
+      "display_name": "Lat-Biased Dumbbell Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -1962,6 +2005,7 @@
     {
       "id": 162,
       "key": "accessory_lat_biased_chest_supported_dumbbell_row",
+      "display_name": "Lat-Biased Chest-Supported Dumbbell Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -1976,6 +2020,7 @@
     {
       "id": 163,
       "key": "accessory_wide_grip_lat_pulldown",
+      "display_name": "Wide-Grip Lat Pulldown",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -1990,6 +2035,7 @@
     {
       "id": 164,
       "key": "accessory_neutral_grip_lat_pulldown",
+      "display_name": "Neutral-Grip Lat Pulldown",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2004,6 +2050,7 @@
     {
       "id": 165,
       "key": "accessory_close_grip_lat_pulldown",
+      "display_name": "Close-Grip Lat Pulldown",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2018,6 +2065,7 @@
     {
       "id": 166,
       "key": "accessory_supinated_grip_lat_pulldown",
+      "display_name": "Supinated-Grip Lat Pulldown",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2032,6 +2080,7 @@
     {
       "id": 167,
       "key": "accessory_single_arm_lat_pulldown",
+      "display_name": "Single-Arm Lat Pulldown",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2046,20 +2095,7 @@
     {
       "id": 168,
       "key": "accessory_half_kneeling_single_arm_lat_pulldown",
-      "kind": "accessory",
-      "family": "accessory_lats",
-      "primary_muscle_group": "lats",
-      "secondary_muscle_groups": [
-        "biceps",
-        "upper_back"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 169,
-      "key": "accessory_kneeling_cable_lat_pulldown",
+      "display_name": "Half-Kneeling Single-Arm Lat Pulldown",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2074,34 +2110,7 @@
     {
       "id": 170,
       "key": "accessory_straight_arm_cable_pulldown",
-      "kind": "accessory",
-      "family": "accessory_lats",
-      "primary_muscle_group": "lats",
-      "secondary_muscle_groups": [
-        "biceps",
-        "upper_back"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 171,
-      "key": "accessory_rope_straight_arm_pulldown",
-      "kind": "accessory",
-      "family": "accessory_lats",
-      "primary_muscle_group": "lats",
-      "secondary_muscle_groups": [
-        "biceps",
-        "upper_back"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 172,
-      "key": "accessory_cable_pullover",
+      "display_name": "Straight-Arm Cable Pulldown",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2116,6 +2125,7 @@
     {
       "id": 173,
       "key": "accessory_single_arm_cable_pullover",
+      "display_name": "Single-Arm Cable Pullover",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2130,6 +2140,7 @@
     {
       "id": 174,
       "key": "accessory_cable_lat_prayer",
+      "display_name": "Cable Lat Prayer",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2144,6 +2155,7 @@
     {
       "id": 175,
       "key": "accessory_single_arm_cable_low_row",
+      "display_name": "Single-Arm Cable Low Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2158,6 +2170,7 @@
     {
       "id": 176,
       "key": "accessory_elbow_tucked_cable_row",
+      "display_name": "Elbow-Tucked Cable Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2172,6 +2185,7 @@
     {
       "id": 177,
       "key": "accessory_cross_bench_cable_pulldown",
+      "display_name": "Cross-Bench Cable Pulldown",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2186,6 +2200,7 @@
     {
       "id": 178,
       "key": "accessory_machine_pullover",
+      "display_name": "Machine Pullover",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2200,6 +2215,7 @@
     {
       "id": 179,
       "key": "accessory_iso_lateral_lat_pulldown",
+      "display_name": "Iso-Lateral Lat Pulldown",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2214,6 +2230,7 @@
     {
       "id": 180,
       "key": "accessory_iso_lateral_low_row",
+      "display_name": "Iso-Lateral Low Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2228,6 +2245,7 @@
     {
       "id": 181,
       "key": "accessory_machine_low_row",
+      "display_name": "Machine Low Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2242,6 +2260,7 @@
     {
       "id": 182,
       "key": "accessory_single_arm_machine_low_row",
+      "display_name": "Single-Arm Machine Low Row",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2256,6 +2275,7 @@
     {
       "id": 183,
       "key": "accessory_neutral_grip_pull_up",
+      "display_name": "Neutral-Grip Pull-Up",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2270,6 +2290,7 @@
     {
       "id": 184,
       "key": "accessory_wide_grip_pull_up",
+      "display_name": "Wide-Grip Pull-Up",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2284,6 +2305,7 @@
     {
       "id": 185,
       "key": "accessory_chin_up",
+      "display_name": "Chin-Up",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2298,6 +2320,7 @@
     {
       "id": 186,
       "key": "accessory_sternum_chin_up",
+      "display_name": "Sternum Chin-Up",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2312,6 +2335,7 @@
     {
       "id": 187,
       "key": "accessory_scapular_pull_up",
+      "display_name": "Scapular Pull-Up",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2324,21 +2348,9 @@
       "core_kind": null
     },
     {
-      "id": 188,
-      "key": "accessory_band_lat_pulldown",
-      "kind": "accessory",
-      "family": "accessory_lats",
-      "primary_muscle_group": "lats",
-      "secondary_muscle_groups": [
-        "biceps"
-      ],
-      "equipment_type": "other",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 189,
       "key": "accessory_band_straight_arm_pulldown",
+      "display_name": "Band Straight-Arm Pulldown",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2352,6 +2364,7 @@
     {
       "id": 190,
       "key": "accessory_band_assisted_pull_up",
+      "display_name": "Band-Assisted Pull-Up",
       "kind": "accessory",
       "family": "accessory_lats",
       "primary_muscle_group": "lats",
@@ -2365,6 +2378,7 @@
     {
       "id": 191,
       "key": "accessory_bent_over_barbell_row",
+      "display_name": "Bent-Over Barbell Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2380,6 +2394,7 @@
     {
       "id": 192,
       "key": "accessory_pendlay_row",
+      "display_name": "Pendlay Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2395,6 +2410,7 @@
     {
       "id": 193,
       "key": "accessory_seal_row",
+      "display_name": "Seal Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2410,6 +2426,7 @@
     {
       "id": 194,
       "key": "accessory_chest_supported_dumbbell_row",
+      "display_name": "Chest-Supported Dumbbell Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2425,6 +2442,7 @@
     {
       "id": 195,
       "key": "accessory_chest_supported_barbell_row",
+      "display_name": "Chest-Supported Barbell Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2440,6 +2458,7 @@
     {
       "id": 196,
       "key": "accessory_incline_bench_dumbbell_row",
+      "display_name": "Incline-Bench Dumbbell Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2455,6 +2474,7 @@
     {
       "id": 197,
       "key": "accessory_t_bar_row",
+      "display_name": "T-Bar Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2470,6 +2490,7 @@
     {
       "id": 198,
       "key": "accessory_wide_grip_t_bar_row",
+      "display_name": "Wide-Grip T-Bar Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2485,6 +2506,7 @@
     {
       "id": 199,
       "key": "accessory_chest_supported_t_bar_row",
+      "display_name": "Chest-Supported T-Bar Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2500,6 +2522,7 @@
     {
       "id": 200,
       "key": "accessory_helms_row",
+      "display_name": "Helms Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2515,6 +2538,7 @@
     {
       "id": 201,
       "key": "accessory_batwing_row",
+      "display_name": "Batwing Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2530,6 +2554,7 @@
     {
       "id": 202,
       "key": "accessory_gorilla_row",
+      "display_name": "Gorilla Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2545,6 +2570,7 @@
     {
       "id": 203,
       "key": "accessory_snatch_grip_barbell_row",
+      "display_name": "Snatch-Grip Barbell Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2560,6 +2586,7 @@
     {
       "id": 204,
       "key": "accessory_wide_elbow_barbell_row",
+      "display_name": "Wide-Elbow Barbell Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2575,6 +2602,7 @@
     {
       "id": 205,
       "key": "accessory_chest_supported_kelso_row",
+      "display_name": "Chest-Supported Kelso Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2590,6 +2618,7 @@
     {
       "id": 206,
       "key": "accessory_dumbbell_high_row",
+      "display_name": "Dumbbell High Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2605,6 +2634,7 @@
     {
       "id": 207,
       "key": "accessory_seated_cable_row",
+      "display_name": "Seated Cable Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2620,6 +2650,7 @@
     {
       "id": 208,
       "key": "accessory_wide_grip_seated_cable_row",
+      "display_name": "Wide-Grip Seated Cable Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2635,6 +2666,7 @@
     {
       "id": 209,
       "key": "accessory_neutral_grip_seated_cable_row",
+      "display_name": "Neutral-Grip Seated Cable Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2650,6 +2682,7 @@
     {
       "id": 210,
       "key": "accessory_single_arm_seated_cable_row",
+      "display_name": "Single-Arm Seated Cable Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2665,21 +2698,7 @@
     {
       "id": 211,
       "key": "accessory_cable_high_row",
-      "kind": "accessory",
-      "family": "accessory_upper_back",
-      "primary_muscle_group": "upper_back",
-      "secondary_muscle_groups": [
-        "lats",
-        "rear_delts",
-        "biceps"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 212,
-      "key": "accessory_rope_cable_row",
+      "display_name": "Cable High Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2695,6 +2714,7 @@
     {
       "id": 213,
       "key": "accessory_chest_supported_cable_row",
+      "display_name": "Chest-Supported Cable Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2710,6 +2730,7 @@
     {
       "id": 214,
       "key": "accessory_standing_cable_row",
+      "display_name": "Standing Cable Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2725,6 +2746,7 @@
     {
       "id": 215,
       "key": "accessory_cable_scapular_row",
+      "display_name": "Cable Scapular Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2740,6 +2762,7 @@
     {
       "id": 216,
       "key": "accessory_chest_supported_machine_row",
+      "display_name": "Chest-Supported Machine Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2755,6 +2778,7 @@
     {
       "id": 217,
       "key": "accessory_plate_loaded_high_row",
+      "display_name": "Machine High Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2770,6 +2794,7 @@
     {
       "id": 218,
       "key": "accessory_iso_lateral_high_row",
+      "display_name": "Iso-Lateral High Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2785,6 +2810,7 @@
     {
       "id": 219,
       "key": "accessory_single_arm_machine_high_row",
+      "display_name": "Single-Arm Machine High Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2800,6 +2826,7 @@
     {
       "id": 220,
       "key": "accessory_machine_t_bar_row",
+      "display_name": "Machine T-Bar Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2815,6 +2842,7 @@
     {
       "id": 221,
       "key": "accessory_machine_mid_row",
+      "display_name": "Machine Mid Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2830,6 +2858,7 @@
     {
       "id": 222,
       "key": "accessory_plate_loaded_seated_row",
+      "display_name": "Machine Seated Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2845,6 +2874,7 @@
     {
       "id": 223,
       "key": "accessory_chest_supported_high_row",
+      "display_name": "Chest-Supported High Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2860,6 +2890,7 @@
     {
       "id": 224,
       "key": "accessory_wide_elbow_machine_row",
+      "display_name": "Wide-Elbow Machine Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2875,6 +2906,7 @@
     {
       "id": 225,
       "key": "accessory_inverted_row",
+      "display_name": "Inverted Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2890,6 +2922,7 @@
     {
       "id": 226,
       "key": "accessory_feet_elevated_inverted_row",
+      "display_name": "Feet-Elevated Inverted Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2905,6 +2938,7 @@
     {
       "id": 227,
       "key": "accessory_ring_row",
+      "display_name": "Ring Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2920,6 +2954,7 @@
     {
       "id": 228,
       "key": "accessory_suspension_trainer_row",
+      "display_name": "Suspension-Trainer Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2935,6 +2970,7 @@
     {
       "id": 229,
       "key": "accessory_scapular_inverted_row",
+      "display_name": "Scapular Inverted Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2950,6 +2986,7 @@
     {
       "id": 230,
       "key": "accessory_band_row",
+      "display_name": "Band Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2964,6 +3001,7 @@
     {
       "id": 231,
       "key": "accessory_band_high_row",
+      "display_name": "Band High Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2978,6 +3016,7 @@
     {
       "id": 232,
       "key": "accessory_band_scapular_row",
+      "display_name": "Band Scapular Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -2992,6 +3031,7 @@
     {
       "id": 233,
       "key": "accessory_single_arm_cable_high_row",
+      "display_name": "Single-Arm Cable High Row",
       "kind": "accessory",
       "family": "accessory_upper_back",
       "primary_muscle_group": "upper_back",
@@ -3006,6 +3046,7 @@
     {
       "id": 234,
       "key": "accessory_barbell_shrug",
+      "display_name": "Barbell Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3020,6 +3061,7 @@
     {
       "id": 235,
       "key": "accessory_dumbbell_shrug",
+      "display_name": "Dumbbell Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3034,6 +3076,7 @@
     {
       "id": 236,
       "key": "accessory_trap_bar_shrug",
+      "display_name": "Trap-Bar Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3048,6 +3091,7 @@
     {
       "id": 237,
       "key": "accessory_behind_the_back_barbell_shrug",
+      "display_name": "Behind-the-Back Barbell Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3062,6 +3106,7 @@
     {
       "id": 238,
       "key": "accessory_snatch_grip_shrug",
+      "display_name": "Snatch-Grip Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3076,6 +3121,7 @@
     {
       "id": 239,
       "key": "accessory_overhead_barbell_shrug",
+      "display_name": "Overhead Barbell Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3090,6 +3136,7 @@
     {
       "id": 240,
       "key": "accessory_farmer_carry",
+      "display_name": "Farmer Carry",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3104,6 +3151,7 @@
     {
       "id": 241,
       "key": "accessory_chest_supported_kelso_shrug",
+      "display_name": "Chest-Supported Kelso Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3118,6 +3166,7 @@
     {
       "id": 242,
       "key": "accessory_kelso_shrug",
+      "display_name": "Kelso Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3132,6 +3181,7 @@
     {
       "id": 243,
       "key": "accessory_machine_shrug",
+      "display_name": "Machine Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3145,6 +3195,7 @@
     {
       "id": 244,
       "key": "accessory_smith_machine_shrug",
+      "display_name": "Smith-Machine Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3158,6 +3209,7 @@
     {
       "id": 245,
       "key": "accessory_machine_kelso_shrug",
+      "display_name": "Machine Kelso Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3171,6 +3223,7 @@
     {
       "id": 246,
       "key": "accessory_cable_shrug",
+      "display_name": "Cable Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3184,6 +3237,7 @@
     {
       "id": 247,
       "key": "accessory_single_arm_cable_shrug",
+      "display_name": "Single-Arm Cable Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3197,6 +3251,7 @@
     {
       "id": 248,
       "key": "accessory_cable_kelso_shrug",
+      "display_name": "Cable Kelso Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3210,6 +3265,7 @@
     {
       "id": 249,
       "key": "accessory_band_shrug",
+      "display_name": "Band Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3223,6 +3279,7 @@
     {
       "id": 250,
       "key": "accessory_band_overhead_shrug",
+      "display_name": "Band Overhead Shrug",
       "kind": "accessory",
       "family": "accessory_traps",
       "primary_muscle_group": "traps",
@@ -3236,6 +3293,7 @@
     {
       "id": 251,
       "key": "accessory_barbell_curl",
+      "display_name": "Barbell Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3249,6 +3307,7 @@
     {
       "id": 252,
       "key": "accessory_ez_bar_curl",
+      "display_name": "EZ-Bar Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3262,6 +3321,7 @@
     {
       "id": 253,
       "key": "accessory_dumbbell_curl",
+      "display_name": "Dumbbell Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3275,6 +3335,7 @@
     {
       "id": 254,
       "key": "accessory_alternating_dumbbell_curl",
+      "display_name": "Alternating Dumbbell Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3288,6 +3349,7 @@
     {
       "id": 255,
       "key": "accessory_seated_dumbbell_curl",
+      "display_name": "Seated Dumbbell Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3301,6 +3363,7 @@
     {
       "id": 256,
       "key": "accessory_standing_dumbbell_curl",
+      "display_name": "Standing Dumbbell Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3314,6 +3377,7 @@
     {
       "id": 257,
       "key": "accessory_incline_dumbbell_curl",
+      "display_name": "Incline Dumbbell Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3327,6 +3391,7 @@
     {
       "id": 258,
       "key": "accessory_spider_curl",
+      "display_name": "Spider Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3340,6 +3405,7 @@
     {
       "id": 259,
       "key": "accessory_single_arm_preacher_curl",
+      "display_name": "Single-Arm Preacher Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3353,6 +3419,7 @@
     {
       "id": 260,
       "key": "accessory_dumbbell_preacher_curl",
+      "display_name": "Dumbbell Preacher Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3366,6 +3433,7 @@
     {
       "id": 261,
       "key": "accessory_ez_bar_preacher_curl",
+      "display_name": "EZ-Bar Preacher Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3379,6 +3447,7 @@
     {
       "id": 262,
       "key": "accessory_concentration_curl",
+      "display_name": "Concentration Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3392,6 +3461,7 @@
     {
       "id": 263,
       "key": "accessory_hammer_curl",
+      "display_name": "Hammer Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3405,6 +3475,7 @@
     {
       "id": 264,
       "key": "accessory_cross_body_hammer_curl",
+      "display_name": "Cross-Body Hammer Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3418,6 +3489,7 @@
     {
       "id": 265,
       "key": "accessory_zottman_curl",
+      "display_name": "Zottman Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3431,6 +3503,7 @@
     {
       "id": 266,
       "key": "accessory_drag_curl",
+      "display_name": "Drag Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3444,6 +3517,7 @@
     {
       "id": 267,
       "key": "accessory_reverse_curl",
+      "display_name": "Reverse Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3457,6 +3531,7 @@
     {
       "id": 268,
       "key": "accessory_cheat_curl",
+      "display_name": "Cheat Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3470,19 +3545,7 @@
     {
       "id": 269,
       "key": "accessory_cable_curl",
-      "kind": "accessory",
-      "family": "accessory_biceps",
-      "primary_muscle_group": "biceps",
-      "secondary_muscle_groups": [
-        "forearms"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 270,
-      "key": "accessory_rope_cable_curl",
+      "display_name": "Cable Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3496,6 +3559,7 @@
     {
       "id": 271,
       "key": "accessory_bayesian_cable_curl",
+      "display_name": "Bayesian Cable Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3509,6 +3573,7 @@
     {
       "id": 272,
       "key": "accessory_single_arm_bayesian_cable_curl",
+      "display_name": "Single-Arm Bayesian Cable Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3522,6 +3587,7 @@
     {
       "id": 273,
       "key": "accessory_cable_preacher_curl",
+      "display_name": "Cable Preacher Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3535,6 +3601,7 @@
     {
       "id": 274,
       "key": "accessory_single_arm_cable_preacher_curl",
+      "display_name": "Single-Arm Cable Preacher Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3548,32 +3615,7 @@
     {
       "id": 275,
       "key": "accessory_high_cable_curl",
-      "kind": "accessory",
-      "family": "accessory_biceps",
-      "primary_muscle_group": "biceps",
-      "secondary_muscle_groups": [
-        "forearms"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 276,
-      "key": "accessory_dual_high_cable_curl",
-      "kind": "accessory",
-      "family": "accessory_biceps",
-      "primary_muscle_group": "biceps",
-      "secondary_muscle_groups": [
-        "forearms"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 277,
-      "key": "accessory_hercules_cable_curl",
+      "display_name": "High Cable Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3587,6 +3629,7 @@
     {
       "id": 278,
       "key": "accessory_single_arm_cable_curl",
+      "display_name": "Single-Arm Cable Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3600,19 +3643,7 @@
     {
       "id": 279,
       "key": "accessory_cable_hammer_curl",
-      "kind": "accessory",
-      "family": "accessory_biceps",
-      "primary_muscle_group": "biceps",
-      "secondary_muscle_groups": [
-        "forearms"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 280,
-      "key": "accessory_behind_the_back_cable_curl",
+      "display_name": "Cable Hammer Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3626,6 +3657,7 @@
     {
       "id": 281,
       "key": "accessory_machine_preacher_curl",
+      "display_name": "Machine Preacher Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3639,6 +3671,7 @@
     {
       "id": 282,
       "key": "accessory_single_arm_machine_preacher_curl",
+      "display_name": "Single-Arm Machine Preacher Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3652,6 +3685,7 @@
     {
       "id": 283,
       "key": "accessory_plate_loaded_biceps_curl",
+      "display_name": "Machine Biceps Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3665,6 +3699,7 @@
     {
       "id": 284,
       "key": "accessory_band_curl",
+      "display_name": "Band Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3678,6 +3713,7 @@
     {
       "id": 285,
       "key": "accessory_band_hammer_curl",
+      "display_name": "Band Hammer Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3691,6 +3727,7 @@
     {
       "id": 286,
       "key": "accessory_band_preacher_curl",
+      "display_name": "Band Preacher Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3704,6 +3741,7 @@
     {
       "id": 287,
       "key": "accessory_bodyweight_curl",
+      "display_name": "Bodyweight Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3717,6 +3755,7 @@
     {
       "id": 288,
       "key": "accessory_ring_curl",
+      "display_name": "Ring Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3730,6 +3769,7 @@
     {
       "id": 289,
       "key": "accessory_close_grip_bench_press",
+      "display_name": "Close-Grip Bench Press",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3744,6 +3784,7 @@
     {
       "id": 290,
       "key": "accessory_jm_press",
+      "display_name": "JM Press",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3758,6 +3799,7 @@
     {
       "id": 291,
       "key": "accessory_barbell_skull_crusher",
+      "display_name": "Barbell Skull Crusher",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3772,6 +3814,7 @@
     {
       "id": 292,
       "key": "accessory_ez_bar_skull_crusher",
+      "display_name": "EZ-Bar Skull Crusher",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3786,6 +3829,7 @@
     {
       "id": 293,
       "key": "accessory_dumbbell_skull_crusher",
+      "display_name": "Dumbbell Skull Crusher",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3800,6 +3844,7 @@
     {
       "id": 294,
       "key": "accessory_incline_skull_crusher",
+      "display_name": "Incline Skull Crusher",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3814,6 +3859,7 @@
     {
       "id": 295,
       "key": "accessory_decline_skull_crusher",
+      "display_name": "Decline Skull Crusher",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3828,6 +3874,7 @@
     {
       "id": 296,
       "key": "accessory_dumbbell_overhead_triceps_extension",
+      "display_name": "Dumbbell Overhead Triceps Extension",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3842,6 +3889,7 @@
     {
       "id": 297,
       "key": "accessory_single_arm_dumbbell_overhead_triceps_extension",
+      "display_name": "Single-Arm Dumbbell Overhead Triceps Extension",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3856,6 +3904,7 @@
     {
       "id": 298,
       "key": "accessory_tate_press",
+      "display_name": "Tate Press",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3870,6 +3919,7 @@
     {
       "id": 299,
       "key": "accessory_rolling_dumbbell_triceps_extension",
+      "display_name": "Rolling Dumbbell Triceps Extension",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3884,6 +3934,7 @@
     {
       "id": 300,
       "key": "accessory_pjr_pullover",
+      "display_name": "PJR Pullover",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3898,39 +3949,7 @@
     {
       "id": 301,
       "key": "accessory_cable_triceps_pressdown",
-      "kind": "accessory",
-      "family": "accessory_triceps",
-      "primary_muscle_group": "triceps",
-      "secondary_muscle_groups": [],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 302,
-      "key": "accessory_rope_triceps_pressdown",
-      "kind": "accessory",
-      "family": "accessory_triceps",
-      "primary_muscle_group": "triceps",
-      "secondary_muscle_groups": [],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 303,
-      "key": "accessory_straight_bar_triceps_pressdown",
-      "kind": "accessory",
-      "family": "accessory_triceps",
-      "primary_muscle_group": "triceps",
-      "secondary_muscle_groups": [],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 304,
-      "key": "accessory_v_bar_triceps_pressdown",
+      "display_name": "Cable Triceps Pressdown",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3942,6 +3961,7 @@
     {
       "id": 305,
       "key": "accessory_reverse_grip_triceps_pressdown",
+      "display_name": "Reverse-Grip Triceps Pressdown",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3953,6 +3973,7 @@
     {
       "id": 306,
       "key": "accessory_single_arm_cable_pressdown",
+      "display_name": "Single-Arm Cable Pressdown",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3964,17 +3985,7 @@
     {
       "id": 307,
       "key": "accessory_cable_overhead_triceps_extension",
-      "kind": "accessory",
-      "family": "accessory_triceps",
-      "primary_muscle_group": "triceps",
-      "secondary_muscle_groups": [],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 308,
-      "key": "accessory_rope_overhead_triceps_extension",
+      "display_name": "Cable Overhead Triceps Extension",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3986,6 +3997,7 @@
     {
       "id": 309,
       "key": "accessory_single_arm_cable_overhead_triceps_extension",
+      "display_name": "Single-Arm Cable Overhead Triceps Extension",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -3997,6 +4009,7 @@
     {
       "id": 310,
       "key": "accessory_cross_body_cable_triceps_extension",
+      "display_name": "Cross-Body Cable Triceps Extension",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4008,6 +4021,7 @@
     {
       "id": 311,
       "key": "accessory_cable_skull_crusher",
+      "display_name": "Cable Skull Crusher",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4019,6 +4033,7 @@
     {
       "id": 312,
       "key": "accessory_cable_kickback",
+      "display_name": "Cable Kickback",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4030,6 +4045,7 @@
     {
       "id": 313,
       "key": "accessory_machine_triceps_extension",
+      "display_name": "Machine Triceps Extension",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4043,6 +4059,7 @@
     {
       "id": 314,
       "key": "accessory_machine_dip",
+      "display_name": "Machine Dip",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4056,6 +4073,7 @@
     {
       "id": 315,
       "key": "accessory_bench_dip",
+      "display_name": "Bench Dip",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4070,6 +4088,7 @@
     {
       "id": 316,
       "key": "accessory_triceps_dip",
+      "display_name": "Triceps Dip",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4084,6 +4103,7 @@
     {
       "id": 317,
       "key": "accessory_diamond_push_up",
+      "display_name": "Diamond Push-Up",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4098,6 +4118,7 @@
     {
       "id": 318,
       "key": "accessory_bodyweight_skull_crusher",
+      "display_name": "Bodyweight Skull Crusher",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4112,6 +4133,7 @@
     {
       "id": 319,
       "key": "accessory_ring_triceps_extension",
+      "display_name": "Ring Triceps Extension",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4126,6 +4148,7 @@
     {
       "id": 320,
       "key": "accessory_assisted_dip",
+      "display_name": "Assisted Dip",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4140,6 +4163,7 @@
     {
       "id": 321,
       "key": "accessory_weighted_dip",
+      "display_name": "Weighted Dip",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4154,6 +4178,7 @@
     {
       "id": 322,
       "key": "accessory_band_triceps_pressdown",
+      "display_name": "Band Triceps Pressdown",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4165,6 +4190,7 @@
     {
       "id": 323,
       "key": "accessory_band_overhead_triceps_extension",
+      "display_name": "Band Overhead Triceps Extension",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4176,6 +4202,7 @@
     {
       "id": 324,
       "key": "accessory_band_kickback",
+      "display_name": "Band Kickback",
       "kind": "accessory",
       "family": "accessory_triceps",
       "primary_muscle_group": "triceps",
@@ -4187,6 +4214,7 @@
     {
       "id": 325,
       "key": "accessory_barbell_wrist_curl",
+      "display_name": "Barbell Wrist Curl",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4198,6 +4226,7 @@
     {
       "id": 326,
       "key": "accessory_dumbbell_wrist_curl",
+      "display_name": "Dumbbell Wrist Curl",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4209,6 +4238,7 @@
     {
       "id": 327,
       "key": "accessory_behind_the_back_wrist_curl",
+      "display_name": "Behind-the-Back Wrist Curl",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4220,6 +4250,7 @@
     {
       "id": 328,
       "key": "accessory_reverse_wrist_curl",
+      "display_name": "Reverse Wrist Curl",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4231,6 +4262,7 @@
     {
       "id": 329,
       "key": "accessory_dumbbell_reverse_wrist_curl",
+      "display_name": "Dumbbell Reverse Wrist Curl",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4242,6 +4274,7 @@
     {
       "id": 330,
       "key": "accessory_wrist_roller",
+      "display_name": "Wrist Roller",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4253,6 +4286,7 @@
     {
       "id": 331,
       "key": "accessory_plate_pinch",
+      "display_name": "Plate Pinch",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4264,6 +4298,7 @@
     {
       "id": 332,
       "key": "accessory_fat_grip_hold",
+      "display_name": "Fat-Grip Hold",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4275,6 +4310,7 @@
     {
       "id": 333,
       "key": "accessory_barbell_finger_curl",
+      "display_name": "Barbell Finger Curl",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4286,6 +4322,7 @@
     {
       "id": 334,
       "key": "accessory_lever_bar_pronation",
+      "display_name": "Lever Bar Pronation",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4297,6 +4334,7 @@
     {
       "id": 335,
       "key": "accessory_lever_bar_supination",
+      "display_name": "Lever Bar Supination",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4308,6 +4346,7 @@
     {
       "id": 336,
       "key": "accessory_radial_deviation",
+      "display_name": "Radial Deviation",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4319,6 +4358,7 @@
     {
       "id": 337,
       "key": "accessory_ulnar_deviation",
+      "display_name": "Ulnar Deviation",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4330,6 +4370,7 @@
     {
       "id": 338,
       "key": "accessory_cable_wrist_curl",
+      "display_name": "Cable Wrist Curl",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4341,6 +4382,7 @@
     {
       "id": 339,
       "key": "accessory_cable_reverse_wrist_curl",
+      "display_name": "Cable Reverse Wrist Curl",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4352,6 +4394,7 @@
     {
       "id": 340,
       "key": "accessory_cable_pronation",
+      "display_name": "Cable Pronation",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4363,6 +4406,7 @@
     {
       "id": 341,
       "key": "accessory_cable_supination",
+      "display_name": "Cable Supination",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4374,6 +4418,7 @@
     {
       "id": 342,
       "key": "accessory_hand_gripper",
+      "display_name": "Hand Gripper",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4385,6 +4430,7 @@
     {
       "id": 343,
       "key": "accessory_towel_grip_hold",
+      "display_name": "Towel Grip Hold",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4396,6 +4442,7 @@
     {
       "id": 344,
       "key": "accessory_rice_bucket_hand_drill",
+      "display_name": "Rice-Bucket Hand Drill",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4407,6 +4454,7 @@
     {
       "id": 345,
       "key": "accessory_dead_hang",
+      "display_name": "Dead Hang",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4418,6 +4466,7 @@
     {
       "id": 346,
       "key": "accessory_towel_dead_hang",
+      "display_name": "Towel Dead Hang",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4429,6 +4478,7 @@
     {
       "id": 347,
       "key": "accessory_false_grip_hang",
+      "display_name": "False-Grip Hang",
       "kind": "accessory",
       "family": "accessory_forearms",
       "primary_muscle_group": "forearms",
@@ -4440,6 +4490,7 @@
     {
       "id": 348,
       "key": "accessory_front_squat",
+      "display_name": "Front Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4454,6 +4505,7 @@
     {
       "id": 349,
       "key": "accessory_high_bar_squat",
+      "display_name": "High-Bar Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4468,6 +4520,7 @@
     {
       "id": 350,
       "key": "accessory_zercher_squat",
+      "display_name": "Zercher Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4482,6 +4535,7 @@
     {
       "id": 351,
       "key": "accessory_goblet_squat",
+      "display_name": "Goblet Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4496,6 +4550,7 @@
     {
       "id": 352,
       "key": "accessory_cyclist_squat",
+      "display_name": "Cyclist Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4510,6 +4565,7 @@
     {
       "id": 353,
       "key": "accessory_heel_elevated_goblet_squat",
+      "display_name": "Heel-Elevated Goblet Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4524,6 +4580,7 @@
     {
       "id": 354,
       "key": "accessory_bulgarian_split_squat",
+      "display_name": "Bulgarian Split Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4538,6 +4595,7 @@
     {
       "id": 355,
       "key": "accessory_front_foot_elevated_split_squat",
+      "display_name": "Front-Foot-Elevated Split Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4552,6 +4610,7 @@
     {
       "id": 356,
       "key": "accessory_heel_elevated_split_squat",
+      "display_name": "Heel-Elevated Split Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4566,6 +4625,7 @@
     {
       "id": 357,
       "key": "accessory_reverse_lunge",
+      "display_name": "Reverse Lunge",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4580,6 +4640,7 @@
     {
       "id": 358,
       "key": "accessory_walking_lunge",
+      "display_name": "Walking Lunge",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4594,6 +4655,7 @@
     {
       "id": 359,
       "key": "accessory_forward_lunge",
+      "display_name": "Forward Lunge",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4608,6 +4670,7 @@
     {
       "id": 360,
       "key": "accessory_lateral_lunge",
+      "display_name": "Lateral Lunge",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4622,6 +4685,7 @@
     {
       "id": 361,
       "key": "accessory_step_up",
+      "display_name": "Step-Up",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4636,6 +4700,7 @@
     {
       "id": 362,
       "key": "accessory_peterson_step_up",
+      "display_name": "Peterson Step-Up",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4650,6 +4715,7 @@
     {
       "id": 363,
       "key": "accessory_dumbbell_step_down",
+      "display_name": "Dumbbell Step-Down",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4664,6 +4730,7 @@
     {
       "id": 364,
       "key": "accessory_spanish_squat_with_weight",
+      "display_name": "Spanish Squat with Weight",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4678,6 +4745,7 @@
     {
       "id": 365,
       "key": "accessory_leg_extension",
+      "display_name": "Leg Extension",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4692,6 +4760,7 @@
     {
       "id": 366,
       "key": "accessory_single_leg_leg_extension",
+      "display_name": "Single-Leg Leg Extension",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4706,6 +4775,7 @@
     {
       "id": 367,
       "key": "accessory_leg_press",
+      "display_name": "Leg Press",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4720,6 +4790,7 @@
     {
       "id": 368,
       "key": "accessory_single_leg_leg_press",
+      "display_name": "Single-Leg Leg Press",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4734,6 +4805,7 @@
     {
       "id": 369,
       "key": "accessory_hack_squat",
+      "display_name": "Hack Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4748,6 +4820,7 @@
     {
       "id": 370,
       "key": "accessory_pendulum_squat",
+      "display_name": "Pendulum Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4762,6 +4835,7 @@
     {
       "id": 371,
       "key": "accessory_belt_squat",
+      "display_name": "Belt Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4776,6 +4850,7 @@
     {
       "id": 372,
       "key": "accessory_v_squat",
+      "display_name": "V-Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4790,6 +4865,7 @@
     {
       "id": 373,
       "key": "accessory_machine_split_squat",
+      "display_name": "Machine Split Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4804,6 +4880,7 @@
     {
       "id": 374,
       "key": "accessory_machine_sissy_squat",
+      "display_name": "Machine Sissy Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4818,6 +4895,7 @@
     {
       "id": 375,
       "key": "accessory_smith_machine_squat",
+      "display_name": "Smith-Machine Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4832,6 +4910,7 @@
     {
       "id": 376,
       "key": "accessory_smith_machine_split_squat",
+      "display_name": "Smith-Machine Split Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4846,6 +4925,7 @@
     {
       "id": 377,
       "key": "accessory_sissy_squat",
+      "display_name": "Sissy Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4859,6 +4939,7 @@
     {
       "id": 378,
       "key": "accessory_reverse_nordic",
+      "display_name": "Reverse Nordic",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4872,6 +4953,7 @@
     {
       "id": 379,
       "key": "accessory_bodyweight_split_squat",
+      "display_name": "Bodyweight Split Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4885,6 +4967,7 @@
     {
       "id": 380,
       "key": "accessory_bodyweight_walking_lunge",
+      "display_name": "Bodyweight Walking Lunge",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4898,6 +4981,7 @@
     {
       "id": 381,
       "key": "accessory_wall_sit",
+      "display_name": "Wall Sit",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4911,6 +4995,7 @@
     {
       "id": 382,
       "key": "accessory_spanish_squat",
+      "display_name": "Spanish Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4924,6 +5009,7 @@
     {
       "id": 383,
       "key": "accessory_step_down",
+      "display_name": "Step-Down",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4937,6 +5023,7 @@
     {
       "id": 384,
       "key": "accessory_band_leg_extension",
+      "display_name": "Band Leg Extension",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4950,6 +5037,7 @@
     {
       "id": 385,
       "key": "accessory_band_spanish_squat",
+      "display_name": "Band Spanish Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4963,6 +5051,7 @@
     {
       "id": 386,
       "key": "accessory_band_assisted_sissy_squat",
+      "display_name": "Band-Assisted Sissy Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -4976,6 +5065,7 @@
     {
       "id": 387,
       "key": "accessory_romanian_deadlift",
+      "display_name": "Romanian Deadlift",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -4990,6 +5080,7 @@
     {
       "id": 388,
       "key": "accessory_dumbbell_romanian_deadlift",
+      "display_name": "Dumbbell Romanian Deadlift",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5004,6 +5095,7 @@
     {
       "id": 389,
       "key": "accessory_single_leg_romanian_deadlift",
+      "display_name": "Single-Leg Romanian Deadlift",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5018,6 +5110,7 @@
     {
       "id": 390,
       "key": "accessory_b_stance_romanian_deadlift",
+      "display_name": "B-Stance Romanian Deadlift",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5032,6 +5125,7 @@
     {
       "id": 391,
       "key": "accessory_stiff_leg_deadlift",
+      "display_name": "Stiff-Leg Deadlift",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5046,6 +5140,7 @@
     {
       "id": 392,
       "key": "accessory_snatch_grip_romanian_deadlift",
+      "display_name": "Snatch-Grip Romanian Deadlift",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5060,6 +5155,7 @@
     {
       "id": 393,
       "key": "accessory_barbell_good_morning",
+      "display_name": "Barbell Good Morning",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5074,6 +5170,7 @@
     {
       "id": 394,
       "key": "accessory_seated_good_morning",
+      "display_name": "Seated Good Morning",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5088,6 +5185,7 @@
     {
       "id": 396,
       "key": "accessory_glute_ham_raise_with_weight",
+      "display_name": "Glute-Ham Raise with Weight",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5102,6 +5200,7 @@
     {
       "id": 397,
       "key": "accessory_seated_leg_curl",
+      "display_name": "Seated Leg Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5115,6 +5214,7 @@
     {
       "id": 398,
       "key": "accessory_lying_leg_curl",
+      "display_name": "Lying Leg Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5128,6 +5228,7 @@
     {
       "id": 399,
       "key": "accessory_standing_single_leg_curl",
+      "display_name": "Standing Single-Leg Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5141,6 +5242,7 @@
     {
       "id": 400,
       "key": "accessory_kneeling_leg_curl",
+      "display_name": "Kneeling Leg Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5154,6 +5256,7 @@
     {
       "id": 401,
       "key": "accessory_single_leg_seated_leg_curl",
+      "display_name": "Single-Leg Seated Leg Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5167,6 +5270,7 @@
     {
       "id": 402,
       "key": "accessory_single_leg_lying_leg_curl",
+      "display_name": "Single-Leg Lying Leg Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5180,6 +5284,7 @@
     {
       "id": 403,
       "key": "accessory_glute_ham_raise",
+      "display_name": "Glute-Ham Raise",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5193,19 +5298,7 @@
     {
       "id": 404,
       "key": "accessory_cable_leg_curl",
-      "kind": "accessory",
-      "family": "accessory_hamstrings",
-      "primary_muscle_group": "hamstrings",
-      "secondary_muscle_groups": [
-        "glutes"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 405,
-      "key": "accessory_standing_cable_leg_curl",
+      "display_name": "Cable Leg Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5219,6 +5312,7 @@
     {
       "id": 406,
       "key": "accessory_cable_romanian_deadlift",
+      "display_name": "Cable Romanian Deadlift",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5232,6 +5326,7 @@
     {
       "id": 407,
       "key": "accessory_single_leg_cable_romanian_deadlift",
+      "display_name": "Single-Leg Cable Romanian Deadlift",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5245,6 +5340,7 @@
     {
       "id": 408,
       "key": "accessory_nordic_hamstring_curl",
+      "display_name": "Nordic Hamstring Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5259,6 +5355,7 @@
     {
       "id": 409,
       "key": "accessory_assisted_nordic_hamstring_curl",
+      "display_name": "Assisted Nordic Hamstring Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5273,6 +5370,7 @@
     {
       "id": 410,
       "key": "accessory_sliding_leg_curl",
+      "display_name": "Sliding Leg Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5287,6 +5385,7 @@
     {
       "id": 411,
       "key": "accessory_stability_ball_leg_curl",
+      "display_name": "Stability-Ball Leg Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5301,6 +5400,7 @@
     {
       "id": 412,
       "key": "accessory_bodyweight_glute_ham_raise",
+      "display_name": "Bodyweight Glute-Ham Raise",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5315,6 +5415,7 @@
     {
       "id": 413,
       "key": "accessory_razor_curl",
+      "display_name": "Razor Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5329,6 +5430,7 @@
     {
       "id": 414,
       "key": "accessory_45_degree_back_extension_hamstring_bias",
+      "display_name": "45-Degree Back Extension (Hamstring Bias)",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5343,6 +5445,7 @@
     {
       "id": 415,
       "key": "accessory_band_leg_curl",
+      "display_name": "Band Leg Curl",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5356,6 +5459,7 @@
     {
       "id": 416,
       "key": "accessory_band_romanian_deadlift",
+      "display_name": "Band Romanian Deadlift",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5369,6 +5473,7 @@
     {
       "id": 417,
       "key": "accessory_band_good_morning",
+      "display_name": "Band Good Morning",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -5382,6 +5487,7 @@
     {
       "id": 418,
       "key": "accessory_barbell_hip_thrust",
+      "display_name": "Barbell Hip Thrust",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5395,6 +5501,7 @@
     {
       "id": 419,
       "key": "accessory_dumbbell_hip_thrust",
+      "display_name": "Dumbbell Hip Thrust",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5408,6 +5515,7 @@
     {
       "id": 420,
       "key": "accessory_barbell_glute_bridge",
+      "display_name": "Barbell Glute Bridge",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5421,6 +5529,7 @@
     {
       "id": 421,
       "key": "accessory_dumbbell_glute_bridge",
+      "display_name": "Dumbbell Glute Bridge",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5434,6 +5543,7 @@
     {
       "id": 422,
       "key": "accessory_single_leg_hip_thrust",
+      "display_name": "Single-Leg Hip Thrust",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5447,6 +5557,7 @@
     {
       "id": 423,
       "key": "accessory_b_stance_hip_thrust",
+      "display_name": "B-Stance Hip Thrust",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5460,6 +5571,7 @@
     {
       "id": 424,
       "key": "accessory_kas_glute_bridge",
+      "display_name": "Kas Glute Bridge",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5473,6 +5585,7 @@
     {
       "id": 425,
       "key": "accessory_sumo_romanian_deadlift",
+      "display_name": "Sumo Romanian Deadlift",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5486,6 +5599,7 @@
     {
       "id": 426,
       "key": "accessory_deficit_reverse_lunge",
+      "display_name": "Deficit Reverse Lunge",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5499,6 +5613,7 @@
     {
       "id": 427,
       "key": "accessory_long_stride_reverse_lunge",
+      "display_name": "Long-Stride Reverse Lunge",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5512,6 +5627,7 @@
     {
       "id": 428,
       "key": "accessory_glute_biased_step_up",
+      "display_name": "Glute-Biased Step-Up",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5525,6 +5641,7 @@
     {
       "id": 429,
       "key": "accessory_long_stride_bulgarian_split_squat",
+      "display_name": "Long-Stride Bulgarian Split Squat",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5538,6 +5655,7 @@
     {
       "id": 430,
       "key": "accessory_dumbbell_frog_pump",
+      "display_name": "Dumbbell Frog Pump",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5551,6 +5669,7 @@
     {
       "id": 431,
       "key": "accessory_machine_hip_thrust",
+      "display_name": "Machine Hip Thrust",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5564,6 +5683,7 @@
     {
       "id": 432,
       "key": "accessory_machine_glute_bridge",
+      "display_name": "Machine Glute Bridge",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5577,6 +5697,7 @@
     {
       "id": 433,
       "key": "accessory_glute_drive_machine",
+      "display_name": "Glute Drive Machine",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5590,6 +5711,7 @@
     {
       "id": 434,
       "key": "accessory_machine_glute_kickback",
+      "display_name": "Machine Glute Kickback",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5603,6 +5725,7 @@
     {
       "id": 435,
       "key": "accessory_reverse_hyperextension",
+      "display_name": "Reverse Hyperextension",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5616,6 +5739,7 @@
     {
       "id": 436,
       "key": "accessory_smith_machine_hip_thrust",
+      "display_name": "Smith-Machine Hip Thrust",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5629,19 +5753,7 @@
     {
       "id": 437,
       "key": "accessory_cable_glute_kickback",
-      "kind": "accessory",
-      "family": "accessory_glutes",
-      "primary_muscle_group": "glutes",
-      "secondary_muscle_groups": [
-        "hamstrings"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 438,
-      "key": "accessory_standing_cable_hip_extension",
+      "display_name": "Cable Glute Kickback",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5655,6 +5767,7 @@
     {
       "id": 439,
       "key": "accessory_cable_pull_through",
+      "display_name": "Cable Pull-Through",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5668,6 +5781,7 @@
     {
       "id": 440,
       "key": "accessory_cable_step_back_lunge",
+      "display_name": "Cable Step-Back Lunge",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5681,6 +5795,7 @@
     {
       "id": 441,
       "key": "accessory_cable_hip_thrust",
+      "display_name": "Cable Hip Thrust",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5694,6 +5809,7 @@
     {
       "id": 442,
       "key": "accessory_bodyweight_glute_bridge",
+      "display_name": "Bodyweight Glute Bridge",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5707,6 +5823,7 @@
     {
       "id": 443,
       "key": "accessory_single_leg_glute_bridge",
+      "display_name": "Single-Leg Glute Bridge",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5720,6 +5837,7 @@
     {
       "id": 444,
       "key": "accessory_frog_pump",
+      "display_name": "Frog Pump",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5733,6 +5851,7 @@
     {
       "id": 445,
       "key": "accessory_quadruped_hip_extension",
+      "display_name": "Quadruped Hip Extension",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5746,6 +5865,7 @@
     {
       "id": 446,
       "key": "accessory_45_degree_back_extension_glute_bias",
+      "display_name": "45-Degree Back Extension (Glute Bias)",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5759,19 +5879,7 @@
     {
       "id": 447,
       "key": "accessory_band_glute_bridge",
-      "kind": "accessory",
-      "family": "accessory_glutes",
-      "primary_muscle_group": "glutes",
-      "secondary_muscle_groups": [
-        "hamstrings"
-      ],
-      "equipment_type": "other",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 448,
-      "key": "accessory_band_hip_thrust",
+      "display_name": "Band Glute Bridge",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5785,6 +5893,7 @@
     {
       "id": 449,
       "key": "accessory_band_glute_kickback",
+      "display_name": "Band Glute Kickback",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5798,6 +5907,7 @@
     {
       "id": 450,
       "key": "accessory_band_frog_pump",
+      "display_name": "Band Frog Pump",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -5811,6 +5921,7 @@
     {
       "id": 451,
       "key": "accessory_adductor_machine",
+      "display_name": "Adductor Machine",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -5824,6 +5935,7 @@
     {
       "id": 452,
       "key": "accessory_single_leg_adductor_machine",
+      "display_name": "Single-Leg Adductor Machine",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -5837,6 +5949,7 @@
     {
       "id": 453,
       "key": "accessory_standing_cable_hip_adduction",
+      "display_name": "Standing Cable Hip Adduction",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -5848,6 +5961,7 @@
     {
       "id": 454,
       "key": "accessory_side_lying_cable_hip_adduction",
+      "display_name": "Side-Lying Cable Hip Adduction",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -5859,6 +5973,7 @@
     {
       "id": 455,
       "key": "accessory_copenhagen_adduction",
+      "display_name": "Copenhagen Adduction",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -5872,6 +5987,7 @@
     {
       "id": 456,
       "key": "accessory_short_lever_copenhagen_adduction",
+      "display_name": "Short-Lever Copenhagen Adduction",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -5885,6 +6001,7 @@
     {
       "id": 457,
       "key": "accessory_long_lever_copenhagen_adduction",
+      "display_name": "Long-Lever Copenhagen Adduction",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -5898,6 +6015,7 @@
     {
       "id": 458,
       "key": "accessory_side_lying_hip_adduction",
+      "display_name": "Side-Lying Hip Adduction",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -5911,6 +6029,7 @@
     {
       "id": 459,
       "key": "accessory_adductor_slide",
+      "display_name": "Adductor Slide",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -5924,6 +6043,7 @@
     {
       "id": 460,
       "key": "accessory_sumo_squat_hold",
+      "display_name": "Sumo Squat Hold",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -5937,6 +6057,7 @@
     {
       "id": 461,
       "key": "accessory_band_hip_adduction",
+      "display_name": "Band Hip Adduction",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -5948,6 +6069,7 @@
     {
       "id": 462,
       "key": "accessory_band_copenhagen_adduction",
+      "display_name": "Band Copenhagen Adduction",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -5959,6 +6081,7 @@
     {
       "id": 463,
       "key": "accessory_hip_abductor_machine",
+      "display_name": "Hip Abductor Machine",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -5972,6 +6095,7 @@
     {
       "id": 464,
       "key": "accessory_standing_hip_abductor_machine",
+      "display_name": "Standing Hip Abductor Machine",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -5985,6 +6109,7 @@
     {
       "id": 465,
       "key": "accessory_standing_cable_hip_abduction",
+      "display_name": "Standing Cable Hip Abduction",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -5998,6 +6123,7 @@
     {
       "id": 466,
       "key": "accessory_side_lying_cable_hip_abduction",
+      "display_name": "Side-Lying Cable Hip Abduction",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -6011,6 +6137,7 @@
     {
       "id": 467,
       "key": "accessory_side_lying_hip_abduction",
+      "display_name": "Side-Lying Hip Abduction",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -6024,6 +6151,7 @@
     {
       "id": 468,
       "key": "accessory_fire_hydrant",
+      "display_name": "Fire Hydrant",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -6037,6 +6165,7 @@
     {
       "id": 469,
       "key": "accessory_lateral_step_down",
+      "display_name": "Lateral Step-Down",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -6050,6 +6179,7 @@
     {
       "id": 470,
       "key": "accessory_side_plank_hip_abduction",
+      "display_name": "Side Plank Hip Abduction",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -6063,6 +6193,7 @@
     {
       "id": 471,
       "key": "accessory_band_hip_abduction",
+      "display_name": "Band Hip Abduction",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -6076,6 +6207,7 @@
     {
       "id": 472,
       "key": "accessory_lateral_band_walk",
+      "display_name": "Lateral Band Walk",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -6089,6 +6221,7 @@
     {
       "id": 473,
       "key": "accessory_monster_walk",
+      "display_name": "Monster Walk",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -6102,6 +6235,7 @@
     {
       "id": 474,
       "key": "accessory_clamshell",
+      "display_name": "Clamshell",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -6115,6 +6249,7 @@
     {
       "id": 475,
       "key": "accessory_standing_band_hip_abduction",
+      "display_name": "Standing Band Hip Abduction",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -6128,6 +6263,7 @@
     {
       "id": 476,
       "key": "accessory_standing_dumbbell_calf_raise",
+      "display_name": "Standing Dumbbell Calf Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6139,6 +6275,7 @@
     {
       "id": 477,
       "key": "accessory_single_leg_dumbbell_calf_raise",
+      "display_name": "Single-Leg Dumbbell Calf Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6150,6 +6287,7 @@
     {
       "id": 478,
       "key": "accessory_barbell_calf_raise",
+      "display_name": "Barbell Calf Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6161,6 +6299,7 @@
     {
       "id": 479,
       "key": "accessory_seated_dumbbell_calf_raise",
+      "display_name": "Seated Dumbbell Calf Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6172,6 +6311,7 @@
     {
       "id": 480,
       "key": "accessory_donkey_calf_raise_with_weight",
+      "display_name": "Donkey Calf Raise with Weight",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6183,6 +6323,7 @@
     {
       "id": 481,
       "key": "accessory_standing_calf_raise_machine",
+      "display_name": "Standing Calf Raise Machine",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6194,6 +6335,7 @@
     {
       "id": 482,
       "key": "accessory_seated_calf_raise_machine",
+      "display_name": "Seated Calf Raise Machine",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6205,6 +6347,7 @@
     {
       "id": 483,
       "key": "accessory_leg_press_calf_raise",
+      "display_name": "Leg-Press Calf Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6216,6 +6359,7 @@
     {
       "id": 484,
       "key": "accessory_hack_squat_calf_raise",
+      "display_name": "Hack-Squat Calf Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6227,6 +6371,7 @@
     {
       "id": 485,
       "key": "accessory_smith_machine_calf_raise",
+      "display_name": "Smith-Machine Calf Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6238,6 +6383,7 @@
     {
       "id": 486,
       "key": "accessory_single_leg_calf_raise_machine",
+      "display_name": "Single-Leg Calf Raise Machine",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6249,6 +6395,7 @@
     {
       "id": 487,
       "key": "accessory_tibialis_raise_machine",
+      "display_name": "Tibialis Raise Machine",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6260,6 +6407,7 @@
     {
       "id": 488,
       "key": "accessory_standing_calf_raise",
+      "display_name": "Standing Calf Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6271,6 +6419,7 @@
     {
       "id": 489,
       "key": "accessory_single_leg_calf_raise",
+      "display_name": "Single-Leg Calf Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6282,6 +6431,7 @@
     {
       "id": 490,
       "key": "accessory_bent_knee_calf_raise",
+      "display_name": "Bent-Knee Calf Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6293,6 +6443,7 @@
     {
       "id": 491,
       "key": "accessory_donkey_calf_raise",
+      "display_name": "Donkey Calf Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6304,6 +6455,7 @@
     {
       "id": 492,
       "key": "accessory_tibialis_raise",
+      "display_name": "Tibialis Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6315,6 +6467,7 @@
     {
       "id": 493,
       "key": "accessory_band_calf_raise",
+      "display_name": "Band Calf Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6326,6 +6479,7 @@
     {
       "id": 494,
       "key": "accessory_band_tibialis_raise",
+      "display_name": "Band Tibialis Raise",
       "kind": "accessory",
       "family": "accessory_calves",
       "primary_muscle_group": "calves",
@@ -6337,6 +6491,7 @@
     {
       "id": 495,
       "key": "accessory_weighted_crunch",
+      "display_name": "Weighted Crunch",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6350,6 +6505,7 @@
     {
       "id": 496,
       "key": "accessory_dumbbell_sit_up",
+      "display_name": "Dumbbell Sit-Up",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6363,6 +6519,7 @@
     {
       "id": 497,
       "key": "accessory_plate_sit_up",
+      "display_name": "Plate Sit-Up",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6376,6 +6533,7 @@
     {
       "id": 498,
       "key": "accessory_weighted_decline_sit_up",
+      "display_name": "Weighted Decline Sit-Up",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6389,6 +6547,7 @@
     {
       "id": 499,
       "key": "accessory_barbell_rollout",
+      "display_name": "Barbell Rollout",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6402,6 +6561,7 @@
     {
       "id": 500,
       "key": "accessory_dumbbell_dead_bug",
+      "display_name": "Dumbbell Dead Bug",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6415,19 +6575,7 @@
     {
       "id": 501,
       "key": "accessory_cable_crunch",
-      "kind": "accessory",
-      "family": "accessory_abs",
-      "primary_muscle_group": "abs",
-      "secondary_muscle_groups": [
-        "hip_flexors"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 502,
-      "key": "accessory_kneeling_cable_crunch",
+      "display_name": "Cable Crunch",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6441,6 +6589,7 @@
     {
       "id": 503,
       "key": "accessory_standing_cable_crunch",
+      "display_name": "Standing Cable Crunch",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6454,6 +6603,7 @@
     {
       "id": 504,
       "key": "accessory_cable_reverse_crunch",
+      "display_name": "Cable Reverse Crunch",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6467,6 +6617,7 @@
     {
       "id": 505,
       "key": "accessory_abdominal_crunch_machine",
+      "display_name": "Abdominal Crunch Machine",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6480,6 +6631,7 @@
     {
       "id": 506,
       "key": "accessory_rotary_ab_crunch_machine",
+      "display_name": "Rotary Ab Crunch Machine",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6493,6 +6645,7 @@
     {
       "id": 507,
       "key": "accessory_crunch",
+      "display_name": "Crunch",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6506,6 +6659,7 @@
     {
       "id": 508,
       "key": "accessory_reverse_crunch",
+      "display_name": "Reverse Crunch",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6519,6 +6673,7 @@
     {
       "id": 509,
       "key": "accessory_decline_sit_up",
+      "display_name": "Decline Sit-Up",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6532,6 +6687,7 @@
     {
       "id": 510,
       "key": "accessory_hanging_knee_raise",
+      "display_name": "Hanging Knee Raise",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6545,6 +6701,7 @@
     {
       "id": 511,
       "key": "accessory_hanging_leg_raise",
+      "display_name": "Hanging Leg Raise",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6558,6 +6715,7 @@
     {
       "id": 512,
       "key": "accessory_captain_s_chair_knee_raise",
+      "display_name": "Captain's-Chair Knee Raise",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6571,6 +6729,7 @@
     {
       "id": 513,
       "key": "accessory_lying_leg_raise",
+      "display_name": "Lying Leg Raise",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6584,6 +6743,7 @@
     {
       "id": 514,
       "key": "accessory_ab_wheel_rollout",
+      "display_name": "Ab Wheel Rollout",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6597,6 +6757,7 @@
     {
       "id": 515,
       "key": "accessory_body_saw",
+      "display_name": "Body Saw",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6610,6 +6771,7 @@
     {
       "id": 516,
       "key": "accessory_dead_bug",
+      "display_name": "Dead Bug",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6623,6 +6785,7 @@
     {
       "id": 517,
       "key": "accessory_hollow_body_hold",
+      "display_name": "Hollow-Body Hold",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6636,6 +6799,7 @@
     {
       "id": 518,
       "key": "accessory_v_up",
+      "display_name": "V-Up",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6649,6 +6813,7 @@
     {
       "id": 519,
       "key": "accessory_toe_touch",
+      "display_name": "Toe Touch",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6662,19 +6827,7 @@
     {
       "id": 520,
       "key": "accessory_band_crunch",
-      "kind": "accessory",
-      "family": "accessory_abs",
-      "primary_muscle_group": "abs",
-      "secondary_muscle_groups": [
-        "hip_flexors"
-      ],
-      "equipment_type": "other",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 521,
-      "key": "accessory_band_reverse_crunch",
+      "display_name": "Band Crunch",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6688,6 +6841,7 @@
     {
       "id": 522,
       "key": "accessory_band_dead_bug",
+      "display_name": "Band Dead Bug",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -6701,6 +6855,7 @@
     {
       "id": 523,
       "key": "accessory_dumbbell_side_bend",
+      "display_name": "Dumbbell Side Bend",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6714,6 +6869,7 @@
     {
       "id": 524,
       "key": "accessory_suitcase_march",
+      "display_name": "Suitcase March",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6727,6 +6883,7 @@
     {
       "id": 525,
       "key": "accessory_suitcase_carry",
+      "display_name": "Suitcase Carry",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6740,6 +6897,7 @@
     {
       "id": 526,
       "key": "accessory_landmine_rotation",
+      "display_name": "Landmine Rotation",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6753,6 +6911,7 @@
     {
       "id": 527,
       "key": "accessory_russian_twist_with_weight",
+      "display_name": "Russian Twist with Weight",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6766,6 +6925,7 @@
     {
       "id": 528,
       "key": "accessory_barbell_windshield_wiper",
+      "display_name": "Barbell Windshield Wiper",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6779,6 +6939,7 @@
     {
       "id": 529,
       "key": "accessory_pallof_press",
+      "display_name": "Pallof Press",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6792,6 +6953,7 @@
     {
       "id": 530,
       "key": "accessory_half_kneeling_pallof_press",
+      "display_name": "Half-Kneeling Pallof Press",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6805,19 +6967,7 @@
     {
       "id": 531,
       "key": "accessory_cable_wood_chop",
-      "kind": "accessory",
-      "family": "accessory_obliques",
-      "primary_muscle_group": "obliques",
-      "secondary_muscle_groups": [
-        "abs"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 532,
-      "key": "accessory_high_to_low_cable_chop",
+      "display_name": "Cable Wood Chop",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6831,6 +6981,7 @@
     {
       "id": 533,
       "key": "accessory_low_to_high_cable_chop",
+      "display_name": "Low-to-High Cable Chop",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6844,19 +6995,7 @@
     {
       "id": 534,
       "key": "accessory_cable_side_bend",
-      "kind": "accessory",
-      "family": "accessory_obliques",
-      "primary_muscle_group": "obliques",
-      "secondary_muscle_groups": [
-        "abs"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 535,
-      "key": "accessory_cable_lift",
+      "display_name": "Cable Side Bend",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6870,6 +7009,7 @@
     {
       "id": 536,
       "key": "accessory_side_plank",
+      "display_name": "Side Plank",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6883,6 +7023,7 @@
     {
       "id": 537,
       "key": "accessory_copenhagen_side_plank",
+      "display_name": "Copenhagen Side Plank",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6896,6 +7037,7 @@
     {
       "id": 538,
       "key": "accessory_bicycle_crunch",
+      "display_name": "Bicycle Crunch",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6909,6 +7051,7 @@
     {
       "id": 539,
       "key": "accessory_cross_body_mountain_climber",
+      "display_name": "Cross-Body Mountain Climber",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6922,6 +7065,7 @@
     {
       "id": 540,
       "key": "accessory_windshield_wiper",
+      "display_name": "Windshield Wiper",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6935,6 +7079,7 @@
     {
       "id": 541,
       "key": "accessory_bird_dog",
+      "display_name": "Bird Dog",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6948,6 +7093,7 @@
     {
       "id": 542,
       "key": "accessory_band_pallof_press",
+      "display_name": "Band Pallof Press",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6961,6 +7107,7 @@
     {
       "id": 543,
       "key": "accessory_band_wood_chop",
+      "display_name": "Band Wood Chop",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6974,6 +7121,7 @@
     {
       "id": 544,
       "key": "accessory_band_anti_rotation_hold",
+      "display_name": "Band Anti-Rotation Hold",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -6987,6 +7135,7 @@
     {
       "id": 545,
       "key": "accessory_barbell_back_extension",
+      "display_name": "Barbell Back Extension",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7001,6 +7150,7 @@
     {
       "id": 546,
       "key": "accessory_good_morning",
+      "display_name": "Good Morning",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7015,6 +7165,7 @@
     {
       "id": 547,
       "key": "accessory_jefferson_curl",
+      "display_name": "Jefferson Curl",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7029,6 +7180,7 @@
     {
       "id": 548,
       "key": "accessory_zercher_good_morning",
+      "display_name": "Zercher Good Morning",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7043,6 +7195,7 @@
     {
       "id": 549,
       "key": "accessory_weighted_sorenson_hold",
+      "display_name": "Weighted Sorenson Hold",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7057,6 +7210,7 @@
     {
       "id": 550,
       "key": "accessory_45_degree_back_extension_lower_back_bias",
+      "display_name": "45-Degree Back Extension (Lower-Back Bias)",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7071,6 +7225,7 @@
     {
       "id": 551,
       "key": "accessory_horizontal_back_extension",
+      "display_name": "Horizontal Back Extension",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7085,6 +7240,7 @@
     {
       "id": 552,
       "key": "accessory_sorenson_hold",
+      "display_name": "Sorenson Hold",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7099,6 +7255,7 @@
     {
       "id": 553,
       "key": "accessory_bird_dog_back_extension",
+      "display_name": "Bird Dog Back Extension",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7113,6 +7270,7 @@
     {
       "id": 554,
       "key": "accessory_superman_hold",
+      "display_name": "Superman Hold",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7127,6 +7285,7 @@
     {
       "id": 555,
       "key": "accessory_lumbar_extension_machine",
+      "display_name": "Lumbar Extension Machine",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7141,6 +7300,7 @@
     {
       "id": 556,
       "key": "accessory_reverse_hyperextension_machine",
+      "display_name": "Reverse Hyperextension Machine",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7155,20 +7315,7 @@
     {
       "id": 557,
       "key": "accessory_cable_good_morning",
-      "kind": "accessory",
-      "family": "accessory_lower_back",
-      "primary_muscle_group": "lower_back",
-      "secondary_muscle_groups": [
-        "hamstrings",
-        "glutes"
-      ],
-      "equipment_type": "cable",
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 558,
-      "key": "accessory_cable_pull_through_back_extension",
+      "display_name": "Cable Good Morning",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7183,6 +7330,7 @@
     {
       "id": 559,
       "key": "accessory_band_back_extension",
+      "display_name": "Band Back Extension",
       "kind": "accessory",
       "family": "accessory_lower_back",
       "primary_muscle_group": "lower_back",
@@ -7197,6 +7345,7 @@
     {
       "id": 560,
       "key": "accessory_dumbbell_serratus_punch",
+      "display_name": "Dumbbell Serratus Punch",
       "kind": "accessory",
       "family": "accessory_serratus",
       "primary_muscle_group": "serratus",
@@ -7210,6 +7359,7 @@
     {
       "id": 562,
       "key": "accessory_cable_serratus_punch",
+      "display_name": "Cable Serratus Punch",
       "kind": "accessory",
       "family": "accessory_serratus",
       "primary_muscle_group": "serratus",
@@ -7223,6 +7373,7 @@
     {
       "id": 563,
       "key": "accessory_single_arm_cable_serratus_punch",
+      "display_name": "Single-Arm Cable Serratus Punch",
       "kind": "accessory",
       "family": "accessory_serratus",
       "primary_muscle_group": "serratus",
@@ -7236,6 +7387,7 @@
     {
       "id": 564,
       "key": "accessory_push_up_plus",
+      "display_name": "Push-Up Plus",
       "kind": "accessory",
       "family": "accessory_serratus",
       "primary_muscle_group": "serratus",
@@ -7249,6 +7401,7 @@
     {
       "id": 565,
       "key": "accessory_scapular_push_up",
+      "display_name": "Scapular Push-Up",
       "kind": "accessory",
       "family": "accessory_serratus",
       "primary_muscle_group": "serratus",
@@ -7262,6 +7415,7 @@
     {
       "id": 566,
       "key": "accessory_wall_slide_with_reach",
+      "display_name": "Wall Slide with Reach",
       "kind": "accessory",
       "family": "accessory_serratus",
       "primary_muscle_group": "serratus",
@@ -7275,6 +7429,7 @@
     {
       "id": 567,
       "key": "accessory_band_serratus_punch",
+      "display_name": "Band Serratus Punch",
       "kind": "accessory",
       "family": "accessory_serratus",
       "primary_muscle_group": "serratus",
@@ -7288,6 +7443,7 @@
     {
       "id": 568,
       "key": "accessory_band_wall_slide",
+      "display_name": "Band Wall Slide",
       "kind": "accessory",
       "family": "accessory_serratus",
       "primary_muscle_group": "serratus",
@@ -7301,6 +7457,7 @@
     {
       "id": 570,
       "key": "accessory_ankle_weight_hip_flexion",
+      "display_name": "Ankle-Weight Hip Flexion",
       "kind": "accessory",
       "family": "accessory_hip_flexors",
       "primary_muscle_group": "hip_flexors",
@@ -7314,6 +7471,7 @@
     {
       "id": 571,
       "key": "accessory_standing_cable_hip_flexion",
+      "display_name": "Standing Cable Hip Flexion",
       "kind": "accessory",
       "family": "accessory_hip_flexors",
       "primary_muscle_group": "hip_flexors",
@@ -7327,6 +7485,7 @@
     {
       "id": 572,
       "key": "accessory_supine_cable_hip_flexion",
+      "display_name": "Supine Cable Hip Flexion",
       "kind": "accessory",
       "family": "accessory_hip_flexors",
       "primary_muscle_group": "hip_flexors",
@@ -7340,6 +7499,7 @@
     {
       "id": 573,
       "key": "accessory_hip_flexion_machine",
+      "display_name": "Hip Flexion Machine",
       "kind": "accessory",
       "family": "accessory_hip_flexors",
       "primary_muscle_group": "hip_flexors",
@@ -7351,6 +7511,7 @@
     {
       "id": 574,
       "key": "accessory_standing_hip_flexor_march",
+      "display_name": "Standing Hip-Flexor March",
       "kind": "accessory",
       "family": "accessory_hip_flexors",
       "primary_muscle_group": "hip_flexors",
@@ -7364,6 +7525,7 @@
     {
       "id": 575,
       "key": "accessory_seated_leg_lift",
+      "display_name": "Seated Leg Lift",
       "kind": "accessory",
       "family": "accessory_hip_flexors",
       "primary_muscle_group": "hip_flexors",
@@ -7377,6 +7539,7 @@
     {
       "id": 576,
       "key": "accessory_l_sit",
+      "display_name": "L-Sit",
       "kind": "accessory",
       "family": "accessory_hip_flexors",
       "primary_muscle_group": "hip_flexors",
@@ -7390,6 +7553,7 @@
     {
       "id": 577,
       "key": "accessory_hanging_knee_raise_iso_hold",
+      "display_name": "Hanging Knee Raise Iso-Hold",
       "kind": "accessory",
       "family": "accessory_hip_flexors",
       "primary_muscle_group": "hip_flexors",
@@ -7403,6 +7567,7 @@
     {
       "id": 578,
       "key": "accessory_band_psoas_march",
+      "display_name": "Band Psoas March",
       "kind": "accessory",
       "family": "accessory_hip_flexors",
       "primary_muscle_group": "hip_flexors",
@@ -7416,6 +7581,7 @@
     {
       "id": 579,
       "key": "accessory_band_hip_flexion",
+      "display_name": "Band Hip Flexion",
       "kind": "accessory",
       "family": "accessory_hip_flexors",
       "primary_muscle_group": "hip_flexors",
@@ -7429,6 +7595,7 @@
     {
       "id": 580,
       "key": "accessory_plate_neck_flexion",
+      "display_name": "Plate Neck Flexion",
       "kind": "accessory",
       "family": "accessory_neck",
       "primary_muscle_group": "neck",
@@ -7440,6 +7607,7 @@
     {
       "id": 581,
       "key": "accessory_plate_neck_extension",
+      "display_name": "Plate Neck Extension",
       "kind": "accessory",
       "family": "accessory_neck",
       "primary_muscle_group": "neck",
@@ -7451,6 +7619,7 @@
     {
       "id": 582,
       "key": "accessory_plate_lateral_neck_flexion",
+      "display_name": "Plate Lateral Neck Flexion",
       "kind": "accessory",
       "family": "accessory_neck",
       "primary_muscle_group": "neck",
@@ -7462,6 +7631,7 @@
     {
       "id": 586,
       "key": "accessory_neck_bridge",
+      "display_name": "Neck Bridge",
       "kind": "accessory",
       "family": "accessory_neck",
       "primary_muscle_group": "neck",
@@ -7473,6 +7643,7 @@
     {
       "id": 587,
       "key": "accessory_isometric_neck_flexion",
+      "display_name": "Isometric Neck Flexion",
       "kind": "accessory",
       "family": "accessory_neck",
       "primary_muscle_group": "neck",
@@ -7484,6 +7655,7 @@
     {
       "id": 588,
       "key": "accessory_isometric_neck_extension",
+      "display_name": "Isometric Neck Extension",
       "kind": "accessory",
       "family": "accessory_neck",
       "primary_muscle_group": "neck",
@@ -7495,6 +7667,7 @@
     {
       "id": 589,
       "key": "accessory_band_neck_flexion",
+      "display_name": "Band Neck Flexion",
       "kind": "accessory",
       "family": "accessory_neck",
       "primary_muscle_group": "neck",
@@ -7506,6 +7679,7 @@
     {
       "id": 590,
       "key": "accessory_band_neck_extension",
+      "display_name": "Band Neck Extension",
       "kind": "accessory",
       "family": "accessory_neck",
       "primary_muscle_group": "neck",
@@ -7517,6 +7691,7 @@
     {
       "id": 591,
       "key": "accessory_band_lateral_neck_flexion",
+      "display_name": "Band Lateral Neck Flexion",
       "kind": "accessory",
       "family": "accessory_neck",
       "primary_muscle_group": "neck",
@@ -7528,6 +7703,7 @@
     {
       "id": 605,
       "key": "pause_squat",
+      "display_name": "Pause Squat",
       "kind": "core",
       "family": "squat",
       "primary_muscle_group": null,
@@ -7539,6 +7715,7 @@
     {
       "id": 606,
       "key": "tempo_squat_3_0_3",
+      "display_name": "Tempo Squat (3-0-3)",
       "kind": "core",
       "family": "squat",
       "primary_muscle_group": null,
@@ -7550,6 +7727,7 @@
     {
       "id": 607,
       "key": "pin_squat",
+      "display_name": "Pin Squat",
       "kind": "core",
       "family": "squat",
       "primary_muscle_group": null,
@@ -7561,6 +7739,7 @@
     {
       "id": 608,
       "key": "front_squat",
+      "display_name": "Front Squat",
       "kind": "core",
       "family": "squat",
       "primary_muscle_group": null,
@@ -7572,6 +7751,7 @@
     {
       "id": 609,
       "key": "safety_bar_squat",
+      "display_name": "Safety Bar Squat (SSB)",
       "kind": "core",
       "family": "squat",
       "primary_muscle_group": null,
@@ -7583,6 +7763,7 @@
     {
       "id": 610,
       "key": "high_bar_squat",
+      "display_name": "High Bar Squat",
       "kind": "core",
       "family": "squat",
       "primary_muscle_group": null,
@@ -7594,6 +7775,7 @@
     {
       "id": 611,
       "key": "low_bar_squat",
+      "display_name": "Low Bar Squat",
       "kind": "core",
       "family": "squat",
       "primary_muscle_group": null,
@@ -7605,6 +7787,7 @@
     {
       "id": 612,
       "key": "hatfield_squat",
+      "display_name": "Hatfield Squat",
       "kind": "core",
       "family": "squat",
       "primary_muscle_group": null,
@@ -7616,6 +7799,7 @@
     {
       "id": 613,
       "key": "pause_bench_press",
+      "display_name": "Pause Bench Press",
       "kind": "core",
       "family": "bench",
       "primary_muscle_group": null,
@@ -7627,6 +7811,7 @@
     {
       "id": 614,
       "key": "larsen_press",
+      "display_name": "Larsen Press",
       "kind": "core",
       "family": "bench",
       "primary_muscle_group": null,
@@ -7638,6 +7823,7 @@
     {
       "id": 615,
       "key": "spoto_press",
+      "display_name": "Spoto Press",
       "kind": "core",
       "family": "bench",
       "primary_muscle_group": null,
@@ -7649,6 +7835,7 @@
     {
       "id": 616,
       "key": "close_grip_bench",
+      "display_name": "Close Grip Bench",
       "kind": "core",
       "family": "bench",
       "primary_muscle_group": null,
@@ -7660,6 +7847,7 @@
     {
       "id": 617,
       "key": "wide_grip_bench",
+      "display_name": "Wide Grip Bench",
       "kind": "core",
       "family": "bench",
       "primary_muscle_group": null,
@@ -7671,6 +7859,7 @@
     {
       "id": 618,
       "key": "pin_press",
+      "display_name": "Pin Press",
       "kind": "core",
       "family": "bench",
       "primary_muscle_group": null,
@@ -7682,6 +7871,7 @@
     {
       "id": 619,
       "key": "tempo_bench_3_0_3",
+      "display_name": "Tempo Bench (3-0-3)",
       "kind": "core",
       "family": "bench",
       "primary_muscle_group": null,
@@ -7693,6 +7883,7 @@
     {
       "id": 620,
       "key": "board_press_2_board",
+      "display_name": "Board Press (2-Board)",
       "kind": "core",
       "family": "bench",
       "primary_muscle_group": null,
@@ -7704,6 +7895,7 @@
     {
       "id": 621,
       "key": "pause_deadlift",
+      "display_name": "Pause Deadlift",
       "kind": "core",
       "family": "deadlift",
       "primary_muscle_group": null,
@@ -7715,6 +7907,7 @@
     {
       "id": 622,
       "key": "deficit_deadlift",
+      "display_name": "Deficit Deadlift",
       "kind": "core",
       "family": "deadlift",
       "primary_muscle_group": null,
@@ -7726,6 +7919,7 @@
     {
       "id": 623,
       "key": "block_pull",
+      "display_name": "Block Pull",
       "kind": "core",
       "family": "deadlift",
       "primary_muscle_group": null,
@@ -7737,6 +7931,7 @@
     {
       "id": 624,
       "key": "tempo_deadlift_3_0_3",
+      "display_name": "Tempo Deadlift (3-0-3)",
       "kind": "core",
       "family": "deadlift",
       "primary_muscle_group": null,
@@ -7748,6 +7943,7 @@
     {
       "id": 625,
       "key": "romanian_deadlift",
+      "display_name": "Romanian Deadlift (RDL)",
       "kind": "core",
       "family": "deadlift",
       "primary_muscle_group": null,
@@ -7759,6 +7955,7 @@
     {
       "id": 626,
       "key": "stiff_leg_deadlift",
+      "display_name": "Stiff-Leg Deadlift",
       "kind": "core",
       "family": "deadlift",
       "primary_muscle_group": null,
@@ -7770,6 +7967,7 @@
     {
       "id": 627,
       "key": "snatch_grip_deadlift",
+      "display_name": "Snatch Grip Deadlift",
       "kind": "core",
       "family": "deadlift",
       "primary_muscle_group": null,
@@ -7781,6 +7979,7 @@
     {
       "id": 628,
       "key": "sumo_deadlift",
+      "display_name": "Sumo Deadlift",
       "kind": "core",
       "family": "deadlift",
       "primary_muscle_group": null,
@@ -7792,6 +7991,7 @@
     {
       "id": 629,
       "key": "conventional_deadlift",
+      "display_name": "Conventional Deadlift",
       "kind": "core",
       "family": "deadlift",
       "primary_muscle_group": null,
@@ -7803,6 +8003,7 @@
     {
       "id": 630,
       "key": "three_count_pause_squat",
+      "display_name": "3ct Pause Squat",
       "kind": "core",
       "family": "squat",
       "primary_muscle_group": null,
@@ -7814,6 +8015,7 @@
     {
       "id": 631,
       "key": "two_count_pause_bench",
+      "display_name": "2ct Pause Bench",
       "kind": "core",
       "family": "bench",
       "primary_muscle_group": null,
@@ -7825,6 +8027,7 @@
     {
       "id": 646,
       "key": "accessory_ankle_weight_psoas_march",
+      "display_name": "Ankle-Weight Psoas March",
       "kind": "accessory",
       "family": "accessory_hip_flexors",
       "primary_muscle_group": "hip_flexors",

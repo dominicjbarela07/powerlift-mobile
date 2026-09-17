@@ -1,3 +1,4 @@
+import { normalizeCurrentWorkoutItem } from './current-session-movement';
 import { equipmentPresentationLabel } from '@/lib/equipment-presentation';
 
 export type EquipmentSelectionContinuation =
@@ -57,6 +58,8 @@ export type EquipmentIdentityLike = {
 
 export type EquipmentAwareWorkoutItem = {
   id: number;
+  movement_definition_id?: number | null;
+  movement_identity_contract?: number;
   movement?: string | null;
   movement_identity?: EquipmentIdentityLike | null;
   performed_movement_identity?: EquipmentIdentityLike | null;
@@ -216,6 +219,10 @@ export function isMachineAccessoryItem(
   item: EquipmentAwareWorkoutItem | null | undefined,
 ): boolean {
   if (!item) return false;
+  if (item.movement_definition_id || item.movement_identity_contract === 1) {
+    const current = normalizeCurrentWorkoutItem(item);
+    return equipmentClassification(current.movement_identity as EquipmentIdentityLike | null) === 'machine';
+  }
   const performedClassification = equipmentClassification(
     item.performed_movement_identity,
   );

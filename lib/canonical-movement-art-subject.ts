@@ -1,3 +1,4 @@
+import { normalizeCurrentWorkoutItem } from './current-session-movement';
 import { governedAccessoryArtworkTaxonomy, governedCoreArtworkTaxonomy } from './governed-movement-art-taxonomy';
 import { normalizeWorkoutItemMovementReferences } from './workout-item-movement-references';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, RETIRED_ACCESSORY_ARTWORK_IDENTITIES } from './canonical-accessory-artwork-identities';
@@ -39,6 +40,7 @@ type Evidence = Readonly<{
 
 /** Serialized movement/evidence contracts. Deliberately has no generic `id`. */
 export type CanonicalMovementArtworkInput = Evidence & Readonly<{
+  movement_identity_contract?: number;
   key?: string | null;
   family?: string | null;
   kind?: string | null;
@@ -135,6 +137,14 @@ export function canonicalArtworkInputFromDefinition(definition?: MovementArtDefi
 /** One read-only subject for every artwork consumer. No labels, fuzzy matching or artwork policy. */
 export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | null): CanonicalMovementArtSubject {
   if (input && 'artSubjectVersion' in input) return input;
+  if (input?.movement_identity_contract === 1) {
+    const current = normalizeCurrentWorkoutItem(input);
+    return normalizeCanonicalMovementArtSubject({
+      item_id: input.item_id, movement_definition_id: current.movement_definition_id,
+      movement_identity: current.movement_identity, core_movement_id: current.core_movement_id,
+      core_movement: current.core_movement, kind: current.core_movement ? 'core' : 'accessory',
+    });
+  }
   const row: CanonicalMovementArtworkInput = normalizeWorkoutItemMovementReferences(input || {});
   const base: CanonicalMovementArtSubject = {
     artSubjectVersion: 1, domain: null, canonicalIdentityId: null, canonicalKey: null,

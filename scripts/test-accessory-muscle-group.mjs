@@ -6,7 +6,7 @@ import {
 
 const governed = (family, movement = 'Legacy display copy') => accessoryMuscleRegion({
   movement,
-  movement_identity: { id: 100, family },
+  movement_identity: { id: 700100, family },
 }).key;
 
 assert.equal(governed('shoulders'), 'shoulders');
@@ -30,7 +30,7 @@ assert.equal(governed('hip_flexors'), 'hip_flexors');
 assert.equal(
   accessoryMuscleRegion({
     movement: 'Misleading Shoulder Press',
-    movement_identity: { id: 101, family: 'row', family_display_name: 'Row' },
+    movement_identity: { id: 700101, family: 'row', family_display_name: 'Row' },
   }).key,
   'upper_back',
   'Governed identity must win over legacy movement copy.',

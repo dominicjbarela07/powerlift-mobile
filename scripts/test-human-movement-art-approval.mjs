@@ -57,6 +57,28 @@ try {
   write('artwork-review/review-state.json', fixture);
   write('artwork-review/runtime-policy.json', {denied_keys: [], approved_exact_artwork: approvedExactArtworkPolicy(fixture)});
   assert.equal(assertHumanArtworkGate(temporary).canonical, 1, 'exact approved receipt enables governed mapping');
+  const chat = {action: 'approve', decision: 'approved', source: 'explicit_owner_chat',
+    owner_instruction: 'Mark this exact image approved.', conversation_id: '01a0a813-c63f-7081-a3c9-475e7bea8368',
+    recorded_by: 'codex_at_owner_request', candidate_sha256: candidate.files.master.sha256};
+  fixture.items[0].review = chat; fixture.items[0].review_history = [chat];
+  fixture.canonical_assets[0].approval_source = chat.source; fixture.canonical_assets[0].review = chat;
+  write('artwork-review/review-state.json', fixture);
+  write('artwork-review/runtime-policy.json', {denied_keys: [], approved_exact_artwork: approvedExactArtworkPolicy(fixture)});
+  assert.equal(assertHumanArtworkGate(temporary).canonical, 1, 'explicit owner chat remains distinct from UI approval');
+  chat.owner_instruction = '';
+  assert.deepEqual(approvedExactArtworkPolicy(fixture), [], 'missing owner evidence fails closed');
+  chat.owner_instruction = 'Mark this exact image approved.';
+  fixture.artwork_invalidations = [{rebuild_id: 'isolated-cable-reset',
+    movement_definition_ids: [candidate.movement_definition_id],
+    invalidated_master_hashes: [candidate.files.master.sha256]}];
+  write('artwork-review/review-state.json', fixture);
+  assert.deepEqual(approvedExactArtworkPolicy(fixture), [], 'family invalidation overrides an old exact human approval');
+  assert.throws(() => assertHumanArtworkGate(temporary), /runtime rejection policy/, 'stale approval manifest cannot re-enable invalidated bytes');
+  write('artwork-review/runtime-policy.json', {denied_keys: [original.key], approved_exact_artwork: []});
+  assert.equal(assertHumanArtworkGate(temporary).canonical, 1, 'retained historical mapping is safe only with current denial and no positive receipt');
+  delete fixture.artwork_invalidations;
+  write('artwork-review/review-state.json', fixture);
+  write('artwork-review/runtime-policy.json', {denied_keys: [], approved_exact_artwork: approvedExactArtworkPolicy(fixture)});
   write('lib/canonical-movement-artwork-assets.ts', mapping.replace(original.files.app.path, candidate.files.app.path));
   assert.throws(() => assertHumanArtworkGate(temporary), /correct identity/);
   write('lib/canonical-movement-artwork-assets.ts', mapping);
