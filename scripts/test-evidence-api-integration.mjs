@@ -1,3 +1,4 @@
+import { normalizeSessionMovementResponse } from '../lib/current-session-movement.ts';
 import assert from 'node:assert/strict';
 import ts from 'typescript';
 import { readFileSync } from 'node:fs';
@@ -19,6 +20,7 @@ const policy = evaluate('../lib/api-request-policy.ts');
 let account = 'account-a'; let mode = 'coach'; let calls = [];
 let implementation = async () => new Response(JSON.stringify({ ok: true, weight_kg: 100 }), { status: 200 });
 const modules = {
+  '@/lib/current-session-movement': { normalizeSessionMovementResponse },
   './evidence-read-cache': cache,
   './session-exposure-cache': exposure,
   'expo-secure-store': { getItemAsync: async (key) => key === 'auth_token' ? account : null },

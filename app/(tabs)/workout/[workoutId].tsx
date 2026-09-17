@@ -3120,6 +3120,24 @@ export default function WorkoutViewerScreen() {
       rir = n;
     }
 
+    const sameMovement = Number(resolveLoggerMovementIdentity(swapAccItem).effective?.id) === Number(swapAccIdentity.id);
+    const unchangedPrescription = substitutionAuthority !== 'self_governed' || (
+      sets === (swapAccItem.performed_sets ?? swapAccItem.sets ?? null)
+      && rir === (swapAccItem.performed_rir_target ?? swapAccItem.rir_target ?? null)
+      && repsText === accessoryRepTargetText(accessoryRepTargetFromText(
+        swapAccItem.performed_reps_text || swapAccItem.reps_text || (swapAccItem.reps != null ? String(swapAccItem.reps) : '10'),
+      ))
+    );
+    if (sameMovement && unchangedPrescription) {
+      // A same-ID selection has no write to reconcile, including on the old
+      // TestFlight API whose Swap endpoint would reset selected equipment.
+      setSwapPickerVisible(false);
+      setSwapAccVisible(false);
+      setSwapAccItem(null);
+      setSwapAccIdentity(null);
+      return;
+    }
+
     const swapOwner = executionScope;
     try {
       setSavingItemId(swapAccItem.id);
@@ -3131,7 +3149,7 @@ export default function WorkoutViewerScreen() {
           method: 'POST',
           body: {
             movement: swapAccIdentity.display_name,
-            performed_canonical_movement_definition_id: swapAccIdentity.id,
+            movement_definition_id: swapAccIdentity.id,
             expected_movement_definition_id: resolveLoggerMovementIdentity(swapAccItem).effective?.id,
             ...(substitutionAuthority === 'self_governed' ? {
               sets: sets ?? undefined, reps_text: repsText, rir: rir ?? undefined,
@@ -3146,7 +3164,24 @@ export default function WorkoutViewerScreen() {
       }
 
       if (executionScopeRef.current !== swapOwner) return;
-      const savedItem = json.item as WorkoutItem | undefined;
+      let savedItem = json.item as WorkoutItem | undefined;
+      const priorEquipment = swapAccItem.performed_movement_identity;
+      if (sameMovement && priorEquipment?.key?.startsWith('machine_equipment_')
+        && Number(savedItem?.performed_movement_identity?.id) !== Number(priorEquipment.id)) {
+        // Older APIs reset equipment when only the prescription changed.
+        // Retain the athlete's explicit selection through their existing
+        // equipment endpoint; the current API preserves it in the first write.
+        const retained = await fetchJson(`${API_BASE}/workouts/mobile/${workoutId}/items/${swapAccItem.id}/performed-identity`, {
+          method: 'PUT', auth: true, body: { movement_definition_id: priorEquipment.id },
+        });
+        if (!retained.ok || !retained.json?.ok
+          || Number(retained.json.performed_movement_identity?.id) !== Number(priorEquipment.id)) {
+          void fetchWorkout({ silent: true, reason: 'manual' });
+          throw new Error('Prescription saved, but equipment could not be retained. Choose your equipment again before logging.');
+        }
+        if (executionScopeRef.current !== swapOwner) return;
+        if (savedItem) savedItem = { ...savedItem, performed_movement_identity: retained.json.performed_movement_identity };
+      }
       if (savedItem) {
         const projectSavedItem = (payload: WorkoutPayload | null) => payload ? {
           ...payload,

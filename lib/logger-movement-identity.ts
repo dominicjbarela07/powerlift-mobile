@@ -1,10 +1,10 @@
+import { normalizeCurrentWorkoutItem } from './current-session-movement';
 import {
   activeEquipmentIdentity,
   type EquipmentAwareWorkoutItem,
   type EquipmentIdentityLike,
 } from '@/lib/equipment-selection';
 import { normalizeCanonicalMovementArtSubject, type CanonicalMovementArtSubject, type CanonicalMovementArtworkInput } from '@/lib/canonical-movement-art-subject';
-import { normalizeWorkoutItemMovementReferences, conflictingWorkoutMovementReferences } from './workout-item-movement-references';
 
 export type LoggerIdentityReference = EquipmentIdentityLike & {
   kind?: string | null;
@@ -72,7 +72,7 @@ function withId(
 export function resolveLoggerMovementIdentity(
   input: LoggerMovementIdentityItem,
 ): LoggerMovementIdentity {
-  const item = normalizeWorkoutItemMovementReferences(input, true);
+  const item = normalizeCurrentWorkoutItem(input);
   const performedCore = withId(item.performed_core_movement);
   const programmedCore = withId(item.core_movement);
   if (performedCore || programmedCore) {
@@ -88,27 +88,8 @@ export function resolveLoggerMovementIdentity(
   }
 
   const equipment = activeEquipmentIdentity(item) as LoggerIdentityReference | null;
-  const equipmentId = positiveId(equipment?.id);
-  const serverEffective = withId(item.effective_movement_identity);
-  const performedCanonical = withId(item.performed_canonical_movement_identity);
-  const performedComparison = withId(
-    item.performed_movement_identity as LoggerIdentityReference | null,
-  );
-  const performedMovement = performedComparison
-    && positiveId(performedComparison.id) !== equipmentId
-    ? performedComparison
-    : null;
-  const legacyEffective = withId(
-    item.legacy?.effective_movement_identity,
-    item.legacy?.effective_movement_definition_id,
-  );
-  const programmed = withId(
-    item.movement_identity as LoggerIdentityReference | null,
-  );
-  const conflicting = conflictingWorkoutMovementReferences(item);
-  const effective = conflicting ? null : serverEffective || performedCanonical || performedMovement || (
-    item.is_substituted ? null : legacyEffective || programmed
-  );
+  const programmed = withId(item.movement_identity as LoggerIdentityReference | null);
+  const effective = programmed;
 
   return {
     kind: 'accessory',
@@ -131,23 +112,14 @@ export function resolveLoggerMovementIdentity(
 export function canonicalArtworkInputForLoggerItem(
   item: CanonicalMovementArtworkInput & { id?: number | null },
 ): CanonicalMovementArtSubject {
+  const current = normalizeCurrentWorkoutItem(item);
   return normalizeCanonicalMovementArtSubject({
     item_id: item.item_id || item.id,
-    set_log_id: item.set_log_id,
-    movement_definition_id: item.movement_definition_id,
-    effective_movement_definition_id: item.effective_movement_definition_id,
-    performed_canonical_movement_definition_id: item.performed_canonical_movement_definition_id,
-    core_movement_id: item.core_movement_id,
-    core_family: item.core_family, core_kind: item.core_kind,
-    primary_muscle_group: item.primary_muscle_group, secondary_muscle_groups: item.secondary_muscle_groups,
-    kind: item.core_movement || item.performed_core_movement ? 'core' : 'accessory',
+    movement_definition_id: current.movement_definition_id,
+    movement_identity: current.movement_identity,
+    core_movement_id: current.core_movement_id,
+    core_movement: current.core_movement,
+    kind: current.core_movement ? 'core' : 'accessory',
     lift: item.lift, variant: item.variant,
-    core_movement: item.core_movement, performed_core_movement: item.performed_core_movement,
-    is_substituted: Boolean(item.is_substituted),
-    movement_identity: item.movement_identity,
-    effective_movement_identity: item.effective_movement_identity,
-    performed_canonical_movement_identity: item.performed_canonical_movement_identity,
-    performed_movement_identity: item.performed_movement_identity,
-    legacy: item.legacy,
   });
 }

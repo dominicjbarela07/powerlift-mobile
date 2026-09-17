@@ -82,7 +82,7 @@ assert.notEqual(currentExcluded.workoutId, 1726);
 assert.ok(currentExcluded.date < '2026-09-09');
 assert.ok(!real12.canonical_history.exposures.some(row => row.workout_id === oldest.workout_id));
 // A Core variant changes identity immediately; Competition evidence is never reused.
-const variant = { ...props12, item: { ...props12.item, core_movement: { ...props12.item.core_movement, id: 999, key: 'pause_squat', display_name: 'Pause Squat' }, performed_core_movement: null } };
+const variant = { ...props12, item: { ...props12.item, movement_identity_contract: 1, movement_definition_id: 700999, movement_identity: { id: 700999, key: 'pause_squat', display_name: 'Pause Squat', core_movement_definition_id: 999 }, core_movement: { ...props12.item.core_movement, id: 999, key: 'pause_squat', display_name: 'Pause Squat' }, performed_core_movement: null } };
 const resolvedVariant = launch.resolveMovementHistoryLaunchForItem({ athleteId: 12, item: variant.item });
 assert.equal(resolvedVariant.target.coreMovementId, 999);
 assert.match(text(render(variant)), /Loading/); await settle();

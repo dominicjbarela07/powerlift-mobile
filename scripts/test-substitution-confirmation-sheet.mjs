@@ -18,6 +18,6 @@ assert.doesNotMatch(sheet, /Future Sets|future set|remaining work|Remaining sets
 assert.match(sheet, /maxFontSizeMultiplier/, 'sheet defines controlled Dynamic Type behavior');
 assert.match(logger, /SubstitutionConfirmationSheet[\s\S]*onConfirm=\{saveSwapAcc\}[\s\S]*performingIdentity=\{swapAccIdentity\}/, 'presentation remains wired to the authoritative selected identity and existing save command');
 assert.match(logger, /itemHasPersistedSetLogs\(swapAccItem\)[\s\S]*acceptedSetEvidenceItemIds\.has/, 'save path retains the post-evidence identity lock');
-assert.match(logger, /performed_canonical_movement_definition_id: swapAccIdentity\.id/, 'confirmation persists the stable governed movement ID');
+assert.match(logger, /movement_definition_id: swapAccIdentity\.id/, 'confirmation persists the stable governed movement ID');
 
 console.log('Substitution confirmation sheet contracts PASS');

@@ -1,3 +1,4 @@
+import { canonicalArtworkInputForLoggerItem } from '@/lib/logger-movement-identity';
 import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { InlineSessionReorder } from './InlineSessionReorder';
 import { AthleteCoachingScratchpadTrigger } from './AthleteCoachingScratchpad';
@@ -88,6 +89,8 @@ export type MovementHistorySet = {
 
 export type SessionMovementItem = {
   id: number;
+  movement_definition_id?: number | null;
+  movement_identity_contract?: number;
   lift?: string | null;
   variant?: string | null;
   designation?: string | null;
@@ -646,13 +649,13 @@ export function SessionEditingWorkspace(props: Props) {
       setSessionDraft((current) => {
         const previous = current.items[replacement.id];
         const previousIdentityId = Number(
-          previous?.movement_identity?.id
-          || previous?.legacy?.effective_movement_definition_id
+          previous?.movement_definition_id
+          || previous?.movement_identity?.id
           || 0,
         );
         const replacementIdentityId = Number(
-          replacement.movement_identity?.id
-          || replacement.legacy?.effective_movement_definition_id
+          replacement.movement_definition_id
+          || replacement.movement_identity?.id
           || 0,
         );
         const identityChanged = (
@@ -1418,21 +1421,7 @@ function InlineMovementWorkspace({ exposureContext, item, kind, draft, dirty, ed
 }
 
 function MovementArtwork({ item, kind, size }: { item: SessionMovementItem | null; kind: MovementKind; size: number }) {
-  const movement = item ? {
-    item_id: item.id,
-    kind,
-    effective_movement_identity: item.effective_movement_identity,
-    is_substituted: item.is_substituted,
-    lift: item.lift,
-    core_movement: item.core_movement,
-    performed_core_movement: item.performed_core_movement,
-    variant: item.variant,
-    movement_definition_id: item.movement_identity?.id,
-    movement_identity: item.movement_identity,
-    performed_movement_identity: item.performed_movement_identity,
-    performed_canonical_movement_identity: item.performed_canonical_movement_identity,
-    legacy: item.legacy,
-  } : null;
+  const movement = item ? canonicalArtworkInputForLoggerItem({ ...item, item_id: item.id, kind }) : null;
   return <CanonicalMovementArtwork movement={movement} size={size} testID="session-editor-canonical-movement-artwork" />;
 }
 
