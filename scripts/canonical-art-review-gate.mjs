@@ -19,6 +19,23 @@ const explicitOwnerChat = review => review?.source === 'explicit_owner_chat'
 const humanSource = review => (review?.source === 'human_review_ui'
   && Number.isInteger(review.reviewer_user_id) && review.reviewer_user_id > 0) || explicitOwnerChat(review);
 
+export function approvedLoggerCropPolicy(state, item) {
+  const row = state.logger_crop_reviews?.[item.candidate_id], receipt = row?.review;
+  if (row?.status !== 'approved' || receipt?.action !== 'approve'
+      || receipt?.source !== 'human_logger_crop_ui' || item.test_only
+      || !Number.isInteger(receipt.reviewer_user_id) || receipt.reviewer_user_id <= 0
+      || receipt.candidate_sha256 !== item.files.master.sha256 || receipt.app_sha256 !== item.files.app.sha256
+      || JSON.stringify(receipt.crop) !== JSON.stringify(row.crop)
+      || !row.history?.some(event => JSON.stringify(event) === JSON.stringify(receipt))) return null;
+  const crop = row.crop;
+  assert.deepEqual(Object.keys(crop).sort(), ['fit', 'x', 'y', 'zoom']);
+  assert.ok(['original', 'contain', 'focal'].includes(crop.fit));
+  for (const [key, low, high] of [['zoom', .5, 1.6], ['x', -.5, .5], ['y', -.5, .5]]) {
+    assert.ok(Number.isFinite(crop[key]) && crop[key] >= low && crop[key] <= high, 'bounded Logger crop');
+  }
+  return crop;
+}
+
 export function approvedExactArtworkPolicy(state) {
   return state.canonical_assets.flatMap(active => {
     const row = state.items.find(candidate => candidate.candidate_id === active.candidate_id);
@@ -32,9 +49,11 @@ export function approvedExactArtworkPolicy(state) {
     if ((!human && !prior) || !row || row.test_only || !['approved', 'approved_existing'].includes(row.status)
         || row.human_approved !== true || row.review?.candidate_sha256 !== row.files.master.sha256
         || !['master', 'app', 'thumbnail'].every(role => active.files[role].sha256 === row.files[role].sha256)) return [];
+    const loggerCrop = approvedLoggerCropPolicy(state, row);
     return [{ key: active.key, movement_definition_id: active.movement_definition_id,
       candidate_id: row.candidate_id, app_sha256: active.files.app.sha256,
-      ...(row.presentation ? {presentation: row.presentation} : {}) }];
+      ...(row.presentation ? {presentation: row.presentation} : {}),
+      ...(loggerCrop ? {logger_crop: loggerCrop} : {}) }];
   }).sort((a, b) => a.key.localeCompare(b.key));
 }
 

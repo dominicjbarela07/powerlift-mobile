@@ -1,6 +1,6 @@
 import { approvedArtRuntimeEnabled } from './approved-art-runtime';
 import policyJson from '@/artwork-review/runtime-policy.json';
-import { DEFAULT_FOCAL, thumbnailGeometry, type Presentation } from './movement-artwork-geometry.mjs';
+import { DEFAULT_FOCAL, thumbnailGeometry, type Presentation, type LoggerCrop } from './movement-artwork-geometry.mjs';
 export { movementHeroGeometry } from './movement-artwork-geometry.mjs';
 import { normalizeCanonicalMovementArtSubject, resolveCanonicalMovementArtwork, type CanonicalMovementArtworkInput, type MovementArtInput, type CanonicalAccessoryArtworkKey } from './canonical-movement-artwork';
 
@@ -12,7 +12,7 @@ export type ApprovedExactArtwork = Readonly<{
 }>;
 type ApprovalPolicy = Readonly<{
   denied_keys: readonly string[];
-  approved_exact_artwork?: readonly Readonly<{ key: string; movement_definition_id: number; candidate_id: string; app_sha256: string; presentation?: Presentation }>[];
+  approved_exact_artwork?: readonly Readonly<{ key: string; movement_definition_id: number; candidate_id: string; app_sha256: string; presentation?: Presentation; logger_crop?: LoggerCrop }>[];
 }>;
 // JSON imports widen cropMode to string. Registration validates its enum and
 // bounds; startup/export independently bind this projection to human receipts.
@@ -90,7 +90,7 @@ function approvedPresentation(key: CanonicalAccessoryArtworkKey, approvals: Appr
   return approvals.approved_exact_artwork?.find(row => row.key === key)?.presentation;
 }
 export function movementHeroFocal(key: CanonicalAccessoryArtworkKey): MovementHeroFocal {
-  return approvedPresentation(key) || FOCAL_BY_ARTWORK[key] || DEFAULT_FOCAL;
+  return approvedPresentation(key) || movementHeroDefaultFocal(key);
 }
 
 /** Modest square crop prioritizes the action at card size, using the same focal
@@ -98,4 +98,13 @@ export function movementHeroFocal(key: CanonicalAccessoryArtworkKey): MovementHe
 export function movementThumbnailGeometry(size: number, key: CanonicalAccessoryArtworkKey) {
   const focal = movementHeroFocal(key);
   return thumbnailGeometry(size, focal, approvedPresentation(key) || FOCAL_BY_ARTWORK[key]);
+}
+
+export function approvedLoggerCrop(key: CanonicalAccessoryArtworkKey): LoggerCrop | undefined {
+  if (policy.denied_keys.includes(key)) return undefined;
+  return policy.approved_exact_artwork?.find(row => row.key === key)?.logger_crop;
+}
+
+export function movementHeroDefaultFocal(key: CanonicalAccessoryArtworkKey): MovementHeroFocal {
+  return FOCAL_BY_ARTWORK[key] || DEFAULT_FOCAL;
 }

@@ -1,12 +1,12 @@
 import { approvedArtRuntimeEnabled } from '@/lib/approved-art-runtime';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Image as NativeImage, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
-import { Image } from 'expo-image';
+import { Image, type ImageProps } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CANONICAL_ACCESSORY_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-artwork-assets';
 import type { CanonicalAccessoryArtworkKey } from '@/lib/canonical-movement-artwork';
-import { movementHeroFocal, movementHeroGeometry, reportApprovedArtworkBypass, type MovementHeroFocal } from '@/lib/movement-artwork-hero';
-import { movementHeroSourceFrame } from '@/lib/movement-artwork-geometry.mjs';
+import { movementHeroFocal, movementHeroGeometry, approvedLoggerCrop, reportApprovedArtworkBypass, type MovementHeroFocal } from '@/lib/movement-artwork-hero';
+import { movementHeroSourceFrame, type LoggerCrop } from '@/lib/movement-artwork-geometry.mjs';
 
 type LayerProps = Readonly<{
   artworkKey: CanonicalAccessoryArtworkKey;
@@ -24,11 +24,6 @@ type LayerProps = Readonly<{
 export const MovementArtworkHero = memo(function MovementArtworkHero({
   artworkKey, receiptId, movementDefinitionId, surface = 'black', reduceMotion = false, focal,
 }: LayerProps) {
-  const [bounds, setBounds] = useState({ width: 0, height: 0 });
-  const onLayout = useCallback((event: LayoutChangeEvent) => {
-    const { width, height } = event.nativeEvent.layout;
-    setBounds(previous => previous.width === width && previous.height === height ? previous : { width, height });
-  }, []);
   const enabled = approvedArtRuntimeEnabled();
   const asset = enabled ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[artworkKey] : null;
   useEffect(() => {
@@ -37,17 +32,34 @@ export const MovementArtworkHero = memo(function MovementArtworkHero({
   }, [asset, movementDefinitionId, surface]);
   if (!enabled) return null;
   if (!asset) return null;
+  const sourceSize = NativeImage.resolveAssetSource(asset.source);
+  return <MovementArtworkHeroLayer source={asset.source} sourceWidth={sourceSize?.width} sourceHeight={sourceSize?.height}
+    receiptId={receiptId} surface={surface} reduceMotion={reduceMotion} focal={focal || movementHeroFocal(artworkKey)}
+    crop={approvedLoggerCrop(artworkKey)} />;
+});
+
+/** Identical raster placement and scrims for the Logger and owner crop review. */
+export const MovementArtworkHeroLayer = memo(function MovementArtworkHeroLayer({
+  source, sourceWidth, sourceHeight, receiptId, surface = 'black', reduceMotion = false, focal,
+  crop, onLoad, onError,
+}: { source: ImageProps['source']; sourceWidth?: number; sourceHeight?: number; receiptId: string;
+  surface?: 'black' | 'superset'; reduceMotion?: boolean; focal: MovementHeroFocal; crop?: LoggerCrop;
+  onLoad?: () => void; onError?: () => void }) {
+  const [bounds, setBounds] = useState({ width: 0, height: 0 });
+  const onLayout = useCallback((event: LayoutChangeEvent) => {
+    const { width, height } = event.nativeEvent.layout;
+    setBounds(previous => previous.width === width && previous.height === height ? previous : { width, height });
+  }, []);
   const rgb = surface === 'superset' ? '13,11,18' : '0,0,0';
   const shade = (alpha: number) => `rgba(${rgb},${alpha})`;
-  const composition = focal || movementHeroFocal(artworkKey);
+  const composition = crop?.fit && crop.fit !== 'original' ? { ...focal, cropMode: crop.fit } : focal;
   const contained = composition.cropMode === 'contain';
-  const sourceSize = NativeImage.resolveAssetSource(asset.source);
   const imageBox = movementHeroSourceFrame(
-    movementHeroGeometry(bounds.width, bounds.height, composition), sourceSize?.width, sourceSize?.height);
+    movementHeroGeometry(bounds.width, bounds.height, composition, crop), sourceWidth, sourceHeight);
   return <View pointerEvents="none" accessible={false} importantForAccessibility="no-hide-descendants"
     onLayout={onLayout} style={s.layer} testID="active-movement-art-hero">
     {bounds.width > 0 && bounds.height > 0 ? <Image
-      source={asset.source} style={[s.image, imageBox]}
+      source={source} onLoad={onLoad} onError={onError} style={[s.image, imageBox]}
       contentFit="contain" cachePolicy="memory-disk" recyclingKey={receiptId}
       transition={reduceMotion ? 0 : 160} accessibilityIgnoresInvertColors /> : null}
     {/* Contained rasters have interior edges; feather those edges into the same

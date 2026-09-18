@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { SessionEquipmentContext } from '@/components/workout-logger/session-equipment-context';
 import { KeyboardScrollView as ScrollView, KeyboardModal as Modal, KeyboardAvoidingView } from '@/components/keyboard/KeyboardSurface';
 // app/(tabs)/workout/[workoutId].tsx
 
@@ -8335,30 +8336,8 @@ export default function WorkoutViewerScreen() {
           expanded={accessoryIsExpanded}
           detailRows={accessoryIsExpanded ? movementPresentation.detailRows : undefined}
           expandedIdentityContext={accessoryIsExpanded && machineAccessory ? (
-            <View style={[
-              styles.currentEquipmentContext,
-              !currentEquipment && styles.currentEquipmentContextRequired,
-            ]}>
-              <ManufacturerBrandMark
-                compact
-                manufacturerName={currentManufacturer}
-              />
-              <View style={styles.currentEquipmentCopy}>
-                <Text style={styles.currentEquipmentEyebrow}>
-                  {currentEquipment ? 'CURRENT EQUIPMENT' : 'EQUIPMENT NEEDED'}
-                </Text>
-                <Text numberOfLines={2} style={styles.currentEquipmentName}>
-                  {currentEquipment ? currentEquipmentName : 'Choose the machine you are using'}
-                </Text>
-                <Text numberOfLines={2} style={styles.currentEquipmentMeta}>
-                  {currentEquipment
-                    ? [currentManufacturer || 'Other', currentEquipmentVariantLabel]
-                        .filter(Boolean)
-                        .join(' · ')
-                    : 'Manufacturer and type keep machine history comparable.'}
-                </Text>
-              </View>
-            </View>
+            <SessionEquipmentContext selected={Boolean(currentEquipment)} manufacturer={currentManufacturer}
+              name={currentEquipmentName} variant={currentEquipmentVariantLabel} />
           ) : null}
           meta={accessoryIsComplete ? accessorySummary.meta : `${loggedCount}/${totalSets || 0} sets logged`}
           top={accessoryIsComplete ? accessorySummary.top : lookbackLine}
@@ -12858,42 +12837,6 @@ const styles = StyleSheet.create({
     color: SLColors.textStrong,
     fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
-  },
-  currentEquipmentContext: {
-    marginTop: 16,
-    marginHorizontal: 26,
-    paddingTop: 14,
-    paddingBottom: 14,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(167,139,250,0.16)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  currentEquipmentContextRequired: {
-    borderColor: 'rgba(251,146,60,0.28)',
-  },
-  currentEquipmentCopy: {
-    flex: 1,
-    gap: 2,
-  },
-  currentEquipmentEyebrow: {
-    color: SLColors.review,
-    fontSize: SLTypography.micro.fontSize,
-    fontWeight: '900',
-    letterSpacing: 0.7,
-  },
-  currentEquipmentName: {
-    color: SLColors.textStrong,
-    fontSize: SLTypography.label.fontSize,
-    lineHeight: 20,
-    fontWeight: '900',
-  },
-  currentEquipmentMeta: {
-    color: SLColors.textMuted,
-    fontSize: SLTypography.caption.fontSize,
-    lineHeight: 17,
   },
   swapOptionButton: {
     alignItems: 'center',
