@@ -62,7 +62,7 @@ function PreviewApp() {
     <View style={{backgroundColor:'#000'}} onLayout={event => send({type:'logger-height',height:event.nativeEvent.layout.height})}>
       <SessionV3Header title="Session" subtitle="Movement art preview" active={false} inset={8}
         logged={0} total={3} startedAt={null} onBack={() => undefined} onActions={() => undefined} />
-      <View style={{paddingHorizontal:18,paddingTop:14}}>
+      <View style={{paddingHorizontal:20,paddingTop:14}}>
         <SessionV3MovementLayout title={item.movement_name} index={1} expanded complete={false} reduceMotion onOpen={() => undefined}
           visual={{liftLabel:item.movement_name,liftAccentColor:'#ab83e3',movementArtworkInput:movement}}
           focus={{movementName:item.movement_name,currentSetLabel:'Set 1',currentSetPositionLabel:'SET 1 OF 3',

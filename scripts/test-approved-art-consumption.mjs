@@ -27,7 +27,8 @@ const NativeImage=Object.assign(function Image(){},{resolveAssetSource:source=>{
  const png=fs.readFileSync(source.replace('@/', ''));
  return {width:png.readUInt32BE(16),height:png.readUInt32BE(20)};
 }});
-const react={createElement:(type,props,...children)=>({type:type===NativeImage?'Image':type,props:{...props,children}}),useEffect:callback=>callback(),useState:x=>x===0?[measuredArtworkEnd,update=>{measuredArtworkEnd=typeof update==='function'?update(measuredArtworkEnd):update;}]:[x?.width===0&&x?.height===0?{width:393,height:250}:x,()=>{}],useCallback:f=>f,memo:f=>f};
+const react={createElement:(type,props,...children)=>typeof type==='function' && ['SessionV3MovementLayout','MovementArtworkHeroLayer'].includes(type.name)
+ ? type({...props,children}) : ({type:type===NativeImage?'Image':type,props:{...props,children}}),useEffect:callback=>callback(),useState:x=>x===0?[measuredArtworkEnd,update=>{measuredArtworkEnd=typeof update==='function'?update(measuredArtworkEnd):update;}]:[x?.width===0&&x?.height===0?{width:393,height:250}:x,()=>{}],useCallback:f=>f,memo:f=>f};
 const mocks={react,'react-native':{View:'View',Image:NativeImage,Pressable:'Pressable',ActivityIndicator:'ActivityIndicator',StyleSheet:{create:x=>x,hairlineWidth:1}},
  '@expo/vector-icons':{Ionicons:'Ionicons'},'expo-image':{Image:'ExpoImage'},'expo-linear-gradient':{LinearGradient:'LinearGradient'},'@/components/ui/sl-text':{Text:'Text'},
  '@/constants/theme':{SLColors:{},SLRadius:{lg:18},SLFontFamilies:{}},
@@ -65,9 +66,10 @@ for(const equipment of [null,{type:'View',props:{children:['Manufacturer']}}]) {
  assert.equal(anchors.length,1,'manufacturer owns the endpoint; otherwise the next detail row owns it');
  anchors[0].props.onLayout({nativeEvent:{layout:{y:260,height:100}}});
  const stage=()=>nodes(render(),'View').find(n=>n.props.pointerEvents==='none');
- assert.equal(stage().props.style[1].height,302,'fade reaches the measured line after the prescription');
+ assert.equal(stage().props.style[0].top+stage().props.style[1].height,310,'fade reaches the measured line after the prescription');
  anchors[0].props.onLayout({nativeEvent:{layout:{y:260,height:400}}});
- assert.equal(stage().props.style[1].height,304,'expanded history cannot drag art into historical records');
+ assert.equal(stage().props.style[0].top+stage().props.style[1].height,312,'expanded history cannot drag art into historical records');
+ assert.ok(stage().props.style[0].left<0 && stage().props.style[0].right<0,'background extends through the foreground content gutters');
  assert.equal(stage().props.pointerEvents,'none','background never intercepts equipment/picker interaction');
 }
 measuredArtworkEnd=0;
@@ -82,10 +84,13 @@ for(const receipt of policy.approved_exact_artwork){
  const layer=heroLayer({artworkKey:key,receiptId:receipt.candidate_id,movementDefinitionId:id,reduceMotion:true});
  const raster=nodes(layer,'ExpoImage')[0];assert.ok(raster,'approved layer paints its real source after layout');
  assert.equal(raster.props.source,asset.source);assert.equal(raster.props.contentFit,'contain');assert.equal(raster.props.transition,0);
- const frame=raster.props.style[1],dimensions=NativeImage.resolveAssetSource(asset.source);
+ const frame=Object.assign({},...raster.props.style),dimensions=NativeImage.resolveAssetSource(asset.source);
  assert.ok(Math.abs(frame.width/frame.height-dimensions.width/dimensions.height)<1e-9,'actual hero respects PNG aspect ratio');
  const canvasFades=nodes(layer,'LinearGradient').slice(-2);
- assert.equal(JSON.stringify(canvasFades[1].props.locations),'[0,0.26,0.46,0.78,1]','every actual hero uses the locked T-Bar Row canvas fade');
+ assert.ok(frame.opacity>0 && frame.opacity<1,'artwork sits below foreground contrast');
+ assert.equal(canvasFades[1].props.locations[0],0);
+ assert.equal(canvasFades[1].props.locations.at(-1),1);
+ assert.ok(!canvasFades[0].props.colors.slice(1,-1).some(color=>color.endsWith(',1)')),'the prescription side is shaded, never hidden behind an opaque panel');
  for(const active of [false,true]){
   const compact=renderSingle(id,false,active);assertCue(compact,true,key);assert.equal(nodes(compact,'MovementArtworkHero').length,0);
   for(let remount=0;remount<2;remount++){

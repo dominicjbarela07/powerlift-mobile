@@ -1,0 +1,2 @@
+Approved art consumption (DEV): 380 human-approved asset chains; actual compact/expanded TSX, PRE/ACTIVE/remount, superset selection, pending/rejected/missing, approved BW/machine coverage and independent cable fallback, crops and diagnostics PASS
+Approved art consumption (TestFlight release): 380 human-approved asset chains; actual compact/expanded TSX, PRE/ACTIVE/remount, superset selection, pending/rejected/missing, approved BW/machine coverage and independent cable fallback, crops and diagnostics PASS

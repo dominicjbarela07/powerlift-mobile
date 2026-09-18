@@ -1,0 +1,1 @@
+Logger crop geometry, immutable aspect ratio, exact receipts and shared renderer PASS

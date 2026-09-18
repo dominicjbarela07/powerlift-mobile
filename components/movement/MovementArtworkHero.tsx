@@ -53,32 +53,32 @@ export const MovementArtworkHeroLayer = memo(function MovementArtworkHeroLayer({
   const rgb = surface === 'superset' ? '13,11,18' : '0,0,0';
   const shade = (alpha: number) => `rgba(${rgb},${alpha})`;
   const composition = crop?.fit && crop.fit !== 'original' ? { ...focal, cropMode: crop.fit } : focal;
-  const contained = composition.cropMode === 'contain';
   const imageBox = movementHeroSourceFrame(
     movementHeroGeometry(bounds.width, bounds.height, composition, crop), sourceWidth, sourceHeight);
   return <View pointerEvents="none" accessible={false} importantForAccessibility="no-hide-descendants"
     onLayout={onLayout} style={s.layer} testID="active-movement-art-hero">
     {bounds.width > 0 && bounds.height > 0 ? <Image
-      source={source} onLoad={onLoad} onError={onError} style={[s.image, imageBox]}
+      source={source} onLoad={onLoad} onError={onError} style={[s.image, s.atmosphere, imageBox]}
       contentFit="contain" cachePolicy="memory-disk" recyclingKey={receiptId}
       transition={reduceMotion ? 0 : 160} accessibilityIgnoresInvertColors /> : null}
-    {/* Contained rasters have interior edges; feather those edges into the same
-        canvas scrim used by focal art. No matte, border, blur or source edits. */}
-    {contained ? <>
+    {/* Feather the raster itself as well as the canvas, including landscape
+        exports and images moved by the reviewer. No visible photograph edge. */}
+    <>
       <LinearGradient pointerEvents="none" style={[s.image, imageBox]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-        colors={[shade(1), shade(0), shade(0), shade(1)]} locations={[0, 0.14, 0.86, 1]} />
+        colors={[shade(1), shade(0), shade(0), shade(1)]} locations={[0, 0.10, 0.90, 1]} />
       <LinearGradient pointerEvents="none" style={[s.image, imageBox]}
-        colors={[shade(1), shade(0), shade(0), shade(1)]} locations={[0, 0.10, 0.84, 1]} />
-    </> : null}
+        colors={[shade(1), shade(0), shade(0), shade(1)]} locations={[0, 0.08, 0.88, 1]} />
+    </>
     <LinearGradient pointerEvents="none" style={s.fill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-      colors={[shade(1), shade(1), shade(0.85), shade(0.08), shade(0), shade(0.9)]}
-      locations={[0, 0.36, 0.52, 0.68, 0.86, 1]} />
-    <LinearGradient pointerEvents="none" style={s.fill} colors={[shade(1), shade(0.96), shade(0), shade(0), shade(1)]}
-      locations={[0, 0.26, 0.46, 0.78, 1]} />
+      colors={[shade(0.8), shade(0.64), shade(0.40), shade(0.12), shade(0.14), shade(0.7)]}
+      locations={[0, 0.16, 0.36, 0.58, 0.84, 1]} />
+    <LinearGradient pointerEvents="none" style={s.fill} colors={[shade(1), shade(0.48), shade(0.12), shade(0.10), shade(1)]}
+      locations={[0, 0.18, 0.38, 0.76, 1]} />
   </View>;
 });
 const s = StyleSheet.create({
   layer: { ...StyleSheet.absoluteFillObject, overflow: 'hidden' },
   fill: { ...StyleSheet.absoluteFillObject },
   image: { position: 'absolute' },
+  atmosphere: { opacity: 0.72 },
 });
