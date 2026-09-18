@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 1981,
+  "revision": 1999,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-18T12:24:00.256942+00:00",
-  "updated_at_display": "Sep 18, 2026 05:24 AM PT (Sep 18, 2026 08:24 AM Eastern)",
+  "updated_at": "2026-09-18T15:44:41.942887+00:00",
+  "updated_at_display": "Sep 18, 2026 08:44 AM PT (Sep 18, 2026 11:44 AM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -4712,6 +4712,118 @@
       }
     },
     {
+      "movement_definition_id": 62,
+      "key": "accessory_low_to_high_cable_flye",
+      "movement_name": "Low-to-High Cable Fly",
+      "primary_muscle_group": "chest",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-next-ten-20260918-62-725e6f45",
+      "generation_batch": "Ten more cable movements — 2026-09-18",
+      "candidate_id": "a414dc96b3ce67a96e625957",
+      "version": 4,
+      "supersedes_candidate_id": "ff5b85907b28431c1fb2309a",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/a414dc96b3ce67a96e625957/master.png",
+          "sha256": "725e6f4577edda80f18be58415955daad5fae3181bfa34718cdd057a9381f1b2",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1714314
+        },
+        "app": {
+          "path": "candidates/a414dc96b3ce67a96e625957/app.png",
+          "sha256": "54dc586414a74348792ac0067a991b01b54c9472447b7754745e3c0735e5ddc5",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 321931
+        },
+        "thumbnail": {
+          "path": "candidates/a414dc96b3ce67a96e625957/thumbnail.png",
+          "sha256": "ead042e2b1b1509763401d8a07ca314e6b5e39c2049bfe482c6fc268491916b3",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49759
+        }
+      },
+      "candidate_asset": "candidates/a414dc96b3ce67a96e625957/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "WHENEVER WE USE BOTH CABLE STACKS, WE NEED TO BE EVEN BETWENE THE CABLES FOR EVEN FORCE VECTORS",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "WHENEVER WE USE BOTH CABLE STACKS, WE NEED TO BE EVEN BETWENE THE CABLES FOR EVEN FORCE VECTORS",
+          "tags": [],
+          "reviewed_at": "2026-09-18T15:35:02.771266+00:00",
+          "reviewed_at_display": "Sep 18, 2026 08:35 AM PT (Sep 18, 2026 11:35 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "725e6f4577edda80f18be58415955daad5fae3181bfa34718cdd057a9381f1b2",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-18T12:23:49.682974+00:00",
+      "created_at_display": "Sep 18, 2026 05:23 AM PT (Sep 18, 2026 08:23 AM Eastern)",
+      "generation_prompt": "62-1\nSquare photorealistic Strength Ledger exercise photograph. Image 1 exclusively controls original athlete, graphite tank/black shorts/shoes, realistic skin, dark studio and subtle violet rim. Image 2 controls the COMPLETE real Precor RUD0915 paired machine as one coherent object. Exactly ONE sliding pulley carriage PER TOWER; moving one low leaves its upper rail EMPTY. Matching shrouds, fixed handles, bridge and feet. Full apparatus/body with 7% margins. Taut cables emerge from actual wheel grooves, not pins; each has one traveling stopper and clip at attachment. Natural task-focused head, no camera posing, no text. LOW-TO-HIGH CABLE FLY. Both existing carriages moved to ANKLE height, upper rails bare. Two independent cables. Athlete stands a full stride in front of machine, facing away, staggered stance. Show late concentric phase: hands with D-handles approach each other FORWARD and UP at upper chest height, palms up/in, elbows softly bent with long symmetrical arms. Each cable goes down/back to its own low wheel without crossing. Normal chest fly arc, not bent-elbow curl or shoulder press. Front three-quarter view makes rising arm path and floor distance obvious.\n\n62-2\nEdit image 2. Image 1 is sole immutable athlete/style baseline; image 3 is exact real Precor paired rig construction. Preserve dark studio, subtle violet rim and realistic original athlete. Correct the low-to-high fly: lengthen BOTH arms forward, only 20 degrees elbow bend, hands approach together just forward of upper chest, palms up/in. Neutral chin, eyes on hand path. Center body one full stride IN FRONT of midpoint of paired rig, back toward rig. CRITICAL: each hand has one taut cable descending BACK to its own actual LOW wheel. The right wire currently dangles in space: DELETE that wire and connect right handle directly to right low wheel GROOVE. Remove dangling hooks/stoppers at BOTH active wheels; stopper/clip travels with each handle. Preserve the two low carriages and bare upper rails. Show long fly arms, not curl. Square full-body photograph, pull camera back 7% so all machine and shoes have breathing room. No text.\n\n62-3\nCreate a new LOW-TO-HIGH CABLE FLY photograph. Image 1 exclusively controls athlete, outfit, dark studio and subtle violet rim. Image 2 is exact complete Precor RUD0915 paired rig. Move its existing two carriages down to ankle height: just TWO total, bare rails above. Athlete stands a full stride in FRONT of midpoint facing away from machine. Show the MIDPOINT of a low-to-high chest fly: nearly straight arms, softly bent elbows, hands sweeping together forward at LOWER CHEST height, palms up/in. Camera is on athlete FRONT LEFT, neutral head aligned with torso and gaze level toward hands. Left handle cable slopes back/down to LEFT low wheel; right handle cable slopes back/down to RIGHT low wheel. Both cables visibly terminate tangentially in their actual wheel grooves, both in use, no hanging idle attachment or stopper at either wheel. Stoppers/clips only at hands. Natural split stance. Full body/full matched apparatus with 6% margins, square.\n\n62-4\nPrecise mechanical edit to IMAGE2. Image1 is immutable original athlete/style only. Correct BOTH working cables only. Delete the loose left wire ending in empty air at far left. Connect LEFT hand stopper around (337,647) by one taut nearly vertical wire to the TOP GROOVE of LEFT low wheel around (345,840). Connect RIGHT hand stopper around (590,635) diagonally down/back to TOP GROOVE of RIGHT low wheel around (998,844), never the center bracket/pin. Coordinates refer to 1254-square edit image. Both are actual rotating wheel grooves separate from adjustment hardware. Remove unused hanging clips below both working pulleys. Preserve arm pose, natural gaze, stance and exactly two carriages. Do not copy dumbbells or change movement.\n\n62-5\nCreate LOW-TO-HIGH CABLE FLY using image2 ONLY as machine/cable layout reference. Image1 is sole original athlete/style baseline. Preserve image2 complete matched Precor paired rig, BOTH existing low pulley wheels and their working source connections. Athlete takes one step forward. Change action from shrug to chest fly: lower shoulders naturally, extend BOTH arms FORWARD and UP with only slight elbow bend. Both D-handles meet near each other at UPPER CHEST height, palms up/in, elbows soft about 160 degrees. EACH handle stays connected by one taut cable down/back to SAME-SIDE LOW grooved wheel, exact two working wires fully traceable. Body centered in front, back toward rig, split stance, neutral neck and gaze toward hand path. Front three-quarter angle shows long arms sweeping together, no curl. Maintain open floor space, full body and full machine.\n\n62-6\nImage1 exclusively fixes immutable original athlete and visual family. New LOW-TO-HIGH CABLE FLY. Image1 original athlete/outfit/style ONLY, never copy its bent elbows. Image2 real complete Precor paired cable rig. SIDE THREE-QUARTER camera, athlete on RIGHT facing RIGHT AWAY from whole machine on LEFT. Both actual carriages are moved low, one per tower; upper rails empty. Athlete one full stride in front of machine, long arms reach FORWARD RIGHT slightly UP at sternum height, elbows almost straight, just 15-degree bend. Two D-handles nearly meet well forward of chest, wrists neutral palms up/in. Each has one straight taut cable going back/down LEFT to its respective low pulley wheel GROOVE. Two visible uninterrupted cable lines, no bends or disconnected ends; wheels swivel toward hands. Shoulders lowered, neutral neck, head level aligned with torso looking ahead. Full matched paired machine, full body grounded split stance, square dark studio subtle violet rim. Movement demonstrated naturally, not posing toward camera.\n\n62-7\nEdit image2 only: remove BOTH unused UPPER pulley carriages and their hanging handles, leaving two completely BARE upper silver rails. Keep the existing two LOW working carriages. Exactly TWO carriages total. The left working cable currently meets hardware beside orange adjustment pin: move only that source endpoint to the LEFTMOST real grooved wheel's upper rim around (113,787), visibly threading the groove behind guard, separate from bolts and pin. Preserve the excellent long fly arms, handles, uninterrupted right working cable, natural head, staggered stance, athlete-to-rig alignment and full framing. Image1 remains original athlete/style authority.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-next-ten-2026-09-18/62-low-to-high-cable-fly.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "movement_family": "accessory_chest",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; immutable original athlete/style baseline first; complete real Precor RUD0915 rig; targeted mechanical refinements.",
+        "owner_instruction": "do 10 more movements",
+        "retained_rejections": "[{\"version\": 2, \"reason\": \"SEPERATED CABEL STACKS IS RETARDED! USE THE ASJUSTABLE ARM MACHINE OR A REAL CABLE RIG! \"}]",
+        "inspection": "Side three-quarter composition places athlete a full stride ahead of paired rig, facing away along the forward fly path. Long gently bent arms approach together forward/up at upper-chest height; neutral head and split stance. Both handles connect to independent low sources with continuous straight working cable segments; far cable is partly occluded behind athlete. Left endpoint moved clear of adjustment pin into outer rim/guard interface. Exactly two low carriages and completely bare upper rails after duplicate removal. Complete matching rig, full shoes and original family appearance.",
+        "selected_attempt": "62-7",
+        "source_sha256": "725e6f4577edda80f18be58415955daad5fae3181bfa34718cdd057a9381f1b2",
+        "scope": "Ten additional existing canonical cable movements using the retained family rebuild receipt. Pending human review only. No identity or attachment variants added; no runtime promotion."
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16",
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "WHENEVER WE USE BOTH CABLE STACKS, WE NEED TO BE EVEN BETWENE THE CABLES FOR EVEN FORCE VECTORS",
+        "tags": [],
+        "reviewed_at": "2026-09-18T15:35:02.771266+00:00",
+        "reviewed_at_display": "Sep 18, 2026 08:35 AM PT (Sep 18, 2026 11:35 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "725e6f4577edda80f18be58415955daad5fae3181bfa34718cdd057a9381f1b2",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 591,
       "key": "accessory_band_lateral_neck_flexion",
       "movement_name": "Band Lateral Neck Flexion",
@@ -4825,6 +4937,231 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "148ec5e2f357e03c84eff77461360b15296b3458d3d3191f76c94282687dfc53",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 279,
+      "key": "accessory_cable_hammer_curl",
+      "movement_name": "Cable Hammer Curl",
+      "primary_muscle_group": "biceps",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-fixes-plus-five-20260918-279-00b52a0e",
+      "generation_batch": "Cable corrections + five new movements — 2026-09-18",
+      "candidate_id": "6e4ade236420dedfe5ed0867",
+      "version": 4,
+      "supersedes_candidate_id": "88b6f93f1b2b9e396cd0220e",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/6e4ade236420dedfe5ed0867/master.png",
+          "sha256": "00b52a0eabc38327a27095870f480858929cb0f3c140133078b79faef478e132",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1841871
+        },
+        "app": {
+          "path": "candidates/6e4ade236420dedfe5ed0867/app.png",
+          "sha256": "2ee51372430d91999874edb47733d8496df8b7b815e3451cbb2ba52faaf0e9fd",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 328685
+        },
+        "thumbnail": {
+          "path": "candidates/6e4ade236420dedfe5ed0867/thumbnail.png",
+          "sha256": "5a0b8a52f395516f9d066e35fe47c26fc8335a554a7143ed3481e7fe2ead5155",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47666
+        }
+      },
+      "candidate_asset": "candidates/6e4ade236420dedfe5ed0867/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "HE NEEDS TO BE CLOSER TO THE CABLE STACK SO THE FORCE VECTOR IS MORE VERTICAL\n",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "HE NEEDS TO BE CLOSER TO THE CABLE STACK SO THE FORCE VECTOR IS MORE VERTICAL\n",
+          "tags": [],
+          "reviewed_at": "2026-09-18T15:36:25.383360+00:00",
+          "reviewed_at_display": "Sep 18, 2026 08:36 AM PT (Sep 18, 2026 11:36 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "00b52a0eabc38327a27095870f480858929cb0f3c140133078b79faef478e132",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-18T11:39:23.747009+00:00",
+      "created_at_display": "Sep 18, 2026 04:39 AM PT (Sep 18, 2026 07:39 AM Eastern)",
+      "generation_prompt": "279-1\nSquare photorealistic Strength Ledger movement artwork. Reference 1 is the immutable athlete/style: same muscular brown-haired man, graphite tank, black shorts/trainers, realistic skin and fabric, near-black studio, charcoal floor, neutral light and restrained violet rim. Reference 2 is ONLY real machine geometry: reproduce the complete Precor twin shrouded stacks, two matching front rails, two real swivel pulley carriages, curved upper bridge and grounded base as a coherent rigid object. Correct human/machine proportions. The actual movement is the subject, no posing or head turned to camera. Full machine/body/feet with clear top and bottom margins. Each working cable emerges tangentially from an actual grooved wheel, forms a straight taut line and ends in ONE stopper and clip at the attachment. No extra wire or stopper at active machine outlet. No text/logos/graphics. CABLE HAMMER CURL. Reference 3 clarifies athlete IN FRONT of the machine and actual operating carriage; do not copy its rowing pose, room or athlete. Stand upright directly FACING the near tower's LOW pulley, about one meter beyond the base, feet hip-width and knees soft. Both hands hold the two rope ends in NEUTRAL hammer grips, thumbs uppermost, palms facing each other. Elbows stay beside ribs; elbows flex to lift the fists toward lower chest in mid-curl, no shoulder shrug or lean-back. ONE low cable connects its real grooved wheel to one carabiner and the center eye of the black two-ended rope; it runs forward/down from the rope to the low pulley. Both rope branches are taut and terminate in black rubber stops below each closed hand. Side three-quarter camera exposes his facing direction and the two neutral wrists. The other tower has intact carriage and parked handle. Full feet/top frame, dark studio.\n\n279-2\nPrecise-object-edit of image 2 cable hammer curl. Image 1 controls original style. Keep the correct upright side-facing athlete, both neutral grips, elbow flexion, single straight cable, complete TWO-carriage Precor rig and every body proportion. Refine ONLY rope center connection: two rope branches from fists converge at a small steel swivel EYE, joined by ONE short proper carabiner to ONE small cable stopper. Remove the large black cup/third rubber endstop at rope center and oversized doubled metal chain. The rope retains its two normal black terminal stops at the thumb ends of his closed fists. Cable remains taut to the groove of existing low near RIGHT wheel. Pull whole camera back about 6 percent for clear top margin, no crop. No changes to posture or hardware elsewhere.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-fixes-plus-five-2026-09-18/279-cable-hammer-curl.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "movement_family": "accessory_biceps",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; immutable original athlete/style first, real Precor RUD0915 rig, movement-specific geometry.",
+        "owner_instruction": "fix the cable rejects and give me 5 more",
+        "exact_latest_rejection": "null",
+        "retained_rejections": "[{\"version\": 2, \"reason\": \"THE FUCK IS THIS SHIT! THATS NOT HOW IT IS EVEN PERFORMED AND I WANT A REAL RIG\"}]",
+        "inspection": "Stands directly in front of near low right source, facing the pulley in side three-quarter view. Both elbows beside torso and neutral hammer grips on separate rope ends. Two rope branches converge into one steel eye, one carabiner and cable stopper. Cable traces to grooved wheel; far tower has one parked carriage.",
+        "selected_attempt": "279-2",
+        "source_sha256": "00b52a0eabc38327a27095870f480858929cb0f3c140133078b79faef478e132",
+        "scope": "Two latest active rejects plus five previously invalidated canonical cable movements. Pending human review only; no identity changes or runtime promotion."
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16",
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "HE NEEDS TO BE CLOSER TO THE CABLE STACK SO THE FORCE VECTOR IS MORE VERTICAL\n",
+        "tags": [],
+        "reviewed_at": "2026-09-18T15:36:25.383360+00:00",
+        "reviewed_at_display": "Sep 18, 2026 08:36 AM PT (Sep 18, 2026 11:36 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "00b52a0eabc38327a27095870f480858929cb0f3c140133078b79faef478e132",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 246,
+      "key": "accessory_cable_shrug",
+      "movement_name": "Cable Shrug",
+      "primary_muscle_group": "traps",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-next-ten-20260918-246-9b01bc6c",
+      "generation_batch": "Ten more cable movements — 2026-09-18",
+      "candidate_id": "81a756f99607bc2f840a8a02",
+      "version": 4,
+      "supersedes_candidate_id": "7ed099d79b702216f5c939f8",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/81a756f99607bc2f840a8a02/master.png",
+          "sha256": "9b01bc6cc24e69096e70c71b59060a4d88d02826dbe77ab762f9f5533b2d7e3e",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1764006
+        },
+        "app": {
+          "path": "candidates/81a756f99607bc2f840a8a02/app.png",
+          "sha256": "2477b033cb277ce5248de39e4b2b3a7958125e1c84df6d81c718076091c13599",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 330958
+        },
+        "thumbnail": {
+          "path": "candidates/81a756f99607bc2f840a8a02/thumbnail.png",
+          "sha256": "84264bebb8ee89e8bb0ff3e6ca0b5c89052afdfc5c8de06699607c6aeff37dd2",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 51340
+        }
+      },
+      "candidate_asset": "candidates/81a756f99607bc2f840a8a02/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "HE IS NOT ORIENTED CORRECTLY CREATING THE ILLUSION OF UNEVEN FORCE VECTORS",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "HE IS NOT ORIENTED CORRECTLY CREATING THE ILLUSION OF UNEVEN FORCE VECTORS",
+          "tags": [],
+          "reviewed_at": "2026-09-18T15:36:46.025237+00:00",
+          "reviewed_at_display": "Sep 18, 2026 08:36 AM PT (Sep 18, 2026 11:36 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9b01bc6cc24e69096e70c71b59060a4d88d02826dbe77ab762f9f5533b2d7e3e",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-18T12:23:59.053138+00:00",
+      "created_at_display": "Sep 18, 2026 05:23 AM PT (Sep 18, 2026 08:23 AM Eastern)",
+      "generation_prompt": "246-1\nSquare photorealistic Strength Ledger exercise photograph. Image 1 exclusively controls original athlete, graphite tank/black shorts/shoes, realistic skin, dark studio and subtle violet rim. Image 2 controls the COMPLETE real Precor RUD0915 paired machine as one coherent object. Exactly ONE sliding pulley carriage PER TOWER; moving one low leaves its upper rail EMPTY. Matching shrouds, fixed handles, bridge and feet. Full apparatus/body with 7% margins. Taut cables emerge from actual wheel grooves, not pins; each has one traveling stopper and clip at attachment. Natural task-focused head, no camera posing, no text. CABLE SHRUG. Image 3 supplies actual machine perspective and operating space only. Athlete upright directly IN FRONT OF and FACING near RIGHT tower low pulley, feet hip width about one stride clear of base. Existing right carriage moved low, upper rail empty; left idle carriage high. One straight short bar held horizontally across front of thighs with symmetric overhand shoulder-width grips either side of its central clip. Arms remain straight; BOTH SHOULDERS visibly elevate toward ears in a controlled shrug. Neck stays neutral looking toward machine, no neck flexion or lean-back. Single taut cable descends forward from center bar clip to groove of low near right wheel. Side three-quarter view shows shoulders elevated and bar clear of thighs, entire frame and shoes.\n\n246-2\nEdit image 2. Image 1 is sole immutable athlete/style baseline; image 3 is exact real Precor paired rig construction. Preserve dark studio, subtle violet rim and realistic original athlete. Correct cable SHRUG: shoulders visibly lifted toward ears with BOTH elbows fully straight and torso upright. Bar at upper thighs, overhand hands shoulder width. Show BOTH hands on opposite sides of exact CENTER bar clip, continuous bar ends, cable from CENTER between hands down to near low pulley groove. Move camera slightly toward athlete FRONT side to reveal both grips; athlete must still directly face pulley, not camera. Restore near tower complete black U support handle, no disconnected stubs. Preserve complete matched paired machine. Square full-body photograph, pull camera back 7% so all machine and shoes have breathing room. No text.\n\n246-3\nCreate bilateral CABLE SHRUG exercise photograph. Image1 immutable original athlete/outfit, dark studio violet rim. Image2 exact whole Precor RUD0915 paired rig, matching orientation. Use TWO independent low pulleys, exactly one carriage per tower, both moved to ankle height leaving bare upper rails. Athlete stands one stride directly IN FRONT of midpoint, BACK TOWARD MACHINE. Holds one D-handle in EACH hand, arms completely straight hanging at sides. BOTH shoulders actively shrugged UP toward ears, visible upper trapezius contraction, neutral neck/gaze slightly down, no elbows bent, no lateral raise. Each handle's taut cable runs backward DOWN outside same-side leg to its own low wheel groove; both wires visible, no crossing, one traveling stopper at each hand, no idle low attachments. Front three-quarter view, natural grounded hip-width stance. Complete body and paired rig with 6% margin; movement is subject, no camera posing.\n\n246-4\nPrecise mechanical edit to IMAGE2. Image1 is immutable original athlete/style only. Correct only the machine ends of BOTH active cables. Each one must visibly enter the same-side actual grooved pulley wheel tangentially; swivel wheel toward pull. Do not connect to orange pins or center bracket. Remove loose idle carabiners dangling below BOTH active carriages; traveling stopper and clip already at each hand. Keep active shrug, both straight arms and grips, torso/head, ground contact, exact TWO low carriages and bare upper rails unchanged. Pull camera back 5%. Do not copy dumbbells or change movement.\n\n246-5\nImage1 exclusively fixes immutable original athlete and visual family. Edit ONLY both cable source connections. LEFT cable must reach LEFTMOST outer black grooved wheel, upper-left rim (approximately x245,y870), NOT the inner circular ORANGE-PIN adjustment cage. RIGHT cable must reach RIGHTMOST outer black grooved wheel, upper-right rim (approximately x1005,y862), NOT orange-pin cage. Cables wrap actual visible rim grooves tangentially behind guards. Existing carriages swivel toward hands. Remove old wrong wire segments, keep one uninterrupted line per hand. Preserve lifted shoulders, straight arms, matched rig, two low carriages, natural gaze and full frame.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-next-ten-2026-09-18/246-cable-shrug.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "movement_family": "accessory_traps",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; immutable original athlete/style baseline first; complete real Precor RUD0915 rig; targeted mechanical refinements.",
+        "owner_instruction": "do 10 more movements",
+        "retained_rejections": "[]",
+        "inspection": "Bilateral shrug uses independent D-handles from two low sources under the existing canonical ID. Both shoulders visibly elevate with straight elbows, neutral lowered gaze and hip-width feet. Wires connect from each handle to same-side carriage at rim/guard interfaces, away from orange pins; internal wrap is covered. No dangling idle handles below active carriages. Exactly two low carriages, upper rails empty; coherent matched paired machine.",
+        "selected_attempt": "246-5",
+        "source_sha256": "9b01bc6cc24e69096e70c71b59060a4d88d02826dbe77ab762f9f5533b2d7e3e",
+        "scope": "Ten additional existing canonical cable movements using the retained family rebuild receipt. Pending human review only. No identity or attachment variants added; no runtime promotion."
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16",
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "HE IS NOT ORIENTED CORRECTLY CREATING THE ILLUSION OF UNEVEN FORCE VECTORS",
+        "tags": [],
+        "reviewed_at": "2026-09-18T15:36:46.025237+00:00",
+        "reviewed_at_display": "Sep 18, 2026 08:36 AM PT (Sep 18, 2026 11:36 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9b01bc6cc24e69096e70c71b59060a4d88d02826dbe77ab762f9f5533b2d7e3e",
         "source": "human_review_ui"
       }
     },
@@ -4948,6 +5285,228 @@
       }
     },
     {
+      "movement_definition_id": 273,
+      "key": "accessory_cable_preacher_curl",
+      "movement_name": "Cable Preacher Curl",
+      "primary_muscle_group": "biceps",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-next-ten-20260918-273-b7877dcd",
+      "generation_batch": "Ten more cable movements — 2026-09-18",
+      "candidate_id": "a9ed4a456f275ad7d4939791",
+      "version": 4,
+      "supersedes_candidate_id": "90298f4f2e7c22ce392d1850",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/a9ed4a456f275ad7d4939791/master.png",
+          "sha256": "b7877dcd1abc8acdb0a3b24bb60eae0e40ad00175c3bef6e7a1d44a857eb5458",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1884603
+        },
+        "app": {
+          "path": "candidates/a9ed4a456f275ad7d4939791/app.png",
+          "sha256": "200795abee10015ace4ae5860352c31b52830f410be8ba3f8d663edadf188e83",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 344915
+        },
+        "thumbnail": {
+          "path": "candidates/a9ed4a456f275ad7d4939791/thumbnail.png",
+          "sha256": "6b9fb5c8412cfd09ce22759a89b76cf4938ba14446baf603dc8526df00b8dcf3",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 52637
+        }
+      },
+      "candidate_asset": "candidates/a9ed4a456f275ad7d4939791/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "NE NEEDS TO BE FUCKING FACING THE STACK",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "NE NEEDS TO BE FUCKING FACING THE STACK",
+          "tags": [],
+          "reviewed_at": "2026-09-18T15:36:57.212749+00:00",
+          "reviewed_at_display": "Sep 18, 2026 08:36 AM PT (Sep 18, 2026 11:36 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b7877dcd1abc8acdb0a3b24bb60eae0e40ad00175c3bef6e7a1d44a857eb5458",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-18T12:23:52.023484+00:00",
+      "created_at_display": "Sep 18, 2026 05:23 AM PT (Sep 18, 2026 08:23 AM Eastern)",
+      "generation_prompt": "273-1\nSquare realistic Strength Ledger exercise photograph. Image 1 controls original muscular man, graphite tank/black shorts/trainers, dark charcoal studio and restrained violet rim. Image 2 is exact complete Precor RUD0915 paired machine geometry. Exactly TWO carriages TOTAL, one per tower: working near RIGHT carriage LOW, unused far LEFT high with parked handle; upper right rail EMPTY. Matching shrouds, rails, bridge and bases, coherent perspective. One taut cable comes from actual wheel groove, not a pin, with one traveling stopper/clip at attachment. Full body/machine and 7% margins. Natural head and body performing movement, no camera posing. CABLE PREACHER CURL, bilateral. Image 3 supplies real freestanding standing preacher support ONLY, recolored charcoal without logos; image 4 supplies actual rig perspective/operator floor space only. Put preacher stand directly IN FRONT of near low right tower, facing it, never sideways. Athlete stands behind angled pad, chest at its upper edge, BOTH upper arms planted on the pad, elbows supported near lower edge. Both hands supinated beneath one short straight cable bar, symmetrical around CENTER eye. Mid-curl with forearms rising, wrists straight. One cable descends forward from center clip, CLEAR beyond pad's front edge, to nearest low groove. View side three-quarter reveals real upper-arm contact, pad slope, empty space under bar, and grounded support/athlete. No barbell plates, no machine lever, no long bench backrest.\n\n273-2\nEdit image 2. Image 1 exclusively controls original athlete/style, dark studio and violet rim. Image 3 supplies correct complete real Precor RUD0915 paired construction. Keep cable preacher curl with both upper arms firmly supported on broad sloping preacher pad, both supinated hands curling bar, CENTER cable attachment. Correct bench/cable placement: place entire preacher stand and athlete farther onto open floor directly IN FRONT of the working right low wheel. Cable must run from bar center through AIR above the stand's front frame to actual wheel groove; the current cable intersects front metal bracket. Move stand far enough from machine so this cable clears all bench hardware. Keep realistic standing preacher support, no lever mechanism or bench backrest. Preserve complete paired rig with exactly two carriages. Square complete full-body exercise photograph. The movement is the subject.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-next-ten-2026-09-18/273-cable-preacher-curl.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "movement_family": "accessory_biceps",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; immutable original athlete/style baseline first; complete real Precor RUD0915 rig; targeted mechanical refinements.",
+        "owner_instruction": "do 10 more movements",
+        "retained_rejections": "[]",
+        "inspection": "Standing preacher support is entirely ahead of working station. Both upper arms rest on sloped pad, supinated hands hold opposite sides of center clip. One taut line clears the stand front brackets and reaches the near low wheel at its lower edge. Full stand base/body/matched machine remain visible; one idle far carriage. Bench and whole-machine proportions compared against real manufacturer references.",
+        "selected_attempt": "273-2",
+        "source_sha256": "b7877dcd1abc8acdb0a3b24bb60eae0e40ad00175c3bef6e7a1d44a857eb5458",
+        "scope": "Ten additional existing canonical cable movements using the retained family rebuild receipt. Pending human review only. No identity or attachment variants added; no runtime promotion."
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16",
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "NE NEEDS TO BE FUCKING FACING THE STACK",
+        "tags": [],
+        "reviewed_at": "2026-09-18T15:36:57.212749+00:00",
+        "reviewed_at_display": "Sep 18, 2026 08:36 AM PT (Sep 18, 2026 11:36 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b7877dcd1abc8acdb0a3b24bb60eae0e40ad00175c3bef6e7a1d44a857eb5458",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 312,
+      "key": "accessory_cable_kickback",
+      "movement_name": "Cable Kickback",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-next-ten-20260918-312-64335822",
+      "generation_batch": "Ten more cable movements — 2026-09-18",
+      "candidate_id": "46ff113f0e9043cd65f31a05",
+      "version": 4,
+      "supersedes_candidate_id": "d0e3ec0a49bb9b270f6b3fb1",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/46ff113f0e9043cd65f31a05/master.png",
+          "sha256": "64335822e141e72fa3ce3b8d50649436e544516988e87d81ecf7579aaa44f941",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1767949
+        },
+        "app": {
+          "path": "candidates/46ff113f0e9043cd65f31a05/app.png",
+          "sha256": "88eef379b7e8c8c264f61696507f88960403c4f4aa6797b63ba4cd764624e229",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 326907
+        },
+        "thumbnail": {
+          "path": "candidates/46ff113f0e9043cd65f31a05/thumbnail.png",
+          "sha256": "8adc90e92b928729c82da759170215fe152c40245a2fae458a7b88e7e0b0a694",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48231
+        }
+      },
+      "candidate_asset": "candidates/46ff113f0e9043cd65f31a05/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "NOT FACING THE STACK.",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "NOT FACING THE STACK.",
+          "tags": [],
+          "reviewed_at": "2026-09-18T15:37:07.312219+00:00",
+          "reviewed_at_display": "Sep 18, 2026 08:37 AM PT (Sep 18, 2026 11:37 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "64335822e141e72fa3ce3b8d50649436e544516988e87d81ecf7579aaa44f941",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-18T12:23:53.236400+00:00",
+      "created_at_display": "Sep 18, 2026 05:23 AM PT (Sep 18, 2026 08:23 AM Eastern)",
+      "generation_prompt": "312-1\nSquare photorealistic Strength Ledger exercise photograph. Image 1 exclusively controls original athlete, graphite tank/black shorts/shoes, realistic skin, dark studio and subtle violet rim. Image 2 controls the COMPLETE real Precor RUD0915 paired machine as one coherent object. Exactly ONE sliding pulley carriage PER TOWER; moving one low leaves its upper rail EMPTY. Matching shrouds, fixed handles, bridge and feet. Full apparatus/body with 7% margins. Taut cables emerge from actual wheel grooves, not pins; each has one traveling stopper and clip at attachment. Natural task-focused head, no camera posing, no text. CABLE TRICEPS KICKBACK, one-arm representative execution. Image 3 establishes standing IN FRONT of near right tower, facing it; copy only machine/camera geometry. Near right carriage LOW, far left idle high. Athlete faces active pulley, hips hinge ~45 degrees, spine and neck neutral with gaze toward floor ahead. Free left hand braces on his own left thigh. Working right upper arm stays alongside and slightly behind torso; elbow stays high by ribs while right forearm extends BACK until almost straight. Right hand holds one D-handle with neutral wrist. Single taut cable from low front wheel runs freely beside his body to the rear hand, opposing elbow extension. Clear entire shoulder-elbow-hand chain and cable in near-side view, no cable through thigh. Grounded staggered feet.\n\n312-2\nEdit image 2. Image 1 is sole immutable athlete/style baseline; image 3 is exact real Precor paired rig construction. Preserve dark studio, subtle violet rim and realistic original athlete. Keep one-arm triceps kickback, near arm straight behind torso with elbow held high and free hand on thigh. Move athlete farther onto open floor IN FRONT of active near low pulley, not between towers: allow obvious depth gap in front of whole machine. Torso and feet face toward active wheel. Working arm held slightly outside hip so cable from hand to low wheel passes CLEAR of thigh/knee without intersecting body. Natural hip hinge, neck aligned. Keep complete paired rig, one active low carriage, other high idle. Square full-body photograph, pull camera back 7% so all machine and shoes have breathing room. No text.\n\n312-3\nPrecise mechanical edit to IMAGE2. Image1 is immutable original athlete/style only. Correct ONLY where cable meets working low wheel: taut line from handle stopper must reach LOWER-LEFT/BOTTOM wheel GROOVE around (940,855), then wrap groove behind guard. No radial wire into center-left of guard. Preserve high fixed upper arm/straight working elbow, free hand on thigh, feet, open floor distance, full matched rig and EXACT two carriages. Do not copy dumbbells or change movement.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-next-ten-2026-09-18/312-cable-kickback.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_triceps",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; immutable original athlete/style baseline first; complete real Precor RUD0915 rig; targeted mechanical refinements.",
+        "owner_instruction": "do 10 more movements",
+        "retained_rejections": "[]",
+        "inspection": "Athlete is farther forward on open floor facing working station, with hips hinged and free hand braced on thigh. Working upper arm remains beside/behind torso and elbow extends the forearm. One D-handle and one taut cable pass in front of the near-side hip/thigh projection and enter beneath outer wheel guard; no visible severed segment or pin attachment. Two carriages and complete machine, natural head and grounded shoes.",
+        "selected_attempt": "312-3",
+        "source_sha256": "64335822e141e72fa3ce3b8d50649436e544516988e87d81ecf7579aaa44f941",
+        "scope": "Ten additional existing canonical cable movements using the retained family rebuild receipt. Pending human review only. No identity or attachment variants added; no runtime promotion."
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16",
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "NOT FACING THE STACK.",
+        "tags": [],
+        "reviewed_at": "2026-09-18T15:37:07.312219+00:00",
+        "reviewed_at_display": "Sep 18, 2026 08:37 AM PT (Sep 18, 2026 11:37 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "64335822e141e72fa3ce3b8d50649436e544516988e87d81ecf7579aaa44f941",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 462,
       "key": "accessory_band_copenhagen_adduction",
       "movement_name": "Band Copenhagen Adduction",
@@ -5061,6 +5620,241 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "0b699213ff59b89cc753900befb36469032798ac3ccc64b63be2fcf16c2a682c",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 406,
+      "key": "accessory_cable_romanian_deadlift",
+      "movement_name": "Cable Romanian Deadlift",
+      "primary_muscle_group": "hamstrings",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-next-ten-20260918-406-a0ff43fe",
+      "generation_batch": "Ten more cable movements — 2026-09-18",
+      "candidate_id": "6e94023f09067bed8b3fa303",
+      "version": 4,
+      "supersedes_candidate_id": "1197e0ac2aeaa8f939bcea74",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/6e94023f09067bed8b3fa303/master.png",
+          "sha256": "a0ff43fe176d60a6bae90347f1d178161d287c461e96abdbe45e827aaf8bd9a7",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1709766
+        },
+        "app": {
+          "path": "candidates/6e94023f09067bed8b3fa303/app.png",
+          "sha256": "74cf4b7efad18d15d5b92ce3559678c67ed0d4d1a202b86dee03e33d366334cc",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 320087
+        },
+        "thumbnail": {
+          "path": "candidates/6e94023f09067bed8b3fa303/thumbnail.png",
+          "sha256": "25544b7ceac6d2845862eb89cbaec0cd6ed7c632ac159f08e78ed7b18f59a0e9",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49878
+        }
+      },
+      "candidate_asset": "candidates/6e94023f09067bed8b3fa303/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "HE NEEDS TO BE WAY CLOSER TO THE STACK",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "HE NEEDS TO BE WAY CLOSER TO THE STACK",
+          "tags": [],
+          "reviewed_at": "2026-09-18T15:37:22.427635+00:00",
+          "reviewed_at_display": "Sep 18, 2026 08:37 AM PT (Sep 18, 2026 11:37 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a0ff43fe176d60a6bae90347f1d178161d287c461e96abdbe45e827aaf8bd9a7",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-18T12:23:54.333262+00:00",
+      "created_at_display": "Sep 18, 2026 05:23 AM PT (Sep 18, 2026 08:23 AM Eastern)",
+      "generation_prompt": "406-1\nSquare photorealistic Strength Ledger exercise photograph. Image 1 exclusively controls original athlete, graphite tank/black shorts/shoes, realistic skin, dark studio and subtle violet rim. Image 2 controls the COMPLETE real Precor RUD0915 paired machine as one coherent object. Exactly ONE sliding pulley carriage PER TOWER; moving one low leaves its upper rail EMPTY. Matching shrouds, fixed handles, bridge and feet. Full apparatus/body with 7% margins. Taut cables emerge from actual wheel grooves, not pins; each has one traveling stopper and clip at attachment. Natural task-focused head, no camera posing, no text. CABLE ROMANIAN DEADLIFT. Image 3 supplies operator space and camera only, not rowing pose. One active LOW near-right pulley; far-left carriage idle high. Man stands directly IN FRONT OF and FACING that low wheel with a meter of floor clearance. Show bottom of controlled HIP HINGE: hips pushed back, knees slightly bent, shins nearly vertical, long neutral spine, head follows torso with gaze down ahead. Both straight arms hang to a short straight cable bar at upper shin level, hands shoulder-width and symmetrically straddling central attachment clip. Single taut cable runs forward/down from BAR CENTER to low wheel, in front of shins. Continuous straight bar with both ends visible, wrists neutral. Camera side-three-quarter exposes hip hinge and clear alignment into near pulley; no squat, no twisted shoulders.\n\n406-2\nEdit image 2. Image 1 is sole immutable athlete/style baseline; image 3 is exact real Precor paired rig construction. Preserve dark studio, subtle violet rim and realistic original athlete. Keep this Romanian deadlift hip hinge and correct athlete-to-pulley alignment. Replace malformed bar with short STRAIGHT cable bar held shoulder width overhand. BOTH hands straddle the exact CENTER metal eyelet, one hand on EACH side. The single carabiner, stopper and cable attach at CENTER BETWEEN hands, never bar end. Show both grips and center clearly by small camera adjustment. Delete extra stopper beside machine pulley; only stopper at moving bar. Knees gently bent, hips back, spine/neck aligned. Preserve complete paired rig and its two carriages. Square full-body photograph, pull camera back 7% so all machine and shoes have breathing room. No text.\n\n406-3\nEdit image 2 with ONLY this attachment correction; image1 is unchanged athlete/style baseline. Replace current end-connected bar with a straight cable bar whose center eyelet is BETWEEN the two hands. Cable and stopper must connect BETWEEN HANDS around image coordinate (397,843), not to right bar end (530,872). Continuous straight bar with one hand each side of center clip. One taut line from this CENTER CLIP to the SAME near low wheel. Remove the old bar-end cable and stopper. Preserve entire machine, its exact two carriages, hip hinge, athlete and framing.\n\n406-4\nPrecise mechanical edit to IMAGE2. Image1 is immutable original athlete/style only. Repair straight bar only: move the center cable eyelet LEFT along bar until it lies in the visible gap BETWEEN the two hands at approximately (397,839). The two hands are around x365 and x432: eyelet must be BETWEEN them, NOT x500. Shorten both bar ends equally. Cable extends from this central eyelet to existing low wheel. Keep hips/back/feet, two-carriage rig, camera and style unchanged. Do not copy dumbbells or change movement.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-next-ten-2026-09-18/406-cable-romanian-deadlift.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "movement_family": "accessory_hamstrings",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; immutable original athlete/style baseline first; complete real Precor RUD0915 rig; targeted mechanical refinements.",
+        "owner_instruction": "do 10 more movements",
+        "retained_rejections": "[]",
+        "inspection": "Hip hinge with hips back, slightly bent knees and aligned spine/head. Both hands straddle the short straight-bar center eyelet after correction. One wire reaches low near wheel outlet. Two complete towers, exactly two carriages, full shoes and stable open-floor stance; active source is ahead of athlete.",
+        "selected_attempt": "406-4",
+        "source_sha256": "a0ff43fe176d60a6bae90347f1d178161d287c461e96abdbe45e827aaf8bd9a7",
+        "scope": "Ten additional existing canonical cable movements using the retained family rebuild receipt. Pending human review only. No identity or attachment variants added; no runtime promotion."
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16",
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "HE NEEDS TO BE WAY CLOSER TO THE STACK",
+        "tags": [],
+        "reviewed_at": "2026-09-18T15:37:22.427635+00:00",
+        "reviewed_at_display": "Sep 18, 2026 08:37 AM PT (Sep 18, 2026 11:37 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a0ff43fe176d60a6bae90347f1d178161d287c461e96abdbe45e827aaf8bd9a7",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 529,
+      "key": "accessory_pallof_press",
+      "movement_name": "Pallof Press",
+      "primary_muscle_group": "obliques",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-fixes-plus-five-20260918-529-a9da27bc",
+      "generation_batch": "Cable corrections + five new movements — 2026-09-18",
+      "candidate_id": "582f10c5c03b6d689dbd30ea",
+      "version": 8,
+      "supersedes_candidate_id": "c27635e7a268c91b756bccd4",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the force needs to fuckign be perpendicular to the arms",
+        "tags": [],
+        "reviewed_at": "2026-09-18T11:09:43.927483+00:00",
+        "reviewed_at_display": "Sep 18, 2026 04:09 AM PT (Sep 18, 2026 07:09 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "bb7df0306f8baa0e07aed1336d516b5db3e629411e5c00a45a5e84df8e7f48d1",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/582f10c5c03b6d689dbd30ea/master.png",
+          "sha256": "a9da27bcdeeaf802e1a30ae549ef233246ca5c7910cd68d0b9ca81d984e1dec1",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1698001
+        },
+        "app": {
+          "path": "candidates/582f10c5c03b6d689dbd30ea/app.png",
+          "sha256": "d24fea2011124a6e0a04bd93c2ea623e7b9438e24e6c33bdb39bafbc00ff7ae9",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 332296
+        },
+        "thumbnail": {
+          "path": "candidates/582f10c5c03b6d689dbd30ea/thumbnail.png",
+          "sha256": "9213d3bea66d452ab409c945ba0c7a0df458388b66f0364f5ce9a621df1239de",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 53247
+        }
+      },
+      "candidate_asset": "candidates/582f10c5c03b6d689dbd30ea/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "AGAIN!!!!!!!!!! STOP FUCKING THIS UP!!! LOOK IUP A FUCKING REFERENCE SINCE YOU ARE TOO RETARDED TO GET THE FORCE VECTOR AND POSITIONING RELATIVE TO THE TOWER RIGHT",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "AGAIN!!!!!!!!!! STOP FUCKING THIS UP!!! LOOK IUP A FUCKING REFERENCE SINCE YOU ARE TOO RETARDED TO GET THE FORCE VECTOR AND POSITIONING RELATIVE TO THE TOWER RIGHT",
+          "tags": [],
+          "reviewed_at": "2026-09-18T15:37:59.193423+00:00",
+          "reviewed_at_display": "Sep 18, 2026 08:37 AM PT (Sep 18, 2026 11:37 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a9da27bcdeeaf802e1a30ae549ef233246ca5c7910cd68d0b9ca81d984e1dec1",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-18T11:39:20.133948+00:00",
+      "created_at_display": "Sep 18, 2026 04:39 AM PT (Sep 18, 2026 07:39 AM Eastern)",
+      "generation_prompt": "529-1\nOne square photorealistic Strength Ledger exercise photograph. Image 1 controls ONLY the original man's identity, graphite tank, black shorts/trainers, realistic skin, near-black studio, charcoal floor, neutral key light and subtle purple rim. Image 2 controls the complete real Precor dual-stack machine: matching tower assemblies, silver rails, authentic swiveling grooved pulley carriages, connected curved top bridge and grounded feet. Preserve its real construction and scale as one rigid object. Do not copy its logos or printed labels. Whole athlete and machine visible with 8% edge clearance. Movement mechanics are the subject; no camera pose. Exactly one loaded cable, continuous and taut from a real wheel groove to the attachment, one traveling stopper at attachment, no duplicate stationary stopper on active wheel. Idle tower still has its full carriage and parked handle. STANDING PALLOF PRESS. Arrange an unmistakable right-angle load path: the athlete stands SIDE-ON to the nearest tower, with the stack to his LEFT; he faces FORWARD, 90 degrees away from the cable's direction. Feet shoulder width, knees soft, ribcage/pelvis square and untwisted, neutral focused gaze straight ahead. Both hands overlap around ONE D-handle held at sternum height, arms extended STRAIGHT FORWARD from the center of his chest, no reaching toward the machine and no arm sweep across the body. Place the working pulley at the same height and fore-aft floor coordinate as his EXTENDED HANDS: cable runs HORIZONTALLY SIDEWAYS from his left to his hands, PERPENDICULAR to the forward arms. This is an anti-rotation hold, not a row or chest fly. Spatial plan viewed from above is a clear L: pulley → hands ← shoulders at ninety degrees. Use a slightly elevated FRONT three-quarter photograph that clearly reveals the forward arm length, two separate shoulders, horizontal lateral cable and full machine. The athlete's chest faces the same direction as feet; his hands remain centered on that midline. Shift the entire machine forward as necessary to put its working wheel beside the extended hands, rather than pulling diagonally backward toward his shoulder. Only NEAREST tower is active; no wire crossing the machine or the other carriage.\n\n529-2\nCorrect the PALLOF PRESS geometry in image 2. Image 1 remains the sole athlete/style control; image 3 is exact machine construction. Keep man OUTSIDE and LEFT of the entire machine, not between stacks. Delete the cable crossing the rig from the far/right tower. ONLY the NEAR LEFT tower supplies one cable, from its chest-height real wheel groove directly leftward to his held D-handle. The far/right tower is completely idle with parked handle. His torso, pelvis, head and feet face straight forward together, ninety degrees to the machine at his side. Both arms reach STRAIGHT FORWARD from his sternum, elbows almost extended, hands joined on his bodily CENTERLINE; do not angle his hands left or toward the pulley. His extended hands and the working pulley occupy the same fore-aft plane, so the straight cable is PERPENDICULAR to his arms, pulling purely sideways. Shift the machine forward in depth if needed to achieve that true right-angle relationship. Choose a slightly elevated front view that makes his forward arms and lateral cable distinguishable. Preserve natural grounded stance and neutral wrist grips. Full matching machine towers including complete carriages, bridge and feet. One stopper at the hand clip, no spare clip dangling at active pulley. Comfortable edge clearance; dark studio; no diagrams.\n\n529-3\nRephotograph image 2 Pallof press from an elevated front-left three-quarter angle, about 30 degrees downward, so the genuine RIGHT ANGLE between forward arms and sideward cable is visible. Original image 1 controls athlete/style. Image 3 controls exact complete coherent twin Precor machine. He stands OUTSIDE LEFT of the entire rig. His torso, hips, face and feet face the same direction, forward, sideways to machine. Both nearly straight arms extend forward from sternum with hands joined, directly on his body's centerline. Place machine physically FORWARD in depth relative to his torso: the active nearest LEFT chest-height pulley is DIRECTLY TO THE SIDE OF HIS EXTENDED HANDS, not beside/behind his shoulder. The horizontal cable to his hands is exactly perpendicular to forward arms, no backward component. Show an honest perspective of this 3D layout; no front-on foreshortening that hides arm direction. Swivel active wheel to face his hands, cable exits the actual outer grooved rim TANGENTIALLY, never from center bolt or adjustment pin. Precisely TWO carriages, active left chest height, idle right with parked handle. Stance grounded, knees soft, no torso twist, elbows almost straight, wrists neutral. Full person and paired machine with 6 percent margins, same dark studio, no text/arrows/diagrams.\n\n529-4\nPrecise mechanical correction of image 2. Keep athlete Pallof posture, hands extended straight forward, sideways cable direction, both complete machine towers and whole composition. Original image 1 controls style. The active LEFT cable currently attaches to a BOLT at the CENTER of the round pulley guard. This is mechanically wrong. Move that entire active left pulley carriage UP its rail by ONE WHEEL RADIUS, about 40 pixels in this 1254 square image. Keep cable line at its present height and angle so it now passes TANGENTIALLY over the BOTTOM RIM/GROOVE of the raised real wheel, entering between its two guards and wrapping around the sheave. Swivel that pulley toward athlete. No cable touching any center axle, bolt, pin or front plate. No additional wheel or carriage. Exactly two carriages total, idle right unchanged. Do not move athlete, hands, cable handle or remaining apparatus.\n\n529-5\nEdit image 2: LOWER the active LEFT pulley carriage from head height to CHEST HEIGHT for a Pallof press. Move the whole left carriage DOWN about 120 pixels, until its bottom cable exit aligns at roughly y470 in the 1254px image. The cable should then run almost HORIZONTALLY sideways to his held handle around y505, with only slight perspective slope. Preserve the now-correct cable routing through the wheel's BOTTOM GROOVE. Preserve athlete entirely, both straight forward arms on torso centerline, wrist grips, natural stance, exact complete machine geometry, idle right pulley and style. Image 1 remains immutable style control. The cable force is level at his chest and perpendicular to his extended arms, not pulling upward. Do not raise carriage or add parts.\n\n529-6\nPrecise machine-only edit of image 2. Preserve the athlete, horizontal working cable and both pulley carriages EXACTLY. The FIXED black vertical support handle on LEFT tower was accidentally lowered. Move ONLY that fixed vertical U-shaped support handle UP on its black tower, to the same manufactured height as the fixed handle on RIGHT tower, accounting for perspective. Left fixed handle should span approximately y235–355 rather than current y350–470 in this square image. This is the handle bolted to the black weight-stack shroud, NOT the sliding round pulley. Sliding left pulley and horizontal cable at y490 remain untouched. Preserve everything else. Image 1 original athlete/style control.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-fixes-plus-five-2026-09-18/529-pallof-press.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "movement_family": "accessory_obliques",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; immutable original athlete/style first, real Precor RUD0915 rig, movement-specific geometry.",
+        "owner_instruction": "fix the cable rejects and give me 5 more",
+        "exact_latest_rejection": "the force needs to fuckign be perpendicular to the arms",
+        "retained_rejections": "[{\"version\": 4, \"reason\": \"force vector is wrong\"}, {\"version\": 5, \"reason\": \"poor machine laity fucking again!!!!\"}, {\"version\": 6, \"reason\": \"same fucking mistakes all the fucking time!\"}, {\"version\": 7, \"reason\": \"the force needs to fuckign be perpendicular to the arms\"}]",
+        "inspection": "Athlete outside the near left tower; body and feet face forward together. Joined hands extend on sternum centerline while one level cable pulls laterally from nearest chest-height wheel, perpendicular to the forward press. Source exits behind outer wheel guard, clear of center bolt. No cable crosses the rig. Paired towers, fixed support handles and two carriages checked after last edit.",
+        "selected_attempt": "529-6",
+        "source_sha256": "a9da27bcdeeaf802e1a30ae549ef233246ca5c7910cd68d0b9ca81d984e1dec1",
+        "scope": "Two latest active rejects plus five previously invalidated canonical cable movements. Pending human review only; no identity changes or runtime promotion."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "AGAIN!!!!!!!!!! STOP FUCKING THIS UP!!! LOOK IUP A FUCKING REFERENCE SINCE YOU ARE TOO RETARDED TO GET THE FORCE VECTOR AND POSITIONING RELATIVE TO THE TOWER RIGHT",
+        "tags": [],
+        "reviewed_at": "2026-09-18T15:37:59.193423+00:00",
+        "reviewed_at_display": "Sep 18, 2026 08:37 AM PT (Sep 18, 2026 11:37 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a9da27bcdeeaf802e1a30ae549ef233246ca5c7910cd68d0b9ca81d984e1dec1",
         "source": "human_review_ui"
       }
     }
