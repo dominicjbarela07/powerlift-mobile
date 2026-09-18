@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 2025,
+  "revision": 2052,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-18T17:59:42.205232+00:00",
-  "updated_at_display": "Sep 18, 2026 10:59 AM PT (Sep 18, 2026 01:59 PM Eastern)",
+  "updated_at": "2026-09-18T18:55:00.860344+00:00",
+  "updated_at_display": "Sep 18, 2026 11:55 AM PT (Sep 18, 2026 02:55 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -1003,6 +1003,27 @@
         "source": "explicit_owner_cable_catalog_cleanup",
         "replacement_movement_definition_id": null,
         "prior_review_history": [],
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "370f66dbf66c7272f6740a7b",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_cable_step_back_lunge",
+      "movement_definition_id": 440,
+      "movement_name": "Cable Step-Back Lunge",
+      "reason": "I dont want it",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-18T18:10:50.137391+00:00",
+      "excluded_at_display": "Sep 18, 2026 11:10 AM PT (Sep 18, 2026 02:10 PM Eastern)",
+      "source": "human_review_catalog_retirement",
+      "catalog_receipt": {
+        "reason": "I dont want it",
+        "reviewer_user_id": 1,
+        "candidate_id": "370f66dbf66c7272f6740a7b",
+        "source": "human_review_catalog_retirement",
+        "retired_at": "2026-09-18T18:10:50.121363",
         "historical_evidence_rewritten": false
       },
       "human_approved": false
