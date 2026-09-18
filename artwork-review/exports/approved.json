@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 1944,
+  "revision": 1958,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-17T21:44:09.581934+00:00",
-  "updated_at_display": "Sep 17, 2026 02:44 PM PT (Sep 17, 2026 05:44 PM Eastern)",
+  "updated_at": "2026-09-18T00:27:06.444638+00:00",
+  "updated_at_display": "Sep 17, 2026 05:27 PM PT (Sep 17, 2026 08:27 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -45862,6 +45862,255 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "82011c66c1999672bc1414b5f24318920c7c3d9aac0e4ce3bbcd5203cd042729",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 95,
+      "key": "accessory_cable_front_raise",
+      "movement_name": "Cable Front Raise",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-machine-quality-20260917-95-5a7deed3",
+      "generation_batch": "Cable machine geometry rebuild — 2026-09-17",
+      "candidate_id": "7d170e7363715fe72fe4aee0",
+      "version": 6,
+      "supersedes_candidate_id": "8a41069c2c401bbed374d5e4",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "force vector is fuckig wrong!!!! he needs to be facing away from the fuckign pulley!!! I already fucking said that",
+        "tags": [],
+        "reviewed_at": "2026-09-17T20:53:41.640071+00:00",
+        "reviewed_at_display": "Sep 17, 2026 01:53 PM PT (Sep 17, 2026 04:53 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5995985b9000700aa49706ca255383ac91572d1b8abc940bf18c23221d918f10",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/7d170e7363715fe72fe4aee0/master.png",
+          "sha256": "5a7deed30d8585fdef4c3d1739983489b2a957e8d92386d1ab66e9bdd8f1a322",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1718065
+        },
+        "app": {
+          "path": "candidates/7d170e7363715fe72fe4aee0/app.png",
+          "sha256": "f842f87a04560b5b6036fadef83eefe0e7c51a3cb719e1cb131289cb427596db",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 342412
+        },
+        "thumbnail": {
+          "path": "candidates/7d170e7363715fe72fe4aee0/thumbnail.png",
+          "sha256": "4466d8b5b6ce6f7cedb01fd906a17aa9d6f340e36472c97caced834b55f0d854",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 56355
+        }
+      },
+      "candidate_asset": "candidates/7d170e7363715fe72fe4aee0/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-17T23:33:20.645361+00:00",
+          "reviewed_at_display": "Sep 17, 2026 04:33 PM PT (Sep 17, 2026 07:33 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5a7deed30d8585fdef4c3d1739983489b2a957e8d92386d1ab66e9bdd8f1a322",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-17T21:44:00.461603+00:00",
+      "created_at_display": "Sep 17, 2026 02:44 PM PT (Sep 17, 2026 05:44 PM Eastern)",
+      "generation_prompt": "95-2\nUse case: photorealistic-natural. One square Strength Ledger exercise illustration, photographed naturally. Image 1 is the immutable athlete/style reference: same muscular brown-haired adult man, graphite sleeveless top, black shorts and trainers, natural skin, near-black studio and restrained purple rim. Do not copy its exercise. Image 2 is the exact coherent dual-column cable rig reference. Treat it as one rigid manufactured object: preserve both mechanically mirrored matching towers, matched plate stacks and guide rods, equal tower height and depth, matching top assemblies and feet, continuous connected top bridge and rear brace. Both stacks retain the same symmetric facing relationship to the machine front; never rotate one tower independently or invent a second machine. The working carriage may move to the height specified; the other cable stays parked. One working cable. Taut continuous cable exits the rim groove of a real swivel pulley, through a visible carabiner to the attachment. No cable originating at an axle, frame tube or empty space. Realistic athlete-to-machine scale, a 2.3m rig and 1.8m standing man. The athlete works OUTSIDE the machine's footprint, in front of the working carriage, not inside its frame or off to its side. Establish the exercise axis first, then photograph it from an angle showing the action without turning his chest to the camera. Keep the paired rig structurally legible and both feet grounded. Action, natural posture and physical geometry take priority over seeing his face. No labels, collage, arrows, watermarks, extra limbs or decorative gym clutter. Movement #95 Cable Front Raise. Keep the nearly FRONTAL machine view of reference 2. The athlete stands in the foreground DIRECTLY IN FRONT OF THE RIGHT TOWER, aligned with its low carriage. He FACES CAMERA and directly AWAY FROM THE MACHINE: his BACK faces the right tower, toes and sternum point toward camera, shoulders parallel to the machine front plane. He is 70cm outside the machine base. Both feet shoulder width. He raises a straight short bar in both overhand grips to chest height in front of him, elbows almost straight. ONE working cable from the right tower at ankle height travels straight forward from BEHIND him, visibly THROUGH THE GAP BETWEEN HIS LEGS, then upward in front of his body to the bar's center swivel. No sideways route or leg intersections. Choose slightly elevated camera shifted only 15 degrees toward athlete's left to reveal raised arms and cable between legs. Neither his head nor torso turns toward the machine. Left tower remains completely unobstructed; right tower visible above and around him, matching left construction. Show ordinary effort, not a posed smile.\n\n95-3\nUse case: photorealistic-natural. Make one square Strength Ledger movement image. Reference 1 supplies the SAME brown-haired muscular man in graphite sleeveless shirt, black shorts and black trainers, natural skin, dark studio and subtle purple rim. Reference 2 supplies the ENTIRE dual-column cable machine: preserve its connected rectangular frame, TWO MATCHING PARALLEL tower/plate-stack assemblies facing the same direction, matching guide rods, front adjustment rails, top hardware and grounded feet. Do not rotate or twist either tower independently. Only slide the single working pulley carriage to the exercise height; the other carriage and cable remain parked. One working cable, seated in the actual pulley groove and visibly linked to attachment. Normal human proportions and commercial 2.3m machine scale. Show the complete spatial relationship and obvious floor space between athlete and machine base. Athlete works in the open floor directly ahead of one tower, never inside the footprint or across the machine. Camera documents the exercise; no torso turn or posing for camera. No extra limbs, extra carriages, annotations, collage or watermark. Cable Front Raise #95. Three-quarter SIDE view. The man stands in the open floor, back directly toward ONE near-tower low pulley, about 0.7m ahead of it. His heels, hips and shoulders are square to that source, chest and both toes point directly AWAY. He raises one short straight bar, both pronated hands shoulder-width, nearly straight arms lifted forward to below shoulder height. The cable goes from that ankle-height pulley FORWARD THROUGH THE GAP BETWEEN HIS LEGS and upward to the bar CENTER fitting. There must be a visible length of cable BEHIND his legs and a separate visible continuation in front, forming ONE STRAIGHT TENSION LINE to bar, with no abrupt turn or leg intersection. Athlete and machine viewed from side so force line behind him is unmistakable; do not show a front-only view that hides the cable origin. The machine stays fully coherent with both matching parallel stack assemblies. Exactly one carriage per tower. No cable pulling from his side.\n\n95-4\nUse case: photorealistic-natural. Make one square Strength Ledger movement image. Reference 1 supplies the SAME brown-haired muscular man in graphite sleeveless shirt, black shorts and black trainers, natural skin, dark studio and subtle purple rim. Reference 2 supplies the ENTIRE dual-column cable machine: preserve its connected rectangular frame, TWO MATCHING PARALLEL tower/plate-stack assemblies facing the same direction, matching guide rods, front adjustment rails, top hardware and grounded feet. Do not rotate or twist either tower independently. Only slide the single working pulley carriage to the exercise height; the other carriage and cable remain parked. One working cable, seated in the actual pulley groove and visibly linked to attachment. Normal human proportions and commercial 2.3m machine scale. Show the complete spatial relationship and obvious floor space between athlete and machine base. Athlete works in the open floor directly ahead of one tower, never inside the footprint or across the machine. Camera documents the exercise; no torso turn or posing for camera. No extra limbs, extra carriages, annotations, collage or watermark. Cable Front Raise #95. Camera side/three-quarter. Man stands only 30cm ahead of a low pulley, back DIRECTLY toward it, fully OUTSIDE the frame. Both toes and sternum point away along the pulley axis. Show the EARLY lifting phase: both nearly straight arms angle forward and downward about 35 degrees from vertical, pronated hands on short straight bar at roughly waist height, comfortably ahead of thighs. Feet shoulder width with a clear gap between thighs. ONE straight taut line goes from the low pulley DIRECTLY THROUGH THE OPEN GAP BETWEEN HIS LEGS to bar center. Use this LOW bar phase so the cable can pass beneath his crotch in a straight line. The cable is NEVER bent around a leg, never changes direction in free space, never passes through clothing. Visibly see source, continuous straight tension line, and carabiner at bar center. No high shoulder-height bar on this attempt. Stand him near enough to the working pulley for the line to run cleanly under the crotch. Both complete matching parallel stacks face consistently and form one connected rig. Whole natural action, not posed portrait.\n\n95-5\nUse case: precise-object-edit. Edit this Cable Front Raise image. Keep the entire TWO matched parallel towers, frame, studio, athlete identity, standing position, facing away from machine and outfit unchanged. Correct ONLY the raising phase and continuous cable routing together. Lower BOTH hands and the straight bar slightly to HIP HEIGHT so his almost-straight arms reach diagonally forward/down. This is the early phase of front raise, not a curl. Connect bar center to working low pulley using ONE PERFECTLY STRAIGHT TAUT CABLE. It passes BELOW his crotch THROUGH THE SPACE BETWEEN HIS LEGS. The visible segment behind the legs and the visible segment ahead of the legs must be exactly COLLINEAR, without a bend around his thigh. The present image has an impossible bend near his right leg; remove that broken path entirely. For this 1254px image: put bar roughly y=635, carabiner/stop below its center ending roughly x=230,y=695; working wheel exit roughly x=570,y=850. Draw the single physical tension line from wheel exit to carabiner, naturally occluded only by the near leg where necessary, visible through the actual gap. Keep both hands wrapped over one rigid bar and neutral wrists. One cable only, seated through the existing wheel, no extra pulley or unrelated edits.\n\n95-6\nUse case: precise-object-edit. Preserve this exact Cable Front Raise image, including the matched twin machine towers, athlete, body orientation, hand grip, low bar phase, clothing and lighting. Fix ONLY the active low pulley HEIGHT and working cable. The current active carriage on the left tower is too high, around upper-shin/knee height. SLIDE THAT ENTIRE SINGLE ACTIVE CARRIAGE DOWN BY ABOUT 110 PIXELS to ANKLE HEIGHT, immediately above the left tower's base foot. Do not add a second carriage. The wire should now run from the bar's center carabiner directly down-back through the leg gap to this LOWER source in ONE UNBROKEN STRAIGHT LINE. Keep the existing FRONT cable segment from bar to gap as the governing straight line; extend that exact same line behind the near leg until it intersects the lowered wheel. Current cable bends invisibly around the near leg: completely eliminate that bend. Both visible segments must have the IDENTICAL SLOPE. Thin taut cable enters the rim groove of that lowered swivel wheel. Nothing else changes, especially both matching full tower assemblies, both grounded feet, bar and hands.\n\n95-7\nEdit precisely: replace ONLY the working cable and its small low swivel carriage in this Cable Front Raise photograph. Everything else stays unchanged. The taut cable must be a SINGLE RULER-STRAIGHT LINE, like a straightedge. Current two cable sections on opposite sides of the near leg have different slopes. Align them perfectly. Keep bar-center carabiner exactly where it is. Keep the cable segment from that carabiner to the open leg gap exactly where it is. CONTINUE THAT SAME STRAIGHT LINE BEHIND THE NEAR LEG TO THE MACHINE. Move the working carriage farther DOWN the adjustment rail until the pulley groove touches this extended line, approximately 45px below its current position. The rear visible cable segment must be steeper than it is now, matching the bar-to-gap slope EXACTLY. No bend at either leg edge. The rear cable is naturally hidden behind the near leg, not changing direction there. Thin taut cable seats in grooved wheel; source moves down, no new joint or extra wire. Preserve both matched tower directions and every other element.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-machine-quality-2026-09-17/95-cable-front-raise-v6.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "movement_family": "accessory_front_delts",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; complete paired rectangular rig rebuilt before movement recomposition; dedicated Intenza row station for ID207.",
+        "owner_instruction": "Listen, bro. With the last batch of fucking cable fixes, you never fucking fixed the fucking machine quality. You're deviating again. What is your fucking problem? I have one stack facing one way, one stack facing the other way. The machine looks fucking retarded. Stop fucking that up.",
+        "exact_latest_rejection": "force vector is fuckig wrong!!!! he needs to be facing away from the fuckign pulley!!! I already fucking said that",
+        "retained_rejections": "[{\"version\": 2, \"reason\": \"FUCK YOU. THE MACHINE UALITY IS GOD FUCKIGN AWFUL\"}, {\"version\": 3, \"reason\": \"terrible machine quality\"}, {\"version\": 4, \"reason\": \"I believe we should be closer to the pulley and facing away with the cable going between the legs\"}, {\"version\": 5, \"reason\": \"force vector is fuckig wrong!!!! he needs to be facing away from the fuckign pulley!!! I already fucking said that\"}]",
+        "inspection": "Both complete plate-stack assemblies face consistently on one connected rectangular rig. Athlete faces away from a low source behind him, with an early front-raise phase and cable through the leg gap. The final lowered carriage aligns the visible front and rear tension segments; two overhand grips share one short bar and center connection.",
+        "selected_attempt": "95-7",
+        "source_sha256": "5a7deed30d8585fdef4c3d1739983489b2a957e8d92386d1ab66e9bdd8f1a322",
+        "scope": "Eight latest human-rejected candidates only; pending human review. No approval, mapping promotion, catalog edit or release."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-17T23:33:20.645361+00:00",
+        "reviewed_at_display": "Sep 17, 2026 04:33 PM PT (Sep 17, 2026 07:33 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5a7deed30d8585fdef4c3d1739983489b2a957e8d92386d1ab66e9bdd8f1a322",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 207,
+      "key": "accessory_seated_cable_row",
+      "movement_name": "Seated Cable Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-machine-quality-20260917-207-f0d83c2f",
+      "generation_batch": "Cable machine geometry rebuild — 2026-09-17",
+      "candidate_id": "b73d38ce013d35be0eff7c36",
+      "version": 6,
+      "supersedes_candidate_id": "2d787047150e6177ea337c6b",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "user not interfacing with the machine properly",
+        "tags": [],
+        "reviewed_at": "2026-09-17T20:54:25.606840+00:00",
+        "reviewed_at_display": "Sep 17, 2026 01:54 PM PT (Sep 17, 2026 04:54 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f2574d57fcaec3c437eeec49bd97932738ebcdb1daecafb0075dc9297d06c9b0",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/b73d38ce013d35be0eff7c36/master.png",
+          "sha256": "f0d83c2f85dfa2fa7854433008138c3313403d424afe362d03a9b3a980dc9fcf",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1908560
+        },
+        "app": {
+          "path": "candidates/b73d38ce013d35be0eff7c36/app.png",
+          "sha256": "bbc5d30ae9e32be08ee202beba3a4a1187adb4bc3d60890c3597fee115e46a33",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 329639
+        },
+        "thumbnail": {
+          "path": "candidates/b73d38ce013d35be0eff7c36/thumbnail.png",
+          "sha256": "f861cdd805bed982fbc8534d82fc20a4fde41a8c9fb56ce27f08e170567d80b1",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46012
+        }
+      },
+      "candidate_asset": "candidates/b73d38ce013d35be0eff7c36/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-17T23:33:54.108027+00:00",
+          "reviewed_at_display": "Sep 17, 2026 04:33 PM PT (Sep 17, 2026 07:33 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f0d83c2f85dfa2fa7854433008138c3313403d424afe362d03a9b3a980dc9fcf",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-17T21:44:05.692392+00:00",
+      "created_at_display": "Sep 17, 2026 02:44 PM PT (Sep 17, 2026 05:44 PM Eastern)",
+      "generation_prompt": "207-1\nUse case: photorealistic-natural. One square Strength Ledger Seated Cable Row #207. Image 1 supplies same brown-haired athletic man, graphite sleeveless shirt, black shorts/trainers, natural realistic skin, dark studio, restrained purple rim. Image 2 is the ACTUAL DEDICATED SEATED ROW STATION: copy its whole connected bench, twin angled footplates, low working pulley and selectorized tower as one mechanically coherent manufactured object. No generic standing cable rig or free bench. Show man seated centered LENGTHWISE on the bench with his pelvis bearing visibly on its padded surface, seat compression and thigh contact, torso upright and neutral, knees softly bent about 25 degrees, legs extending ahead toward machine. BOTH SHOE SOLES are flat against the TWO FOOTPLATES, heel and forefoot supported; plates should be the same size as a sole, shoes on user-facing sides, never threaded through plates or balanced on their top edges. Feet shoulder width and one on each matching plate. Both neutral hands grasp a small double-D/V handle pulled to navel with elbows close behind ribs. ONE taut cable from handle's center eye runs straight to station's real low pulley BETWEEN his feet at below-navel level, stays clear of shoes and thighs. Head, sternum and pelvic midline face along bench and toward cable source, no twist. Side/three-quarter camera with enough angle to SEE BOTH FOOT CONTACTS separately and full pad contact. The entire bench frame connects to the footplate/tower base and all feet rest on floor. Normal human proportions and authentic manufacturer machine proportions. The natural row action is the main subject. No tilted detached footpads, floating hips, oversized bench, cable axle origin, labels or watermarks.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-machine-quality-2026-09-17/207-seated-cable-row-v6.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; complete paired rectangular rig rebuilt before movement recomposition; dedicated Intenza row station for ID207.",
+        "owner_instruction": "Listen, bro. With the last batch of fucking cable fixes, you never fucking fixed the fucking machine quality. You're deviating again. What is your fucking problem? I have one stack facing one way, one stack facing the other way. The machine looks fucking retarded. Stop fucking that up.",
+        "exact_latest_rejection": "user not interfacing with the machine properly",
+        "retained_rejections": "[{\"version\": 2, \"reason\": \"SHIT MACHINE QUALITY AND PROPORTIONS\"}, {\"version\": 3, \"reason\": \"not even fuckign even on the bench pad! you suck fucking dick\"}, {\"version\": 4, \"reason\": \"use a fuckign real cable row machine\"}, {\"version\": 5, \"reason\": \"user not interfacing with the machine properly\"}]",
+        "inspection": "Dedicated connected seated-row station follows Intenza reference. Hips and thighs contact the continuous level bench; both soles contact separate angled footplates. Torso and neutral handle face along bench toward the low source; frame and footplate supports form one grounded machine.",
+        "selected_attempt": "207-1",
+        "source_sha256": "f0d83c2f85dfa2fa7854433008138c3313403d424afe362d03a9b3a980dc9fcf",
+        "scope": "Eight latest human-rejected candidates only; pending human review. No approval, mapping promotion, catalog edit or release."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-17T23:33:54.108027+00:00",
+        "reviewed_at_display": "Sep 17, 2026 04:33 PM PT (Sep 17, 2026 07:33 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f0d83c2f85dfa2fa7854433008138c3313403d424afe362d03a9b3a980dc9fcf",
         "source": "human_review_ui"
       }
     },
