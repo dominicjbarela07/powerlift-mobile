@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": 2261,
-  "updated_at": "2026-09-19T17:57:19.487545+00:00",
-  "updated_at_display": "Sep 19, 2026 10:57 AM PT (Sep 19, 2026 01:57 PM Eastern)",
+  "revision": 2305,
+  "updated_at": "2026-09-20T18:24:07.169720+00:00",
+  "updated_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -169169,6 +169169,510 @@
         "historical_evidence_rewritten": false
       },
       "human_approved": false
+    },
+    {
+      "candidate_id": "9635b933e05318233687a15b",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_good_morning",
+      "movement_definition_id": 546,
+      "movement_name": "Good Morning",
+      "reason": "Owner-authorized duplicate consolidation: Good Morning shares canonical movement #393 (Barbell Good Morning).",
+      "replacement_movement_definition_id": 393,
+      "excluded_at": "2026-09-20T18:24:00.294491+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 393,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "10ca2a4cb45d5db26f65834d",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_incline_bench_rear_delt_flye",
+      "movement_definition_id": 128,
+      "movement_name": "Incline-Bench Rear-Delt Fly",
+      "reason": "Owner-authorized duplicate consolidation: Incline-Bench Rear-Delt Fly shares canonical movement #127 (Chest-Supported Dumbbell Reverse Fly).",
+      "replacement_movement_definition_id": 127,
+      "excluded_at": "2026-09-20T18:24:00.553588+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 127,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "ca536ef31b1ae46671db1033",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_glute_ham_raise",
+      "movement_definition_id": 403,
+      "movement_name": "Glute-Ham Raise",
+      "reason": "Owner-authorized duplicate consolidation: Glute-Ham Raise shares canonical movement #412 (Bodyweight Glute-Ham Raise).",
+      "replacement_movement_definition_id": 412,
+      "excluded_at": "2026-09-20T18:24:00.805808+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 412,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "5c13e1227ef9f7f033af3eab",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_pec_deck",
+      "movement_definition_id": 52,
+      "movement_name": "Pec Deck",
+      "reason": "Owner-authorized duplicate consolidation: Pec Deck shares canonical movement #51 (Machine Chest Fly).",
+      "replacement_movement_definition_id": 51,
+      "excluded_at": "2026-09-20T18:24:01.066648+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 51,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "470f87395a16ed81a875e987",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_reverse_pec_deck",
+      "movement_definition_id": 134,
+      "movement_name": "Reverse Pec Deck",
+      "reason": "Owner-authorized duplicate consolidation: Reverse Pec Deck shares canonical movement #135 (Machine Reverse Fly).",
+      "replacement_movement_definition_id": 135,
+      "excluded_at": "2026-09-20T18:24:01.326650+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 135,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-130-193a2f63eef9",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_wide_elbow_dumbbell_row",
+      "movement_definition_id": 130,
+      "movement_name": "Wide-Elbow Dumbbell Row",
+      "reason": "Owner-authorized duplicate consolidation: Wide-Elbow Dumbbell Row shares canonical movement #129 (Rear-Delt Dumbbell Row).",
+      "replacement_movement_definition_id": 129,
+      "excluded_at": "2026-09-20T18:24:01.578665+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 129,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-204-52632fba91a2",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_wide_elbow_barbell_row",
+      "movement_definition_id": 204,
+      "movement_name": "Wide-Elbow Barbell Row",
+      "reason": "Owner-authorized duplicate consolidation: Wide-Elbow Barbell Row shares canonical movement #131 (Rear-Delt Barbell Row).",
+      "replacement_movement_definition_id": 131,
+      "excluded_at": "2026-09-20T18:24:01.827727+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 131,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "4b5657f21f41cbb4c17e2f25",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_chest_supported_rear_delt_machine_row",
+      "movement_definition_id": 137,
+      "movement_name": "Chest-Supported Rear-Delt Machine Row",
+      "reason": "Owner-authorized duplicate consolidation: Chest-Supported Rear-Delt Machine Row shares canonical movement #136 (Rear-Delt Row Machine).",
+      "replacement_movement_definition_id": 136,
+      "excluded_at": "2026-09-20T18:24:02.076030+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 136,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "9ad0087f466a0ac21c4db51b",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_wide_elbow_machine_row",
+      "movement_definition_id": 224,
+      "movement_name": "Wide-Elbow Machine Row",
+      "reason": "Owner-authorized duplicate consolidation: Wide-Elbow Machine Row shares canonical movement #136 (Rear-Delt Row Machine).",
+      "replacement_movement_definition_id": 136,
+      "excluded_at": "2026-09-20T18:24:02.324089+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 136,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-196-bd408563094c",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_incline_bench_dumbbell_row",
+      "movement_definition_id": 196,
+      "movement_name": "Incline-Bench Dumbbell Row",
+      "reason": "Owner-authorized duplicate consolidation: Incline-Bench Dumbbell Row shares canonical movement #194 (Chest-Supported Dumbbell Row).",
+      "replacement_movement_definition_id": 194,
+      "excluded_at": "2026-09-20T18:24:02.574030+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 194,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "5795559f49af0c86eb2e8be3",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_three_point_dumbbell_row",
+      "movement_definition_id": 158,
+      "movement_name": "Three-Point Dumbbell Row",
+      "reason": "Owner-authorized duplicate consolidation: Three-Point Dumbbell Row shares canonical movement #154 (One-Arm Dumbbell Row).",
+      "replacement_movement_definition_id": 154,
+      "excluded_at": "2026-09-20T18:24:02.825680+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 154,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "6e7e72507bca7cb4c2620ac1",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_kelso_shrug",
+      "movement_definition_id": 242,
+      "movement_name": "Kelso Shrug",
+      "reason": "Owner-authorized duplicate consolidation: Kelso Shrug shares canonical movement #241 (Chest-Supported Kelso Shrug).",
+      "replacement_movement_definition_id": 241,
+      "excluded_at": "2026-09-20T18:24:03.079191+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 241,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "709164d609f64a1a9546febb",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_chest_supported_kelso_row",
+      "movement_definition_id": 205,
+      "movement_name": "Chest-Supported Kelso Row",
+      "reason": "Owner-authorized duplicate consolidation: Chest-Supported Kelso Row shares canonical movement #241 (Chest-Supported Kelso Shrug).",
+      "replacement_movement_definition_id": 241,
+      "excluded_at": "2026-09-20T18:24:03.328918+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 241,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-256-6bd56e7f32c6",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_standing_dumbbell_curl",
+      "movement_definition_id": 256,
+      "movement_name": "Standing Dumbbell Curl",
+      "reason": "Owner-authorized duplicate consolidation: Standing Dumbbell Curl shares canonical movement #253 (Dumbbell Curl).",
+      "replacement_movement_definition_id": 253,
+      "excluded_at": "2026-09-20T18:24:03.585095+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 253,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "e6eafa2076e23080eaa55806",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_glute_drive_machine",
+      "movement_definition_id": 433,
+      "movement_name": "Glute Drive Machine",
+      "reason": "Owner-authorized duplicate consolidation: Glute Drive Machine shares canonical movement #431 (Machine Hip Thrust).",
+      "replacement_movement_definition_id": 431,
+      "excluded_at": "2026-09-20T18:24:03.835743+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 431,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "676628c3b75a58ed74c4bbf9",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_reverse_hyperextension_machine",
+      "movement_definition_id": 556,
+      "movement_name": "Reverse Hyperextension Machine",
+      "reason": "Owner-authorized duplicate consolidation: Reverse Hyperextension Machine shares canonical movement #435 (Reverse Hyperextension).",
+      "replacement_movement_definition_id": 435,
+      "excluded_at": "2026-09-20T18:24:04.082954+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 435,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "0eb9934f56f5777f096d473c",
+      "family": "canonical_bodyweight_accessories",
+      "key": "accessory_bird_dog_back_extension",
+      "movement_definition_id": 553,
+      "movement_name": "Bird Dog Back Extension",
+      "reason": "Owner-authorized duplicate consolidation: Bird Dog Back Extension shares canonical movement #541 (Bird Dog).",
+      "replacement_movement_definition_id": 541,
+      "excluded_at": "2026-09-20T18:24:04.335510+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 541,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "8669dd7ce2d5342377643dc9",
+      "family": "canonical_bodyweight_accessories",
+      "key": "accessory_copenhagen_adduction",
+      "movement_definition_id": 455,
+      "movement_name": "Copenhagen Adduction",
+      "reason": "Owner-authorized duplicate consolidation: Copenhagen Adduction shares canonical movement #457 (Long-Lever Copenhagen Adduction).",
+      "replacement_movement_definition_id": 457,
+      "excluded_at": "2026-09-20T18:24:04.584449+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 457,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "738bcb309a944dc4b3b9c536",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_band_hip_abduction",
+      "movement_definition_id": 471,
+      "movement_name": "Band Hip Abduction",
+      "reason": "Owner-authorized duplicate consolidation: Band Hip Abduction shares canonical movement #475 (Standing Band Hip Abduction).",
+      "replacement_movement_definition_id": 475,
+      "excluded_at": "2026-09-20T18:24:04.836782+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 475,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "eaaaa71a62f3c249f2246581",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_chest_supported_high_row",
+      "movement_definition_id": 223,
+      "movement_name": "Chest-Supported High Row",
+      "reason": "Owner-authorized duplicate consolidation: Chest-Supported High Row shares canonical movement #217 (Machine High Row).",
+      "replacement_movement_definition_id": 217,
+      "excluded_at": "2026-09-20T18:24:05.093437+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 217,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "eece78a3e59566292af2c061",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_machine_mid_row",
+      "movement_definition_id": 221,
+      "movement_name": "Machine Mid Row",
+      "reason": "Owner-authorized duplicate consolidation: Machine Mid Row shares canonical movement #216 (Chest-Supported Machine Row).",
+      "replacement_movement_definition_id": 216,
+      "excluded_at": "2026-09-20T18:24:05.347158+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 216,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "872e263f29c7215bfef13589",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_plate_loaded_seated_row",
+      "movement_definition_id": 222,
+      "movement_name": "Machine Seated Row",
+      "reason": "Owner-authorized duplicate consolidation: Machine Seated Row shares canonical movement #216 (Chest-Supported Machine Row).",
+      "replacement_movement_definition_id": 216,
+      "excluded_at": "2026-09-20T18:24:05.604269+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 216,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "6e7734eac43593177792d550",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_chest_supported_t_bar_row",
+      "movement_definition_id": 199,
+      "movement_name": "Chest-Supported T-Bar Row",
+      "reason": "Owner-authorized duplicate consolidation: Chest-Supported T-Bar Row shares canonical movement #220 (Machine T-Bar Row).",
+      "replacement_movement_definition_id": 220,
+      "excluded_at": "2026-09-20T18:24:05.857740+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 220,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-159-9b8d79b0c3a8",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_landmine_row",
+      "movement_definition_id": 159,
+      "movement_name": "Landmine Row",
+      "reason": "Owner-authorized duplicate consolidation: Landmine Row shares canonical movement #197 (T-Bar Row).",
+      "replacement_movement_definition_id": 197,
+      "excluded_at": "2026-09-20T18:24:06.104927+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 197,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-4-3f52a2da015d",
+      "family": "canonical_free_weight_accessories",
+      "key": "barbell_row",
+      "movement_definition_id": 4,
+      "movement_name": "Barbell Row",
+      "reason": "Owner-authorized duplicate consolidation: Barbell Row shares canonical movement #191 (Bent-Over Barbell Row).",
+      "replacement_movement_definition_id": 191,
+      "excluded_at": "2026-09-20T18:24:06.359534+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 191,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-5-e9fb3e4c6cc5",
+      "family": "canonical_free_weight_accessories",
+      "key": "single_arm_dumbbell_row",
+      "movement_definition_id": 5,
+      "movement_name": "Single-Arm Dumbbell Row",
+      "reason": "Owner-authorized duplicate consolidation: Single-Arm Dumbbell Row shares canonical movement #154 (One-Arm Dumbbell Row).",
+      "replacement_movement_definition_id": 154,
+      "excluded_at": "2026-09-20T18:24:06.657171+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 154,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-7-abc9f534ae00",
+      "family": "canonical_free_weight_accessories",
+      "key": "incline_dumbbell_press",
+      "movement_definition_id": 7,
+      "movement_name": "Incline Dumbbell Press",
+      "reason": "Owner-authorized duplicate consolidation: Incline Dumbbell Press shares canonical movement #33 (Incline Dumbbell Bench Press).",
+      "replacement_movement_definition_id": 33,
+      "excluded_at": "2026-09-20T18:24:06.913596+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 33,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "8d63ebb269dff87595e02a3c",
+      "family": "canonical_remaining_accessories",
+      "key": "cable_row",
+      "movement_definition_id": 8,
+      "movement_name": "Cable Row",
+      "reason": "Owner-authorized duplicate consolidation: Cable Row shares canonical movement #207 (Seated Cable Row).",
+      "replacement_movement_definition_id": 207,
+      "excluded_at": "2026-09-20T18:24:07.169696+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 207,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
     }
   ],
   "artwork_invalidations": [
@@ -178558,6 +179062,710 @@
           "reviewer_user_id": 1,
           "candidate_sha256": "7e8c00d925953bc69a36f38099fe48af18d2927e8fcaa624e77aa9d2e68982fb",
           "app_sha256": "d2636716c769a45d596e0e5010545e39a0357d035eb87c458f6179ed7e0d6fbb",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "86d3e3c45a05a3b02d8df847": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.62,
+        "x": 0.14,
+        "y": -0.06
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.62,
+          "x": 0.14,
+          "y": -0.06
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:04:06.822846+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1b85f9ff1651e4e56931ca92c63fe7a5136706656856a6498bc797f46bef8235",
+        "app_sha256": "0a00df537f408a2f0e4c60b0d6bde06e09b1a45191608a265a6a858ddc553ce1",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.62,
+            "x": 0.14,
+            "y": -0.06
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:04:06.822846+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1b85f9ff1651e4e56931ca92c63fe7a5136706656856a6498bc797f46bef8235",
+          "app_sha256": "0a00df537f408a2f0e4c60b0d6bde06e09b1a45191608a265a6a858ddc553ce1",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "fc78b6ea33a42873b8e8b90b": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.68,
+        "x": 0.1,
+        "y": -0.03
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.68,
+          "x": 0.1,
+          "y": -0.03
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:04:20.122369+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "db6d7c3b88cd745d40ad757d184ea16b5c749391fc2a9d7a12334732b63f5933",
+        "app_sha256": "6fd9d4322db6fa0af76fc70559367fc45e47002f5cad416f34e0224c6bae1d45",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.68,
+            "x": 0.1,
+            "y": -0.03
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:04:20.122369+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "db6d7c3b88cd745d40ad757d184ea16b5c749391fc2a9d7a12334732b63f5933",
+          "app_sha256": "6fd9d4322db6fa0af76fc70559367fc45e47002f5cad416f34e0224c6bae1d45",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "5795559f49af0c86eb2e8be3": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.68,
+        "x": 0.11,
+        "y": -0.05
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.68,
+          "x": 0.11,
+          "y": -0.05
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:04:26.864459+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "26fe1bbc6765e84909bee2e11d29082aa4f146df2754e35d9cc0298567770fb5",
+        "app_sha256": "e6839f11ff7c87a2ef518875f797ced571faac87acba6bddc473fe9d04230be7",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.68,
+            "x": 0.11,
+            "y": -0.05
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:04:26.864459+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "26fe1bbc6765e84909bee2e11d29082aa4f146df2754e35d9cc0298567770fb5",
+          "app_sha256": "e6839f11ff7c87a2ef518875f797ced571faac87acba6bddc473fe9d04230be7",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "21258909b16cd32a763f1ea6": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.64,
+        "x": 0.12,
+        "y": -0.09
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.64,
+          "x": 0.12,
+          "y": -0.09
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:04:37.898543+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d6da280e9625421a5a9708800c5c85fea33fbdde9726e2d920364420013bf0e4",
+        "app_sha256": "598a1f30b8fe810a74ac3dd25f6b474861e18c1454b7b0000ec9a3ab6419122a",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.64,
+            "x": 0.12,
+            "y": -0.09
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:04:37.898543+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d6da280e9625421a5a9708800c5c85fea33fbdde9726e2d920364420013bf0e4",
+          "app_sha256": "598a1f30b8fe810a74ac3dd25f6b474861e18c1454b7b0000ec9a3ab6419122a",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "8fd7cad47c02dd45290993f7": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.59,
+        "x": 0.09,
+        "y": -0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.59,
+          "x": 0.09,
+          "y": -0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:04:56.220666+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8c2232050b6a17bbf0c431ac3d176cb4deb3b96b0180c7805a87acecd14987da",
+        "app_sha256": "ea885c68438ece788d04a14190a6f5cab18f554265970b5c6c0feb3a38c93da8",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.59,
+            "x": 0.09,
+            "y": -0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:04:56.220666+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8c2232050b6a17bbf0c431ac3d176cb4deb3b96b0180c7805a87acecd14987da",
+          "app_sha256": "ea885c68438ece788d04a14190a6f5cab18f554265970b5c6c0feb3a38c93da8",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "9a90a98de48fb2df9e2419c8": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.69,
+        "x": 0.04,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.69,
+          "x": 0.04,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:05:04.769677+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "67d86f5a67a10987155f684f5cac08033f8939b171a8b186fac24c6d446bad1c",
+        "app_sha256": "6a2b880b6f212621408bd67a6abf6d2efb933f466fc55c78e37c689228828959",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.69,
+            "x": 0.04,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:05:04.769677+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "67d86f5a67a10987155f684f5cac08033f8939b171a8b186fac24c6d446bad1c",
+          "app_sha256": "6a2b880b6f212621408bd67a6abf6d2efb933f466fc55c78e37c689228828959",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "f446851c99e5d016bd4cb3ea": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.74,
+        "x": 0.09,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.74,
+          "x": 0.09,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:05:10.652963+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "25ddd0492a5b841a3e460c94e16bb0db85fa2a3ec4f540ec7a5c0ff1d7f8ae1b",
+        "app_sha256": "97e902a1c6c47a4ea341596f54110e11318148feed78662525ee52adeda2665e",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.74,
+            "x": 0.09,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:05:10.652963+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "25ddd0492a5b841a3e460c94e16bb0db85fa2a3ec4f540ec7a5c0ff1d7f8ae1b",
+          "app_sha256": "97e902a1c6c47a4ea341596f54110e11318148feed78662525ee52adeda2665e",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "9a198a3297f07211f8dcba5c": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.77,
+        "x": 0,
+        "y": -0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.77,
+          "x": 0,
+          "y": -0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:05:16.446333+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9444445abf1725f540dd0ce9f8e230728cca5621f5c89864075f128a0c094416",
+        "app_sha256": "cb6d1e8cd7f03d7597cd18f804b70f79ee0da42249a2503fd402787bb8bfb691",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.77,
+            "x": 0,
+            "y": -0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:05:16.446333+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9444445abf1725f540dd0ce9f8e230728cca5621f5c89864075f128a0c094416",
+          "app_sha256": "cb6d1e8cd7f03d7597cd18f804b70f79ee0da42249a2503fd402787bb8bfb691",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "328e95f86182e8df9b089c8d": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.72,
+        "x": 0.08,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.72,
+          "x": 0.08,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:05:23.878330+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3520078b90dbcfa0b45645b2a44e8559642ec28cb84c21d2185f329108c55892",
+        "app_sha256": "da25d829fb67708372cd613f4b12de90fe47be0d411d8a7dd99146577554526c",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.72,
+            "x": 0.08,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:05:23.878330+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3520078b90dbcfa0b45645b2a44e8559642ec28cb84c21d2185f329108c55892",
+          "app_sha256": "da25d829fb67708372cd613f4b12de90fe47be0d411d8a7dd99146577554526c",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "40d02b8114f15e28ef43dcbc": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.63,
+        "x": 0.11,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.63,
+          "x": 0.11,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:05:31.303350+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8bcdf0c76156cd3084bf50b0a47d90c8f6662349c1f191ffed0656f80285eafc",
+        "app_sha256": "20063a2918670276a9ecbe1fecc73167bcc73ccb71f19d7eff9141139edc380d",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.63,
+            "x": 0.11,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:05:31.303350+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8bcdf0c76156cd3084bf50b0a47d90c8f6662349c1f191ffed0656f80285eafc",
+          "app_sha256": "20063a2918670276a9ecbe1fecc73167bcc73ccb71f19d7eff9141139edc380d",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "f11ec8bb26619230e58b6206": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.74,
+        "x": 0.09,
+        "y": -0.06
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.74,
+          "x": 0.09,
+          "y": -0.06
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:05:39.365860+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a8a3023fd6883e437cab061b1c3f719308c2529cf1137015e207d4a9fe70b8fa",
+        "app_sha256": "12ab94335df4dfd3480687a7e7be1a1ba4257a8a2ea1b9d4ab294d38e1602c8b",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.74,
+            "x": 0.09,
+            "y": -0.06
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:05:39.365860+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a8a3023fd6883e437cab061b1c3f719308c2529cf1137015e207d4a9fe70b8fa",
+          "app_sha256": "12ab94335df4dfd3480687a7e7be1a1ba4257a8a2ea1b9d4ab294d38e1602c8b",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "f3ca088b8eab5e49eb9fdcb0": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.69,
+        "x": 0.07,
+        "y": -0.14
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.69,
+          "x": 0.07,
+          "y": -0.14
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:06:02.590557+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:06 AM PT (Sep 20, 2026 02:06 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "7f4aeaaa76c930e2119d926165f9872977ee6ad3f0817ee08a11c4f89d7e4ff7",
+        "app_sha256": "db45402f4bf4157d25a8c7c741165f4a3e5ecea7fac3bdfc78810b7407e86f08",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.69,
+            "x": 0.07,
+            "y": -0.14
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:06:02.590557+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:06 AM PT (Sep 20, 2026 02:06 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "7f4aeaaa76c930e2119d926165f9872977ee6ad3f0817ee08a11c4f89d7e4ff7",
+          "app_sha256": "db45402f4bf4157d25a8c7c741165f4a3e5ecea7fac3bdfc78810b7407e86f08",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "3dbe9edc7e5b9277127ebaa6": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.68,
+        "x": 0.12,
+        "y": -0.07
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.68,
+          "x": 0.12,
+          "y": -0.07
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:07:29.029617+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:07 AM PT (Sep 20, 2026 02:07 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a393d443563090f93c20554b6ddab412f558cba327c4885a3dc47933bf5d0502",
+        "app_sha256": "bc139d9d6279641f978c271682e5e65b52fb1d41140959c253cf029b4576d30b",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.68,
+            "x": 0.12,
+            "y": -0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:07:29.029617+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:07 AM PT (Sep 20, 2026 02:07 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a393d443563090f93c20554b6ddab412f558cba327c4885a3dc47933bf5d0502",
+          "app_sha256": "bc139d9d6279641f978c271682e5e65b52fb1d41140959c253cf029b4576d30b",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "9e8366baa208633bca0dd89b": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.69,
+        "x": 0.07,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.69,
+          "x": 0.07,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:07:40.756373+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:07 AM PT (Sep 20, 2026 02:07 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f85315cb76c6f3f83d876d1c047b162f1035662f70b0002b0d168acac4f2393e",
+        "app_sha256": "49a8a63dda007e81492a07b8e2cdcb47cdc0401064e2f40c3eb2c456df2ecbc7",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.69,
+            "x": 0.07,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:07:40.756373+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:07 AM PT (Sep 20, 2026 02:07 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f85315cb76c6f3f83d876d1c047b162f1035662f70b0002b0d168acac4f2393e",
+          "app_sha256": "49a8a63dda007e81492a07b8e2cdcb47cdc0401064e2f40c3eb2c456df2ecbc7",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "10ca2a4cb45d5db26f65834d": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.1,
+        "y": -0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.7,
+          "x": 0.1,
+          "y": -0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:08:03.429173+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:08 AM PT (Sep 20, 2026 02:08 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "cb922a4d83e12166e5a8a4c5161c6b3df87c2360af8d642c18fd555df1126905",
+        "app_sha256": "a71b66e3caf45458adedde88a4a2b79c87a295bcdfb1f2135f61569ed4a1f390",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.1,
+            "y": -0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:08:03.429173+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:08 AM PT (Sep 20, 2026 02:08 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "cb922a4d83e12166e5a8a4c5161c6b3df87c2360af8d642c18fd555df1126905",
+          "app_sha256": "a71b66e3caf45458adedde88a4a2b79c87a295bcdfb1f2135f61569ed4a1f390",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "9635b933e05318233687a15b": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.77,
+        "x": 0.08,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.77,
+          "x": 0.08,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:08:12.598180+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:08 AM PT (Sep 20, 2026 02:08 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "926859929086fb987b34edc3e246ef4eb1567c01e7a931b46b1151d22d88cc09",
+        "app_sha256": "16db63f89835112bc6db8f1e38cfe9c7ef40b6ffef6ad0ba22472edc770900c0",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.77,
+            "x": 0.08,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:08:12.598180+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:08 AM PT (Sep 20, 2026 02:08 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "926859929086fb987b34edc3e246ef4eb1567c01e7a931b46b1151d22d88cc09",
+          "app_sha256": "16db63f89835112bc6db8f1e38cfe9c7ef40b6ffef6ad0ba22472edc770900c0",
           "source": "human_logger_crop_ui"
         }
       ]

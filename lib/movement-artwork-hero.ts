@@ -1,5 +1,6 @@
 import { approvedArtRuntimeEnabled } from './approved-art-runtime';
 import policyJson from '@/artwork-review/runtime-policy.json';
+import taxonomyCatalog from '@/config/governed-movement-art-taxonomy.json';
 import { DEFAULT_FOCAL, thumbnailGeometry, type Presentation, type LoggerCrop } from './movement-artwork-geometry.mjs';
 export { movementHeroGeometry } from './movement-artwork-geometry.mjs';
 import { normalizeCanonicalMovementArtSubject, resolveCanonicalMovementArtwork, type CanonicalMovementArtworkInput, type MovementArtInput, type CanonicalAccessoryArtworkKey } from './canonical-movement-artwork';
@@ -17,6 +18,11 @@ type ApprovalPolicy = Readonly<{
 // JSON imports widen cropMode to string. Registration validates its enum and
 // bounds; startup/export independently bind this projection to human receipts.
 const policy = policyJson as ApprovalPolicy;
+type SharedArtworkIdentity = Readonly<{ movement_definition_id: number; key: string;
+  core_movement_definition_id: number; artwork_movement_definition_id: number; artwork_key: string }>;
+const sharedArtwork = (taxonomyCatalog as typeof taxonomyCatalog & {
+  shared_artwork_identities?: readonly SharedArtworkIdentity[];
+}).shared_artwork_identities || [];
 
 /** Positive receipt for the exact currently mapped candidate. A filename,
  * grandfathered DEV preview or broad Core family illustration is not approval.
@@ -28,6 +34,19 @@ export function resolveApprovedExactMovementArtwork(
   approvals: ApprovalPolicy = policy,
 ): ApprovedExactArtwork | null {
   if (!dev) return null;
+  const subject = normalizeCanonicalMovementArtSubject(movement);
+  const shared = !subject.reason && sharedArtwork.find(row => subject.canonicalKey === row.key
+    && (subject.movementDefinitionId === row.movement_definition_id
+      || (subject.domain === 'core' && subject.canonicalIdentityId === row.core_movement_definition_id)));
+  if (shared) {
+    if (approvals.denied_keys.includes(shared.artwork_key)) return null;
+    // Reuse only the original exact, hash-bound human receipt. An identity
+    // redirect grants no image approval and changes no candidate bytes.
+    const receipt = approvals.approved_exact_artwork?.find(row => row.key === shared.artwork_key
+      && row.movement_definition_id === shared.artwork_movement_definition_id);
+    if (!receipt?.candidate_id || !/^[a-f0-9]{64}$/.test(receipt.app_sha256)) return null;
+    return { ...receipt, movement_definition_id: shared.movement_definition_id } as ApprovedExactArtwork;
+  }
   const identity = resolveCanonicalMovementArtwork(movement);
   if (identity.kind !== 'accessory' || !identity.artworkKey) return null;
   if (approvals.denied_keys.includes(identity.artworkKey)) return null;

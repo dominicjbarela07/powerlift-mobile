@@ -1553,6 +1553,10 @@ export function canonicalMovementArtworkSource(
   movement?: CanonicalMovementArtworkInput | null,
 ): ImageSourcePropType | null {
   const resolution = resolveCanonicalMovementArtwork(movement);
+  const sharedOrExact = resolveApprovedExactMovementArtwork(movement);
+  if (sharedOrExact && CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[sharedOrExact.key]) {
+    return CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[sharedOrExact.key].source;
+  }
   if (resolution.kind === 'accessory') {
     const approved = resolveApprovedExactMovementArtwork(movement);
     const exact = approved ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[approved.key] : null;

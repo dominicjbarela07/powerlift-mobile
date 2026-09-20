@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 2261,
+  "revision": 2305,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-19T17:57:19.487545+00:00",
-  "updated_at_display": "Sep 19, 2026 10:57 AM PT (Sep 19, 2026 01:57 PM Eastern)",
+  "updated_at": "2026-09-20T18:24:07.169720+00:00",
+  "updated_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -1024,6 +1024,510 @@
         "candidate_id": "370f66dbf66c7272f6740a7b",
         "source": "human_review_catalog_retirement",
         "retired_at": "2026-09-18T18:10:50.121363",
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "9635b933e05318233687a15b",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_good_morning",
+      "movement_definition_id": 546,
+      "movement_name": "Good Morning",
+      "reason": "Owner-authorized duplicate consolidation: Good Morning shares canonical movement #393 (Barbell Good Morning).",
+      "replacement_movement_definition_id": 393,
+      "excluded_at": "2026-09-20T18:24:00.294491+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 393,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "10ca2a4cb45d5db26f65834d",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_incline_bench_rear_delt_flye",
+      "movement_definition_id": 128,
+      "movement_name": "Incline-Bench Rear-Delt Fly",
+      "reason": "Owner-authorized duplicate consolidation: Incline-Bench Rear-Delt Fly shares canonical movement #127 (Chest-Supported Dumbbell Reverse Fly).",
+      "replacement_movement_definition_id": 127,
+      "excluded_at": "2026-09-20T18:24:00.553588+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 127,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "ca536ef31b1ae46671db1033",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_glute_ham_raise",
+      "movement_definition_id": 403,
+      "movement_name": "Glute-Ham Raise",
+      "reason": "Owner-authorized duplicate consolidation: Glute-Ham Raise shares canonical movement #412 (Bodyweight Glute-Ham Raise).",
+      "replacement_movement_definition_id": 412,
+      "excluded_at": "2026-09-20T18:24:00.805808+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 412,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "5c13e1227ef9f7f033af3eab",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_pec_deck",
+      "movement_definition_id": 52,
+      "movement_name": "Pec Deck",
+      "reason": "Owner-authorized duplicate consolidation: Pec Deck shares canonical movement #51 (Machine Chest Fly).",
+      "replacement_movement_definition_id": 51,
+      "excluded_at": "2026-09-20T18:24:01.066648+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 51,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "470f87395a16ed81a875e987",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_reverse_pec_deck",
+      "movement_definition_id": 134,
+      "movement_name": "Reverse Pec Deck",
+      "reason": "Owner-authorized duplicate consolidation: Reverse Pec Deck shares canonical movement #135 (Machine Reverse Fly).",
+      "replacement_movement_definition_id": 135,
+      "excluded_at": "2026-09-20T18:24:01.326650+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 135,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-130-193a2f63eef9",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_wide_elbow_dumbbell_row",
+      "movement_definition_id": 130,
+      "movement_name": "Wide-Elbow Dumbbell Row",
+      "reason": "Owner-authorized duplicate consolidation: Wide-Elbow Dumbbell Row shares canonical movement #129 (Rear-Delt Dumbbell Row).",
+      "replacement_movement_definition_id": 129,
+      "excluded_at": "2026-09-20T18:24:01.578665+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 129,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-204-52632fba91a2",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_wide_elbow_barbell_row",
+      "movement_definition_id": 204,
+      "movement_name": "Wide-Elbow Barbell Row",
+      "reason": "Owner-authorized duplicate consolidation: Wide-Elbow Barbell Row shares canonical movement #131 (Rear-Delt Barbell Row).",
+      "replacement_movement_definition_id": 131,
+      "excluded_at": "2026-09-20T18:24:01.827727+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 131,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "4b5657f21f41cbb4c17e2f25",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_chest_supported_rear_delt_machine_row",
+      "movement_definition_id": 137,
+      "movement_name": "Chest-Supported Rear-Delt Machine Row",
+      "reason": "Owner-authorized duplicate consolidation: Chest-Supported Rear-Delt Machine Row shares canonical movement #136 (Rear-Delt Row Machine).",
+      "replacement_movement_definition_id": 136,
+      "excluded_at": "2026-09-20T18:24:02.076030+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 136,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "9ad0087f466a0ac21c4db51b",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_wide_elbow_machine_row",
+      "movement_definition_id": 224,
+      "movement_name": "Wide-Elbow Machine Row",
+      "reason": "Owner-authorized duplicate consolidation: Wide-Elbow Machine Row shares canonical movement #136 (Rear-Delt Row Machine).",
+      "replacement_movement_definition_id": 136,
+      "excluded_at": "2026-09-20T18:24:02.324089+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 136,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-196-bd408563094c",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_incline_bench_dumbbell_row",
+      "movement_definition_id": 196,
+      "movement_name": "Incline-Bench Dumbbell Row",
+      "reason": "Owner-authorized duplicate consolidation: Incline-Bench Dumbbell Row shares canonical movement #194 (Chest-Supported Dumbbell Row).",
+      "replacement_movement_definition_id": 194,
+      "excluded_at": "2026-09-20T18:24:02.574030+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 194,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "5795559f49af0c86eb2e8be3",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_three_point_dumbbell_row",
+      "movement_definition_id": 158,
+      "movement_name": "Three-Point Dumbbell Row",
+      "reason": "Owner-authorized duplicate consolidation: Three-Point Dumbbell Row shares canonical movement #154 (One-Arm Dumbbell Row).",
+      "replacement_movement_definition_id": 154,
+      "excluded_at": "2026-09-20T18:24:02.825680+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 154,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "6e7e72507bca7cb4c2620ac1",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_kelso_shrug",
+      "movement_definition_id": 242,
+      "movement_name": "Kelso Shrug",
+      "reason": "Owner-authorized duplicate consolidation: Kelso Shrug shares canonical movement #241 (Chest-Supported Kelso Shrug).",
+      "replacement_movement_definition_id": 241,
+      "excluded_at": "2026-09-20T18:24:03.079191+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 241,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "709164d609f64a1a9546febb",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_chest_supported_kelso_row",
+      "movement_definition_id": 205,
+      "movement_name": "Chest-Supported Kelso Row",
+      "reason": "Owner-authorized duplicate consolidation: Chest-Supported Kelso Row shares canonical movement #241 (Chest-Supported Kelso Shrug).",
+      "replacement_movement_definition_id": 241,
+      "excluded_at": "2026-09-20T18:24:03.328918+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 241,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-256-6bd56e7f32c6",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_standing_dumbbell_curl",
+      "movement_definition_id": 256,
+      "movement_name": "Standing Dumbbell Curl",
+      "reason": "Owner-authorized duplicate consolidation: Standing Dumbbell Curl shares canonical movement #253 (Dumbbell Curl).",
+      "replacement_movement_definition_id": 253,
+      "excluded_at": "2026-09-20T18:24:03.585095+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 253,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "e6eafa2076e23080eaa55806",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_glute_drive_machine",
+      "movement_definition_id": 433,
+      "movement_name": "Glute Drive Machine",
+      "reason": "Owner-authorized duplicate consolidation: Glute Drive Machine shares canonical movement #431 (Machine Hip Thrust).",
+      "replacement_movement_definition_id": 431,
+      "excluded_at": "2026-09-20T18:24:03.835743+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 431,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "676628c3b75a58ed74c4bbf9",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_reverse_hyperextension_machine",
+      "movement_definition_id": 556,
+      "movement_name": "Reverse Hyperextension Machine",
+      "reason": "Owner-authorized duplicate consolidation: Reverse Hyperextension Machine shares canonical movement #435 (Reverse Hyperextension).",
+      "replacement_movement_definition_id": 435,
+      "excluded_at": "2026-09-20T18:24:04.082954+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 435,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "0eb9934f56f5777f096d473c",
+      "family": "canonical_bodyweight_accessories",
+      "key": "accessory_bird_dog_back_extension",
+      "movement_definition_id": 553,
+      "movement_name": "Bird Dog Back Extension",
+      "reason": "Owner-authorized duplicate consolidation: Bird Dog Back Extension shares canonical movement #541 (Bird Dog).",
+      "replacement_movement_definition_id": 541,
+      "excluded_at": "2026-09-20T18:24:04.335510+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 541,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "8669dd7ce2d5342377643dc9",
+      "family": "canonical_bodyweight_accessories",
+      "key": "accessory_copenhagen_adduction",
+      "movement_definition_id": 455,
+      "movement_name": "Copenhagen Adduction",
+      "reason": "Owner-authorized duplicate consolidation: Copenhagen Adduction shares canonical movement #457 (Long-Lever Copenhagen Adduction).",
+      "replacement_movement_definition_id": 457,
+      "excluded_at": "2026-09-20T18:24:04.584449+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 457,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "738bcb309a944dc4b3b9c536",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_band_hip_abduction",
+      "movement_definition_id": 471,
+      "movement_name": "Band Hip Abduction",
+      "reason": "Owner-authorized duplicate consolidation: Band Hip Abduction shares canonical movement #475 (Standing Band Hip Abduction).",
+      "replacement_movement_definition_id": 475,
+      "excluded_at": "2026-09-20T18:24:04.836782+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 475,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "eaaaa71a62f3c249f2246581",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_chest_supported_high_row",
+      "movement_definition_id": 223,
+      "movement_name": "Chest-Supported High Row",
+      "reason": "Owner-authorized duplicate consolidation: Chest-Supported High Row shares canonical movement #217 (Machine High Row).",
+      "replacement_movement_definition_id": 217,
+      "excluded_at": "2026-09-20T18:24:05.093437+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 217,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "eece78a3e59566292af2c061",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_machine_mid_row",
+      "movement_definition_id": 221,
+      "movement_name": "Machine Mid Row",
+      "reason": "Owner-authorized duplicate consolidation: Machine Mid Row shares canonical movement #216 (Chest-Supported Machine Row).",
+      "replacement_movement_definition_id": 216,
+      "excluded_at": "2026-09-20T18:24:05.347158+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 216,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "872e263f29c7215bfef13589",
+      "family": "canonical_machine_accessories",
+      "key": "accessory_plate_loaded_seated_row",
+      "movement_definition_id": 222,
+      "movement_name": "Machine Seated Row",
+      "reason": "Owner-authorized duplicate consolidation: Machine Seated Row shares canonical movement #216 (Chest-Supported Machine Row).",
+      "replacement_movement_definition_id": 216,
+      "excluded_at": "2026-09-20T18:24:05.604269+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 216,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "6e7734eac43593177792d550",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_chest_supported_t_bar_row",
+      "movement_definition_id": 199,
+      "movement_name": "Chest-Supported T-Bar Row",
+      "reason": "Owner-authorized duplicate consolidation: Chest-Supported T-Bar Row shares canonical movement #220 (Machine T-Bar Row).",
+      "replacement_movement_definition_id": 220,
+      "excluded_at": "2026-09-20T18:24:05.857740+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 220,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-159-9b8d79b0c3a8",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_landmine_row",
+      "movement_definition_id": 159,
+      "movement_name": "Landmine Row",
+      "reason": "Owner-authorized duplicate consolidation: Landmine Row shares canonical movement #197 (T-Bar Row).",
+      "replacement_movement_definition_id": 197,
+      "excluded_at": "2026-09-20T18:24:06.104927+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 197,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-4-3f52a2da015d",
+      "family": "canonical_free_weight_accessories",
+      "key": "barbell_row",
+      "movement_definition_id": 4,
+      "movement_name": "Barbell Row",
+      "reason": "Owner-authorized duplicate consolidation: Barbell Row shares canonical movement #191 (Bent-Over Barbell Row).",
+      "replacement_movement_definition_id": 191,
+      "excluded_at": "2026-09-20T18:24:06.359534+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 191,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-5-e9fb3e4c6cc5",
+      "family": "canonical_free_weight_accessories",
+      "key": "single_arm_dumbbell_row",
+      "movement_definition_id": 5,
+      "movement_name": "Single-Arm Dumbbell Row",
+      "reason": "Owner-authorized duplicate consolidation: Single-Arm Dumbbell Row shares canonical movement #154 (One-Arm Dumbbell Row).",
+      "replacement_movement_definition_id": 154,
+      "excluded_at": "2026-09-20T18:24:06.657171+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 154,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-7-abc9f534ae00",
+      "family": "canonical_free_weight_accessories",
+      "key": "incline_dumbbell_press",
+      "movement_definition_id": 7,
+      "movement_name": "Incline Dumbbell Press",
+      "reason": "Owner-authorized duplicate consolidation: Incline Dumbbell Press shares canonical movement #33 (Incline Dumbbell Bench Press).",
+      "replacement_movement_definition_id": 33,
+      "excluded_at": "2026-09-20T18:24:06.913596+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 33,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "8d63ebb269dff87595e02a3c",
+      "family": "canonical_remaining_accessories",
+      "key": "cable_row",
+      "movement_definition_id": 8,
+      "movement_name": "Cable Row",
+      "reason": "Owner-authorized duplicate consolidation: Cable Row shares canonical movement #207 (Seated Cable Row).",
+      "replacement_movement_definition_id": 207,
+      "excluded_at": "2026-09-20T18:24:07.169696+00:00",
+      "excluded_at_display": "Sep 20, 2026 11:24 AM PT (Sep 20, 2026 02:24 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 207,
         "historical_evidence_rewritten": false
       },
       "human_approved": false
@@ -10419,169 +10923,713 @@
           "source": "human_logger_crop_ui"
         }
       ]
+    },
+    "86d3e3c45a05a3b02d8df847": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.62,
+        "x": 0.14,
+        "y": -0.06
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.62,
+          "x": 0.14,
+          "y": -0.06
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:04:06.822846+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1b85f9ff1651e4e56931ca92c63fe7a5136706656856a6498bc797f46bef8235",
+        "app_sha256": "0a00df537f408a2f0e4c60b0d6bde06e09b1a45191608a265a6a858ddc553ce1",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.62,
+            "x": 0.14,
+            "y": -0.06
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:04:06.822846+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1b85f9ff1651e4e56931ca92c63fe7a5136706656856a6498bc797f46bef8235",
+          "app_sha256": "0a00df537f408a2f0e4c60b0d6bde06e09b1a45191608a265a6a858ddc553ce1",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "fc78b6ea33a42873b8e8b90b": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.68,
+        "x": 0.1,
+        "y": -0.03
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.68,
+          "x": 0.1,
+          "y": -0.03
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:04:20.122369+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "db6d7c3b88cd745d40ad757d184ea16b5c749391fc2a9d7a12334732b63f5933",
+        "app_sha256": "6fd9d4322db6fa0af76fc70559367fc45e47002f5cad416f34e0224c6bae1d45",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.68,
+            "x": 0.1,
+            "y": -0.03
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:04:20.122369+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "db6d7c3b88cd745d40ad757d184ea16b5c749391fc2a9d7a12334732b63f5933",
+          "app_sha256": "6fd9d4322db6fa0af76fc70559367fc45e47002f5cad416f34e0224c6bae1d45",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "5795559f49af0c86eb2e8be3": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.68,
+        "x": 0.11,
+        "y": -0.05
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.68,
+          "x": 0.11,
+          "y": -0.05
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:04:26.864459+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "26fe1bbc6765e84909bee2e11d29082aa4f146df2754e35d9cc0298567770fb5",
+        "app_sha256": "e6839f11ff7c87a2ef518875f797ced571faac87acba6bddc473fe9d04230be7",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.68,
+            "x": 0.11,
+            "y": -0.05
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:04:26.864459+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "26fe1bbc6765e84909bee2e11d29082aa4f146df2754e35d9cc0298567770fb5",
+          "app_sha256": "e6839f11ff7c87a2ef518875f797ced571faac87acba6bddc473fe9d04230be7",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "21258909b16cd32a763f1ea6": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.64,
+        "x": 0.12,
+        "y": -0.09
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.64,
+          "x": 0.12,
+          "y": -0.09
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:04:37.898543+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d6da280e9625421a5a9708800c5c85fea33fbdde9726e2d920364420013bf0e4",
+        "app_sha256": "598a1f30b8fe810a74ac3dd25f6b474861e18c1454b7b0000ec9a3ab6419122a",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.64,
+            "x": 0.12,
+            "y": -0.09
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:04:37.898543+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d6da280e9625421a5a9708800c5c85fea33fbdde9726e2d920364420013bf0e4",
+          "app_sha256": "598a1f30b8fe810a74ac3dd25f6b474861e18c1454b7b0000ec9a3ab6419122a",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "8fd7cad47c02dd45290993f7": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.59,
+        "x": 0.09,
+        "y": -0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.59,
+          "x": 0.09,
+          "y": -0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:04:56.220666+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8c2232050b6a17bbf0c431ac3d176cb4deb3b96b0180c7805a87acecd14987da",
+        "app_sha256": "ea885c68438ece788d04a14190a6f5cab18f554265970b5c6c0feb3a38c93da8",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.59,
+            "x": 0.09,
+            "y": -0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:04:56.220666+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:04 AM PT (Sep 20, 2026 02:04 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8c2232050b6a17bbf0c431ac3d176cb4deb3b96b0180c7805a87acecd14987da",
+          "app_sha256": "ea885c68438ece788d04a14190a6f5cab18f554265970b5c6c0feb3a38c93da8",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "9a90a98de48fb2df9e2419c8": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.69,
+        "x": 0.04,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.69,
+          "x": 0.04,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:05:04.769677+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "67d86f5a67a10987155f684f5cac08033f8939b171a8b186fac24c6d446bad1c",
+        "app_sha256": "6a2b880b6f212621408bd67a6abf6d2efb933f466fc55c78e37c689228828959",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.69,
+            "x": 0.04,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:05:04.769677+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "67d86f5a67a10987155f684f5cac08033f8939b171a8b186fac24c6d446bad1c",
+          "app_sha256": "6a2b880b6f212621408bd67a6abf6d2efb933f466fc55c78e37c689228828959",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "f446851c99e5d016bd4cb3ea": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.74,
+        "x": 0.09,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.74,
+          "x": 0.09,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:05:10.652963+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "25ddd0492a5b841a3e460c94e16bb0db85fa2a3ec4f540ec7a5c0ff1d7f8ae1b",
+        "app_sha256": "97e902a1c6c47a4ea341596f54110e11318148feed78662525ee52adeda2665e",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.74,
+            "x": 0.09,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:05:10.652963+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "25ddd0492a5b841a3e460c94e16bb0db85fa2a3ec4f540ec7a5c0ff1d7f8ae1b",
+          "app_sha256": "97e902a1c6c47a4ea341596f54110e11318148feed78662525ee52adeda2665e",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "9a198a3297f07211f8dcba5c": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.77,
+        "x": 0,
+        "y": -0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.77,
+          "x": 0,
+          "y": -0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:05:16.446333+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9444445abf1725f540dd0ce9f8e230728cca5621f5c89864075f128a0c094416",
+        "app_sha256": "cb6d1e8cd7f03d7597cd18f804b70f79ee0da42249a2503fd402787bb8bfb691",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.77,
+            "x": 0,
+            "y": -0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:05:16.446333+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9444445abf1725f540dd0ce9f8e230728cca5621f5c89864075f128a0c094416",
+          "app_sha256": "cb6d1e8cd7f03d7597cd18f804b70f79ee0da42249a2503fd402787bb8bfb691",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "328e95f86182e8df9b089c8d": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.72,
+        "x": 0.08,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.72,
+          "x": 0.08,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:05:23.878330+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3520078b90dbcfa0b45645b2a44e8559642ec28cb84c21d2185f329108c55892",
+        "app_sha256": "da25d829fb67708372cd613f4b12de90fe47be0d411d8a7dd99146577554526c",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.72,
+            "x": 0.08,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:05:23.878330+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3520078b90dbcfa0b45645b2a44e8559642ec28cb84c21d2185f329108c55892",
+          "app_sha256": "da25d829fb67708372cd613f4b12de90fe47be0d411d8a7dd99146577554526c",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "40d02b8114f15e28ef43dcbc": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.63,
+        "x": 0.11,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.63,
+          "x": 0.11,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:05:31.303350+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8bcdf0c76156cd3084bf50b0a47d90c8f6662349c1f191ffed0656f80285eafc",
+        "app_sha256": "20063a2918670276a9ecbe1fecc73167bcc73ccb71f19d7eff9141139edc380d",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.63,
+            "x": 0.11,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:05:31.303350+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8bcdf0c76156cd3084bf50b0a47d90c8f6662349c1f191ffed0656f80285eafc",
+          "app_sha256": "20063a2918670276a9ecbe1fecc73167bcc73ccb71f19d7eff9141139edc380d",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "f11ec8bb26619230e58b6206": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.74,
+        "x": 0.09,
+        "y": -0.06
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.74,
+          "x": 0.09,
+          "y": -0.06
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:05:39.365860+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a8a3023fd6883e437cab061b1c3f719308c2529cf1137015e207d4a9fe70b8fa",
+        "app_sha256": "12ab94335df4dfd3480687a7e7be1a1ba4257a8a2ea1b9d4ab294d38e1602c8b",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.74,
+            "x": 0.09,
+            "y": -0.06
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:05:39.365860+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:05 AM PT (Sep 20, 2026 02:05 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a8a3023fd6883e437cab061b1c3f719308c2529cf1137015e207d4a9fe70b8fa",
+          "app_sha256": "12ab94335df4dfd3480687a7e7be1a1ba4257a8a2ea1b9d4ab294d38e1602c8b",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "f3ca088b8eab5e49eb9fdcb0": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.69,
+        "x": 0.07,
+        "y": -0.14
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.69,
+          "x": 0.07,
+          "y": -0.14
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:06:02.590557+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:06 AM PT (Sep 20, 2026 02:06 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "7f4aeaaa76c930e2119d926165f9872977ee6ad3f0817ee08a11c4f89d7e4ff7",
+        "app_sha256": "db45402f4bf4157d25a8c7c741165f4a3e5ecea7fac3bdfc78810b7407e86f08",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.69,
+            "x": 0.07,
+            "y": -0.14
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:06:02.590557+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:06 AM PT (Sep 20, 2026 02:06 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "7f4aeaaa76c930e2119d926165f9872977ee6ad3f0817ee08a11c4f89d7e4ff7",
+          "app_sha256": "db45402f4bf4157d25a8c7c741165f4a3e5ecea7fac3bdfc78810b7407e86f08",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "3dbe9edc7e5b9277127ebaa6": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.68,
+        "x": 0.12,
+        "y": -0.07
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.68,
+          "x": 0.12,
+          "y": -0.07
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:07:29.029617+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:07 AM PT (Sep 20, 2026 02:07 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a393d443563090f93c20554b6ddab412f558cba327c4885a3dc47933bf5d0502",
+        "app_sha256": "bc139d9d6279641f978c271682e5e65b52fb1d41140959c253cf029b4576d30b",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.68,
+            "x": 0.12,
+            "y": -0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:07:29.029617+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:07 AM PT (Sep 20, 2026 02:07 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a393d443563090f93c20554b6ddab412f558cba327c4885a3dc47933bf5d0502",
+          "app_sha256": "bc139d9d6279641f978c271682e5e65b52fb1d41140959c253cf029b4576d30b",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "9e8366baa208633bca0dd89b": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.69,
+        "x": 0.07,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.69,
+          "x": 0.07,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:07:40.756373+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:07 AM PT (Sep 20, 2026 02:07 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f85315cb76c6f3f83d876d1c047b162f1035662f70b0002b0d168acac4f2393e",
+        "app_sha256": "49a8a63dda007e81492a07b8e2cdcb47cdc0401064e2f40c3eb2c456df2ecbc7",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.69,
+            "x": 0.07,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:07:40.756373+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:07 AM PT (Sep 20, 2026 02:07 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f85315cb76c6f3f83d876d1c047b162f1035662f70b0002b0d168acac4f2393e",
+          "app_sha256": "49a8a63dda007e81492a07b8e2cdcb47cdc0401064e2f40c3eb2c456df2ecbc7",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "10ca2a4cb45d5db26f65834d": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.1,
+        "y": -0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.7,
+          "x": 0.1,
+          "y": -0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:08:03.429173+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:08 AM PT (Sep 20, 2026 02:08 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "cb922a4d83e12166e5a8a4c5161c6b3df87c2360af8d642c18fd555df1126905",
+        "app_sha256": "a71b66e3caf45458adedde88a4a2b79c87a295bcdfb1f2135f61569ed4a1f390",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.1,
+            "y": -0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:08:03.429173+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:08 AM PT (Sep 20, 2026 02:08 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "cb922a4d83e12166e5a8a4c5161c6b3df87c2360af8d642c18fd555df1126905",
+          "app_sha256": "a71b66e3caf45458adedde88a4a2b79c87a295bcdfb1f2135f61569ed4a1f390",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "9635b933e05318233687a15b": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.77,
+        "x": 0.08,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.77,
+          "x": 0.08,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T18:08:12.598180+00:00",
+        "reviewed_at_display": "Sep 20, 2026 11:08 AM PT (Sep 20, 2026 02:08 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "926859929086fb987b34edc3e246ef4eb1567c01e7a931b46b1151d22d88cc09",
+        "app_sha256": "16db63f89835112bc6db8f1e38cfe9c7ef40b6ffef6ad0ba22472edc770900c0",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.77,
+            "x": 0.08,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T18:08:12.598180+00:00",
+          "reviewed_at_display": "Sep 20, 2026 11:08 AM PT (Sep 20, 2026 02:08 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "926859929086fb987b34edc3e246ef4eb1567c01e7a931b46b1151d22d88cc09",
+          "app_sha256": "16db63f89835112bc6db8f1e38cfe9c7ef40b6ffef6ad0ba22472edc770900c0",
+          "source": "human_logger_crop_ui"
+        }
+      ]
     }
   },
   "approved": [
-    {
-      "movement_definition_id": 4,
-      "key": "barbell_row",
-      "movement_name": "Barbell Row",
-      "primary_muscle_group": "upper_back",
-      "equipment_type": "barbell",
-      "implement": "Straight barbell",
-      "family": "canonical_free_weight_accessories",
-      "generation_batch": "Completion",
-      "generation_id": "backfill-existing-4-3f52a2da015d",
-      "candidate_id": "existing-4-3f52a2da015d",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/existing-4-3f52a2da015d/master.png",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1858564,
-          "sha256": "3f52a2da015d610ca9cc42eaa1636f6c3252ac9fdc4d57370f23b408cc8fcbe1"
-        },
-        "app": {
-          "path": "candidates/existing-4-3f52a2da015d/app.png",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 317704,
-          "sha256": "f53f38c8debb0178ba696434025c7d4380cc8fdba399985c13a12f54e659f907"
-        },
-        "thumbnail": {
-          "path": "candidates/existing-4-3f52a2da015d/thumbnail.png",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 46487,
-          "sha256": "a0bc0037129ab578242e131cd7be39e07b23375e8eb0ded46ade03cdd449a0be"
-        }
-      },
-      "candidate_asset": "candidates/existing-4-3f52a2da015d/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-12T23:56:43.019754+00:00",
-        "reviewed_at_display": "Sep 12, 2026 04:56 PM PT (Sep 12, 2026 07:56 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "3f52a2da015d610ca9cc42eaa1636f6c3252ac9fdc4d57370f23b408cc8fcbe1",
-        "source": "human_review_ui"
-      },
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-12T23:56:43.019754+00:00",
-          "reviewed_at_display": "Sep 12, 2026 04:56 PM PT (Sep 12, 2026 07:56 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "3f52a2da015d610ca9cc42eaa1636f6c3252ac9fdc4d57370f23b408cc8fcbe1",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-12T13:02:25.547181+00:00",
-      "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
-      "test_only": false,
-      "existing_dev_backfill": true
-    },
-    {
-      "movement_definition_id": 5,
-      "key": "single_arm_dumbbell_row",
-      "movement_name": "Single-Arm Dumbbell Row",
-      "primary_muscle_group": "upper_back",
-      "equipment_type": "dumbbell",
-      "implement": "One dumbbell and flat bench",
-      "family": "canonical_free_weight_accessories",
-      "generation_batch": "Completion",
-      "generation_id": "backfill-existing-5-e9fb3e4c6cc5",
-      "candidate_id": "existing-5-e9fb3e4c6cc5",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/existing-5-e9fb3e4c6cc5/master.png",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1857475,
-          "sha256": "e9fb3e4c6cc57435b0b359d262d344b7c00de1127cc1f8bae87c6d0710d3323a"
-        },
-        "app": {
-          "path": "candidates/existing-5-e9fb3e4c6cc5/app.png",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 314560,
-          "sha256": "24be2f5d80ba4450b4355b1ef4148b9747d1646db74266759d8d1a15189e330f"
-        },
-        "thumbnail": {
-          "path": "candidates/existing-5-e9fb3e4c6cc5/thumbnail.png",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 45525,
-          "sha256": "be399659aa6dc97cf0a138483511aa14424a437f0e68c17c0566608fe4e0fa07"
-        }
-      },
-      "candidate_asset": "candidates/existing-5-e9fb3e4c6cc5/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-12T23:57:53.823488+00:00",
-        "reviewed_at_display": "Sep 12, 2026 04:57 PM PT (Sep 12, 2026 07:57 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "e9fb3e4c6cc57435b0b359d262d344b7c00de1127cc1f8bae87c6d0710d3323a",
-        "source": "human_review_ui"
-      },
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-12T23:57:53.823488+00:00",
-          "reviewed_at_display": "Sep 12, 2026 04:57 PM PT (Sep 12, 2026 07:57 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "e9fb3e4c6cc57435b0b359d262d344b7c00de1127cc1f8bae87c6d0710d3323a",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-12T13:02:25.547181+00:00",
-      "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
-      "test_only": false,
-      "existing_dev_backfill": true
-    },
     {
       "movement_definition_id": 6,
       "key": "incline_barbell_press",
@@ -10654,86 +11702,6 @@
           "reviewer": "dev_user_1",
           "reviewer_user_id": 1,
           "candidate_sha256": "6df024b1f109865d180538cbc3855eabedaf18a602beba37ce34e2af1baa16d1",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-12T13:02:25.547181+00:00",
-      "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
-      "test_only": false,
-      "existing_dev_backfill": true
-    },
-    {
-      "movement_definition_id": 7,
-      "key": "incline_dumbbell_press",
-      "movement_name": "Incline Dumbbell Press",
-      "primary_muscle_group": "chest",
-      "equipment_type": "dumbbell",
-      "implement": "Two dumbbells and incline bench",
-      "family": "canonical_free_weight_accessories",
-      "generation_batch": "Completion",
-      "generation_id": "backfill-existing-7-abc9f534ae00",
-      "candidate_id": "existing-7-abc9f534ae00",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/existing-7-abc9f534ae00/master.png",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1854948,
-          "sha256": "abc9f534ae002b3fc6788da86cf8eb30c5607b748bdf552ea6758a9e0cf2840f"
-        },
-        "app": {
-          "path": "candidates/existing-7-abc9f534ae00/app.png",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 316091,
-          "sha256": "557188f6c2404074eda7f40eedd0bf89c474a1f46a3217b204aa0cb84c24937a"
-        },
-        "thumbnail": {
-          "path": "candidates/existing-7-abc9f534ae00/thumbnail.png",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 46647,
-          "sha256": "87506392263271a10a7486ff474305cddb971e3f933adf305d6215a156205e4b"
-        }
-      },
-      "candidate_asset": "candidates/existing-7-abc9f534ae00/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-12T23:58:16.700122+00:00",
-        "reviewed_at_display": "Sep 12, 2026 04:58 PM PT (Sep 12, 2026 07:58 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "abc9f534ae002b3fc6788da86cf8eb30c5607b748bdf552ea6758a9e0cf2840f",
-        "source": "human_review_ui"
-      },
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-12T23:58:16.700122+00:00",
-          "reviewed_at_display": "Sep 12, 2026 04:58 PM PT (Sep 12, 2026 07:58 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "abc9f534ae002b3fc6788da86cf8eb30c5607b748bdf552ea6758a9e0cf2840f",
           "source": "human_review_ui"
         }
       ],
@@ -14124,101 +15092,6 @@
       }
     },
     {
-      "movement_definition_id": 128,
-      "key": "accessory_incline_bench_rear_delt_flye",
-      "movement_name": "Incline-Bench Rear-Delt Fly",
-      "primary_muscle_group": "rear_delts",
-      "equipment_type": "free_weight",
-      "implement": "paired dumbbells",
-      "family": "canonical_free_weight_accessories",
-      "generation_id": "human_review_20260913_128_v4",
-      "generation_batch": "human_review_round_4_20260913",
-      "candidate_id": "10ca2a4cb45d5db26f65834d",
-      "version": 4,
-      "supersedes_candidate_id": "7e1335dbdb050e33cf8d0e62",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "SAME FUCKING THING AS THE OTHER REAR DELT FLY! FUCKING UNACCEPTABLE",
-        "tags": [
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-13T12:57:24.753920+00:00",
-        "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "ed7ccab470221bf571f12f70204352a542e389735e300c7b26e8e251810172b0",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/10ca2a4cb45d5db26f65834d/master.png",
-          "sha256": "cb922a4d83e12166e5a8a4c5161c6b3df87c2360af8d642c18fd555df1126905",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 2019655
-        },
-        "app": {
-          "path": "candidates/10ca2a4cb45d5db26f65834d/app.png",
-          "sha256": "a71b66e3caf45458adedde88a4a2b79c87a295bcdfb1f2135f61569ed4a1f390",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 358820
-        },
-        "thumbnail": {
-          "path": "candidates/10ca2a4cb45d5db26f65834d/thumbnail.png",
-          "sha256": "794d34466ad2317256cc895ce6c3e25720d4afe56d8aab854e16b415fc93890d",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 51220
-        }
-      },
-      "candidate_asset": "candidates/10ca2a4cb45d5db26f65834d/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-13T13:55:07.605111+00:00",
-          "reviewed_at_display": "Sep 13, 2026 06:55 AM PT (Sep 13, 2026 09:55 AM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "cb922a4d83e12166e5a8a4c5161c6b3df87c2360af8d642c18fd555df1126905",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-13T13:45:45.688571+00:00",
-      "created_at_display": "Sep 13, 2026 06:45 AM PT (Sep 13, 2026 09:45 AM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement-art candidate.\nReference 1 is the ONLY appearance/style baseline: its original muscular adult man, charcoal tank top, black shorts and shoes, dark studio, textured black floor, subtle purple rim and compact steel dumbbells. Reference 2 is a real reverse-fly technique demonstration ONLY; borrow the internal rotation of the upper arms and the relationship of shoulders, elbows, hands and weights. Do not copy the demonstration man's face/clothes, gym, text, UI or logos.\nMovement: chest-supported dumbbell reverse fly with BOTH SHOULDERS INTERNALLY ROTATED. This is HUMERAL rotation at the shoulder, not merely turning the wrists. Upper arms spread widely to the sides, rotated inward so the elbow creases turn down/away and the elbow points lead upward/back. Thumb sides of both closed fists point DOWN toward the floor; little-finger sides are higher. Neutral straight wrists. Keep the hand, forearm and humeral rotation consistent on BOTH arms. Elbows only softly bent, forming a broad long-arm fly, not a bent-elbow row. Compact steel dumbbells each have two matching heads connected by one center handle gripped by a real hand; show the weight orientation from the technique reference, not a thumb-up hammer-grip T pose.\nChest and abdomen rest on the inclined bench, feet planted, neck naturally aligned and eyes down. Entire athlete and bench fit in frame. No labels or collage.\nCamera: elevated front three-quarter view, facing the head end from the athlete's left. Bench at 35 degrees. Capture the top of the fly near shoulder height, showing both internally rotated shoulders and both hand grips clearly.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-5cac94d1-6871-47f7-93a1-22af19ae798f.png",
-      "test_only": false,
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-13T13:55:07.605111+00:00",
-        "reviewed_at_display": "Sep 13, 2026 06:55 AM PT (Sep 13, 2026 09:55 AM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "cb922a4d83e12166e5a8a4c5161c6b3df87c2360af8d642c18fd555df1126905",
-        "source": "human_review_ui"
-      }
-    },
-    {
       "movement_definition_id": 129,
       "key": "accessory_rear_delt_dumbbell_row",
       "movement_name": "Rear-Delt Dumbbell Row",
@@ -14290,86 +15163,6 @@
           "reviewer": "dev_user_1",
           "reviewer_user_id": 1,
           "candidate_sha256": "f078f24ffb299b100565729d0347ae70489a8e23953412690c24ee81aee00e9e",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-12T13:02:25.547181+00:00",
-      "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
-      "test_only": false,
-      "existing_dev_backfill": true
-    },
-    {
-      "movement_definition_id": 130,
-      "key": "accessory_wide_elbow_dumbbell_row",
-      "movement_name": "Wide-Elbow Dumbbell Row",
-      "primary_muscle_group": "rear_delts",
-      "equipment_type": "dumbbell",
-      "implement": "paired dumbbells",
-      "family": "canonical_free_weight_accessories",
-      "generation_batch": "Pull",
-      "generation_id": "backfill-existing-130-193a2f63eef9",
-      "candidate_id": "existing-130-193a2f63eef9",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/existing-130-193a2f63eef9/master.png",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1838896,
-          "sha256": "193a2f63eef94503e8774a5699abc7ba67ce2c60065c1c4b628f6f9f38bf1dc7"
-        },
-        "app": {
-          "path": "candidates/existing-130-193a2f63eef9/app.png",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 310935,
-          "sha256": "f6e7c56fb6565dd2c58eed67d05c386cf226cdaf049f3d3c61c05686aec49b93"
-        },
-        "thumbnail": {
-          "path": "candidates/existing-130-193a2f63eef9/thumbnail.png",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 45887,
-          "sha256": "e175c5e4648a8681ce33e2eb4632e9796f63194e0727858f313342e40ecf600e"
-        }
-      },
-      "candidate_asset": "candidates/existing-130-193a2f63eef9/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-13T00:12:41.695695+00:00",
-        "reviewed_at_display": "Sep 12, 2026 05:12 PM PT (Sep 12, 2026 08:12 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "193a2f63eef94503e8774a5699abc7ba67ce2c60065c1c4b628f6f9f38bf1dc7",
-        "source": "human_review_ui"
-      },
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-13T00:12:41.695695+00:00",
-          "reviewed_at_display": "Sep 12, 2026 05:12 PM PT (Sep 12, 2026 08:12 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "193a2f63eef94503e8774a5699abc7ba67ce2c60065c1c4b628f6f9f38bf1dc7",
           "source": "human_review_ui"
         }
       ],
@@ -15128,179 +15921,6 @@
       }
     },
     {
-      "movement_definition_id": 158,
-      "key": "accessory_three_point_dumbbell_row",
-      "movement_name": "Three-Point Dumbbell Row",
-      "primary_muscle_group": "lats",
-      "equipment_type": "dumbbell",
-      "implement": "single dumbbell",
-      "family": "canonical_free_weight_accessories",
-      "generation_id": "human_review_20260912_158_v3",
-      "generation_batch": "human_review_round_3_20260912",
-      "candidate_id": "5795559f49af0c86eb2e8be3",
-      "version": 3,
-      "supersedes_candidate_id": "1695fb52e671464f4e52f216",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "the bench is in the way of the fucking dumbbell path",
-        "tags": [],
-        "reviewed_at": "2026-09-13T03:08:44.190931+00:00",
-        "reviewed_at_display": "Sep 12, 2026 08:08 PM PT (Sep 12, 2026 11:08 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "ecfd328c10407b7174cf784750bbb30665ea89079fc54dd39b86abefd5711c4b",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/5795559f49af0c86eb2e8be3/master.png",
-          "sha256": "26fe1bbc6765e84909bee2e11d29082aa4f146df2754e35d9cc0298567770fb5",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1937924
-        },
-        "app": {
-          "path": "candidates/5795559f49af0c86eb2e8be3/app.png",
-          "sha256": "e6839f11ff7c87a2ef518875f797ced571faac87acba6bddc473fe9d04230be7",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 346797
-        },
-        "thumbnail": {
-          "path": "candidates/5795559f49af0c86eb2e8be3/thumbnail.png",
-          "sha256": "f7f81199c723447205b1db2ec8ea6a7d8b6830aa7805c7d231a348c0a90837eb",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 48599
-        }
-      },
-      "candidate_asset": "candidates/5795559f49af0c86eb2e8be3/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-13T12:57:29.526413+00:00",
-          "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "26fe1bbc6765e84909bee2e11d29082aa4f146df2754e35d9cc0298567770fb5",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-13T03:43:12.599953+00:00",
-      "created_at_display": "Sep 12, 2026 08:43 PM PT (Sep 12, 2026 11:43 PM Eastern)",
-      "generation_prompt": "Use case: precise-object-edit. Create ONE square photorealistic Strength Ledger movement-art candidate. Image 1 is the immutable STYLE BASELINE ONLY; image 2 is the rejected EDIT TARGET. Use original baseline's realistic adult male, graphite sleeveless tank, black shorts and dark shoes, credible anatomy, dark textured studio floor blending to black, restrained violet rim and brushed steel equipment. Entire body and required equipment remain inside frame. Natural head and neck follow torso direction. No text, collage, duplicate body parts, invented joints, painted anatomy or plastic skin. Preserve the exact exercise; correct the human's identified defect.\nExact movement 158: Three-Point Dumbbell Row. Human rejection verbatim: \"the bench is in the way of the fucking dumbbell path\".\nCorrection: Rebuild support placement to give the loaded dumbbell an unobstructed vertical path outside the bench. Place the entire FLAT BENCH on the athlete's LEFT side running head-to-foot PARALLEL to his torso; LEFT palm braces on its near corner under left shoulder. BOTH feet planted on floor in a staggered standing stance on the RIGHT side of bench; NO knee on pad. RIGHT arm performs dumbbell row outside the OUTER RIGHT hip, visible clear space all the way down to floor beneath weight. The bench and frame must be well LEFT of sternum, never under right hand or across front of body. Hinged spine, shoulders and hips square, right elbow tucked behind torso at top, right hand with neutral grip under ribs. Camera on working RIGHT side exposes air between weight and bench. No bench crossing dumbbell travel.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-efaac40a-852f-466e-b9e9-cfdbdd00cedf.png",
-      "test_only": false,
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-13T12:57:29.526413+00:00",
-        "reviewed_at_display": "Sep 13, 2026 05:57 AM PT (Sep 13, 2026 08:57 AM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "26fe1bbc6765e84909bee2e11d29082aa4f146df2754e35d9cc0298567770fb5",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 159,
-      "key": "accessory_landmine_row",
-      "movement_name": "Landmine Row",
-      "primary_muscle_group": "lats",
-      "equipment_type": "free_weight",
-      "implement": "landmine barbell with close neutral row handle",
-      "family": "canonical_free_weight_accessories",
-      "generation_batch": "Pull",
-      "generation_id": "backfill-existing-159-9b8d79b0c3a8",
-      "candidate_id": "existing-159-9b8d79b0c3a8",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/existing-159-9b8d79b0c3a8/master.png",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1792737,
-          "sha256": "9b8d79b0c3a8464dc6fed1b33b8542f59b722ea1141df13886c88fbc5206b1b2"
-        },
-        "app": {
-          "path": "candidates/existing-159-9b8d79b0c3a8/app.png",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 309511,
-          "sha256": "5af96063baa9d753a050a54684404d16b6286c24955e97b89836d21e61520a85"
-        },
-        "thumbnail": {
-          "path": "candidates/existing-159-9b8d79b0c3a8/thumbnail.png",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 45195,
-          "sha256": "4be7a34c6669534a1ef199cd75732bd38b03b95261cf6e6d0de5c6ce2705eb52"
-        }
-      },
-      "candidate_asset": "candidates/existing-159-9b8d79b0c3a8/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-13T00:15:32.580225+00:00",
-        "reviewed_at_display": "Sep 12, 2026 05:15 PM PT (Sep 12, 2026 08:15 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "9b8d79b0c3a8464dc6fed1b33b8542f59b722ea1141df13886c88fbc5206b1b2",
-        "source": "human_review_ui"
-      },
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-13T00:15:32.580225+00:00",
-          "reviewed_at_display": "Sep 12, 2026 05:15 PM PT (Sep 12, 2026 08:15 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "9b8d79b0c3a8464dc6fed1b33b8542f59b722ea1141df13886c88fbc5206b1b2",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-12T13:02:25.547181+00:00",
-      "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
-      "test_only": false,
-      "existing_dev_backfill": true
-    },
-    {
       "movement_definition_id": 160,
       "key": "accessory_one_arm_landmine_row",
       "movement_name": "One-Arm Landmine Row",
@@ -15988,86 +16608,6 @@
       "existing_dev_backfill": true
     },
     {
-      "movement_definition_id": 196,
-      "key": "accessory_incline_bench_dumbbell_row",
-      "movement_name": "Incline-Bench Dumbbell Row",
-      "primary_muscle_group": "upper_back",
-      "equipment_type": "dumbbell",
-      "implement": "paired dumbbells",
-      "family": "canonical_free_weight_accessories",
-      "generation_batch": "Pull",
-      "generation_id": "backfill-existing-196-bd408563094c",
-      "candidate_id": "existing-196-bd408563094c",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/existing-196-bd408563094c/master.png",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1829228,
-          "sha256": "bd408563094c1defaca1e3e2800649519b8be6618599b41dc5d794913bc8efe6"
-        },
-        "app": {
-          "path": "candidates/existing-196-bd408563094c/app.png",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 314460,
-          "sha256": "b2843dbad59e4529f67ac7b4e950650d3949a3c3dbf684e15c0201c0718c9547"
-        },
-        "thumbnail": {
-          "path": "candidates/existing-196-bd408563094c/thumbnail.png",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 46689,
-          "sha256": "c952f157b2f52e4c63a00722735f9558d9c9de717e87b4d73542a0cfa85b5f7d"
-        }
-      },
-      "candidate_asset": "candidates/existing-196-bd408563094c/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-13T00:17:12.364172+00:00",
-        "reviewed_at_display": "Sep 12, 2026 05:17 PM PT (Sep 12, 2026 08:17 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "bd408563094c1defaca1e3e2800649519b8be6618599b41dc5d794913bc8efe6",
-        "source": "human_review_ui"
-      },
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-13T00:17:12.364172+00:00",
-          "reviewed_at_display": "Sep 12, 2026 05:17 PM PT (Sep 12, 2026 08:17 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "bd408563094c1defaca1e3e2800649519b8be6618599b41dc5d794913bc8efe6",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-12T13:02:25.547181+00:00",
-      "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
-      "test_only": false,
-      "existing_dev_backfill": true
-    },
-    {
       "movement_definition_id": 197,
       "key": "accessory_t_bar_row",
       "movement_name": "T-Bar Row",
@@ -16252,103 +16792,6 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "7ebbb70229f1c6b2b45e92c455d1e03961a7ba0280d8f8b5a348b03e22755946",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 199,
-      "key": "accessory_chest_supported_t_bar_row",
-      "movement_name": "Chest-Supported T-Bar Row",
-      "primary_muscle_group": "upper_back",
-      "equipment_type": "free_weight",
-      "implement": "free landmine barbell and independent chest support bench",
-      "family": "canonical_free_weight_accessories",
-      "generation_id": "human_review_20260912_199_v2",
-      "generation_batch": "human_review_corrections_20260912",
-      "candidate_id": "6e7734eac43593177792d550",
-      "version": 2,
-      "supersedes_candidate_id": "existing-199-9ff2fd55e355",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "this is not a T-bar, and the chest support/barbell look like they are magically avoiding each other!",
-        "tags": [
-          "equipment",
-          "human_anatomy",
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-13T00:18:35.051557+00:00",
-        "reviewed_at_display": "Sep 12, 2026 05:18 PM PT (Sep 12, 2026 08:18 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "9ff2fd55e355c22de51de19b2fb134124e0e119c1c12cd1e5579f8c518d1ea32",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/6e7734eac43593177792d550/master.png",
-          "sha256": "7699ddf87c8f652c5361587ea0c2679219b9c0434e890721a55b2d485c48f591",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1874355
-        },
-        "app": {
-          "path": "candidates/6e7734eac43593177792d550/app.png",
-          "sha256": "1fe9b9682e7a5d4a2d32671c719070b8fe99a71d4e992c340f1ceaa68cee0585",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 334615
-        },
-        "thumbnail": {
-          "path": "candidates/6e7734eac43593177792d550/thumbnail.png",
-          "sha256": "7b1d132cf6a6681d9048d7b12637d2a6ccec19034ea16f60417985ee62415a42",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 49756
-        }
-      },
-      "candidate_asset": "candidates/6e7734eac43593177792d550/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-13T03:09:10.432357+00:00",
-          "reviewed_at_display": "Sep 12, 2026 08:09 PM PT (Sep 12, 2026 11:09 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "7699ddf87c8f652c5361587ea0c2679219b9c0434e890721a55b2d485c48f591",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-13T01:23:55.468832+00:00",
-      "created_at_display": "Sep 12, 2026 06:23 PM PT (Sep 12, 2026 09:23 PM Eastern)",
-      "generation_prompt": "Use case: precise-object-edit. Output ONE square photorealistic Strength Ledger movement-art candidate. Reference 1 is the immutable STYLE BASELINE ONLY; reference 2 is the rejected EDIT TARGET. Preserve baseline lifter appearance in graphite sleeveless shirt, black shorts and dark shoes, realistic skin, dark textured-floor studio blending to black, modest violet rim, brushed steel. Entire body and required equipment inside frame. No text, collage, motion duplicates, extra limbs, malformed hands or equipment. Maintain natural cervical alignment and gaze in the torso's direction. \nExact movement 199: Chest-Supported T-Bar Row. Human rejection (verbatim): \"this is not a T-bar, and the chest support/barbell look like they are magically avoiding each other!\".\nCorrection: REPLACE imaginary bench/landmine assembly with an actual commercial plate-loaded CHEST-SUPPORTED T-BAR ROW apparatus: wide stable rectangular steel base, rear raised pair foot platforms, padded chest support tilted45degrees mounted on TWO lateral uprights that leave a clear open central channel. A thick single rowing lever pivots low at rear under platform and passes freely THROUGH OPEN SPACE below chest pad between lateral supports, never through metal. Front lever carries horizontal crossbar with two neutral handles and forward load horn holding round steel plates. Man plants both feet on platforms, presses chest into pad, pulls handles toward ribs. Choose side three-quarter view clearly showing pivot-to-lever-to-handles and clearances. No normal incline bench, no magical intersecting shaft. Full body and complete realistic apparatus within8%frame. Neutral neck gaze floor.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-7debc031-18ff-4900-84b4-489c902af78e.png",
-      "test_only": false,
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-13T03:09:10.432357+00:00",
-        "reviewed_at_display": "Sep 12, 2026 08:09 PM PT (Sep 12, 2026 11:09 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "7699ddf87c8f652c5361587ea0c2679219b9c0434e890721a55b2d485c48f591",
         "source": "human_review_ui"
       }
     },
@@ -16686,181 +17129,6 @@
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
       "existing_dev_backfill": true
-    },
-    {
-      "movement_definition_id": 204,
-      "key": "accessory_wide_elbow_barbell_row",
-      "movement_name": "Wide-Elbow Barbell Row",
-      "primary_muscle_group": "upper_back",
-      "equipment_type": "barbell",
-      "implement": "straight barbell",
-      "family": "canonical_free_weight_accessories",
-      "generation_batch": "Pull",
-      "generation_id": "backfill-existing-204-52632fba91a2",
-      "candidate_id": "existing-204-52632fba91a2",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/existing-204-52632fba91a2/master.png",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1863323,
-          "sha256": "52632fba91a2acc93a40253881c6575157fd7425983fcc1223f1b300deb1b9da"
-        },
-        "app": {
-          "path": "candidates/existing-204-52632fba91a2/app.png",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 320369,
-          "sha256": "591843c1237e9a9117b527e792198af20ae1a5940881236106406acacfd95adf"
-        },
-        "thumbnail": {
-          "path": "candidates/existing-204-52632fba91a2/thumbnail.png",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 47480,
-          "sha256": "a70f0e205446f0c75939933b79c7796dd17274732e855353bee0ecffa1b94389"
-        }
-      },
-      "candidate_asset": "candidates/existing-204-52632fba91a2/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-13T00:19:28.368238+00:00",
-        "reviewed_at_display": "Sep 12, 2026 05:19 PM PT (Sep 12, 2026 08:19 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "52632fba91a2acc93a40253881c6575157fd7425983fcc1223f1b300deb1b9da",
-        "source": "human_review_ui"
-      },
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-13T00:19:28.368238+00:00",
-          "reviewed_at_display": "Sep 12, 2026 05:19 PM PT (Sep 12, 2026 08:19 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "52632fba91a2acc93a40253881c6575157fd7425983fcc1223f1b300deb1b9da",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-12T13:02:25.547181+00:00",
-      "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
-      "test_only": false,
-      "existing_dev_backfill": true
-    },
-    {
-      "movement_definition_id": 205,
-      "key": "accessory_chest_supported_kelso_row",
-      "movement_name": "Chest-Supported Kelso Row",
-      "primary_muscle_group": "upper_back",
-      "equipment_type": "free_weight",
-      "implement": "straight barbell and incline bench",
-      "family": "canonical_free_weight_accessories",
-      "generation_id": "human_review_20260912_205_v2",
-      "generation_batch": "human_review_corrections_20260912",
-      "candidate_id": "709164d609f64a1a9546febb",
-      "version": 2,
-      "supersedes_candidate_id": "existing-205-dd78a70b36c4",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "For this we need to actually show the Kelso shrug. this image is not helpful for hinting at what the movement is",
-        "tags": [
-          "biomechanics"
-        ],
-        "reviewed_at": "2026-09-13T00:20:03.859369+00:00",
-        "reviewed_at_display": "Sep 12, 2026 05:20 PM PT (Sep 12, 2026 08:20 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "dd78a70b36c4a9e9d102ca3b8574753f7471acbfddc24558a2a0a58d35449123",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/709164d609f64a1a9546febb/master.png",
-          "sha256": "f5260d67ca53b32af8d8a7296b901275d3deae5614864d1975f9d870a3a844d1",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1859137
-        },
-        "app": {
-          "path": "candidates/709164d609f64a1a9546febb/app.png",
-          "sha256": "874f66c70d841debb1d49a19008f49481a6bb03299af6f4ef63453c86342bb8b",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 330173
-        },
-        "thumbnail": {
-          "path": "candidates/709164d609f64a1a9546febb/thumbnail.png",
-          "sha256": "652f6a26b4e46277b14af1c10a0ad00f930bbc8b54be003878ca6167f3bac73d",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 49630
-        }
-      },
-      "candidate_asset": "candidates/709164d609f64a1a9546febb/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-13T03:09:15.272085+00:00",
-          "reviewed_at_display": "Sep 12, 2026 08:09 PM PT (Sep 12, 2026 11:09 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "f5260d67ca53b32af8d8a7296b901275d3deae5614864d1975f9d870a3a844d1",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-13T01:23:55.941684+00:00",
-      "created_at_display": "Sep 12, 2026 06:23 PM PT (Sep 12, 2026 09:23 PM Eastern)",
-      "generation_prompt": "Use case: precise-object-edit. Output ONE square photorealistic Strength Ledger movement-art candidate. Reference 1 is the immutable STYLE BASELINE ONLY; reference 2 is the rejected EDIT TARGET. Preserve baseline lifter appearance in graphite sleeveless shirt, black shorts and dark shoes, realistic skin, dark textured-floor studio blending to black, modest violet rim, brushed steel. Entire body and required equipment inside frame. No text, collage, motion duplicates, extra limbs, malformed hands or equipment. Maintain natural cervical alignment and gaze in the torso's direction. \nExact movement 205: Chest-Supported Kelso Row. Human rejection (verbatim): \"For this we need to actually show the Kelso shrug. this image is not helpful for hinting at what the movement is\".\nCorrection: Show peak contracted CHEST-SUPPORTED KELSO SHRUG with BARBELL, according to owner's correction, not ordinary bent-elbow row. Rear three-quarter elevated camera makes shoulderblades visible. Prone chest against real40degree incline bench. BOTH ELBOWS stay STRAIGHT, bar hangs just below knees/thighline with secure overhand shoulder-width grip. Strong visible bilateral scapular RETRACTION: shoulderblades squeezed IN toward spine, shoulder points drawn BACK, upperback muscles visibly contracted beneath fitted graphite racerback tank. Arms remain extended and lift load only a few cm through shoulderblade movement, not elbow flexion. Freeze PEAK squeeze, not passive hanging. Neck neutral down. One bar andtwoendplate stacks, entire bench/body/bar inside frame.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-23d1c0ae-2daa-428d-94dc-f7d1a055478a.png",
-      "test_only": false,
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-13T03:09:15.272085+00:00",
-        "reviewed_at_display": "Sep 12, 2026 08:09 PM PT (Sep 12, 2026 11:09 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "f5260d67ca53b32af8d8a7296b901275d3deae5614864d1975f9d870a3a844d1",
-        "source": "human_review_ui"
-      }
     },
     {
       "movement_definition_id": 206,
@@ -17598,99 +17866,6 @@
       }
     },
     {
-      "movement_definition_id": 242,
-      "key": "accessory_kelso_shrug",
-      "movement_name": "Kelso Shrug",
-      "primary_muscle_group": "traps",
-      "equipment_type": "free_weight",
-      "implement": "straight barbell",
-      "family": "canonical_free_weight_accessories",
-      "generation_id": "human_review_20260912_242_v2",
-      "generation_batch": "human_review_corrections_20260912",
-      "candidate_id": "6e7e72507bca7cb4c2620ac1",
-      "version": 2,
-      "supersedes_candidate_id": "existing-242-1187b261b943",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "need to show the shrug part of the movement",
-        "tags": [],
-        "reviewed_at": "2026-09-13T00:21:01.426778+00:00",
-        "reviewed_at_display": "Sep 12, 2026 05:21 PM PT (Sep 12, 2026 08:21 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "1187b261b9436903f3221a6403e3fe644e57a87a6b8c34764ee9377532f5a0d4",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/6e7e72507bca7cb4c2620ac1/master.png",
-          "sha256": "a65d6681ae5e1608ccbba44f794df7632b8baebfaeeb7f501c986cbdff1dde01",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1893478
-        },
-        "app": {
-          "path": "candidates/6e7e72507bca7cb4c2620ac1/app.png",
-          "sha256": "36cc64ed65ce1b28ac42f67e265d47ee639a771d011012f986ae551e02cb936e",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 329474
-        },
-        "thumbnail": {
-          "path": "candidates/6e7e72507bca7cb4c2620ac1/thumbnail.png",
-          "sha256": "5bff2f1bc7a99e79cfc23493c1db50cc725924efa294b679256642eb48f99613",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 47062
-        }
-      },
-      "candidate_asset": "candidates/6e7e72507bca7cb4c2620ac1/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-13T03:09:18.531395+00:00",
-          "reviewed_at_display": "Sep 12, 2026 08:09 PM PT (Sep 12, 2026 11:09 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "a65d6681ae5e1608ccbba44f794df7632b8baebfaeeb7f501c986cbdff1dde01",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-13T01:37:07.772520+00:00",
-      "created_at_display": "Sep 12, 2026 06:37 PM PT (Sep 12, 2026 09:37 PM Eastern)",
-      "generation_prompt": "Use case: precise-object-edit. Output ONE square photorealistic Strength Ledger movement-art candidate. Reference 1 is the immutable STYLE BASELINE ONLY; reference 2 is the rejected EDIT TARGET. Preserve baseline lifter appearance in graphite sleeveless shirt, black shorts and dark shoes, realistic skin, dark textured-floor studio blending to black, modest violet rim, brushed steel. Entire body and required equipment inside frame. No text, collage, motion duplicates, extra limbs, malformed hands or equipment. Maintain natural cervical alignment and gaze in the torso's direction. \nExact movement 242: Kelso Shrug. Human rejection (verbatim): \"need to show the shrug part of the movement\".\nCorrection: Recompose actual BENT-OVER KELSO SHRUG in peak contraction. Three-quarter SIDE/REAR view, athlete facesRIGHT, torso hinged forward to45degrees, head neutral gazeDOWN. Barbell hangs clearly IN FRONT OF THE KNEES toward RIGHT ofimage, never behindbuttocks, never crossing thighs. Arms remain straight down from shoulders. Shoulder blades intensely squeezed together and shoulder points pulled backward, upperback/traps visiblycontracted underdarkracerbacktank. Not upright shrug, not bentelbowrow, not passivehang. One straight moderatelyloadedbar, bothhands overhand shoulderwidth, bothfeet onfloor. Full body/barclearwithmargins.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-07d26dcb-1c5f-4f3c-9b04-f686dd8cff0a.png",
-      "test_only": false,
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-13T03:09:18.531395+00:00",
-        "reviewed_at_display": "Sep 12, 2026 08:09 PM PT (Sep 12, 2026 11:09 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "a65d6681ae5e1608ccbba44f794df7632b8baebfaeeb7f501c986cbdff1dde01",
-        "source": "human_review_ui"
-      }
-    },
-    {
       "movement_definition_id": 251,
       "key": "accessory_barbell_curl",
       "movement_name": "Barbell Curl",
@@ -18082,86 +18257,6 @@
           "reviewer": "dev_user_1",
           "reviewer_user_id": 1,
           "candidate_sha256": "c3e09688f6580c26170c10b9b139d94066d2b654a25ed171fcc85d6fe3538a89",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-12T13:02:25.547181+00:00",
-      "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
-      "test_only": false,
-      "existing_dev_backfill": true
-    },
-    {
-      "movement_definition_id": 256,
-      "key": "accessory_standing_dumbbell_curl",
-      "movement_name": "Standing Dumbbell Curl",
-      "primary_muscle_group": "biceps",
-      "equipment_type": "dumbbell",
-      "implement": "Two dumbbells",
-      "family": "canonical_free_weight_accessories",
-      "generation_batch": "Completion",
-      "generation_id": "backfill-existing-256-6bd56e7f32c6",
-      "candidate_id": "existing-256-6bd56e7f32c6",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/existing-256-6bd56e7f32c6/master.png",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1711888,
-          "sha256": "6bd56e7f32c6e88f4052a0b25432abe32887a15d838b0419338132c2b636df23"
-        },
-        "app": {
-          "path": "candidates/existing-256-6bd56e7f32c6/app.png",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 286881,
-          "sha256": "51a6e1897edac6e2591f5ab6785803370354b56d32d134e8c18fc6dbe99d8fca"
-        },
-        "thumbnail": {
-          "path": "candidates/existing-256-6bd56e7f32c6/thumbnail.png",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 40908,
-          "sha256": "dda045b4b81cd77b0a011d9a91a1e328659b8494c76217afe7703d1e8ea4c292"
-        }
-      },
-      "candidate_asset": "candidates/existing-256-6bd56e7f32c6/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-13T00:24:44.976568+00:00",
-        "reviewed_at_display": "Sep 12, 2026 05:24 PM PT (Sep 12, 2026 08:24 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "6bd56e7f32c6e88f4052a0b25432abe32887a15d838b0419338132c2b636df23",
-        "source": "human_review_ui"
-      },
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-13T00:24:44.976568+00:00",
-          "reviewed_at_display": "Sep 12, 2026 05:24 PM PT (Sep 12, 2026 08:24 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "6bd56e7f32c6e88f4052a0b25432abe32887a15d838b0419338132c2b636df23",
           "source": "human_review_ui"
         }
       ],
@@ -25986,102 +26081,6 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "7f4aeaaa76c930e2119d926165f9872977ee6ad3f0817ee08a11c4f89d7e4ff7",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 546,
-      "key": "accessory_good_morning",
-      "movement_name": "Good Morning",
-      "primary_muscle_group": "lower_back",
-      "equipment_type": "free_weight",
-      "implement": "Straight barbell",
-      "family": "canonical_free_weight_accessories",
-      "generation_id": "human_review_20260913_546_v5",
-      "generation_batch": "human_review_round_5_20260913",
-      "candidate_id": "9635b933e05318233687a15b",
-      "version": 5,
-      "supersedes_candidate_id": "341fc9ab1e21828b3a6a6758",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "WHY ARE YOU GIVING ME AN ANGLE OF THE ASSHOLE! GIVE ME A FRONT DIAGNONAL ANGLE! WHO AUTHORIZED YOU TO CHANGE THE ANGLES",
-        "tags": [
-          "baseline_drift",
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-13T13:56:41.630159+00:00",
-        "reviewed_at_display": "Sep 13, 2026 06:56 AM PT (Sep 13, 2026 09:56 AM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "efdc109a6f1cb3c09a266aded2e0554d3228d65cdc0b360754a9ddc30fa9240f",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/9635b933e05318233687a15b/master.png",
-          "sha256": "926859929086fb987b34edc3e246ef4eb1567c01e7a931b46b1151d22d88cc09",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1814577
-        },
-        "app": {
-          "path": "candidates/9635b933e05318233687a15b/app.png",
-          "sha256": "16db63f89835112bc6db8f1e38cfe9c7ef40b6ffef6ad0ba22472edc770900c0",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 319081
-        },
-        "thumbnail": {
-          "path": "candidates/9635b933e05318233687a15b/thumbnail.png",
-          "sha256": "b2c91b87323cfbd8227c5f919a2b27d98a2af88b68c89a4e088178cc3555fac3",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 46174
-        }
-      },
-      "candidate_asset": "candidates/9635b933e05318233687a15b/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-13T14:25:12.607296+00:00",
-          "reviewed_at_display": "Sep 13, 2026 07:25 AM PT (Sep 13, 2026 10:25 AM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "926859929086fb987b34edc3e246ef4eb1567c01e7a931b46b1151d22d88cc09",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-13T14:18:35.415164+00:00",
-      "created_at_display": "Sep 13, 2026 07:18 AM PT (Sep 13, 2026 10:18 AM Eastern)",
-      "generation_prompt": "Use case: precise-object-edit. One square photorealistic Strength Ledger movement image. Reference 1 is the immutable STYLE baseline only: preserve its original man's face, charcoal sleeveless tank, black shorts/shoes, realistic skin, black studio and textured dark floor with restrained violet rim. Do not turn style reference into an incline bench press. No text, logos, diagram or collage.\nReference 2 is Good Morning movement content, but its rear camera view is REJECTED. Recreate this exact BARBELL GOOD MORNING from a FRONT DIAGONAL THREE-QUARTER camera, looking toward the athlete's face/chest and one side. Camera at approximately chest height; head and face visible from front diagonal, never buttocks-facing. Proper hip hinge: feet shoulder width planted, soft slight knee bend, hips pushed back, torso hinged forward about 45 degrees, natural neutral neck with eyes down along torso. Real adult symmetric limbs. A SINGLE DEAD-STRAIGHT barbell rests securely across BOTH upper-trap shoulder shelves, transverse to the shoulder line. Both hands equally wide gripping bar outside shoulders. Shaft, collars, plate holes and sleeves on ONE common straight axis with equal small steel plates each end. No plate obscures the whole face; do not twist bar or body to show it. Full person and bar in frame; original family studio.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-43ce3827-7a0d-4098-beb9-386f94a3217c.png",
-      "test_only": false,
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-13T14:25:12.607296+00:00",
-        "reviewed_at_display": "Sep 13, 2026 07:25 AM PT (Sep 13, 2026 10:25 AM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "926859929086fb987b34edc3e246ef4eb1567c01e7a931b46b1151d22d88cc09",
         "source": "human_review_ui"
       }
     },
@@ -35309,129 +35308,6 @@
       }
     },
     {
-      "movement_definition_id": 553,
-      "key": "accessory_bird_dog_back_extension",
-      "movement_name": "Bird Dog Back Extension",
-      "primary_muscle_group": "lower_back",
-      "equipment_type": "bodyweight",
-      "implement": "floor mat",
-      "family": "canonical_bodyweight_accessories",
-      "generation_id": "bw_review7_20260913_553_attempt01",
-      "generation_batch": "bodyweight-review-round-7-2026-09-13",
-      "candidate_id": "0eb9934f56f5777f096d473c",
-      "version": 2,
-      "supersedes_candidate_id": "72cb6407e4c62498d0391e12",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "the down arm is fucing unnatural, why is his tricep on the inside! bad",
-        "tags": [],
-        "reviewed_at": "2026-09-14T00:29:28.847730+00:00",
-        "reviewed_at_display": "Sep 13, 2026 05:29 PM PT (Sep 13, 2026 08:29 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "7112fd7234b6da7fba6f78d0ee17f0ed5f79207900888a0fac312f3ff9d9ff9b",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/0eb9934f56f5777f096d473c/master.png",
-          "sha256": "0693708d89f35d49a18396d1d92ca517ec95f2d00ba6e135a05185f874c8733e",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1775356
-        },
-        "app": {
-          "path": "candidates/0eb9934f56f5777f096d473c/app.png",
-          "sha256": "859137488342bc014708fac6b14017b1a3e870ac42ee29d4a2e7062fc1315c0d",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 312051
-        },
-        "thumbnail": {
-          "path": "candidates/0eb9934f56f5777f096d473c/thumbnail.png",
-          "sha256": "431b1cc8772c16c65df7d3f275b9b9593ac80265f08914b351898029e95fb8f3",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 43872
-        }
-      },
-      "candidate_asset": "candidates/0eb9934f56f5777f096d473c/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-14T02:26:58.695178+00:00",
-          "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "0693708d89f35d49a18396d1d92ca517ec95f2d00ba6e135a05185f874c8733e",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-14T02:12:36.471141+00:00",
-      "created_at_display": "Sep 13, 2026 07:12 PM PT (Sep 13, 2026 10:12 PM Eastern)",
-      "generation_prompt": "Edit ONE square photorealistic Strength Ledger movement artwork. Image 1 is the rejected EDIT TARGET; image 2 is the approved STYLE, ATHLETE AND CLOTHING reference only. Preserve studio style: same athletic adult man with short brown hair, neutral natural skin, full-length graphite tank overlapping plain black shorts, black trainers, textured rubber floor, near-black studio, soft neutral upper-left key, restrained purple rim from right. No text, logos, panels, diagrams. Essential body and hardware fully in frame, photograph-like 60mm perspective. Keep head facing with torso/task; no sideways look to camera. Fix actual geometry rather than hiding errors. Rebuild Bird Dog with anatomically correct supporting arm. Use clear FRONT THREE-QUARTER VIEW facing athlete's chest side, not rejected rear view. Athlete faces image LEFT on all fours, his RIGHT palm and LEFT knee support body. RIGHT supporting arm vertical shoulder over palm, elbow straight with elbow pit/biceps on anterior side toward head, triceps on posterior side toward hip, forearm pronated with palm flat/fingers forward. LEFT arm reaches straight forward at shoulder height; RIGHT leg extends straight backward at hip height. Spine horizontal neutral, head aligned looking down between hands, pelvis square. Four distinct correctly attached limbs, normal joints, no twisted humerus or inverted triceps. Full body on dark rubber floor no equipment.",
-      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-review-round-7-2026-09-13/553/attempt-01.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "hamstrings",
-        "glutes"
-      ],
-      "movement_family": "accessory_lower_back",
-      "execution_family": "BODYWEIGHT",
-      "sidedness": "bilateral",
-      "loading_implementation": "bodyweight",
-      "load_convention": "bodyweight_only",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.48,
-        "scale": 1,
-        "biasX": -0.04,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "assistance": "unassisted",
-        "equipment": "floor mat",
-        "grip": "opposite palm and knee support",
-        "orientation": "quadruped opposite reach, posterior view",
-        "preflight_notes": "Recomposed three-quarter view clarifies normal supporting arm anatomy and opposite raised arm/leg.",
-        "owner_feedback": "the down arm is fucing unnatural, why is his tricep on the inside! bad",
-        "inspection": "Full master, enlarged contact regions and 192/80 previews inspected; agent preflight is not human approval."
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-14T02:26:58.695178+00:00",
-        "reviewed_at_display": "Sep 13, 2026 07:26 PM PT (Sep 13, 2026 10:26 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "0693708d89f35d49a18396d1d92ca517ec95f2d00ba6e135a05185f874c8733e",
-        "source": "human_review_ui"
-      }
-    },
-    {
       "movement_definition_id": 554,
       "key": "accessory_superman_hold",
       "movement_name": "Superman Hold",
@@ -35879,115 +35755,6 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "51f3c0210a24aa568fd98171cb61eb4e525136a2624559fefb2cd3f78ba3460f",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 455,
-      "key": "accessory_copenhagen_adduction",
-      "movement_name": "Copenhagen Adduction",
-      "primary_muscle_group": "adductors",
-      "equipment_type": "bodyweight",
-      "implement": "flat bench and floor",
-      "family": "canonical_bodyweight_accessories",
-      "generation_id": "bw_20260913_455_attempt02",
-      "generation_batch": "bodyweight-2026-09-13",
-      "candidate_id": "8669dd7ce2d5342377643dc9",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/8669dd7ce2d5342377643dc9/master.png",
-          "sha256": "337be6cf8b8f21c9084272f47ed896979b86977c86a254fba9c0b45da5edc63c",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1811363
-        },
-        "app": {
-          "path": "candidates/8669dd7ce2d5342377643dc9/app.png",
-          "sha256": "6bb29b351880924215ca9377529e378e14e10d2b06fe5f98f955476eea5d11d8",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 321366
-        },
-        "thumbnail": {
-          "path": "candidates/8669dd7ce2d5342377643dc9/thumbnail.png",
-          "sha256": "59864eee9b2362c50d3474dac449edb0072494255a9b70999104d0328380b50b",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 44259
-        }
-      },
-      "candidate_asset": "candidates/8669dd7ce2d5342377643dc9/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-14T00:30:03.173526+00:00",
-          "reviewed_at_display": "Sep 13, 2026 05:30 PM PT (Sep 13, 2026 08:30 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "337be6cf8b8f21c9084272f47ed896979b86977c86a254fba9c0b45da5edc63c",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-13T23:21:03.449658+00:00",
-      "created_at_display": "Sep 13, 2026 04:21 PM PT (Sep 13, 2026 07:21 PM Eastern)",
-      "generation_prompt": "Create ONE square photorealistic exact-movement artwork candidate, no panels/text/arrows/logos. Reference image is the immutable ART STYLE AND SAME ATHLETE reference only, NOT the exercise pose or bench. Preserve its believable athletic adult man, short brown hair, charcoal graphite sleeveless tank, black shorts and trainers; neutral natural skin, dark near-black seamless studio and textured rubber floor, neutral soft key upper-left and restrained violet rim rear-right. Same commercial photography, normal-to-short-telephoto perspective, clean materials, no stylization or dramatic neon. Full body, full essential equipment/contact points, sensible margins for square mobile thumbnail and wide hero crops. Equipment must be recognizable real gym hardware, visibly supported and plausible proportional steel, no fantasy mechanisms. Head/gaze ALWAYS aligned with torso and task, no sideways head turn or glance at camera. Anatomically correct hands, feet and joints. Movement-specific instruction: EDIT THE SECOND IMAGE. Preserve its exercise, body, clothing, lighting and anatomy except the specific corrections below. First image is style reference only. HEAD CORRECTION: face must face exactly in the same direction as the FRONT OF CHEST/sternum. Camera is looking at the front of the side-lying athlete, so face should naturally be frontal to camera while head's long axis follows spine. No looking toward feet, supporting hand, ceiling, over shoulder, left, or right. Nose points straight out from chest, no cervical yaw. Widen composition sufficiently to include ENTIRE bench including every leg and both ends of pad, all feet and hands. Keep bottom leg floating below top leg.",
-      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/bodyweight-2026-09-13/455/attempt-02.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "obliques"
-      ],
-      "movement_family": "accessory_adductors",
-      "execution_family": "BODYWEIGHT",
-      "sidedness": "bilateral",
-      "loading_implementation": "bodyweight",
-      "load_convention": "bodyweight_only",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.52,
-        "scale": 1,
-        "biasX": -0.04,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "orientation": "side lying, elevated pelvis",
-        "equipment": "flat bench and floor",
-        "grip": "forearm support; top ankle on bench",
-        "assistance": "unassisted",
-        "preflight_notes": "Head faces chest direction; top ankle support and separate floating bottom leg clear; complete grounded bench now visible."
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-14T00:30:03.173526+00:00",
-        "reviewed_at_display": "Sep 13, 2026 05:30 PM PT (Sep 13, 2026 08:30 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "337be6cf8b8f21c9084272f47ed896979b86977c86a254fba9c0b45da5edc63c",
         "source": "human_review_ui"
       }
     },
@@ -38863,132 +38630,6 @@
       }
     },
     {
-      "movement_definition_id": 52,
-      "key": "accessory_pec_deck",
-      "movement_name": "Pec Deck",
-      "primary_muscle_group": "chest",
-      "equipment_type": "machine",
-      "implement": "machine",
-      "family": "canonical_machine_accessories",
-      "generation_id": "machine-rescreen-2026-09-14-52-attempt-01",
-      "generation_batch": "machine-rescreen-2026-09-14",
-      "candidate_id": "5c13e1227ef9f7f033af3eab",
-      "version": 2,
-      "supersedes_candidate_id": "460f350a25fe163edf59f384",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "what the fuck man! this is not a pec deck! I want handles, not a forearm pad",
-        "tags": [],
-        "reviewed_at": "2026-09-14T21:13:29.538224+00:00",
-        "reviewed_at_display": "Sep 14, 2026 02:13 PM PT (Sep 14, 2026 05:13 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "e819100ec617b62e5b1aa2d0f130533168f7ba4c01345754b2f93afe7d7f1f1e",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/5c13e1227ef9f7f033af3eab/master.png",
-          "sha256": "079a68eaff9453ebfdbc97cf85e95a80749a94d846fcad2be5df6b0673016fa1",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1704259
-        },
-        "app": {
-          "path": "candidates/5c13e1227ef9f7f033af3eab/app.png",
-          "sha256": "bebc8f8cc1aae75cab1d6be8fa907bffc2e02c3504250e20cb5d85e7838174a3",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 326493
-        },
-        "thumbnail": {
-          "path": "candidates/5c13e1227ef9f7f033af3eab/thumbnail.png",
-          "sha256": "515ff25cb1d0b40ff9f253299e897c8a331c61af1aecc0a12bb2e44ced357bdf",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 51804
-        }
-      },
-      "candidate_asset": "candidates/5c13e1227ef9f7f033af3eab/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-15T00:26:06.780981+00:00",
-          "reviewed_at_display": "Sep 14, 2026 05:26 PM PT (Sep 14, 2026 08:26 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "079a68eaff9453ebfdbc97cf85e95a80749a94d846fcad2be5df6b0673016fa1",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-15T00:11:22.786344+00:00",
-      "created_at_display": "Sep 14, 2026 05:11 PM PT (Sep 14, 2026 08:11 PM Eastern)",
-      "generation_prompt": "Use case: precise-object-edit. Derive a new HANDLE-based Pec Deck artwork on this same actual selectorized pec-fly machine. Preserve EXACT machine frame, overhead fixed support, two upper pivots and their two connected swing arms, cables, seat, athlete, dark studio, lighting. Change only exercise phase: both arms and their machine levers move outward to a symmetrical mid-fly phase, arms spread about100degrees total rather than fully closed. Both palms grasp the vertical cylindrical HANDLES, matching neutral grip, elbows softly bent about20degrees. Torso stays centered against backrest and feet planted. Exactly TWO handles, each rigidly attached to one of the two overhead moving arms. Do not leave old closed-position handles behind; MOVE them with the two arms. No forearm pads. No detached hardware.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-22c18938-2f8e-4883-884a-8ff68e00c95e.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "front_delts",
-        "triceps"
-      ],
-      "movement_family": "accessory_chest",
-      "execution_family": "MACHINE",
-      "sidedness": "bilateral",
-      "loading_implementation": "machine_unspecified",
-      "load_convention": "machine_stack_display",
-      "measurement_type": "load_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "reference_manufacturer": "Hammer Strength",
-        "reference_model": "Hammer Strength Select Pectoral Fly",
-        "reference_page": "https://shop.lifefitness.com/products/hammer-strength-select-pectoral-fly",
-        "reference_image_url": "https://cdn.shopify.com/s/files/1/0538/8307/6805/files/hammer-strength-selectpectoral-flybase_charcoalframe_blackuph_1000x1000_f03bfdfd-af28-4b12-b79f-cb9089223fd7.jpg?v=1748945077",
-        "orientation": "Side / three-quarter photographic view; full composition. Head follows torso and task direction.",
-        "equipment": "Hammer Strength Select Pectoral Fly — representative art reference only; no equipment-specific artwork identity.",
-        "preflight_notes": "Handle-based pec deck with no forearm pads. Two overhead supported arms connect directly to grasped neutral handles. Matching open fly phase.",
-        "review_round": "Owner-requested full machine batch rescreen; September 14, 2026",
-        "agent_visual_inspection": "Full master and 192/80-pixel contain previews inspected. Observation only; requires human approval.",
-        "corrected_defect": "Forearm-pad pec deck violates explicit requested handle-based pec deck. Use two grasped vertical handles and no forearm pads."
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-15T00:26:06.780981+00:00",
-        "reviewed_at_display": "Sep 14, 2026 05:26 PM PT (Sep 14, 2026 08:26 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "079a68eaff9453ebfdbc97cf85e95a80749a94d846fcad2be5df6b0673016fa1",
-        "source": "human_review_ui"
-      }
-    },
-    {
       "movement_definition_id": 53,
       "key": "accessory_converging_chest_press",
       "movement_name": "Converging Chest Press",
@@ -40467,134 +40108,6 @@
       }
     },
     {
-      "movement_definition_id": 134,
-      "key": "accessory_reverse_pec_deck",
-      "movement_name": "Reverse Pec Deck",
-      "primary_muscle_group": "rear_delts",
-      "equipment_type": "machine",
-      "implement": "machine",
-      "family": "canonical_machine_accessories",
-      "generation_id": "machine_r2_20260914_134_2",
-      "generation_batch": "machine-review-round-2-2026-09-14",
-      "candidate_id": "470f87395a16ed81a875e987",
-      "version": 4,
-      "supersedes_candidate_id": "b690ed598e9a0a4dfb72029f",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "again stop this fucking angel",
-        "tags": [],
-        "reviewed_at": "2026-09-15T02:48:20.699152+00:00",
-        "reviewed_at_display": "Sep 14, 2026 07:48 PM PT (Sep 14, 2026 10:48 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "5c3f79748b592bf9314887ee171fa4f4d6d1be10e0b93e898a2501632e425449",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/470f87395a16ed81a875e987/master.png",
-          "sha256": "4bf8bf39a1f2aa3fb112aa8f53f9aecdb05c9ab4bbe8cad2c4548d1382e36c18",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1898782
-        },
-        "app": {
-          "path": "candidates/470f87395a16ed81a875e987/app.png",
-          "sha256": "9fd7f3e021ac22081855d13e89324d9c7f77f825286a3bb491c803a3b694dfcf",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 347159
-        },
-        "thumbnail": {
-          "path": "candidates/470f87395a16ed81a875e987/thumbnail.png",
-          "sha256": "527c0acffe345163ac3c2618dd4a230bdf431cabb7feed23ce4981846354a0b9",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 51238
-        }
-      },
-      "candidate_asset": "candidates/470f87395a16ed81a875e987/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-15T11:09:42.824946+00:00",
-          "reviewed_at_display": "Sep 15, 2026 04:09 AM PT (Sep 15, 2026 07:09 AM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "4bf8bf39a1f2aa3fb112aa8f53f9aecdb05c9ab4bbe8cad2c4548d1382e36c18",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-15T03:50:24.422561+00:00",
-      "created_at_display": "Sep 14, 2026 08:50 PM PT (Sep 14, 2026 11:50 PM Eastern)",
-      "generation_prompt": "Change reverse pec-deck CAMERA to a 40-degree REAR-SIDE diagonal angle; whole athlete and machine rotate together in perspective, so near shoulder/arm is nearer and far arm foreshortened. NO straight rear orthographic view. Clearly reveal the chest resting against front pad, pelvis square to seat, both feet floor, and nearly straight elbows moving outward in a reverse fly, not a row. Maintain both hands gripping actual two handles and matching long machine arms linked to overhead pivots. Head follows torso straight toward machine, never turned back at camera. Whole scene black/purple studio, charcoal male, normal perspective.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-23eddc2b-13aa-4de5-99f2-f529562a0dbf.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "upper_back"
-      ],
-      "movement_family": "accessory_rear_delts",
-      "execution_family": "MACHINE",
-      "sidedness": "bilateral",
-      "loading_implementation": "machine_unspecified",
-      "load_convention": "machine_stack_display",
-      "measurement_type": "load_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "reference_manufacturer": "Life Fitness",
-        "reference_model": "Insignia Series Pectoral Fly/Rear Deltoid",
-        "reference_page": "https://shop.lifefitness.com/products/insignia-series-pectoral-fly-rear-deltoid",
-        "reference_image_url": "https://cdn.shopify.com/s/files/1/0538/8307/6805/files/LFInsignia-DualFly-charcoal-black.jpg?v=1759853180",
-        "orientation": "Side / three-quarter photographic view; full composition. Head follows torso and task direction.",
-        "equipment": "Insignia Series Pectoral Fly/Rear Deltoid — representative art reference only; no equipment-specific artwork identity.",
-        "preflight_notes": "Oblique rear-side view now exposes seat and chest pad; centered athlete, continuous arms, matched grips and overhead linkage.",
-        "review_round": "Completed human machine-art review, correction round 2, September 14, 2026",
-        "agent_visual_inspection": "Full generated master inspected before registration; human approval still required.",
-        "corrected_defect": "Oblique rear-side view now exposes seat and chest pad; centered athlete, continuous arms, matched grips and overhead linkage.",
-        "owner_rejection": "again stop this fucking angel",
-        "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/b690ed598e9a0a4dfb72029f/master.png\"]",
-        "owner_live_feedback": "again stop this fucking angel"
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-15T11:09:42.824946+00:00",
-        "reviewed_at_display": "Sep 15, 2026 04:09 AM PT (Sep 15, 2026 07:09 AM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "4bf8bf39a1f2aa3fb112aa8f53f9aecdb05c9ab4bbe8cad2c4548d1382e36c18",
-        "source": "human_review_ui"
-      }
-    },
-    {
       "movement_definition_id": 135,
       "key": "accessory_machine_reverse_flye",
       "movement_name": "Machine Reverse Fly",
@@ -40828,132 +40341,6 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "b3269382a6f6f564c1c8113f9357e10e69e8ebfb4396517a5b2625e7e7302fb7",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 137,
-      "key": "accessory_chest_supported_rear_delt_machine_row",
-      "movement_name": "Chest-Supported Rear-Delt Machine Row",
-      "primary_muscle_group": "rear_delts",
-      "equipment_type": "machine",
-      "implement": "machine",
-      "family": "canonical_machine_accessories",
-      "generation_id": "machine_r4_20260915_137_1",
-      "generation_batch": "machine-review-round-4-2026-09-15",
-      "candidate_id": "4b5657f21f41cbb4c17e2f25",
-      "version": 6,
-      "supersedes_candidate_id": "7e6b58433245cc2f9e5daea0",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "THE WEIGHT IS LITERALLY ON THE PIVOT POINT STILL!!!",
-        "tags": [],
-        "reviewed_at": "2026-09-15T16:05:50.326268+00:00",
-        "reviewed_at_display": "Sep 15, 2026 09:05 AM PT (Sep 15, 2026 12:05 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "3ef7fba1e28b6283e6b65ec5a82f385f763f6fcb407bd2457c0bcb91469b5ec8",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/4b5657f21f41cbb4c17e2f25/master.png",
-          "sha256": "a4bf48008d16df76ebc761eb22fc87705a95097234414b8d5ebdb3092a9fd6ee",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1746947
-        },
-        "app": {
-          "path": "candidates/4b5657f21f41cbb4c17e2f25/app.png",
-          "sha256": "4fe0cf26d8a03277f986f3eb11f71a2610ed5aad083f68c7ce4002568219503d",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 312691
-        },
-        "thumbnail": {
-          "path": "candidates/4b5657f21f41cbb4c17e2f25/thumbnail.png",
-          "sha256": "f9a087c2622b72be6d5dd68eec3a9bc6c0af4c456d3d88fcb8275d1dd647be45",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 47419
-        }
-      },
-      "candidate_asset": "candidates/4b5657f21f41cbb4c17e2f25/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-15T16:55:31.244454+00:00",
-          "reviewed_at_display": "Sep 15, 2026 09:55 AM PT (Sep 15, 2026 12:55 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "a4bf48008d16df76ebc761eb22fc87705a95097234414b8d5ebdb3092a9fd6ee",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-15T16:25:08.574548+00:00",
-      "created_at_display": "Sep 15, 2026 09:25 AM PT (Sep 15, 2026 12:25 PM Eastern)",
-      "generation_prompt": "Edit this inspected real selectorized row illustration to depict CHEST-SUPPORTED REAR-DELT MACHINE ROW. Keep the EXACT same actual Insignia machine, its intact weight-stack tower, chest pad, single seated support, low cable/cam mechanism, connected paired curved moving arms and original attached upper grip pieces. No plate loading, no new hardware. Maintain this same dark studio, masculine model/clothes, camera from rear three-quarter SIDE, full grounded frame and crisp photographic style. Move the man into a slightly later contraction: upper arms flared almost horizontally to the sides and elbows bent a little beyond 90 degrees, pulling the original upper grips closer to the chest. BOTH hands stay closed naturally over the attached pronated/diagonal grip portions, wrists straight. Move both existing curved machine arms by the corresponding small equal angle around their unchanged original low pivot axes so their grips stay attached inside his hands; keep cable linkage continuous. This must read as a bent-elbow high-wide row, never a straight-arm reverse fly or tucked-elbow lat row. Keep the pelvis completely seated, chest against its actual pad, feet on same supports and head facing exactly along the torso axis toward the front of the machine. Do not rotate the head to show the face. Preserve matching complete shoulder-elbow-wrist chains, each visible hand has one actual connected handle. Do not change the machine design or add parts. One finished image.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-8a267bb4-8d78-43d9-9a82-2f7b1fc7dae4.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "upper_back"
-      ],
-      "movement_family": "accessory_rear_delts",
-      "execution_family": "MACHINE",
-      "sidedness": "bilateral",
-      "loading_implementation": "machine_unspecified",
-      "load_convention": "machine_stack_display",
-      "measurement_type": "load_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "review_round": "Machine correction of five latest owner rejections, September 15, 2026",
-        "owner_rejection": "THE WEIGHT IS LITERALLY ON THE PIVOT POINT STILL!!!",
-        "preflight_notes": "Actual selectorized row construction retained: paired grips connect through curved arms to low pivots/cam and enclosed stack. No plate-on-pivot geometry. Chest support, single seat and high-elbow contracted row aligned.",
-        "corrected_defect": "Actual selectorized row construction retained: paired grips connect through curved arms to low pivots/cam and enclosed stack. No plate-on-pivot geometry. Chest support, single seat and high-elbow contracted row aligned.",
-        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
-        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-a6cb045c-afa5-445e-a0ab-cfc38dd94cb0.png\"]",
-        "reference_machine": "Life Fitness Insignia Series Row SS-RW, selectorized",
-        "reference_source": "https://www.lifefitness.com/en-us/catalog/strength-training/selectorized/insignia-series-row",
-        "operator_reference": "https://www.youtube.com/watch?v=5VqeNOZt2ok",
-        "reference_observation": "Actual manufacturer operator setup has chest against front pad and pelvis on seat; curved bilateral arms connect to low cable/cam mechanism and enclosed stack. No exercise-loading horns.",
-        "original_baseline": "powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png"
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-15T16:55:31.244454+00:00",
-        "reviewed_at_display": "Sep 15, 2026 09:55 AM PT (Sep 15, 2026 12:55 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "a4bf48008d16df76ebc761eb22fc87705a95097234414b8d5ebdb3092a9fd6ee",
         "source": "human_review_ui"
       }
     },
@@ -42241,523 +41628,6 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "db9cd95aab1f15842dd47b761e9ca4ff051c8070c94f029c2e2f16a98edb4a79",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 221,
-      "key": "accessory_machine_mid_row",
-      "movement_name": "Machine Mid Row",
-      "primary_muscle_group": "upper_back",
-      "equipment_type": "machine",
-      "implement": "machine",
-      "family": "canonical_machine_accessories",
-      "generation_id": "machine_r2_20260914_221_5",
-      "generation_batch": "machine-review-round-2-2026-09-14",
-      "candidate_id": "eece78a3e59566292af2c061",
-      "version": 4,
-      "supersedes_candidate_id": "3e65a5615ac6f017a1a60533",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "FUCK YOU!!!! THIS IS BEYOND UNACCEPTABLE QUALITY!!! HES LITERALLY FUCKIGN SIDEWAYS TO THE FUCKING MACHINE!!",
-        "tags": [],
-        "reviewed_at": "2026-09-15T02:50:49.466941+00:00",
-        "reviewed_at_display": "Sep 14, 2026 07:50 PM PT (Sep 14, 2026 10:50 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "7d56ec0f847b5c18c161825a0489e5d8c8d4b4ab49103b39d6f46804bf64e82f",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/eece78a3e59566292af2c061/master.png",
-          "sha256": "0c06aa701276dcc21e8064b0d767deafb648bf7543b87a9ed05fc55aa4476384",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1751338
-        },
-        "app": {
-          "path": "candidates/eece78a3e59566292af2c061/app.png",
-          "sha256": "5f35398cfbea2e2bb19cddd4d578b85ee687e27b3f8c85bbac740e81c059f8c7",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 324954
-        },
-        "thumbnail": {
-          "path": "candidates/eece78a3e59566292af2c061/thumbnail.png",
-          "sha256": "6755706785e2c66bcae970185948c5355a94b52c22d2d7acee4ca16855799361",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 52679
-        }
-      },
-      "candidate_asset": "candidates/eece78a3e59566292af2c061/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-15T11:11:25.938772+00:00",
-          "reviewed_at_display": "Sep 15, 2026 04:11 AM PT (Sep 15, 2026 07:11 AM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "0c06aa701276dcc21e8064b0d767deafb648bf7543b87a9ed05fc55aa4476384",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-15T04:41:35.573215+00:00",
-      "created_at_display": "Sep 14, 2026 09:41 PM PT (Sep 15, 2026 12:41 AM Eastern)",
-      "generation_prompt": "Use this EXACT intact machine row setup, including exactly ONE connected grip per lever. Depict Machine Mid Row at the beginning of the pull, bending BOTH elbows only slightly, about 20 degrees. Keep both complete arms in front, both hands wrapping their correct same connected handles, chest supported, pelvis centered and feet on actual foot supports. Do not add any duplicate handles or floating tube. All existing machine geometry and body proportions remain unchanged. Same dark premium studio photo, black clothing and restrained violet rim light.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-9f6309e9-7a82-4f0f-8df2-35c27db57e71.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "lats",
-        "rear_delts",
-        "biceps"
-      ],
-      "movement_family": "accessory_upper_back",
-      "execution_family": "MACHINE",
-      "sidedness": "bilateral",
-      "loading_implementation": "machine_unspecified",
-      "load_convention": "machine_stack_display",
-      "measurement_type": "load_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "reference_manufacturer": "Hammer Strength",
-        "reference_model": "Hammer Strength Plate-Loaded Iso-Lateral Row",
-        "reference_page": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-iso-lateral-row",
-        "reference_image_url": "https://cdn.shopify.com/s/files/1/0538/8307/6805/products/hammer-strength-plate-loaded-iso-later-rowing-machine-charcoal-charcoal-front-1000x1000.jpg?v=1748945275",
-        "orientation": "Side / three-quarter photographic view; full composition. Head follows torso and task direction.",
-        "equipment": "Hammer Strength Plate-Loaded Iso-Lateral Row — representative art reference only; no equipment-specific artwork identity.",
-        "preflight_notes": "Both hands/forearms visibly continuous on matched single grips; supported centerline stays aligned with machine and no duplicate hardware.",
-        "review_round": "Completed human machine-art review, correction round 2, September 14, 2026",
-        "agent_visual_inspection": "Full generated master inspected before registration; human approval still required.",
-        "corrected_defect": "Both hands/forearms visibly continuous on matched single grips; supported centerline stays aligned with machine and no duplicate hardware.",
-        "owner_rejection": "FUCK YOU!!!! THIS IS BEYOND UNACCEPTABLE QUALITY!!! HES LITERALLY FUCKIGN SIDEWAYS TO THE FUCKING MACHINE!!",
-        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-588a91da-f2c4-4c73-b33a-7e35904284dd.png\"]"
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-15T11:11:25.938772+00:00",
-        "reviewed_at_display": "Sep 15, 2026 04:11 AM PT (Sep 15, 2026 07:11 AM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "0c06aa701276dcc21e8064b0d767deafb648bf7543b87a9ed05fc55aa4476384",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 222,
-      "key": "accessory_plate_loaded_seated_row",
-      "movement_name": "Machine Seated Row",
-      "primary_muscle_group": "upper_back",
-      "equipment_type": "machine",
-      "implement": "machine",
-      "family": "canonical_machine_accessories",
-      "generation_id": "machine_r2_20260914_222_4",
-      "generation_batch": "machine-review-round-2-2026-09-14",
-      "candidate_id": "872e263f29c7215bfef13589",
-      "version": 4,
-      "supersedes_candidate_id": "703813e80118d3aecebe76dd",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "YOU FUCKING SUCK DICK1",
-        "tags": [
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-15T02:51:00.317370+00:00",
-        "reviewed_at_display": "Sep 14, 2026 07:51 PM PT (Sep 14, 2026 10:51 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "9fd1e531bdc01ca10aa5fc26f578e4124981fff7528ce39cb69089485cba9249",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/872e263f29c7215bfef13589/master.png",
-          "sha256": "5c46ce0995e07f0093f962ed28e5795f39399d269cd84d2ca3e7fe7b4d5599aa",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1804499
-        },
-        "app": {
-          "path": "candidates/872e263f29c7215bfef13589/app.png",
-          "sha256": "003f49e5ffe9ed5e696152a71d8f873cff3b39ef1dc1743af4cbca2cda09bf8d",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 334887
-        },
-        "thumbnail": {
-          "path": "candidates/872e263f29c7215bfef13589/thumbnail.png",
-          "sha256": "70b2b0c24d035145b40e936b4bfab947ee0a9edebd25fb8511f51fe7a8726887",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 52441
-        }
-      },
-      "candidate_asset": "candidates/872e263f29c7215bfef13589/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-15T11:11:27.994181+00:00",
-          "reviewed_at_display": "Sep 15, 2026 04:11 AM PT (Sep 15, 2026 07:11 AM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "5c46ce0995e07f0093f962ed28e5795f39399d269cd84d2ca3e7fe7b4d5599aa",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-15T04:35:36.469673+00:00",
-      "created_at_display": "Sep 14, 2026 09:35 PM PT (Sep 15, 2026 12:35 AM Eastern)",
-      "generation_prompt": "Depict an EARLY-PHASE bilateral machine seated row using this precise machine and athlete. Keep BOTH arms mostly extended forward as in reference, with only 15 degrees of elbow bend, keeping shoulders, upper arms, elbows, forearms and hands all continuous and visibly traceable. Both hands grip their respective original handles, palms facing inward. Correct the duplicated near handle: ONE connected vertical grip per working lever, no floating parallel tube. Chest stays against pad, pelvis centered on seat, legs/feet unchanged. Same three-quarter side camera and machine proportions. High quality dark studio, restrained purple rim, charcoal shirt black shorts. Never put far elbow behind the body with a detached hand in front.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-588a91da-f2c4-4c73-b33a-7e35904284dd.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "lats",
-        "rear_delts",
-        "biceps"
-      ],
-      "movement_family": "accessory_upper_back",
-      "execution_family": "MACHINE",
-      "sidedness": "bilateral",
-      "loading_implementation": "machine_unspecified",
-      "load_convention": "machine_stack_display",
-      "measurement_type": "load_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "reference_manufacturer": "Hammer Strength",
-        "reference_model": "Hammer Strength Plate-Loaded Iso-Lateral Row",
-        "reference_page": "https://shop.lifefitness.com/products/hammer-strength-plate-loaded-iso-lateral-row",
-        "reference_image_url": "https://cdn.shopify.com/s/files/1/0538/8307/6805/products/hammer-strength-plate-loaded-iso-later-rowing-machine-charcoal-charcoal-front-1000x1000.jpg?v=1748945275",
-        "orientation": "Side / three-quarter photographic view; full composition. Head follows torso and task direction.",
-        "equipment": "Hammer Strength Plate-Loaded Iso-Lateral Row — representative art reference only; no equipment-specific artwork identity.",
-        "preflight_notes": "Both continuous arms and closed hands clearly visible in early row phase; one attached grip on each lever and centered subject.",
-        "review_round": "Completed human machine-art review, correction round 2, September 14, 2026",
-        "agent_visual_inspection": "Full generated master inspected before registration; human approval still required.",
-        "corrected_defect": "Both continuous arms and closed hands clearly visible in early row phase; one attached grip on each lever and centered subject.",
-        "owner_rejection": "YOU FUCKING SUCK DICK1",
-        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-0d4901e6-48eb-48ad-abd6-8e9d7754d993.png\"]"
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-15T11:11:27.994181+00:00",
-        "reviewed_at_display": "Sep 15, 2026 04:11 AM PT (Sep 15, 2026 07:11 AM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "5c46ce0995e07f0093f962ed28e5795f39399d269cd84d2ca3e7fe7b4d5599aa",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 223,
-      "key": "accessory_chest_supported_high_row",
-      "movement_name": "Chest-Supported High Row",
-      "primary_muscle_group": "upper_back",
-      "equipment_type": "machine",
-      "implement": "machine",
-      "family": "canonical_machine_accessories",
-      "generation_id": "machine_r2_20260914_223_3",
-      "generation_batch": "machine-review-round-2-2026-09-14",
-      "candidate_id": "eaaaa71a62f3c249f2246581",
-      "version": 4,
-      "supersedes_candidate_id": "006214a4ad1f6282918eb0a0",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "WHY THE FUCK ARE THE HANDLES LIKE THAT",
-        "tags": [],
-        "reviewed_at": "2026-09-15T02:51:10.807032+00:00",
-        "reviewed_at_display": "Sep 14, 2026 07:51 PM PT (Sep 14, 2026 10:51 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "6619989235144353ef8d9596f7c6e95b7a9171176e35563fc15c27f91c7a0e23",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/eaaaa71a62f3c249f2246581/master.png",
-          "sha256": "f99df94bcd6e2ac8e78889740427fbac362448414f13d47ed1ef48bd3cb754e3",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1727697
-        },
-        "app": {
-          "path": "candidates/eaaaa71a62f3c249f2246581/app.png",
-          "sha256": "69e6025a7737182f53b79d2d98ce0399ab805cf1245826478efd8c87bb588153",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 324911
-        },
-        "thumbnail": {
-          "path": "candidates/eaaaa71a62f3c249f2246581/thumbnail.png",
-          "sha256": "7ee03d2ca7c11c09c0fcda5dcd3b572ffa7bb949c9a4ad3670a9f8a4351b6666",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 50486
-        }
-      },
-      "candidate_asset": "candidates/eaaaa71a62f3c249f2246581/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-15T11:11:40.692883+00:00",
-          "reviewed_at_display": "Sep 15, 2026 04:11 AM PT (Sep 15, 2026 07:11 AM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "f99df94bcd6e2ac8e78889740427fbac362448414f13d47ed1ef48bd3cb754e3",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-15T04:18:33.758092+00:00",
-      "created_at_display": "Sep 14, 2026 09:18 PM PT (Sep 15, 2026 12:18 AM Eastern)",
-      "generation_prompt": "Create chest-supported high-row artwork from this owner-approved real machine. Preserve the machine architecture, both ACTUAL short black vertical rubber handles and matched levers exactly as shown. Keep chest in visible contact with center pad. Depict slightly earlier in the same bilateral pull, both elbows about 100 degrees instead of fully drawn back, levers rotate forward only about 10 degrees at their real pivots. Entire athlete stays aligned with seat and chest pad, feet supported. No invented long grips, protruding bars or extra plates. Square premium realistic movement artwork. Preserve human proportions and exact load-bearing connections. Dark charcoal sleeveless shirt, black shorts and shoes; matte black machine and black pads with brushed steel working hardware, near-black seamless studio, soft white key and restrained violet edge light. No labels, logos or UI. Full relevant machine and athlete visible with 5% margin.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-11406b25-998e-4cdf-a4ba-395665781aab.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "lats",
-        "rear_delts",
-        "biceps"
-      ],
-      "movement_family": "accessory_upper_back",
-      "execution_family": "MACHINE",
-      "sidedness": "bilateral",
-      "loading_implementation": "machine_unspecified",
-      "load_convention": "machine_stack_display",
-      "measurement_type": "load_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "reference_manufacturer": "Hammer Strength",
-        "reference_model": "Hammer Strength Iso-Lateral High Row",
-        "reference_page": "https://shop.lifefitness.com/products/hammer-strength-iso-lateral-high-row",
-        "reference_image_url": "https://cdn.shopify.com/s/files/1/0538/8307/6805/files/hammer-strength-plate-loadediso-lateral-high-row-1000x1000.jpg?v=1748945111",
-        "orientation": "Side / three-quarter photographic view; full composition. Head follows torso and task direction.",
-        "equipment": "Hammer Strength Iso-Lateral High Row — representative art reference only; no equipment-specific artwork identity.",
-        "preflight_notes": "Matched connected lever handles both fully grasped, body centered against chest pad, thighs restrained and feet supported.",
-        "review_round": "Completed human machine-art review, correction round 2, September 14, 2026",
-        "agent_visual_inspection": "Full generated master inspected before registration; human approval still required.",
-        "corrected_defect": "Matched connected lever handles both fully grasped, body centered against chest pad, thighs restrained and feet supported.",
-        "owner_rejection": "WHY THE FUCK ARE THE HANDLES LIKE THAT",
-        "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/f9cc8ee8c9075270b3b0e02d/master.png\"]"
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-15T11:11:40.692883+00:00",
-        "reviewed_at_display": "Sep 15, 2026 04:11 AM PT (Sep 15, 2026 07:11 AM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "f99df94bcd6e2ac8e78889740427fbac362448414f13d47ed1ef48bd3cb754e3",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 224,
-      "key": "accessory_wide_elbow_machine_row",
-      "movement_name": "Wide-Elbow Machine Row",
-      "primary_muscle_group": "upper_back",
-      "equipment_type": "machine",
-      "implement": "machine",
-      "family": "canonical_machine_accessories",
-      "generation_id": "machine_r4_20260915_224_1",
-      "generation_batch": "machine-review-round-4-2026-09-15",
-      "candidate_id": "9ad0087f466a0ac21c4db51b",
-      "version": 6,
-      "supersedes_candidate_id": "00e92d8f8f8359083fe68eb2",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "THIS SPECIFIC MACHINE YOU CANT GET RIGHT",
-        "tags": [],
-        "reviewed_at": "2026-09-15T16:06:21.282940+00:00",
-        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "b0c28825f31bb2fef96873d65b63512c5281cb2f277c37c1541b0a04febd6591",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/9ad0087f466a0ac21c4db51b/master.png",
-          "sha256": "612d790128675b28085dc3ebf244010b21f6871b425613b93e62c9f283241f93",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1746733
-        },
-        "app": {
-          "path": "candidates/9ad0087f466a0ac21c4db51b/app.png",
-          "sha256": "c8db9b8464d13e4abdda4174f43b86cca9463ccb569a27fdab4a582b296f990f",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 315792
-        },
-        "thumbnail": {
-          "path": "candidates/9ad0087f466a0ac21c4db51b/thumbnail.png",
-          "sha256": "1d94e8ba46dacda6cb19c64185430fd60aafd3b3dc737e786dd8789ecd97a580",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 47961
-        }
-      },
-      "candidate_asset": "candidates/9ad0087f466a0ac21c4db51b/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-15T16:55:32.896137+00:00",
-          "reviewed_at_display": "Sep 15, 2026 09:55 AM PT (Sep 15, 2026 12:55 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "612d790128675b28085dc3ebf244010b21f6871b425613b93e62c9f283241f93",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-15T16:25:08.961940+00:00",
-      "created_at_display": "Sep 15, 2026 09:25 AM PT (Sep 15, 2026 12:25 PM Eastern)",
-      "generation_prompt": "Edit this inspected real selectorized row illustration to depict WIDE-ELBOW MACHINE ROW. Keep the EXACT same actual Insignia machine, its intact weight-stack tower, chest pad, single seated support, low cable/cam mechanism, connected paired curved moving arms and original attached upper grip pieces. No plate loading, no new hardware. Maintain this same dark studio, masculine model/clothes, camera from rear three-quarter SIDE, full grounded frame and crisp photographic style. Move the man into a slightly earlier mid-pull: upper arms still flared wide at upper-chest height but elbows bent approximately 65 degrees, holding the original upper grips slightly farther forward. BOTH hands stay closed naturally over the attached pronated/diagonal grip portions, wrists straight. Move both existing curved machine arms by the corresponding small equal angle around their unchanged original low pivot axes so their grips stay attached inside his hands; keep cable linkage continuous. This must read as a bent-elbow high-wide row, never a straight-arm reverse fly or tucked-elbow lat row. Keep the pelvis completely seated, chest against its actual pad, feet on same supports and head facing exactly along the torso axis toward the front of the machine. Do not rotate the head to show the face. Preserve matching complete shoulder-elbow-wrist chains, each visible hand has one actual connected handle. Do not change the machine design or add parts. One finished image.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-7b31f39b-8b07-451e-bf00-44a0093a0d15.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "lats",
-        "rear_delts",
-        "biceps"
-      ],
-      "movement_family": "accessory_upper_back",
-      "execution_family": "MACHINE",
-      "sidedness": "bilateral",
-      "loading_implementation": "machine_unspecified",
-      "load_convention": "machine_stack_display",
-      "measurement_type": "load_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "review_round": "Machine correction of five latest owner rejections, September 15, 2026",
-        "owner_rejection": "THIS SPECIFIC MACHINE YOU CANT GET RIGHT",
-        "preflight_notes": "Replaced rejected plate-loaded machine with real selectorized row. Paired attached grips/arms, cam/stack resistance, supported pelvis/chest and matched wide-elbow row phase inspected. No loose plates or added hardware.",
-        "corrected_defect": "Replaced rejected plate-loaded machine with real selectorized row. Paired attached grips/arms, cam/stack resistance, supported pelvis/chest and matched wide-elbow row phase inspected. No loose plates or added hardware.",
-        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
-        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-a6cb045c-afa5-445e-a0ab-cfc38dd94cb0.png\"]",
-        "reference_machine": "Life Fitness Insignia Series Row SS-RW, selectorized",
-        "reference_source": "https://www.lifefitness.com/en-us/catalog/strength-training/selectorized/insignia-series-row",
-        "operator_reference": "https://www.youtube.com/watch?v=5VqeNOZt2ok",
-        "reference_observation": "Actual manufacturer operator setup has chest against front pad and pelvis on seat; curved bilateral arms connect to low cable/cam mechanism and enclosed stack. No exercise-loading horns.",
-        "original_baseline": "powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png"
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-15T16:55:32.896137+00:00",
-        "reviewed_at_display": "Sep 15, 2026 09:55 AM PT (Sep 15, 2026 12:55 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "612d790128675b28085dc3ebf244010b21f6871b425613b93e62c9f283241f93",
         "source": "human_review_ui"
       }
     },
@@ -46042,117 +44912,6 @@
       }
     },
     {
-      "movement_definition_id": 403,
-      "key": "accessory_glute_ham_raise",
-      "movement_name": "Glute-Ham Raise",
-      "primary_muscle_group": "hamstrings",
-      "equipment_type": "machine",
-      "implement": "machine",
-      "family": "canonical_machine_accessories",
-      "generation_id": "machine-2026-09-14-403-attempt-01",
-      "generation_batch": "machine-2026-09-14",
-      "candidate_id": "ca536ef31b1ae46671db1033",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/ca536ef31b1ae46671db1033/master.png",
-          "sha256": "f2ae494deae090e99afbecc030abbdcd8d6cc6fb53ecb5c45bb072ea6371a48e",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1796701
-        },
-        "app": {
-          "path": "candidates/ca536ef31b1ae46671db1033/app.png",
-          "sha256": "5a7cbf0c326d3cad30eac166c5b362b3c03df56fcfe32d7c357b3f44f4ccca58",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 316638
-        },
-        "thumbnail": {
-          "path": "candidates/ca536ef31b1ae46671db1033/thumbnail.png",
-          "sha256": "a1cb90e7b30c2c88231ada7b0ac5a20817135b4eb1df54b7a44f0dc0471c488e",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 45020
-        }
-      },
-      "candidate_asset": "candidates/ca536ef31b1ae46671db1033/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-15T00:41:58.232512+00:00",
-          "reviewed_at_display": "Sep 14, 2026 05:41 PM PT (Sep 14, 2026 08:41 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "f2ae494deae090e99afbecc030abbdcd8d6cc6fb53ecb5c45bb072ea6371a48e",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-14T18:15:08.704027+00:00",
-      "created_at_display": "Sep 14, 2026 11:15 AM PT (Sep 14, 2026 02:15 PM Eastern)",
-      "generation_prompt": "Use case: compositing. ONE square photorealistic Strength Ledger exact-movement artwork. Reference 1 is the REAL COMMERCIAL MACHINE: preserve its coherent frame, seat/back pads, pivots, lever arms, grips, loading horns and ground supports as one intact design. Move only its legitimate moving arms to the exercise phase; never add imaginary mechanisms or combine other machines. Reference 2 is STYLE AND ATHLETE ONLY: same original athletic adult man, short brown hair, graphite full-length sleeveless tank covering waist, plain black shorts, black trainers, natural skin/proportions. Near-black studio and rubber floor, neutral soft key, restrained purple rim; black equipment with modest steel highlights. Athlete actively performs the specified movement with anatomically coherent bilateral joints, hands wrapped around actual machine grips, realistic pad/body contact and both feet supported. Camera side/front three-quarter chosen for clear athlete-machine mechanics. Entire important machine, athlete, load and feet within square with tight but comfortable margins; prioritize movement clarity at thumbnail size. Brand-neutral: remove manufacturer logos and instruction decals; no text, arrows, collage or other people. Preserve actual geometry rather than inventing a simplified machine.  The athlete's neck and face follow the torso midline and gaze along movement direction, NEVER turning sideways or looking at the camera. Every handgrip remains visibly attached to its real lever, with an uninterrupted metal connection to the pivot. Keep entire machine frame top inside the image with a visible dark margin.\nMOVEMENT ID 403: Glute-Ham Raise. Real geometry: Rogue Fitness Abram GHD 2.0. Real Rogue GHD with split rounded pads and rear ankle rollers. Athlete FACES DOWN/forward over rounded pads, KNEES contact rounded front pad edge, both ankles trapped between rear ankle rollers and soles against rear footplate. Mid glute-ham raise: knees bent 90 degrees, torso and hips extended in one line tilted 45 degrees forward/up from knees; arms crossed on chest. Movement comes from knee flexion, not a back-extension fold. Side three-quarter shows pads under thighs/knees, ankle fixation and coherent triangular grounded frame. Remove all diagram marks from reference.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-2b9d2d51-06c1-46d5-a0cd-dd29f07e4bbb.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "glutes"
-      ],
-      "movement_family": "accessory_hamstrings",
-      "execution_family": "MACHINE",
-      "sidedness": "bilateral",
-      "loading_implementation": "machine_unspecified",
-      "load_convention": "machine_stack_display",
-      "measurement_type": "load_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "reference_manufacturer": "Rogue Fitness",
-        "reference_model": "Abram GHD 2.0",
-        "reference_page": "https://www.roguefitness.com/rogue-abram-ghd-2-0",
-        "reference_image_url": "https://assets.roguefitness.com/f_auto%2Cq_auto%2Cc_limit%2Cw_1600%2Cb_rgb%3Affffff/catalog/Strength%20Equipment/Strength%20Training/Glute%20Ham%20%28GHD%29/RF0594/RF0594-H_ravxoo.png",
-        "orientation": "Side / three-quarter photographic view; full composition. Head follows torso and task direction.",
-        "equipment": "Abram GHD 2.0 — representative art reference only; no equipment-specific artwork identity.",
-        "preflight_notes": "Glute-ham raise: shins/ankles restrained between rear rollers, thighs/knees on curved pad, body raising from knee flexion."
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-15T00:41:58.232512+00:00",
-        "reviewed_at_display": "Sep 14, 2026 05:41 PM PT (Sep 14, 2026 08:41 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "f2ae494deae090e99afbecc030abbdcd8d6cc6fb53ecb5c45bb072ea6371a48e",
-        "source": "human_review_ui"
-      }
-    },
-    {
       "movement_definition_id": 431,
       "key": "accessory_machine_hip_thrust",
       "movement_name": "Machine Hip Thrust",
@@ -46407,135 +45166,6 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "16c14d0e0adf8f3464f5e54f3bb003815b97075f9158c7cc28411ebaba51cc99",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 433,
-      "key": "accessory_glute_drive_machine",
-      "movement_name": "Glute Drive Machine",
-      "primary_muscle_group": "glutes",
-      "equipment_type": "machine",
-      "implement": "machine",
-      "family": "canonical_machine_accessories",
-      "generation_id": "machine_r2_20260914_433_2",
-      "generation_batch": "machine-review-round-2-2026-09-14",
-      "candidate_id": "e6eafa2076e23080eaa55806",
-      "version": 2,
-      "supersedes_candidate_id": "f12b4c1cf4848621daf5b2bc",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "the machine is too fucking big compared to the person!",
-        "tags": [
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-15T00:44:04.220938+00:00",
-        "reviewed_at_display": "Sep 14, 2026 05:44 PM PT (Sep 14, 2026 08:44 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "b5e149fca7bc5afcc3b581c1ea7ea190c3f735f894dc088c7e70e006bc68c02d",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/e6eafa2076e23080eaa55806/master.png",
-          "sha256": "778cbc5ac734614ceebb9928a296f2f9c7f7b9a923cf90674eae934fac48b196",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1764025
-        },
-        "app": {
-          "path": "candidates/e6eafa2076e23080eaa55806/app.png",
-          "sha256": "c481d1df0a64a0da3be19fac9b1cb63651ec1aec890e44c2f6f9f9608bbc0f88",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 319603
-        },
-        "thumbnail": {
-          "path": "candidates/e6eafa2076e23080eaa55806/thumbnail.png",
-          "sha256": "8dc27fe627a81077775d95d64587f521b2c7b9d91b72a7aa1e79af109370ce9f",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 46635
-        }
-      },
-      "candidate_asset": "candidates/e6eafa2076e23080eaa55806/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-15T11:15:37.043819+00:00",
-          "reviewed_at_display": "Sep 15, 2026 04:15 AM PT (Sep 15, 2026 07:15 AM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "778cbc5ac734614ceebb9928a296f2f9c7f7b9a923cf90674eae934fac48b196",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-15T03:42:41.164906+00:00",
-      "created_at_display": "Sep 14, 2026 08:42 PM PT (Sep 14, 2026 11:42 PM Eastern)",
-      "generation_prompt": "Make this exact image a SQUARE canvas by extending ONLY the dark studio background above and below. Remove small white instruction placards on the two machine beams, replace with continuous same black steel. Preserve precisely EVERY machine edge, linkage, belt attachment, load horn, plate, hand, head, leg, shoe and body proportion. No new pose. No other changes.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-3b5291d7-ca62-4212-a1e5-a98febcc032f.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "hamstrings"
-      ],
-      "movement_family": "accessory_glutes",
-      "execution_family": "MACHINE",
-      "sidedness": "bilateral",
-      "loading_implementation": "machine_unspecified",
-      "load_convention": "machine_stack_display",
-      "measurement_type": "load_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "reference_manufacturer": "Nautilus",
-        "reference_model": "Glute Drive 9NP-L1131",
-        "reference_page": "https://www.corehandf.com/products/nautilus-plate-loaded-glute-drive",
-        "reference_image_url": "https://www.corehandf.com/cdn/shop/files/Leverage_Glute_Drive-60.png?v=1764699053",
-        "orientation": "Side / three-quarter photographic view; full composition. Head follows torso and task direction.",
-        "equipment": "Glute Drive 9NP-L1131 — representative art reference only; no equipment-specific artwork identity.",
-        "preflight_notes": "Square master, placards removed, real Nautilus belt over pelvis, supported upper back, paired load levers and both feet flat on working platform.",
-        "review_round": "Completed human machine-art review, correction round 2, September 14, 2026",
-        "owner_rejection": "the machine is too fucking big compared to the person!",
-        "corrected_defect": "Square master, placards removed, real Nautilus belt over pelvis, supported upper back, paired load levers and both feet flat on working platform.",
-        "agent_visual_inspection": "Full generated master inspected before registration; human approval still required.",
-        "reference_files": "[\"/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-dc45fa85-1fcf-43d3-9529-7d860f1ab69a.png\"]"
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-15T11:15:37.043819+00:00",
-        "reviewed_at_display": "Sep 15, 2026 04:15 AM PT (Sep 15, 2026 07:15 AM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "778cbc5ac734614ceebb9928a296f2f9c7f7b9a923cf90674eae934fac48b196",
         "source": "human_review_ui"
       }
     },
@@ -48724,130 +47354,6 @@
       }
     },
     {
-      "movement_definition_id": 556,
-      "key": "accessory_reverse_hyperextension_machine",
-      "movement_name": "Reverse Hyperextension Machine",
-      "primary_muscle_group": "lower_back",
-      "equipment_type": "machine",
-      "implement": "machine",
-      "family": "canonical_machine_accessories",
-      "generation_id": "machine_r3_20260915_556_2",
-      "generation_batch": "machine-review-round-3-2026-09-15",
-      "candidate_id": "676628c3b75a58ed74c4bbf9",
-      "version": 4,
-      "supersedes_candidate_id": "8dc0e2a961d5fdce47d72a5e",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "THE WEIGHT LOOKS UN NATURA",
-        "tags": [],
-        "reviewed_at": "2026-09-15T11:17:06.626522+00:00",
-        "reviewed_at_display": "Sep 15, 2026 04:17 AM PT (Sep 15, 2026 07:17 AM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "c51c8686f7a44a6572962e0aa89caf510713fd7af19070ded7885f6203470353",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/676628c3b75a58ed74c4bbf9/master.png",
-          "sha256": "84779ba86a822e80642950584c8faf26411aa98f41c4deb5aba5aeaa32322d0f",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1809884
-        },
-        "app": {
-          "path": "candidates/676628c3b75a58ed74c4bbf9/app.png",
-          "sha256": "e536d998c8c5e26d9e3d891c21477faf4c9f89c23da98cdfc340bf733e5ecbe8",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 318506
-        },
-        "thumbnail": {
-          "path": "candidates/676628c3b75a58ed74c4bbf9/thumbnail.png",
-          "sha256": "149993531cf2d45db13b5b45458519b5dc377c9d021623ce43cb10e1a43dccc6",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 47268
-        }
-      },
-      "candidate_asset": "candidates/676628c3b75a58ed74c4bbf9/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-15T16:06:51.401555+00:00",
-          "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "84779ba86a822e80642950584c8faf26411aa98f41c4deb5aba5aeaa32322d0f",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-15T12:14:24.191758+00:00",
-      "created_at_display": "Sep 15, 2026 05:14 AM PT (Sep 15, 2026 08:14 AM Eastern)",
-      "generation_prompt": "Image 1 is the edit target. Image 2 supplies the correct reverse-hyper PLATE AND AXLE geometry only. Replace the unnatural tilted plate assembly in image 1 with the same mechanically correct round near-side plates, centered sleeve/collar and pendulum attachment as image 2. The near plate's flat circular face must face the viewer in the same perspective as the SIDE of the machine frame, its hole centered on a straight sleeve projecting toward the viewer. No shaft may project sideways from the back of the plate. Both ends of the axle remain connected to the same swinging pendulum. The short ankle webbing must visibly connect from the ankles to that same load axle with no open gap. Keep image 1's man, pose, two existing grasped handles, frame, padding, camera and lighting unchanged. Do NOT copy image 2's additional unused handgrips. Only repair the load assembly and strap connection. Real circular black plates, no text.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-a0e6e31a-fb6a-40f3-9086-e5e9bc4de387.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "hamstrings",
-        "glutes"
-      ],
-      "movement_family": "accessory_lower_back",
-      "execution_family": "MACHINE",
-      "sidedness": "bilateral",
-      "loading_implementation": "machine_unspecified",
-      "load_convention": "machine_stack_display",
-      "measurement_type": "load_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "review_round": "Machine-first correction of 16 owner rejections, September 15, 2026",
-        "owner_rejection": "THE WEIGHT LOOKS UN NATURA",
-        "preflight_notes": "Rebuilt plate stack from correct reverse-hyper reference: circular parallel plates, hub and sleeve on one transverse axis, short continuous strap attachment to ankles. Two held handles, connected pendulum and frame.",
-        "corrected_defect": "Rebuilt plate stack from correct reverse-hyper reference: circular parallel plates, hub and sleeve on one transverse axis, short continuous strap attachment to ankles. Two held handles, connected pendulum and frame.",
-        "agent_visual_inspection": "Generated master inspected before registration; human approval remains required.",
-        "reference_files": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/8dc0e2a961d5fdce47d72a5e/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/99e38449474b702a7a45dcca/master.png\"]",
-        "reference_machine": "Rogue RH-2 pendulum and transverse plate axle reference",
-        "reference_source": "https://www.roguefitness.com/rogue-reverse-hyper-2"
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-15T16:06:51.401555+00:00",
-        "reviewed_at_display": "Sep 15, 2026 09:06 AM PT (Sep 15, 2026 12:06 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "84779ba86a822e80642950584c8faf26411aa98f41c4deb5aba5aeaa32322d0f",
-        "source": "human_review_ui"
-      }
-    },
-    {
       "movement_definition_id": 573,
       "key": "accessory_hip_flexion_machine",
       "movement_name": "Hip Flexion Machine",
@@ -50182,115 +48688,6 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "ba30e1f12751f7e03d04dcdf4d838b7963a5c7170ccfe03d60123c2bec7939d2",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 471,
-      "key": "accessory_band_hip_abduction",
-      "movement_name": "Band Hip Abduction",
-      "primary_muscle_group": "abductors",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "remaining-20260915-471-a01",
-      "generation_batch": "remaining-2026-09-15",
-      "candidate_id": "738bcb309a944dc4b3b9c536",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/738bcb309a944dc4b3b9c536/master.png",
-          "sha256": "8cda94b3489bcdab0a454fd2a696b783052dcee9b220bce95e47423f2970b772",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1829404
-        },
-        "app": {
-          "path": "candidates/738bcb309a944dc4b3b9c536/app.png",
-          "sha256": "2e377fb33f11aba34cdae8b1c87c94dd3e2518bb3714499e869a8e062a358d12",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 316834
-        },
-        "thumbnail": {
-          "path": "candidates/738bcb309a944dc4b3b9c536/thumbnail.png",
-          "sha256": "db6dbd0f3e904367e1efeac6c9e1e64cef03f2039d8bf134fe1926b9352170cf",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 45935
-        }
-      },
-      "candidate_asset": "candidates/738bcb309a944dc4b3b9c536/master.png",
-      "status": "approved",
-      "human_approved": true,
-      "automation_passed": true,
-      "reason": "",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "approve",
-          "decision": "approved",
-          "reason": "",
-          "tags": [],
-          "reviewed_at": "2026-09-15T21:56:16.559857+00:00",
-          "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "8cda94b3489bcdab0a454fd2a696b783052dcee9b220bce95e47423f2970b772",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-15T18:26:55.098012+00:00",
-      "created_at_display": "Sep 15, 2026 11:26 AM PT (Sep 15, 2026 02:26 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: BAND HIP ABDUCTION, seated bilateral variation. Sit near front of an ordinary solid flat padded gym bench, feet fully planted slightly wider than hips, knees bent90degrees. RED flat commercial mini-loop around both lower thighs just ABOVE the knees. Actively press knees outward at symmetric angles, stretching the loop sideways; feet remain planted. Torso modestly leaned forward, hands relaxed on bench edges beside hips, head neutral in torso plane. Front three-quarter camera makes both complete knees/feet, both arms, the closed red loop and grounded bench visible. A single loop, no cables or invented resistance machine.",
-      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/471/attempt-01.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "glutes"
-      ],
-      "movement_family": "accessory_abductors",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "master_inspection": "Seated hip abduction with both grounded feet, spread knees and continuous red loop above knees; supported bench contacts and complete limbs visible.",
-        "thumbnail_inspection": "Inspected labeled 192px and 80px previews: complete pose, red resistance path, defining support and contacts remain visible; no distracting empty half.",
-        "reference_pages": "https://www.roguefitness.com/rogue-tube-bands ; https://bretcontreras.com/hip-thrust-wiki-page/ ; https://pmc.ncbi.nlm.nih.gov/articles/PMC3418110/",
-        "setup": "BAND HIP ABDUCTION, seated bilateral variation. Sit near front of an ordinary solid flat padded gym bench, feet fully planted slightly wider than hips, knees bent90degrees. RED flat commercial mini-loop around both lower thighs just ABOVE the knees. Actively press knees outward at symmetric angles, stretching the loop sideways; feet remain planted. Torso modestly leaned forward, hands relaxed on bench edges beside hips, head neutral in torso plane. Front three-quarter camera makes both complete knees/feet, both arms, the closed red loop and grounded bench visible. A single loop, no cables or invented resistance machine.",
-        "band_color": "RED"
-      },
-      "review": {
-        "action": "approve",
-        "decision": "approved",
-        "reason": "",
-        "tags": [],
-        "reviewed_at": "2026-09-15T21:56:16.559857+00:00",
-        "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "8cda94b3489bcdab0a454fd2a696b783052dcee9b220bce95e47423f2970b772",
         "source": "human_review_ui"
       }
     },
