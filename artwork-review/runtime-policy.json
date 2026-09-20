@@ -1,14 +1,26 @@
 {
   "schema_version": 1,
   "denied_keys": [
+    "accessory_ankle_weight_hip_flexion",
+    "accessory_barbell_back_extension",
+    "accessory_barbell_calf_raise",
+    "accessory_barbell_glute_bridge",
     "accessory_bird_dog_back_extension",
+    "accessory_bodyweight_walking_lunge",
     "accessory_chest_supported_high_row",
     "accessory_chest_supported_kelso_row",
     "accessory_chest_supported_rear_delt_machine_row",
     "accessory_chest_supported_t_bar_row",
     "accessory_copenhagen_adduction",
+    "accessory_donkey_calf_raise_with_weight",
+    "accessory_dumbbell_dead_bug",
+    "accessory_dumbbell_frog_pump",
+    "accessory_dumbbell_glute_bridge",
+    "accessory_dumbbell_hip_thrust",
+    "accessory_dumbbell_step_down",
     "accessory_glute_drive_machine",
     "accessory_glute_ham_raise",
+    "accessory_glute_ham_raise_with_weight",
     "accessory_good_morning",
     "accessory_incline_bench_dumbbell_row",
     "accessory_incline_bench_rear_delt_flye",
@@ -17,12 +29,19 @@
     "accessory_machine_mid_row",
     "accessory_pec_deck",
     "accessory_plate_loaded_seated_row",
+    "accessory_plate_sit_up",
     "accessory_reverse_hyperextension_machine",
     "accessory_reverse_pec_deck",
     "accessory_single_leg_calf_raise_machine",
     "accessory_single_leg_dumbbell_calf_raise",
+    "accessory_spanish_squat_with_weight",
+    "accessory_standing_dumbbell_calf_raise",
     "accessory_standing_dumbbell_curl",
     "accessory_three_point_dumbbell_row",
+    "accessory_weighted_crunch",
+    "accessory_weighted_decline_sit_up",
+    "accessory_weighted_push_up",
+    "accessory_weighted_sorenson_hold",
     "accessory_wide_elbow_barbell_row",
     "accessory_wide_elbow_dumbbell_row",
     "accessory_wide_elbow_machine_row",
@@ -205,18 +224,6 @@
       }
     },
     {
-      "key": "accessory_ankle_weight_hip_flexion",
-      "movement_definition_id": 570,
-      "candidate_id": "existing-570-380be4b2bf6d",
-      "app_sha256": "40679182dc561dd69362d9550702705d4ad44eaebb1bab67123b5fb6b3e93730",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.68,
-        "x": 0.15,
-        "y": -0.08
-      }
-    },
-    {
       "key": "accessory_ankle_weight_psoas_march",
       "movement_definition_id": 646,
       "candidate_id": "dbdcd379caf4fb75b32afcc1",
@@ -288,30 +295,6 @@
       }
     },
     {
-      "key": "accessory_barbell_back_extension",
-      "movement_definition_id": 545,
-      "candidate_id": "f3ca088b8eab5e49eb9fdcb0",
-      "app_sha256": "db45402f4bf4157d25a8c7c741165f4a3e5ecea7fac3bdfc78810b7407e86f08",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.69,
-        "x": 0.07,
-        "y": -0.14
-      }
-    },
-    {
-      "key": "accessory_barbell_calf_raise",
-      "movement_definition_id": 478,
-      "candidate_id": "existing-478-1fbd762a4186",
-      "app_sha256": "543238f7c7a15c511c0c28d94ae139f07cdf4bb4162f4c2ca9e9901f120800fb",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.5,
-        "x": 0.12,
-        "y": -0.18
-      }
-    },
-    {
       "key": "accessory_barbell_curl",
       "movement_definition_id": 251,
       "candidate_id": "existing-251-6e16969d4372",
@@ -357,18 +340,6 @@
         "zoom": 0.69,
         "x": 0.15,
         "y": 0
-      }
-    },
-    {
-      "key": "accessory_barbell_glute_bridge",
-      "movement_definition_id": 420,
-      "candidate_id": "d2e8f7a4c3bd391ac89dec1a",
-      "app_sha256": "661fadd319d17e1cb5c1d273c76da55f678ed2e2202a9ffc0bc8394d70670a4e",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.69,
-        "x": 0.16,
-        "y": -0.2
       }
     },
     {
@@ -760,29 +731,6 @@
         "zoom": 0.81,
         "x": 0.14,
         "y": 0.09
-      },
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.52,
-        "scale": 1,
-        "biasX": -0.04,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      }
-    },
-    {
-      "key": "accessory_bodyweight_walking_lunge",
-      "movement_definition_id": 380,
-      "candidate_id": "8dbac316058a60f22d4233b3",
-      "app_sha256": "6e6a514012d86e81e6a9b8881cce301d803dd3393120b0a3fdb7327c38b7bc69",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.77,
-        "x": 0.17,
-        "y": 0.07
       },
       "presentation": {
         "focalX": 0.5,
@@ -1337,6 +1285,12 @@
       "movement_definition_id": 491,
       "candidate_id": "e4cff2d874911ad7c071f58c",
       "app_sha256": "3670183e1f60177dc106d3a3f65f7d0f9f27d60410ad8e0b551fdc3eabe35158",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.83,
+        "x": 0.17,
+        "y": 0.1
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.48,
@@ -1347,18 +1301,6 @@
         "thumbnailFocalY": 0.5,
         "thumbnailScale": 1,
         "cropMode": "contain"
-      }
-    },
-    {
-      "key": "accessory_donkey_calf_raise_with_weight",
-      "movement_definition_id": 480,
-      "candidate_id": "existing-480-863cc433be9d",
-      "app_sha256": "d8dcb932784487d3acf4ebf8742e97b5cb0ca150acdda518c600158a8b0adce7",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.6,
-        "x": 0.12,
-        "y": -0.17
       }
     },
     {
@@ -1398,18 +1340,6 @@
       }
     },
     {
-      "key": "accessory_dumbbell_dead_bug",
-      "movement_definition_id": 500,
-      "candidate_id": "existing-500-6d51e21e7623",
-      "app_sha256": "c9cd908d3062465b7ba275bb64a77a96c6ddd9f48e41aba0aef1689689d5ce92",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.71,
-        "x": 0.16,
-        "y": -0.18
-      }
-    },
-    {
       "key": "accessory_dumbbell_floor_press",
       "movement_definition_id": 36,
       "candidate_id": "existing-36-19a436752cc6",
@@ -1434,18 +1364,6 @@
       }
     },
     {
-      "key": "accessory_dumbbell_frog_pump",
-      "movement_definition_id": 430,
-      "candidate_id": "existing-430-ef1dbbd2249b",
-      "app_sha256": "cde4598c453027a5431d2537835ecde8b9eea77b7e5d3362a2ba18c25398c55a",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.68,
-        "x": 0.11,
-        "y": -0.19
-      }
-    },
-    {
       "key": "accessory_dumbbell_front_raise",
       "movement_definition_id": 82,
       "candidate_id": "existing-82-7f7b13ac3193",
@@ -1458,18 +1376,6 @@
       }
     },
     {
-      "key": "accessory_dumbbell_glute_bridge",
-      "movement_definition_id": 421,
-      "candidate_id": "existing-421-39ded1265bcd",
-      "app_sha256": "13b104c9a6a5da942aa4d55eeb5b81130624fa35da3ca2160f7a164726072ae9",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.73,
-        "x": 0.12,
-        "y": -0.26
-      }
-    },
-    {
       "key": "accessory_dumbbell_high_row",
       "movement_definition_id": 206,
       "candidate_id": "existing-206-a085137b5b99",
@@ -1479,18 +1385,6 @@
         "zoom": 0.83,
         "x": 0.1,
         "y": 0
-      }
-    },
-    {
-      "key": "accessory_dumbbell_hip_thrust",
-      "movement_definition_id": 419,
-      "candidate_id": "9ec6d42f89a34028484bae94",
-      "app_sha256": "62e2b24ff04d0bb2ed97aa4ef22b5f63c276b19eea9de12997bc38dcbcede9f4",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.75,
-        "x": 0.11,
-        "y": -0.09
       }
     },
     {
@@ -1635,18 +1529,6 @@
         "zoom": 0.62,
         "x": 0.14,
         "y": -0.06
-      }
-    },
-    {
-      "key": "accessory_dumbbell_step_down",
-      "movement_definition_id": 363,
-      "candidate_id": "existing-363-6fad78389b09",
-      "app_sha256": "efa945daafd1f687b767fb23862f4130b458355d3a9066a35c91556071a69992",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.5,
-        "x": 0.07,
-        "y": -0.19
       }
     },
     {
@@ -1877,18 +1759,6 @@
         "zoom": 0.59,
         "x": 0.11,
         "y": -0.15
-      }
-    },
-    {
-      "key": "accessory_glute_ham_raise_with_weight",
-      "movement_definition_id": 396,
-      "candidate_id": "existing-396-02d80949a189",
-      "app_sha256": "32b91294dfb7010bbb478a5d3d9f8bd37a46592fb8425e01c37161b67d68f450",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.8,
-        "x": 0.09,
-        "y": -0.06
       }
     },
     {
@@ -3502,18 +3372,6 @@
       }
     },
     {
-      "key": "accessory_plate_sit_up",
-      "movement_definition_id": 497,
-      "candidate_id": "existing-497-e384118232bb",
-      "app_sha256": "53c80d4fdf5a2c3a0c71a1094db3e74f3680d6152ffa677d6630eb10c8c5ef5b",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.7,
-        "x": 0.11,
-        "y": -0.16
-      }
-    },
-    {
       "key": "accessory_prone_rear_delt_swing",
       "movement_definition_id": 133,
       "candidate_id": "existing-133-e45f61a78b06",
@@ -4364,6 +4222,12 @@
       "movement_definition_id": 489,
       "candidate_id": "1161f6529f8f9af62c3e8300",
       "app_sha256": "264cdbecc394a6c83e363e4ac633005bbf3f3c67d8b0f0fa70335bcf2026f69e",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.76,
+        "x": 0.11,
+        "y": 0.06
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.48,
@@ -4733,18 +4597,6 @@
       }
     },
     {
-      "key": "accessory_spanish_squat_with_weight",
-      "movement_definition_id": 364,
-      "candidate_id": "existing-364-2c985a5a9f3c",
-      "app_sha256": "ba1e01de0fba14b684433eeb56fb00efa214971c9477e9779ef468d236fe432a",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.56,
-        "x": 0.09,
-        "y": -0.2
-      }
-    },
-    {
       "key": "accessory_spider_curl",
       "movement_definition_id": 258,
       "candidate_id": "existing-258-4af47ddcc4f6",
@@ -4829,18 +4681,6 @@
         "thumbnailFocalY": 0.5,
         "thumbnailScale": 1,
         "cropMode": "contain"
-      }
-    },
-    {
-      "key": "accessory_standing_dumbbell_calf_raise",
-      "movement_definition_id": 476,
-      "candidate_id": "existing-476-1a3902e47b88",
-      "app_sha256": "bb88178c2ab59ebd0dd22829e517849eebbb44017b2e42076b6b2041ef884170",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.5,
-        "x": 0.12,
-        "y": -0.18
       }
     },
     {
@@ -5328,54 +5168,6 @@
         "thumbnailFocalY": 0.5,
         "thumbnailScale": 1,
         "cropMode": "contain"
-      }
-    },
-    {
-      "key": "accessory_weighted_crunch",
-      "movement_definition_id": 495,
-      "candidate_id": "existing-495-ffab3db96976",
-      "app_sha256": "72cf4064cb82c84c8bb8aaa1b3f7c472b8a2a529d9adbc7576e95350fed8c291",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.69,
-        "x": 0.16,
-        "y": -0.18
-      }
-    },
-    {
-      "key": "accessory_weighted_decline_sit_up",
-      "movement_definition_id": 498,
-      "candidate_id": "existing-498-7cedc1be8c32",
-      "app_sha256": "18e46de20496f207e9dcb32bcf43c948c36446aeeca7d8aa2b508a4d389cea31",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.7,
-        "x": 0.11,
-        "y": -0.12
-      }
-    },
-    {
-      "key": "accessory_weighted_push_up",
-      "movement_definition_id": 73,
-      "candidate_id": "existing-73-6a0ac3e90eb5",
-      "app_sha256": "c935ea019b742a10f88e2e9c1baa54fa2dd6e437216e0e49d115a2e986d477c3",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.76,
-        "x": 0.07,
-        "y": -0.16
-      }
-    },
-    {
-      "key": "accessory_weighted_sorenson_hold",
-      "movement_definition_id": 549,
-      "candidate_id": "213f6f72a3266e7d7ca19659",
-      "app_sha256": "d2636716c769a45d596e0e5010545e39a0357d035eb87c458f6179ed7e0d6fbb",
-      "logger_crop": {
-        "fit": "original",
-        "zoom": 0.6,
-        "x": 0.12,
-        "y": -0.13
       }
     },
     {

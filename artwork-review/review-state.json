@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": 2393,
-  "updated_at": "2026-09-20T22:41:35.853267+00:00",
-  "updated_at_display": "Sep 20, 2026 03:41 PM PT (Sep 20, 2026 06:41 PM Eastern)",
+  "revision": 2414,
+  "updated_at": "2026-09-20T22:57:57.146453+00:00",
+  "updated_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -169709,6 +169709,348 @@
         "historical_evidence_rewritten": false
       },
       "human_approved": false
+    },
+    {
+      "candidate_id": "existing-73-6a0ac3e90eb5",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_weighted_push_up",
+      "movement_definition_id": 73,
+      "movement_name": "Weighted Push-Up",
+      "reason": "Owner-authorized duplicate consolidation: Weighted Push-Up shares canonical movement #67 (Push-Up).",
+      "replacement_movement_definition_id": 67,
+      "excluded_at": "2026-09-20T22:57:52.363248+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 67,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-396-02d80949a189",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_glute_ham_raise_with_weight",
+      "movement_definition_id": 396,
+      "movement_name": "Glute-Ham Raise with Weight",
+      "reason": "Owner-authorized duplicate consolidation: Glute-Ham Raise with Weight shares canonical movement #412 (Glute-Ham Raise).",
+      "replacement_movement_definition_id": 412,
+      "excluded_at": "2026-09-20T22:57:52.645169+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 412,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "8dbac316058a60f22d4233b3",
+      "family": "canonical_bodyweight_accessories",
+      "key": "accessory_bodyweight_walking_lunge",
+      "movement_definition_id": 380,
+      "movement_name": "Bodyweight Walking Lunge",
+      "reason": "Owner-authorized duplicate consolidation: Bodyweight Walking Lunge shares canonical movement #358 (Walking Lunge).",
+      "replacement_movement_definition_id": 358,
+      "excluded_at": "2026-09-20T22:57:52.904944+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 358,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-363-6fad78389b09",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_dumbbell_step_down",
+      "movement_definition_id": 363,
+      "movement_name": "Dumbbell Step-Down",
+      "reason": "Owner-authorized duplicate consolidation: Dumbbell Step-Down shares canonical movement #383 (Step-Down).",
+      "replacement_movement_definition_id": 383,
+      "excluded_at": "2026-09-20T22:57:53.160499+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 383,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-364-2c985a5a9f3c",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_spanish_squat_with_weight",
+      "movement_definition_id": 364,
+      "movement_name": "Spanish Squat with Weight",
+      "reason": "Owner-authorized duplicate consolidation: Spanish Squat with Weight shares canonical movement #382 (Spanish Squat).",
+      "replacement_movement_definition_id": 382,
+      "excluded_at": "2026-09-20T22:57:53.425136+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 382,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "9ec6d42f89a34028484bae94",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_dumbbell_hip_thrust",
+      "movement_definition_id": 419,
+      "movement_name": "Dumbbell Hip Thrust",
+      "reason": "Owner-authorized duplicate consolidation: Dumbbell Hip Thrust shares canonical movement #418 (Barbell Hip Thrust).",
+      "replacement_movement_definition_id": 418,
+      "excluded_at": "2026-09-20T22:57:53.684508+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 418,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "d2e8f7a4c3bd391ac89dec1a",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_barbell_glute_bridge",
+      "movement_definition_id": 420,
+      "movement_name": "Barbell Glute Bridge",
+      "reason": "Owner-authorized duplicate consolidation: Barbell Glute Bridge shares canonical movement #442 (Bodyweight Glute Bridge).",
+      "replacement_movement_definition_id": 442,
+      "excluded_at": "2026-09-20T22:57:53.948634+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 442,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-421-39ded1265bcd",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_dumbbell_glute_bridge",
+      "movement_definition_id": 421,
+      "movement_name": "Dumbbell Glute Bridge",
+      "reason": "Owner-authorized duplicate consolidation: Dumbbell Glute Bridge shares canonical movement #442 (Bodyweight Glute Bridge).",
+      "replacement_movement_definition_id": 442,
+      "excluded_at": "2026-09-20T22:57:54.213866+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 442,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-430-ef1dbbd2249b",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_dumbbell_frog_pump",
+      "movement_definition_id": 430,
+      "movement_name": "Dumbbell Frog Pump",
+      "reason": "Owner-authorized duplicate consolidation: Dumbbell Frog Pump shares canonical movement #444 (Frog Pump).",
+      "replacement_movement_definition_id": 444,
+      "excluded_at": "2026-09-20T22:57:54.476074+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 444,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-476-1a3902e47b88",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_standing_dumbbell_calf_raise",
+      "movement_definition_id": 476,
+      "movement_name": "Standing Dumbbell Calf Raise",
+      "reason": "Owner-authorized duplicate consolidation: Standing Dumbbell Calf Raise shares canonical movement #488 (Standing Calf Raise).",
+      "replacement_movement_definition_id": 488,
+      "excluded_at": "2026-09-20T22:57:54.740540+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 488,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-478-1fbd762a4186",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_barbell_calf_raise",
+      "movement_definition_id": 478,
+      "movement_name": "Barbell Calf Raise",
+      "reason": "Owner-authorized duplicate consolidation: Barbell Calf Raise shares canonical movement #488 (Standing Calf Raise).",
+      "replacement_movement_definition_id": 488,
+      "excluded_at": "2026-09-20T22:57:55.002273+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 488,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-480-863cc433be9d",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_donkey_calf_raise_with_weight",
+      "movement_definition_id": 480,
+      "movement_name": "Donkey Calf Raise with Weight",
+      "reason": "Owner-authorized duplicate consolidation: Donkey Calf Raise with Weight shares canonical movement #491 (Donkey Calf Raise).",
+      "replacement_movement_definition_id": 491,
+      "excluded_at": "2026-09-20T22:57:55.265215+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 491,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-495-ffab3db96976",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_weighted_crunch",
+      "movement_definition_id": 495,
+      "movement_name": "Weighted Crunch",
+      "reason": "Owner-authorized duplicate consolidation: Weighted Crunch shares canonical movement #507 (Crunch).",
+      "replacement_movement_definition_id": 507,
+      "excluded_at": "2026-09-20T22:57:55.529761+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 507,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-497-e384118232bb",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_plate_sit_up",
+      "movement_definition_id": 497,
+      "movement_name": "Plate Sit-Up",
+      "reason": "Owner-authorized duplicate consolidation: Plate Sit-Up shares canonical movement #496 (Dumbbell Sit-Up).",
+      "replacement_movement_definition_id": 496,
+      "excluded_at": "2026-09-20T22:57:55.792366+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 496,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-498-7cedc1be8c32",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_weighted_decline_sit_up",
+      "movement_definition_id": 498,
+      "movement_name": "Weighted Decline Sit-Up",
+      "reason": "Owner-authorized duplicate consolidation: Weighted Decline Sit-Up shares canonical movement #509 (Decline Sit-Up).",
+      "replacement_movement_definition_id": 509,
+      "excluded_at": "2026-09-20T22:57:56.064722+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 509,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-500-6d51e21e7623",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_dumbbell_dead_bug",
+      "movement_definition_id": 500,
+      "movement_name": "Dumbbell Dead Bug",
+      "reason": "Owner-authorized duplicate consolidation: Dumbbell Dead Bug shares canonical movement #516 (Dead Bug).",
+      "replacement_movement_definition_id": 516,
+      "excluded_at": "2026-09-20T22:57:56.334999+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 516,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "f3ca088b8eab5e49eb9fdcb0",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_barbell_back_extension",
+      "movement_definition_id": 545,
+      "movement_name": "Barbell Back Extension",
+      "reason": "Owner-authorized duplicate consolidation: Barbell Back Extension shares canonical movement #551 (Horizontal Back Extension).",
+      "replacement_movement_definition_id": 551,
+      "excluded_at": "2026-09-20T22:57:56.602917+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 551,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "213f6f72a3266e7d7ca19659",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_weighted_sorenson_hold",
+      "movement_definition_id": 549,
+      "movement_name": "Weighted Sorenson Hold",
+      "reason": "Owner-authorized duplicate consolidation: Weighted Sorenson Hold shares canonical movement #552 (Sorenson Hold).",
+      "replacement_movement_definition_id": 552,
+      "excluded_at": "2026-09-20T22:57:56.873964+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 552,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "existing-570-380be4b2bf6d",
+      "family": "canonical_free_weight_accessories",
+      "key": "accessory_ankle_weight_hip_flexion",
+      "movement_definition_id": 570,
+      "movement_name": "Ankle-Weight Hip Flexion",
+      "reason": "Owner-authorized duplicate consolidation: Ankle-Weight Hip Flexion shares canonical movement #574 (Standing Hip-Flexor March).",
+      "replacement_movement_definition_id": 574,
+      "excluded_at": "2026-09-20T22:57:57.146425+00:00",
+      "excluded_at_display": "Sep 20, 2026 03:57 PM PT (Sep 20, 2026 06:57 PM Eastern)",
+      "source": "owner_catalog_consolidation_2026_09_20",
+      "catalog_receipt": {
+        "source": "owner_catalog_consolidation_2026_09_20",
+        "replacement_movement_definition_id": 574,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
     }
   ],
   "artwork_invalidations": [
@@ -183586,6 +183928,94 @@
           "reviewer_user_id": 1,
           "candidate_sha256": "5d3879fcda855ef352e9c4b2f89bda73af9075645e45c4e14b602fb092ac0afc",
           "app_sha256": "e29a5e067c5287c3b23e3ab9fe68e85f84bde3d3ed9cfb41e9d07e3db32e5a87",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "1161f6529f8f9af62c3e8300": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.76,
+        "x": 0.11,
+        "y": 0.06
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.76,
+          "x": 0.11,
+          "y": 0.06
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T22:49:16.956447+00:00",
+        "reviewed_at_display": "Sep 20, 2026 03:49 PM PT (Sep 20, 2026 06:49 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e5557e9d9e73e72bd8a80ae2c0cfd0b492295084aaff1dccfcb089dad6484ef6",
+        "app_sha256": "264cdbecc394a6c83e363e4ac633005bbf3f3c67d8b0f0fa70335bcf2026f69e",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.76,
+            "x": 0.11,
+            "y": 0.06
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T22:49:16.956447+00:00",
+          "reviewed_at_display": "Sep 20, 2026 03:49 PM PT (Sep 20, 2026 06:49 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e5557e9d9e73e72bd8a80ae2c0cfd0b492295084aaff1dccfcb089dad6484ef6",
+          "app_sha256": "264cdbecc394a6c83e363e4ac633005bbf3f3c67d8b0f0fa70335bcf2026f69e",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "e4cff2d874911ad7c071f58c": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.83,
+        "x": 0.17,
+        "y": 0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.83,
+          "x": 0.17,
+          "y": 0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-20T22:49:29.540146+00:00",
+        "reviewed_at_display": "Sep 20, 2026 03:49 PM PT (Sep 20, 2026 06:49 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1ba9d0c26b3028ae1e322dc612d14a7788533b56dc9d1c3bd9ec4a050f830bb2",
+        "app_sha256": "3670183e1f60177dc106d3a3f65f7d0f9f27d60410ad8e0b551fdc3eabe35158",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.83,
+            "x": 0.17,
+            "y": 0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-20T22:49:29.540146+00:00",
+          "reviewed_at_display": "Sep 20, 2026 03:49 PM PT (Sep 20, 2026 06:49 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1ba9d0c26b3028ae1e322dc612d14a7788533b56dc9d1c3bd9ec4a050f830bb2",
+          "app_sha256": "3670183e1f60177dc106d3a3f65f7d0f9f27d60410ad8e0b551fdc3eabe35158",
           "source": "human_logger_crop_ui"
         }
       ]

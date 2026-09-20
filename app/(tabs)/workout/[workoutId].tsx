@@ -1476,9 +1476,11 @@ function nearestWheelValue(options: string[], value: string, fallback: string) {
 }
 
 function loadWheelAllowsZero(item: WorkoutItem): boolean {
-  const identity = item.performed_movement_identity || item.movement_identity || null;
-  const convention = String(identity?.load_convention || '').trim().toLowerCase();
-  return convention === 'bodyweight_only' || convention === 'no_external_load' || convention === 'added_bodyweight';
+  const convention = String(itemLoadSemantics(item).loadConvention || '').trim().toLowerCase();
+  const accessorySlot = String(item.variant || '').toUpperCase() === 'ACC'
+    || ['AX', 'ACC'].includes(String(item.lift || '').toUpperCase());
+  return ['bodyweight_only', 'no_external_load', 'added_bodyweight'].includes(convention)
+    || (accessorySlot && ['total_external_load', 'per_hand'].includes(convention));
 }
 
 function nextSetIndexFromEvidence(evidence: readonly SetLoggerLoadEvidence[]): number {

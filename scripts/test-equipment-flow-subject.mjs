@@ -162,6 +162,10 @@ const load=vm.runInNewContext(loadCode,{optionalMachineLoadIdentity,formatPerfor
 assert.equal(load.itemLoadSemantics(machineCalf).loadConvention,'machine_stack_display');
 assert.equal(load.itemLoadSemantics(portableCalf).loadConvention,'added_bodyweight');
 assert(load.loadWheelAllowsZero(portableCalf));assert(!load.loadWheelAllowsZero(machineCalf));
+for (const convention of ['per_hand','total_external_load']) {
+ assert(load.loadWheelAllowsZero({lift:'AX',variant:'ACC',movement_identity:{load_convention:convention}}));
+ assert(!load.loadWheelAllowsZero({lift:'SQ',variant:'COMP',movement_identity:{load_convention:convention}}));
+}
 assert.equal(load.loggedSetText({actual_weight_kg:0,actual_reps:10,load_convention_snapshot:'bodyweight_only',measurement_type_snapshot:'bodyweight_reps'},'kg',machineCalf),'BW × 10');
 assert.equal(load.loggedSetText({actual_weight_kg:20,actual_reps:10,load_convention_snapshot:'machine_stack_display',measurement_type_snapshot:'load_reps'},'kg',portableCalf),'20 kg × 10');
 assert.match(source,/identityPickerSubject\?\.displayName/);
