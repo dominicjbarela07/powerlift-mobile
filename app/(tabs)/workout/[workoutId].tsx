@@ -310,6 +310,8 @@ import {
   equipmentSnapshotForSet,
   equipmentTypeSelectionStatusLabels,
   isMachineAccessoryItem,
+  canConfigureMachineEquipment,
+  optionalMachineLoadIdentity,
   needsEquipmentSelection,
   orderEquipmentChoices,
   type EquipmentSelectionContinuation,
@@ -329,7 +331,7 @@ import {
 } from '@/lib/equipment-presentation';
 import { type MachineEquipmentType } from '@/lib/machine-equipment';
 import { equipmentFlowSubject, assertEquipmentFlowSubject, assertEquipmentResponseSubject,
-  equipmentFlowVariants, equipmentFlowWrite, type EquipmentFlowSubject } from '@/lib/equipment-flow-subject';
+  equipmentFlowVariants, equipmentFlowWrite, portableLoadingWrite, type EquipmentFlowSubject } from '@/lib/equipment-flow-subject';
 import {
   accessoryRepeatDraft,
   coreRepeatDraft,
@@ -365,6 +367,8 @@ type SetLog = {
   implementation_key_snapshot?: string | null;
   performed_label_snapshot?: string | null;
   identity_source_snapshot?: string | null;
+  load_convention_snapshot?: string | null;
+  measurement_type_snapshot?: string | null;
 };
 
 type SetSubmissionAttempt = {
@@ -657,7 +661,8 @@ function formatWeight(
 }
 
 function itemLoadSemantics(item?: WorkoutItem | null): PerformedLoadSemantics {
-  const identity = item?.performed_canonical_movement_identity
+  const identity = optionalMachineLoadIdentity(item)
+    || item?.performed_canonical_movement_identity
     || item?.performed_movement_identity
     || item?.effective_movement_identity
     || item?.movement_identity
@@ -671,7 +676,10 @@ function itemLoadSemantics(item?: WorkoutItem | null): PerformedLoadSemantics {
 
 function loggedSetText(log?: SetLog | null, unit: 'kg' | 'lb' = 'kg', item?: WorkoutItem | null) {
   if (!log) return null;
-  let text = formatPerformedLoad(log.actual_weight_kg, unit, itemLoadSemantics(item))
+  const semantics = log.load_convention_snapshot || log.measurement_type_snapshot
+    ? { loadConvention: log.load_convention_snapshot, measurementType: log.measurement_type_snapshot }
+    : itemLoadSemantics(item);
+  let text = formatPerformedLoad(log.actual_weight_kg, unit, semantics)
     || `${formatWeight(log.actual_weight_kg, unit)} ${unit}`;
   if (log.actual_reps === 0) text += ' × Failed';
   else if (log.actual_reps != null) text += ` × ${log.actual_reps}`;
@@ -1470,7 +1478,7 @@ function nearestWheelValue(options: string[], value: string, fallback: string) {
 function loadWheelAllowsZero(item: WorkoutItem): boolean {
   const identity = item.performed_movement_identity || item.movement_identity || null;
   const convention = String(identity?.load_convention || '').trim().toLowerCase();
-  return convention === 'bodyweight_only' || convention === 'no_external_load';
+  return convention === 'bodyweight_only' || convention === 'no_external_load' || convention === 'added_bodyweight';
 }
 
 function nextSetIndexFromEvidence(evidence: readonly SetLoggerLoadEvidence[]): number {
@@ -3859,6 +3867,8 @@ export default function WorkoutViewerScreen() {
     const equipmentOwner = executionScope;
     const pickerItem = identityPickerItem;
     const continuation = identityPickerContinuation;
+    const portableLoading = !equipmentVariant && identity.id === entry.subject.movementDefinitionId
+      && entry.subject.allowsPortableLoading && continuation.kind !== 'evidence_correction';
     const previousIdentityId = activeEquipmentIdentity(pickerItem)?.id ?? null;
     identityPickerSaveRef.current = entry;
     setIdentityPickerLoading(true);
@@ -3904,7 +3914,8 @@ export default function WorkoutViewerScreen() {
         auth: true,
         body: {
           ...(continuation.kind === 'evidence_correction' ? { intent: 'evidence_correction' } : {}),
-          ...equipmentFlowWrite(entry.subject, identity.manufacturer?.key || 'other', equipmentVariant as MachineEquipmentType),
+          ...(portableLoading ? portableLoadingWrite(entry.subject)
+            : equipmentFlowWrite(entry.subject, identity.manufacturer?.key || 'other', equipmentVariant as MachineEquipmentType)),
         },
       });
       if (executionScopeRef.current !== equipmentOwner || identityPickerEntryRef.current !== entry) return;
@@ -3922,7 +3933,8 @@ export default function WorkoutViewerScreen() {
         performed_movement_identity:
           response.json?.performed_movement_identity,
       };
-      if (!nextItem.performed_movement_identity?.key?.startsWith('machine_equipment_')) {
+      if (portableLoading ? nextItem.performed_movement_identity?.id !== entry.subject.movementDefinitionId
+        : !nextItem.performed_movement_identity?.key?.startsWith('machine_equipment_')) {
         throw new Error('The server did not return a supported equipment configuration. Refresh the Session.');
       }
       assertEquipmentFlowSubject(entry.subject, nextItem);
@@ -8121,7 +8133,7 @@ export default function WorkoutViewerScreen() {
       id: item.id,
       title: simplifyMobileMovementName(executionName) || 'Accessory',
       canConfigureEquipment:
-        !isCoachAthletePreview && isMachineAccessoryItem(item),
+        !isCoachAthletePreview && canConfigureMachineEquipment(item),
       equipmentContext: equipmentPresentation?.contextLabel || null,
       equipmentRequired: needsEquipmentSelection(item),
       movementArtwork: canonicalArtworkInputForLoggerItem(item),
@@ -8358,7 +8370,7 @@ export default function WorkoutViewerScreen() {
           sessionLifecycle={screenMode}
           auxAction={isCoachAthletePreview ? null : (
             <>
-              {machineAccessory ? (
+              {canConfigureMachineEquipment(it) ? (
                 <TouchableOpacity
                   style={styles.accessoryInlineAction}
                   onPress={() => openIdentityPicker(it)}
@@ -9962,6 +9974,13 @@ export default function WorkoutViewerScreen() {
                       : 'Upcoming set'}
                   </Text>
                 </View>
+                {identityPickerSubject?.allowsPortableLoading && identityPickerContinuation.kind !== 'evidence_correction' ? (
+                  <TouchableOpacity style={styles.equipmentVariantRow} disabled={identityPickerLoading}
+                    onPress={() => void commitPerformedIdentity(resolveLoggerMovementIdentity(identityPickerItem).effective as GeneralMovementIdentity)}>
+                    <Text style={styles.equipmentVariantLabel}>Bodyweight or added weight</Text>
+                    <Text style={styles.identityPickerStatus}>No machine</Text>
+                  </TouchableOpacity>
+                ) : null}
                 {identityPickerManufacturer ? (
                   <>
                     <View style={styles.equipmentPickerHeader}>

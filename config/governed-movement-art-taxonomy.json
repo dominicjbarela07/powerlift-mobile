@@ -6962,21 +6962,6 @@
       "core_kind": null
     },
     {
-      "id": 477,
-      "key": "accessory_single_leg_dumbbell_calf_raise",
-      "display_name": "Single-Leg Dumbbell Calf Raise",
-      "kind": "accessory",
-      "family": "accessory_calves",
-      "primary_muscle_group": "calves",
-      "secondary_muscle_groups": [],
-      "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 478,
       "key": "accessory_barbell_calf_raise",
       "display_name": "Barbell Calf Raise",
@@ -7097,21 +7082,6 @@
       "core_kind": null
     },
     {
-      "id": 486,
-      "key": "accessory_single_leg_calf_raise_machine",
-      "display_name": "Single-Leg Calf Raise Machine",
-      "kind": "accessory",
-      "family": "accessory_calves",
-      "primary_muscle_group": "calves",
-      "secondary_muscle_groups": [],
-      "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 487,
       "key": "accessory_tibialis_raise_machine",
       "display_name": "Tibialis Raise Machine",
@@ -7154,7 +7124,13 @@
         "accessory"
       ],
       "core_movement_definition_id": null,
-      "core_kind": null
+      "core_kind": null,
+      "optional_equipment_domains": [
+        "machine"
+      ],
+      "load_convention": "added_bodyweight",
+      "measurement_type": "added_weight_reps",
+      "loading_implementation": "added_bodyweight"
     },
     {
       "id": 490,
