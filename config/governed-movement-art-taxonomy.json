@@ -9653,6 +9653,22 @@
   ],
   "shared_artwork_identities": [
     {
+      "movement_definition_id": 220,
+      "key": "accessory_machine_t_bar_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 199,
+      "artwork_key": "accessory_chest_supported_t_bar_row",
+      "movement_name": "Machine T-Bar Row"
+    },
+    {
+      "movement_definition_id": 552,
+      "key": "accessory_sorenson_hold",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 549,
+      "artwork_key": "accessory_weighted_sorenson_hold",
+      "movement_name": "Sorenson Hold"
+    },
+    {
       "movement_definition_id": 608,
       "key": "front_squat",
       "core_movement_definition_id": 40,

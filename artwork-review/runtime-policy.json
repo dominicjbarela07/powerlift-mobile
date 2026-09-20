@@ -10,7 +10,6 @@
     "accessory_chest_supported_high_row",
     "accessory_chest_supported_kelso_row",
     "accessory_chest_supported_rear_delt_machine_row",
-    "accessory_chest_supported_t_bar_row",
     "accessory_copenhagen_adduction",
     "accessory_donkey_calf_raise_with_weight",
     "accessory_dumbbell_dead_bug",
@@ -41,7 +40,6 @@
     "accessory_weighted_crunch",
     "accessory_weighted_decline_sit_up",
     "accessory_weighted_push_up",
-    "accessory_weighted_sorenson_hold",
     "accessory_wide_elbow_barbell_row",
     "accessory_wide_elbow_dumbbell_row",
     "accessory_wide_elbow_machine_row",
@@ -913,6 +911,18 @@
         "thumbnailFocalY": 0.5,
         "thumbnailScale": 1,
         "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_chest_supported_t_bar_row",
+      "movement_definition_id": 199,
+      "candidate_id": "6e7734eac43593177792d550",
+      "app_sha256": "1fe9b9682e7a5d4a2d32671c719070b8fe99a71d4e992c340f1ceaa68cee0585",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.72,
+        "x": 0.07,
+        "y": -0.12
       }
     },
     {
@@ -5168,6 +5178,18 @@
         "thumbnailFocalY": 0.5,
         "thumbnailScale": 1,
         "cropMode": "contain"
+      }
+    },
+    {
+      "key": "accessory_weighted_sorenson_hold",
+      "movement_definition_id": 549,
+      "candidate_id": "213f6f72a3266e7d7ca19659",
+      "app_sha256": "d2636716c769a45d596e0e5010545e39a0357d035eb87c458f6179ed7e0d6fbb",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.6,
+        "x": 0.12,
+        "y": -0.13
       }
     },
     {

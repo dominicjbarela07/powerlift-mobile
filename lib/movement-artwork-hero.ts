@@ -19,7 +19,7 @@ type ApprovalPolicy = Readonly<{
 // bounds; startup/export independently bind this projection to human receipts.
 const policy = policyJson as ApprovalPolicy;
 type SharedArtworkIdentity = Readonly<{ movement_definition_id: number; key: string;
-  core_movement_definition_id: number; artwork_movement_definition_id: number; artwork_key: string }>;
+  core_movement_definition_id: number | null; artwork_movement_definition_id: number; artwork_key: string }>;
 const sharedArtwork = (taxonomyCatalog as typeof taxonomyCatalog & {
   shared_artwork_identities?: readonly SharedArtworkIdentity[];
 }).shared_artwork_identities || [];
@@ -67,8 +67,7 @@ const warnedBypasses = new Set<string>();
 export function reportApprovedArtworkBypass(movement: MovementArtInput | null | undefined, renderedKey: string | null,
   surface: string, approvals: ApprovalPolicy = policy, dev = typeof __DEV__ !== 'undefined' && __DEV__) {
   if (!dev) return;
-  const subject = normalizeCanonicalMovementArtSubject(movement);
-  const expected = approvals.approved_exact_artwork?.find(row => row.movement_definition_id === subject.canonicalIdentityId);
+  const expected = resolveApprovedExactMovementArtwork(movement, dev, approvals);
   if (!expected || approvals.denied_keys.includes(expected.key) || expected.key === renderedKey) return;
   const warningKey = `${surface}:${expected.movement_definition_id}:${expected.candidate_id}`;
   if (warnedBypasses.has(warningKey)) return;
