@@ -73,6 +73,7 @@ export function reportApprovedArtworkBypass(movement: MovementArtInput | null | 
   if (warnedBypasses.has(warningKey)) return;
   if (warnedBypasses.size >= 200) warnedBypasses.clear();
   warnedBypasses.add(warningKey);
+  const subject = normalizeCanonicalMovementArtSubject(movement);
   console.warn('[MovementArt] Approved exact artwork unexpectedly bypassed', {
     surface, movement_definition_id: expected.movement_definition_id, key: expected.key,
     candidate_id: expected.candidate_id, resolved_key: renderedKey, subject_source: subject.source,

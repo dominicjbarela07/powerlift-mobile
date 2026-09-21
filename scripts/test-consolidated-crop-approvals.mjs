@@ -21,6 +21,15 @@ for(const binding of state.consolidated_artwork_bindings){
  const warnings=[];const warn=console.warn;console.warn=(...args)=>warnings.push(args);
  try{reportApprovedArtworkBypass(input,art.key,'consolidated-crop-test',undefined,true);}finally{console.warn=warn;}
  assert.equal(warnings.length,0,'using the selected approved image is not an artwork bypass');
+ console.warn=(...args)=>warnings.push(args);
+ try {
+  reportApprovedArtworkBypass(input,null,'consolidated-crop-missing-art',undefined,true);
+  reportApprovedArtworkBypass(input,null,'consolidated-crop-missing-art',undefined,true);
+ } finally { console.warn=warn; }
+ assert.equal(warnings.length,1,'a missing approved image reports once without throwing');
+ assert.equal(warnings[0][1].movement_definition_id,target.id);
+ assert.equal(warnings[0][1].candidate_id,source.candidate_id);
+ assert.equal(typeof warnings[0][1].subject_source,'string');
  for(const corruption of ['hash','receipt','sourceApproval']){
   const invalid=structuredClone(state);
   const record=invalid.consolidated_artwork_bindings.find(r=>r.candidate_id===source.candidate_id);

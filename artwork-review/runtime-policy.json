@@ -145,6 +145,12 @@
       "movement_definition_id": 505,
       "candidate_id": "2fe43f2043f40af776d90b48",
       "app_sha256": "3dd6da0fc7fc53b0bfd29286b8e0b1f17e069f07fa63cff56fe8916efd9bf2aa",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.09,
+        "y": 0.12
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -162,6 +168,12 @@
       "movement_definition_id": 451,
       "candidate_id": "14b0b3a365f2f505147a6f20",
       "app_sha256": "036d1376f89f412583642862279311f2f7ac76e979df7510d17b6915221f05ac",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.89,
+        "x": 0.08,
+        "y": 0.12
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -488,6 +500,12 @@
       "movement_definition_id": 371,
       "candidate_id": "1867d11732557b0fe5c43d0c",
       "app_sha256": "8fe869c7bc25d32495bbc392ffa83674738b5a0e9f8bced9e4ab4416eff0222d",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.14,
+        "y": 0.11
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -528,6 +546,12 @@
       "movement_definition_id": 490,
       "candidate_id": "9f70024d2811ce4d7453c526",
       "app_sha256": "f4bf320f8215d9ceb7a64e37f111c92db5aaeedba509d97af2fd775f438d6ddd",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.84,
+        "x": 0.2,
+        "y": 0.04
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -638,6 +662,12 @@
       "movement_definition_id": 287,
       "candidate_id": "f65d2a4af15a1149c6cbdcb2",
       "app_sha256": "2e4f6bdc0c23c8c6d8424b3b42aa279ba36d66a1ffd5a837b9597a700ac19183",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.19,
+        "y": 0.18
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -901,6 +931,12 @@
       "movement_definition_id": 216,
       "candidate_id": "2bc172966d50e3616d50ace9",
       "app_sha256": "6b0187ca20b243fe2de6d4eb014fa27aec2a839d81bdacf416af1f2e661d9f77",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.1,
+        "y": 0.19
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -977,6 +1013,12 @@
       "movement_definition_id": 53,
       "candidate_id": "69d6729659cf1e3929de84a1",
       "app_sha256": "a5422acd560e9659784011e1ff6542c509274e026bcb56e5de45be8c8dcf3292",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.11,
+        "y": 0.12
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -994,6 +1036,12 @@
       "movement_definition_id": 537,
       "candidate_id": "6d6bc1fabaa7eb46a6bcbece",
       "app_sha256": "7daf317de6166c004fdc49b7e07b9c77437294c0d975ae4102d67d28a214f0e2",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.14,
+        "y": 0.09
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.48,
@@ -1023,6 +1071,12 @@
       "movement_definition_id": 539,
       "candidate_id": "2ea93a2f09118fc4276bb25a",
       "app_sha256": "1062bd6986b66791f1aca1d7424b8d4096a5b8d89b8477fd8e521ed1d6b22a9b",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.95,
+        "x": 0.16,
+        "y": 0.1
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.48,
@@ -1145,6 +1199,12 @@
       "movement_definition_id": 50,
       "candidate_id": "bba6945dc45d7e402541ed1b",
       "app_sha256": "a99351771428b4bc291da8875c7996f7fcdc7f2060ebe479cb289ab5e9f50afd",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.11
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -1220,6 +1280,12 @@
       "movement_definition_id": 58,
       "candidate_id": "8fbbeb77652be1ad4867e036",
       "app_sha256": "d73d9ef993e02115ba1e1aedb4deccc7a5b39d14ab23376eb3b384852bb55498",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.16
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -1653,6 +1719,12 @@
       "movement_definition_id": 226,
       "candidate_id": "1a5058828f72a3b6c5d846dc",
       "app_sha256": "738e82f4f8e2ca1a6d4d470a8c5aa3bc8b2ae7bb3b0c9ecb451b96a4b362c6a4",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.18,
+        "y": 0.22
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -1812,6 +1884,12 @@
       "movement_definition_id": 369,
       "candidate_id": "3fdcb864e77b7327f2ebf66b",
       "app_sha256": "bd232658c6da1bcb92e1b9060bf5e56fb0bbd12846b7ff52659b85175bace54e",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.13
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -1829,6 +1907,12 @@
       "movement_definition_id": 484,
       "candidate_id": "959c1a01a34f5aaa58608791",
       "app_sha256": "b187d8b0920c5f7cb3222844f653d86eaef3a30f23d45b0dbe7d2d1f6cc3db26",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.13,
+        "y": 0.2
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -1870,6 +1954,12 @@
       "movement_definition_id": 102,
       "candidate_id": "b5ee29c48e06185f9cca481f",
       "app_sha256": "406fa33c5c6acd95f517ec9fd6ccfab9ed5ff033b42425130ceb54200e8e7b48",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.76,
+        "x": 0.07,
+        "y": 0.03
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -1887,6 +1977,12 @@
       "movement_definition_id": 510,
       "candidate_id": "aeb8888e2520cedeb4a8fa62",
       "app_sha256": "491b7385b14f2b1d8db77be11dd7bc2fea41d41f2ff59279875a4dba99ea0da2",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.85,
+        "x": 0.14,
+        "y": 0.16
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.48,
@@ -1904,6 +2000,12 @@
       "movement_definition_id": 577,
       "candidate_id": "9f9cf4783ed13b956fb9f465",
       "app_sha256": "f3b8810ddca38915812792467d6ad45080b366b3fe0316b636e9ad515a6e985f",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.96,
+        "x": 0.17,
+        "y": 0.19
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -1992,6 +2094,12 @@
       "movement_definition_id": 463,
       "candidate_id": "b9ee423a7d06163ed2b72aaa",
       "app_sha256": "7184b86456a6314c5f967b4adbcd07091a0c040b657feea11d172d5758218bfe",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.95,
+        "x": 0.14,
+        "y": 0.1
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2009,6 +2117,12 @@
       "movement_definition_id": 573,
       "candidate_id": "f5b1dd65207d056fb9d3a501",
       "app_sha256": "c4463b47bf64882290ed80bb6d75d1c618bd4c9c561ed148943983dba25d3d97",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.83,
+        "x": 0.11,
+        "y": 0.14
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2120,6 +2234,12 @@
       "movement_definition_id": 49,
       "candidate_id": "a8b4759ef9f0e43e9414ab59",
       "app_sha256": "40e08b05c05af6e8adfffc093c92124e823e941da3ccd6dd18c41c92fd59e6f2",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.12,
+        "y": 0.18
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2172,6 +2292,12 @@
       "movement_definition_id": 57,
       "candidate_id": "59226a6b58ac95ba4b19185b",
       "app_sha256": "b8cc90a46e58d9520271f511a20ce3fb29f5e370fcf92fab41de4e5714767870",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.15,
+        "y": 0.12
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2212,6 +2338,12 @@
       "movement_definition_id": 54,
       "candidate_id": "8857f89f27647ad57ce097f3",
       "app_sha256": "01a8df8b3786172c301114b9cf123dfec9b7bd72cfc611c53d524a75f2af074e",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.14,
+        "y": 0.2
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2229,6 +2361,12 @@
       "movement_definition_id": 218,
       "candidate_id": "f9cc8ee8c9075270b3b0e02d",
       "app_sha256": "91745c28831909c573818d978a6055e0398cc3b20618a08a962bcf37dca62b25",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.14,
+        "y": 0.15
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2246,6 +2384,12 @@
       "movement_definition_id": 179,
       "candidate_id": "de5bfaa1b25dbd41438a9f68",
       "app_sha256": "2ac3119bfc120051dcf1a3f86d7c610e7def27303b0852c6a0248369030fee3e",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.17,
+        "y": 0.11
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2263,6 +2407,12 @@
       "movement_definition_id": 180,
       "candidate_id": "2090a98fd2fd6d5dafe4624b",
       "app_sha256": "6db5b49824b6edbd2521aa731f0084dcb071a7f58fe72d0fffde7b75429f05a0",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.15,
+        "y": 0.15
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2280,6 +2430,12 @@
       "movement_definition_id": 92,
       "candidate_id": "d241d381c5080630880e8de5",
       "app_sha256": "6fbfe1e57fafa83325a98791f03d2d80c0b586f6f7d59f34576832e6c8002e68",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.23
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2379,6 +2535,12 @@
       "movement_definition_id": 400,
       "candidate_id": "db43d473970bfdfb771c9a5a",
       "app_sha256": "689ae036e5b7893d94e8c8b1bf0133df8f58441f734284008ff741365e92bc3a",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.85,
+        "x": 0.1,
+        "y": 0.12
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2538,6 +2700,12 @@
       "movement_definition_id": 365,
       "candidate_id": "383cb23f97c816d471d75a2b",
       "app_sha256": "a3845270d0da8b0ae9c94858ff842e4ced7d33b128a259f5db966b8111f6d777",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.11,
+        "y": 0.08
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2555,6 +2723,12 @@
       "movement_definition_id": 367,
       "candidate_id": "5fdca18ee08c21a1ca98285b",
       "app_sha256": "36ba7121ece63165cb7adfde549ec730633077f31a3aed36e97a32dfdbd8288b",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.1,
+        "y": 0.16
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2572,6 +2746,12 @@
       "movement_definition_id": 483,
       "candidate_id": "544d9e44901b5d62c0e7ad71",
       "app_sha256": "9517ea1192c6a5a467c2f6c019f5bbac47992891e6420c967288e0911c3dd10b",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.11,
+        "y": 0.15
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2672,6 +2852,12 @@
       "movement_definition_id": 555,
       "candidate_id": "d0c2a157251b1d1b2abe0952",
       "app_sha256": "05c4add75e9dd0be946040fe5c3f0d645172be980ad7db7755b8cdfb968d7a75",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.97,
+        "x": 0.09,
+        "y": 0.11
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2701,6 +2887,12 @@
       "movement_definition_id": 398,
       "candidate_id": "a83a1e8374c1a7e6743a4a69",
       "app_sha256": "1d42c78e8c88974ab79d4224c7eee775e654de5d6aa14721c79415b93743a2b3",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.14,
+        "y": 0.08
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2741,6 +2933,12 @@
       "movement_definition_id": 51,
       "candidate_id": "89de6b686aff5031fc64cf02",
       "app_sha256": "2e85a053a0c8327df19ba72466e5628cd78289a05bba2da307ee9d44bcabb60a",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.11,
+        "y": 0.14
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2758,6 +2956,12 @@
       "movement_definition_id": 48,
       "candidate_id": "2a069920fe2167677134f601",
       "app_sha256": "416b429e3b6374f469522537f8549678ddb5f824f7bff06878a7631ba2ac1712",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.15,
+        "y": 0.18
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2775,6 +2979,12 @@
       "movement_definition_id": 314,
       "candidate_id": "28b076c168e5f2129fbc912c",
       "app_sha256": "6baebb85b1e2fb65798ae5d8c09e0dfed59deb35b58d00d7c20b9cdf6c3222b9",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.1,
+        "y": 0.11
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2792,6 +3002,12 @@
       "movement_definition_id": 94,
       "candidate_id": "77b30ae05f3f77f4732300b3",
       "app_sha256": "58dc6004502be509de3825c779bb4902e9f9ea8873c4ed47ae67d0598d058d31",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.26
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2809,6 +3025,12 @@
       "movement_definition_id": 432,
       "candidate_id": "86da56c6bca3024bbcc6ba0d",
       "app_sha256": "49fbfaf2ab13b4cb9256c18dfcd8e7d8f9cec60f20b6ff3a1d67923aed0cdbd5",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.11,
+        "y": 0.2
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2826,6 +3048,12 @@
       "movement_definition_id": 434,
       "candidate_id": "f8ba437fe138064dee2937a9",
       "app_sha256": "95b36ae7e74a64026b8528f182b3cced191c174fb351efacb0cece6a93c40c0b",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.15,
+        "y": 0.18
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2843,6 +3071,12 @@
       "movement_definition_id": 431,
       "candidate_id": "938e460a5274e6c242eb1f68",
       "app_sha256": "1884393c26f11d9f508830f2934566d0fbda502bdc6665871706a91230713165",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.12,
+        "y": 0.15
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2860,6 +3094,12 @@
       "movement_definition_id": 245,
       "candidate_id": "4831206a7f278dd05411909a",
       "app_sha256": "a841316875cc8b97978866a6076d3eccfa18bf2d5a0f2d3795f1878059b501ce",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.14,
+        "y": 0.16
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2877,6 +3117,12 @@
       "movement_definition_id": 121,
       "candidate_id": "f39156778d7e8111993259cd",
       "app_sha256": "51c2d4295c948c9596b1e8ddced0912d8d8929cea9fca447123b87ac798af7b0",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.1,
+        "y": 0.08
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2894,6 +3140,12 @@
       "movement_definition_id": 181,
       "candidate_id": "5c86e1b02effadcb038c4da4",
       "app_sha256": "5598c883cad67cf0d28aaae444af4e15d53bfbc3be06b87f0b0201dfb995c8d2",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.09,
+        "y": 0.2
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2911,6 +3163,12 @@
       "movement_definition_id": 281,
       "candidate_id": "247c95cb491beaae8dcfd6e4",
       "app_sha256": "53a05f8bd2cbdeed24f885622f91b7582ccb13aa3515a7c7c26aea34f1f6f0e4",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.95,
+        "x": 0.1,
+        "y": 0.19
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2928,6 +3186,12 @@
       "movement_definition_id": 178,
       "candidate_id": "3e5244cd2e58e2469014be51",
       "app_sha256": "78fa54d1c2b461dba6d550ad0899f3f18e78f3e4e65500859fd2ab93e5eece9b",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.11
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2945,6 +3209,12 @@
       "movement_definition_id": 135,
       "candidate_id": "3f43ef70433f3a79728b5751",
       "app_sha256": "c03f1d1c991e3683e6f498c8380241dd228282c8fce20c571e3bd3bb27494b73",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.08,
+        "y": 0.14
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2962,6 +3232,12 @@
       "movement_definition_id": 91,
       "candidate_id": "d12752a492bce76a24bee9ef",
       "app_sha256": "83278911ebfcaa9df697bd2fc7949f20f8a1e8ff441550675a42dd82905fddd9",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.15
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2979,6 +3255,12 @@
       "movement_definition_id": 243,
       "candidate_id": "d58be6679b75b7fe3797459e",
       "app_sha256": "4bcd883bb871c7e5426b7cbc9b2c86fc17e4c5882fcc969a4811742b5db1cc22",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.09,
+        "y": 0.14
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -2996,6 +3278,12 @@
       "movement_definition_id": 374,
       "candidate_id": "f2ab50c2f5a6e0ed94f90fde",
       "app_sha256": "8108b130f7cc5a498dbc421d1943ef9e3bfbb18951575a9c8da7deb6393af386",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.11,
+        "y": 0.14
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3013,6 +3301,12 @@
       "movement_definition_id": 373,
       "candidate_id": "10f382b2708f7c5ba6e807cc",
       "app_sha256": "53d5ed7838644a880979a3da281b1661bf775e506fbfc1f90fe3666593ccd49e",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.95,
+        "x": 0.05,
+        "y": 0.1
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3047,6 +3341,12 @@
       "movement_definition_id": 313,
       "candidate_id": "4ccb7273c2f5d066b025b8dd",
       "app_sha256": "fae7dd3a2dc8a050bd3322a5b76796dd9501faa7df33cd409107aad121c108b8",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.91,
+        "x": 0.08,
+        "y": 0.19
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3064,6 +3364,12 @@
       "movement_definition_id": 122,
       "candidate_id": "f26e0aa35bd389c265e7a390",
       "app_sha256": "17d47f954f46c8d53471dc777ca446c2640e4949160dd2ebf4660ca4b11d49db",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.11,
+        "y": 0.24
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3128,6 +3434,12 @@
       "movement_definition_id": 183,
       "candidate_id": "9ccfb34c076f0a8f05503849",
       "app_sha256": "989a294196f96bb596f78f7cbeb667296b6b74636e516a922545272e2205df1d",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.16,
+        "y": 0.22
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3228,6 +3540,12 @@
       "movement_definition_id": 370,
       "candidate_id": "08450fdf3dc878b8f4acb8c9",
       "app_sha256": "144be715e7621cbc6368c784e5c6c3a290e4fea06f058c6432f880fd46ab79d7",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.91,
+        "x": 0.1,
+        "y": 0.08
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3316,6 +3634,12 @@
       "movement_definition_id": 283,
       "candidate_id": "5779a6cf070388847016413a",
       "app_sha256": "aee9d4fa6b3ffd6315b9a2b566efa943eb8f4cb4de9f654f32da548c4f2b6c0c",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.06,
+        "y": 0.16
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3333,6 +3657,12 @@
       "movement_definition_id": 217,
       "candidate_id": "66f9857fcbe74c63bff5e459",
       "app_sha256": "e471f7c53314bbd290c1ab81b2ca94b9edbc6434297bf45824be0ea5667b8ee9",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.1,
+        "y": 0.13
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3526,6 +3856,12 @@
       "movement_definition_id": 136,
       "candidate_id": "ef2eb540910327574a8e3ff9",
       "app_sha256": "113cf952025bee4811c06fdb0dc1673e42c4437ec874c9c7d3614dff5b65e7be",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.14,
+        "y": 0.13
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3590,6 +3926,12 @@
       "movement_definition_id": 435,
       "candidate_id": "ae5e0058b265c2916a2bdf75",
       "app_sha256": "268a011db5a1c930e9be1e0f41d490530458ee136ed8b92eafc7f80d613d0c64",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.15,
+        "y": 0.13
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3654,6 +3996,12 @@
       "movement_definition_id": 288,
       "candidate_id": "5382767a20828c9cfb77937d",
       "app_sha256": "aebfe10d036746503cb75638f337f56e089cd43f4619f64fe4368dea83f094b6",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.17,
+        "y": 0
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3717,6 +4065,12 @@
       "movement_definition_id": 227,
       "candidate_id": "1f5b22c1967e93d5abcfb7fb",
       "app_sha256": "85242cf8b28dfb2197f1a5bcaf4f8f55dfe3b182e2edbefc02f01bc45375c2f8",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1.3,
+        "x": 0.25,
+        "y": 0
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3734,6 +4088,12 @@
       "movement_definition_id": 319,
       "candidate_id": "40fedb6d95218d504d523bd0",
       "app_sha256": "207d7f9b50815314fec57927def8c629af2204b350d1aa08d0d512a511e4b51e",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.16,
+        "y": 0.03
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3775,6 +4135,12 @@
       "movement_definition_id": 506,
       "candidate_id": "d3bd0ff90ee81e5bfb4f2101",
       "app_sha256": "f879ba2ed5fffe62c40c5f30a6ffe7bf1feb76302b2b03a384518037e764d5ea",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.12
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3804,6 +4170,12 @@
       "movement_definition_id": 229,
       "candidate_id": "8f211d32576af340d91c0572",
       "app_sha256": "5c42c2992d82d43eacfe4edc554ed49790704f28bcfceb7423f0e1d8efcfbd6a",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.89,
+        "x": 0.18,
+        "y": 0.08
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3879,6 +4251,12 @@
       "movement_definition_id": 482,
       "candidate_id": "44ac57c94b9e94a05cfa9872",
       "app_sha256": "5fe9890bb88f0133081e3dc07d80b546959a65227abf9eb5c39a2fd2c0120dcf",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.11,
+        "y": 0.15
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -3956,6 +4334,12 @@
       "movement_definition_id": 397,
       "candidate_id": "57fcf9369f31bb3950bc6d1d",
       "app_sha256": "0519adee958c58dc29d97515c657c85337c62a567f07354f2ac95b7b4900bb18",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.12,
+        "y": 0.11
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4135,6 +4519,12 @@
       "movement_definition_id": 55,
       "candidate_id": "648eeea8985dc0b3cd4be60f",
       "app_sha256": "5fd85ff8789f943a92f60bf542f913f64222aaf8563e1bc18c432d50aa6d9fb4",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.14,
+        "y": 0.19
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4152,6 +4542,12 @@
       "movement_definition_id": 219,
       "candidate_id": "cb6821c72b9c7cdaae88199e",
       "app_sha256": "237cf8225c92f454f28956accc12a5db7eb37ad3f9e4cf3643810c5955f00f93",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.12,
+        "y": 0.15
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4169,6 +4565,12 @@
       "movement_definition_id": 182,
       "candidate_id": "81bba1119c63ef4469747773",
       "app_sha256": "174ec26f011fc9c89f5df70638ac1a1d19db4f906041431239a55842b0ef7d86",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.15,
+        "y": 0.17
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4186,6 +4588,12 @@
       "movement_definition_id": 282,
       "candidate_id": "9f8f9ad9d16f2a2ac4a66986",
       "app_sha256": "bb3fe0e58be9a208fc3f4c686db3ad76d96d838894083fd7e4bb2f26ecec8583",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.08,
+        "y": 0.26
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4290,6 +4698,12 @@
       "movement_definition_id": 366,
       "candidate_id": "ba58d0b8037856101378c271",
       "app_sha256": "2446ea3596033c985819387c4cc8dd8addf5d75b1355fb9b28f693526a9d5d9f",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.12,
+        "y": 0.11
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4307,6 +4721,12 @@
       "movement_definition_id": 368,
       "candidate_id": "eeb70b452fcf9361be8d24bc",
       "app_sha256": "1145e4426c1d93ee165133b72cdbe5921a809cf8e39ebe1dcbf0ff49ab9f2c0b",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.1,
+        "y": 0.11
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4324,6 +4744,12 @@
       "movement_definition_id": 402,
       "candidate_id": "3e009c6e86a2da2ce32f617c",
       "app_sha256": "22258554b07553f354e4ff79ba17332de00c7eefccb744598b05f9b003fa98d7",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.07,
+        "y": 0.09
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4353,6 +4779,12 @@
       "movement_definition_id": 401,
       "candidate_id": "7ff708a012eeece93bc3a336",
       "app_sha256": "aa336529bf63e105bdeac5346e6460b4120eed73a4f3486da986912c66e4c26f",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.1,
+        "y": 0.11
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4416,6 +4848,12 @@
       "movement_definition_id": 56,
       "candidate_id": "103c6882d99b663e5653fe9d",
       "app_sha256": "ebdd670fceedd7c0dbbe5c30fa78a54c603a25d2483476989f6455c8dcff2124",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.15
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4433,6 +4871,12 @@
       "movement_definition_id": 485,
       "candidate_id": "09544f13836f250c39867843",
       "app_sha256": "1aeadf747f8cc07868f0ee1793e7169a927bba938fe3931b855f329508acdc37",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.15,
+        "y": 0.1
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4450,6 +4894,12 @@
       "movement_definition_id": 436,
       "candidate_id": "b926558d9f76867a701531a8",
       "app_sha256": "bc040a6cdf509c1b0998064ff57bfb680401b707a5cc6669caced084ede7df97",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.08,
+        "y": 0.1
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4467,6 +4917,12 @@
       "movement_definition_id": 93,
       "candidate_id": "15f7e85fe7cb2eeb151753ad",
       "app_sha256": "eeb66b89fde52d7e4ff2794e003e8320c5b52d9829fb96f1b2f70cdab5555095",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.1
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4484,6 +4940,12 @@
       "movement_definition_id": 244,
       "candidate_id": "8c16078e6bb5571e79e37a25",
       "app_sha256": "73a9b1b8cc78d6ced4588eaa2fb7816cb6f699ef5b2769fb6411fd2b864f0f98",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.12
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4501,6 +4963,12 @@
       "movement_definition_id": 376,
       "candidate_id": "590075f40aeb89b1eceb2878",
       "app_sha256": "28ab382e6fb58630873c8803b1ea8fb28e4cabeff324e5d071b171bdcb7a5f82",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.1,
+        "y": 0.08
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4518,6 +4986,12 @@
       "movement_definition_id": 375,
       "candidate_id": "609cf117d0a70d55cdff554f",
       "app_sha256": "787177ecfc0b0eb55144a5d53a309a2b867e179e473e38340f52b7332f38517b",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.14,
+        "y": 0.05
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4681,6 +5155,12 @@
       "movement_definition_id": 481,
       "candidate_id": "d408782dff49a63f7af5724e",
       "app_sha256": "8cc0e4f7896a1d7d95633539e6d08d1116018aeaae449e77e7043d0ef2812c26",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.89,
+        "x": 0.17,
+        "y": 0.12
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4710,6 +5190,12 @@
       "movement_definition_id": 464,
       "candidate_id": "9ed3298914b6db9d9481fff9",
       "app_sha256": "41ef646f90f38d2ec53ad7d6bdea217916af23a15af9984e6468e06fe53d6e7c",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.14,
+        "y": 0.12
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4750,6 +5236,12 @@
       "movement_definition_id": 399,
       "candidate_id": "f1c3a1053dd189495730e0db",
       "app_sha256": "d8d3a0912d37011df504f51446804c55c5d7656f33fcb6a761b075d4cdbc3ab6",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.85,
+        "x": 0.09,
+        "y": 0.12
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4802,6 +5294,12 @@
       "movement_definition_id": 186,
       "candidate_id": "a89b95f52d65454a1326bee9",
       "app_sha256": "2c0a628e047027be9e17d048cdd08a02120d6a192814602949bf8166389ec632",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.17,
+        "y": 0.16
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4913,6 +5411,12 @@
       "movement_definition_id": 228,
       "candidate_id": "f093f5d9ceb35671958198a2",
       "app_sha256": "6736fd722c64329a13671b41750a665128c1df1d3c7f065a192c90a18e43e9e1",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 1.24,
+        "x": 0.05,
+        "y": 0.07
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -4977,6 +5481,12 @@
       "movement_definition_id": 487,
       "candidate_id": "b4e75390a9ed01017b8e3e78",
       "app_sha256": "bd152f3d3728493c18169c60d3dd53c7ef84afc4163ff6639b1af4f86582a98f",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.15,
+        "y": 0.12
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -5087,6 +5597,12 @@
       "movement_definition_id": 372,
       "candidate_id": "027f74d363e703f5c3708f67",
       "app_sha256": "f5d4da6b9d357c913eab8b64c87fa0b680438fc4ffdefe2b67c3f6d26b77f705",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.19,
+        "y": 0.13
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
@@ -5374,6 +5890,12 @@
       "movement_definition_id": 15,
       "candidate_id": "f7280bea2f233afb92750518",
       "app_sha256": "938af41702c7f92bd91821fb8db9aa0dbe41966507fb0dbe2ae93a5829c8a19e",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.07,
+        "y": 0.14
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
