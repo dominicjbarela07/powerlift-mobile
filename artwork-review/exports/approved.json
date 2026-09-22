@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 2550,
+  "revision": 2601,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-21T22:27:06.727130+00:00",
-  "updated_at_display": "Sep 21, 2026 03:27 PM PT (Sep 21, 2026 06:27 PM Eastern)",
+  "updated_at": "2026-09-22T16:24:45.888652+00:00",
+  "updated_at_display": "Sep 22, 2026 09:24 AM PT (Sep 22, 2026 12:24 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -20802,6 +20802,1282 @@
           "reviewer_user_id": 1,
           "candidate_sha256": "9e9390c210fa6054f125287cdff6c180d9348240e391ca961c33f3f1b37b1691",
           "app_sha256": "5d9e0cb25bc510aaad48e06c8dcf53fff0d2531b131d5e12fb5879b2cd636eb7",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "ee59b42bc6d24abc0eacbba1": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.13,
+        "y": 0.09
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.8,
+          "x": 0.13,
+          "y": 0.09
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T03:14:35.846781+00:00",
+        "reviewed_at_display": "Sep 21, 2026 08:14 PM PT (Sep 21, 2026 11:14 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "dbb5b2df0bcf8b4fe8e00d3745445b64bd5c0a286aa5746aa45e8027d364cadc",
+        "app_sha256": "9cc4cf5adb3ea16ddfa5e9b6e9ce39b2da6c67de1aaeafdbb7c86834ac391134",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.8,
+            "x": 0.13,
+            "y": 0.09
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T03:14:35.846781+00:00",
+          "reviewed_at_display": "Sep 21, 2026 08:14 PM PT (Sep 21, 2026 11:14 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "dbb5b2df0bcf8b4fe8e00d3745445b64bd5c0a286aa5746aa45e8027d364cadc",
+          "app_sha256": "9cc4cf5adb3ea16ddfa5e9b6e9ce39b2da6c67de1aaeafdbb7c86834ac391134",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "7bc8bbe5aedb4408c817fd30": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.15,
+        "y": 0.07
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.7,
+          "x": 0.15,
+          "y": 0.07
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T03:14:51.383527+00:00",
+        "reviewed_at_display": "Sep 21, 2026 08:14 PM PT (Sep 21, 2026 11:14 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0f3677f2d665df3881952775cebd54e0969ee31b8212c2a64dea35df7c4c470d",
+        "app_sha256": "75f56a5cd2587e969f40a9dfe7d32291b8511d9c493db1012cbadd64cf26c318",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.15,
+            "y": 0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T03:14:51.383527+00:00",
+          "reviewed_at_display": "Sep 21, 2026 08:14 PM PT (Sep 21, 2026 11:14 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "0f3677f2d665df3881952775cebd54e0969ee31b8212c2a64dea35df7c4c470d",
+          "app_sha256": "75f56a5cd2587e969f40a9dfe7d32291b8511d9c493db1012cbadd64cf26c318",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "1483dc8e36ef435617fccf77": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.13,
+        "y": 0.07
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.9,
+          "x": 0.13,
+          "y": 0.07
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:16:15.206849+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:16 AM PT (Sep 22, 2026 12:16 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5bf188cbeff7dcf60790125392617606428e18107999bf2da3ee827eba914d1c",
+        "app_sha256": "121f3dc01b1ab12cfb965f37111b0637a12a1b9c67338435420ac2adf0d4ed68",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.9,
+            "x": 0.13,
+            "y": 0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:16:15.206849+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:16 AM PT (Sep 22, 2026 12:16 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5bf188cbeff7dcf60790125392617606428e18107999bf2da3ee827eba914d1c",
+          "app_sha256": "121f3dc01b1ab12cfb965f37111b0637a12a1b9c67338435420ac2adf0d4ed68",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "2646f38a9273f5a93495a37d": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.14,
+        "y": 0.28
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.14,
+          "y": 0.28
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:16:21.621087+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:16 AM PT (Sep 22, 2026 12:16 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "90a286588759e05e380cbebe2290c74a85a7097a1fdce6b31dbd64f86bb1bb42",
+        "app_sha256": "4b5c2b03907c0550ab4383261a18ca2b396a6ca509e85838c48cab7fd53644b7",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.14,
+            "y": 0.28
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:16:21.621087+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:16 AM PT (Sep 22, 2026 12:16 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "90a286588759e05e380cbebe2290c74a85a7097a1fdce6b31dbd64f86bb1bb42",
+          "app_sha256": "4b5c2b03907c0550ab4383261a18ca2b396a6ca509e85838c48cab7fd53644b7",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "9fbb42ef295c0413ff5b2044": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.1,
+        "y": 0.11
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.8,
+          "x": 0.1,
+          "y": 0.11
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:16:46.617703+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:16 AM PT (Sep 22, 2026 12:16 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "55ada55daf162d629727a5b4f09fbb7e50f3a7fbdc7a687e66527c152defa985",
+        "app_sha256": "bb9ddc69ab2aadff2602e708d895bbc4fee705066c4a0a8be2ffc2e4d666775a",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.8,
+            "x": 0.1,
+            "y": 0.11
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:16:46.617703+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:16 AM PT (Sep 22, 2026 12:16 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "55ada55daf162d629727a5b4f09fbb7e50f3a7fbdc7a687e66527c152defa985",
+          "app_sha256": "bb9ddc69ab2aadff2602e708d895bbc4fee705066c4a0a8be2ffc2e4d666775a",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "3840ef471260cdafa013a4d4": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.15,
+        "y": 0.11
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.15,
+          "y": 0.11
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:16:57.285253+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:16 AM PT (Sep 22, 2026 12:16 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "26871ed470371d34cf90b7a080415b07bfc815baed30ef631f1499d31a27380b",
+        "app_sha256": "e86b810dd5b05d220743d0035bda102975f26ea02a9f15792f9b8c869aa5bf77",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.15,
+            "y": 0.11
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:16:57.285253+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:16 AM PT (Sep 22, 2026 12:16 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "26871ed470371d34cf90b7a080415b07bfc815baed30ef631f1499d31a27380b",
+          "app_sha256": "e86b810dd5b05d220743d0035bda102975f26ea02a9f15792f9b8c869aa5bf77",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "b4389def30fea8cbcf439784": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.22,
+        "y": 0.23
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.22,
+          "y": 0.23
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:17:05.473742+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:17 AM PT (Sep 22, 2026 12:17 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8575ef9397089f519d1cb4f0b0b481ea27040081a87059e5ad4a8e7559ddaf2f",
+        "app_sha256": "159d300ddb095aebd1aec9499c8739c73bcac20be707cbfbb14d7ea3f69b6507",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.22,
+            "y": 0.23
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:17:05.473742+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:17 AM PT (Sep 22, 2026 12:17 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8575ef9397089f519d1cb4f0b0b481ea27040081a87059e5ad4a8e7559ddaf2f",
+          "app_sha256": "159d300ddb095aebd1aec9499c8739c73bcac20be707cbfbb14d7ea3f69b6507",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "adc8856619d97b3a5b150061": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.74,
+        "x": 0.15,
+        "y": 0.11
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.74,
+          "x": 0.15,
+          "y": 0.11
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:17:25.454393+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:17 AM PT (Sep 22, 2026 12:17 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ed43537d28a5060ca0b7b6ff092dd46ee6c589d137d7964389bbf03077c11aa4",
+        "app_sha256": "2c321caca1442dc90a5232a136cb5bd6cef64aa1d16e2951aa3200ee28cec608",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.74,
+            "x": 0.15,
+            "y": 0.11
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:17:25.454393+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:17 AM PT (Sep 22, 2026 12:17 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ed43537d28a5060ca0b7b6ff092dd46ee6c589d137d7964389bbf03077c11aa4",
+          "app_sha256": "2c321caca1442dc90a5232a136cb5bd6cef64aa1d16e2951aa3200ee28cec608",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "83317b98c463cf2755cd14ef": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.79,
+        "x": 0.13,
+        "y": 0.08
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.79,
+          "x": 0.13,
+          "y": 0.08
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:17:35.025269+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:17 AM PT (Sep 22, 2026 12:17 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f4dfafda6ea64b489003f540e83c9ec1bd916f6e07ed95b42ae5dd68d2204171",
+        "app_sha256": "5ef1a97d1510330bdeb1944a690c806d94540c9430111f614542481ef5e26cc1",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.79,
+            "x": 0.13,
+            "y": 0.08
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:17:35.025269+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:17 AM PT (Sep 22, 2026 12:17 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f4dfafda6ea64b489003f540e83c9ec1bd916f6e07ed95b42ae5dd68d2204171",
+          "app_sha256": "5ef1a97d1510330bdeb1944a690c806d94540c9430111f614542481ef5e26cc1",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "b8fd29f14bf537a0b18f961c": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.16,
+        "y": 0.25
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.16,
+          "y": 0.25
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:17:41.452916+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:17 AM PT (Sep 22, 2026 12:17 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "65619e4cf5f7f4f7284942bea353343a09ad170e44c749317a99cdc6ad7f1b6f",
+        "app_sha256": "f722f61c5f32db78d2c99d3940d229fb809f4f32df7d6b11b2a7ea2040c7a09d",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.16,
+            "y": 0.25
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:17:41.452916+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:17 AM PT (Sep 22, 2026 12:17 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "65619e4cf5f7f4f7284942bea353343a09ad170e44c749317a99cdc6ad7f1b6f",
+          "app_sha256": "f722f61c5f32db78d2c99d3940d229fb809f4f32df7d6b11b2a7ea2040c7a09d",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "a34421611ceaa2cacbe74b53": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.14,
+        "y": 0.28
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.14,
+          "y": 0.28
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:17:46.492883+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:17 AM PT (Sep 22, 2026 12:17 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "61a7666280c9923b88714eeb9efa95cb3a46386cce6cf6ffc1a6e36703b296c3",
+        "app_sha256": "d48d1ef0fe102fb8f088e7ee69a40113ddd8332fa1b9a011e0cd81ee9caaee8b",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.14,
+            "y": 0.28
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:17:46.492883+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:17 AM PT (Sep 22, 2026 12:17 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "61a7666280c9923b88714eeb9efa95cb3a46386cce6cf6ffc1a6e36703b296c3",
+          "app_sha256": "d48d1ef0fe102fb8f088e7ee69a40113ddd8332fa1b9a011e0cd81ee9caaee8b",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "c0a5c3d1cbb2487828e68531": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.85,
+        "x": 0.13,
+        "y": 0.11
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.85,
+          "x": 0.13,
+          "y": 0.11
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:17:56.132532+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:17 AM PT (Sep 22, 2026 12:17 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "fec6639c6d900b4eb8d08499a8f8a43e249a763bb605c59dfcccf974f8c89a2c",
+        "app_sha256": "c6338523b2bfb64fe22e7d054c3a81d5c42963faaeba2a31f6634c96bf684044",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.85,
+            "x": 0.13,
+            "y": 0.11
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:17:56.132532+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:17 AM PT (Sep 22, 2026 12:17 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "fec6639c6d900b4eb8d08499a8f8a43e249a763bb605c59dfcccf974f8c89a2c",
+          "app_sha256": "c6338523b2bfb64fe22e7d054c3a81d5c42963faaeba2a31f6634c96bf684044",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "98acd458d76a1141840bca5e": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.28
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.13,
+          "y": 0.28
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:18:02.517711+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9a32e1228175575552f6efb9455f3db0f6c7e86d52780f236caa98373b949781",
+        "app_sha256": "1c36b1b87970f75325ad81fdbfa37257df44b29e45db250cb4cc87a20aa6a9d4",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.13,
+            "y": 0.28
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:18:02.517711+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9a32e1228175575552f6efb9455f3db0f6c7e86d52780f236caa98373b949781",
+          "app_sha256": "1c36b1b87970f75325ad81fdbfa37257df44b29e45db250cb4cc87a20aa6a9d4",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "969c8c5659e5aa55e556b7d1": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.14,
+        "y": 0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.8,
+          "x": 0.14,
+          "y": 0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:18:12.208224+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1900f3d3db67ce0f01d47704d20b4ba42d3da742e6442a739259a0894c4e734a",
+        "app_sha256": "5e470c8a9c18947a62b0f2c4929e04d0fdd30bd6544d27ae8d9744947fc0f934",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.8,
+            "x": 0.14,
+            "y": 0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:18:12.208224+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1900f3d3db67ce0f01d47704d20b4ba42d3da742e6442a739259a0894c4e734a",
+          "app_sha256": "5e470c8a9c18947a62b0f2c4929e04d0fdd30bd6544d27ae8d9744947fc0f934",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "be0cb70685bdcdf5a7b2662c": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.14,
+        "y": 0.2
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.9,
+          "x": 0.14,
+          "y": 0.2
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:18:24.726468+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "01287c3d61736880e00470d456e5bf42e6c91412ccb68a3f468cea44ec1ec7e7",
+        "app_sha256": "07c7f86aa756d036637429c0f3de2db80c454e10519713a9516968d988c2e571",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.9,
+            "x": 0.14,
+            "y": 0.2
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:18:24.726468+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "01287c3d61736880e00470d456e5bf42e6c91412ccb68a3f468cea44ec1ec7e7",
+          "app_sha256": "07c7f86aa756d036637429c0f3de2db80c454e10519713a9516968d988c2e571",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "62032b267962a957d16ed20f": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.12,
+        "y": 0.19
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.12,
+          "y": 0.19
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:18:34.634704+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "de5165bb72371f78d6b8c873075865e129014d2c2e153d1291086c564c82b671",
+        "app_sha256": "b4f4e4ac40dbaf58c59dc52b6c03941014cab080af32a9cc54a4a68b044ef471",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.12,
+            "y": 0.19
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:18:34.634704+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "de5165bb72371f78d6b8c873075865e129014d2c2e153d1291086c564c82b671",
+          "app_sha256": "b4f4e4ac40dbaf58c59dc52b6c03941014cab080af32a9cc54a4a68b044ef471",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "7863752ea4b1291a85cc62df": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.15,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.15,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:18:38.598129+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3e87d5608379b4c2e62bdfb12d5752a0b024aca1c39ae0628aee8c3616e34f43",
+        "app_sha256": "b41e72357133584ec93501250a2fb0032b6112ede71ba52370d574b687b1990e",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.15,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:18:38.598129+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3e87d5608379b4c2e62bdfb12d5752a0b024aca1c39ae0628aee8c3616e34f43",
+          "app_sha256": "b41e72357133584ec93501250a2fb0032b6112ede71ba52370d574b687b1990e",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "f6f86a076b7a5e52ccd3cb90": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.22
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.13,
+          "y": 0.22
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:18:45.296805+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ecb7ee52aef2d363240e11e64531ef6971e247803815192874e7bd2ab9ab0b86",
+        "app_sha256": "cf98253d20a657ec2fa70bbffda73e548893d8e9d4f77437c282821522568bd0",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.13,
+            "y": 0.22
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:18:45.296805+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ecb7ee52aef2d363240e11e64531ef6971e247803815192874e7bd2ab9ab0b86",
+          "app_sha256": "cf98253d20a657ec2fa70bbffda73e548893d8e9d4f77437c282821522568bd0",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "bbf01e70ec8b26c7aa58a2aa": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.15,
+        "y": 0.23
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.15,
+          "y": 0.23
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:18:57.104430+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0387b61e49f8f6741efa7ccbc15ea26987d7a7213ee95a03e39319b5683d65a2",
+        "app_sha256": "e8de7040303a6cc5b29a700c7faea3107c97fc6a85f86810d66822a9e67ad044",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.15,
+            "y": 0.23
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:18:57.104430+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:18 AM PT (Sep 22, 2026 12:18 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "0387b61e49f8f6741efa7ccbc15ea26987d7a7213ee95a03e39319b5683d65a2",
+          "app_sha256": "e8de7040303a6cc5b29a700c7faea3107c97fc6a85f86810d66822a9e67ad044",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "723fe284cf2b1e1a6d3f5e15": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.16,
+        "y": 0.21
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.16,
+          "y": 0.21
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:19:02.778020+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:19 AM PT (Sep 22, 2026 12:19 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "87749f33d535a8c2caf75c3be7cd908b981af21429f14f6cd87a0875278533b8",
+        "app_sha256": "4118806598224d3940d990089597e6c59a18942ca90602d7eb6d2a29a9875e75",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.16,
+            "y": 0.21
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:19:02.778020+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:19 AM PT (Sep 22, 2026 12:19 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "87749f33d535a8c2caf75c3be7cd908b981af21429f14f6cd87a0875278533b8",
+          "app_sha256": "4118806598224d3940d990089597e6c59a18942ca90602d7eb6d2a29a9875e75",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "cf42459cae3c24380a7cedd3": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.26
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.13,
+          "y": 0.26
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:19:10.716850+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:19 AM PT (Sep 22, 2026 12:19 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2bce7bfb441749c1ba0644cca3e7eb329b74d51661d011b70bc4a055cc4f4991",
+        "app_sha256": "40001046f690d0edf27adf33c4a68a69a9d7d3eba55ad82c6e9c3eefd04bd876",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.13,
+            "y": 0.26
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:19:10.716850+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:19 AM PT (Sep 22, 2026 12:19 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "2bce7bfb441749c1ba0644cca3e7eb329b74d51661d011b70bc4a055cc4f4991",
+          "app_sha256": "40001046f690d0edf27adf33c4a68a69a9d7d3eba55ad82c6e9c3eefd04bd876",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "b70943e1cbdd3281497f4b5f": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.85,
+        "x": 0.19,
+        "y": 0.11
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.85,
+          "x": 0.19,
+          "y": 0.11
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:19:22.506119+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:19 AM PT (Sep 22, 2026 12:19 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1b43ff641ccdee1e92379d04f22912189e09e02ebfb2c331c5a8d32fcfcecada",
+        "app_sha256": "626a863af5ccbedfe42aba97a8bcce07d1e1e49d5ab45147522bd0f17f7f9291",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.85,
+            "x": 0.19,
+            "y": 0.11
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:19:22.506119+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:19 AM PT (Sep 22, 2026 12:19 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1b43ff641ccdee1e92379d04f22912189e09e02ebfb2c331c5a8d32fcfcecada",
+          "app_sha256": "626a863af5ccbedfe42aba97a8bcce07d1e1e49d5ab45147522bd0f17f7f9291",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "474c44b61ea1870636153269": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.16,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.16,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:19:27.280092+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:19 AM PT (Sep 22, 2026 12:19 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "af68fd04d5a3bb2fd9bee5839d7b1748b593fe0bd6c2e15db59bfd16265be7eb",
+        "app_sha256": "a356fc16d73897ed8d62d03abae6eab8ceee99fb213b3e67fa681361c802c4e5",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.16,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:19:27.280092+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:19 AM PT (Sep 22, 2026 12:19 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "af68fd04d5a3bb2fd9bee5839d7b1748b593fe0bd6c2e15db59bfd16265be7eb",
+          "app_sha256": "a356fc16d73897ed8d62d03abae6eab8ceee99fb213b3e67fa681361c802c4e5",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "fa716ecfc9b5f7a0efacd436": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.1,
+        "y": 0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.9,
+          "x": 0.1,
+          "y": 0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:19:38.501999+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:19 AM PT (Sep 22, 2026 12:19 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6a033369a406e1b2506a6c6f3e5c60736674a3621dd2a75019aeca8279581e97",
+        "app_sha256": "1808b2ce43b5e643e4a35e2a5f02f24e6e4146b38b03629f6b95328b46af5c5c",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.9,
+            "x": 0.1,
+            "y": 0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:19:38.501999+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:19 AM PT (Sep 22, 2026 12:19 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "6a033369a406e1b2506a6c6f3e5c60736674a3621dd2a75019aeca8279581e97",
+          "app_sha256": "1808b2ce43b5e643e4a35e2a5f02f24e6e4146b38b03629f6b95328b46af5c5c",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "6b665ab318983d9a8c7592c6": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.12,
+        "y": 0.02
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.12,
+          "y": 0.02
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:24:04.108705+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:24 AM PT (Sep 22, 2026 12:24 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "37c979743341ed78f0072cb8a6c7562639e2ec94b521b751d56cde9668124596",
+        "app_sha256": "43693697db1dfb398fa805ac357a3a481b0cfc2286cf7f23e05e3f80a23c0dc1",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.12,
+            "y": 0.02
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:24:04.108705+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:24 AM PT (Sep 22, 2026 12:24 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "37c979743341ed78f0072cb8a6c7562639e2ec94b521b751d56cde9668124596",
+          "app_sha256": "43693697db1dfb398fa805ac357a3a481b0cfc2286cf7f23e05e3f80a23c0dc1",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "85ec3c5e62528ad7f21fe015": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.2,
+        "y": 0.07
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.2,
+          "y": 0.07
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:24:10.962710+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:24 AM PT (Sep 22, 2026 12:24 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "4d062650ade3840ba352ca39eafd875ce0dc262153ac447ad0af98884dc7b9bd",
+        "app_sha256": "dc637c8553874fef80a6ed4ec6b163ac5d4c2a49aa5c11c6cd6c137ab733dc19",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.2,
+            "y": 0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:24:10.962710+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:24 AM PT (Sep 22, 2026 12:24 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "4d062650ade3840ba352ca39eafd875ce0dc262153ac447ad0af98884dc7b9bd",
+          "app_sha256": "dc637c8553874fef80a6ed4ec6b163ac5d4c2a49aa5c11c6cd6c137ab733dc19",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "db33cb6a8b4f63e1a3d20baf": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.93,
+        "x": 0.19,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.93,
+          "x": 0.19,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:24:20.879649+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:24 AM PT (Sep 22, 2026 12:24 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "89a0d0e8b0911167fadb6f7132624d063af10ee03d96abb08af4561fc548a758",
+        "app_sha256": "47cecf18435d264a04d7df3bfef4a39e61cf7f6e8bdf7714f6adea4c45183c64",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.93,
+            "x": 0.19,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:24:20.879649+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:24 AM PT (Sep 22, 2026 12:24 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "89a0d0e8b0911167fadb6f7132624d063af10ee03d96abb08af4561fc548a758",
+          "app_sha256": "47cecf18435d264a04d7df3bfef4a39e61cf7f6e8bdf7714f6adea4c45183c64",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "53fc3601a94497fe281ec5cc": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.06,
+        "y": 0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.06,
+          "y": 0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:24:28.829846+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:24 AM PT (Sep 22, 2026 12:24 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "36135697d26ca46ab0b17d96cb3e00e37b7b6b2f814c8e246b2c9e1955c915d5",
+        "app_sha256": "07503eb795dbe6f381aec97672fe6bb31d9fdeeb2c5b870b8f2942ec028fda9c",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.06,
+            "y": 0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:24:28.829846+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:24 AM PT (Sep 22, 2026 12:24 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "36135697d26ca46ab0b17d96cb3e00e37b7b6b2f814c8e246b2c9e1955c915d5",
+          "app_sha256": "07503eb795dbe6f381aec97672fe6bb31d9fdeeb2c5b870b8f2942ec028fda9c",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "1fdc85f8bb41b30ebe7db7f4": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.11,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.11,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-22T16:24:45.888601+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:24 AM PT (Sep 22, 2026 12:24 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "138840ac17a4488e4ea629b55051e5727c3bdfd1c43174c352aa1227fc0ec237",
+        "app_sha256": "0d8455392f260b39b077061da1a3e675ad96fe909073a5f08ff9c7bbd53bcd00",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.11,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-22T16:24:45.888601+00:00",
+          "reviewed_at_display": "Sep 22, 2026 09:24 AM PT (Sep 22, 2026 12:24 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "138840ac17a4488e4ea629b55051e5727c3bdfd1c43174c352aa1227fc0ec237",
+          "app_sha256": "0d8455392f260b39b077061da1a3e675ad96fe909073a5f08ff9c7bbd53bcd00",
           "source": "human_logger_crop_ui"
         }
       ]
@@ -60116,6 +61392,131 @@
       }
     },
     {
+      "movement_definition_id": 113,
+      "key": "accessory_cable_lateral_raise",
+      "movement_name": "Cable Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-rejects-plus-five-20260921-113-e7303dbc",
+      "generation_batch": "Five cable corrections and five additions — 2026-09-21",
+      "candidate_id": "44cd921b212537d3036ac114",
+      "version": 5,
+      "supersedes_candidate_id": "e3c049f87922c7d4f4b22374",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "lifter should be facing the cable rig",
+        "tags": [],
+        "reviewed_at": "2026-09-21T21:44:32.069520+00:00",
+        "reviewed_at_display": "Sep 21, 2026 02:44 PM PT (Sep 21, 2026 05:44 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "957f39c00dff980fa614ab908252e6f5c1e9ffdcdbd0fb6bf266d10c91daff41",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/44cd921b212537d3036ac114/master.png",
+          "sha256": "e7303dbcc03d778c0d328921723df41312da6e9bf73152519b978547e6eed298",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1788216
+        },
+        "app": {
+          "path": "candidates/44cd921b212537d3036ac114/app.png",
+          "sha256": "fe2b585174642726f61576b07d91936b7d62f6a9d16c0a8ca23db253054aee45",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 337146
+        },
+        "thumbnail": {
+          "path": "candidates/44cd921b212537d3036ac114/thumbnail.png",
+          "sha256": "eed3f402e6d336f2f507fd58f050de147fea9b217ba372a88754ea40dc557679",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 51668
+        }
+      },
+      "candidate_asset": "candidates/44cd921b212537d3036ac114/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-22T03:13:11.168489+00:00",
+          "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e7303dbcc03d778c0d328921723df41312da6e9bf73152519b978547e6eed298",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-21T22:26:56.340436+00:00",
+      "created_at_display": "Sep 21, 2026 03:26 PM PT (Sep 21, 2026 06:26 PM Eastern)",
+      "generation_prompt": "Attempt 1\nUse case: precise-object-edit. Strength Ledger CABLE LATERAL RAISE. Image 1 is only the athlete/outfit/studio style baseline; image 2 is edit target. Correct the owner's exact note: 'lifter should be facing the cable rig'. Keep the complete front-facing symmetrical dual-stack cable rig and its proportions. TURN THE ATHLETE 180 DEGREES so we see his BACK; his chest, pelvis, knees and toes now all face directly INTO the rig. He stands centered on open floor about 60cm IN FRONT of the towers, at equal distance from both. Both arms lift outward to just BELOW shoulder height with soft elbows, relaxed neck looking straight into machine. Each hand holds the opposite low tower's D-handle: left hand attached to right LOW pulley and right hand to left LOW pulley. Two taut lines cross in open space IN FRONT OF HIS BODY toward machine, never against his back or passing through torso. Cables enter visible grooves tangentially at the low wheel rims. Hands and handles anatomically natural, shoulders not shrugged. Preserve matching intact towers facing same way, feet on floor, same 1.8m athlete vs 2.3m machine scale. Rear three-quarter camera only slightly off center to reveal cable clearance; do not rotate athlete toward camera. Whole machine and figure fully in square image, subtle purple rim charcoal photographic studio. No text.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-rejects-plus-five-2026-09-21/113.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "movement_family": "accessory_side_delts",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen only. Exact rejected feedback and original #33 style baseline retained. All 23 attempts inspected; ten selected, thirteen withheld.",
+        "owner_instruction": "fix the rejects and add 5 more",
+        "exact_latest_rejection": "lifter should be facing the cable rig",
+        "retained_rejections": "[{\"version\": 2, \"reason\": \"GO FUCK YOURSELF\"}, {\"version\": 4, \"reason\": \"lifter should be facing the cable rig\"}]",
+        "inspection": "Athlete faces the matched rig squarely with his back to camera. Crossed low lines clear his torso; both wheel rims and grips inspected.",
+        "selected_attempt": "1",
+        "source_sha256": "e7303dbcc03d778c0d328921723df41312da6e9bf73152519b978547e6eed298",
+        "exercise_references": "https://www.puregym.com/exercises/arms-and-shoulders/rear-delt-exercises/cable-rear-delt-flyes/ ; https://repfitness.com/products/pro-series-neutral-grip-lat-bar ; https://www.muscleandfitness.com/exercise/workouts/back-exercises/wide-grip-seated-cable-row/ ; https://www.muscleandstrength.com/exercises/lying-cable-tricep-extension.html",
+        "scope": "Five latest active rejects and five existing invalidated cable movements. Pending human review. Preserve approvals, crop decisions, consolidated artwork bindings, canonical mappings, movement IDs and histories."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-22T03:13:11.168489+00:00",
+        "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e7303dbcc03d778c0d328921723df41312da6e9bf73152519b978547e6eed298",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 115,
       "key": "accessory_lean_away_cable_lateral_raise",
       "movement_name": "Lean-Away Cable Lateral Raise",
@@ -60976,6 +62377,132 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "0d61827b9909bb67089e614a009de5893146c6690e0b580040a10b517152b6ed",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 167,
+      "key": "accessory_single_arm_lat_pulldown",
+      "movement_name": "Single-Arm Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-rejects-plus-five-20260921-167-b9571291",
+      "generation_batch": "Five cable corrections and five additions — 2026-09-21",
+      "candidate_id": "5abc26f4226dc53b89fa0963",
+      "version": 4,
+      "supersedes_candidate_id": "1f2707eba6f938da3c7bf88b",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "stop using this machine",
+        "tags": [],
+        "reviewed_at": "2026-09-16T16:23:58.827482+00:00",
+        "reviewed_at_display": "Sep 16, 2026 09:23 AM PT (Sep 16, 2026 12:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "794a5f619c1fed164fe1bea5476210ee71a2a92b7fec332b45afb118ecead22f",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/5abc26f4226dc53b89fa0963/master.png",
+          "sha256": "b95712916af4236451534d5c177d138a62f77b14a43f63d0ddbd51505f080ee2",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1721134
+        },
+        "app": {
+          "path": "candidates/5abc26f4226dc53b89fa0963/app.png",
+          "sha256": "484da2ba994b1b3026981a1a69237c4ee7ff86120d4ff64d0a6782a4ef2d8405",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 305253
+        },
+        "thumbnail": {
+          "path": "candidates/5abc26f4226dc53b89fa0963/thumbnail.png",
+          "sha256": "53504403beba0cf2a9c9572351f75828a764bc0c1cd81bc4cc2f0706abccd2b3",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46585
+        }
+      },
+      "candidate_asset": "candidates/5abc26f4226dc53b89fa0963/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-22T03:13:16.378165+00:00",
+          "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b95712916af4236451534d5c177d138a62f77b14a43f63d0ddbd51505f080ee2",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-21T22:27:04.488578+00:00",
+      "created_at_display": "Sep 21, 2026 03:27 PM PT (Sep 21, 2026 06:27 PM Eastern)",
+      "generation_prompt": "Attempt 1\nPrecise-object-edit. Strength Ledger SINGLE-ARM LAT PULLDOWN. Image1 immutable same athlete/style. Image2 is exact approved dedicated pulldown station: preserve all machine dimensions, overhead boom, cable and working top sheave, seat, thigh pads, foot position and studio. Replace bar with ONE small D handle held in athlete's RIGHT hand only. Athlete squarely seated beneath pulley, thighs held down, feet planted, torso stable with only 5-degree natural recline, no sideways bend or twist. Capture mid-pulldown: working right upper arm about 35 degrees from torso, elbow flexed 80 degrees driving down toward right ribs; right hand at eye height with neutral palm facing inward, wrapped thumb and four fingers, straight wrist. Right shoulder directly under cable path so resistance acts UPWARD, minimal inward slope. Rest nonworking LEFT hand naturally on left thigh, connected left forearm fully visible. One taut cable from D-handle clip/stopper to overhead wheel groove; no second handle or cable. Rear-left three-quarter camera shows right working arm and left resting arm. Whole real lat pulldown machine and seated body in square, full feet, subtle purple studio. The subject is exercising naturally, never posing.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-rejects-plus-five-2026-09-21/167.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "CABLE",
+      "sidedness": "unilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen only. Exact rejected feedback and original #33 style baseline retained. All 23 attempts inspected; ten selected, thirteen withheld.",
+        "owner_instruction": "fix the rejects and add 5 more",
+        "exact_latest_rejection": "stop using this machine",
+        "retained_rejections": "[{\"version\": 2, \"reason\": \"SHIT EQUIPMENT QUALITY\"}, {\"version\": 3, \"reason\": \"stop using this machine\"}]",
+        "inspection": "Single-arm pulldown on the owner-approved dedicated station, stable torso and one working handle. Free hand rests naturally; obsolete rejected machine design not reused.",
+        "selected_attempt": "1",
+        "source_sha256": "b95712916af4236451534d5c177d138a62f77b14a43f63d0ddbd51505f080ee2",
+        "exercise_references": "https://www.puregym.com/exercises/arms-and-shoulders/rear-delt-exercises/cable-rear-delt-flyes/ ; https://repfitness.com/products/pro-series-neutral-grip-lat-bar ; https://www.muscleandfitness.com/exercise/workouts/back-exercises/wide-grip-seated-cable-row/ ; https://www.muscleandstrength.com/exercises/lying-cable-tricep-extension.html",
+        "scope": "Five latest active rejects and five existing invalidated cable movements. Pending human review. Preserve approvals, crop decisions, consolidated artwork bindings, canonical mappings, movement IDs and histories."
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16",
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-22T03:13:16.378165+00:00",
+        "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b95712916af4236451534d5c177d138a62f77b14a43f63d0ddbd51505f080ee2",
         "source": "human_review_ui"
       }
     },
@@ -62053,6 +63580,131 @@
       }
     },
     {
+      "movement_definition_id": 139,
+      "key": "accessory_single_arm_cable_reverse_flye",
+      "movement_name": "Single-Arm Cable Reverse Fly",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-rejects-plus-five-20260921-139-d566c3f0",
+      "generation_batch": "Five cable corrections and five additions — 2026-09-21",
+      "candidate_id": "9db355439dec90b00ead04cf",
+      "version": 5,
+      "supersedes_candidate_id": "bababce56915efd2ff7e87fa",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "please look up how it is supposed to look, but it is not this",
+        "tags": [],
+        "reviewed_at": "2026-09-21T21:45:00.010298+00:00",
+        "reviewed_at_display": "Sep 21, 2026 02:45 PM PT (Sep 21, 2026 05:45 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "cabe2d067ad57207088cc6cf26093d4d396889fac6721baf3833702d4f83d2b4",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/9db355439dec90b00ead04cf/master.png",
+          "sha256": "d566c3f01be0a85e2956674b473880b107dd86ad2725a0b7be892ba7a7340b1d",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1674821
+        },
+        "app": {
+          "path": "candidates/9db355439dec90b00ead04cf/app.png",
+          "sha256": "ac6966fa45581a78e98ca172c3dde73e55373a9b0ba83be1107ab50d178f13a6",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 337509
+        },
+        "thumbnail": {
+          "path": "candidates/9db355439dec90b00ead04cf/thumbnail.png",
+          "sha256": "928f11d4b877fcfe70d9f33e4d68cf8c4f4e3920475aaaa7fd5d598d18bd6a6e",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 56075
+        }
+      },
+      "candidate_asset": "candidates/9db355439dec90b00ead04cf/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-22T03:13:20.578247+00:00",
+          "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d566c3f01be0a85e2956674b473880b107dd86ad2725a0b7be892ba7a7340b1d",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-21T22:26:57.497124+00:00",
+      "created_at_display": "Sep 21, 2026 03:26 PM PT (Sep 21, 2026 06:26 PM Eastern)",
+      "generation_prompt": "Attempt 1\nUse case: photorealistic-natural. Strength Ledger SINGLE-ARM CABLE REVERSE FLY correction. Image 1 supplies only same male athlete, graphite tank, black shorts, shoes, charcoal studio and subtle purple rim. Image 2 supplies ONLY the complete coherent paired Precor rig, not its incorrect athlete pose. Image 3 is the INSTRUCTOR'S ACTUAL EXERCISE demonstration: reproduce its body/cable relationship and arm motion accurately with our athlete. Athlete stands upright, his RIGHT SIDE nearer the active LEFT-of-image shoulder-height pulley. His LEFT arm works (on image RIGHT): nearly straight softly bent elbow, swept outward to his left at shoulder height, just slightly forward of shoulder line; right arm hangs relaxed. Torso stays still, head aligned neutrally with torso, no camera posing. The SINGLE taut cable travels from left shoulder-height wheel ACROSS OPEN SPACE IN FRONT of upper chest to left working hand on image right, directly like instructor reference 3. Closed pronated hand holds cable-end ball/short strap as in demonstration, no D-handle required. Put athlete sufficiently in front of pulley plane to keep line visibly clear of shoulder/neck/chest. Complete matched machine towers stand behind on the same ground plane, both face same direction. One active cable only; other carriage parked with hanging handle. Bare cable visibly wraps around the grooved perimeter of working wheel, never at its axle. Whole figure including shoes, whole machine including feet/top in square frame. Realistic moderate musculature/proportions from image1, genuine controlled reverse fly, not a forward raise or a row. No additional text.\n\nAttempt 2\nPrecise local mechanical correction of image 2, SINGLE-ARM REVERSE FLY. Image1 remains immutable photographic baseline. Keep athlete pose, planted feet, natural left-arm reverse fly, hand, whole paired rig and camera. Fix WORKING LEFT CARRIAGE: the wire must NOT touch the orange axle knob. Lower this complete carriage about 18cm so its TOP GROOVE is at raised hand height. Rotate its swivel so the pulley wheel lies in the vertical plane of the cable toward the athlete's hand. ONE taut horizontal cable from the existing grip stopper to the wheel's TOP PERIMETER TANGENT, wrapping visibly over its outer grooved rim into the machine. The orange axle is BELOW cable with clearly visible empty space between them. No cable can end on a knob, plate, bolt or flat wheel face. Loaded line travels just below collarbone level in clear space IN FRONT of his chest, never across his chin. Keep upper arm in shoulder-height reverse fly and soft elbow, don't turn into a forward raise. Both machine assemblies complete, matching black guards and steel uprights. Preserve single active cable, untouched idle right carriage/handle, no additional dangling active cable.\n\nAttempt 3\nPrecise-object-edit of reference2. Preserve entire single-arm reverse fly athlete, pose, line height, grip, both complete matching towers, studio and all proportions. ONLY replace working left pulley carriage with a mechanically correct swivel assembly seen OBLIQUELY EDGE-ON: two black guard cheeks flank one real circular sheave; its deep circumferential cable groove is visible between cheeks. The taut active cable from the hand must enter the exposed TOP EDGE of the sheave, wrap around its curved GROOVE, and continue vertically downward inside tower. Do not attach the wire to either of the silver screwheads on the guard face. No wire endpoint is visible at the machine; it is one continuous cable curving into a wheel. Orient the wheel plane along the pull line toward the hand, not broad flat face toward the cable. Small orange adjustment pin stays on rail behind wheel completely separate from wire. This connection is the only change: preserve natural shoulder-height reverse fly, off-hand down, black tank and exact full-frame composition. Reference1 athlete style invariant.\n\nAttempt 4\nONE precise mechanical edit on image2, keep everything else pixel-faithful. Single-arm cable reverse fly. The current active cable wrongly meets a tiny bolt around image coordinate x220 y330. ERASE that cable segment. Its proper connection is the visible TOP OF THE GROOVED WHEEL around x194 y299. Draw one taut straight wire from existing grip stopper at x918 y330 to that wheel TOP-RIM TANGENT x194 y299. Show a short CONTINUOUS CURVED WRAP hugging the groove over the top and down the left rear edge of the circular sheave before disappearing inside guard. This must visibly be a cable wrapped AROUND a rotating wheel, never tied to a protruding bolt or axle. The old line at x220 y330 must be gone. Slight downward slope toward hand is correct. Do not change athlete, anatomical proportions, one-arm reverse-fly pose, hand grip, natural gaze, machine towers, wheel position or style. Original athlete/style reference1 only. No new cable anywhere else.\n\nAttempt 5\nPrecise-object-edit, image2 single-arm reverse fly. Preserve all original pixels except the free working cable. Its wheel wrap is now correct, preserve that curved segment ON THE WHEEL. The exposed cable between top tangent x194 y298 and handle stopper x918 y335 is slightly bowed and must be under load: replace only exposed segment with ONE PERFECTLY STRAIGHT THIN TAUT LINE between these points, absolutely no sag, kink, curvature or bow. Its slope is constant from wheel to hand. Maintain transition tangentially into visible wheel groove. Keep athlete, grip, shoulders, posture, paired machine and style unchanged. No new wire tail. Image1 remains immutable style.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-rejects-plus-five-2026-09-21/139.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "upper_back",
+        "traps"
+      ],
+      "movement_family": "accessory_rear_delts",
+      "execution_family": "CABLE",
+      "sidedness": "unilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen only. Exact rejected feedback and original #33 style baseline retained. All 23 attempts inspected; ten selected, thirteen withheld.",
+        "owner_instruction": "fix the rejects and add 5 more",
+        "exact_latest_rejection": "please look up how it is supposed to look, but it is not this",
+        "retained_rejections": "[{\"version\": 2, \"reason\": \"I want a fucking cable rig\"}, {\"version\": 4, \"reason\": \"please look up how it is supposed to look, but it is not this\"}]",
+        "inspection": "Rebuilt against the PureGym instructor demonstration: side-on cross-body reverse fly, softly bent working arm at shoulder height, one cable running into the wheel groove; free arm relaxed.",
+        "selected_attempt": "5",
+        "source_sha256": "d566c3f01be0a85e2956674b473880b107dd86ad2725a0b7be892ba7a7340b1d",
+        "exercise_references": "https://www.puregym.com/exercises/arms-and-shoulders/rear-delt-exercises/cable-rear-delt-flyes/ ; https://repfitness.com/products/pro-series-neutral-grip-lat-bar ; https://www.muscleandfitness.com/exercise/workouts/back-exercises/wide-grip-seated-cable-row/ ; https://www.muscleandstrength.com/exercises/lying-cable-tricep-extension.html",
+        "scope": "Five latest active rejects and five existing invalidated cable movements. Pending human review. Preserve approvals, crop decisions, consolidated artwork bindings, canonical mappings, movement IDs and histories."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-22T03:13:20.578247+00:00",
+        "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d566c3f01be0a85e2956674b473880b107dd86ad2725a0b7be892ba7a7340b1d",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 170,
       "key": "accessory_straight_arm_cable_pulldown",
       "movement_name": "Straight-Arm Cable Pulldown",
@@ -62425,6 +64077,248 @@
       }
     },
     {
+      "movement_definition_id": 208,
+      "key": "accessory_wide_grip_seated_cable_row",
+      "movement_name": "Wide-Grip Seated Cable Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-rejects-plus-five-20260921-208-f0d509c0",
+      "generation_batch": "Five cable corrections and five additions — 2026-09-21",
+      "candidate_id": "9bcb7e4fd372d6382d5af686",
+      "version": 5,
+      "supersedes_candidate_id": "8a915e11e5763527ae2318a5",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "none of it looks natural. body/machine/force angles are all not cohesive",
+        "tags": [],
+        "reviewed_at": "2026-09-21T21:45:48.222265+00:00",
+        "reviewed_at_display": "Sep 21, 2026 02:45 PM PT (Sep 21, 2026 05:45 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5e6642cfa4f1bcd9758c1b045a1f7228831f7f6b958775fe426234f4e4200c48",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/9bcb7e4fd372d6382d5af686/master.png",
+          "sha256": "f0d509c0d47572fad31745325a9893a98e12feabbe1c778f32c5840341d9750b",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1825706
+        },
+        "app": {
+          "path": "candidates/9bcb7e4fd372d6382d5af686/app.png",
+          "sha256": "c5c7c03db9b8993712f6cb34d05e65f972d6d292e5367f3690e9aa678f21701a",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 320600
+        },
+        "thumbnail": {
+          "path": "candidates/9bcb7e4fd372d6382d5af686/thumbnail.png",
+          "sha256": "12fb0ed4ec8fd0336d3a815eaf985bd3bbbfc9d119d087f85b81ce2920571576",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46119
+        }
+      },
+      "candidate_asset": "candidates/9bcb7e4fd372d6382d5af686/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-22T03:13:24.436611+00:00",
+          "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f0d509c0d47572fad31745325a9893a98e12feabbe1c778f32c5840341d9750b",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-21T22:26:58.642468+00:00",
+      "created_at_display": "Sep 21, 2026 03:26 PM PT (Sep 21, 2026 06:26 PM Eastern)",
+      "generation_prompt": "Attempt 1\nUse case: photorealistic-natural. Strength Ledger WIDE-GRIP SEATED CABLE ROW. Image1 immutable male athlete/style (natural size, graphite tank, black shorts/trainers, dark studio with restrained violet rim). Image2 specifies the owner-approved DEDICATED SEATED CABLE ROW STATION, preserve its coherent single enclosed stack, low forward output sheave, long bench and TWO footplates. Photograph a natural real row, not posing. CHANGE CAMERA to mostly SIDE PROFILE, only 15 degrees forward of profile; this keeps the machine, bench and athlete in one true perspective. Athlete sits squarely on bench facing directly at output sheave, feet centered on respective footplates, knees softly bent, spine neutral, torso leaning backward just 8 degrees, eyes following torso. His sternum, bench center, bar center and working pulley lie in SAME vertical plane. Both hands hold a straight chrome bar in an OVERHAND grip 1.5 shoulder widths apart. The bar lies perpendicular to bench axis and looks foreshortened from this side view, never enormous across photo. Capture mid-row: elbows bent 80 degrees, flared naturally 45-60 degrees, upper arms beside trunk, bar moving toward lower chest. Shoulders level, natural forearm lengths, wrists straight. Exactly one central eyelet, clip and stopper with taut cable to the pulley GROOVE, directly forward between feet, no lateral bend. Entire figure, seat legs, matched footplates and full stack contained in square. Preserve correct seat height and real commercial machine dimensions. One working cable; do not substitute adjustable cable crossover towers.\n\nAttempt 2\nPrecise-object-edit of image2 WIDE-GRIP SEATED CABLE ROW. Preserve natural seated athlete, full bench, feet firmly on paired footplates, overhead-grip straight row bar and whole machine. Correct ONLY the output pulley assembly and final cable routing: the loaded wire currently terminates on a small bolt at left edge. It must wrap around an actual SHEAVE GROOVE. Lower the complete wheel by about one radius (5cm), leaving existing wire pull line near horizontal. Position the TOP PERIMETER GROOVE directly on that pull line; cable travels from bar center stopper through open space then tangentially onto the TOP RIM, follows a visible curved wrap on outer groove and returns downward INSIDE machine. No tie-off at axle/guard/bolt; no wire endpoint at machine. Keep robust black two-cheek guard, silver axle in CENTER clearly below wire, correct steel frame. Do not change bar, hand positions, elbows, chest orientation, anatomy, lighting or square framing. Image1 preserves baseline style.\n\nAttempt 3\nStrength Ledger WIDE-GRIP SEATED CABLE ROW. Image1 athlete/style fixed. Image2 scene and correct dedicated seated row machine. Current view hides wide hand spacing. Rephotograph entire scene from REAR-LEFT THREE-QUARTER viewpoint so we see athlete's UPPER BACK and two widely spaced hands. The camera orbits; athlete does NOT twist at waist. Whole athlete remains perfectly square to machine, both feet squarely on its respective footplates, seated center of bench, spine neutral. Machine is ahead and on image right, bench axis projects from bottom-left toward upper-right. Hands take a clearly WIDE OVERHAND GRIP on a straight 95cm bar, about 70cm apart, beyond shoulder width. Elbows flare outward about 60 degrees and travel back, bar pulled toward lower sternum at mid-row. Show both closed hands and thumbs, naturally proportional forearms and shoulders, gaze directly toward machine. Exactly ONE center eyelet/clip/stopper BETWEEN the hands, cable straight forward in athlete's center plane to top groove of dedicated row output sheave. Keep the actual coherent single-stack row machine with long bench, two footplates and return cable; matching whole-object perspective for machine, bench, feet, athlete and bar. Correct cable wraps wheel rim, never axle. Complete machine and feet in square frame, same charcoal subtle violet studio. Wide row must be mechanically recognizable; not a narrow row, not torso rotated to camera.\n\nAttempt 4\nCreate final corrected WIDE-GRIP SEATED CABLE ROW. Image1 fixes athlete identity, natural muscular proportions, clothing and dark studio style. Image2 provides the dedicated seated cable-row bench machine with proper footplates and groove-routed cable. Image3 is the real instructor pose reference: use that natural shoulder/elbow/forearm/bar relationship (mirrored horizontally to face right), but seated ON our bench with both feet on its footplates. Torso upright naturally square to station; head faces same way as chest and knees, not looking at camera. Straight bar in two fully CLOSED overhand hands slightly wider than shoulders, about 60cm apart; elbows pulled backward evenly, flared a moderate 40 degrees, identical left/right elbow bend. Cable clips to welded CENTER EYELET BETWEEN hands, single stopper, both hands equidistant from center. Bar perpendicular to bench's long axis with correct foreshortening, not a bar aligned along cable. Natural 3/4 front-side view like reference3, whole machine and body share same perspective. The center bar clip, midpoint between feet, sternum and wheel are on same forward line. Use actual dedicated long seat, paired footplates, closed stack machine of image2, not instructor's floor station. Real wrists, limbs, sensible machine dimensions; no oversized shoulders, no body twist. One cable stays taut straight into TOP groove of actual wheel, never an axle or bar end. Whole figure/station in square charcoal studio, movement primary.\n\nAttempt 5\nPrecise framing-only edit. Image2 WIDE-GRIP SEATED CABLE ROW has correct natural athlete, wide closed overhand grips, center eyelet and correct cable groove. Preserve ALL these exact movement details and original proportions. Make a SQUARE finished artwork by EXTENDING the CANVAS UPWARD to reveal the whole curved rounded top of the enclosed row-machine stack and a little headroom, adding dark studio floor below if needed. Do not crop any machine edge, footplate, bench support or shoe. Do not stretch image or rebuild athlete. Image3 shows the COMPLETE original row machine design including rounded top; use solely to reconstruct the missing top beyond image2's boundary with coherent vertical perspective. Image1 original style baseline remains fixed. Whole natural row still fills the lower/main part of square; maximum empty top space only enough for full tower. Keep cable, wheel, both hands, bar, arm angles and all body contact points absolutely unchanged. No text.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-rejects-plus-five-2026-09-21/208.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen only. Exact rejected feedback and original #33 style baseline retained. All 23 attempts inspected; ten selected, thirteen withheld.",
+        "owner_instruction": "fix the rejects and add 5 more",
+        "exact_latest_rejection": "none of it looks natural. body/machine/force angles are all not cohesive",
+        "retained_rejections": "[{\"version\": 4, \"reason\": \"none of it looks natural. body/machine/force angles are all not cohesive\"}]",
+        "inspection": "Dedicated seated row station, square body, feet braced, wider overhand hands on a center-loaded bar. Corrected hand/bar geometry and restored the complete machine top without stretching.",
+        "selected_attempt": "5",
+        "source_sha256": "f0d509c0d47572fad31745325a9893a98e12feabbe1c778f32c5840341d9750b",
+        "exercise_references": "https://www.puregym.com/exercises/arms-and-shoulders/rear-delt-exercises/cable-rear-delt-flyes/ ; https://repfitness.com/products/pro-series-neutral-grip-lat-bar ; https://www.muscleandfitness.com/exercise/workouts/back-exercises/wide-grip-seated-cable-row/ ; https://www.muscleandstrength.com/exercises/lying-cable-tricep-extension.html",
+        "scope": "Five latest active rejects and five existing invalidated cable movements. Pending human review. Preserve approvals, crop decisions, consolidated artwork bindings, canonical mappings, movement IDs and histories."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-22T03:13:24.436611+00:00",
+        "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f0d509c0d47572fad31745325a9893a98e12feabbe1c778f32c5840341d9750b",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 210,
+      "key": "accessory_single_arm_seated_cable_row",
+      "movement_name": "Single-Arm Seated Cable Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-rejects-plus-five-20260921-210-32291ab5",
+      "generation_batch": "Five cable corrections and five additions — 2026-09-21",
+      "candidate_id": "ec64b4bc75841cebd42c872f",
+      "version": 4,
+      "supersedes_candidate_id": "5bbfe2ae20f7cef1ed402c4e",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/ec64b4bc75841cebd42c872f/master.png",
+          "sha256": "32291ab5b0192b01933414dc5c3110085028041a7c9dbb57f29e619257aa9c48",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1791742
+        },
+        "app": {
+          "path": "candidates/ec64b4bc75841cebd42c872f/app.png",
+          "sha256": "d62abcd8bb94f810c068f748b66b7059f97332a0438bd88d28ca21442fcc23b8",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 326777
+        },
+        "thumbnail": {
+          "path": "candidates/ec64b4bc75841cebd42c872f/thumbnail.png",
+          "sha256": "02e5c046c0f55616af80fad2151212953494e4d9c4bad0a286c4f95628a966f0",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48462
+        }
+      },
+      "candidate_asset": "candidates/ec64b4bc75841cebd42c872f/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-22T03:13:26.369394+00:00",
+          "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "32291ab5b0192b01933414dc5c3110085028041a7c9dbb57f29e619257aa9c48",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-21T22:27:05.603955+00:00",
+      "created_at_display": "Sep 21, 2026 03:27 PM PT (Sep 21, 2026 06:27 PM Eastern)",
+      "generation_prompt": "Attempt 1\nPrecise-object-edit SINGLE-ARM SEATED CABLE ROW. Image1 immutable athlete/style. Image2 specifies dedicated row station, natural side camera, seated athlete square to pulley, grounded seat, paired footplates, coherent stack and physically correct working wheel with cable in top groove. Preserve ALL that hardware and pose proportions. Change exercise to ONE ARM: remove bar. Athlete's RIGHT hand (near camera) firmly wraps one cylindrical grip inside a D-handle, neutral palm toward body midline, straight wrist. He rows it back beside right lower ribs, right elbow bends 90 degrees and points straight behind him, shoulder down. Nonworking LEFT hand rests open on left thigh with separate visible forearm, not holding an attachment. Torso stays square to machine, no twisting or side bend; both feet remain on respective footplates and knees soft. One straight taut cable from D-handle carabiner/single stopper to preserved actual TOP GROOVE of row wheel; no second cable, no bar. Machine outlet directly forward of athlete, no sideways body pose. Whole scene unchanged, full square, same restrained violet rim. Show genuine controlled one-arm row.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-rejects-plus-five-2026-09-21/210.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "CABLE",
+      "sidedness": "unilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen only. Exact rejected feedback and original #33 style baseline retained. All 23 attempts inspected; ten selected, thirteen withheld.",
+        "owner_instruction": "fix the rejects and add 5 more",
+        "exact_latest_rejection": "",
+        "retained_rejections": "[]",
+        "inspection": "Dedicated seated row machine, one neutral D-handle, free hand resting on thigh, square torso and two braced feet. One taut cable meets the output groove.",
+        "selected_attempt": "1",
+        "source_sha256": "32291ab5b0192b01933414dc5c3110085028041a7c9dbb57f29e619257aa9c48",
+        "exercise_references": "https://www.puregym.com/exercises/arms-and-shoulders/rear-delt-exercises/cable-rear-delt-flyes/ ; https://repfitness.com/products/pro-series-neutral-grip-lat-bar ; https://www.muscleandfitness.com/exercise/workouts/back-exercises/wide-grip-seated-cable-row/ ; https://www.muscleandstrength.com/exercises/lying-cable-tricep-extension.html",
+        "scope": "Five latest active rejects and five existing invalidated cable movements. Pending human review. Preserve approvals, crop decisions, consolidated artwork bindings, canonical mappings, movement IDs and histories."
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16",
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-22T03:13:26.369394+00:00",
+        "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "32291ab5b0192b01933414dc5c3110085028041a7c9dbb57f29e619257aa9c48",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 214,
       "key": "accessory_standing_cable_row",
       "movement_name": "Standing Cable Row",
@@ -62775,6 +64669,121 @@
       }
     },
     {
+      "movement_definition_id": 166,
+      "key": "accessory_supinated_grip_lat_pulldown",
+      "movement_name": "Supinated-Grip Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-rejects-plus-five-20260921-166-c361a6f0",
+      "generation_batch": "Five cable corrections and five additions — 2026-09-21",
+      "candidate_id": "10c4d724be6b98fa238a0cff",
+      "version": 3,
+      "supersedes_candidate_id": "c4660b6c9773a19cd57be2af",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/10c4d724be6b98fa238a0cff/master.png",
+          "sha256": "c361a6f03cc89135f655f1525835b18504d38c10c60df46022a96226d9ac4282",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1690390
+        },
+        "app": {
+          "path": "candidates/10c4d724be6b98fa238a0cff/app.png",
+          "sha256": "cac59b009aca3353e708b559adf2a9bd0e4c6e8b3775a8f8a588d1c7764cd82e",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 307608
+        },
+        "thumbnail": {
+          "path": "candidates/10c4d724be6b98fa238a0cff/thumbnail.png",
+          "sha256": "55a198ceb1777355465ef4e18fe121769d554eb175b874845ff3880e093fb91d",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46546
+        }
+      },
+      "candidate_asset": "candidates/10c4d724be6b98fa238a0cff/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-22T03:13:46.609472+00:00",
+          "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "c361a6f03cc89135f655f1525835b18504d38c10c60df46022a96226d9ac4282",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-21T22:27:03.351532+00:00",
+      "created_at_display": "Sep 21, 2026 03:27 PM PT (Sep 21, 2026 06:27 PM Eastern)",
+      "generation_prompt": "Attempt 1\nPrecise-object-edit. Strength Ledger SUPINATED-GRIP LAT PULLDOWN. Image1 immutable athlete/style. Image2 exact approved dedicated lat pulldown machine and seated setup: preserve entire machine, working overhead pulley routing, seat and thigh rollers, feet. Change wide overhand bar grip to SHOULDER-WIDTH UNDERHAND grip on a STRAIGHT bar about 80cm long. Both palms face BACK TOWARD THE ATHLETE'S FACE, fingers close upward from underneath, thumbs wrapped around bar, clear SUPINATED hands. Hands shoulder-width apart equally spaced around center eyelet. Pull bar to just below chin in FRONT of head, shoulders depressed, elbows pulled down close to front of ribs, forearms nearly vertical, wrists straight. Keep torso squarely facing station with natural 10-degree recline; neck neutral and eyes following exercise. One cable descends vertically from real overhead wheel groove to bar center clip/stopper, not offset to a hand. Entire frame and figure in square, same natural scale, same quiet charcoal studio subtle violet rim. The exercise and true grip are primary, not showing off to camera. Do not alter machine or invent another pulley.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-rejects-plus-five-2026-09-21/166.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen only. Exact rejected feedback and original #33 style baseline retained. All 23 attempts inspected; ten selected, thirteen withheld.",
+        "owner_instruction": "fix the rejects and add 5 more",
+        "exact_latest_rejection": "",
+        "retained_rejections": "[]",
+        "inspection": "Dedicated pulldown station with shoulder-width underhand grip, front-of-head bar path, restrained torso recline and secured thighs.",
+        "selected_attempt": "1",
+        "source_sha256": "c361a6f03cc89135f655f1525835b18504d38c10c60df46022a96226d9ac4282",
+        "exercise_references": "https://www.puregym.com/exercises/arms-and-shoulders/rear-delt-exercises/cable-rear-delt-flyes/ ; https://repfitness.com/products/pro-series-neutral-grip-lat-bar ; https://www.muscleandfitness.com/exercise/workouts/back-exercises/wide-grip-seated-cable-row/ ; https://www.muscleandstrength.com/exercises/lying-cable-tricep-extension.html",
+        "scope": "Five latest active rejects and five existing invalidated cable movements. Pending human review. Preserve approvals, crop decisions, consolidated artwork bindings, canonical mappings, movement IDs and histories."
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16",
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-22T03:13:46.609472+00:00",
+        "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "c361a6f03cc89135f655f1525835b18504d38c10c60df46022a96226d9ac4282",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 273,
       "key": "accessory_cable_preacher_curl",
       "movement_name": "Cable Preacher Curl",
@@ -62994,6 +65003,128 @@
         "reviewer": "owner_via_chat",
         "reviewed_at": "2026-09-16T22:16:07.992875+00:00",
         "reviewed_at_display": "Sep 16, 2026 03:16 PM PT (Sep 16, 2026 06:16 PM Eastern)"
+      }
+    },
+    {
+      "movement_definition_id": 306,
+      "key": "accessory_single_arm_cable_pressdown",
+      "movement_name": "Single-Arm Cable Pressdown",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-rejects-plus-five-20260921-306-402b5936",
+      "generation_batch": "Five cable corrections and five additions — 2026-09-21",
+      "candidate_id": "f3c49ced07ca5b0ed82293aa",
+      "version": 7,
+      "supersedes_candidate_id": "2b24099e4ed48956903c7466",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "hand should be pronated, gripping the handle with the palm down",
+        "tags": [],
+        "reviewed_at": "2026-09-21T21:46:09.022250+00:00",
+        "reviewed_at_display": "Sep 21, 2026 02:46 PM PT (Sep 21, 2026 05:46 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "7110694eddff64e5141d33cde8270b49e01280c68050c5d41d4818556d3bc37a",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/f3c49ced07ca5b0ed82293aa/master.png",
+          "sha256": "402b59364a9f6f6ed438be9c824c4e5731b425387fe5bda8cec1e8a33ebbc1cd",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1775713
+        },
+        "app": {
+          "path": "candidates/f3c49ced07ca5b0ed82293aa/app.png",
+          "sha256": "915c931006b247a80af5d89e27a2472de0c4d0868177753b794b8004a4a9b29e",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 338839
+        },
+        "thumbnail": {
+          "path": "candidates/f3c49ced07ca5b0ed82293aa/thumbnail.png",
+          "sha256": "239c5f194fc774476d7e774370f89cf2f12b43f1377dfd91fcc411e3d4f52ef6",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 52731
+        }
+      },
+      "candidate_asset": "candidates/f3c49ced07ca5b0ed82293aa/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-22T03:13:57.127634+00:00",
+          "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "402b59364a9f6f6ed438be9c824c4e5731b425387fe5bda8cec1e8a33ebbc1cd",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-21T22:27:01.093992+00:00",
+      "created_at_display": "Sep 21, 2026 03:27 PM PT (Sep 21, 2026 06:27 PM Eastern)",
+      "generation_prompt": "Attempt 1\nUse case: precise-object-edit. Strength Ledger SINGLE-ARM CABLE PRESSDOWN correction. Image 1 is immutable athlete/style baseline. Image 2 is the edit target; retain the entire matching Precor paired cable machine, steel uprights, pulley grooves, camera, scale, black studio and athlete facing directly toward the active right tower. Owner correction: 'hand should be pronated, gripping the handle with the palm down'. Make that unmistakable: working right elbow remains pinned beside his ribs; capture slightly BEFORE lockout with elbow bent about 35 degrees and forearm extending down and forward. Rotate forearm into full PRONATION; back of hand faces UP, palm faces FLOOR, four fingers curl DOWN over a horizontal D-handle grip, thumb wraps underneath. Grip axis runs across his body, not vertically like a hammer grip. Neutral straight wrist, natural knuckles, no wrist twisting. One taut cable through one clip/stopper to the existing high wheel groove. Keep other arm naturally relaxed, both feet planted and torso square to working station. No other active cable. Full intact man and machine; no new text.\n\nAttempt 2\nPrecise-object-edit SINGLE ARM CABLE PUSHDOWN. Image1 athlete/style only. Image2 edit target, keep full matched Precor rig, side view and same athlete facing working right tower. Change WORKING FOREARM AND GRIP substantially: show the MIDPOINT, with upper right arm vertical at his ribs and elbow bent NINETY DEGREES. Right forearm HORIZONTAL pointing straight toward active tower, hand in front of belly. Full OVERHAND PRONATED grip: palm faces DOWN TO FLOOR, back of hand faces UP TO CEILING. Horizontal handle axis extends side-to-side across body; from this side camera it is foreshortened, seen almost END-ON, NOT a long bar drawn sideways across picture. Fingers wrap DOWN over cylindrical rubber grip, thumb under. Keep neutral straight wrist. A short D stirrup arches above the grip and clips to one stopper on ONE taut cable coming down from existing top pulley groove. Clearly visible genuine palm-down single arm pressdown, not neutral hammer grip and not reverse-grip. Nonworking left hand rests lightly on left hip so both arms are visible. Feet stay square to station, head neutral task-focused, natural neck. Keep rest of full apparatus unchanged.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-rejects-plus-five-2026-09-21/306.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_triceps",
+      "execution_family": "CABLE",
+      "sidedness": "unilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen only. Exact rejected feedback and original #33 style baseline retained. All 23 attempts inspected; ten selected, thirteen withheld.",
+        "owner_instruction": "fix the rejects and add 5 more",
+        "exact_latest_rejection": "hand should be pronated, gripping the handle with the palm down",
+        "retained_rejections": "[{\"version\": 4, \"reason\": \"hand/handle interface doesnt look natural\"}, {\"version\": 5, \"reason\": \"cable handle is not correctly in the hand!!! look up how it looks\"}, {\"version\": 6, \"reason\": \"hand should be pronated, gripping the handle with the palm down\"}]",
+        "inspection": "Working elbow stays beside ribs with a horizontal forearm and clear palm-down pronation. Grip is foreshortened from the side, wrist straight, one high cable in use.",
+        "selected_attempt": "2",
+        "source_sha256": "402b59364a9f6f6ed438be9c824c4e5731b425387fe5bda8cec1e8a33ebbc1cd",
+        "exercise_references": "https://www.puregym.com/exercises/arms-and-shoulders/rear-delt-exercises/cable-rear-delt-flyes/ ; https://repfitness.com/products/pro-series-neutral-grip-lat-bar ; https://www.muscleandfitness.com/exercise/workouts/back-exercises/wide-grip-seated-cable-row/ ; https://www.muscleandstrength.com/exercises/lying-cable-tricep-extension.html",
+        "scope": "Five latest active rejects and five existing invalidated cable movements. Pending human review. Preserve approvals, crop decisions, consolidated artwork bindings, canonical mappings, movement IDs and histories."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-22T03:13:57.127634+00:00",
+        "reviewed_at_display": "Sep 21, 2026 08:13 PM PT (Sep 21, 2026 11:13 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "402b59364a9f6f6ed438be9c824c4e5731b425387fe5bda8cec1e8a33ebbc1cd",
+        "source": "human_review_ui"
       }
     },
     {
@@ -65463,6 +67594,118 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "d71c7c13e1c51d7cd0e4cf8b2154d7a4ca83fd3edb96e52e8f0212d199a07c9a",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 311,
+      "key": "accessory_cable_skull_crusher",
+      "movement_name": "Cable Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-rejects-plus-five-20260921-311-4fd60378",
+      "generation_batch": "Five cable corrections and five additions — 2026-09-21",
+      "candidate_id": "0e8b78395af483948f3a1630",
+      "version": 4,
+      "supersedes_candidate_id": "cabe1796c96193be7a283ddd",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/0e8b78395af483948f3a1630/master.png",
+          "sha256": "4fd603786ded88e5d0759c3c85cfde9fda332c7e2cf0aab327eaab3c25041b80",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1808389
+        },
+        "app": {
+          "path": "candidates/0e8b78395af483948f3a1630/app.png",
+          "sha256": "914d97627ca1a309364651d60fa68c6f785c735fb3d8621b6617c13eadd8412c",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 350115
+        },
+        "thumbnail": {
+          "path": "candidates/0e8b78395af483948f3a1630/thumbnail.png",
+          "sha256": "1dbf3be9abd24c58ebdd000914ac5a24ff3d759560a91913fa60d75fd12b6ba6",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 54311
+        }
+      },
+      "candidate_asset": "candidates/0e8b78395af483948f3a1630/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-22T03:14:15.829352+00:00",
+          "reviewed_at_display": "Sep 21, 2026 08:14 PM PT (Sep 21, 2026 11:14 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "4fd603786ded88e5d0759c3c85cfde9fda332c7e2cf0aab327eaab3c25041b80",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-21T22:27:06.726887+00:00",
+      "created_at_display": "Sep 21, 2026 03:27 PM PT (Sep 21, 2026 06:27 PM Eastern)",
+      "generation_prompt": "Attempt 1\nUse case: photorealistic-natural. Strength Ledger CABLE SKULL CRUSHER / lying cable triceps extension. Image1 athlete/outfit/studio only. Image2 exact matched Precor dual-stack machine design; retain both full coherent forward-facing stacks, bridge, bases and steel rails. Replace standing pose with a flat sturdy gym bench on OPEN FLOOR directly IN FRONT of near RIGHT tower, bench long axis aimed straight at that tower. Athlete lies SUPINE on bench, HEAD NEAREST active low pulley at right, feet farther away to left, feet planted on floor either side of bench, knees bent naturally. Bench supports full torso and head. Move near right working carriage to LOW height 20cm; far left carriage remains idle with parked handle. ONE cable travels from low wheel groove toward a short EZ bar above/beyond athlete's forehead. Both hands overhand shoulder-width grip, thumbs closed, center eyelet and one clip/stopper. Upper arms angle upward and slightly toward head (15 degrees beyond vertical), elbows bent 65 degrees: clearly mid skull-crusher extension, not bench press. Keep upper arms stationary, elbows shoulder width, wrists straight. Taut cable runs in clear space beyond head to low wheel, never intersects face/head/bench. Athlete looks naturally upward along forearms. True SIDE camera with slight foot-end oblique reveals both hands and grip, natural 1.8m human vs 2.3m machine scale. Entire scene contained square, charcoal studio subtle violet rim, movement readable, no posing and no labels.\n\nAttempt 2\nPrecise local correction of image2 CABLE SKULL CRUSHER; preserve entire realistic supine athlete, arm bends, head supported on bench, feet, full paired machine and composition. Replace the incorrect end-loaded bar with a REAL short EZ cable bar loaded at its EXACT CENTER BETWEEN HANDS. Two closed overhand hands sit equal distances to left/right of central welded eyelet. A silver carabiner clips ONLY to that center eyelet, with ONE small black stopper on the cable immediately beyond clip toward machine. Both bar ends terminate in ordinary small metal end caps and have NO clips, cables or balls. There must be zero cable or ball attached past the right hand. A single taut cable from center clip runs clear of face/head to existing low pulley. Make center eyelet/clip visible BETWEEN and slightly beyond hands, not hidden in a fist. Keep bar transverse to body and bench, physically foreshortened to camera. Only correct this attachment and cable connection. Retain natural wrists, exactly two hands, elbow-extension position, whole frame and same baseline style image1.\n\nAttempt 3\nPrecise-object-edit CABLE SKULL CRUSHER. Image1 style invariant. Image2 target: preserve paired Precor rig, supine athlete/bench/feet, natural head, center-loaded EZ bar with hands evenly spaced and one center clip/stopper. ONLY correct active LOW RIGHT PULLEY CONNECTION. Cable incorrectly lands on hinge cylinder LEFT of wheel. REMOVE that hinge attachment entirely. Working cable must enter the actual wheel GROOVE around its UPPER LEFT PERIMETER, then visibly wrap around outer circumference into machine. Swivel the whole pulley cheek/sheave assembly toward the bar, showing the wheel rim and grooved channel, with hinge cylinder BEHIND assembly and out of wire's path. No wire can end on a bolt, hinge, knob or flat cover. One taut continuous load path from center stopper to actual grooved sheave and onward into tower. Keep left idle carriage/handle unchanged, both complete towers coherent and matched. No other changes to pose, machine proportions, exact center bar load, grip or composition.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-rejects-plus-five-2026-09-21/311.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_triceps",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen only. Exact rejected feedback and original #33 style baseline retained. All 23 attempts inspected; ten selected, thirteen withheld.",
+        "owner_instruction": "fix the rejects and add 5 more",
+        "exact_latest_rejection": "",
+        "retained_rejections": "[]",
+        "inspection": "Supine elbow-extension position near lockout with head supported and feet grounded. EZ bar has one center clip between two hands; active low wheel swivels toward its load and cable enters the perimeter groove.",
+        "selected_attempt": "3",
+        "source_sha256": "4fd603786ded88e5d0759c3c85cfde9fda332c7e2cf0aab327eaab3c25041b80",
+        "exercise_references": "https://www.puregym.com/exercises/arms-and-shoulders/rear-delt-exercises/cable-rear-delt-flyes/ ; https://repfitness.com/products/pro-series-neutral-grip-lat-bar ; https://www.muscleandfitness.com/exercise/workouts/back-exercises/wide-grip-seated-cable-row/ ; https://www.muscleandstrength.com/exercises/lying-cable-tricep-extension.html",
+        "scope": "Five latest active rejects and five existing invalidated cable movements. Pending human review. Preserve approvals, crop decisions, consolidated artwork bindings, canonical mappings, movement IDs and histories."
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16",
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-22T03:14:15.829352+00:00",
+        "reviewed_at_display": "Sep 21, 2026 08:14 PM PT (Sep 21, 2026 11:14 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "4fd603786ded88e5d0759c3c85cfde9fda332c7e2cf0aab327eaab3c25041b80",
         "source": "human_review_ui"
       }
     },
