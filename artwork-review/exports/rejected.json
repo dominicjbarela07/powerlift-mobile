@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 2647,
+  "revision": 2673,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-22T17:51:25.525606+00:00",
-  "updated_at_display": "Sep 22, 2026 10:51 AM PT (Sep 22, 2026 01:51 PM Eastern)",
+  "updated_at": "2026-09-22T21:48:00.969578+00:00",
+  "updated_at_display": "Sep 22, 2026 02:48 PM PT (Sep 22, 2026 05:48 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -1906,6 +1906,69 @@
       "catalog_receipt": {
         "source": "owner_catalog_consolidation_2026_09_20",
         "replacement_movement_definition_id": 574,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "95383e13a89728448ba63714",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_side_lying_cable_hip_abduction",
+      "movement_definition_id": 466,
+      "movement_name": "Side-Lying Cable Hip Abduction",
+      "reason": "I want it gone",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-22T20:56:48.859633+00:00",
+      "excluded_at_display": "Sep 22, 2026 01:56 PM PT (Sep 22, 2026 04:56 PM Eastern)",
+      "source": "human_review_catalog_retirement",
+      "catalog_receipt": {
+        "reason": "I want it gone",
+        "reviewer_user_id": 1,
+        "candidate_id": "95383e13a89728448ba63714",
+        "source": "human_review_catalog_retirement",
+        "retired_at": "2026-09-22T20:56:48.851751",
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "d8fbb9e9bbf6193c6a7e7447",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_side_lying_cable_hip_adduction",
+      "movement_definition_id": 454,
+      "movement_name": "Side-Lying Cable Hip Adduction",
+      "reason": "I want it gone",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-22T20:57:24.834773+00:00",
+      "excluded_at_display": "Sep 22, 2026 01:57 PM PT (Sep 22, 2026 04:57 PM Eastern)",
+      "source": "human_review_catalog_retirement",
+      "catalog_receipt": {
+        "reason": "I want it gone",
+        "reviewer_user_id": 1,
+        "candidate_id": "d8fbb9e9bbf6193c6a7e7447",
+        "source": "human_review_catalog_retirement",
+        "retired_at": "2026-09-22T20:57:24.831430",
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "a07998c57fce7a267526dda5",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_cable_hip_thrust",
+      "movement_definition_id": 441,
+      "movement_name": "Cable Hip Thrust",
+      "reason": "I dont want it",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-22T20:57:37.246405+00:00",
+      "excluded_at_display": "Sep 22, 2026 01:57 PM PT (Sep 22, 2026 04:57 PM Eastern)",
+      "source": "human_review_catalog_retirement",
+      "catalog_receipt": {
+        "reason": "I dont want it",
+        "reviewer_user_id": 1,
+        "candidate_id": "a07998c57fce7a267526dda5",
+        "source": "human_review_catalog_retirement",
+        "retired_at": "2026-09-22T20:57:37.244027",
         "historical_evidence_rewritten": false
       },
       "human_approved": false

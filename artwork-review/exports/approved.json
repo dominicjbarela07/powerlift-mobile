@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 2647,
+  "revision": 2673,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-22T17:51:25.525606+00:00",
-  "updated_at_display": "Sep 22, 2026 10:51 AM PT (Sep 22, 2026 01:51 PM Eastern)",
+  "updated_at": "2026-09-22T21:48:00.969578+00:00",
+  "updated_at_display": "Sep 22, 2026 02:48 PM PT (Sep 22, 2026 05:48 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -1906,6 +1906,69 @@
       "catalog_receipt": {
         "source": "owner_catalog_consolidation_2026_09_20",
         "replacement_movement_definition_id": 574,
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "95383e13a89728448ba63714",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_side_lying_cable_hip_abduction",
+      "movement_definition_id": 466,
+      "movement_name": "Side-Lying Cable Hip Abduction",
+      "reason": "I want it gone",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-22T20:56:48.859633+00:00",
+      "excluded_at_display": "Sep 22, 2026 01:56 PM PT (Sep 22, 2026 04:56 PM Eastern)",
+      "source": "human_review_catalog_retirement",
+      "catalog_receipt": {
+        "reason": "I want it gone",
+        "reviewer_user_id": 1,
+        "candidate_id": "95383e13a89728448ba63714",
+        "source": "human_review_catalog_retirement",
+        "retired_at": "2026-09-22T20:56:48.851751",
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "d8fbb9e9bbf6193c6a7e7447",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_side_lying_cable_hip_adduction",
+      "movement_definition_id": 454,
+      "movement_name": "Side-Lying Cable Hip Adduction",
+      "reason": "I want it gone",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-22T20:57:24.834773+00:00",
+      "excluded_at_display": "Sep 22, 2026 01:57 PM PT (Sep 22, 2026 04:57 PM Eastern)",
+      "source": "human_review_catalog_retirement",
+      "catalog_receipt": {
+        "reason": "I want it gone",
+        "reviewer_user_id": 1,
+        "candidate_id": "d8fbb9e9bbf6193c6a7e7447",
+        "source": "human_review_catalog_retirement",
+        "retired_at": "2026-09-22T20:57:24.831430",
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "a07998c57fce7a267526dda5",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_cable_hip_thrust",
+      "movement_definition_id": 441,
+      "movement_name": "Cable Hip Thrust",
+      "reason": "I dont want it",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-22T20:57:37.246405+00:00",
+      "excluded_at_display": "Sep 22, 2026 01:57 PM PT (Sep 22, 2026 04:57 PM Eastern)",
+      "source": "human_review_catalog_retirement",
+      "catalog_receipt": {
+        "reason": "I dont want it",
+        "reviewer_user_id": 1,
+        "candidate_id": "a07998c57fce7a267526dda5",
+        "source": "human_review_catalog_retirement",
+        "retired_at": "2026-09-22T20:57:37.244027",
         "historical_evidence_rewritten": false
       },
       "human_approved": false
@@ -65197,6 +65260,137 @@
       }
     },
     {
+      "movement_definition_id": 176,
+      "key": "accessory_elbow_tucked_cable_row",
+      "movement_name": "Elbow-Tucked Cable Row",
+      "primary_muscle_group": "lats",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-reference-fixes-plus-ten-20260922-176-f0d83c2f",
+      "generation_batch": "Four reference-based cable corrections and ten additions — 2026-09-22",
+      "candidate_id": "e9fbafd9ce94b0e2531f5eaf",
+      "version": 4,
+      "supersedes_candidate_id": "a58f144317b9e2b99cd6af7b",
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/b73d38ce013d35be0eff7c36/master.png",
+          "sha256": "f0d83c2f85dfa2fa7854433008138c3313403d424afe362d03a9b3a980dc9fcf",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1908560
+        },
+        "app": {
+          "path": "candidates/b73d38ce013d35be0eff7c36/app.png",
+          "sha256": "bbc5d30ae9e32be08ee202beba3a4a1187adb4bc3d60890c3597fee115e46a33",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 329639
+        },
+        "thumbnail": {
+          "path": "candidates/b73d38ce013d35be0eff7c36/thumbnail.png",
+          "sha256": "f861cdd805bed982fbc8534d82fc20a4fde41a8c9fb56ce27f08e170567d80b1",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46012
+        }
+      },
+      "candidate_asset": "candidates/b73d38ce013d35be0eff7c36/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-22T20:54:33.798993+00:00",
+          "reviewed_at_display": "Sep 22, 2026 01:54 PM PT (Sep 22, 2026 04:54 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f0d83c2f85dfa2fa7854433008138c3313403d424afe362d03a9b3a980dc9fcf",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-22T17:51:18.778079+00:00",
+      "created_at_display": "Sep 22, 2026 10:51 AM PT (Sep 22, 2026 01:51 PM Eastern)",
+      "generation_prompt": "Attempt 0\nReuse the unmodified exact human-approved seated cable-row master from candidate b73d38ce013d35be0eff7c36 for the compatible elbow-tucked cable-row presentation. Its dedicated row station, seated braced feet, close neutral grip and tucked elbows depict this existing identity. No image generation or editing; preserve original bytes and record reuse lineage. Register the new identity-specific candidate pending, without transferring approval.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-reference-fixes-plus-ten-2026-09-22/176.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen only. Exact rejected feedback and original #33 style baseline retained. 33 generated attempts inspected; thirteen selected generated images plus one unmodified owner-approved compatible master reuse.",
+        "owner_instruction": "Fix the rejects and add 10 more! some of those rejects were due to just overly shit attempts! use a reference if you fucking need to! dont fuckig just guess",
+        "exact_latest_rejection": "",
+        "retained_rejections": "[]",
+        "inspection": "Exact unmodified owner-approved master from #207 candidate b73d38ce013d35be0eff7c36 reused for compatible tucked-elbow seated-row presentation. Dedicated row station, low outlet, compact neutral handle, foot supports. New identity-specific receipt remains pending.",
+        "selected_attempt": "0",
+        "source_sha256": "f0d83c2f85dfa2fa7854433008138c3313403d424afe362d03a9b3a980dc9fcf",
+        "exercise_references": "[\"existing human-approved master b73d38ce013d35be0eff7c36\"]",
+        "reference_inspection": "Actual video frames for face pull and archer row; instructional thumbnails/photos and research figure where supplied; written coaching instructions otherwise. Generation adaptations documented per movement.",
+        "scope": "Four latest active rejects and ten existing invalidated cable movements. #176 reuses exact owner-approved #207 bytes without transferring approval. Pending human review. Preserve approvals, crop decisions, consolidated artwork bindings, canonical mappings, movement IDs and histories."
+      },
+      "rebuild_id": "cable-cleanup-2026-09-16",
+      "shared_artwork": {
+        "group_id": "seated-elbow-tucked-cable-row-20260922",
+        "movement_definition_ids": [
+          176,
+          207
+        ],
+        "owner_instruction": "please fucking consolidate images if necessary!!! no need to have fucking multiple images for similar looking shit!",
+        "mechanical_rationale": "The approved dedicated seated cable row depicts elbows tucked close to the torso, planted feet on the station braces and a centered neutral handle. The same visible execution represents the elbow-tucked row. Retain distinct current governed IDs and independent review decisions; share only the exact immutable image triple."
+      },
+      "reused_approved_artwork": {
+        "candidate_id": "b73d38ce013d35be0eff7c36",
+        "movement_definition_id": 207,
+        "master_sha256": "f0d83c2f85dfa2fa7854433008138c3313403d424afe362d03a9b3a980dc9fcf",
+        "approval_transferred": false
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-22T20:54:33.798993+00:00",
+        "reviewed_at_display": "Sep 22, 2026 01:54 PM PT (Sep 22, 2026 04:54 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f0d83c2f85dfa2fa7854433008138c3313403d424afe362d03a9b3a980dc9fcf",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 208,
       "key": "accessory_wide_grip_seated_cable_row",
       "movement_name": "Wide-Grip Seated Cable Row",
@@ -69164,6 +69358,133 @@
       }
     },
     {
+      "movement_definition_id": 213,
+      "key": "accessory_chest_supported_cable_row",
+      "movement_name": "Chest-Supported Cable Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-reference-fixes-plus-ten-20260922-213-50bc597e",
+      "generation_batch": "Four reference-based cable corrections and ten additions — 2026-09-22",
+      "candidate_id": "b468a4228fe84f6f6b583d12",
+      "version": 8,
+      "supersedes_candidate_id": "ea7377b4f06e4b6943a6f772",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "ALSO NOT HOW THIS IS PERFORMED!!! FUCKIGN LOOK IT UP IF YOU NEED TO! THESE ATTEMPTS ARE UNACCEPTBLE",
+        "tags": [],
+        "reviewed_at": "2026-09-22T16:30:31.129312+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:30 AM PT (Sep 22, 2026 12:30 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6196394f8ca7854e06f5a062cee4fca9852ebf8c7ab322f6e2816b0bd49eddd8",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/b468a4228fe84f6f6b583d12/master.png",
+          "sha256": "50bc597e613ccffd7e0c96e7c07e62ce132141bb7dc61dc237eaa637656d8052",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1848373
+        },
+        "app": {
+          "path": "candidates/b468a4228fe84f6f6b583d12/app.png",
+          "sha256": "065a642d9df60dfa74aed2f77434536a063152ddc9994212700d766a3e112c5c",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 340011
+        },
+        "thumbnail": {
+          "path": "candidates/b468a4228fe84f6f6b583d12/thumbnail.png",
+          "sha256": "b2c6fda3167847c269dd752171de0045023655d2e6b7421905dbd88c3989c677",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 50418
+        }
+      },
+      "candidate_asset": "candidates/b468a4228fe84f6f6b583d12/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-22T20:56:15.245861+00:00",
+          "reviewed_at_display": "Sep 22, 2026 01:56 PM PT (Sep 22, 2026 04:56 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "50bc597e613ccffd7e0c96e7c07e62ce132141bb7dc61dc237eaa637656d8052",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-22T17:45:30.415931+00:00",
+      "created_at_display": "Sep 22, 2026 10:45 AM PT (Sep 22, 2026 01:45 PM Eastern)",
+      "generation_prompt": "Attempt 1\nScientific-educational photorealistic Strength Ledger CHEST-SUPPORTED CABLE ROW. Image1 supplies our athlete, dark tank/shorts, black studio and purple edge light. Image2 supplies paired cable rig construction only. Image3 is the authentic Catalyst Athletics execution reference; copy its SIDE VIEW, 35-degree incline bench, athlete prone with chest firmly on the pad, feet planted behind the bench, and low-cable-to-abdomen force line. Remove all reference text/overlays. Put this entire bench/athlete directly in front of ONE low trolley on the paired rig, sufficiently distant for an unobstructed rising cable. Athlete's head at upper end of pad points directly toward working pulley; feet extend behind low end. Chest supported, neck neutral, elbows bent pulling beside ribs, hands gripping a broad curved row bar beside lower ribs. The curved bar clears the sides of the pad; cable attached to bar center passes freely in front of bench to the low pulley. One active taut cable; other stack idle. Full paired machine symmetric, both stacks identically oriented; frame camera from side at modest oblique angle to make chest-to-pad contact and cable line readable like real reference. Natural effortful movement, anatomically plausible hands. Complete feet, head and equipment inside square with safe margins. No words.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-reference-fixes-plus-ten-2026-09-22/213.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen only. Exact rejected feedback and original #33 style baseline retained. 33 generated attempts inspected; thirteen selected generated images plus one unmodified owner-approved compatible master reuse.",
+        "owner_instruction": "Fix the rejects and add 10 more! some of those rejects were due to just overly shit attempts! use a reference if you fucking need to! dont fuckig just guess",
+        "exact_latest_rejection": "ALSO NOT HOW THIS IS PERFORMED!!! FUCKIGN LOOK IT UP IF YOU NEED TO! THESE ATTEMPTS ARE UNACCEPTBLE",
+        "retained_rejections": "[{\"version\": 4, \"reason\": \"doesnt look like he's lined up correctly with the force vectors\"}, {\"version\": 5, \"reason\": \"doesnt look natural\"}, {\"version\": 6, \"reason\": \"not how this goes\"}, {\"version\": 7, \"reason\": \"ALSO NOT HOW THIS IS PERFORMED!!! FUCKIGN LOOK IT UP IF YOU NEED TO! THESE ATTEMPTS ARE UNACCEPTBLE\"}]",
+        "inspection": "Catalyst Athletics prone incline-bench setup: chest stays on inclined pad, feet brace behind, curved bar clears pad, one low cable to abdomen. Replaces upright seated rejected arrangement.",
+        "selected_attempt": "1",
+        "source_sha256": "50bc597e613ccffd7e0c96e7c07e62ce132141bb7dc61dc237eaa637656d8052",
+        "exercise_references": "[\"https://www.catalystathletics.com/exercise/813/Cable-T-Bar-Row/\"]",
+        "reference_inspection": "Actual video frames for face pull and archer row; instructional thumbnails/photos and research figure where supplied; written coaching instructions otherwise. Generation adaptations documented per movement.",
+        "scope": "Four latest active rejects and ten existing invalidated cable movements. #176 reuses exact owner-approved #207 bytes without transferring approval. Pending human review. Preserve approvals, crop decisions, consolidated artwork bindings, canonical mappings, movement IDs and histories."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-22T20:56:15.245861+00:00",
+        "reviewed_at_display": "Sep 22, 2026 01:56 PM PT (Sep 22, 2026 04:56 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "50bc597e613ccffd7e0c96e7c07e62ce132141bb7dc61dc237eaa637656d8052",
+        "source": "human_review_ui"
+      }
+    },
+    {
       "movement_definition_id": 305,
       "key": "accessory_reverse_grip_triceps_pressdown",
       "movement_name": "Reverse-Grip Triceps Pressdown",
@@ -69513,6 +69834,132 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "4fd603786ded88e5d0759c3c85cfde9fda332c7e2cf0aab327eaab3c25041b80",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 145,
+      "key": "accessory_rope_face_pull_with_external_rotation",
+      "movement_name": "Cable Face Pull with External Rotation",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "cable-reference-fixes-plus-ten-20260922-145-62721f9f",
+      "generation_batch": "Four reference-based cable corrections and ten additions — 2026-09-22",
+      "candidate_id": "016a97082f505893001a9abe",
+      "version": 5,
+      "supersedes_candidate_id": "8bba4d56283b50f4c1992ffc",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "DUDE WHAT IS WITH EHE CABLE, RHE FORCE VECTORS ARE ALSO SHIT",
+        "tags": [],
+        "reviewed_at": "2026-09-22T16:30:48.696343+00:00",
+        "reviewed_at_display": "Sep 22, 2026 09:30 AM PT (Sep 22, 2026 12:30 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6d5408efaccf7c8f9462b078015bf66227141d04f43533cfa7e391431b17b41c",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/016a97082f505893001a9abe/master.png",
+          "sha256": "62721f9f2e8eab46e4fc5543136083c5bd47fd8b5f2c91d8548d5e5d450860ca",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1693314
+        },
+        "app": {
+          "path": "candidates/016a97082f505893001a9abe/app.png",
+          "sha256": "4760e149eb10bf87dd179e38a0365d6e638f845ee6bcd1d9b5795d2b811b8372",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 316613
+        },
+        "thumbnail": {
+          "path": "candidates/016a97082f505893001a9abe/thumbnail.png",
+          "sha256": "086cb11f4c1120681d3c645b286eab65d67cc4081dc09779b45b91ee7b1dced1",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48212
+        }
+      },
+      "candidate_asset": "candidates/016a97082f505893001a9abe/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-22T20:56:33.233088+00:00",
+          "reviewed_at_display": "Sep 22, 2026 01:56 PM PT (Sep 22, 2026 04:56 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "62721f9f2e8eab46e4fc5543136083c5bd47fd8b5f2c91d8548d5e5d450860ca",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-22T17:45:27.135567+00:00",
+      "created_at_display": "Sep 22, 2026 10:45 AM PT (Sep 22, 2026 01:45 PM Eastern)",
+      "generation_prompt": "Attempt 1\nScientific educational photorealistic Strength Ledger CABLE FACE PULL WITH EXTERNAL ROTATION. Image1 supplies male athlete/style; image2 supplies paired Precor-style equipment construction ONLY; image3 supplies the exact real exercise pose, camera angle and placement relative to the working pulley. Reproduce image3's side-oblique view and human/pulley alignment with our male athlete wearing dark tank/shorts in black studio with subtle purple rim. Athlete stands directly in front of working trolley, facing directly toward it, head and chest and both feet directed at that pulley. Trolley at lower chest height, two-ended rope held above forehead at completed external rotation, bent elbows out, torso upright with small braced lean, knees soft. The one active cable runs in a single unobstructed straight diagonal from the central rope swivel down to the actual pulley groove, as in image3. Preserve the reference's joint angles and force line. Paired tower rig is mechanically symmetric with both stacks identically oriented, the other trolley idle. Turn the WHOLE paired rig as necessary to match image3 side perspective, never shift the athlete laterally off the working pulley's axis. Full athlete, feet and full machine, square frame. No diagrams or words.\n\nAttempt 2\nPrecise object edit of image2. Image1 is identity/style reference only. Preserve the athlete's natural external-rotation face pull, all pose, machine, camera and framing. REMOVE the erroneous nearly horizontal extra cable running from the tiny upper-left hole to the rope swivel. There must be exactly ONE operating cable: keep the existing rising diagonal line from the chest-height LEFT trolley wheel to the rope swivel. Remove only the other unsupported upper line and tiny upper exit hole. Ensure the surviving cable visibly exits tangentially from the front groove of the chest-height trolley wheel and connects directly to the rope swivel. No second line to the attachment. Don't change anything else.",
+      "generation_source_asset": "/Users/dominic/Documents/Codex/2026-09-15/files-pasted-by-the-user-continue/outputs/cable-reference-fixes-plus-ten-2026-09-22/145.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "upper_back",
+        "traps"
+      ],
+      "movement_family": "accessory_rear_delts",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen only. Exact rejected feedback and original #33 style baseline retained. 33 generated attempts inspected; thirteen selected generated images plus one unmodified owner-approved compatible master reuse.",
+        "owner_instruction": "Fix the rejects and add 10 more! some of those rejects were due to just overly shit attempts! use a reference if you fucking need to! dont fuckig just guess",
+        "exact_latest_rejection": "DUDE WHAT IS WITH EHE CABLE, RHE FORCE VECTORS ARE ALSO SHIT",
+        "retained_rejections": "[{\"version\": 4, \"reason\": \"DUDE WHAT IS WITH EHE CABLE, RHE FORCE VECTORS ARE ALSO SHIT\"}]",
+        "inspection": "Physitrack external-rotation finish; front-facing working pulley, one rising cable, two-ended rope above forehead; duplicate line removed. Full image, groove, hands and stance inspected.",
+        "selected_attempt": "2",
+        "source_sha256": "62721f9f2e8eab46e4fc5543136083c5bd47fd8b5f2c91d8548d5e5d450860ca",
+        "exercise_references": "[\"https://ca.physitrack.com/home-exercise-video/face-pull-with-external-rotation-cable-machine\"]",
+        "reference_inspection": "Actual video frames for face pull and archer row; instructional thumbnails/photos and research figure where supplied; written coaching instructions otherwise. Generation adaptations documented per movement.",
+        "scope": "Four latest active rejects and ten existing invalidated cable movements. #176 reuses exact owner-approved #207 bytes without transferring approval. Pending human review. Preserve approvals, crop decisions, consolidated artwork bindings, canonical mappings, movement IDs and histories."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-22T20:56:33.233088+00:00",
+        "reviewed_at_display": "Sep 22, 2026 01:56 PM PT (Sep 22, 2026 04:56 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "62721f9f2e8eab46e4fc5543136083c5bd47fd8b5f2c91d8548d5e5d450860ca",
         "source": "human_review_ui"
       }
     },
