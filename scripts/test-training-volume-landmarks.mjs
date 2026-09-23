@@ -80,7 +80,7 @@ assert.match(experience, /width: progress\.milestones\.length \* 76/, 'expanded 
 assert.match(experience, /deriveVolumeAchievement\(currentLb, entry\.id\)/, 'each scope uses its governed ladder');
 assert.match(experience, /testID="competition-total-volume"/);
 assert.match(experience, /data\.lifts\.map/);
-assert.match(experience, /minimumFontScale=\{safeVolumeLb\(currentLb\) >= 100_000_000 \? 0\.5 : 0\.78\}/, 'billion-scale totals retain the full value in the existing hero');
+assert.match(experience, /minimumFontScale=\{safeVolumeLb\(currentLb\) >= 100_000_000 \? 0\.48 : 0\.78\}/, 'billion-scale totals retain the full value in the existing hero');
 assert.match(experience, /largeCompetitionTotal && styles\.competitionTotalValueLarge/, 'large competition totals receive full card width');
 assert.match(experience, /maxHeight: viewportHeight \* 0\.9/, 'expanded stories and revealed facts remain scrollable on short iPhones');
 assert.match(experience, /adjustsFontSizeToFit minimumFontScale=\{0\.5\} numberOfLines=\{1\} style=\{styles\.detailThreshold\}/, 'detail thresholds fit at 1B');

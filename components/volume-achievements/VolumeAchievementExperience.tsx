@@ -216,7 +216,7 @@ function TotalVolumeAchievement({ entry, unit, onSelect }: { entry: VolumeAchiev
       <View style={styles.totalHeader}>
         <View style={styles.totalMetricCopy}>
           <ThemedText style={styles.eyebrow}>{entry.label.toUpperCase()}</ThemedText>
-          <ThemedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={safeVolumeLb(currentLb) >= 100_000_000 ? 0.5 : 0.78} style={[styles.totalMetric, compact && styles.totalMetricCompact]}>
+          <ThemedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={safeVolumeLb(currentLb) >= 100_000_000 ? 0.48 : 0.78} style={[styles.totalMetric, compact && styles.totalMetricCompact]}>
             {formatVolumeValue(suppliedDisplayValue(entry, unit))} <ThemedText style={styles.totalUnit}>{unit.toUpperCase()}</ThemedText>
           </ThemedText>
           <ThemedText typographyRole="supportingBody" style={styles.totalCaption}>Every recorded rep, accumulated.</ThemedText>
