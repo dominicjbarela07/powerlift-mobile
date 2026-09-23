@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": 2769,
-  "updated_at": "2026-09-23T16:06:45.990868+00:00",
-  "updated_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
+  "revision": 2791,
+  "updated_at": "2026-09-23T16:49:54.210940+00:00",
+  "updated_at_display": "Sep 23, 2026 09:49 AM PT (Sep 23, 2026 12:49 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -140101,12 +140101,25 @@
         }
       },
       "candidate_asset": "candidates/0cd5fe8a2397926f7afbf8e7/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T16:40:24.015403+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:40 AM PT (Sep 23, 2026 12:40 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "527410daec7925e0c81ef050700700a8c9b56a854ba20ebd961a1e25a1bbbc88",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T16:06:35.837043+00:00",
       "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion.  Edit SECOND image precisely. Preserve the entire corrected Body-Solid-style lat pulldown station, cable routing through top pulley, connected seat and thigh rollers, grounded feet, seated athlete facing the stack, rear-side camera and realistic body proportions. Replace ONLY the erroneous inverted-U attachment and associated hands/forearms with the actual compact chrome triangle double-D neutral-grip handle in THIRD photo. FOURTH photo shows legitimate bottom-of-pulldown hand posture. Handle has one triangular top plate/apex, four diagonal struts to two PARALLEL knurled cylindrical grips. Grips run fore-aft across each closed palm, perpendicular to forearms; they are NOT upright posts. Both full hands wrap the two horizontal parallel grips, palms facing each other, neutral straight wrists. Elbows pull down beside ribs; attachment ends at upper sternum below chin, hands about 16cm apart. Single center carabiner and existing taut vertical cable. Keep working cable vertically above attachment in the pulley groove. Do not add other handles, alter machine, rotate athlete toward viewer, or replace the full scene with a close-up.",
@@ -140145,6 +140158,18 @@
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/references/slm300-empty.jpg\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/references/slm300-in-use.jpg\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/references/neutral-demo-frame-21.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/164-a1.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/cable-motion-fixes-plus-five-2026-09-22/references/triangle-product-0.jpg\"]",
         "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
         "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T16:40:24.015403+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:40 AM PT (Sep 23, 2026 12:40 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "527410daec7925e0c81ef050700700a8c9b56a854ba20ebd961a1e25a1bbbc88",
+        "source": "human_review_ui"
       }
     },
     {
@@ -140203,12 +140228,25 @@
         }
       },
       "candidate_asset": "candidates/acf579fd677b272a551b9dff/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T16:39:57.061821+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:39 AM PT (Sep 23, 2026 12:39 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "4787c5227502419aed30901f41e0d3181b13f97a6ed856ce995aebf3c22bc908",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T16:06:36.950173+00:00",
       "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Precise head-only correction to reference 2 Band Scapular Row. Preserve the full seated body, both long almost-straight arms, red loop securely around both forefeet, leg placement, hands, mat and camera exactly. The head currently looks upward and sideways. Rotate and gently lower the head so nose, chin and gaze point straight along the athlete's torso midline toward the space immediately above his OWN feet, eyes level with the far floor. Neck neutral and continuous with the spine, chin slightly tucked. No head turned to the camera, no raised chin or sideways gaze. He is doing a small scapular-retraction row with straight elbows, not posing. Keep original adult proportions.",
@@ -140247,6 +140285,18 @@
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/82500f4b67a20ce1a56f58eb/master.png\"]",
         "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
         "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T16:39:57.061821+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:39 AM PT (Sep 23, 2026 12:39 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "4787c5227502419aed30901f41e0d3181b13f97a6ed856ce995aebf3c22bc908",
+        "source": "human_review_ui"
       }
     },
     {
@@ -140305,12 +140355,25 @@
         }
       },
       "candidate_asset": "candidates/27139208520ba58424d49431/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T16:40:04.964718+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:40 AM PT (Sep 23, 2026 12:40 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "2ecd2d3e2ff27392d208dff2ac0e999307818ca6711776c25e45c96930b99848",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T16:06:38.063779+00:00",
       "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Band-Assisted Pull-Up. Reference 2 is the governing REAL body pose and knee-band contact. Recreate exactly this support mechanism and pull-up phase using the baseline athlete. Thighs hang nearly vertically below hips, knees stay together and bent 100 degrees, shins fold backward, ankles crossed. A single thick RED loop is choked to the center pull-up bar, its long sides pass outside the legs and its bottom turn is securely captured UNDER THE UPPER SHINS immediately BELOW the bent knees, with legs inserted fully THROUGH the loop. The loaded bottom turn is partly occluded by bent legs exactly as reference 2, not a red sling stretched across the exposed front of the kneecaps. No forward-raised thighs or high knee tuck. Hands fully grip bar slightly wider than shoulders, elbows bending downward, chin approaching bar. Pull-up bar belongs to a complete full-size 2.25m squat stand using reference 3, with two matching uprights, parallel long base rails and rear connecting base rail. Front view like the real reference with neutral upward gaze, complete shoes hanging above ground. Frame entire stand with at least 80px dark clearance ABOVE BOTH uprights and below feet; make composition smaller to fit.",
@@ -140348,6 +140411,18 @@
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/references/band-knee-pull.jpg\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\"]",
         "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
         "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T16:40:04.964718+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:40 AM PT (Sep 23, 2026 12:40 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2ecd2d3e2ff27392d208dff2ac0e999307818ca6711776c25e45c96930b99848",
+        "source": "human_review_ui"
       }
     },
     {
@@ -140406,12 +140481,25 @@
         }
       },
       "candidate_asset": "candidates/bcfbcea1004eea50cba10476/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T16:40:09.566135+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:40 AM PT (Sep 23, 2026 12:40 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "464c7537bdbce3afd37a434aca72be54d5bc515c1bf5ab24e0fc22b31f0e97cf",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T16:06:39.199214+00:00",
       "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Band Lateral Neck Flexion. Rebuild in a true FRONT ELEVATION, level 70mm camera, with natural modest proportions. Athlete sits upright on the END of a real flat bench from reference 3, its 45cm seat below his hips, knees 90 degrees, feet planted, palms resting on thighs. No oversized head or short shins. Full size 2.2m black squat stand from reference 2 stands immediately to his RIGHT (image left). Its nearest upright is only 45cm lateral to his right temple, exactly AT THE SAME FRONT-TO-BACK DEPTH as his head/shoulders. Anchor a RED loop around this upright at temple height. Run both taut branches exactly horizontally sideways toward the head: loop passes around his entire skull above eyebrows and ears, contacting the forehead and back of skull visibly, no neck contact. He tilts his head gently 8 degrees LEFT (image right, AWAY from anchor) in lateral flexion while shoulders stay level and torso vertical. Face and eyes remain forward, no neck rotation. This is lateral resistance, neither frontward nor backward pull. Align the rack upright and head in ONE FRONTAL PLANE; equal depth and scale, no distant rack behind shoulder. Full rack including top, paired parallel feet and rear base connection; whole bench and feet. Generous 80px margin above BOTH rack uprights and below shoes. No branding.",
@@ -140447,6 +140535,18 @@
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rep-flat-bench.jpg\"]",
         "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
         "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T16:40:09.566135+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:40 AM PT (Sep 23, 2026 12:40 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "464c7537bdbce3afd37a434aca72be54d5bc515c1bf5ab24e0fc22b31f0e97cf",
+        "source": "human_review_ui"
       }
     },
     {
@@ -140505,12 +140605,25 @@
         }
       },
       "candidate_asset": "candidates/afa80a8c7d5911de6a7e995c/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T16:39:19.292387+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:39 AM PT (Sep 23, 2026 12:39 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "c6654209e4fc10309f52889d92fed1dda99619c95e118342f3506569911c0a0f",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T16:06:40.321981+00:00",
       "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Fresh composition: Band Push-Up, camera slightly ABOVE and IN FRONT of the athlete, about 25 degrees off center. Both planted hands are equally visible at the front. Full plank body extends back behind them, near-top push-up phase, elbows softly unlocked. Use a long closed RED latex loop folded across his upper back exactly like real reference 2. BOTH palms are inserted through its bottom turns and pin the band to the floor. At EACH hand show two taut red branches approaching from upper back, ONE along the THUMB SIDE and ONE along the LITTLE-FINGER SIDE; they join beneath the palm, hidden by palm-to-floor contact. Thus each palm visibly sits BETWEEN the two red strands. This arrangement is symmetric on the left and right hand. No red strip over the back of either hand, no doubled strands both on one side of a hand, no band crossing fingers, no band around wrists. Each palm flat with five natural fingers, hands just wider than shoulders, red loop over back well below neck. Real athletic push-up posture, head neutral looking at floor ahead of hands, full shoes and toes on ground. Do not reproduce the side camera from the exercise reference; select view exposing both identical hand contacts.",
@@ -140548,6 +140661,18 @@
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/ccf51a83812712db2872b4e6/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/band-pushup-real-2.png\"]",
         "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
         "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T16:39:19.292387+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:39 AM PT (Sep 23, 2026 12:39 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "c6654209e4fc10309f52889d92fed1dda99619c95e118342f3506569911c0a0f",
+        "source": "human_review_ui"
       }
     },
     {
@@ -140606,12 +140731,25 @@
         }
       },
       "candidate_asset": "candidates/4d5af47664bd055d987f71f6/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T16:40:07.250416+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:40 AM PT (Sep 23, 2026 12:40 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "aa21354b5471bb9b4827d2e1b8b7fbacba647161d98843ac4b1ea2c6fd408e78",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T16:06:41.446102+00:00",
       "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Precise framing-only refinement of second image, Band Spanish Squat. Preserve EXACTLY the athlete posture, side-facing orientation, body-to-active-upright alignment, horizontal red band and loop behind both knees, all dimensions and complete connected rack base. Pull the virtual camera BACK 14 percent and center the complete scene so BOTH TOP ENDS of the rack uprights are fully in-frame, with approximately 90 pixels dark empty space ABOVE the highest metal. Add the missing upper end of the nearest upright naturally, matching the existing far upright height in physical space. Keep full-size rack proportions; do not shorten uprights or enlarge athlete. Do not change camera direction, face, hand contact, or band mechanics. Same square aspect.",
@@ -140649,6 +140787,18 @@
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/remaining-accessory-art-2026-09-15/references/band-spanish-squat.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-14187fb3-0915-4520-91de-b09347f7c6bf.png\"]",
         "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
         "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T16:40:07.250416+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:40 AM PT (Sep 23, 2026 12:40 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "aa21354b5471bb9b4827d2e1b8b7fbacba647161d98843ac4b1ea2c6fd408e78",
+        "source": "human_review_ui"
       }
     },
     {
@@ -140707,12 +140857,25 @@
         }
       },
       "candidate_asset": "candidates/c55597888646563f09187444/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T16:40:01.568322+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:40 AM PT (Sep 23, 2026 12:40 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "4a3cbfa004aad197bfeee4e815c29ccc595b83cc1d40f92aac0b866a37035347",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T16:06:42.571729+00:00",
       "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Recreate the actual band dead bug in reference 2 with the baseline male and RED band. Reference 2 governs body AND force direction: band is anchored BEYOND HIS HEAD, pulls his vertical arms back toward the head, not toward feet. Put the ENTIRE black squat stand on the LEFT SIDE of the square image, physically BEYOND THE HEAD, not in the background behind torso. Athlete occupies bottom-right, lies on his back with head on image left and feet on image right, arms vertical, one leg bent90 and other straight hovering. Anchor band on the NEAR LEFT UPRIGHT at 70cm height, 60cm LEFT OF his head. Both taut strands run from that anchor toward the right into his two closed fists directly over chest. Anchor, hand midpoint and body's midline lie in one vertical plane, so there is NO LATERAL pull. Show stand EDGE-ON: near and far uprights nearly overlap because camera sees rack from its SIDE; top crossbar consequently appears short/foreshortened, NOT a big frontal rectangle behind athlete. Both rack base rails run left-to-right PARALLEL to mat and man's spine. Keep the whole 2.2m stand, feet, and top crossbar within an 80px margin by pulling camera back. Actual reference body proportions, neck neutral on mat. Band clear of forehead, only hands contact it.",
@@ -140750,6 +140913,18 @@
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/references/prehab-deadbug.jpg\"]",
         "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
         "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T16:40:01.568322+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:40 AM PT (Sep 23, 2026 12:40 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "4a3cbfa004aad197bfeee4e815c29ccc595b83cc1d40f92aac0b866a37035347",
+        "source": "human_review_ui"
       }
     },
     {
@@ -140808,12 +140983,25 @@
         }
       },
       "candidate_asset": "candidates/dc39e33a464a51dfc2fff0b3/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T16:39:59.421995+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:39 AM PT (Sep 23, 2026 12:39 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "85b4cc2f883ee47052d375dcf13be3cdf9d0a1b9314a00ae8f31fe71b732e42f",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T16:06:43.737702+00:00",
       "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Refine second image, Band Crunch, preserving the athlete's exact facing toward center of high crossbar and current side view. Repair rack: join the REAR ends of both long floor feet with one continuous welded horizontal crossmember, matching a real two-upright squat stand. Existing two rails remain parallel, top bar unchanged. Ensure BOTH closed gripping fists sit a little IN FRONT OF the forehead with the loaded red strands in open air; the far strand currently seems to go to his scalp. Move both fists forward by 8cm without changing elbow bend and curled trunk, so neither branch contacts head, both connect to their grip. Preserve central overhead anchor and square pelvis/shoulder relation to rack. Pull camera BACK 10 percent to leave 80px clear margin around whole rig including top. Do not rotate him to face camera or twist body. Keep full natural limb dimensions and clearly flexed crunch pose.",
@@ -140851,6 +141039,18 @@
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-133cc1a2-8bd4-42b4-96ac-b70cb0c7cd38.png\"]",
         "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
         "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T16:39:59.421995+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:39 AM PT (Sep 23, 2026 12:39 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "85b4cc2f883ee47052d375dcf13be3cdf9d0a1b9314a00ae8f31fe71b732e42f",
+        "source": "human_review_ui"
       }
     },
     {
@@ -140909,12 +141109,25 @@
         }
       },
       "candidate_asset": "candidates/a38c4a881d050cb1792e6b18/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "AGAIN, THAT IS NOT A FUCKNG HIGH ROW1 THE BAND SHOULD BE ON ONE OF THE RACK UPRIGHTS AND LOWER S THE FIRCE VECTORS LINE UP",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "AGAIN, THAT IS NOT A FUCKNG HIGH ROW1 THE BAND SHOULD BE ON ONE OF THE RACK UPRIGHTS AND LOWER S THE FIRCE VECTORS LINE UP",
+          "tags": [],
+          "reviewed_at": "2026-09-23T16:39:54.113668+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:39 AM PT (Sep 23, 2026 12:39 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8921d9e60c7dc9cccd4e16bc98629efa8dea895a0423d756917d5b7aab324ba3",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T16:06:44.869820+00:00",
       "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion.  Refine SECOND image into a biomechanically clear BAND HIGH ROW. Preserve this half-kneeling stance, adult proportions, correctly centered anchor at midpoint of pull-up bar, gaze into anchor, complete rack and rear camera. Change arm pose: each fist ends at its same-side UPPER RIBS below armpit height, in FRONT of the torso, with elbows swept back and down 30 degrees from torso. Forearms point diagonally forward/up towards the central high anchor, aligned with the red band force. Row hands toward ribs, not face and not wide ears. Symmetric left/right shoulder action; far hand may be naturally partly occluded by forearm in this rear view. Two continuous taut red strands reach the closed hands without touching head, neck, shoulders or passing through arms. Feet/kneeling support unchanged, no torso twist or camera pose. Pull framing back slightly so complete rack has 7% headroom. The exercise is a high-to-low row into upper ribs.",
@@ -140953,6 +141166,18 @@
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-9198b555-e0c1-4fe3-adaa-4ad5db24d09c.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/231-a1.png\"]",
         "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
         "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "AGAIN, THAT IS NOT A FUCKNG HIGH ROW1 THE BAND SHOULD BE ON ONE OF THE RACK UPRIGHTS AND LOWER S THE FIRCE VECTORS LINE UP",
+        "tags": [],
+        "reviewed_at": "2026-09-23T16:39:54.113668+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:39 AM PT (Sep 23, 2026 12:39 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8921d9e60c7dc9cccd4e16bc98629efa8dea895a0423d756917d5b7aab324ba3",
+        "source": "human_review_ui"
       }
     },
     {
@@ -141011,12 +141236,25 @@
         }
       },
       "candidate_asset": "candidates/7555e450808ed83bf43e73f1/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T16:39:21.813693+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:39 AM PT (Sep 23, 2026 12:39 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "cb4b27b2b1a69a13c105ab4cf4dc229e04f2d7a315bdae54c689cbe3b6a46962",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T16:06:45.990649+00:00",
       "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Framing-only correction to second image Band Triceps Pressdown. Preserve exact athlete facing INTO rack, hands fully gripping red loop at thighs, clear band path well in FRONT of head, full arm position, band and rack orientation. Pull virtual camera back by 10 percent, recenter to leave 80px BLACK CLEARANCE ABOVE both complete uprights. Preserve real rack height relative to athlete, do not shorten frame or enlarge body. Both top caps fully visible. Full connected rack feet and athlete shoes. No changes to mechanics or pose.",
@@ -141052,6 +141290,117 @@
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-9aac8dc9-7224-45ba-9a6d-eaba0f8c8e6f.png\"]",
         "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
         "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T16:39:21.813693+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:39 AM PT (Sep 23, 2026 12:39 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "cb4b27b2b1a69a13c105ab4cf4dc229e04f2d7a315bdae54c689cbe3b6a46962",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 231,
+      "key": "accessory_band_high_row",
+      "movement_name": "Band High Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "high-row-upright-20260923-d8636c3d",
+      "generation_batch": "Band High Row upright correction — 2026-09-23",
+      "candidate_id": "80fa467da7fef1e47f21e14a",
+      "version": 5,
+      "supersedes_candidate_id": "a38c4a881d050cb1792e6b18",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "AGAIN, THAT IS NOT A FUCKNG HIGH ROW1 THE BAND SHOULD BE ON ONE OF THE RACK UPRIGHTS AND LOWER S THE FIRCE VECTORS LINE UP",
+        "tags": [],
+        "reviewed_at": "2026-09-23T16:39:54.113668+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:39 AM PT (Sep 23, 2026 12:39 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8921d9e60c7dc9cccd4e16bc98629efa8dea895a0423d756917d5b7aab324ba3",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/80fa467da7fef1e47f21e14a/master.png",
+          "sha256": "d8636c3d23a114ef774a00ee118bdf2aa2defdbee0e2a0f0efe93551e514d996",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1650584
+        },
+        "app": {
+          "path": "candidates/80fa467da7fef1e47f21e14a/app.png",
+          "sha256": "fc26b36c43929ec7473952f3dd5610e7332373a8a3323368631a5fb117f49073",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 291102
+        },
+        "thumbnail": {
+          "path": "candidates/80fa467da7fef1e47f21e14a/thumbnail.png",
+          "sha256": "daf88f235442d788b52d1453c235f7740c9ed64aab42b47fbb9e004fd8a493ac",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42033
+        }
+      },
+      "candidate_asset": "candidates/80fa467da7fef1e47f21e14a/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-23T16:47:22.751178+00:00",
+      "created_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. FIRST image is immutable athlete/style reference. SECOND image is the high-row target. Preserve the target's exact red band chest-height wrap around the one upright, nearly horizontal resistance line, closed overhand grips, raised rowing elbows, complete athlete's posture, hands, anatomy, distance to anchor, standing position, and camera angle. Only widen the framing by pulling the camera back about 15% so the TOP of BOTH rack uprights and whole connecting pull-up bar are fully visible with at least 7% black headroom, along with all base feet. Maintain realistic rack height about 2.3m vs athlete1.8m, same coherent steel construction; no shortening or bending the frame. Keep the red band anchored on the vertical upright at the same upper-chest height. Match original near-black studio, faint floor, subtle violet rim. Square output. Do not alter the exercise or equipment layout. No text/logos.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/band-high-row-final-2026-09-23/row-a2.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen only; 2 retained attempts. First immutable #33 style reference; actual exercise and complete official rack references.",
+        "exact_latest_rejection": "AGAIN, THAT IS NOT A FUCKNG HIGH ROW1 THE BAND SHOULD BE ON ONE OF THE RACK UPRIGHTS AND LOWER S THE FIRCE VECTORS LINE UP",
+        "primary_mechanics_reference": "https://www.rehabhero.ca/exercise/standing-high-row",
+        "exact_prompt_and_reference_record": "/Users/dominic/powerlifting_app_dev/docs/validation/band-high-row-final-2026-09-23/attempts.json",
+        "inspection": "Full body and complete rack, upper-chest-height loop on one upright, nearly horizontal load aligned with forearms, elbows row back at chest level, closed overhand grips. Head/sternum face the anchor. Complete real reference compared side by side. Enlarged hand and anchor contact, 192px/80px thumbnails inspected. First attempt withheld for cropped rack top; second preserves mechanics and includes full rack.",
+        "source_sha256": "d8636c3d23a114ef774a00ee118bdf2aa2defdbee0e2a0f0efe93551e514d996",
+        "original_generation_source": "/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-c5ffe148-18d4-4a18-b8b5-553b70bf2c34.png",
+        "scope": "DEV pending replacement only. All existing human approvals, rejected predecessor, crop decisions, canonical movement identities, runtime mappings and performed histories preserved."
       }
     }
   ],
@@ -202486,6 +202835,490 @@
           "reviewer_user_id": 1,
           "candidate_sha256": "49c9fe84c0b27582d7e971dfa919e04923f79b8a75c3fa337a75866742ffcf87",
           "app_sha256": "e53de6561e82501a7c1723b29a482997e9a98a730f6cbc8ca7dfcb97935dd6bb",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "a39d41785a9dd788a8418f7f": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.17,
+        "y": 0.13
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.17,
+          "y": 0.13
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T16:47:09.514206+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6a737535ea7784209bf71cd25caa4198cd018efbc4f28b73948711584583830e",
+        "app_sha256": "0a3eebb7502b38a7f0c9e2ac9b288996291f75a1a00cd342264fe52eede3da50",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.17,
+            "y": 0.13
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T16:47:09.514206+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "6a737535ea7784209bf71cd25caa4198cd018efbc4f28b73948711584583830e",
+          "app_sha256": "0a3eebb7502b38a7f0c9e2ac9b288996291f75a1a00cd342264fe52eede3da50",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "0adf6f87ac718b9294462003": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.23,
+        "y": 0.07
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.9,
+          "x": 0.23,
+          "y": 0.07
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T16:47:17.863538+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9d4aa2eb9d877d7043d59b4264de5a433c25713c9a0fc8159eb0e57734dd7450",
+        "app_sha256": "dfd9c6a28573d3bd443cd04f33f293ae7c4bafa3f154cd23d62bc6f1b5cb9ac6",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.9,
+            "x": 0.23,
+            "y": 0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T16:47:17.863538+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9d4aa2eb9d877d7043d59b4264de5a433c25713c9a0fc8159eb0e57734dd7450",
+          "app_sha256": "dfd9c6a28573d3bd443cd04f33f293ae7c4bafa3f154cd23d62bc6f1b5cb9ac6",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "8f2e05a3528add2a172c170c": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.16,
+        "y": 0.17
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.16,
+          "y": 0.17
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T16:47:39.069942+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "22977cf7b136309046d1f042299caa26f9d82109f5c4645c028c7b1618a0d5a5",
+        "app_sha256": "660d102cc18d3997602409db1a0754edcf87b2011daa7b0cc207198cfc3a8ee4",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.16,
+            "y": 0.17
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T16:47:39.069942+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "22977cf7b136309046d1f042299caa26f9d82109f5c4645c028c7b1618a0d5a5",
+          "app_sha256": "660d102cc18d3997602409db1a0754edcf87b2011daa7b0cc207198cfc3a8ee4",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "e3d4fff2866ff5e005f89189": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.15,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.15,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T16:47:43.969018+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5d06de83116d20139c0d270b09342ad0e7e1a2a2544e8a9d6c49bdabafca3592",
+        "app_sha256": "e38b2956decc68ab01fd3745a14f4ea66e464c71921d6a3afe2b27b4e5730fc4",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.15,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T16:47:43.969018+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5d06de83116d20139c0d270b09342ad0e7e1a2a2544e8a9d6c49bdabafca3592",
+          "app_sha256": "e38b2956decc68ab01fd3745a14f4ea66e464c71921d6a3afe2b27b4e5730fc4",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "d6cf7999ab8c7f6e7d532ae6": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.09,
+        "y": 0.09
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.09,
+          "y": 0.09
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T16:47:50.929265+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "cb92675b2508c6a39911916e020ef23cf97d962d0c28c99b664620e603b5b81c",
+        "app_sha256": "84e545583743917ad4ce38f33404510c3295db80610b061efc3ee77da52ba435",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.09,
+            "y": 0.09
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T16:47:50.929265+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "cb92675b2508c6a39911916e020ef23cf97d962d0c28c99b664620e603b5b81c",
+          "app_sha256": "84e545583743917ad4ce38f33404510c3295db80610b061efc3ee77da52ba435",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "9f7990106a5c00559d28ef5d": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.11,
+        "y": 0.11
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.11,
+          "y": 0.11
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T16:47:59.091816+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "add065a816926c5b0586b4390c5940adff41a8ae9ed55d07d60042ec8bb257d0",
+        "app_sha256": "cf1827e8f01fa29799b7f07c79c944c28e8c16390c7e4bb11dd7e7b57bfab1f4",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.11,
+            "y": 0.11
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T16:47:59.091816+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:47 AM PT (Sep 23, 2026 12:47 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "add065a816926c5b0586b4390c5940adff41a8ae9ed55d07d60042ec8bb257d0",
+          "app_sha256": "cf1827e8f01fa29799b7f07c79c944c28e8c16390c7e4bb11dd7e7b57bfab1f4",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "b09d1b525a496ae67b930f5d": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.25,
+        "y": 0.07
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.25,
+          "y": 0.07
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T16:48:15.595634+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:48 AM PT (Sep 23, 2026 12:48 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f83e82be4c9bdbb3999781121677452f9544d568854a6e3323eb462ac01eb731",
+        "app_sha256": "01ed9da7c50c6de4d338795c0366fc80fd596937f1db2c60c59e72cbb68477c7",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.25,
+            "y": 0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T16:48:15.595634+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:48 AM PT (Sep 23, 2026 12:48 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f83e82be4c9bdbb3999781121677452f9544d568854a6e3323eb462ac01eb731",
+          "app_sha256": "01ed9da7c50c6de4d338795c0366fc80fd596937f1db2c60c59e72cbb68477c7",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "b216ea660335640207c3809b": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.15,
+        "y": 0.14
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.15,
+          "y": 0.14
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T16:48:22.381745+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:48 AM PT (Sep 23, 2026 12:48 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6278e69a726dd890e9fcf8425ee6a454aaf702e131d6f033dafcbeddacf300ee",
+        "app_sha256": "55c4f8d93551b7397555dea04cc58162bd3c5cee2a0653e332e65210b5e07601",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.15,
+            "y": 0.14
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T16:48:22.381745+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:48 AM PT (Sep 23, 2026 12:48 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "6278e69a726dd890e9fcf8425ee6a454aaf702e131d6f033dafcbeddacf300ee",
+          "app_sha256": "55c4f8d93551b7397555dea04cc58162bd3c5cee2a0653e332e65210b5e07601",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "8e07e61f8de1b97c36ade694": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.22,
+        "y": 0.05
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.22,
+          "y": 0.05
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T16:48:28.581616+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:48 AM PT (Sep 23, 2026 12:48 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5c96463c060b038e8aa8245d0a8cdda02294ce5a05dcea0864183bf654be0eed",
+        "app_sha256": "0b632febcd5626b936ce5d5dc52e34f89746ebf44f628e4590e0580b1bfcadcd",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.22,
+            "y": 0.05
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T16:48:28.581616+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:48 AM PT (Sep 23, 2026 12:48 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5c96463c060b038e8aa8245d0a8cdda02294ce5a05dcea0864183bf654be0eed",
+          "app_sha256": "0b632febcd5626b936ce5d5dc52e34f89746ebf44f628e4590e0580b1bfcadcd",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "fe9d6562d292a4acd436d4c3": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.21,
+        "y": 0.07
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.21,
+          "y": 0.07
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T16:48:36.106482+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:48 AM PT (Sep 23, 2026 12:48 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "eb2e0d6589c5a36996a224e81321a14bf0b07cef2d4099ac018147eb0cd17bf1",
+        "app_sha256": "a04f58191224129f62e5b2390ec9685caca548d10c9f9d80cc3b7bd70ed350f3",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.21,
+            "y": 0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T16:48:36.106482+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:48 AM PT (Sep 23, 2026 12:48 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "eb2e0d6589c5a36996a224e81321a14bf0b07cef2d4099ac018147eb0cd17bf1",
+          "app_sha256": "a04f58191224129f62e5b2390ec9685caca548d10c9f9d80cc3b7bd70ed350f3",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "1738b5a12eb6968b809e5285": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.14,
+        "y": 0.18
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.14,
+          "y": 0.18
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T16:49:54.210904+00:00",
+        "reviewed_at_display": "Sep 23, 2026 09:49 AM PT (Sep 23, 2026 12:49 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2c06408baffe70bf3a17e7938f9e5eae5c4bb40c53b45ec9de7a2623ee8a36a6",
+        "app_sha256": "f0077f642b6aa118d8d212273e5fd32d273c17723c3147dc202da73f98c45e04",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.14,
+            "y": 0.18
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T16:49:54.210904+00:00",
+          "reviewed_at_display": "Sep 23, 2026 09:49 AM PT (Sep 23, 2026 12:49 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "2c06408baffe70bf3a17e7938f9e5eae5c4bb40c53b45ec9de7a2623ee8a36a6",
+          "app_sha256": "f0077f642b6aa118d8d212273e5fd32d273c17723c3147dc202da73f98c45e04",
           "source": "human_logger_crop_ui"
         }
       ]
