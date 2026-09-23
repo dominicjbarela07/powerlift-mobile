@@ -70,7 +70,7 @@ assert.equal(h.requests.length, 1, 'Repeated confirmation sends only one request
 assert.match(h.requests[0].url, /\/7\/composition\/items\/11\?history=summary$/);
 assert.equal(h.requests[0].method, 'DELETE');
 assert.deepEqual(JSON.parse(h.requests[0].body), { expected_item_ids: [11, 12] });
-h.finish({ ok: true, json: { ok: true } }); await Promise.resolve();
+h.finish({ ok: true, json: { ok: true } }); await new Promise(setImmediate);
 assert.equal(h.saved.length, 1); assert.equal(h.closed(), 1);
 const stale = harness(); remove(stale.render()).onPress();
 stale.props.composition.items[0].can_remove = false;
