@@ -1,8 +1,9 @@
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Animated, Image, Pressable, ScrollView, StyleSheet, useWindowDimensions, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AccessibilityInfo, Animated, Image, Pressable, StyleSheet, useWindowDimensions, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
@@ -139,10 +140,12 @@ function VolumeScaleLadder({
   const railRef = useRef<ScrollView>(null);
   const [railWidth, setRailWidth] = useState(0);
   const targetIndex = progress.milestones.findIndex(({ thresholdLb }) => thresholdLb === (progress.next ?? progress.achieved)?.thresholdLb);
-  const focusTarget = () => railRef.current?.scrollTo({
-    x: Math.max(0, targetIndex * 76 - (railWidth - 76) / 2), y: 0, animated: false,
-  });
-  useEffect(() => { if (expanded) focusTarget(); }, [expanded, targetIndex, railWidth]);
+  const railContentWidth = progress.milestones.length * 76;
+  const focusTarget = useCallback(() => railRef.current?.scrollTo({
+    x: Math.max(0, Math.min(railContentWidth - railWidth, targetIndex * 76 - (railWidth - 76) / 2)),
+    y: 0, animated: false,
+  }), [targetIndex, railWidth, railContentWidth]);
+  useEffect(() => { if (expanded) focusTarget(); }, [expanded, focusTarget]);
   const ladder = <View style={[styles.ladder, expanded && { width: progress.milestones.length * 76 }]} accessibilityLabel={`${contextLabel} achievement scale`}>
     <View pointerEvents="none" style={styles.ladderLine} />
     {progress.milestones.map((milestone) => {
