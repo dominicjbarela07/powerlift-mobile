@@ -27,6 +27,7 @@ type Props = {
   phase: 'pre' | 'active' | 'complete'; expanded: boolean; selectedItemId?: number;
   canLog: boolean; reduceMotion?: boolean; onToggle: () => void;
   onSelectMember: (itemId: number) => void; onConfigureEquipment: (itemId: number) => void;
+  onEditPrescription?: (itemId: number) => void;
   onOpenHistory: (itemId: number) => void; onSwapMovement: (itemId: number) => void;
   swapActionForItem: (itemId: number) => 'Swap' | 'Sub' | null; swappingItemId?: number | null;
   onEditSet: (item: SupersetWorkspaceItem, log: SupersetWorkspaceLog) => void;
@@ -37,7 +38,7 @@ type Props = {
  * sole logging action; rows own identity and contextual tools, never a second Logger. */
 export function SupersetRoundWorkspace({ groupLabel, model, phase, expanded, selectedItemId, canLog,
   reduceMotion = false, onToggle, onSelectMember, onConfigureEquipment, onOpenHistory,
-  onSwapMovement, swapActionForItem, swappingItemId, onEditSet, onDeleteSet }: Props) {
+  onEditPrescription, onSwapMovement, swapActionForItem, swappingItemId, onEditSet, onDeleteSet }: Props) {
   const [evidenceItemId, setEvidenceItemId] = useState<number | null>(null);
   const isActive = phase === 'active';
   const complete = model.status === 'complete';
@@ -86,6 +87,7 @@ export function SupersetRoundWorkspace({ groupLabel, model, phase, expanded, sel
             {item.canConfigureEquipment ? <Pressable accessibilityRole="button" accessibilityLabel={`Configure equipment for ${label}, ${item.title}`} onPress={() => onConfigureEquipment(item.id)} style={({ pressed }) => [s.tool, pressed && s.controlPressed]}>
               <Ionicons name="barbell-outline" color="#c9b1ec" size={16} /><Text style={s.toolText}>Equipment</Text>
             </Pressable> : null}
+            {isActive && onEditPrescription ? <Pressable accessibilityRole="button" accessibilityLabel={`Edit Prescription for ${item.title}`} onPress={() => onEditPrescription(item.id)} style={s.tool}><Ionicons name="create-outline" color="#c9b1ec" size={16} /><Text style={s.toolText}>Edit Prescription</Text></Pressable> : null}
             {swapAction ? <Pressable accessibilityRole="button" accessibilityLabel={`${swapAction} ${item.title}`} disabled={swapBusy} onPress={() => onSwapMovement(item.id)} style={({ pressed }) => [s.tool, pressed && s.controlPressed]}>
               {swapBusy ? <ActivityIndicator size="small" color="#c9b1ec" /> : <Ionicons name="swap-horizontal-outline" color="#c9b1ec" size={16} />}<Text style={s.toolText}>{swapBusy ? 'Updating…' : swapAction}</Text>
             </Pressable> : null}
