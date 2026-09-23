@@ -216,7 +216,7 @@ function TotalVolumeAchievement({ entry, unit, onSelect }: { entry: VolumeAchiev
       <View style={styles.totalHeader}>
         <View style={styles.totalMetricCopy}>
           <ThemedText style={styles.eyebrow}>{entry.label.toUpperCase()}</ThemedText>
-          <ThemedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.totalMetric, compact && styles.totalMetricCompact]}>
+          <ThemedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={safeVolumeLb(currentLb) >= 100_000_000 ? 0.5 : 0.78} style={[styles.totalMetric, compact && styles.totalMetricCompact]}>
             {formatVolumeValue(suppliedDisplayValue(entry, unit))} <ThemedText style={styles.totalUnit}>{unit.toUpperCase()}</ThemedText>
           </ThemedText>
           <ThemedText typographyRole="supportingBody" style={styles.totalCaption}>Every recorded rep, accumulated.</ThemedText>
@@ -444,15 +444,16 @@ function VolumeMilestoneDetail({ selection, unit, onClose }: { selection: Select
 export function VolumeAchievementExperience({ data, unit }: Props) {
   const [selection, setSelection] = useState<Selection | null>(null);
   const totalLb = safeVolumeLb(data.total.current.lb);
+  const largeCompetitionTotal = safeVolumeLb(data.competitionTotal?.current[unit]) >= 100_000_000;
 
   return <View style={styles.experience}>
     <TotalVolumeAchievement entry={data.total} unit={unit} onSelect={setSelection} />
-    {data.competitionTotal ? <View testID="competition-total-volume" style={styles.competitionTotalCase}>
+    {data.competitionTotal ? <View testID="competition-total-volume" style={[styles.competitionTotalCase, largeCompetitionTotal && styles.competitionTotalCaseLarge]}>
       <View style={styles.competitionTotalCopy}>
         <ThemedText style={styles.competitionTotalLabel}>{data.competitionTotal.label.toUpperCase()}</ThemedText>
         <ThemedText style={styles.competitionTotalDetail}>GOVERNED SQUAT · BENCH · DEADLIFT</ThemedText>
       </View>
-      <ThemedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72} style={styles.competitionTotalValue}>
+      <ThemedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72} style={[styles.competitionTotalValue, largeCompetitionTotal && styles.competitionTotalValueLarge]}>
         {typeof data.competitionTotal.current[unit] === 'number'
           ? formatVolumeValue(safeVolumeLb(data.competitionTotal.current[unit]))
           : '—'}{typeof data.competitionTotal.current[unit] === 'number' ? <ThemedText style={styles.competitionTotalUnit}> {unit.toUpperCase()}</ThemedText> : null}
@@ -529,6 +530,8 @@ const styles = StyleSheet.create({
   shareValue: { fontFamily: SLFontFamilies.numeric, fontWeight: '400', fontSize: 17, lineHeight: 20, letterSpacing: -0.25 },
   shareLabel: { fontFamily: SLFontFamilies.bodyMedium, fontWeight: '400', color: '#8591A2', fontSize: 8, lineHeight: 10, letterSpacing: 0.2 },
   competitionTotalCase: { minHeight: 88, flexDirection: 'row', alignItems: 'center', gap: SLSpacing.sm, paddingHorizontal: SLSpacing.md, paddingVertical: SLSpacing.sm, borderRadius: 15, borderWidth: 1, borderColor: '#304355', backgroundColor: 'transparent' },
+  competitionTotalCaseLarge: { flexDirection: 'column', alignItems: 'stretch' },
+  competitionTotalValueLarge: { maxWidth: '100%', textAlign: 'left' },
   competitionTotalCopy: { flex: 1, minWidth: 0 },
   competitionTotalLabel: { fontFamily: SLFontFamilies.bodySemiBold, fontWeight: '400', fontSize: 14, lineHeight: 18, color: '#92CED8', letterSpacing: 0.45 },
   competitionTotalDetail: { fontFamily: SLFontFamilies.bodyMedium, fontWeight: '400', fontSize: 9, lineHeight: 12, color: '#7E8998', marginTop: 3, letterSpacing: 0.35 },
