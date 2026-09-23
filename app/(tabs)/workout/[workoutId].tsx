@@ -1,4 +1,6 @@
 // @ts-nocheck
+import { ActiveCompositionEditor } from '@/components/workout-logger/active-composition-editor';
+import { canEditActiveComposition, orderSessionMovementRows, focusAfterCompositionChange, validateCompositionResponse, type SessionComposition } from '@/lib/active-session-composition';
 import { ActivePrescriptionEditor } from '@/components/workout-logger/active-prescription-editor';
 import { canEditActivePrescription } from '@/lib/active-session-prescription';
 import { SessionEquipmentContext } from '@/components/workout-logger/session-equipment-context';
@@ -594,6 +596,7 @@ type WorkoutPayload = {
     can_log: boolean;
     can_coach: boolean;
     is_self_coached: boolean;
+    can_edit_composition?: boolean;
     can_edit_prescription?: boolean;
     can_hot_swap: boolean;
     can_browse_hot_swap_catalog?: boolean;
@@ -625,6 +628,8 @@ type WorkoutPayload = {
     dev_visual_coverage?: Record<string, readonly string[]> | null;
     post_session_coach_feedback?: string | null;
     post_session_coach_feedback_at?: string | null;
+    item_order?: number[];
+    composition?: SessionComposition | null;
     core_items: WorkoutItem[];
     accessory_groups: AccessoryGroup[];
     impact_summary?: SessionImpactSummary | null;
@@ -2027,7 +2032,7 @@ export default function WorkoutViewerScreen() {
       }
     }
 
-    return rows;
+    return orderSessionMovementRows(rows, workout.item_order);
   }, [isIdealWorkoutDetailPreview]);
 
   const findRenderedMovementKeyForItem = useCallback((
@@ -2849,6 +2854,7 @@ export default function WorkoutViewerScreen() {
   }, [feedbackState.recognition.currentEvent, rewardLoopDemoV2StorageScope, transientRecognitionTrace]);
 
   const [prescriptionItemId, setPrescriptionItemId] = useState<number | null>(null);
+  const [compositionMode, setCompositionMode] = useState<'add' | 'remove' | null>(null);
   const [recapCorrection, setRecapCorrection] = useState<'sets' | 'note' | 'reflection' | null>(null);
   const [postSessionVisible, setPostSessionVisible] = useState(false);
   const [postSessionSubmitting, setPostSessionSubmitting] = useState(false);
@@ -8238,6 +8244,12 @@ export default function WorkoutViewerScreen() {
     return { loggerFocus, detailRows };
   };
 
+  const canEditComposition = canEditActiveComposition(data.permissions?.can_edit_composition,
+    data.permissions?.is_self_coached, workout.status, isCoachAthletePreview || coachPreviewRequested);
+  const openComposition = (mode: 'add' | 'remove') => {
+    if (!canEditComposition || canonicalSetSubmissionControllerRef.current.isInFlight()) return;
+    setCompositionMode(mode);
+  };
   const canEditPrescription = canEditActivePrescription(data.permissions?.can_edit_prescription,
     data.permissions?.is_self_coached, workout.status, isCoachAthletePreview || coachPreviewRequested);
   const openPrescription = (itemId: number) => {
@@ -8577,6 +8589,24 @@ export default function WorkoutViewerScreen() {
   return (
     <View style={styles.screen}>
       <Tabs.Screen options={{ headerShown: loggerHeaderShown }} />
+      {canEditComposition && compositionMode && workout.composition ? <ActiveCompositionEditor
+        key={`${executionScope}:${compositionMode}`} mode={compositionMode} workoutId={workout.id} athlete={athlete}
+        unit={unit} composition={workout.composition} onClose={() => setCompositionMode(null)} onSaved={payload => {
+          if (!validateCompositionResponse(payload, dataRef.current, String(workoutId))) {
+            throw new Error('Session saved. Refresh to see the updated movements.');
+          }
+          const previous = getOrderedWorkoutMovements(dataRef.current?.workout);
+          const next = getOrderedWorkoutMovements(payload.workout);
+          const focus = focusAfterCompositionChange(previous, next, focusedMovementKey);
+          workoutRequestManagerRef.current.cancel();
+          dataRef.current = payload;
+          setData(payload);
+          setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
+          manualMovementSelectionRef.current = true;
+          if (focus) openMovementCard(focus);
+          else { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); }
+          showSetMutationNotice(payload.composition_mutation?.removed_item_id ? 'Movement removed' : 'Movement added');
+        }} /> : null}
       {canEditPrescription && prescriptionItemId != null ? <ActivePrescriptionEditor
         key={`${executionScope}:${prescriptionItemId}`} workoutId={workout.id} itemId={prescriptionItemId} unit={unit}
         onClose={() => setPrescriptionItemId(null)} onSaved={(payload: WorkoutPayload) => {
@@ -8594,6 +8624,7 @@ export default function WorkoutViewerScreen() {
         onActions={() => Alert.alert('Session actions', undefined, [
           ...(isCoachAthletePreview ? [{ text: 'Return to Coach Editor', onPress: handleReturnToCoachEditor }] : [
             ...(canEdit ? [{ text: 'Edit Session', onPress: handleEditWorkout }] : []),
+            ...(canEditComposition ? [{ text: 'Add Movement', onPress: () => openComposition('add') }, { text: 'Remove Movement', onPress: () => openComposition('remove') }] : []),
             ...(canLog ? [{ text: 'Rest timer', onPress: openTimerPicker }, { text: 'Finish Session', onPress: requestCompleteWorkout }, { text: 'Cancel Session', style: 'destructive', onPress: () => setCancelConfirmVisible(true) }] : []),
           ]), { text: 'Close', style: 'cancel' },
         ])} />
@@ -8634,6 +8665,13 @@ export default function WorkoutViewerScreen() {
         scrollEventThrottle={16}
         keyboardShouldPersistTaps="handled"
       >
+        {canEditComposition && getOrderedWorkoutMovements(workout).length === 0 ? <View style={{ paddingVertical: 28, gap: 16 }}>
+          <Text style={styles.accessoryInlineActionText}>No movements in this Session.</Text>
+          <TouchableOpacity accessibilityRole="button" accessibilityLabel="Add Movement" onPress={() => openComposition('add')} style={styles.accessoryInlineAction}>
+            <Ionicons name="add-circle-outline" size={22} color={SLColors.accentViolet} />
+            <Text style={styles.accessoryInlineActionText}>Add Movement</Text>
+          </TouchableOpacity>
+        </View> : null}
         {isPreSession && !focusedMovementKey ? <SessionV3PlanHero
           title={workout.label || 'Training Session'} focus={focusLine} planned={plannedSets}
           movements={coreMovementCount + accessoryMovementOrder.length}
