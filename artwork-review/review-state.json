@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": 2850,
-  "updated_at": "2026-09-23T20:24:35.302758+00:00",
-  "updated_at_display": "Sep 23, 2026 01:24 PM PT (Sep 23, 2026 04:24 PM Eastern)",
+  "revision": 2856,
+  "updated_at": "2026-09-23T21:06:04.209135+00:00",
+  "updated_at_display": "Sep 23, 2026 02:06 PM PT (Sep 23, 2026 05:06 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -136846,12 +136846,25 @@
         }
       },
       "candidate_asset": "candidates/0d8f606929b104adf34306e4/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "this is wrong! it should be the assisted pull up machine",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "this is wrong! it should be the assisted pull up machine",
+          "tags": [],
+          "reviewed_at": "2026-09-23T20:58:16.958739+00:00",
+          "reviewed_at_display": "Sep 23, 2026 01:58 PM PT (Sep 23, 2026 04:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f1b25fd64ca8850ab3f0d87acd2c25dad968df26c7120f0c8ae8468cb4f01687",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:37.271125+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Use case photorealistic-natural. First reference is immutable Strength Ledger athlete/style: same muscular man, graphite sleeveless shirt, black shorts and black trainers, neutral skin, near-black studio, restrained violet edge. Square single exercise photograph, full head/hands/feet/equipment and 5% dark clearance, realistic body proportions, no text or logos.  Create a BODYWEIGHT FOOT-ASSISTED PULL-UP, not a band exercise. Use the complete narrow real rack from image2, same athlete and grip, REMOVE ALL RED BANDS. Use coaching mechanics of actual demo reference3: one foot on a sturdy box displaced to his side supports some bodyweight while he pulls upward. Mid-rep, elbows bent around100 degrees, chin below bar, palms forward. His RIGHT knee is bent, right shoe planted FLAT on top of a stable 60cm-high matte black rectangular plyo box immediately below and to his right; clearly visible foot-to-box contact. His LEFT leg hangs relaxed nearly straight with left shoe above floor. Torso directly beneath middle of pull-up bar, no lateral twisted body. Box a real closed cube with flat top, not floating. Full compact rack, box, both feet, both hands visible with margins. No text, no bands, no weights, no invented machine. Natural meaningful use of leg assistance.",
@@ -136889,6 +136902,18 @@
         "source_sha256": "f1b25fd64ca8850ab3f0d87acd2c25dad968df26c7120f0c8ae8468cb4f01687",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/attempt-masters/190-a2.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/assisted-pullup-real.jpg\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "this is wrong! it should be the assisted pull up machine",
+        "tags": [],
+        "reviewed_at": "2026-09-23T20:58:16.958739+00:00",
+        "reviewed_at_display": "Sep 23, 2026 01:58 PM PT (Sep 23, 2026 04:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f1b25fd64ca8850ab3f0d87acd2c25dad968df26c7120f0c8ae8468cb4f01687",
+        "source": "human_review_ui"
       }
     },
     {
@@ -136936,12 +136961,25 @@
         }
       },
       "candidate_asset": "candidates/0edb706448bb483164b9ee29/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T20:58:19.392782+00:00",
+          "reviewed_at_display": "Sep 23, 2026 01:58 PM PT (Sep 23, 2026 04:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e4de390d7c8a7fa9f8f9ab5cf3fee1182cd6e03a571679ab57fddc53ba1bbac6",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:38.407701+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Use case photorealistic-natural. First reference is immutable Strength Ledger athlete/style: same muscular man, graphite sleeveless shirt, black shorts and black trainers, neutral skin, near-black studio, restrained violet edge. Square single exercise photograph, full head/hands/feet/equipment and 5% dark clearance, realistic body proportions, no text or logos.  Depict a plain FOREARM PLANK. Same athletic man and style as image1. Use side three-quarter full-body view similar image2, remove ALL bands. Both forearms rest flat on a dark thin exercise mat, elbows directly under shoulders, elbows bent90 degrees, hands relaxed closed fists pointing forward. Toes planted, heels up, knees straight and off floor. Neutral straight alignment ear-shoulder-hip-ankle, pelvis level, abs braced, gaze naturally down at mat, no back sag or hips peaked. Both arms and both feet anatomically clear. This is bodyweight plank, no plate on back, no racks or props beyond thin mat. Frame full person with 7percent clearance on all sides and black ambient space.",
@@ -136978,6 +137016,18 @@
         "source_sha256": "e4de390d7c8a7fa9f8f9ab5cf3fee1182cd6e03a571679ab57fddc53ba1bbac6",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/attempt-masters/78-a1.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T20:58:19.392782+00:00",
+        "reviewed_at_display": "Sep 23, 2026 01:58 PM PT (Sep 23, 2026 04:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e4de390d7c8a7fa9f8f9ab5cf3fee1182cd6e03a571679ab57fddc53ba1bbac6",
+        "source": "human_review_ui"
       }
     },
     {
@@ -138259,12 +138309,25 @@
         }
       },
       "candidate_asset": "candidates/3af1983ae045126f3c5add10/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T20:58:21.850027+00:00",
+          "reviewed_at_display": "Sep 23, 2026 01:58 PM PT (Sep 23, 2026 04:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a4ef5a331017e47e72b75651ec1fd538b3beb95dcf810f8848129e486029c28c",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:50.183310+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Use case photorealistic-natural. First reference is immutable Strength Ledger athlete/style: same muscular man, graphite sleeveless shirt, black shorts and black trainers, neutral skin, near-black studio, restrained violet edge. Square single exercise photograph, full head/hands/feet/equipment and 5% dark clearance, realistic body proportions, no text or logos.  Depict a FOOT-ASSISTED PARALLEL BAR DIP, bodyweight regression. Real simple portable dip station: TWO PARALLEL horizontal black round bars about85cm high, about60cm apart; each bar has two vertical steel legs, each leg fixed to a broad floor foot. Both handgrips point front-to-back, one bar alongside each hip. Athletic man BETWEEN the bars facing right in clear side-three-quarter view. BOTH hands firmly grasp bars beside hips, palms inward; elbows bent about90degrees behind his torso in a mid-dip. Torso upright with mild forward inclination, shoulders not shrugged. BOTH knees bent in front, BOTH feet FLAT ON FLOOR visibly bearing some load to assist the dip. Bar height allows feet to stay planted and knees bent throughout rep. Feet below and slightly forward of knees. Not bench dip, not hanging unsupported, no resistance band, no weight stacks, no kneeling pad. Full support structure and feet visible; realistic construction and natural joint positions.",
@@ -138302,6 +138365,18 @@
         "source_sha256": "a4ef5a331017e47e72b75651ec1fd538b3beb95dcf810f8848129e486029c28c",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T20:58:21.850027+00:00",
+        "reviewed_at_display": "Sep 23, 2026 01:58 PM PT (Sep 23, 2026 04:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a4ef5a331017e47e72b75651ec1fd538b3beb95dcf810f8848129e486029c28c",
+        "source": "human_review_ui"
       }
     },
     {
@@ -141426,6 +141501,135 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "d8636c3d23a114ef774a00ee118bdf2aa2defdbee0e2a0f0efe93551e514d996",
         "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 13,
+      "key": "pull_up_assisted",
+      "movement_name": "Assisted Pull-Up",
+      "primary_muscle_group": "lats",
+      "equipment_type": "bodyweight",
+      "implement": "bodyweight",
+      "family": "canonical_bodyweight_accessories",
+      "generation_id": "assisted-pullup-machine-20260923-ac618967",
+      "generation_batch": "Assisted Pull-Up machine correction — September 23, 2026",
+      "candidate_id": "f81cfed37700615c4c284487",
+      "version": 2,
+      "supersedes_candidate_id": "0d8f606929b104adf34306e4",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "this is wrong! it should be the assisted pull up machine",
+        "tags": [],
+        "reviewed_at": "2026-09-23T20:58:16.958739+00:00",
+        "reviewed_at_display": "Sep 23, 2026 01:58 PM PT (Sep 23, 2026 04:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f1b25fd64ca8850ab3f0d87acd2c25dad968df26c7120f0c8ae8468cb4f01687",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/f81cfed37700615c4c284487/master.png",
+          "sha256": "ac61896776a0cae4b7d314554bc424f3af2bea533e5a98e34dbc94237c30d6d9",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1813271
+        },
+        "app": {
+          "path": "candidates/f81cfed37700615c4c284487/app.png",
+          "sha256": "4d161b84fdc80cf048e6745d07c90ecdd5608c74f554ffc2f1bc42e4e1626d52",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 316376
+        },
+        "thumbnail": {
+          "path": "candidates/f81cfed37700615c4c284487/thumbnail.png",
+          "sha256": "19616eb41fa329e90f18556e72b063acddbb338771601dfb9b5886df106bced8",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45055
+        }
+      },
+      "candidate_asset": "candidates/f81cfed37700615c4c284487/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "source": "explicit_owner_chat",
+          "owner_instruction": "approved",
+          "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+          "recorded_by": "codex_at_owner_request",
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "candidate_sha256": "ac61896776a0cae4b7d314554bc424f3af2bea533e5a98e34dbc94237c30d6d9",
+          "reviewer": "owner_via_chat",
+          "reviewed_at": "2026-09-23T21:06:03.884899+00:00",
+          "reviewed_at_display": "Sep 23, 2026 02:06 PM PT (Sep 23, 2026 05:06 PM Eastern)"
+        }
+      ],
+      "created_at": "2026-09-23T21:06:03.405597+00:00",
+      "created_at_display": "Sep 23, 2026 02:06 PM PT (Sep 23, 2026 05:06 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural.\nCreate the corrected Strength Ledger Assisted Pull-Up movement illustration, square 1254 x 1254.\nInput 1 is the immutable athlete and visual style reference ONLY: same muscular adult man, short brown hair, charcoal sleeveless shirt, black shorts and black trainers; same near-black studio, dark rubber floor and restrained violet rim lighting. Do not copy its bench or dumbbells.\nInput 2 is the real Life Fitness SS-ADC assisted chin/dip machine: copy this complete machine's coherent physical structure, dimensions and operating direction. Input 3 is its manufacturer operating diagram, especially the assisted chin on the lower right.\nShow this athlete performing a MACHINE-ASSISTED PULL-UP. Both knees bear weight side by side on the single horizontal traveling padded knee platform. His knees are directly below his hips and shoulders; his lower legs bend back naturally behind him, shoes off the steps. The pad stays connected to its carriage on the two vertical chrome guide rods and the counterweight system. Both hands grasp the matched outer overhead pull-up grips with overhand grip. Capture a natural midway pull, elbows flexed, shoulders and wrists anatomically plausible. Torso centered beneath the grips, facing straight into the tall uprights. Athlete, pad and grips share one operating centerline. He looks toward the machine, never rotates toward the camera.\nUse the three-quarter rear/side view consistent with the product reference, showing the athlete's back and some side profile; the camera adapts to the movement. Clearly show both hands actually wrapped around their grips, both knees on the same support pad, the connected carriage, full tower and full grounded base. Retain the manufacturer's single side counterweight shroud, two tall bent uprights, connected overhead grips, paired low access steps and idle dip handles. No box, no bands, no lat-pulldown seat or thigh rollers, no cables or attachments held in the hands, no invented extra frame.\nFull machine and athlete visible with 6% margin, complete shoes and top grips, no cut-offs. Realistic proportions relative to the 221cm machine; natural candid exertion, athletic movement as the focus. Restrained studio rendering matching input 1, clear silhouette and readable contact at thumbnail size. No text, logos, instructional arrows, duplicate figures or overlays.\n",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/assisted-pullup-machine-2026-09-23/13-a1.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "BODYWEIGHT",
+      "sidedness": "bilateral",
+      "loading_implementation": "bodyweight",
+      "load_convention": "bodyweight_only",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen, one selected attempt; reference-based machine correction.",
+        "owner_instruction": "fix the assisted pullup please",
+        "exact_latest_rejection": "this is wrong! it should be the assisted pull up machine",
+        "references": "Original #33 athlete/style; official Life Fitness SS-ADC product photograph; manufacturer manual printed page 11 (PDF page 13).",
+        "manufacturer_url": "https://www.lifefitness.com/en-us/catalog/strength-training/selectorized/insignia-series-assist-dip-chin",
+        "manual_url": "https://kb.cybexintl.com/Owners_Manuals/Strength/Life_Fitness_Insignia_Series_Owners_Manual_9481201_Rev_BE.pdf",
+        "inspection": "Full 1254px master, enlarged hands and knee contact, 192px and 80px previews inspected. Two overhand grips; athlete faces the uprights under the overhead station; both knees on the connected guided assistance pad; feet clear of access steps. Complete coherent machine and counterweight shroud. Same family athlete, clothing and studio. Agent preflight alone grants no approval.",
+        "source_sha256": "ac61896776a0cae4b7d314554bc424f3af2bea533e5a98e34dbc94237c30d6d9",
+        "identity_scope": "Artwork only; preserve current governed ID 13, key, equipment metadata, performed evidence and all existing decisions. No approval copied from rejected v1 or its old crop."
+      },
+      "review": {
+        "source": "explicit_owner_chat",
+        "owner_instruction": "approved",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "recorded_by": "codex_at_owner_request",
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "candidate_sha256": "ac61896776a0cae4b7d314554bc424f3af2bea533e5a98e34dbc94237c30d6d9",
+        "reviewer": "owner_via_chat",
+        "reviewed_at": "2026-09-23T21:06:03.884899+00:00",
+        "reviewed_at_display": "Sep 23, 2026 02:06 PM PT (Sep 23, 2026 05:06 PM Eastern)"
       }
     }
   ],
@@ -164253,6 +164457,149 @@
         "candidate_sha256": "1dde961be20f4ae607d0f4acd530808ec416f23d173a8abcda8093a00ce5f9ea",
         "source": "human_review_ui"
       }
+    },
+    {
+      "movement_definition_id": 13,
+      "key": "pull_up_assisted",
+      "candidate_id": "f81cfed37700615c4c284487",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/approved-completion-v1/pull_up_assisted-v2-master.png",
+          "sha256": "ac61896776a0cae4b7d314554bc424f3af2bea533e5a98e34dbc94237c30d6d9",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1813271
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/approved-completion-v1/pull_up_assisted-v2.png",
+          "sha256": "4d161b84fdc80cf048e6745d07c90ecdd5608c74f554ffc2f1bc42e4e1626d52",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 316376
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/approved-completion-v1/pull_up_assisted-v2-thumb.png",
+          "sha256": "19616eb41fa329e90f18556e72b063acddbb338771601dfb9b5886df106bced8",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45055
+        }
+      },
+      "approval_source": "explicit_owner_chat",
+      "review": {
+        "source": "explicit_owner_chat",
+        "owner_instruction": "approved",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "recorded_by": "codex_at_owner_request",
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "candidate_sha256": "ac61896776a0cae4b7d314554bc424f3af2bea533e5a98e34dbc94237c30d6d9",
+        "reviewer": "owner_via_chat",
+        "reviewed_at": "2026-09-23T21:06:03.884899+00:00",
+        "reviewed_at_display": "Sep 23, 2026 02:06 PM PT (Sep 23, 2026 05:06 PM Eastern)"
+      }
+    },
+    {
+      "movement_definition_id": 14,
+      "key": "plank_duration",
+      "candidate_id": "0edb706448bb483164b9ee29",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/approved-completion-v1/plank_duration-v1-master.png",
+          "sha256": "e4de390d7c8a7fa9f8f9ab5cf3fee1182cd6e03a571679ab57fddc53ba1bbac6",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1783512
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/approved-completion-v1/plank_duration-v1.png",
+          "sha256": "5e6b3c2928f914f48a3401de3f3d2d63b7ea3dd327f3953ea4442f5ad239d422",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 317847
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/approved-completion-v1/plank_duration-v1-thumb.png",
+          "sha256": "2de23a21fd8c1a6f303b5f5a2ac80946424d11f41dbb41c306150e5973feb1ab",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44528
+        }
+      },
+      "approval_source": "human_review_ui",
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T20:58:19.392782+00:00",
+        "reviewed_at_display": "Sep 23, 2026 01:58 PM PT (Sep 23, 2026 04:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e4de390d7c8a7fa9f8f9ab5cf3fee1182cd6e03a571679ab57fddc53ba1bbac6",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 320,
+      "key": "accessory_assisted_dip",
+      "candidate_id": "3af1983ae045126f3c5add10",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/approved-completion-v1/accessory_assisted_dip-v1-master.png",
+          "sha256": "a4ef5a331017e47e72b75651ec1fd538b3beb95dcf810f8848129e486029c28c",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1777182
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/approved-completion-v1/accessory_assisted_dip-v1.png",
+          "sha256": "b8f230a19e7255462e4b45c41f106387668f743bb7d2a9a3db4fdafb5856b512",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 310297
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/approved-completion-v1/accessory_assisted_dip-v1-thumb.png",
+          "sha256": "410fb03aefd24c41830aa336618568af9477d9de8474124392e3042c4c8611c1",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44836
+        }
+      },
+      "approval_source": "human_review_ui",
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T20:58:21.850027+00:00",
+        "reviewed_at_display": "Sep 23, 2026 01:58 PM PT (Sep 23, 2026 04:58 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a4ef5a331017e47e72b75651ec1fd538b3beb95dcf810f8848129e486029c28c",
+        "source": "human_review_ui"
+      }
     }
   ],
   "canonical_history": [
@@ -185584,6 +185931,158 @@
           "reviewer": "dev_user_1",
           "reviewer_user_id": 1,
           "candidate_sha256": "1dde961be20f4ae607d0f4acd530808ec416f23d173a8abcda8093a00ce5f9ea",
+          "source": "human_review_ui"
+        }
+      }
+    },
+    {
+      "previous": null,
+      "promoted": {
+        "movement_definition_id": 13,
+        "key": "pull_up_assisted",
+        "candidate_id": "f81cfed37700615c4c284487",
+        "files": {
+          "master": {
+            "path": "assets/images/movement-artwork/approved-completion-v1/pull_up_assisted-v2-master.png",
+            "sha256": "ac61896776a0cae4b7d314554bc424f3af2bea533e5a98e34dbc94237c30d6d9",
+            "dimensions": [
+              1254,
+              1254
+            ],
+            "bytes": 1813271
+          },
+          "app": {
+            "path": "assets/images/movement-artwork/approved-completion-v1/pull_up_assisted-v2.png",
+            "sha256": "4d161b84fdc80cf048e6745d07c90ecdd5608c74f554ffc2f1bc42e4e1626d52",
+            "dimensions": [
+              512,
+              512
+            ],
+            "bytes": 316376
+          },
+          "thumbnail": {
+            "path": "assets/images/movement-artwork/approved-completion-v1/pull_up_assisted-v2-thumb.png",
+            "sha256": "19616eb41fa329e90f18556e72b063acddbb338771601dfb9b5886df106bced8",
+            "dimensions": [
+              192,
+              192
+            ],
+            "bytes": 45055
+          }
+        },
+        "approval_source": "explicit_owner_chat",
+        "review": {
+          "source": "explicit_owner_chat",
+          "owner_instruction": "approved",
+          "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+          "recorded_by": "codex_at_owner_request",
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "candidate_sha256": "ac61896776a0cae4b7d314554bc424f3af2bea533e5a98e34dbc94237c30d6d9",
+          "reviewer": "owner_via_chat",
+          "reviewed_at": "2026-09-23T21:06:03.884899+00:00",
+          "reviewed_at_display": "Sep 23, 2026 02:06 PM PT (Sep 23, 2026 05:06 PM Eastern)"
+        }
+      }
+    },
+    {
+      "previous": null,
+      "promoted": {
+        "movement_definition_id": 14,
+        "key": "plank_duration",
+        "candidate_id": "0edb706448bb483164b9ee29",
+        "files": {
+          "master": {
+            "path": "assets/images/movement-artwork/approved-completion-v1/plank_duration-v1-master.png",
+            "sha256": "e4de390d7c8a7fa9f8f9ab5cf3fee1182cd6e03a571679ab57fddc53ba1bbac6",
+            "dimensions": [
+              1254,
+              1254
+            ],
+            "bytes": 1783512
+          },
+          "app": {
+            "path": "assets/images/movement-artwork/approved-completion-v1/plank_duration-v1.png",
+            "sha256": "5e6b3c2928f914f48a3401de3f3d2d63b7ea3dd327f3953ea4442f5ad239d422",
+            "dimensions": [
+              512,
+              512
+            ],
+            "bytes": 317847
+          },
+          "thumbnail": {
+            "path": "assets/images/movement-artwork/approved-completion-v1/plank_duration-v1-thumb.png",
+            "sha256": "2de23a21fd8c1a6f303b5f5a2ac80946424d11f41dbb41c306150e5973feb1ab",
+            "dimensions": [
+              192,
+              192
+            ],
+            "bytes": 44528
+          }
+        },
+        "approval_source": "human_review_ui",
+        "review": {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T20:58:19.392782+00:00",
+          "reviewed_at_display": "Sep 23, 2026 01:58 PM PT (Sep 23, 2026 04:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e4de390d7c8a7fa9f8f9ab5cf3fee1182cd6e03a571679ab57fddc53ba1bbac6",
+          "source": "human_review_ui"
+        }
+      }
+    },
+    {
+      "previous": null,
+      "promoted": {
+        "movement_definition_id": 320,
+        "key": "accessory_assisted_dip",
+        "candidate_id": "3af1983ae045126f3c5add10",
+        "files": {
+          "master": {
+            "path": "assets/images/movement-artwork/approved-completion-v1/accessory_assisted_dip-v1-master.png",
+            "sha256": "a4ef5a331017e47e72b75651ec1fd538b3beb95dcf810f8848129e486029c28c",
+            "dimensions": [
+              1254,
+              1254
+            ],
+            "bytes": 1777182
+          },
+          "app": {
+            "path": "assets/images/movement-artwork/approved-completion-v1/accessory_assisted_dip-v1.png",
+            "sha256": "b8f230a19e7255462e4b45c41f106387668f743bb7d2a9a3db4fdafb5856b512",
+            "dimensions": [
+              512,
+              512
+            ],
+            "bytes": 310297
+          },
+          "thumbnail": {
+            "path": "assets/images/movement-artwork/approved-completion-v1/accessory_assisted_dip-v1-thumb.png",
+            "sha256": "410fb03aefd24c41830aa336618568af9477d9de8474124392e3042c4c8611c1",
+            "dimensions": [
+              192,
+              192
+            ],
+            "bytes": 44836
+          }
+        },
+        "approval_source": "human_review_ui",
+        "review": {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T20:58:21.850027+00:00",
+          "reviewed_at_display": "Sep 23, 2026 01:58 PM PT (Sep 23, 2026 04:58 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a4ef5a331017e47e72b75651ec1fd538b3beb95dcf810f8848129e486029c28c",
           "source": "human_review_ui"
         }
       }

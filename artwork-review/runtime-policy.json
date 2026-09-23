@@ -259,6 +259,29 @@
       }
     },
     {
+      "key": "accessory_assisted_dip",
+      "movement_definition_id": 320,
+      "candidate_id": "3af1983ae045126f3c5add10",
+      "app_sha256": "b8f230a19e7255462e4b45c41f106387668f743bb7d2a9a3db4fdafb5856b512",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.14,
+        "y": 0.13
+      },
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
       "key": "accessory_assisted_nordic_hamstring_curl",
       "movement_definition_id": 409,
       "candidate_id": "4f9422288b2bf60bf6fbbf9f",
@@ -9089,6 +9112,46 @@
         "x": 0.07,
         "y": 0.14
       },
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "plank_duration",
+      "movement_definition_id": 14,
+      "candidate_id": "0edb706448bb483164b9ee29",
+      "app_sha256": "5e6b3c2928f914f48a3401de3f3d2d63b7ea3dd327f3953ea4442f5ad239d422",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.07,
+        "y": 0.08
+      },
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      }
+    },
+    {
+      "key": "pull_up_assisted",
+      "movement_definition_id": 13,
+      "candidate_id": "f81cfed37700615c4c284487",
+      "app_sha256": "4d161b84fdc80cf048e6745d07c90ecdd5608c74f554ffc2f1bc42e4e1626d52",
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
