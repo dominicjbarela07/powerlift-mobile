@@ -50,7 +50,7 @@ for(const row of reuse.legacy_artwork_identities) {
  assert.equal(result?.candidate_id,source?.candidate_id,`${row.key}: old exact reference reuses only the governed survivor image`);
  if(result){assert.equal(result.movement_definition_id,row.movement_definition_id);assert.deepEqual(approvedLoggerCrop(result.key),source.logger_crop);}
  assert.deepEqual(input,before,'artwork reuse does not perform a Swap or rewrite historical provenance');
- assert.equal(resolveApprovedExactMovementArtwork({...input,movement_identity:{...row.taxonomy,key:'fixture_wrong_key'}},true),null);
+ assert.equal(resolveApprovedExactMovementArtwork({movement_definition_id:row.movement_definition_id,movement_identity:{...row.taxonomy,key:'fixture_wrong_key'}},true),null);
 }
 console.log(JSON.stringify({active_accessories:reuse.active_accessory_identities.length,approved_with_exact_crops:reuse.active_accessory_identities.length-pending.length,pending_source_approvals:pending,verified_legacy_artwork_redirects:reuse.legacy_artwork_identities.length,production_art_runtime_unchanged:true}));
 if(process.argv.includes('--require-complete'))assert.deepEqual(pending,[],'all accessory source images require owner approval before declaring complete coverage');
