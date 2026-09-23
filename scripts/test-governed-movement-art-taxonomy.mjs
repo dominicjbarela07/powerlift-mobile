@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { normalizeCanonicalMovementArtSubject as subject, resolveCanonicalMovementArtwork as resolve } from '../lib/canonical-movement-artwork.ts';
 import { canonicalArtworkInputForLoggerItem as logger } from '../lib/logger-movement-identity.ts';
 import { resolveApprovedExactMovementArtwork as approved } from '../lib/movement-artwork-hero.ts';
@@ -80,7 +80,22 @@ assert.match(renderer, /console.error\('\[movement-artwork\] INVARIANT/);
 // additions/removals before shipping a stale projection; ordinary offline tests
 // still exercise every checked-in governed definition.
 const backend = process.env.STRENGTH_LEDGER_BACKEND_ROOT;
-if (backend) {
+// A targeted TestFlight patch may deliberately retain its published catalog.
+// Validate the entire frozen file against that release, rather than requiring
+// unrelated DEV catalog migrations. Normal promotions still require DB parity.
+const frozenTestFlightRef = process.env.STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF;
+if (frozenTestFlightRef) {
+  assert.ok(/^[a-f0-9]{40}$/.test(frozenTestFlightRef), 'frozen catalog requires an exact published release commit');
+  const baseline = file => execFileSync('git', ['show', `${frozenTestFlightRef}:${file}`], { encoding: 'utf8' });
+  const released = JSON.parse(baseline('app.json')).expo;
+  const candidate = JSON.parse(fs.readFileSync('app.json', 'utf8')).expo;
+  assert.equal(released.extra?.releaseTrack, 'testflight');
+  assert.equal(candidate.extra?.releaseTrack, 'testflight');
+  assert.equal(candidate.version, released.version, 'frozen catalog is limited to the existing TestFlight runtime');
+  assert.equal(fs.readFileSync('config/governed-movement-art-taxonomy.json', 'utf8'),
+    baseline('config/governed-movement-art-taxonomy.json'), 'targeted patch must preserve the published catalog byte-for-byte');
+  console.log(`Frozen TestFlight catalog matches published release ${frozenTestFlightRef}`);
+} else if (backend) {
   const result = spawnSync(path.join(backend, 'venv/bin/python'), [path.join(backend, 'scripts/export_movement_art_taxonomy.py'), '--check'], { cwd: backend, encoding: 'utf8', timeout: 20000 });
   assert.equal(result.status, 0, `${result.stdout || ''}${result.stderr || ''}`);
   const current = JSON.parse(fs.readFileSync(path.join(backend, 'powerlift_mobile/config/governed-movement-art-taxonomy.json'), 'utf8'));
