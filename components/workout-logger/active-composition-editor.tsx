@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Text, TextInput } from '@/components/ui/sl-text';
+import { SLConfirmationModal } from '@/components/ui/sl-confirmation-modal';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { GovernedAccessorySubstitutionPickerModal } from '@/components/movement/GovernedAccessoryPickerModal';
 import { MovementQuickPrescriptionEditor } from '@/components/coach-mobile/SessionEditingWorkspace';
@@ -17,6 +18,8 @@ export function ActiveCompositionEditor({ mode, workoutId, athlete, composition,
   const [selection, setSelection] = useState<AdditionSelection | null>(null);
   const [draft, setDraft] = useState<CoachMovementDraft | null>(null);
   const [beforeId, setBeforeId] = useState<number | null>(null);
+  const [pendingRemovalId, setPendingRemovalId] = useState<number | null>(null);
+  const pendingRemoval = composition.items.find(item => item.id === pendingRemovalId);
   const [coreChoices, setCoreChoices] = useState<{ id: number; display_name: string; lift: string }[]>([]);
   const [coreLoading, setCoreLoading] = useState(mode === 'add');
   const [error, setError] = useState('');
@@ -41,6 +44,7 @@ export function ActiveCompositionEditor({ mode, workoutId, athlete, composition,
   const select = (value: AdditionSelection) => { setSelection(value); setDraft(additionDraft(value, unit)); };
   const save = async (removeId?: number) => {
     if (saving.current || (removeId == null && (!selection || !draft))) return;
+    if (removeId != null && (removeId !== pendingRemoval?.id || !pendingRemoval.can_remove)) return;
     saving.current = true; setBusy(true); setError('');
     try {
       const response = await fetchJson(`/workouts/mobile/${workoutId}/composition/items${removeId != null ? `/${removeId}` : ''}?history=summary`, {
@@ -52,14 +56,17 @@ export function ActiveCompositionEditor({ mode, workoutId, athlete, composition,
       if (!response.ok || !response.json?.ok) throw new Error(response.json?.error || 'Could not update Session movements.');
       onSaved(response.json); onClose();
     } catch (reason: any) { if (alive.current) setError(reason.message || 'Could not update Session movements.'); }
-    finally { saving.current = false; if (alive.current) setBusy(false); }
+    finally {
+      saving.current = false;
+      if (alive.current) { setBusy(false); setPendingRemovalId(null); }
+    }
   };
   if (mode === 'add' && !selection && !error) return <GovernedAccessorySubstitutionPickerModal
     context="in-session-addition" visible title="Add Movement" athleteId={athlete.id} athleteAnatomy={athlete}
     coreLoading={coreLoading} coreChoices={coreChoices} onSelectCore={value => select({ ...value, kind: 'core' })}
     canCreateCustom onCancel={onClose} onSelect={value => select({ id: value.id, display_name: value.display_name, kind: 'accessory' })} />;
   return <StrengthLedgerBottomSheet visible accessibilityLabel={mode === 'add' ? 'Add Movement' : 'Remove Movement'}
-    heightFraction={0.88} dismissalBlocked={busy} onDismiss={onClose}>
+    heightFraction={0.88} dismissalBlocked={busy || pendingRemoval != null} onDismiss={onClose}>
     <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
       <Text style={s.title}>{mode === 'add' ? 'Add Movement' : 'Remove Movement'}</Text>
       {mode === 'remove' ? <>
@@ -68,7 +75,7 @@ export function ActiveCompositionEditor({ mode, workoutId, athlete, composition,
           <View style={s.copy}><Text style={s.name}>{item.movement}{item.variant === 'BK' ? ' · Backdowns' : item.variant === 'TOP' ? ' · Top Sets' : ''}</Text>
             <Text style={s.hint}>{item.set_log_count ? 'Cannot remove: Sets have already been logged.' : item.variant === 'TOP' && composition.items.some(row => row.parent_item_id === item.id) ? 'Backdowns stay in this Session.' : 'No logged Sets'}</Text></View>
           <Pressable accessibilityRole="button" accessibilityLabel={`Remove ${item.movement}${item.variant === 'BK' ? ' Backdowns' : item.variant === 'TOP' ? ' Top Sets' : ''}`}
-            disabled={busy || !item.can_remove} onPress={() => { void save(item.id); }} style={[s.remove, (!item.can_remove || busy) && s.disabled]}>
+            disabled={busy || !item.can_remove} onPress={() => setPendingRemovalId(item.id)} style={[s.remove, (!item.can_remove || busy) && s.disabled]}>
             <Text style={s.removeText}>Remove</Text></Pressable>
         </View>)}
         {!composition.items.length ? <Text style={s.hint}>No movements in this Session. Use Add Movement to continue.</Text> : null}
@@ -97,6 +104,11 @@ export function ActiveCompositionEditor({ mode, workoutId, athlete, composition,
       </> : null}
       {error ? <Text accessibilityRole="alert" style={s.error}>{error}</Text> : null}
     </ScrollView>
+    <SLConfirmationModal visible={pendingRemoval != null} title="Remove movement?"
+      body={pendingRemoval ? `Are you sure you want to remove ${pendingRemoval.movement}${pendingRemoval.variant === 'BK' ? ' · Backdowns' : pendingRemoval.variant === 'TOP' ? ' · Top Sets' : ''} from this Session?${pendingRemoval.variant === 'TOP' && composition.items.some(item => item.parent_item_id === pendingRemoval.id) ? '\n\nBackdowns will stay in this Session.' : ''}` : undefined}
+      confirmLabel="Remove" cancelLabel="Cancel" confirmTone="danger" loading={busy}
+      onCancel={() => { if (!saving.current) setPendingRemovalId(null); }}
+      onConfirm={() => { if (pendingRemoval) void save(pendingRemoval.id); }} />
   </StrengthLedgerBottomSheet>;
 }
 const s = StyleSheet.create({
