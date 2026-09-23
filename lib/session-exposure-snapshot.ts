@@ -14,8 +14,9 @@ export type HydratedExposureHistory = Readonly<{
     representative_set_selection_reason?: string | null } | null;
 }>;
 export type SessionExposure = Readonly<{
-  set: ExposureSet; date: string; workoutId: number; comparisonKey: string;
+  set: ExposureSet; date: string; workoutId: number; comparisonKey: string | null;
   selection: 'Representative set'; recordedSetCount?: number;
+  equipmentLabel?: string;
 }> | null;
 
 function isPrior(row: { workout_id?: number | null; date?: string | null }, identity: ExposureSnapshotIdentity) {
@@ -27,6 +28,25 @@ function isPrior(row: { workout_id?: number | null; date?: string | null }, iden
 function usableSet(set?: ExposureSet | null): set is ExposureSet {
   return Boolean(set && set.weight_kg != null && Number.isFinite(set.weight_kg) && set.weight_kg >= 0
     && set.reps != null && Number.isFinite(set.reps) && set.reps > 0);
+}
+
+/** The Editor's Last Exposure is recorded exact-movement evidence. Equipment
+ * remains context, just as in History's All History view; it is not an identity
+ * selector or a claim that different implementations are comparable. */
+export function exposureFromAccessoryHistory(history: CanonicalMovementHistory, identity: ExposureSnapshotIdentity): SessionExposure {
+  if (!identity.movementDefinitionId || history.athlete.id !== identity.athleteId
+    || history.identity_resolution?.status !== 'resolved'
+    || history.identity_resolution.subject_type !== 'accessory'
+    || history.identity_resolution.subject_id !== identity.movementDefinitionId
+    || history.scope !== 'exact_identity') return null;
+  const prior = history.exposures.find(row => isPrior(row, identity) && usableSet(row.best_set));
+  if (!prior?.best_set) return null;
+  return { set: prior.best_set, date: prior.date, workoutId: prior.workout_id,
+    comparisonKey: prior.comparison_identity_key || null, selection: 'Representative set',
+    recordedSetCount: prior.set_count > 0 ? prior.set_count : undefined,
+    equipmentLabel: prior.equipment?.label || (history.movement.requires_equipment_configuration
+      || prior.comparison_scope === 'exact_implementation' || prior.comparison_scope === 'not_comparable'
+      ? 'Equipment not recorded' : undefined) };
 }
 
 /** Consume the existing bounded summary; never infer a comparable task from labels. */
@@ -87,5 +107,6 @@ export function presentSessionExposure(exposure: SessionExposure, unit: 'kg' | '
   const date = new Date(`${exposure.date.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
   return { performance: `${formatPerformedLoad(set.weight_kg, unit, semantics, 'recorded')} × ${set.reps}`,
     effort, date, context: [exposure.selection, exposure.recordedSetCount
-      ? `${exposure.recordedSetCount} recorded ${exposure.recordedSetCount === 1 ? 'set' : 'sets'}` : null].filter(Boolean).join(' · ') };
+      ? `${exposure.recordedSetCount} recorded ${exposure.recordedSetCount === 1 ? 'set' : 'sets'}` : null,
+      exposure.equipmentLabel].filter(Boolean).join(' · ') };
 }

@@ -7,6 +7,8 @@ type IdentityReference = Readonly<{ id?: number | null }>;
 
 export type MovementHistoryLaunchItem = Readonly<{
   id?: number | null;
+  movement_identity_contract?: number;
+  movement_definition_id?: number | null;
   movement?: string | null;
   movement_identity?: IdentityReference | null;
   effective_movement_identity?: IdentityReference | null;
