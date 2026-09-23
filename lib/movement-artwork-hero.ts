@@ -1,6 +1,7 @@
 import { approvedArtRuntimeEnabled } from './approved-art-runtime';
 import policyJson from '@/artwork-review/runtime-policy.json';
-import { DEFAULT_FOCAL, thumbnailGeometry, type Presentation } from './movement-artwork-geometry.mjs';
+import artworkReuse from '@/config/governed-movement-art-reuse.json';
+import { DEFAULT_FOCAL, thumbnailGeometry, type Presentation, type LoggerCrop } from './movement-artwork-geometry.mjs';
 export { movementHeroGeometry } from './movement-artwork-geometry.mjs';
 import { normalizeCanonicalMovementArtSubject, resolveCanonicalMovementArtwork, type CanonicalMovementArtworkInput, type MovementArtInput, type CanonicalAccessoryArtworkKey } from './canonical-movement-artwork';
 
@@ -12,11 +13,16 @@ export type ApprovedExactArtwork = Readonly<{
 }>;
 type ApprovalPolicy = Readonly<{
   denied_keys: readonly string[];
-  approved_exact_artwork?: readonly Readonly<{ key: string; movement_definition_id: number; candidate_id: string; app_sha256: string; presentation?: Presentation }>[];
+  approved_exact_artwork?: readonly Readonly<{ key: string; movement_definition_id: number; candidate_id: string; app_sha256: string; presentation?: Presentation; logger_crop?: LoggerCrop }>[];
 }>;
 // JSON imports widen cropMode to string. Registration validates its enum and
 // bounds; startup/export independently bind this projection to human receipts.
 const policy = policyJson as ApprovalPolicy;
+type SharedArtworkIdentity = Readonly<{ movement_definition_id: number; key: string;
+  core_movement_definition_id: number | null; artwork_movement_definition_id: number; artwork_key: string }>;
+const sharedArtwork: readonly SharedArtworkIdentity[] = [
+  ...artworkReuse.shared_artwork_identities, ...artworkReuse.legacy_artwork_identities,
+];
 
 /** Positive receipt for the exact currently mapped candidate. A filename,
  * grandfathered DEV preview or broad Core family illustration is not approval.
@@ -28,6 +34,20 @@ export function resolveApprovedExactMovementArtwork(
   approvals: ApprovalPolicy = policy,
 ): ApprovedExactArtwork | null {
   if (!dev) return null;
+  const subject = normalizeCanonicalMovementArtSubject(movement);
+  const shared = !subject.reason && sharedArtwork.find(row => subject.canonicalKey === row.key
+    && (subject.domain === 'core'
+      ? subject.canonicalIdentityId === row.core_movement_definition_id
+      : subject.canonicalIdentityId === row.movement_definition_id));
+  if (shared) {
+    if (approvals.denied_keys.includes(shared.artwork_key)) return null;
+    // Reuse only the original exact, hash-bound human receipt. An identity
+    // redirect grants no image approval and changes no candidate bytes.
+    const receipt = approvals.approved_exact_artwork?.find(row => row.key === shared.artwork_key
+      && row.movement_definition_id === shared.artwork_movement_definition_id);
+    if (!receipt?.candidate_id || !/^[a-f0-9]{64}$/.test(receipt.app_sha256)) return null;
+    return { ...receipt, movement_definition_id: shared.movement_definition_id } as ApprovedExactArtwork;
+  }
   const identity = resolveCanonicalMovementArtwork(movement);
   if (identity.kind !== 'accessory' || !identity.artworkKey) return null;
   if (approvals.denied_keys.includes(identity.artworkKey)) return null;
@@ -48,13 +68,13 @@ const warnedBypasses = new Set<string>();
 export function reportApprovedArtworkBypass(movement: MovementArtInput | null | undefined, renderedKey: string | null,
   surface: string, approvals: ApprovalPolicy = policy, dev = typeof __DEV__ !== 'undefined' && __DEV__) {
   if (!dev) return;
-  const subject = normalizeCanonicalMovementArtSubject(movement);
-  const expected = approvals.approved_exact_artwork?.find(row => row.movement_definition_id === subject.canonicalIdentityId);
+  const expected = resolveApprovedExactMovementArtwork(movement, dev, approvals);
   if (!expected || approvals.denied_keys.includes(expected.key) || expected.key === renderedKey) return;
   const warningKey = `${surface}:${expected.movement_definition_id}:${expected.candidate_id}`;
   if (warnedBypasses.has(warningKey)) return;
   if (warnedBypasses.size >= 200) warnedBypasses.clear();
   warnedBypasses.add(warningKey);
+  const subject = normalizeCanonicalMovementArtSubject(movement);
   console.warn('[MovementArt] Approved exact artwork unexpectedly bypassed', {
     surface, movement_definition_id: expected.movement_definition_id, key: expected.key,
     candidate_id: expected.candidate_id, resolved_key: renderedKey, subject_source: subject.source,
@@ -90,7 +110,7 @@ function approvedPresentation(key: CanonicalAccessoryArtworkKey, approvals: Appr
   return approvals.approved_exact_artwork?.find(row => row.key === key)?.presentation;
 }
 export function movementHeroFocal(key: CanonicalAccessoryArtworkKey): MovementHeroFocal {
-  return approvedPresentation(key) || FOCAL_BY_ARTWORK[key] || DEFAULT_FOCAL;
+  return approvedPresentation(key) || movementHeroDefaultFocal(key);
 }
 
 /** Modest square crop prioritizes the action at card size, using the same focal
@@ -98,4 +118,13 @@ export function movementHeroFocal(key: CanonicalAccessoryArtworkKey): MovementHe
 export function movementThumbnailGeometry(size: number, key: CanonicalAccessoryArtworkKey) {
   const focal = movementHeroFocal(key);
   return thumbnailGeometry(size, focal, approvedPresentation(key) || FOCAL_BY_ARTWORK[key]);
+}
+
+export function approvedLoggerCrop(key: CanonicalAccessoryArtworkKey): LoggerCrop | undefined {
+  if (policy.denied_keys.includes(key)) return undefined;
+  return policy.approved_exact_artwork?.find(row => row.key === key)?.logger_crop;
+}
+
+export function movementHeroDefaultFocal(key: CanonicalAccessoryArtworkKey): MovementHeroFocal {
+  return FOCAL_BY_ARTWORK[key] || DEFAULT_FOCAL;
 }

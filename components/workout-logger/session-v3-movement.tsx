@@ -12,17 +12,29 @@ import type { AccessoryLastBestCue } from '@/lib/accessory-last-best';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
 
 /** Lifecycle composition only; prescription, identity and write callbacks stay canonical. */
-export function SessionV3Movement({ title, index, expanded, complete, prescription, focus,
-  visual, note, prior, equipment, actions, warmup, history, timeline, onOpen, reduceMotion = false,
-}: {
+type SessionMovementProps = {
   title: string; index: number; expanded: boolean; complete: boolean; active?: boolean; reduceMotion?: boolean;
   prescription?: string | null; focus?: MovementLoggerFocusModel | null;
   visual?: ActiveMovementVisualContext | null; note?: string | null;
   prior?: AccessoryLastBestCue | null;
   equipment?: React.ReactNode; actions?: React.ReactNode; warmup?: React.ReactNode;
   history?: React.ReactNode; timeline?: React.ReactNode; onOpen: () => void;
-}) {
-  const { hero, thumbnailPresentation } = resolveMovementArtworkPresentation(visual?.movementArtworkInput, expanded, complete, 'session-v3-movement');
+};
+
+export function SessionV3Movement(props: SessionMovementProps) {
+  const { visual, expanded, complete } = props;
+  const { hero } = resolveMovementArtworkPresentation(visual?.movementArtworkInput, expanded, complete, 'session-v3-movement');
+  return <SessionV3MovementLayout {...props} artwork={hero ?
+    <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} movementDefinitionId={hero.movement_definition_id} reduceMotion={props.reduceMotion} /> : null} />;
+}
+
+/** Shared measured layout. The product wrapper above owns artwork eligibility;
+ * the private DEV reviewer supplies a clearly labelled candidate layer. */
+export function SessionV3MovementLayout({ title, index, expanded, complete, prescription, focus,
+  visual, note, prior, equipment, actions, warmup, history, timeline, onOpen, reduceMotion = false,
+  artwork,
+}: SessionMovementProps & { artwork?: React.ReactNode }) {
+  const thumbnailPresentation = expanded ? 'muscle-focus' : 'movement';
   const [artworkEnd, setArtworkEnd] = useState(0);
   // The first detail row is the visual endpoint: manufacturer for machines,
   // history/picker context for other lifts. Its measured middle puts the end
@@ -45,8 +57,8 @@ export function SessionV3Movement({ title, index, expanded, complete, prescripti
   const loadParts = load.match(/^(.*?)\s*(kg|lb)$/i);
   const progress = prior || visual?.progress;
   return <View style={s.workspace}>
-    {hero ? <View pointerEvents="none" style={[s.artworkStage, { height: Math.max(0, artworkEnd - 8) }]}>
-      <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} movementDefinitionId={hero.movement_definition_id} reduceMotion={reduceMotion} />
+    {artwork ? <View pointerEvents="none" style={[s.artworkStage, { height: Math.max(0, artworkEnd + 14) }]}>
+      {artwork}
     </View> : null}
     <View style={s.activeHeader}>
     <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen} style={s.heading}>
@@ -91,7 +103,8 @@ const s = StyleSheet.create({
   copy: { flex: 1, minWidth: 0 }, rowTitle: { color: '#f8f6fb', fontFamily: SLFontFamilies.sansSemiBold, fontSize: 16 },
   detail: { color: '#b7b0c2', fontSize: 12, lineHeight: 17, marginTop: 3 },
   activeHeader: { position: 'relative' },
-  artworkStage: { position: 'absolute', top: 8, left: 0, right: 0 },
+  // Bleed through the Session's 20 px content gutters; foreground keeps its inset.
+  artworkStage: { position: 'absolute', top: -14, left: -20, right: -20 },
   workspace: { paddingVertical: 8 }, heading: { flexDirection: 'row', gap: 12, alignItems: 'center', paddingVertical: 8 },
   title: { color: '#faf7ff', fontFamily: SLFontFamilies.sansBold, fontSize: 26, lineHeight: 31 },
   eyebrow: { color: '#b391ec', fontFamily: SLFontFamilies.sansBold, fontSize: 10, letterSpacing: 1.2, marginTop: 7 },

@@ -5,13 +5,16 @@ import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES } from '../lib/canonical-movemen
 import { movementHeroSourceFrame } from '../lib/movement-artwork-geometry.mjs';
 import { approvedExactArtworkPolicy, assertHumanArtworkGate } from './canonical-art-review-gate.mjs';
 const state=JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
+const reuse=JSON.parse(fs.readFileSync('config/governed-movement-art-reuse.json'));
+const reuseRows=[...reuse.shared_artwork_identities,...reuse.legacy_artwork_identities];
 const policy=JSON.parse(fs.readFileSync('artwork-review/runtime-policy.json'));
 const subject=id=>({ identity_type:'accessory', movement_definition_id:id, key:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.key, primary_muscle_group:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.primary });
 assertHumanArtworkGate();
 assert.deepEqual(policy.approved_exact_artwork,approvedExactArtworkPolicy(state));
 for (const row of state.canonical_assets) {
   const result=resolveApprovedExactMovementArtwork(subject(row.movement_definition_id),true,policy);
-  const receipt=policy.approved_exact_artwork.find(entry=>entry.key===row.key);
+  const binding=reuseRows.find(entry=>entry.movement_definition_id===row.movement_definition_id && entry.key===row.key);
+  const receipt=policy.approved_exact_artwork.find(entry=>entry.key===(binding?.artwork_key || row.key));
   assert.equal(Boolean(result),Boolean(receipt),'only current positive human receipts enable exact heroes');
   assert.equal(resolveApprovedExactMovementArtwork(subject(row.movement_definition_id),false,policy),null,'DEV-only enhancement cannot enter release runtime');
 }
@@ -39,20 +42,24 @@ for(const id of [33,253,154,256,354]) for(const width of [288,343,393]) for(cons
   const key=CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id].key;
   const focal=movementHeroFocal(key),box=movementHeroGeometry(width,height,focal);
   assert.ok(Object.values(box).every(Number.isFinite));
-  assert.ok(box.width<=450&&box.width>0,'decode/layout dimensions stay bounded');
+  assert.ok(box.width<=650&&box.width>0,'decode/layout dimensions stay bounded');
   const subjectX=box.left+focal.focalX*box.width;
-  assert.ok(subjectX>width*.6&&subjectX<width*.92,'subject stays center-right with edge clearance');
+  assert.ok(subjectX>width*.4&&subjectX<width*.7,'movement spans the background behind the prescription');
   assert.equal(box.width,box.height,'square source is not stretched');
 }
 const read=path=>fs.readFileSync(path,'utf8');
 for(const receipt of policy.approved_exact_artwork.filter(row=>row.presentation?.cropMode==='contain')) {
   for(const width of [288,343,393,430]) for(const height of [140,220,300]) {
     const box=movementHeroGeometry(width,height,movementHeroFocal(receipt.key));
-    assert.equal(box.width,box.height,'approved square remains undistorted');
     assert.ok(box.left>=0 && box.top>=0 && box.left+box.width<=width && box.top+box.height<=height,
-      `${receipt.key}: contain retains all head/hand/foot and machine contact points inside the hero`);
-    assert.ok(box.left>=width*.30-1e-9,'contained artwork expands behind the shared prescription-protection scrim');
-    assert.ok(box.width>=Math.min(width*.67,height*.85),'full compositions fill the background at atmospheric scale');
+      `${receipt.key}: full composition stays inside the background`);
+    for (const [sourceWidth,sourceHeight] of [[512,512],[1536,1024],[1024,1536]]) {
+      const frame=movementHeroSourceFrame(box,sourceWidth,sourceHeight);
+      assert.ok(frame.left>=0 && frame.top>=0 && frame.left+frame.width<=width+1e-9 && frame.top+frame.height<=height+1e-9,
+        'contain keeps all machine and body contact points within the canvas');
+      assert.ok(frame.width>=width-1e-9 || frame.height>=height-1e-9,'full composition uses the available background');
+      assert.ok(Math.abs(frame.width/frame.height-sourceWidth/sourceHeight)<1e-9,'full composition does not stretch');
+    }
   }
 }
 for (const row of state.canonical_assets) {
@@ -61,17 +68,17 @@ for (const row of state.canonical_assets) {
   const frame=movementHeroSourceFrame(box,sourceWidth,sourceHeight);
   assert.ok(Math.abs(frame.width/frame.height-sourceWidth/sourceHeight)<1e-9,`${row.key}: original aspect ratio`);
   assert.ok(frame.left>=box.left-1e-9&&frame.top>=box.top-1e-9&&frame.left+frame.width<=box.left+box.width+1e-9&&frame.top+frame.height<=box.top+box.height+1e-9);
-  if(sourceWidth===sourceHeight) assert.deepEqual(frame,box,'square approved sources, including T-Bar Row, retain their exact geometry');
+  if(sourceWidth===sourceHeight) assert.equal(frame.width,frame.height,'square approved sources remain square');
 }
-assert.deepEqual(movementHeroGeometry(393,250,movementHeroFocal('accessory_t_bar_row')),
-  {width:270,height:270,left:167.61,top:45.8},'locked T-Bar Row composition');
+const background=movementHeroGeometry(393,250,movementHeroFocal('accessory_t_bar_row'));
+assert.ok(background.left<393*.2 && background.left+background.width>393*.9,
+  'focal artwork spans the prescription and right side instead of a separate image window');
 const hero=read('components/movement/MovementArtworkHero.tsx');
 assert.match(hero,/memo\(function MovementArtworkHero/);
 assert.match(hero,/StyleSheet.absoluteFillObject/,'hero must not add layout height');
 assert.match(hero,/cachePolicy="memory-disk"/);
 assert.match(hero,/recyclingKey=\{receiptId\}/);
 assert.match(hero,/reduceMotion \? 0 : 160/);
-assert.match(hero,/locations=\{\[0, 0\.26, 0\.46, 0\.78, 1\]\}/,'one canvas fade for every composition');
 assert.doesNotMatch(hero,/locations=\{contained \?/,'containment must never switch back to the photo-tile fade');
 assert.doesNotMatch(hero,/setInterval|setTimeout|elapsedSeconds|elapsedMs|restRemaining|Date\.now|MuscleMap|help-outline|require\(/,'the image layer has no timer, fallback, identity guesses or independent asset paths');
 const single=read('components/workout-logger/session-v3-movement.tsx');

@@ -11,6 +11,19 @@ export const invalidatedArtwork = (state, row) => Boolean(row && (state.artwork_
   reset.movement_definition_ids.includes(row.movement_definition_id) && reset.invalidated_master_hashes.includes(row.files.master.sha256)));
 const catalogExcluded = (state, row) => (state.catalog_exclusions || []).some(exclusion =>
   exclusion.movement_definition_id === row.movement_definition_id && exclusion.family === row.family);
+export const consolidatedArtworkBinding = (state, row) => (state.consolidated_artwork_bindings || []).find(binding => {
+  const receipt = binding.crop_approval;
+  return binding.candidate_id === row.candidate_id && binding.artwork_movement_definition_id === row.movement_definition_id
+    && binding.artwork_key === row.key && binding.master_sha256 === row.files.master.sha256
+    && binding.app_sha256 === row.files.app.sha256 && binding.source === 'owner_consolidated_artwork_reuse'
+    && typeof binding.owner_instruction === 'string' && binding.owner_instruction.trim().length > 0
+    && receipt?.action === 'approve' && receipt.source === 'human_logger_crop_ui'
+    && Number.isInteger(receipt.reviewer_user_id) && receipt.reviewer_user_id > 0
+    && receipt.candidate_sha256 === binding.master_sha256 && receipt.app_sha256 === binding.app_sha256
+    && state.logger_crop_reviews?.[row.candidate_id]?.history?.some(event => JSON.stringify(event) === JSON.stringify(receipt))
+    && state.catalog_exclusions?.some(exclusion => exclusion.movement_definition_id === row.movement_definition_id
+      && exclusion.replacement_movement_definition_id === binding.movement_definition_id);
+});
 const explicitOwnerChat = review => review?.source === 'explicit_owner_chat'
   && typeof review.owner_instruction === 'string' && review.owner_instruction.trim().length > 0
   && review.owner_instruction.trim().length <= 20000
@@ -19,10 +32,27 @@ const explicitOwnerChat = review => review?.source === 'explicit_owner_chat'
 const humanSource = review => (review?.source === 'human_review_ui'
   && Number.isInteger(review.reviewer_user_id) && review.reviewer_user_id > 0) || explicitOwnerChat(review);
 
+export function approvedLoggerCropPolicy(state, item) {
+  const row = state.logger_crop_reviews?.[item.candidate_id], receipt = row?.review;
+  if (row?.status !== 'approved' || receipt?.action !== 'approve'
+      || receipt?.source !== 'human_logger_crop_ui' || item.test_only
+      || !Number.isInteger(receipt.reviewer_user_id) || receipt.reviewer_user_id <= 0
+      || receipt.candidate_sha256 !== item.files.master.sha256 || receipt.app_sha256 !== item.files.app.sha256
+      || JSON.stringify(receipt.crop) !== JSON.stringify(row.crop)
+      || !row.history?.some(event => JSON.stringify(event) === JSON.stringify(receipt))) return null;
+  const crop = row.crop;
+  assert.deepEqual(Object.keys(crop).sort(), ['fit', 'x', 'y', 'zoom']);
+  assert.ok(['original', 'contain', 'focal'].includes(crop.fit));
+  for (const [key, low, high] of [['zoom', .5, 1.6], ['x', -.5, .5], ['y', -.5, .5]]) {
+    assert.ok(Number.isFinite(crop[key]) && crop[key] >= low && crop[key] <= high, 'bounded Logger crop');
+  }
+  return crop;
+}
+
 export function approvedExactArtworkPolicy(state) {
   return state.canonical_assets.flatMap(active => {
     const row = state.items.find(candidate => candidate.candidate_id === active.candidate_id);
-    if (invalidatedArtwork(state, row) || (row && catalogExcluded(state, row))) return [];
+    if (invalidatedArtwork(state, row) || (row && catalogExcluded(state, row) && !consolidatedArtworkBinding(state, row))) return [];
     const review = row?.review;
     const human = row?.status === 'approved' && review?.decision === 'approved'
       && humanSource(review)
@@ -32,9 +62,11 @@ export function approvedExactArtworkPolicy(state) {
     if ((!human && !prior) || !row || row.test_only || !['approved', 'approved_existing'].includes(row.status)
         || row.human_approved !== true || row.review?.candidate_sha256 !== row.files.master.sha256
         || !['master', 'app', 'thumbnail'].every(role => active.files[role].sha256 === row.files[role].sha256)) return [];
+    const loggerCrop = approvedLoggerCropPolicy(state, row);
     return [{ key: active.key, movement_definition_id: active.movement_definition_id,
       candidate_id: row.candidate_id, app_sha256: active.files.app.sha256,
-      ...(row.presentation ? {presentation: row.presentation} : {}) }];
+      ...(row.presentation ? {presentation: row.presentation} : {}),
+      ...(loggerCrop ? {logger_crop: loggerCrop} : {}) }];
   }).sort((a, b) => a.key.localeCompare(b.key));
 }
 
@@ -72,7 +104,7 @@ export function assertHumanArtworkGate(root = defaultRoot) {
     for (const [property, role] of [['source', 'app']]) {
       assert.ok(block.includes(`${property}: require('@/${active.files[role].path}')`), 'canonical mapping must bind the correct identity and exact approved file');
     }
-    if (invalidatedArtwork(state, candidate) || catalogExcluded(state, candidate) || candidate.status === 'rejected' || (candidate.status === 'pending' && candidate.review_history.length)) denied.push(active.key);
+    if (invalidatedArtwork(state, candidate) || (catalogExcluded(state, candidate) && !consolidatedArtworkBinding(state, candidate)) || candidate.status === 'rejected' || (candidate.status === 'pending' && candidate.review_history.length)) denied.push(active.key);
     for (const role of ['master', 'app', 'thumbnail']) {
       const asset = active.files[role];
       const file = path.resolve(root, asset.path);
@@ -90,6 +122,15 @@ export function assertHumanArtworkGate(root = defaultRoot) {
   for (const file of mappedPaths) assert.ok(allowedPaths.has(file), `Unreviewed mapping: ${file}`);
   assert.ok(!mapping.includes('artwork-review/candidates'), 'candidate storage must never be bundled as canonical artwork');
   const policy = JSON.parse(fs.readFileSync(path.join(reviewRoot, 'runtime-policy.json'), 'utf8'));
+  if (state.consolidated_artwork_bindings?.length) {
+    const taxonomy = JSON.parse(fs.readFileSync(path.join(root, 'config/governed-movement-art-reuse.json'), 'utf8'));
+    for (const binding of state.consolidated_artwork_bindings) {
+      assert.ok(consolidatedArtworkBinding(state, candidates.get(binding.candidate_id)), 'reuse retains exact source image and crop approval');
+      assert.ok(taxonomy.shared_artwork_identities.some(row => row.movement_definition_id === binding.movement_definition_id
+        && row.key === binding.key && row.artwork_movement_definition_id === binding.artwork_movement_definition_id
+        && row.artwork_key === binding.artwork_key), 'runtime artwork reuse must match governed catalog projection');
+    }
+  }
   assert.deepEqual(policy.denied_keys, [...new Set(denied)].sort(), 'runtime rejection policy must reflect durable human decisions');
   assert.deepEqual(policy.approved_exact_artwork, approvedExactArtworkPolicy(state), 'hero eligibility must match positive human approval of mapped bytes');
   return {canonical: state.canonical_assets.length, denied: denied.length};

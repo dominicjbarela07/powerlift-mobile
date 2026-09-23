@@ -72,14 +72,14 @@ export function CanonicalMovementArtwork({ movement, size = 72, style, testID, s
     if (taxonomyPresent) console.error('[movement-artwork] INVARIANT: governed taxonomy reached unresolved artwork', diagnostic);
   }, [movement, subject, resolution, surface, testID]);
 
-  if (resolution.kind === 'accessory') {
-    if (exactAsset && approved) {
+  if (exactAsset && approved) {
       return (
         <View accessibilityLabel={exactAsset.label} accessibilityRole="image" style={[styles.frame, { width: size, height: size, borderRadius: Math.min(SLRadius.lg, size * 0.16) }, style]} testID={testID}>
           <Image accessibilityIgnoresInvertColors resizeMode="contain" source={exactAsset.source} style={[styles.exactImage, size <= 80 ? movementThumbnailGeometry(size, approved.key) : { width: size, height: size }]} />
         </View>
       );
-    }
+  }
+  if (resolution.kind === 'accessory') {
     const asset = accessoryMuscleRegionAsset(resolution.regionKey);
     return (
       <View accessibilityLabel={`${asset.label} targeted muscle-group artwork`} accessibilityRole="image" style={[styles.frame, { width: size, height: size }, style]} testID={testID}>

@@ -3,5 +3,8 @@ export type Presentation = Focal & Readonly<{ thumbnailFocalX?: number; thumbnai
 type Geometry = { width: number; height: number; left: number; top: number };
 export const DEFAULT_FOCAL: Focal;
 export function thumbnailGeometry(size: number, focal: Focal, preset?: Partial<Presentation>): Geometry;
-export function movementHeroGeometry(width: number, height: number, focal: Presentation): Geometry;
+export function movementHeroGeometry(width: number, height: number, focal: Presentation, crop?: LoggerCrop): Geometry;
 export function movementHeroSourceFrame(box: Geometry, sourceWidth?: number, sourceHeight?: number): Geometry;
+
+export type LoggerCrop = Readonly<{ fit: 'original' | 'contain' | 'focal'; zoom: number; x: number; y: number }>;
+export const DEFAULT_LOGGER_CROP: LoggerCrop;

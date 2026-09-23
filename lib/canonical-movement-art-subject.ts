@@ -15,6 +15,7 @@ export type MovementArtDefinition = Readonly<{
   family?: string | null;
   core_family?: string | null;
   core_kind?: string | null;
+  core_movement_definition_id?: number | null;
   equipment_type?: string | null;
   primary_muscle_group?: string | null;
   secondary_muscle_groups?: readonly string[] | null;
@@ -127,6 +128,9 @@ function taxonomy(identity?: MovementArtDefinition | null) {
 /** Call only at a typed MovementDefinition/CanonicalHistory/Ledger definition boundary. */
 export function canonicalArtworkInputFromDefinition(definition?: MovementArtDefinition | null): CanonicalMovementArtworkInput | null {
   if (!definition) return null;
+  if (definition.core_movement_definition_id) {
+    return { movement_identity_contract: 1, movement_definition_id: definition.id, movement_identity: definition };
+  }
   if (definition.identity_type === 'core' || ['core', 'competition', 'variant'].includes(token(definition.kind)) || definition.core_family) {
     return { kind: definition.kind, core_family: definition.core_family, core_kind: definition.core_kind,
       core_movement_id: definition.id, core_movement: definition };
