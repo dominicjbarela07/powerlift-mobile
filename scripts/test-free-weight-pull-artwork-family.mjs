@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import { expectedDirectArtworkKey, assertReviewedArtworkReuse } from './artwork-review-expectations.mjs';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { reviewedFreeWeightFiles } from './reviewed-free-weight-corrections.mjs';
@@ -33,13 +34,14 @@ for (const row of audit.qualifying) {
   assert.equal(row.identity_status, 'canonical');
   assert.equal(row.retired_at, null);
   const identity = { id: row.id, key: row.key, family: row.family, primary_muscle_group: row.primary_muscle_group };
-  assert.equal(resolve(identity).artworkKey, row.key);
-  assert.equal(resolve({ ...identity, key: undefined }).artworkKey, row.key, 'known governed ID restores its canonical key; approval stays separate');
+  assertReviewedArtworkReuse({kind:'accessory',effective_movement_identity:identity},row.id,row.key);
+  assert.equal(resolve(identity).artworkKey, expectedDirectArtworkKey(row.key));
+  assert.equal(resolve({ ...identity, key: undefined }).artworkKey, expectedDirectArtworkKey(row.key), 'known governed ID restores its canonical key; approval stays separate');
   assert.equal(resolve({ ...identity, key: undefined }).kind, 'accessory');
   assert.equal(resolve({ ...identity, key: 'contradictory_identity' }).kind, 'neutral');
   assert.equal(resolve({ ...identity, primary_muscle_group: 'chest', family: 'accessory_chest' }).artworkKey, undefined, 'governed taxonomy remains available, but incompatible photography is excluded');
   assert.equal(resolve({ ...identity, id: 999999 }).kind, 'neutral', 'known key cannot override a contradictory ID');
-  assert.equal(resolve({ ...identity, id: undefined }).artworkKey, row.key, 'an explicitly typed governed key resolves its registered identity');
+  assert.equal(resolve({ ...identity, id: undefined }).artworkKey, expectedDirectArtworkKey(row.key), 'an explicitly typed governed key resolves its registered identity');
   assert.equal(resolve({ ...identity, id: undefined }).kind, 'accessory', 'governed taxonomy can survive without an exact ID');
   assert.equal(resolveCanonicalMovementArtwork({ kind: 'accessory', ...identity,
     movement_identity: { ...identity, key: 'contradictory_identity' },
@@ -55,7 +57,7 @@ for (const row of audit.qualifying) {
     is_substituted: true,
   });
   assert.equal(resolveCanonicalMovementArtwork(normalized).canonicalIdentityId, row.id);
-  assert.equal(resolveCanonicalMovementArtwork(normalized).artworkKey, row.key);
+  assert.equal(resolveCanonicalMovementArtwork(normalized).artworkKey, expectedDirectArtworkKey(row.key));
   assert.equal(resolveCanonicalMovementArtwork({ kind: 'accessory', movement_identity: identity, is_substituted: true }).kind, 'neutral');
   const asset = manifest.movements.find(r=>r.id===row.id);
   assert.ok(asset?.files);
@@ -78,7 +80,7 @@ for (const group of searchGroups) {
   for (const item of group.items) {
     assert.equal(item.primary_muscle_group, group.primary);
     const selected = resolveCanonicalMovementArtwork({ movement_identity: item, kind: 'accessory' });
-    assert.equal(selected.artworkKey, CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[item.id]?.key, 'real historical search DTO maps its currently governed exact identity, including completed hinge coverage');
+    assert.equal(selected.artworkKey, expectedDirectArtworkKey(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[item.id]?.key), 'real historical search DTO maps its currently governed exact identity, including completed hinge coverage');
     assert.equal(selected.canonicalIdentityId, item.id);
   }
 }
@@ -90,7 +92,7 @@ for (const item of serializedItems) {
   const selected = resolveCanonicalMovementArtwork(canonicalArtworkInputForLoggerItem(item));
   assert.equal(selected.kind, 'accessory');
   assert.equal(selected.canonicalIdentityId, item.effective_movement_definition_id);
-  assert.equal(selected.artworkKey, item.effective_movement_identity.key, 'real DEV serialized subject resolves without label inference');
+  assert.equal(selected.artworkKey, expectedDirectArtworkKey(item.effective_movement_identity.key), 'real DEV serialized subject resolves without label inference');
 }
 assert.equal(crypto.createHash('sha256').update(read('assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png')).digest('hex'), 'e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe');
 for (const row of audit.excluded.filter(row => pullPrimaries.has(row.primary_muscle_group))) {

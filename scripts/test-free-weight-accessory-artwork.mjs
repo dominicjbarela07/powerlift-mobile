@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import { expectedDirectArtworkKey, assertReviewedArtworkReuse } from './artwork-review-expectations.mjs';
 import fs from 'node:fs';
 import { resolveCanonicalMovementArtwork } from '../lib/canonical-movement-artwork.ts';
 import { canonicalArtworkInputForLoggerItem } from '../lib/logger-movement-identity.ts';
@@ -35,7 +36,7 @@ assert.equal(resolve({ movement_identity: target, legacy: { state: 'resolved', e
 
 assert.equal(resolve({ key, primary_muscle_group: 'chest' }).artworkKey, undefined, 'taxonomy survives without a numeric ID but cannot acquire exact photography');
 assert.equal(resolve({ id: 33, primary_muscle_group: 'chest', display_name: 'Dumbbell Incline Bench Press' }).artworkKey, undefined, 'numeric row ID and display name cannot invent governed artwork membership');
-assert.equal(resolve({ movement_definition_id: 7, key: 'incline_dumbbell_press', family: 'horizontal_push' }).artworkKey, 'incline_dumbbell_press', 'separate legacy movement owns independently generated artwork');
+assert.equal(resolve({ movement_definition_id: 7, key: 'incline_dumbbell_press', family: 'horizontal_push' }).artworkKey, expectedDirectArtworkKey('incline_dumbbell_press'), 'retired duplicate does not re-enable its superseded photo');
 assert.equal(resolve({ movement_definition_id: 7, key, family: 'horizontal_push' }).kind, 'neutral', 'legacy identity cannot borrow ID33 artwork');
 for (const unrelated of [{ id: 135, key: 'accessory_machine_reverse_fly', primary_muscle_group: 'rear_delts' }, { id: 222, key: 'accessory_chest_supported_row', primary_muscle_group: 'upper_back' }]) {
   const result = resolve({ ...unrelated, display_name: 'Dumbbell Incline Bench Press' });
@@ -50,3 +51,5 @@ for (const [name, expectedSize] of [['dumbbell-incline-bench-press-v1.png', 512]
   assert.equal(png.readUInt32BE(20), expectedSize);
 }
 console.log('[free-weight-accessory-artwork] exact governed mapping, performed identity, conflict denial, unrelated fallback and PNG derivatives passed');
+
+assertReviewedArtworkReuse({kind:'accessory',movement_definition_id:7,key:'incline_dumbbell_press',family:'horizontal_push'},7,'incline_dumbbell_press');

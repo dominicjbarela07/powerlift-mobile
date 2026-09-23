@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import { expectedDirectArtworkKey, assertReviewedArtworkReuse } from './artwork-review-expectations.mjs';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { reviewedFreeWeightFiles } from './reviewed-free-weight-corrections.mjs';
@@ -25,7 +26,10 @@ assert.deepEqual(audit.prior_coverage, {Push:51, Pull:47});
 assert.equal(audit.initial_decisions['NEEDS NEW ART'], 100);
 assert.deepEqual(audit.blocked_ids, [343]);
 const human = json('artwork-review/review-state.json');
-const withdrawn = new Set(human.catalog_exclusions.filter(row => historicalConfirmed.some(item => item.id === row.movement_definition_id)).map(row => row.movement_definition_id));
+// This 2026-09-11 manifest retains its original membership; later merges
+// change runtime eligibility, not these historical inventory/hash receipts.
+const withdrawn = new Set([38,395,561,569]);
+for (const id of withdrawn) assert.ok(human.catalog_exclusions.some(row=>row.movement_definition_id===id));
 assert.deepEqual([...withdrawn].sort((a,b)=>a-b), [38,395,561,569]);
 const confirmed = [...historicalConfirmed.filter(row => !withdrawn.has(row.id)), {
   id:646, key:'accessory_ankle_weight_psoas_march', family:'accessory_hip_flexors',
@@ -34,7 +38,7 @@ const confirmed = [...historicalConfirmed.filter(row => !withdrawn.has(row.id)),
 assert.equal(confirmed.length,195);
 assert.deepEqual(ids(manifest.movements), ids(confirmed));
 const otherApprovedFamilies = new Set(human.canonical_assets.filter(asset =>
-  ['canonical_bodyweight_accessories','canonical_machine_accessories'].includes(
+  ['canonical_bodyweight_accessories','canonical_machine_accessories','canonical_remaining_accessories'].includes(
     human.items.find(item => item.candidate_id === asset.candidate_id)?.family)).map(asset => asset.movement_definition_id));
 assert.deepEqual(Object.keys(registry).map(Number).filter(id => !otherApprovedFamilies.has(id)).sort((a,b)=>a-b), ids(confirmed), 'exact free-weight inventory, without family gaps or ungoverned extra registrations');
 assert.deepEqual(manifest.uncovered_confirmed_ids, []);
@@ -54,10 +58,11 @@ for (const row of confirmed) {
   assert.deepEqual(registry[row.id], {key:row.key,primary:row.artwork_primary_muscle_group});
   const identity = {id:row.id,key:row.key,family:row.family,primary_muscle_group:row.primary_muscle_group};
   const selected = resolve({kind:'accessory',effective_movement_identity:identity});
-  assert.equal(selected.artworkKey,row.key);
+  assertReviewedArtworkReuse({kind:'accessory',effective_movement_identity:identity},row.id,row.key);
+  assert.equal(selected.artworkKey,expectedDirectArtworkKey(row.key));
   assert.equal(selected.canonicalIdentityId,row.id);
   assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,key:'wrong'}}).kind,'neutral');
-  assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,key:undefined}}).artworkKey,row.key,'governed ID recovers its exact key; human approval is still independently required');
+  assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,key:undefined}}).artworkKey,expectedDirectArtworkKey(row.key),'governed ID recovers its exact key; human approval is still independently required');
   assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,id:999999}}).kind,'neutral');
   assert.equal(resolve({kind:'accessory',effective_movement_identity:{...identity,primary_muscle_group:'invalid_primary'}}).regionKey,registry[row.id].primary,'registered canonical identity supplies known taxonomy');
   assert.equal(resolve({kind:'accessory',effective_movement_identity:identity,performed_canonical_movement_identity:{...identity,id:999999}}).kind,'neutral');
@@ -67,7 +72,7 @@ for (const row of confirmed) {
     movement_identity:{id:314,key:'accessory_machine_dip',primary_muscle_group:'triceps'},
     effective_movement_identity:identity,performed_canonical_movement_identity:identity,
   });
-  assert.equal(resolve(input).artworkKey,row.key,'effective subject owns swapped Logger art');
+  assert.equal(resolve(input).artworkKey,expectedDirectArtworkKey(row.key),'effective subject owns swapped Logger art');
   for (const role of ['master','app','thumbnail']) {
     const file=asset.files[role], bytes=read(file.path);
     assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),file.sha256);
@@ -101,7 +106,9 @@ assert.equal(uniqueFiles.size,195);
 assert.equal(uniqueMasters.size,195,'distinct definitions have independently generated masters');
 for(const row of audit.records.filter(row=>!confirmed.some(item=>item.id===row.id))) {
   if (otherApprovedFamilies.has(row.id)) {
-    assert.ok(['BODYWEIGHT','MACHINE'].includes(row.execution_family), 'only separately approved families extend this historical inventory');
+    const mapping=human.canonical_assets.find(asset=>asset.movement_definition_id===row.id);
+    const candidate=human.items.find(item=>item.candidate_id===mapping.candidate_id);
+    assert.ok(candidate.human_approved && ['approved','approved_existing'].includes(candidate.status), 'only separately human-approved families extend this historical inventory');
     assert.equal(row.identity_status,'canonical');
     assert.equal(registry[row.id].key,row.key);
     continue;
@@ -112,10 +119,13 @@ for(const id of [4,5,6,7]) {
   const row=confirmed.find(item=>item.id===id);
   assert.equal(row.primary_muscle_group,null);
   assert.ok(row.artwork_primary_source.includes('GOVERNED_FAMILY_REGIONS'));
-  assert.equal(resolve({kind:'accessory',movement_definition_id:id,key:row.key,family:row.family}).artworkKey,row.key,'existing typed family adapter supports independent legacy identity');
+  assert.equal(resolve({kind:'accessory',movement_definition_id:id,key:row.key,family:row.family}).artworkKey,expectedDirectArtworkKey(row.key),'existing typed family adapter supports independent legacy identity');
 }
 for(const id of [546,548]) assert.equal(manifest.movements.find(row=>row.id===id).generation_batch,'Completion');
-for(const id of [321,342,343,344,595,603]) assert.equal(registry[id],undefined);
+for(const id of [321,342,343,344,595,603]) {
+  if(otherApprovedFamilies.has(id)) assert.equal(registry[id]?.key,human.canonical_assets.find(row=>row.movement_definition_id===id).key);
+  else assert.equal(registry[id],undefined);
+}
 assert.equal(registry[499]?.key, 'accessory_barbell_rollout', 'governed BODYWEIGHT rollout now has separately human-approved artwork');
 assert.equal(resolve({kind:'accessory',display_name:'Dumbbell Curl',equipment_type:'dumbbell',primary_muscle_group:'biceps'}).artworkKey,undefined,'labels/equipment/muscles cannot select an exact asset');
 assert.equal(resolve({kind:'core',core_movement_id:33,core_family:'bench'}).kind,'core');
@@ -124,7 +134,7 @@ assert.equal(search.length,20);
 assert.equal(search.flatMap(group=>group.items).length,194);
 for(const group of search) for(const row of group.items) {
   assert.equal(group.http_status,200);
-  assert.equal(resolve({kind:'accessory',movement_identity:row}).artworkKey,withdrawn.has(row.id) ? undefined : row.key,'historical DTO preserves identity; retired art stays absent');
+  assert.equal(resolve({kind:'accessory',movement_identity:row}).artworkKey,expectedDirectArtworkKey(row.key),'historical DTO preserves identity; retired art stays absent');
 }
 const serialized=json(doc+'qa-session-serialized.json').workout;
 assert.equal(serialized.athlete_id,12);
@@ -132,7 +142,7 @@ const items=serialized.accessory_groups.flatMap(group=>group.items);
 assert.deepEqual(items.map(item=>item.effective_movement_definition_id),[33,154,253,325,354,388,476,495,4,5,6,7]);
 for(const item of items) {
   const selected=resolve(canonicalArtworkInputForLoggerItem(item));
-  assert.equal(selected.artworkKey,item.effective_movement_identity.key);
+  assert.equal(selected.artworkKey,expectedDirectArtworkKey(item.effective_movement_identity.key));
   assert.equal(selected.canonicalIdentityId,item.effective_movement_definition_id);
 }
 assert.equal(crypto.createHash('sha256').update(read('assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png')).digest('hex'),'e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe');
