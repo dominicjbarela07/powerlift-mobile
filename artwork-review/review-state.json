@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": 2735,
-  "updated_at": "2026-09-23T12:18:05.124006+00:00",
-  "updated_at_display": "Sep 23, 2026 05:18 AM PT (Sep 23, 2026 08:18 AM Eastern)",
+  "revision": 2769,
+  "updated_at": "2026-09-23T16:06:45.990868+00:00",
+  "updated_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -137038,12 +137038,25 @@
         }
       },
       "candidate_asset": "candidates/ccf51a83812712db2872b4e6/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "the band is not around the athletes right hand correctly. it should interface with both hands in the same fashion",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "the band is not around the athletes right hand correctly. it should interface with both hands in the same fashion",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:21:35.203292+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:21 AM PT (Sep 23, 2026 11:21 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "128d6d0a321f6a6b586f8190dfb498f29575cd6812dd9dd21e4a55a44c0c1c9e",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:39.470108+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Use case photorealistic-natural. First reference is immutable Strength Ledger athlete/style: same muscular man, graphite sleeveless shirt, black shorts and black trainers, neutral skin, near-black studio, restrained violet edge. Square single exercise photograph, full head/hands/feet/equipment and 5% dark clearance, realistic body proportions, no text or logos. Second reference is ACTUAL exercise demonstration for exact band routing and pushup pose; match its mechanics, not person/location/colors. BAND PUSH-UP at the top of a controlled repetition. Athlete forms straight line head-hips-heels, arms straight, both palms flat on floor slightly wider than shoulders, both toes support feet. One continuous CLOSED RED flat resistance LOOP lies over upper back/shoulder blades; two parallel rubber strands down either side of torso to each hand, secure lower bights pinned UNDER heel of each planted palm. At each hand both inner and outer red strands visibly emerge from under palm edges, not lying across fingers or simply ending at wrist. Band must not go under torso or wrap neck. Camera slightly elevated front-side three-quarter exposes BOTH planted hands, unbroken loop bends beneath palms, red band on shoulder blades, entire athlete. No equipment needed. Adult natural forearm lengths and five fingers each. Red color is mandatory even though mechanics source band is yellow.",
@@ -137080,6 +137093,18 @@
         "source_sha256": "128d6d0a321f6a6b586f8190dfb498f29575cd6812dd9dd21e4a55a44c0c1c9e",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/band-pushup-real-2.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the band is not around the athletes right hand correctly. it should interface with both hands in the same fashion",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:21:35.203292+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:21 AM PT (Sep 23, 2026 11:21 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "128d6d0a321f6a6b586f8190dfb498f29575cd6812dd9dd21e4a55a44c0c1c9e",
+        "source": "human_review_ui"
       }
     },
     {
@@ -137138,12 +137163,25 @@
         }
       },
       "candidate_asset": "candidates/93c55010b49b8edc5f1f1a8b/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:25:10.255986+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:25 AM PT (Sep 23, 2026 11:25 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d45f5ae4937185343f1244b809e3834d9dc0a81a3fde5f51560252eb874d96cc",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:40.542468+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Reference 1 is immutable athlete, charcoal tank/black shorts/shoes and restrained dark studio style. Reference 2 is the EDIT TARGET: dual cable Y raise. Preserve its actual matched dual-stack functional trainer, complete rig, athlete proportions, outfit and raised Y arm pose, opposite-stack cable arrangement. Correct the one explicit defect: athlete is much too far in front of the rig. Move his whole body together toward the rig so both shoes are immediately in front of the two low pulley carriages, approximately 20–30 cm forward of the line between pulley centers, centered halfway between them. Athlete squarely faces the center of the machine. Camera directly behind athlete with slight elevation, clearly shows both carriages and full feet. Cable from LEFT low pulley goes continuously straight and taut to RIGHT hand, cable from RIGHT low pulley to LEFT hand; cables cross in open air in front of his torso. Both hands hold intact D-handles, both arms raised in a natural Y. Both stack shrouds identical orientation, each carriage complete. Working wires must visibly emerge from the grooves of the working low pulley wheels, follow straight lines to the handle clips with one traveling stopper each. Keep the athlete at true human scale relative to the 7-foot rig. Full machine, full athlete within square frame, clean black studio with subtle violet rim, no labels/collage. The exercise is the subject; no looking toward camera. Do not change to same-side cables.",
@@ -137181,6 +137219,18 @@
         "source_sha256": "d45f5ae4937185343f1244b809e3834d9dc0a81a3fde5f51560252eb874d96cc",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/0dc3fbc491cd2214b1c05aa3/master.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:25:10.255986+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:25 AM PT (Sep 23, 2026 11:25 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d45f5ae4937185343f1244b809e3834d9dc0a81a3fde5f51560252eb874d96cc",
+        "source": "human_review_ui"
       }
     },
     {
@@ -137239,12 +137289,25 @@
         }
       },
       "candidate_asset": "candidates/1894abc3dc9ecf994964b140/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "DUDE HOW DO YOU KEEP FUCKING THIS ONE UP!!!!!!!! FUCKIGN REDO THE OVERALL MACHINE!!! I DONT FUCKING GET IT! YOU KEEP MAKING THE SAME FUCKING MISTAKES! LOOK UP A PROPER FUCKING REFERENCE! STOP MAKING IT DIFFICULT",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "DUDE HOW DO YOU KEEP FUCKING THIS ONE UP!!!!!!!! FUCKIGN REDO THE OVERALL MACHINE!!! I DONT FUCKING GET IT! YOU KEEP MAKING THE SAME FUCKING MISTAKES! LOOK UP A PROPER FUCKING REFERENCE! STOP MAKING IT DIFFICULT",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:26:22.066603+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:26 AM PT (Sep 23, 2026 11:26 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "12c39ed70017d4fd5939ec78b8ceb8292ef6873dcecc240e88fd31a8448a01f4",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:41.619984+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Photorealistic NEUTRAL-GRIP LAT PULLDOWN. Image1 is immutable athlete appearance and dark studio style (graphite tank, black shorts/shoes). Image2 is exact machine specification: preserve this dedicated seated station with right shrouded stack, broad overhead pulley assembly, full real seat/thigh rollers/frame proportions. IMPORTANT: MOVE CAMERA to FRONT-SIDE THREE-QUARTER as in real exercise photo3, so we see athlete's CHEST and hands from the side, not his back. Athlete stays seated squarely facing machine, hips/seat/thigh pads/machine on one axis. MATCH THE NEUTRAL GRIP AND ARM POSITIONS OF ACTUAL HUMAN IN IMAGE3. Use exact chrome triangle handle of image4. Each hand wraps one of the two PARALLEL grips, palms facing each other. Both grips point forward from athlete toward machine, NOT sideways. Hand backs face opposite outside directions; thumbs on top, fingers underneath. Elbows lowered close to ribs, pulling triangle toward collarbones as real image3. Both cables from approved machine overhead pulleys converge to central handle carabiner. Cables clear face, load upward along body midline. No long bar, no transverse rod between fists. Entire machine and athlete head/hands/feet visible with dark margins. Real movement matters more than showing torso to camera; camera changed solely to clearly show hand contact.",
@@ -137282,6 +137345,18 @@
         "source_sha256": "12c39ed70017d4fd5939ec78b8ceb8292ef6873dcecc240e88fd31a8448a01f4",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/9848870bec52e3328a139740/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/cable-motion-fixes-plus-five-2026-09-22/references/neutral-real.jpg\", \"/Users/dominic/powerlifting_app_dev/docs/validation/cable-motion-fixes-plus-five-2026-09-22/references/triangle-product-0.jpg\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "DUDE HOW DO YOU KEEP FUCKING THIS ONE UP!!!!!!!! FUCKIGN REDO THE OVERALL MACHINE!!! I DONT FUCKING GET IT! YOU KEEP MAKING THE SAME FUCKING MISTAKES! LOOK UP A PROPER FUCKING REFERENCE! STOP MAKING IT DIFFICULT",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:26:22.066603+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:26 AM PT (Sep 23, 2026 11:26 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "12c39ed70017d4fd5939ec78b8ceb8292ef6873dcecc240e88fd31a8448a01f4",
+        "source": "human_review_ui"
       }
     },
     {
@@ -137340,12 +137415,25 @@
         }
       },
       "candidate_asset": "candidates/0d61c15713d22586a5a27c53/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:26:26.898982+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:26 AM PT (Sep 23, 2026 11:26 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "6efc59d7363f9eeec32233df412893f32faa8a775ee4e9f73459c2acc6307d0e",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:42.692836+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Image 1 is immutable Strength Ledger athlete/style reference. Image 2 is EDIT TARGET: approved ordinary seated cable lat pulldown. Preserve exactly this dedicated machine, paired overhead cables and bar attachments, seat, mounted thigh roller, planted feet, athlete outfit, face/hair, natural scale, black/violet studio and rear three-quarter view. Change ONLY hand placement and corresponding elbow position to a CLOSE-GRIP PRONATED LAT PULLDOWN: both hands grasp the straight central horizontal portion of the existing long lat bar, inside shoulder width, about 20 cm apart, palms forward away from his face (overhand pronated grip). Knuckles visible from this rear viewpoint, thumbs securely around bar, wrists neutral. Hands located symmetrically either side of bar center. Elbows travel downward in front of ribs. Bar is at upper-chest height in front of athlete, never behind neck. Retain actual two existing cable clips on same bar, both continuous taut cables in original pulley grooves. Entire athlete remains centered on seat and machine force vector. No neutral/parallel handle, no underhand grip, no extra fingers. Preserve full machine/feet framing. One realistic exercise photograph, no text/collage.",
@@ -137383,6 +137471,18 @@
         "source_sha256": "6efc59d7363f9eeec32233df412893f32faa8a775ee4e9f73459c2acc6307d0e",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/9848870bec52e3328a139740/master.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:26:26.898982+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:26 AM PT (Sep 23, 2026 11:26 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6efc59d7363f9eeec32233df412893f32faa8a775ee4e9f73459c2acc6307d0e",
+        "source": "human_review_ui"
       }
     },
     {
@@ -137441,12 +137541,25 @@
         }
       },
       "candidate_asset": "candidates/9c8126c7e463a99b15dd3551/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:22:14.274966+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:22 AM PT (Sep 23, 2026 11:22 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f92f52e97bb130db4f44a133758b01ed404304e6ea864049d94147f6705c39d4",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:43.762446+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Create a mechanically clear BAND STRAIGHT ARM PULLDOWN photograph. Same adult man, charcoal tank black shorts and shoes, realistic black studio/violet rim as image1. Use exact complete rack and the TWO-HAND red loop grip from image2. Camera is SIDE THREE-QUARTER. Athlete stands OUTSIDE in FRONT of the crossbar, facing the rack, about 90cm from it. A red continuous loop is hitched around middle of high crossbar; two taut strands descend toward his two fists at thigh level. He hinges slightly forward with neutral spine and soft knees; exactly TWO straight long arms from shoulders to fists, both hands side by side grasp bottom of band at shoulder width with closed fingers. Hands fully visible, each wrist attached to its forearm. Bottom horizontal band connects these two fists only. No extra arm, no third hand, no loose hand in center. Entire compact rack, head, both feet and rubber anchor visible. Natural real exercise, not posing.",
@@ -137483,6 +137596,18 @@
         "source_sha256": "f92f52e97bb130db4f44a133758b01ed404304e6ea864049d94147f6705c39d4",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/attempt-masters/322-a2.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:22:14.274966+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:22 AM PT (Sep 23, 2026 11:22 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f92f52e97bb130db4f44a133758b01ed404304e6ea864049d94147f6705c39d4",
+        "source": "human_review_ui"
       }
     },
     {
@@ -137541,12 +137666,25 @@
         }
       },
       "candidate_asset": "candidates/8ba3b1101889ad3db32dc0df/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "BAND IS NOT WRAPPING AROUND THE KNEES IN A REALISTIC MANNOR. THIS IMAGE SHOWS THAT THE BAND WOULD SLIP OFF IN REAL LIFE",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "BAND IS NOT WRAPPING AROUND THE KNEES IN A REALISTIC MANNOR. THIS IMAGE SHOWS THAT THE BAND WOULD SLIP OFF IN REAL LIFE",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:24:45.382197+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "4e3b8a99541ed610159da89db4a57f68356aa0349bd31b5556f892159095c6f9",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:44.847883+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "First reference fixed style. Second reference EDIT TARGET. Local correction only to RED BAND LOWER LOOP and both knees. Athlete is doing a band-assisted pullup; his BOTH bent knees must rest ON and compress the bottom of the red rubber sling. WIDEN lower U-shaped band so its left strand lies OUTSIDE athlete's LEFT knee and its right strand lies OUTSIDE athlete's RIGHT knee, never between the knees. Bottom red bight runs horizontally underneath and directly touching BOTH upper shins together just below their kneecaps, visibly cradling their weight. Closed red sling wraps beneath the paired knees like a hammock, no band hovering in front of skin. Two thighs side-by-side, lower legs bend90degrees backward, two shoes airborne behind. Keep upper hitch, rack construction, human scale, hands on bar, arm pull position, clothing and camera unchanged. Make knee-band support unambiguous.",
@@ -137583,6 +137721,18 @@
         "source_sha256": "4e3b8a99541ed610159da89db4a57f68356aa0349bd31b5556f892159095c6f9",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/attempt-masters/190-a1.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "BAND IS NOT WRAPPING AROUND THE KNEES IN A REALISTIC MANNOR. THIS IMAGE SHOWS THAT THE BAND WOULD SLIP OFF IN REAL LIFE",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:24:45.382197+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "4e3b8a99541ed610159da89db4a57f68356aa0349bd31b5556f892159095c6f9",
+        "source": "human_review_ui"
       }
     },
     {
@@ -137641,12 +137791,25 @@
         }
       },
       "candidate_asset": "candidates/509ae311e0c17a34db7b0294/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:26:45.127932+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:26 AM PT (Sep 23, 2026 11:26 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a328765c9e721cc2400928033689bfd6f52546968ee63e3111b38a70f72dd747",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:45.905670+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Use case: photorealistic-natural. Image 1 is the immutable Strength Ledger athlete/style. Image 2 is EDIT TARGET. Preserve the entire dual-stack rig, its stance/orientation/working upper-left pulley and exactly one active cable, floor-seated athlete position and downward high-row movement plane. Repair only the fictitious cable attachment and both hands: replace the entire malformed triangle with a REAL 20-inch chrome straight cable bar: one straight cylindrical horizontal steel rod with black rubber cylindrical end grips and ONE central rotating swivel eyelet welded around its midpoint. The single cable's existing traveling stopper and carabiner connect only to that CENTER eyelet. Both athlete hands grip the two black end grips, pronated overhand, equally spaced either side of the center clip; five natural fingers wrap each handle and thumbs encircle opposite side. Bar across upper abdomen, elbows drawn behind torso, wrists straight, shoulder blades retracted, natural high-row endpoint. Cable must run taut and straight from upper-left pulley groove through stopper/carabiner to exact bar center. Cable line in front of athlete, no wire clipping torso/hand. No triangular frame, no extra grips or old attachment remnants. Preserve machine quality and full athlete/frame proportions. Dark studio black background, slight violet rim, photorealistic, no labels or collage.",
@@ -137685,6 +137848,18 @@
         "source_sha256": "a328765c9e721cc2400928033689bfd6f52546968ee63e3111b38a70f72dd747",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/a29a605497c5b981aaefc8de/master.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:26:45.127932+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:26 AM PT (Sep 23, 2026 11:26 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a328765c9e721cc2400928033689bfd6f52546968ee63e3111b38a70f72dd747",
+        "source": "human_review_ui"
       }
     },
     {
@@ -137743,12 +137918,25 @@
         }
       },
       "candidate_asset": "candidates/33240727616b356489162446/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "force vectors and movement pattern dont look cohesive and natural",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "force vectors and movement pattern dont look cohesive and natural",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:22:38.113913+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:22 AM PT (Sep 23, 2026 11:22 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "0c3bffcd2fa95834824ede82d2d28288137dd9f8629bf7b237241821c03d7dad",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:46.973508+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Use case photorealistic-natural. First reference is immutable Strength Ledger athlete/style: same muscular man, graphite sleeveless shirt, black shorts and black trainers, neutral skin, near-black studio, restrained violet edge. Square single exercise photograph, full head/hands/feet/equipment and 5% dark clearance, realistic body proportions, no text or logos. Construct the actual compact squat stand in the manufacturer drawing: two parallel 90-inch-high 3x3 inch steel uprights, 43-inch crossbar between them, overall 49 inches wide, two 48-inch-long front-to-back feet connected by one lower rear crossmember, identical triangular bolted base gussets. Thus height is almost TWICE width; do not stretch the rack across the whole image or shorten it to athlete seated height. Render matte black steel, no drawing labels. BAND HIGH ROW. Full compact squat stand on RIGHT, athletic man half-kneeling on LEFT, directly facing nearest upright and its HIGH securely wrapped RED closed-loop anchor at just above head height. One knee on small black mat, other foot planted forward, erect trunk. Both hands fully grasp the two sides of band with closed fingers. Draw hands pulled toward UPPER CHEST, elbows bend and travel back/down beside torso, shoulder blades retracted. One connected RED closed loop forms continuous tensioned strands diagonally UP-FORWARD from fists to secure upper upright girth hitch, with bottom bight visible between hands at chest. This is a high row with torso upright, not pulldown behind neck and not a facepull with elbows flared 90 degrees. Side three-quarter camera shows entire anchor-to-hand line and correct kneeling knee contacts. Rack height92in, width49in. Not sitting inside rack. No bench, no invented handles. Entire compact rack and athlete frame with margins.",
@@ -137786,6 +137974,18 @@
         "source_sha256": "0c3bffcd2fa95834824ede82d2d28288137dd9f8629bf7b237241821c03d7dad",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "force vectors and movement pattern dont look cohesive and natural",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:22:38.113913+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:22 AM PT (Sep 23, 2026 11:22 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0c3bffcd2fa95834824ede82d2d28288137dd9f8629bf7b237241821c03d7dad",
+        "source": "human_review_ui"
       }
     },
     {
@@ -137844,12 +138044,25 @@
         }
       },
       "candidate_asset": "candidates/82500f4b67a20ce1a56f58eb/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "the fuck is with the athlete's head position! why is he looking off to the side",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "the fuck is with the athlete's head position! why is he looking off to the side",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:22:54.926153+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:22 AM PT (Sep 23, 2026 11:22 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e460239773310c556dc52d285004100781b7adb5c1556f06b15b08801eaf9505",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:48.037335+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Use case photorealistic-natural. First reference is immutable Strength Ledger athlete/style: same muscular man, graphite sleeveless shirt, black shorts and black trainers, neutral skin, near-black studio, restrained violet edge. Square single exercise photograph, full head/hands/feet/equipment and 5% dark clearance, realistic body proportions, no text or logos. Second reference is approved seated band row and supplies mechanically correct feet/band anchoring and camera. Generate BAND SCAPULAR ROW. Same floor-seated position with both legs naturally extended in front, knees soft, heels supported. One continuous broad RED resistance band loops securely around the SOLES of both shoes at midfoot and runs back to both hands. Change arm phase: both elbows remain completely STRAIGHT, arms reach diagonally forward at lower chest height, fists grip band securely. Athlete retracts shoulder blades gently while keeping elbows straight, erect neutral trunk. Band under taut tension from foot soles to fists, no clipping calves. No rack is needed for this valid foot-anchored version. Correct hand-to-finger connection and both complete arm chains. Entire figure fills frame like approved source. Show unbroken U of loop crossing both soles. No dumbbells.",
@@ -137887,6 +138100,18 @@
         "source_sha256": "e460239773310c556dc52d285004100781b7adb5c1556f06b15b08801eaf9505",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/96715478d113e1f59a49db0d/master.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the fuck is with the athlete's head position! why is he looking off to the side",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:22:54.926153+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:22 AM PT (Sep 23, 2026 11:22 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e460239773310c556dc52d285004100781b7adb5c1556f06b15b08801eaf9505",
+        "source": "human_review_ui"
       }
     },
     {
@@ -138135,12 +138360,25 @@
         }
       },
       "candidate_asset": "candidates/f2993ba72acac46fb9c6d4fe/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "make the athlete face the other way so it doesnt look like the band is f=dragging against their head",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "make the athlete face the other way so it doesnt look like the band is f=dragging against their head",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:22:09.229929+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:22 AM PT (Sep 23, 2026 11:22 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "b94f823102765c6cf46e22968ad72836392267d581b355c9bcff52ebf92a6525",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:51.258769+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Edit second image only, first is immutable style. Keep athlete performing the band triceps pressdown, actual closed fists gripping the complete bottom RED transverse band section and all anatomy/equipment unchanged. Pull the CAMERA BACK enough to frame the WHOLE stand: both upper upright caps and complete top horizontal pullup bar with secure band wrap, both grounded feet, complete athlete shoes, at least5% black margin all around. Do not crop top of rack. Keep rack real90inchhigh49inchwide proportions and athlete tall. No new equipment, no extra hands. Preserve genuine full-hand rubber grip and natural movement.",
@@ -138175,6 +138413,18 @@
         "source_sha256": "b94f823102765c6cf46e22968ad72836392267d581b355c9bcff52ebf92a6525",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/attempt-masters/322-a1.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "make the athlete face the other way so it doesnt look like the band is f=dragging against their head",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:22:09.229929+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:22 AM PT (Sep 23, 2026 11:22 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b94f823102765c6cf46e22968ad72836392267d581b355c9bcff52ebf92a6525",
+        "source": "human_review_ui"
       }
     },
     {
@@ -138233,12 +138483,25 @@
         }
       },
       "candidate_asset": "candidates/bafa531981bec9697a252868/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:25:34.391165+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:25 AM PT (Sep 23, 2026 11:25 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f6e157341879bdb15b19490f963527689a096a54fe1deaa73203543cfbb77cd6",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:52.339277+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Use case photorealistic-natural. First reference is immutable Strength Ledger athlete/style: same muscular man, graphite sleeveless shirt, black shorts and black trainers, neutral skin, near-black studio, restrained violet edge. Square single exercise photograph, full head/hands/feet/equipment and 5% dark clearance, realistic body proportions, no text or logos. Second reference EDIT TARGET Band Leg Extension. Keep athlete seated on same full horizontal black padded bench, right lower leg extended, ankle cuff, other foot grounded, natural hands supporting bench sides. Fix RED band route: relocate fixed anchor from FAR rear bench leg to the OUTER SIDE of NEAR front bench leg nearest the working ankle. Use one small real strap around that near bench leg at ankle height with closed metal carabiner. RED elastic band from this strap goes straight forward/outward to ankle cuff ring entirely OUTSIDE and alongside bench support, never through steel upright, upholstery, resting leg or seat. Band's origin on outer side of nearest bench leg and its entire path visible in open air. Smooth unbroken straight tensioned RED tube and carabiners at both ends; no extra old band segment on far leg. Preserve exact anatomy, legs' scale, grounded bench structure and full framing.",
@@ -138275,6 +138538,18 @@
         "source_sha256": "f6e157341879bdb15b19490f963527689a096a54fe1deaa73203543cfbb77cd6",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/b70943e1cbdd3281497f4b5f/master.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:25:34.391165+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:25 AM PT (Sep 23, 2026 11:25 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f6e157341879bdb15b19490f963527689a096a54fe1deaa73203543cfbb77cd6",
+        "source": "human_review_ui"
       }
     },
     {
@@ -138335,12 +138610,25 @@
         }
       },
       "candidate_asset": "candidates/80b7dca9f81857d0a9c339d3/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "ALIGNMENT ISSUES",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "ALIGNMENT ISSUES",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:24:56.250756+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "be709b50647b48d3077eb58df3566c3ecb84fadabfe5f549ec8dfad81c772a9d",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:53.427219+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Use case photorealistic-natural. First reference is immutable Strength Ledger athlete/style: same muscular man, graphite sleeveless shirt, black shorts and black trainers, neutral skin, near-black studio, restrained violet edge. Square single exercise photograph, full head/hands/feet/equipment and 5% dark clearance, realistic body proportions, no text or logos. Construct the actual compact squat stand in the manufacturer drawing: two parallel 90-inch-high 3x3 inch steel uprights, 43-inch crossbar between them, overall 49 inches wide, two 48-inch-long front-to-back feet connected by one lower rear crossmember, identical triangular bolted base gussets. Thus height is almost TWICE width; do not stretch the rack across the whole image or shorten it to athlete seated height. Render matte black steel, no drawing labels. Third reference is actual Spanish squat mechanics, not style. BAND SPANISH SQUAT. Compact squat stand on RIGHT, athlete entirely outside to LEFT facing RIGHT toward nearest upright. One broad RED closed-loop band securely girth-hitched around nearest upright at knee height, extended in a visible horizontal pair of bands to the BACKS of BOTH knees. Loop cups both upper calves behind knee creases, no rubber cutting through legs. Athlete leans back against band, sitting into squat with torso upright, hips back/down, shins near vertical, heels flat shoulder-width, hands clasped at chest. Face looks straight ahead along body direction, no camera pose. Side three-quarter view keeps both knee-band contacts legible and squat stand true tall/narrow geometry. Real bolted triangular base and both feet; never make stand wide enough to surround athlete side-on. Maintain visible red path and cloth compression at knees.",
@@ -138377,6 +138665,18 @@
         "source_sha256": "be709b50647b48d3077eb58df3566c3ecb84fadabfe5f549ec8dfad81c772a9d",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/remaining-accessory-art-2026-09-15/references/band-spanish-squat.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "ALIGNMENT ISSUES",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:24:56.250756+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "be709b50647b48d3077eb58df3566c3ecb84fadabfe5f549ec8dfad81c772a9d",
+        "source": "human_review_ui"
       }
     },
     {
@@ -138535,12 +138835,25 @@
         }
       },
       "candidate_asset": "candidates/3556387d6c228c03775537ad/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "again, why is he not fucking lined up correctly for the force vectos and the rack! this is a common mistake you keep fucking up! STOP DOING THAT!!! ITS A SIMPLE FUCKING ALIGNMENT THAT YOU CANT SEEM TO GET RIGHT!!! FUCKING FIGURE IT OUT\n",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "again, why is he not fucking lined up correctly for the force vectos and the rack! this is a common mistake you keep fucking up! STOP DOING THAT!!! ITS A SIMPLE FUCKING ALIGNMENT THAT YOU CANT SEEM TO GET RIGHT!!! FUCKING FIGURE IT OUT\n",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:23:54.565099+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:23 AM PT (Sep 23, 2026 11:23 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "21868c9644e264454283e78b5b8576a5a440c4fa2f7cd1a4b5feb4c24301f77f",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:55.565577+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Clarify BAND CRUNCH grip in second image. Preserve complete rack and kneeling athlete in same position. Move both closed fists forward to either side of forehead, about10cm IN FRONT of the face. Both wrists and fists visible, anatomically connected to their own forearms. Exactly two arms/two hands. Each fist firmly grips one side of red band loop. Two taut red strands come from actual top crossbar hitch down to these TWO fists IN FRONT of head. No strand touching, ending in, or disappearing behind hair. Lower loop connects between fists, behind or below fingers. Torso flexes in a natural kneeling abdominal crunch, knees remain on mat. Entire athlete and machine preserved, same body style.",
@@ -138577,6 +138890,18 @@
         "source_sha256": "21868c9644e264454283e78b5b8576a5a440c4fa2f7cd1a4b5feb4c24301f77f",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/attempt-masters/520-a1.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "again, why is he not fucking lined up correctly for the force vectos and the rack! this is a common mistake you keep fucking up! STOP DOING THAT!!! ITS A SIMPLE FUCKING ALIGNMENT THAT YOU CANT SEEM TO GET RIGHT!!! FUCKING FIGURE IT OUT\n",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:23:54.565099+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:23 AM PT (Sep 23, 2026 11:23 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "21868c9644e264454283e78b5b8576a5a440c4fa2f7cd1a4b5feb4c24301f77f",
+        "source": "human_review_ui"
       }
     },
     {
@@ -138635,12 +138960,25 @@
         }
       },
       "candidate_asset": "candidates/1b9fb26f84c411276893618a/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "SAME FUCKING ALIGNMENT ISSUE",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "SAME FUCKING ALIGNMENT ISSUE",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:24:04.335704+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "6c7a4c5e1feaa5526ed68ee76bee7cb5d3d70681c12f6cbebf5c68557cfe80d8",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:56.651087+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Use case photorealistic-natural. First reference is immutable Strength Ledger athlete/style: same muscular man, graphite sleeveless shirt, black shorts and black trainers, neutral skin, near-black studio, restrained violet edge. Square single exercise photograph, full head/hands/feet/equipment and 5% dark clearance, realistic body proportions, no text or logos. Construct the actual compact squat stand in the manufacturer drawing: two parallel 90-inch-high 3x3 inch steel uprights, 43-inch crossbar between them, overall 49 inches wide, two 48-inch-long front-to-back feet connected by one lower rear crossmember, identical triangular bolted base gussets. Thus height is almost TWICE width; do not stretch the rack across the whole image or shorten it to athlete seated height. Render matte black steel, no drawing labels. Second image provides BAND DEAD BUG motion only; discard its distorted rack and human proportions. Recompose side view: athlete supine on black exercise mat LEFT-to-RIGHT, head LEFT nearest rack, feet RIGHT away from rack. Real compact squat stand behind HEAD at LEFT with near upright low anchor about20cm above floor. One RED closed loop girth-hitched to this low anchor, two tensioned strands extend forward to both closed fists. Arms straight up above chest, resisting backward pull toward head-end anchor. One hip/knee held tabletop90 degrees, opposite leg extends low above floor without touching, lower back stays on mat, natural thigh/shin equal lengths, neutral head lying on mat. Both hands grip lower band bight firmly. Anchor, arms and spine lie in same vertical movement plane. Full body and compact full-height rack framed with breathing space. No short miniature rack, no oversized feet or shrunken torso.",
@@ -138677,6 +139015,18 @@
         "source_sha256": "6c7a4c5e1feaa5526ed68ee76bee7cb5d3d70681c12f6cbebf5c68557cfe80d8",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/85ec3c5e62528ad7f21fe015/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "SAME FUCKING ALIGNMENT ISSUE",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:24:04.335704+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6c7a4c5e1feaa5526ed68ee76bee7cb5d3d70681c12f6cbebf5c68557cfe80d8",
+        "source": "human_review_ui"
       }
     },
     {
@@ -138735,12 +139085,25 @@
         }
       },
       "candidate_asset": "candidates/f4c8f2acd2e8fb9ff04ab8b4/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:24:07.777091+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a943dd11c569e405ab9d429f1e15e27d68eb89cf72a9c0129dffa0cd7131b6d5",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:57.713321+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "First reference fixed style. Second image edit target. Keep corrected compact full-height squat stand on left and exact red anchor. Correct athlete's orientation for BAND PALLOF PRESS: turn hips, knees, toes, sternum, face all square TOWARD THE CAMERA, shoulders level, no head turn independent of body. Both arms extend straight forward directly TOWARD CAMERA in front of his sternum, so clasped hands appear at horizontal center of his own chest with clear foreshortening; do NOT extend hands off to image-right. The band arrives laterally from LEFT at90degrees to his body facing direction, crosswise in open air ahead of chest, pulled sideways against firmly clasped hands. Entire athlete stands to right of stand, athletic stance, natural elbows straight and five fingers each. This is actual antirotation exercise facing viewer, not pose: braced trunk, neutral focused expression. Maintain head/feet margins. Keep band continuous actual girth hitch and real compact stand.",
@@ -138777,6 +139140,18 @@
         "source_sha256": "a943dd11c569e405ab9d429f1e15e27d68eb89cf72a9c0129dffa0cd7131b6d5",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/attempt-masters/542-a1.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:24:07.777091+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a943dd11c569e405ab9d429f1e15e27d68eb89cf72a9c0129dffa0cd7131b6d5",
+        "source": "human_review_ui"
       }
     },
     {
@@ -138837,12 +139212,25 @@
         }
       },
       "candidate_asset": "candidates/a7ff665503cb4f274d007e58/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:24:59.522317+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a1a407ef05ecd85ed7ddbc41d5711fe2175e47c275e3f95cea79a8229d903112",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:58.787616+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "Correct second Band Wood Chop image while preserving full real rack and athlete. The red band currently kinks near left waist. Move clasped hands 25cm FORWARD away from abdomen at same right hip height, arms extended forward and down. Both taut red band strands must form PERFECT STRAIGHT LINES from high rack hitch to grasped bottom bight in his hands, through unobstructed air IN FRONT of waist. No contact with waist, no kink, no bend before hand. Trunk naturally rotates toward right hip with weight shifted and gaze following hands to right, not looking back left. Feet planted natural pivot. Keep human proportions and black studio style, full machine all margins.",
@@ -138879,6 +139267,18 @@
         "source_sha256": "a1a407ef05ecd85ed7ddbc41d5711fe2175e47c275e3f95cea79a8229d903112",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/attempt-masters/543-a1.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:24:59.522317+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a1a407ef05ecd85ed7ddbc41d5711fe2175e47c275e3f95cea79a8229d903112",
+        "source": "human_review_ui"
       }
     },
     {
@@ -138939,12 +139339,25 @@
         }
       },
       "candidate_asset": "candidates/f4c8f2acd2e8fb9ff04ab8b4/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:24:12.147358+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a943dd11c569e405ab9d429f1e15e27d68eb89cf72a9c0129dffa0cd7131b6d5",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:17:59.711659+00:00",
       "created_at_display": "Sep 23, 2026 05:17 AM PT (Sep 23, 2026 08:17 AM Eastern)",
       "generation_prompt": "First reference fixed style. Second image edit target. Keep corrected compact full-height squat stand on left and exact red anchor. Correct athlete's orientation for BAND PALLOF PRESS: turn hips, knees, toes, sternum, face all square TOWARD THE CAMERA, shoulders level, no head turn independent of body. Both arms extend straight forward directly TOWARD CAMERA in front of his sternum, so clasped hands appear at horizontal center of his own chest with clear foreshortening; do NOT extend hands off to image-right. The band arrives laterally from LEFT at90degrees to his body facing direction, crosswise in open air ahead of chest, pulled sideways against firmly clasped hands. Entire athlete stands to right of stand, athletic stance, natural elbows straight and five fingers each. This is actual antirotation exercise facing viewer, not pose: braced trunk, neutral focused expression. Maintain head/feet margins. Keep band continuous actual girth hitch and real compact stand.",
@@ -138996,6 +139409,18 @@
         "movement_definition_id": 542,
         "master_sha256": "a943dd11c569e405ab9d429f1e15e27d68eb89cf72a9c0129dffa0cd7131b6d5",
         "approval_transferred": false
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:24:12.147358+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a943dd11c569e405ab9d429f1e15e27d68eb89cf72a9c0129dffa0cd7131b6d5",
+        "source": "human_review_ui"
       }
     },
     {
@@ -139054,12 +139479,25 @@
         }
       },
       "candidate_asset": "candidates/4105cbfb4b0f6e7e87a4e7b5/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:24:16.665941+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "325c0d24133d63df6853fb6025f02d1ea0c598aa7f9efd5b19cd4f35fed866f6",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:18:00.810874+00:00",
       "created_at_display": "Sep 23, 2026 05:18 AM PT (Sep 23, 2026 08:18 AM Eastern)",
       "generation_prompt": "Use case photorealistic-natural. First reference is immutable Strength Ledger athlete/style: same muscular man, graphite sleeveless shirt, black shorts and black trainers, neutral skin, near-black studio, restrained violet edge. Square single exercise photograph, full head/hands/feet/equipment and 5% dark clearance, realistic body proportions, no text or logos. Second image edit target BAND BACK EXTENSION. Preserve actual45degree back-extension bench, both feet secured on rear plate under matching ankle pads, upper-thigh hip support, athlete at neutral straight-body top position head-spine aligned. Correct red rubber load path entirely: REMOVE ALL rubber over shoulders, behind arms, or touching armpits. Instead athlete grasps bottom bight of a RED closed resistance loop with BOTH closed fists together at sternum in FRONT of chest, upper arms alongside ribs. Other end of band securely girth-hitched around existing front lower steel band peg. Exactly TWO taut RED strands run from low front peg UP to clasped fists in open air entirely IN FRONT of torso, visible uninterrupted, no contact with arms/skin/bench pad. Hands hold compressed red rubber with all fingers and opposing thumbs. Rubber's terminal bight visible between fists, no cut ends. Same natural anatomy, graphite clothing, full bench feet and full body inside square.",
@@ -139097,6 +139535,18 @@
         "source_sha256": "325c0d24133d63df6853fb6025f02d1ea0c598aa7f9efd5b19cd4f35fed866f6",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/9fbb42ef295c0413ff5b2044/master.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:24:16.665941+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "325c0d24133d63df6853fb6025f02d1ea0c598aa7f9efd5b19cd4f35fed866f6",
+        "source": "human_review_ui"
       }
     },
     {
@@ -139155,12 +139605,25 @@
         }
       },
       "candidate_asset": "candidates/76eb88a9c1fe0fa6aaaae06b/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:25:02.464336+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:25 AM PT (Sep 23, 2026 11:25 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "6b9b23c99ddcef141e9ef5171f62896532481e697f11f268b52b6ca6ce4d5db1",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:18:01.889360+00:00",
       "created_at_display": "Sep 23, 2026 05:18 AM PT (Sep 23, 2026 08:18 AM Eastern)",
       "generation_prompt": "Repair second image only, original first image style lock. Band Serratus Punch: existing red tubing vanishes into shoulder and NEVER reaches the hand. Replace entire red tubing with ONE CONTINUOUS VISIBLE red tube running straight in OPEN AIR from same rack anchor to the black D handle held in athlete's right hand. Route tube BELOW the outstretched arm, 5cm below armpit, elbow, forearm; entire tube visible and separated from skin. Move rack anchor DOWN to lower chest height so tube rises gently to the hand. D handle strap apex must visibly connect to tube just behind fist. Shift athlete slightly farther from camera if needed to give airgap. Same forward straight-arm punch pose and realistic full rack. No tube ending at shoulder, no tube through body, no detached handle. Natural force line aligned along forward punching arm.",
@@ -139197,6 +139660,18 @@
         "source_sha256": "6b9b23c99ddcef141e9ef5171f62896532481e697f11f268b52b6ca6ce4d5db1",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/attempt-masters/567-a1.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:25:02.464336+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:25 AM PT (Sep 23, 2026 11:25 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6b9b23c99ddcef141e9ef5171f62896532481e697f11f268b52b6ca6ce4d5db1",
+        "source": "human_review_ui"
       }
     },
     {
@@ -139255,12 +139730,25 @@
         }
       },
       "candidate_asset": "candidates/4f481e0bc994169e152a75a1/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:25:07.578684+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:25 AM PT (Sep 23, 2026 11:25 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d00082e504ef59abedfc45e9d9383e5aced8efd28133be55c95a27430e8d3463",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:18:02.964763+00:00",
       "created_at_display": "Sep 23, 2026 05:18 AM PT (Sep 23, 2026 08:18 AM Eastern)",
       "generation_prompt": "Reframe second photograph wider. Keep EXACT athlete, head facing RIGHT away from the rack, red forehead band going back to LEFT anchor, correct band contact, chin tuck, entire existing real bench. Pull camera BACK enough to include ENTIRE two-upright rack: both top ends, entire top pull-up crossbar, full bases. Reconstruct only the offscreen part of this real narrow rack consistently, both uprights90inch, crossbar43inch, no extra third upright. 5percent black margin all sides. Do not reverse athlete or change resistance direction. All scene must fit square frame without cropping feet/head/rack.",
@@ -139295,6 +139783,18 @@
         "source_sha256": "d00082e504ef59abedfc45e9d9383e5aced8efd28133be55c95a27430e8d3463",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/attempt-masters/589-a2.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:25:07.578684+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:25 AM PT (Sep 23, 2026 11:25 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d00082e504ef59abedfc45e9d9383e5aced8efd28133be55c95a27430e8d3463",
+        "source": "human_review_ui"
       }
     },
     {
@@ -139355,12 +139855,25 @@
         }
       },
       "candidate_asset": "candidates/fa8f7d873ba293d91bf0ce1d/master.png",
-      "status": "pending",
-      "human_approved": false,
+      "status": "approved",
+      "human_approved": true,
       "automation_passed": true,
       "reason": "",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:24:21.953112+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a03deb1eea640ff89b51d078442444ffff4b3edc24a27139c5637f0297f03f27",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:18:04.038898+00:00",
       "created_at_display": "Sep 23, 2026 05:18 AM PT (Sep 23, 2026 08:18 AM Eastern)",
       "generation_prompt": "Use case photorealistic-natural. First reference is immutable Strength Ledger athlete/style: same muscular man, graphite sleeveless shirt, black shorts and black trainers, neutral skin, near-black studio, restrained violet edge. Square single exercise photograph, full head/hands/feet/equipment and 5% dark clearance, realistic body proportions, no text or logos. Second image EDIT TARGET Band Neck Extension, third actual REP FB5000 bench reference. Preserve seated athlete, hands holding RED band forward at forehead level, and broad closed-loop bight contacting BACK of skull above ears, neck extending modestly against forward resistance. Replace entire invented bench with EXACT real flat bench from third image: one continuous horizontal 48-inch black pad, supported longitudinal steel beam, rear transverse T-foot with two floor contacts and short front center post with single foot/transport handle. No angled disconnected legs, no adjustable seat or headrest. Athlete sits near front end, pelvis physically supported, knees at90degrees and both feet flat on floor. Band has two unbroken taut side strands from back-of-head bight to both securely closed fists held forward; no segment across eyes or neck, no open hands gripping air. Realistic elbow/forearm anatomy and neutral spine. Full bench and all shoes fully framed. No rack needed for this self-resisted version.",
@@ -139395,6 +139908,18 @@
         "source_sha256": "a03deb1eea640ff89b51d078442444ffff4b3edc24a27139c5637f0297f03f27",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/b4389def30fea8cbcf439784/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rep-flat-bench.jpg\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:24:21.953112+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a03deb1eea640ff89b51d078442444ffff4b3edc24a27139c5637f0297f03f27",
+        "source": "human_review_ui"
       }
     },
     {
@@ -139453,12 +139978,25 @@
         }
       },
       "candidate_asset": "candidates/04fee8ed95177d8c7132ce73/master.png",
-      "status": "pending",
+      "status": "rejected",
       "human_approved": false,
       "automation_passed": true,
-      "reason": "",
+      "reason": "EVERYTHING IS OFF FROM PROPORTIONS TO DISTANCE TO ALIGNMENT",
       "tags": [],
-      "review_history": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "EVERYTHING IS OFF FROM PROPORTIONS TO DISTANCE TO ALIGNMENT",
+          "tags": [],
+          "reviewed_at": "2026-09-23T15:25:27.404057+00:00",
+          "reviewed_at_display": "Sep 23, 2026 08:25 AM PT (Sep 23, 2026 11:25 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "2808d7b4eb654729cf61ac1565e3cb4b8b102aae1ab6121beeff581c3b0d49fa",
+          "source": "human_review_ui"
+        }
+      ],
       "created_at": "2026-09-23T12:18:05.123798+00:00",
       "created_at_display": "Sep 23, 2026 05:18 AM PT (Sep 23, 2026 08:18 AM Eastern)",
       "generation_prompt": "Edit second photograph only: HEAD ALIGNMENT correction, everything else stays. The top of his head currently leans LEFT toward the rack. Make his head UPRIGHT and VERTICAL, directly above his neck, face straight forward and level: both eyes on same horizontal line, nose centered over sternum, both ears same height, neck vertical. A real mid-repetition still of band resisted lateral neck flexion at NEUTRAL head angle, braced against sideways band tension. Keep band FULLY wrapped across forehead above eyebrows and around skull, both red strands go continuously to left rack anchor. No tilt toward left or right. Preserve full original realistic rack, bench, hands on thighs, athlete body, feet, lighting, framing. No other edits.",
@@ -139493,6 +140031,1027 @@
         "source_sha256": "2808d7b4eb654729cf61ac1565e3cb4b8b102aae1ab6121beeff581c3b0d49fa",
         "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/attempt-masters/591-a2.png\"]",
         "scope": "DEV pending review only. Preserve prior candidates, approvals, crop receipts, consolidated bindings, 380 runtime mappings, movement IDs and performed histories. Cross-Bench Cable Pulldown #177 retired by explicit owner instruction; no history rewrite."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "EVERYTHING IS OFF FROM PROPORTIONS TO DISTANCE TO ALIGNMENT",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:25:27.404057+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:25 AM PT (Sep 23, 2026 11:25 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2808d7b4eb654729cf61ac1565e3cb4b8b102aae1ab6121beeff581c3b0d49fa",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 164,
+      "key": "accessory_neutral_grip_lat_pulldown",
+      "movement_name": "Neutral-Grip Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "equipment_type": "cable",
+      "implement": "cable",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "reject-alignment-20260923-164-527410da",
+      "generation_batch": "Owner rejection alignment and machine corrections — 2026-09-23",
+      "candidate_id": "0cd5fe8a2397926f7afbf8e7",
+      "version": 9,
+      "supersedes_candidate_id": "1894abc3dc9ecf994964b140",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "DUDE HOW DO YOU KEEP FUCKING THIS ONE UP!!!!!!!! FUCKIGN REDO THE OVERALL MACHINE!!! I DONT FUCKING GET IT! YOU KEEP MAKING THE SAME FUCKING MISTAKES! LOOK UP A PROPER FUCKING REFERENCE! STOP MAKING IT DIFFICULT",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:26:22.066603+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:26 AM PT (Sep 23, 2026 11:26 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "12c39ed70017d4fd5939ec78b8ceb8292ef6873dcecc240e88fd31a8448a01f4",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/0cd5fe8a2397926f7afbf8e7/master.png",
+          "sha256": "527410daec7925e0c81ef050700700a8c9b56a854ba20ebd961a1e25a1bbbc88",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1664772
+        },
+        "app": {
+          "path": "candidates/0cd5fe8a2397926f7afbf8e7/app.png",
+          "sha256": "e1549333964775f83b8c197706b6f4d5aa78b81b7495eafe09418742241ef826",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 304385
+        },
+        "thumbnail": {
+          "path": "candidates/0cd5fe8a2397926f7afbf8e7/thumbnail.png",
+          "sha256": "bb912b66a94a88a27b51a854a9a2df837b7b5c932a2c5d81ecc8d687f64659f0",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44113
+        }
+      },
+      "candidate_asset": "candidates/0cd5fe8a2397926f7afbf8e7/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-23T16:06:35.837043+00:00",
+      "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion.  Edit SECOND image precisely. Preserve the entire corrected Body-Solid-style lat pulldown station, cable routing through top pulley, connected seat and thigh rollers, grounded feet, seated athlete facing the stack, rear-side camera and realistic body proportions. Replace ONLY the erroneous inverted-U attachment and associated hands/forearms with the actual compact chrome triangle double-D neutral-grip handle in THIRD photo. FOURTH photo shows legitimate bottom-of-pulldown hand posture. Handle has one triangular top plate/apex, four diagonal struts to two PARALLEL knurled cylindrical grips. Grips run fore-aft across each closed palm, perpendicular to forearms; they are NOT upright posts. Both full hands wrap the two horizontal parallel grips, palms facing each other, neutral straight wrists. Elbows pull down beside ribs; attachment ends at upper sternum below chin, hands about 16cm apart. Single center carabiner and existing taut vertical cable. Keep working cable vertically above attachment in the pulley groove. Do not add other handles, alter machine, rotate athlete toward viewer, or replace the full scene with a close-up.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/164-a2.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "CABLE",
+      "sidedness": "bilateral",
+      "loading_implementation": "cable_stack_unknown_ratio",
+      "load_convention": "machine_stack_display",
+      "measurement_type": "load_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; 18 retained attempts, 10 selected and 8 withheld. Original #33 athlete/style reference first in each generation.",
+        "owner_instruction": "FIX THE FUCKING REJECTS! IM TIRED OF YOU FUCKIGN UP THE GOD DAMN NEUTRAL GRIP LAT PULLDOWN! ITS FUCKING NOT THAT HARD AND YOU KEEP GIVING ME DOGSHIT!",
+        "exact_latest_rejection": "DUDE HOW DO YOU KEEP FUCKING THIS ONE UP!!!!!!!! FUCKIGN REDO THE OVERALL MACHINE!!! I DONT FUCKING GET IT! YOU KEEP MAKING THE SAME FUCKING MISTAKES! LOOK UP A PROPER FUCKING REFERENCE! STOP MAKING IT DIFFICULT",
+        "inspection": "Complete station rebuilt from Body-Solid SLM300 empty/operating references; connected seat, thigh rollers and base; one loaded vertical cable enters forward working pulley. Athlete sits facing the stack, feet grounded. Real triangle parallel-grip attachment replaces erroneous inverted U; neutral hands, straight wrists and elbows down. Inspected whole machine, grip and pulley close-ups plus 192/80px.",
+        "inspection_surfaces": "Full master, enlarged contacts, entire equipment, 192px/80px and original baseline. Agent preflight only; never human approval.",
+        "selected_attempt": "2",
+        "source_sha256": "527410daec7925e0c81ef050700700a8c9b56a854ba20ebd961a1e25a1bbbc88",
+        "original_generation_source": "/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-275ebd7d-f838-4da2-985b-ebc14bfa612a.png",
+        "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/references/slm300-empty.jpg\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/references/slm300-in-use.jpg\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/references/neutral-demo-frame-21.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/164-a1.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/cable-motion-fixes-plus-five-2026-09-22/references/triangle-product-0.jpg\"]",
+        "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
+        "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      }
+    },
+    {
+      "movement_definition_id": 232,
+      "key": "accessory_band_scapular_row",
+      "movement_name": "Band Scapular Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "reject-alignment-20260923-232-4787c522",
+      "generation_batch": "Owner rejection alignment and machine corrections — 2026-09-23",
+      "candidate_id": "acf579fd677b272a551b9dff",
+      "version": 4,
+      "supersedes_candidate_id": "82500f4b67a20ce1a56f58eb",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the fuck is with the athlete's head position! why is he looking off to the side",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:22:54.926153+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:22 AM PT (Sep 23, 2026 11:22 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e460239773310c556dc52d285004100781b7adb5c1556f06b15b08801eaf9505",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/acf579fd677b272a551b9dff/master.png",
+          "sha256": "4787c5227502419aed30901f41e0d3181b13f97a6ed856ce995aebf3c22bc908",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1871417
+        },
+        "app": {
+          "path": "candidates/acf579fd677b272a551b9dff/app.png",
+          "sha256": "539ca5b3e92be8bc42af5bf99d1da0ca90f5e4f9a087b9001a11b442aa24b8aa",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 343145
+        },
+        "thumbnail": {
+          "path": "candidates/acf579fd677b272a551b9dff/thumbnail.png",
+          "sha256": "aeeb7e837c217e4ece1fc08ebf25fb9312a810d157687b0037f91e10fd7bd505",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 51772
+        }
+      },
+      "candidate_asset": "candidates/acf579fd677b272a551b9dff/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-23T16:06:36.950173+00:00",
+      "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Precise head-only correction to reference 2 Band Scapular Row. Preserve the full seated body, both long almost-straight arms, red loop securely around both forefeet, leg placement, hands, mat and camera exactly. The head currently looks upward and sideways. Rotate and gently lower the head so nose, chin and gaze point straight along the athlete's torso midline toward the space immediately above his OWN feet, eyes level with the far floor. Neck neutral and continuous with the spine, chin slightly tucked. No head turned to the camera, no raised chin or sideways gaze. He is doing a small scapular-retraction row with straight elbows, not posing. Keep original adult proportions.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/232-a1.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; 18 retained attempts, 10 selected and 8 withheld. Original #33 athlete/style reference first in each generation.",
+        "owner_instruction": "FIX THE FUCKING REJECTS! IM TIRED OF YOU FUCKIGN UP THE GOD DAMN NEUTRAL GRIP LAT PULLDOWN! ITS FUCKING NOT THAT HARD AND YOU KEEP GIVING ME DOGSHIT!",
+        "exact_latest_rejection": "the fuck is with the athlete's head position! why is he looking off to the side",
+        "inspection": "Head and gaze follow forward/down toward feet instead of turning to camera; long arms, retracted shoulders and band foot contact preserved. Face, arms, continuous band and thumbnail silhouette inspected.",
+        "inspection_surfaces": "Full master, enlarged contacts, entire equipment, 192px/80px and original baseline. Agent preflight only; never human approval.",
+        "selected_attempt": "1",
+        "source_sha256": "4787c5227502419aed30901f41e0d3181b13f97a6ed856ce995aebf3c22bc908",
+        "original_generation_source": "/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-df6c353e-665d-432d-95cb-406dc7793de8.png",
+        "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/82500f4b67a20ce1a56f58eb/master.png\"]",
+        "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
+        "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      }
+    },
+    {
+      "movement_definition_id": 190,
+      "key": "accessory_band_assisted_pull_up",
+      "movement_name": "Band-Assisted Pull-Up",
+      "primary_muscle_group": "lats",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "reject-alignment-20260923-190-2ecd2d3e",
+      "generation_batch": "Owner rejection alignment and machine corrections — 2026-09-23",
+      "candidate_id": "27139208520ba58424d49431",
+      "version": 4,
+      "supersedes_candidate_id": "8ba3b1101889ad3db32dc0df",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "BAND IS NOT WRAPPING AROUND THE KNEES IN A REALISTIC MANNOR. THIS IMAGE SHOWS THAT THE BAND WOULD SLIP OFF IN REAL LIFE",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:24:45.382197+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "4e3b8a99541ed610159da89db4a57f68356aa0349bd31b5556f892159095c6f9",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/27139208520ba58424d49431/master.png",
+          "sha256": "2ecd2d3e2ff27392d208dff2ac0e999307818ca6711776c25e45c96930b99848",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1683122
+        },
+        "app": {
+          "path": "candidates/27139208520ba58424d49431/app.png",
+          "sha256": "dc21b571ecb46ec0fe09112040ad18c877bff76d82cb5d66ef1c405c575e8161",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 302738
+        },
+        "thumbnail": {
+          "path": "candidates/27139208520ba58424d49431/thumbnail.png",
+          "sha256": "6b6b8dadc473c8c1fca44e415ef14bbab9665513664ff0b5248bfc2f43c40ebd",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42561
+        }
+      },
+      "candidate_asset": "candidates/27139208520ba58424d49431/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-23T16:06:38.063779+00:00",
+      "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Band-Assisted Pull-Up. Reference 2 is the governing REAL body pose and knee-band contact. Recreate exactly this support mechanism and pull-up phase using the baseline athlete. Thighs hang nearly vertically below hips, knees stay together and bent 100 degrees, shins fold backward, ankles crossed. A single thick RED loop is choked to the center pull-up bar, its long sides pass outside the legs and its bottom turn is securely captured UNDER THE UPPER SHINS immediately BELOW the bent knees, with legs inserted fully THROUGH the loop. The loaded bottom turn is partly occluded by bent legs exactly as reference 2, not a red sling stretched across the exposed front of the kneecaps. No forward-raised thighs or high knee tuck. Hands fully grip bar slightly wider than shoulders, elbows bending downward, chin approaching bar. Pull-up bar belongs to a complete full-size 2.25m squat stand using reference 3, with two matching uprights, parallel long base rails and rear connecting base rail. Front view like the real reference with neutral upward gaze, complete shoes hanging above ground. Frame entire stand with at least 80px dark clearance ABOVE BOTH uprights and below feet; make composition smaller to fit.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/190-a1.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "biceps"
+      ],
+      "movement_family": "accessory_lats",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; 18 retained attempts, 10 selected and 8 withheld. Original #33 athlete/style reference first in each generation.",
+        "owner_instruction": "FIX THE FUCKING REJECTS! IM TIRED OF YOU FUCKIGN UP THE GOD DAMN NEUTRAL GRIP LAT PULLDOWN! ITS FUCKING NOT THAT HARD AND YOU KEEP GIVING ME DOGSHIT!",
+        "exact_latest_rejection": "BAND IS NOT WRAPPING AROUND THE KNEES IN A REALISTIC MANNOR. THIS IMAGE SHOWS THAT THE BAND WOULD SLIP OFF IN REAL LIFE",
+        "inspection": "Assistance loop cradles underside of folded upper shins/knee fold, with vertical thighs and crossed ankles as real operating photographs show. It no longer hangs against front kneecaps. Full rack, central hitch, two hands and natural upward gaze inspected.",
+        "inspection_surfaces": "Full master, enlarged contacts, entire equipment, 192px/80px and original baseline. Agent preflight only; never human approval.",
+        "selected_attempt": "1",
+        "source_sha256": "2ecd2d3e2ff27392d208dff2ac0e999307818ca6711776c25e45c96930b99848",
+        "original_generation_source": "/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-2932eafc-d379-478d-a476-8b00a459108a.png",
+        "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/references/band-knee-pull.jpg\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\"]",
+        "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
+        "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      }
+    },
+    {
+      "movement_definition_id": 591,
+      "key": "accessory_band_lateral_neck_flexion",
+      "movement_name": "Band Lateral Neck Flexion",
+      "primary_muscle_group": "neck",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "reject-alignment-20260923-591-464c7537",
+      "generation_batch": "Owner rejection alignment and machine corrections — 2026-09-23",
+      "candidate_id": "bcfbcea1004eea50cba10476",
+      "version": 4,
+      "supersedes_candidate_id": "04fee8ed95177d8c7132ce73",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "EVERYTHING IS OFF FROM PROPORTIONS TO DISTANCE TO ALIGNMENT",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:25:27.404057+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:25 AM PT (Sep 23, 2026 11:25 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2808d7b4eb654729cf61ac1565e3cb4b8b102aae1ab6121beeff581c3b0d49fa",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/bcfbcea1004eea50cba10476/master.png",
+          "sha256": "464c7537bdbce3afd37a434aca72be54d5bc515c1bf5ab24e0fc22b31f0e97cf",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1797489
+        },
+        "app": {
+          "path": "candidates/bcfbcea1004eea50cba10476/app.png",
+          "sha256": "3b5e2d1e39e2815d84690e1e8bc60778c30cdd39427bb679768572ab86924592",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 313505
+        },
+        "thumbnail": {
+          "path": "candidates/bcfbcea1004eea50cba10476/thumbnail.png",
+          "sha256": "9e304265eadcab092e2d104f2f5ae7baee0ec9fcefb4bd44b8ca4aa8fb652ed3",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44157
+        }
+      },
+      "candidate_asset": "candidates/bcfbcea1004eea50cba10476/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-23T16:06:39.199214+00:00",
+      "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Band Lateral Neck Flexion. Rebuild in a true FRONT ELEVATION, level 70mm camera, with natural modest proportions. Athlete sits upright on the END of a real flat bench from reference 3, its 45cm seat below his hips, knees 90 degrees, feet planted, palms resting on thighs. No oversized head or short shins. Full size 2.2m black squat stand from reference 2 stands immediately to his RIGHT (image left). Its nearest upright is only 45cm lateral to his right temple, exactly AT THE SAME FRONT-TO-BACK DEPTH as his head/shoulders. Anchor a RED loop around this upright at temple height. Run both taut branches exactly horizontally sideways toward the head: loop passes around his entire skull above eyebrows and ears, contacting the forehead and back of skull visibly, no neck contact. He tilts his head gently 8 degrees LEFT (image right, AWAY from anchor) in lateral flexion while shoulders stay level and torso vertical. Face and eyes remain forward, no neck rotation. This is lateral resistance, neither frontward nor backward pull. Align the rack upright and head in ONE FRONTAL PLANE; equal depth and scale, no distant rack behind shoulder. Full rack including top, paired parallel feet and rear base connection; whole bench and feet. Generous 80px margin above BOTH rack uprights and below shoes. No branding.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/591-a1.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_neck",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; 18 retained attempts, 10 selected and 8 withheld. Original #33 athlete/style reference first in each generation.",
+        "owner_instruction": "FIX THE FUCKING REJECTS! IM TIRED OF YOU FUCKIGN UP THE GOD DAMN NEUTRAL GRIP LAT PULLDOWN! ITS FUCKING NOT THAT HARD AND YOU KEEP GIVING ME DOGSHIT!",
+        "exact_latest_rejection": "EVERYTHING IS OFF FROM PROPORTIONS TO DISTANCE TO ALIGNMENT",
+        "inspection": "Lateral neck flexion with complete normal-height rack, low flat bench and planted feet. Head-level horizontal loop around skull above ears; short natural distance to adjacent upright, head tilts away from resistance with level shoulders. Face, band/anchor, body proportions and small renders inspected.",
+        "inspection_surfaces": "Full master, enlarged contacts, entire equipment, 192px/80px and original baseline. Agent preflight only; never human approval.",
+        "selected_attempt": "1",
+        "source_sha256": "464c7537bdbce3afd37a434aca72be54d5bc515c1bf5ab24e0fc22b31f0e97cf",
+        "original_generation_source": "/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-25d26522-6975-45b2-aba8-c5250b1bcb33.png",
+        "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rep-flat-bench.jpg\"]",
+        "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
+        "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      }
+    },
+    {
+      "movement_definition_id": 78,
+      "key": "accessory_band_push_up",
+      "movement_name": "Band Push-Up",
+      "primary_muscle_group": "chest",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "reject-alignment-20260923-78-c6654209",
+      "generation_batch": "Owner rejection alignment and machine corrections — 2026-09-23",
+      "candidate_id": "afa80a8c7d5911de6a7e995c",
+      "version": 4,
+      "supersedes_candidate_id": "ccf51a83812712db2872b4e6",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "the band is not around the athletes right hand correctly. it should interface with both hands in the same fashion",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:21:35.203292+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:21 AM PT (Sep 23, 2026 11:21 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "128d6d0a321f6a6b586f8190dfb498f29575cd6812dd9dd21e4a55a44c0c1c9e",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/afa80a8c7d5911de6a7e995c/master.png",
+          "sha256": "c6654209e4fc10309f52889d92fed1dda99619c95e118342f3506569911c0a0f",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1929054
+        },
+        "app": {
+          "path": "candidates/afa80a8c7d5911de6a7e995c/app.png",
+          "sha256": "7837f1eb3057b0aa8d41569490d363e98514e8efd8bbba97ea4238c660fe4705",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 348595
+        },
+        "thumbnail": {
+          "path": "candidates/afa80a8c7d5911de6a7e995c/thumbnail.png",
+          "sha256": "f44ab41303a6399fbfff9dbebbb68585aac2c92d0c4e6e28b67d478ac8d4ec4f",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49108
+        }
+      },
+      "candidate_asset": "candidates/afa80a8c7d5911de6a7e995c/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-23T16:06:40.321981+00:00",
+      "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Fresh composition: Band Push-Up, camera slightly ABOVE and IN FRONT of the athlete, about 25 degrees off center. Both planted hands are equally visible at the front. Full plank body extends back behind them, near-top push-up phase, elbows softly unlocked. Use a long closed RED latex loop folded across his upper back exactly like real reference 2. BOTH palms are inserted through its bottom turns and pin the band to the floor. At EACH hand show two taut red branches approaching from upper back, ONE along the THUMB SIDE and ONE along the LITTLE-FINGER SIDE; they join beneath the palm, hidden by palm-to-floor contact. Thus each palm visibly sits BETWEEN the two red strands. This arrangement is symmetric on the left and right hand. No red strip over the back of either hand, no doubled strands both on one side of a hand, no band crossing fingers, no band around wrists. Each palm flat with five natural fingers, hands just wider than shoulders, red loop over back well below neck. Real athletic push-up posture, head neutral looking at floor ahead of hands, full shoes and toes on ground. Do not reproduce the side camera from the exercise reference; select view exposing both identical hand contacts.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/78-a2.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "movement_family": "accessory_chest",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; 18 retained attempts, 10 selected and 8 withheld. Original #33 athlete/style reference first in each generation.",
+        "owner_instruction": "FIX THE FUCKING REJECTS! IM TIRED OF YOU FUCKIGN UP THE GOD DAMN NEUTRAL GRIP LAT PULLDOWN! ITS FUCKING NOT THAT HARD AND YOU KEEP GIVING ME DOGSHIT!",
+        "exact_latest_rejection": "the band is not around the athletes right hand correctly. it should interface with both hands in the same fashion",
+        "inspection": "Both palms sit between the two red strands with matching loops anchored beneath palms, not across the back of one hand. Full closed-loop upper-back routing, stable full-body plank, natural head position. Both hand contacts inspected enlarged and at 192/80px.",
+        "inspection_surfaces": "Full master, enlarged contacts, entire equipment, 192px/80px and original baseline. Agent preflight only; never human approval.",
+        "selected_attempt": "2",
+        "source_sha256": "c6654209e4fc10309f52889d92fed1dda99619c95e118342f3506569911c0a0f",
+        "original_generation_source": "/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-b553c45d-f781-4aa3-b829-f892cd06cc12.png",
+        "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/ccf51a83812712db2872b4e6/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/band-pushup-real-2.png\"]",
+        "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
+        "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      }
+    },
+    {
+      "movement_definition_id": 385,
+      "key": "accessory_band_spanish_squat",
+      "movement_name": "Band Spanish Squat",
+      "primary_muscle_group": "quads",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "reject-alignment-20260923-385-aa21354b",
+      "generation_batch": "Owner rejection alignment and machine corrections — 2026-09-23",
+      "candidate_id": "4d5af47664bd055d987f71f6",
+      "version": 4,
+      "supersedes_candidate_id": "80b7dca9f81857d0a9c339d3",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "ALIGNMENT ISSUES",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:24:56.250756+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "be709b50647b48d3077eb58df3566c3ecb84fadabfe5f549ec8dfad81c772a9d",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/4d5af47664bd055d987f71f6/master.png",
+          "sha256": "aa21354b5471bb9b4827d2e1b8b7fbacba647161d98843ac4b1ea2c6fd408e78",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1673612
+        },
+        "app": {
+          "path": "candidates/4d5af47664bd055d987f71f6/app.png",
+          "sha256": "4dad46c71a4a010b60e88f9a0c465ccabd172b9b1c93ba1c962b1b32ad11ab52",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 296885
+        },
+        "thumbnail": {
+          "path": "candidates/4d5af47664bd055d987f71f6/thumbnail.png",
+          "sha256": "b7af06e2cd1efebb3ca74ce4bf1d5c051ae81cbbb53f577794e51e4b5952c3a4",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41741
+        }
+      },
+      "candidate_asset": "candidates/4d5af47664bd055d987f71f6/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-23T16:06:41.446102+00:00",
+      "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Precise framing-only refinement of second image, Band Spanish Squat. Preserve EXACTLY the athlete posture, side-facing orientation, body-to-active-upright alignment, horizontal red band and loop behind both knees, all dimensions and complete connected rack base. Pull the virtual camera BACK 14 percent and center the complete scene so BOTH TOP ENDS of the rack uprights are fully in-frame, with approximately 90 pixels dark empty space ABOVE the highest metal. Add the missing upper end of the nearest upright naturally, matching the existing far upright height in physical space. Keep full-size rack proportions; do not shorten uprights or enlarge athlete. Do not change camera direction, face, hand contact, or band mechanics. Same square aspect.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/385-a2.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "movement_family": "accessory_quads",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; 18 retained attempts, 10 selected and 8 withheld. Original #33 athlete/style reference first in each generation.",
+        "owner_instruction": "FIX THE FUCKING REJECTS! IM TIRED OF YOU FUCKIGN UP THE GOD DAMN NEUTRAL GRIP LAT PULLDOWN! ITS FUCKING NOT THAT HARD AND YOU KEEP GIVING ME DOGSHIT!",
+        "exact_latest_rejection": "ALIGNMENT ISSUES",
+        "inspection": "Profile Spanish squat faces active knee-height upright. Continuous red loop seats behind both knees, horizontally aligned with anchor. Upright torso, grounded feet, coherent whole rack and uncropped supports retained.",
+        "inspection_surfaces": "Full master, enlarged contacts, entire equipment, 192px/80px and original baseline. Agent preflight only; never human approval.",
+        "selected_attempt": "2",
+        "source_sha256": "aa21354b5471bb9b4827d2e1b8b7fbacba647161d98843ac4b1ea2c6fd408e78",
+        "original_generation_source": "/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-40618341-96e9-489a-a343-5121e74e8f69.png",
+        "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/remaining-accessory-art-2026-09-15/references/band-spanish-squat.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-14187fb3-0915-4520-91de-b09347f7c6bf.png\"]",
+        "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
+        "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      }
+    },
+    {
+      "movement_definition_id": 522,
+      "key": "accessory_band_dead_bug",
+      "movement_name": "Band Dead Bug",
+      "primary_muscle_group": "abs",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "reject-alignment-20260923-522-4a3cbfa0",
+      "generation_batch": "Owner rejection alignment and machine corrections — 2026-09-23",
+      "candidate_id": "c55597888646563f09187444",
+      "version": 4,
+      "supersedes_candidate_id": "1b9fb26f84c411276893618a",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "SAME FUCKING ALIGNMENT ISSUE",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:24:04.335704+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:24 AM PT (Sep 23, 2026 11:24 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "6c7a4c5e1feaa5526ed68ee76bee7cb5d3d70681c12f6cbebf5c68557cfe80d8",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/c55597888646563f09187444/master.png",
+          "sha256": "4a3cbfa004aad197bfeee4e815c29ccc595b83cc1d40f92aac0b866a37035347",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1613397
+        },
+        "app": {
+          "path": "candidates/c55597888646563f09187444/app.png",
+          "sha256": "6e113cb0dbee6340cdcd53dfe73d0b0b9de078e3b97844af29ed9f2bb6040949",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 284604
+        },
+        "thumbnail": {
+          "path": "candidates/c55597888646563f09187444/thumbnail.png",
+          "sha256": "894c2e17cbda60e85da11e25fd6c4acc42562e8082e961f56108f9551c8fa7cd",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 40017
+        }
+      },
+      "candidate_asset": "candidates/c55597888646563f09187444/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-23T16:06:42.571729+00:00",
+      "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Recreate the actual band dead bug in reference 2 with the baseline male and RED band. Reference 2 governs body AND force direction: band is anchored BEYOND HIS HEAD, pulls his vertical arms back toward the head, not toward feet. Put the ENTIRE black squat stand on the LEFT SIDE of the square image, physically BEYOND THE HEAD, not in the background behind torso. Athlete occupies bottom-right, lies on his back with head on image left and feet on image right, arms vertical, one leg bent90 and other straight hovering. Anchor band on the NEAR LEFT UPRIGHT at 70cm height, 60cm LEFT OF his head. Both taut strands run from that anchor toward the right into his two closed fists directly over chest. Anchor, hand midpoint and body's midline lie in one vertical plane, so there is NO LATERAL pull. Show stand EDGE-ON: near and far uprights nearly overlap because camera sees rack from its SIDE; top crossbar consequently appears short/foreshortened, NOT a big frontal rectangle behind athlete. Both rack base rails run left-to-right PARALLEL to mat and man's spine. Keep the whole 2.2m stand, feet, and top crossbar within an 80px margin by pulling camera back. Actual reference body proportions, neck neutral on mat. Band clear of forehead, only hands contact it.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/522-a2.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "movement_family": "accessory_abs",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; 18 retained attempts, 10 selected and 8 withheld. Original #33 athlete/style reference first in each generation.",
+        "owner_instruction": "FIX THE FUCKING REJECTS! IM TIRED OF YOU FUCKIGN UP THE GOD DAMN NEUTRAL GRIP LAT PULLDOWN! ITS FUCKING NOT THAT HARD AND YOU KEEP GIVING ME DOGSHIT!",
+        "exact_latest_rejection": "SAME FUCKING ALIGNMENT ISSUE",
+        "inspection": "Profile anti-extension dead bug with entire rack behind the head, not beside hips or toward feet. Band loads hands horizontally toward the behind-head anchor; two arms above chest, one leg flexed and one extended. Corrected elongated anatomy, complete compact side-view rack and clear line of tension.",
+        "inspection_surfaces": "Full master, enlarged contacts, entire equipment, 192px/80px and original baseline. Agent preflight only; never human approval.",
+        "selected_attempt": "2",
+        "source_sha256": "4a3cbfa004aad197bfeee4e815c29ccc595b83cc1d40f92aac0b866a37035347",
+        "original_generation_source": "/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-822764f8-fa45-4e31-813d-af038f473b35.png",
+        "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/references/prehab-deadbug.jpg\"]",
+        "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
+        "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      }
+    },
+    {
+      "movement_definition_id": 520,
+      "key": "accessory_band_crunch",
+      "movement_name": "Band Crunch",
+      "primary_muscle_group": "abs",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "reject-alignment-20260923-520-85b4cc2f",
+      "generation_batch": "Owner rejection alignment and machine corrections — 2026-09-23",
+      "candidate_id": "dc39e33a464a51dfc2fff0b3",
+      "version": 4,
+      "supersedes_candidate_id": "3556387d6c228c03775537ad",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "again, why is he not fucking lined up correctly for the force vectos and the rack! this is a common mistake you keep fucking up! STOP DOING THAT!!! ITS A SIMPLE FUCKING ALIGNMENT THAT YOU CANT SEEM TO GET RIGHT!!! FUCKING FIGURE IT OUT\n",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:23:54.565099+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:23 AM PT (Sep 23, 2026 11:23 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "21868c9644e264454283e78b5b8576a5a440c4fa2f7cd1a4b5feb4c24301f77f",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/dc39e33a464a51dfc2fff0b3/master.png",
+          "sha256": "85b4cc2f883ee47052d375dcf13be3cdf9d0a1b9314a00ae8f31fe71b732e42f",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1698241
+        },
+        "app": {
+          "path": "candidates/dc39e33a464a51dfc2fff0b3/app.png",
+          "sha256": "deb11f3f4264a6faf35c6a45c5fb3f9811062cde304afa6d5b05f612725a0701",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 301919
+        },
+        "thumbnail": {
+          "path": "candidates/dc39e33a464a51dfc2fff0b3/thumbnail.png",
+          "sha256": "e21bca1cd4d49e9a019e16b9555ec2f2cb84957c2f02f9fa969de0fab0757cc1",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42468
+        }
+      },
+      "candidate_asset": "candidates/dc39e33a464a51dfc2fff0b3/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-23T16:06:43.737702+00:00",
+      "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Refine second image, Band Crunch, preserving the athlete's exact facing toward center of high crossbar and current side view. Repair rack: join the REAR ends of both long floor feet with one continuous welded horizontal crossmember, matching a real two-upright squat stand. Existing two rails remain parallel, top bar unchanged. Ensure BOTH closed gripping fists sit a little IN FRONT OF the forehead with the loaded red strands in open air; the far strand currently seems to go to his scalp. Move both fists forward by 8cm without changing elbow bend and curled trunk, so neither branch contacts head, both connect to their grip. Preserve central overhead anchor and square pelvis/shoulder relation to rack. Pull camera BACK 10 percent to leave 80px clear margin around whole rig including top. Do not rotate him to face camera or twist body. Keep full natural limb dimensions and clearly flexed crunch pose.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/520-a2.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "movement_family": "accessory_abs",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; 18 retained attempts, 10 selected and 8 withheld. Original #33 athlete/style reference first in each generation.",
+        "owner_instruction": "FIX THE FUCKING REJECTS! IM TIRED OF YOU FUCKIGN UP THE GOD DAMN NEUTRAL GRIP LAT PULLDOWN! ITS FUCKING NOT THAT HARD AND YOU KEEP GIVING ME DOGSHIT!",
+        "exact_latest_rejection": "again, why is he not fucking lined up correctly for the force vectos and the rack! this is a common mistake you keep fucking up! STOP DOING THAT!!! ITS A SIMPLE FUCKING ALIGNMENT THAT YOU CANT SEEM TO GET RIGHT!!! FUCKING FIGURE IT OUT\n",
+        "inspection": "Kneeling crunch faces the central high anchor in the same sagittal plane. Hands hold band beside forehead, torso flexed and hips above knees. Continuous loaded strands and complete connected rack base inspected enlarged.",
+        "inspection_surfaces": "Full master, enlarged contacts, entire equipment, 192px/80px and original baseline. Agent preflight only; never human approval.",
+        "selected_attempt": "2",
+        "source_sha256": "85b4cc2f883ee47052d375dcf13be3cdf9d0a1b9314a00ae8f31fe71b732e42f",
+        "original_generation_source": "/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-7adff0e1-cb38-488c-baa2-4cc4dfc19393.png",
+        "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-133cc1a2-8bd4-42b4-96ac-b70cb0c7cd38.png\"]",
+        "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
+        "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      }
+    },
+    {
+      "movement_definition_id": 231,
+      "key": "accessory_band_high_row",
+      "movement_name": "Band High Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "reject-alignment-20260923-231-8921d9e6",
+      "generation_batch": "Owner rejection alignment and machine corrections — 2026-09-23",
+      "candidate_id": "a38c4a881d050cb1792e6b18",
+      "version": 4,
+      "supersedes_candidate_id": "33240727616b356489162446",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "force vectors and movement pattern dont look cohesive and natural",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:22:38.113913+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:22 AM PT (Sep 23, 2026 11:22 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "0c3bffcd2fa95834824ede82d2d28288137dd9f8629bf7b237241821c03d7dad",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/a38c4a881d050cb1792e6b18/master.png",
+          "sha256": "8921d9e60c7dc9cccd4e16bc98629efa8dea895a0423d756917d5b7aab324ba3",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1801322
+        },
+        "app": {
+          "path": "candidates/a38c4a881d050cb1792e6b18/app.png",
+          "sha256": "15bc46da81446309e4f1a155c8778756ece9fcc33ae16900c4d79f6511c70365",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 313456
+        },
+        "thumbnail": {
+          "path": "candidates/a38c4a881d050cb1792e6b18/thumbnail.png",
+          "sha256": "9bd3765b3e2ed0f4d97b8a4c7264f30666cfc802c48df76f4cd9ba2b15ec14a8",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44921
+        }
+      },
+      "candidate_asset": "candidates/a38c4a881d050cb1792e6b18/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-23T16:06:44.869820+00:00",
+      "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion.  Refine SECOND image into a biomechanically clear BAND HIGH ROW. Preserve this half-kneeling stance, adult proportions, correctly centered anchor at midpoint of pull-up bar, gaze into anchor, complete rack and rear camera. Change arm pose: each fist ends at its same-side UPPER RIBS below armpit height, in FRONT of the torso, with elbows swept back and down 30 degrees from torso. Forearms point diagonally forward/up towards the central high anchor, aligned with the red band force. Row hands toward ribs, not face and not wide ears. Symmetric left/right shoulder action; far hand may be naturally partly occluded by forearm in this rear view. Two continuous taut red strands reach the closed hands without touching head, neck, shoulders or passing through arms. Feet/kneeling support unchanged, no torso twist or camera pose. Pull framing back slightly so complete rack has 7% headroom. The exercise is a high-to-low row into upper ribs.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/231-a3.png",
+      "test_only": false,
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts"
+      ],
+      "movement_family": "accessory_upper_back",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; 18 retained attempts, 10 selected and 8 withheld. Original #33 athlete/style reference first in each generation.",
+        "owner_instruction": "FIX THE FUCKING REJECTS! IM TIRED OF YOU FUCKIGN UP THE GOD DAMN NEUTRAL GRIP LAT PULLDOWN! ITS FUCKING NOT THAT HARD AND YOU KEEP GIVING ME DOGSHIT!",
+        "exact_latest_rejection": "force vectors and movement pattern dont look cohesive and natural",
+        "inspection": "Half-kneeling high row centered on high rack anchor. Head faces anchor; fists pull toward upper ribs below armpits with elbows back/down rather than a face-pull endpoint. Continuous strands reach hands in front of torso; far hand naturally partly occluded. Full rack retained; tighter upper margin is visible in QA.",
+        "inspection_surfaces": "Full master, enlarged contacts, entire equipment, 192px/80px and original baseline. Agent preflight only; never human approval.",
+        "selected_attempt": "3",
+        "source_sha256": "8921d9e60c7dc9cccd4e16bc98629efa8dea895a0423d756917d5b7aab324ba3",
+        "original_generation_source": "/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-fdd92948-d57a-404e-86e8-40b31c270088.png",
+        "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-9198b555-e0c1-4fe3-adaa-4ad5db24d09c.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/231-a1.png\"]",
+        "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
+        "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
+      }
+    },
+    {
+      "movement_definition_id": 322,
+      "key": "accessory_band_triceps_pressdown",
+      "movement_name": "Band Triceps Pressdown",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "other",
+      "implement": "other",
+      "family": "canonical_remaining_accessories",
+      "generation_id": "reject-alignment-20260923-322-cb4b27b2",
+      "generation_batch": "Owner rejection alignment and machine corrections — 2026-09-23",
+      "candidate_id": "7555e450808ed83bf43e73f1",
+      "version": 4,
+      "supersedes_candidate_id": "f2993ba72acac46fb9c6d4fe",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "make the athlete face the other way so it doesnt look like the band is f=dragging against their head",
+        "tags": [],
+        "reviewed_at": "2026-09-23T15:22:09.229929+00:00",
+        "reviewed_at_display": "Sep 23, 2026 08:22 AM PT (Sep 23, 2026 11:22 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "b94f823102765c6cf46e22968ad72836392267d581b355c9bcff52ebf92a6525",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/7555e450808ed83bf43e73f1/master.png",
+          "sha256": "cb4b27b2b1a69a13c105ab4cf4dc229e04f2d7a315bdae54c689cbe3b6a46962",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1665893
+        },
+        "app": {
+          "path": "candidates/7555e450808ed83bf43e73f1/app.png",
+          "sha256": "082e018c0551caeb5f908fc00f08841908d71f44bed3e56c6eaa9cc785962428",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 294184
+        },
+        "thumbnail": {
+          "path": "candidates/7555e450808ed83bf43e73f1/thumbnail.png",
+          "sha256": "92c8ad006856f8e34d3398316f75fad8f49cd6260c3a39ae2ae3b9fa257542a7",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 40951
+        }
+      },
+      "candidate_asset": "candidates/7555e450808ed83bf43e73f1/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-23T16:06:45.990649+00:00",
+      "created_at_display": "Sep 23, 2026 09:06 AM PT (Sep 23, 2026 12:06 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Strength Ledger square movement artwork. First image is the immutable athlete/style baseline only: preserve this adult male identity, natural muscular proportions, graphite tank, black shorts/shoes, photoreal texture, soft neutral upper-left key, subtle violet rear rim, near-black studio/faint floor. Other references specify mechanics. The exercise is the subject; athlete attends to the movement, never poses at the camera. Single instantaneous pose, full body and full relevant equipment within frame, 7% dark perimeter, no cropped supports, no text/logos/watermarks/anatomy overlays. Photograph with normal lens, no wide-angle distortion. Framing-only correction to second image Band Triceps Pressdown. Preserve exact athlete facing INTO rack, hands fully gripping red loop at thighs, clear band path well in FRONT of head, full arm position, band and rack orientation. Pull virtual camera back by 10 percent, recenter to leave 80px BLACK CLEARANCE ABOVE both complete uprights. Preserve real rack height relative to athlete, do not shorten frame or enlarge body. Both top caps fully visible. Full connected rack feet and athlete shoes. No changes to mechanics or pose.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempt-masters/322-a2.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "accessory_triceps",
+      "execution_family": "BAND",
+      "sidedness": "bilateral",
+      "loading_implementation": "unknown",
+      "load_convention": "no_external_load",
+      "measurement_type": "bodyweight_reps",
+      "presentation": {
+        "focalX": 0.5,
+        "focalY": 0.5,
+        "scale": 1,
+        "biasX": 0,
+        "biasY": 0,
+        "thumbnailFocalX": 0.5,
+        "thumbnailFocalY": 0.5,
+        "thumbnailScale": 1,
+        "cropMode": "contain"
+      },
+      "generation_context": {
+        "method": "Built-in ImageGen; 18 retained attempts, 10 selected and 8 withheld. Original #33 athlete/style reference first in each generation.",
+        "owner_instruction": "FIX THE FUCKING REJECTS! IM TIRED OF YOU FUCKIGN UP THE GOD DAMN NEUTRAL GRIP LAT PULLDOWN! ITS FUCKING NOT THAT HARD AND YOU KEEP GIVING ME DOGSHIT!",
+        "exact_latest_rejection": "make the athlete face the other way so it doesnt look like the band is f=dragging against their head",
+        "inspection": "Athlete faces into the high central anchor with red band in clear space in front of the head. Both full fists grip near thighs, elbows remain beside torso. Complete rack and upper anchor in frame; near/far grip occlusion remains anatomically connected.",
+        "inspection_surfaces": "Full master, enlarged contacts, entire equipment, 192px/80px and original baseline. Agent preflight only; never human approval.",
+        "selected_attempt": "2",
+        "source_sha256": "cb4b27b2b1a69a13c105ab4cf4dc229e04f2d7a315bdae54c689cbe3b6a46962",
+        "original_generation_source": "/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-4dc308c5-afd1-4541-9afb-d6bcbd302c9d.png",
+        "references": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/artwork-fixes-plus-more-2026-09-23/references/rogue-sml2-complete.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-9aac8dc9-7224-45ba-9a6d-eaba0f8c8e6f.png\"]",
+        "provenance_report": "/Users/dominic/powerlifting_app_dev/docs/validation/rejected-art-alignment-2026-09-23/attempts.json",
+        "scope": "DEV pending artwork only. Preserve prior approvals, crop histories, candidate versions, canonical IDs and performed histories. No release or runtime mapping changes."
       }
     }
   ],
@@ -178821,6 +180380,48 @@
         "candidate_id": "5dd122ff2f38e38ac7bafecf",
         "source": "human_review_catalog_retirement",
         "retired_at": "2026-09-23T00:35:04.568529",
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "5e402a68756beea830fada54",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_band_preacher_curl",
+      "movement_definition_id": 286,
+      "movement_name": "Band Preacher Curl",
+      "reason": "no one will do this",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-23T15:23:09.050634+00:00",
+      "excluded_at_display": "Sep 23, 2026 08:23 AM PT (Sep 23, 2026 11:23 AM Eastern)",
+      "source": "human_review_catalog_retirement",
+      "catalog_receipt": {
+        "reason": "no one will do this",
+        "reviewer_user_id": 1,
+        "candidate_id": "5e402a68756beea830fada54",
+        "source": "human_review_catalog_retirement",
+        "retired_at": "2026-09-23T15:23:09.040595",
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "e95ebd73c1320818245b25bf",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_band_copenhagen_adduction",
+      "movement_definition_id": 462,
+      "movement_name": "Band Copenhagen Adduction",
+      "reason": "F",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-23T15:26:40.973338+00:00",
+      "excluded_at_display": "Sep 23, 2026 08:26 AM PT (Sep 23, 2026 11:26 AM Eastern)",
+      "source": "human_review_catalog_retirement",
+      "catalog_receipt": {
+        "reason": "F",
+        "reviewer_user_id": 1,
+        "candidate_id": "e95ebd73c1320818245b25bf",
+        "source": "human_review_catalog_retirement",
+        "retired_at": "2026-09-23T15:26:40.969549",
         "historical_evidence_rewritten": false
       },
       "human_approved": false
