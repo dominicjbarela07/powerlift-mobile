@@ -19,7 +19,10 @@ assert.equal(audit.corrected_count, 22);
 assert.equal(audit.kept_count, 176);
 assert.equal(new Set(audit.movements.map(row => row.id)).size, 198);
 assert.deepEqual(sortedIds(audit.movements), sortedIds(before.movements));
-const withdrawn = new Set(humanState.catalog_exclusions.filter(row=>before.movements.some(item=>item.id===row.movement_definition_id)).map(row=>row.movement_definition_id));
+// This 2026-09-11 manifest retains its original membership; later merges
+// change runtime eligibility, not these historical inventory/hash receipts.
+const withdrawn = new Set([38,395,561,569]);
+for (const id of withdrawn) assert.ok(humanState.catalog_exclusions.some(row=>row.movement_definition_id===id));
 assert.deepEqual([...withdrawn].sort((a,b)=>a-b),[38,395,561,569]);
 assert.deepEqual(sortedIds(current.movements), [...sortedIds(before.movements.filter(row=>!withdrawn.has(row.id))),646].sort((a,b)=>a-b), 'current human-approved catalog supersedes the historical audit without erasing its provenance');
 assert.deepEqual(sortedIds(audit.movements.filter(row => row.decision === 'CORRECT')), expected);

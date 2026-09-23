@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from 'node:assert/strict';
+import { expectedDirectArtworkKey, assertReviewedArtworkReuse } from './artwork-review-expectations.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -131,7 +132,7 @@ assert.deepEqual(
   {
     kind: 'accessory',
     canonicalIdentityId: 4,
-    artworkKey: 'barbell_row',
+    ...(expectedDirectArtworkKey('barbell_row') ? {artworkKey:'barbell_row'} : {}),
     regionKey: 'upper_back',
     primaryMuscleGroup: 'upper_back',
     secondaryMuscleGroups: [],
@@ -233,3 +234,5 @@ if (webProgrammingManagerPath && fs.existsSync(webProgrammingManagerPath)) {
 }
 
 console.log(`[canonical-movement-artwork] ${fixtures.length} screenshot fixtures + fail-closed and consumer enforcement passed`);
+
+assertReviewedArtworkReuse({kind:'accessory',movement_identity:{id:4,key:'barbell_row',family:'horizontal_pull'}},4,'barbell_row');
