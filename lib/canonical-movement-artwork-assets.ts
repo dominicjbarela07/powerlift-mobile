@@ -1923,6 +1923,18 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Partial<Record<
     source: require('@/assets/images/movement-artwork/approved-completion-v1/cable_lat_pulldown_unknown-v2.png'),
     label: "Athlete performing Cable Lat Pulldown",
   },
+  pull_up_assisted: {
+    source: require('@/assets/images/movement-artwork/approved-completion-v1/pull_up_assisted-v2.png'),
+    label: "Athlete performing Assisted Pull-Up",
+  },
+  plank_duration: {
+    source: require('@/assets/images/movement-artwork/approved-completion-v1/plank_duration-v1.png'),
+    label: "Athlete performing Plank",
+  },
+  accessory_assisted_dip: {
+    source: require('@/assets/images/movement-artwork/approved-completion-v1/accessory_assisted_dip-v1.png'),
+    label: "Athlete performing Assisted Dip",
+  },
   // Archive bytes remain reviewable locally and are removed from release exports.
   ...(__DEV__ ? {
   barbell_row: {
