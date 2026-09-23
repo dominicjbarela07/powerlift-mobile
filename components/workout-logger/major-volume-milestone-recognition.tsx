@@ -7,11 +7,12 @@ import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLSpacing, SLTypography } from '@/constants/theme';
 import type { LoggerRecognitionEvent } from '@/lib/logger-feedback';
 import type { LoggerDisplayUnit } from '@/lib/logger-weight-format';
+import { MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB } from '@/lib/major-volume-milestones';
 import { majorVolumeMedallionAsset } from '@/lib/major-volume-medallion-assets';
 import { SLEasing } from '@/lib/motion';
 import { useSLMotionPreviewOverrides } from '@/lib/motion-preview';
 import {
-  VOLUME_ACHIEVEMENT_THRESHOLDS_LB,
+  deriveVolumeAchievement,
   formatCompactVolumeLb,
   formatVolumeLb,
   formatVolumeValue,
@@ -55,14 +56,15 @@ function milestonePresentation(event: LoggerRecognitionEvent): MilestonePresenta
   const liftFamily = ['squat', 'bench', 'deadlift'].includes(String(evidence.lift_family))
     ? String(evidence.lift_family) as MilestonePresentation['liftFamily']
     : null;
+  const thresholdLb = Math.max(1, Number(evidence.threshold_lb) || Math.round(Number(event.current_value || 0) / KG_PER_LB));
   return {
     scope: evidence.milestone_scope === 'lift' ? 'lift' : 'total',
     liftFamily,
-    thresholdLb: Math.max(1, Number(evidence.threshold_lb) || Math.round(Number(event.current_value || 0) / KG_PER_LB)),
+    thresholdLb,
     previousTotalKg: Math.max(0, Number(evidence.previous_total_kg ?? event.prior_value) || 0),
     newTotalKg: Math.max(0, Number(evidence.new_total_kg) || Number(event.current_value) || 0),
     accumulatedReps: Math.max(0, Math.round(Number(evidence.accumulated_reps) || 0)),
-    nextThresholdLb: Number(evidence.next_threshold_lb) > 0 ? Number(evidence.next_threshold_lb) : null,
+    nextThresholdLb: deriveVolumeAchievement(thresholdLb, liftFamily ?? 'total').next?.thresholdLb ?? null,
   };
 }
 
@@ -263,7 +265,7 @@ export function MajorVolumeMilestoneRecognition({
         <Text style={styles.runningValue}>{formatVolumeValue(risingDisplay)} <Text style={styles.runningUnit}>{displayUnit.toUpperCase()}</Text></Text>
         <View style={styles.rail}>
           <Animated.View style={[styles.railEnergy, { backgroundColor: accent, transform: [{ scaleX: railScale }] }]} />
-          {VOLUME_ACHIEVEMENT_THRESHOLDS_LB.map((threshold) => {
+          {MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB.map((threshold) => {
             const current = threshold === presentation.thresholdLb;
             const achieved = threshold <= presentation.thresholdLb;
             return (
@@ -317,7 +319,7 @@ export function MajorVolumeMilestoneRecognition({
           ) : null}
         </View>
         <View style={styles.evidenceRail}>
-          {VOLUME_ACHIEVEMENT_THRESHOLDS_LB.map((threshold) => (
+          {MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB.map((threshold) => (
             <View key={threshold} style={styles.evidenceRailStop}>
               <View
                 style={[

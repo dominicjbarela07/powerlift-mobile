@@ -8,7 +8,7 @@ const achievements = fs.readFileSync(path.join(root, 'components/ledger/Achievem
 const visualAssets = fs.readFileSync(path.join(root, 'lib/strength-ledger-visual-assets.ts'), 'utf8');
 const milestoneAssets = fs.readFileSync(path.join(root, 'lib/barbell/milestone-render-assets.ts'), 'utf8');
 
-assert.match(achievements, /PRIMARY_ACHIEVEMENT_SECTIONS = \['hub', 'milestones', 'clubs', 'trophies', 'medallions'\]/, 'the storyboard five-family tab row is canonical');
+assert.match(achievements, /PRIMARY_ACHIEVEMENT_SECTIONS = \['hub', 'volume', 'milestones', 'clubs', 'trophies', 'medallions'\]/, 'Training Volume is directly discoverable beside Overview while preserving the other categories');
 assert.match(achievements, /achievement-trophy-detail/, 'trophies open a full detail screen');
 assert.match(achievements, /achievement-lift-tier-detail-/, 'each core lift opens a full tier detail screen');
 assert.match(achievements, /PLATE CLUB PROGRESSION/, 'lift detail exposes the governed gym-native plate-club ladder');
