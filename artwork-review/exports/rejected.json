@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 2673,
+  "revision": 2735,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-22T21:48:00.969578+00:00",
-  "updated_at_display": "Sep 22, 2026 02:48 PM PT (Sep 22, 2026 05:48 PM Eastern)",
+  "updated_at": "2026-09-23T12:18:05.124006+00:00",
+  "updated_at_display": "Sep 23, 2026 05:18 AM PT (Sep 23, 2026 08:18 AM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -1969,6 +1969,48 @@
         "candidate_id": "a07998c57fce7a267526dda5",
         "source": "human_review_catalog_retirement",
         "retired_at": "2026-09-22T20:57:37.244027",
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "246b7c96a6a4f3aa1a81a10d",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_cable_kelso_shrug",
+      "movement_definition_id": 248,
+      "movement_name": "Cable Kelso Shrug",
+      "reason": "I dont think this would be sued over other Kelso shrugs",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-23T00:34:41.656744+00:00",
+      "excluded_at_display": "Sep 22, 2026 05:34 PM PT (Sep 22, 2026 08:34 PM Eastern)",
+      "source": "human_review_catalog_retirement",
+      "catalog_receipt": {
+        "reason": "I dont think this would be sued over other Kelso shrugs",
+        "reviewer_user_id": 1,
+        "candidate_id": "246b7c96a6a4f3aa1a81a10d",
+        "source": "human_review_catalog_retirement",
+        "retired_at": "2026-09-23T00:34:41.647450",
+        "historical_evidence_rewritten": false
+      },
+      "human_approved": false
+    },
+    {
+      "candidate_id": "5dd122ff2f38e38ac7bafecf",
+      "family": "canonical_remaining_accessories",
+      "key": "accessory_cable_good_morning",
+      "movement_definition_id": 557,
+      "movement_name": "Cable Good Morning",
+      "reason": "no one would do this over a cable RDL... if they want it they can add their own",
+      "replacement_movement_definition_id": null,
+      "excluded_at": "2026-09-23T00:35:04.570901+00:00",
+      "excluded_at_display": "Sep 22, 2026 05:35 PM PT (Sep 22, 2026 08:35 PM Eastern)",
+      "source": "human_review_catalog_retirement",
+      "catalog_receipt": {
+        "reason": "no one would do this over a cable RDL... if they want it they can add their own",
+        "reviewer_user_id": 1,
+        "candidate_id": "5dd122ff2f38e38ac7bafecf",
+        "source": "human_review_catalog_retirement",
+        "retired_at": "2026-09-23T00:35:04.568529",
         "historical_evidence_rewritten": false
       },
       "human_approved": false
@@ -23024,6 +23066,1018 @@
           "source": "human_logger_crop_ui"
         }
       ]
+    },
+    "93996a12d11235a8eff2a218": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.2,
+        "y": 0.23
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.2,
+          "y": 0.23
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:26:24.355211+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:26 AM PT (Sep 23, 2026 07:26 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5da73c7c92c0259221081d81062759c6ebb207a6f600d75356b501fd7289d966",
+        "app_sha256": "cb5e10d745df79c6f049e620ed3c7322d1c8739379990b5d3704ce927a08fd47",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.2,
+            "y": 0.23
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:26:24.355211+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:26 AM PT (Sep 23, 2026 07:26 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5da73c7c92c0259221081d81062759c6ebb207a6f600d75356b501fd7289d966",
+          "app_sha256": "cb5e10d745df79c6f049e620ed3c7322d1c8739379990b5d3704ce927a08fd47",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "722cb791c7537fedef28150a": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.23,
+        "y": 0.11
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.23,
+          "y": 0.11
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:26:32.390072+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:26 AM PT (Sep 23, 2026 07:26 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ccdbc4f13ee9125215b32dd2b29adde343e93082a697edbd707b21bc1163f936",
+        "app_sha256": "6fd7fe51f3dab4ac802b73b2cbd4487902bb41554ddffdfe0bcf0a7e461968c7",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.23,
+            "y": 0.11
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:26:32.390072+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:26 AM PT (Sep 23, 2026 07:26 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ccdbc4f13ee9125215b32dd2b29adde343e93082a697edbd707b21bc1163f936",
+          "app_sha256": "6fd7fe51f3dab4ac802b73b2cbd4487902bb41554ddffdfe0bcf0a7e461968c7",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "64d250bd4c08aeeedf374e34": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.18,
+        "y": 0.13
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.18,
+          "y": 0.13
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:26:40.015185+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:26 AM PT (Sep 23, 2026 07:26 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d8d117d594a8d7d3ebf37571a9af1715bfe813ab5833b76ce540b6e6ab01e0f6",
+        "app_sha256": "a94bc4bc30cd7b71c4d31589dab90ca2db3a9453e07201888351c28928f9392d",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.18,
+            "y": 0.13
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:26:40.015185+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:26 AM PT (Sep 23, 2026 07:26 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d8d117d594a8d7d3ebf37571a9af1715bfe813ab5833b76ce540b6e6ab01e0f6",
+          "app_sha256": "a94bc4bc30cd7b71c4d31589dab90ca2db3a9453e07201888351c28928f9392d",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "d39b10b43320bc5054b095c8": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.27,
+        "y": 0.17
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.27,
+          "y": 0.17
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:26:46.408521+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:26 AM PT (Sep 23, 2026 07:26 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "fa72658218667a9076c75336ddb8bfa861247c01375d145b487cb305e8768af8",
+        "app_sha256": "7aa4c455b93636963782592247e24b44025bf908a9d2305e4e4f1453b5acd7ad",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.27,
+            "y": 0.17
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:26:46.408521+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:26 AM PT (Sep 23, 2026 07:26 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "fa72658218667a9076c75336ddb8bfa861247c01375d145b487cb305e8768af8",
+          "app_sha256": "7aa4c455b93636963782592247e24b44025bf908a9d2305e4e4f1453b5acd7ad",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "fd1b1d950eec5ebe70a325bd": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.08,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.08,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:26:51.943707+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:26 AM PT (Sep 23, 2026 07:26 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "096b02f13bcc79f746529a192cfff44182d0df0a0aec8f0722f7c00254ac2f36",
+        "app_sha256": "ec4a28a6b754b50fb1e67aa5b0b0af6b02561d759a130c18ab76d2e83aebc842",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.08,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:26:51.943707+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:26 AM PT (Sep 23, 2026 07:26 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "096b02f13bcc79f746529a192cfff44182d0df0a0aec8f0722f7c00254ac2f36",
+          "app_sha256": "ec4a28a6b754b50fb1e67aa5b0b0af6b02561d759a130c18ab76d2e83aebc842",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "d7c750e8cdeb518affee6be3": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.14,
+        "y": 0.12
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.14,
+          "y": 0.12
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:26:57.935351+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:26 AM PT (Sep 23, 2026 07:26 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "bbbbec12421b1aa5bfe9127d3d8358074dde2f2ce44fee8cda1cf4b1ad696001",
+        "app_sha256": "2d521a582decc103ab3372444fd057d73dfad8e4b8e4cf0459bff76d895f0c28",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.14,
+            "y": 0.12
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:26:57.935351+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:26 AM PT (Sep 23, 2026 07:26 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "bbbbec12421b1aa5bfe9127d3d8358074dde2f2ce44fee8cda1cf4b1ad696001",
+          "app_sha256": "2d521a582decc103ab3372444fd057d73dfad8e4b8e4cf0459bff76d895f0c28",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "50af5f97e4397ac4110119cf": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.05,
+        "y": 0.15
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.05,
+          "y": 0.15
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:27:10.070358+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:27 AM PT (Sep 23, 2026 07:27 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f516d0c4c607b62ae516398c186507a1a1b73dda058f539ae940b39366dbd494",
+        "app_sha256": "4199e204593c8aeda6e75124f2bd85ae5a31ded54910159020a487401b101c99",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.05,
+            "y": 0.15
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:27:10.070358+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:27 AM PT (Sep 23, 2026 07:27 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f516d0c4c607b62ae516398c186507a1a1b73dda058f539ae940b39366dbd494",
+          "app_sha256": "4199e204593c8aeda6e75124f2bd85ae5a31ded54910159020a487401b101c99",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "93324aedff124ac4f734a83f": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.2,
+        "y": 0.11
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.2,
+          "y": 0.11
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:27:19.289850+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:27 AM PT (Sep 23, 2026 07:27 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9cb6002acedeec0278c933cef3c6b3c711481d549dac8dc08bad21f4c93e5b62",
+        "app_sha256": "e70d9aaeefeb632e5446fc10a379120960b837a7a91965e9bf4ce837ae975b93",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.2,
+            "y": 0.11
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:27:19.289850+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:27 AM PT (Sep 23, 2026 07:27 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9cb6002acedeec0278c933cef3c6b3c711481d549dac8dc08bad21f4c93e5b62",
+          "app_sha256": "e70d9aaeefeb632e5446fc10a379120960b837a7a91965e9bf4ce837ae975b93",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "4480e20de80c6ac58fa0d1e7": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.04,
+        "y": 0.09
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.04,
+          "y": 0.09
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:27:26.437857+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:27 AM PT (Sep 23, 2026 07:27 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d59ca406b5b66027b64085a13aeb8c759479fdea0d8f74de2a950fa1f454d941",
+        "app_sha256": "f060f78618e450bba8bd8ec59b317c6116fdd34e4c6573b1310e9d4d383188c4",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.04,
+            "y": 0.09
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:27:26.437857+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:27 AM PT (Sep 23, 2026 07:27 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d59ca406b5b66027b64085a13aeb8c759479fdea0d8f74de2a950fa1f454d941",
+          "app_sha256": "f060f78618e450bba8bd8ec59b317c6116fdd34e4c6573b1310e9d4d383188c4",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "a82e9a5f9144ddb27ad6b263": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.22,
+        "y": 0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.22,
+          "y": 0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:27:36.167469+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:27 AM PT (Sep 23, 2026 07:27 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "a6d44a1b5e1af11cb92cc64b8b94dea41e2173f821ec9551af0f97edce9ba3c2",
+        "app_sha256": "02842d182819f9f692ce4fedf9246c796842e79db38be72d124e7f5d17f06199",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.22,
+            "y": 0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:27:36.167469+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:27 AM PT (Sep 23, 2026 07:27 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "a6d44a1b5e1af11cb92cc64b8b94dea41e2173f821ec9551af0f97edce9ba3c2",
+          "app_sha256": "02842d182819f9f692ce4fedf9246c796842e79db38be72d124e7f5d17f06199",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "61b6f1ad81a43dec620519e9": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.95,
+        "x": 0.14,
+        "y": 0.06
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.95,
+          "x": 0.14,
+          "y": 0.06
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:28:01.243873+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "80e7d520167d2e58aacf78d659f9b65c649e66a1209abd4657f77f4bed45f97d",
+        "app_sha256": "b306835135da3170eb25dfc140152280cb30297a23e68e4a4c67f98db2eb280a",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.95,
+            "x": 0.14,
+            "y": 0.06
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:28:01.243873+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "80e7d520167d2e58aacf78d659f9b65c649e66a1209abd4657f77f4bed45f97d",
+          "app_sha256": "b306835135da3170eb25dfc140152280cb30297a23e68e4a4c67f98db2eb280a",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "fe977c00ed9da396fd5a5109": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.06,
+        "y": 0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.9,
+          "x": 0.06,
+          "y": 0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:28:14.953277+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f1f01192249236220c89944d1c9025dba4cb26a46f0ba2394d4c62b1ceb600a2",
+        "app_sha256": "2ffab2ae59e73acc7a97939190d2a755f20dc564a80d794968488424a4caaf2f",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.9,
+            "x": 0.06,
+            "y": 0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:28:14.953277+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f1f01192249236220c89944d1c9025dba4cb26a46f0ba2394d4c62b1ceb600a2",
+          "app_sha256": "2ffab2ae59e73acc7a97939190d2a755f20dc564a80d794968488424a4caaf2f",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "a3dea663533df50f048cc13e": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.03,
+        "y": 0.02
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.03,
+          "y": 0.02
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:28:23.851953+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "faf19086962ddfcb4b8a18dbef38f115833b67c6080ce5b150ab4f0caa57130d",
+        "app_sha256": "99248aa9bcb99b84a1c1c002b93897a5d1201bbc2a696fbb91b02bd3e8672cf1",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.03,
+            "y": 0.02
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:28:23.851953+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "faf19086962ddfcb4b8a18dbef38f115833b67c6080ce5b150ab4f0caa57130d",
+          "app_sha256": "99248aa9bcb99b84a1c1c002b93897a5d1201bbc2a696fbb91b02bd3e8672cf1",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "e007ebba07038bbd5801c86f": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.21,
+        "y": 0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.21,
+          "y": 0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:28:33.268939+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1f5581d4305a41c57d88c7679503da5bc50ad2be8363725c7c7ee14e97794835",
+        "app_sha256": "1832b7730bce3192b54fd0eed717774014ed76004c17ce1f20123bf9a3ffe17d",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.21,
+            "y": 0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:28:33.268939+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1f5581d4305a41c57d88c7679503da5bc50ad2be8363725c7c7ee14e97794835",
+          "app_sha256": "1832b7730bce3192b54fd0eed717774014ed76004c17ce1f20123bf9a3ffe17d",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "c925732d066f64f7d594d14d": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.15,
+        "y": 0.13
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.15,
+          "y": 0.13
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:28:38.734549+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "498c8b9f6c7bc44ab9c7a788d13365545269640ebe5e8d4331d2692a86a1b212",
+        "app_sha256": "2c6e0a1952c5087c5de41b475277ed3667b86039fd0af051a3fe69f954a38c43",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.15,
+            "y": 0.13
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:28:38.734549+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "498c8b9f6c7bc44ab9c7a788d13365545269640ebe5e8d4331d2692a86a1b212",
+          "app_sha256": "2c6e0a1952c5087c5de41b475277ed3667b86039fd0af051a3fe69f954a38c43",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "17f742892163e7d2a428cacf": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.1,
+        "y": 0.13
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.1,
+          "y": 0.13
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:28:46.653866+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1f1649adaccf56e7f0411cd4aea906fd6d7c0d0fdb28bd02094b98fa02385d6a",
+        "app_sha256": "d69569ce790c505405d3842eee9f2249c1432702aa49e5ad08f3c5988009061a",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.1,
+            "y": 0.13
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:28:46.653866+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1f1649adaccf56e7f0411cd4aea906fd6d7c0d0fdb28bd02094b98fa02385d6a",
+          "app_sha256": "d69569ce790c505405d3842eee9f2249c1432702aa49e5ad08f3c5988009061a",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "a6b3bca27643f000239e6f91": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.26,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.26,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:28:51.822149+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "50037f6888e969c7d52852dc245023f7216ff72a8f738b99902ad1c143fd4007",
+        "app_sha256": "152629673c9e536e5378228a72c1de909006575b5466f90ba9925499028d28e0",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.26,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:28:51.822149+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "50037f6888e969c7d52852dc245023f7216ff72a8f738b99902ad1c143fd4007",
+          "app_sha256": "152629673c9e536e5378228a72c1de909006575b5466f90ba9925499028d28e0",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "e0b04f8ad580153ed4709ac1": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.1,
+        "y": 0.1
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.1,
+          "y": 0.1
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:28:56.988312+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e4fea03c9b6c9c4c709811867363088fc14b11b0d516272cac037aa33d716208",
+        "app_sha256": "bda1157a419b802d0ab9fcf6bded70104a0f06b8bdfc7b3980cac25d5a22ce83",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.1,
+            "y": 0.1
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:28:56.988312+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:28 AM PT (Sep 23, 2026 07:28 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e4fea03c9b6c9c4c709811867363088fc14b11b0d516272cac037aa33d716208",
+          "app_sha256": "bda1157a419b802d0ab9fcf6bded70104a0f06b8bdfc7b3980cac25d5a22ce83",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "1d0a88a3f0b572083ac41975": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.2,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.2,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:29:59.735778+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:29 AM PT (Sep 23, 2026 07:29 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "34a7489f898252d6f58de6fb090bdf94a6d513c0dd224fa6a51332f17ea20cd9",
+        "app_sha256": "b2ad5b4b62dedc99f594408a4ffd9bf9ef6ca72dd3ca20d5d1183d2b784a8750",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.2,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:29:59.735778+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:29 AM PT (Sep 23, 2026 07:29 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "34a7489f898252d6f58de6fb090bdf94a6d513c0dd224fa6a51332f17ea20cd9",
+          "app_sha256": "b2ad5b4b62dedc99f594408a4ffd9bf9ef6ca72dd3ca20d5d1183d2b784a8750",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "70ff39782a3d8c3a40a33542": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.35,
+        "y": 0.09
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.35,
+          "y": 0.09
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:30:05.819301+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:30 AM PT (Sep 23, 2026 07:30 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "8a6b2b088cafc7c5a028c59172278ce76a3301cf0fcd30ac04461baab4bbdca4",
+        "app_sha256": "b6b1601928c88c2b2d5a0c3a09aa7cd990c8666f67d692b9fba4ca74a18997c8",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.35,
+            "y": 0.09
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:30:05.819301+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:30 AM PT (Sep 23, 2026 07:30 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "8a6b2b088cafc7c5a028c59172278ce76a3301cf0fcd30ac04461baab4bbdca4",
+          "app_sha256": "b6b1601928c88c2b2d5a0c3a09aa7cd990c8666f67d692b9fba4ca74a18997c8",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "9848870bec52e3328a139740": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.16,
+        "y": 0.02
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.9,
+          "x": 0.16,
+          "y": 0.02
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:30:21.239658+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:30 AM PT (Sep 23, 2026 07:30 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "1dde961be20f4ae607d0f4acd530808ec416f23d173a8abcda8093a00ce5f9ea",
+        "app_sha256": "c2080a53d5a911022f27ffcddaca09d3c5353be8a1c603998cc6bcdf2c8bce65",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.9,
+            "x": 0.16,
+            "y": 0.02
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:30:21.239658+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:30 AM PT (Sep 23, 2026 07:30 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "1dde961be20f4ae607d0f4acd530808ec416f23d173a8abcda8093a00ce5f9ea",
+          "app_sha256": "c2080a53d5a911022f27ffcddaca09d3c5353be8a1c603998cc6bcdf2c8bce65",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "a197eeed42a6f30ab3b1ffe9": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.27,
+        "y": -0.02
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.27,
+          "y": -0.02
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:30:35.309347+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:30 AM PT (Sep 23, 2026 07:30 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "cf94116bf95f725f9184d90b2f44c8f0348b29b13852f20c4342ad70c6fad3de",
+        "app_sha256": "822cb42a7238f397f74cd40dbb6e757a859539facb5aa5374e146ea85a79e281",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.27,
+            "y": -0.02
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:30:35.309347+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:30 AM PT (Sep 23, 2026 07:30 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "cf94116bf95f725f9184d90b2f44c8f0348b29b13852f20c4342ad70c6fad3de",
+          "app_sha256": "822cb42a7238f397f74cd40dbb6e757a859539facb5aa5374e146ea85a79e281",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "3e1dc870ba1dd43459f319b5": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 1,
+        "x": 0.13,
+        "y": 0.19
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 1,
+          "x": 0.13,
+          "y": 0.19
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T11:30:41.253722+00:00",
+        "reviewed_at_display": "Sep 23, 2026 04:30 AM PT (Sep 23, 2026 07:30 AM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "49c9fe84c0b27582d7e971dfa919e04923f79b8a75c3fa337a75866742ffcf87",
+        "app_sha256": "e53de6561e82501a7c1723b29a482997e9a98a730f6cbc8ca7dfcb97935dd6bb",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 1,
+            "x": 0.13,
+            "y": 0.19
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T11:30:41.253722+00:00",
+          "reviewed_at_display": "Sep 23, 2026 04:30 AM PT (Sep 23, 2026 07:30 AM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "49c9fe84c0b27582d7e971dfa919e04923f79b8a75c3fa337a75866742ffcf87",
+          "app_sha256": "e53de6561e82501a7c1723b29a482997e9a98a730f6cbc8ca7dfcb97935dd6bb",
+          "source": "human_logger_crop_ui"
+        }
+      ]
     }
   },
   "consolidated_artwork_bindings": [
@@ -23092,2411 +24146,5 @@
       "recorded_at_display": "Sep 20, 2026 04:12 PM PT (Sep 20, 2026 07:12 PM Eastern)"
     }
   ],
-  "rejected": [
-    {
-      "movement_definition_id": 78,
-      "key": "accessory_band_push_up",
-      "movement_name": "Band Push-Up",
-      "primary_muscle_group": "chest",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-78-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "c0a5c3d1cbb2487828e68531",
-      "version": 2,
-      "supersedes_candidate_id": "da28cc68752727a014378b95",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "you should see the band on both sides of the hands if its a standard band",
-        "tags": [],
-        "reviewed_at": "2026-09-15T21:55:53.923253+00:00",
-        "reviewed_at_display": "Sep 15, 2026 02:55 PM PT (Sep 15, 2026 05:55 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "561c591ae8421fcb71864595247fb1a49362517af50031cd806bf48ef2060698",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/c0a5c3d1cbb2487828e68531/master.png",
-          "sha256": "fec6639c6d900b4eb8d08499a8f8a43e249a763bb605c59dfcccf974f8c89a2c",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 2290998
-        },
-        "app": {
-          "path": "candidates/c0a5c3d1cbb2487828e68531/app.png",
-          "sha256": "c6338523b2bfb64fe22e7d054c3a81d5c42963faaeba2a31f6634c96bf684044",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 431857
-        },
-        "thumbnail": {
-          "path": "candidates/c0a5c3d1cbb2487828e68531/thumbnail.png",
-          "sha256": "a29b6854c9884398517d49e499d047d2bf51eef4ce9b39d9d029b3f499b75e08",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 60570
-        }
-      },
-      "candidate_asset": "candidates/c0a5c3d1cbb2487828e68531/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "dude stop fucking this up! fucking look at a fucking reference!!! its not that fucking hard!!!!!",
-      "tags": [
-        "visual_quality"
-      ],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "dude stop fucking this up! fucking look at a fucking reference!!! its not that fucking hard!!!!!",
-          "tags": [
-            "visual_quality"
-          ],
-          "reviewed_at": "2026-09-16T02:20:54.441221+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:20 PM PT (Sep 15, 2026 10:20 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "fec6639c6d900b4eb8d08499a8f8a43e249a763bb605c59dfcccf974f8c89a2c",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:05:40.674384+00:00",
-      "created_at_display": "Sep 15, 2026 06:05 PM PT (Sep 15, 2026 09:05 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Every elastic resistance band MUST BE RED. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nEDIT Band Push-Up #78. Keep exact athlete, low pushup pose, hands, floor, camera and lighting. Replace apparent open-ended red strip with one standard CLOSED RED LOOP resistance band. The closed loop is flattened/doubled across upper back: TWO parallel red runs with a tiny gap across back and down each side. At EACH planted palm the loop bends in a visible U underneath heel of palm, so red band emerges visibly on BOTH inner and outer sides of each hand, joining the two upward runs. Show connected loop, no free cut ends and no rubber terminating inside palm. Band across shoulder blades, NOT neck. Both hands anatomically five-fingered flat on floor; no extra straps or bands below chest. Preserve whole body.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-56449009-a6df-4ccd-bbe8-896bae9602fb.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "front_delts"
-      ],
-      "movement_family": "accessory_chest",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Band reads as an open strip terminating at hands; closed loop must visibly emerge on both sides of each supporting palm.",
-        "exact_human_rejection": "you should see the band on both sides of the hands if its a standard band",
-        "agent_master_check": "Closed-loop band has two parallel back runs and visible red segments on both sides of each supporting hand, with curved returns under hand heels. No open ends. Complete push-up limbs; band lies over shirt/back without entering skin.",
-        "agent_enlarged_and_thumbnail_check": "Closed red loop has two strands over back and on both sides of each hand, wrapping beneath hand heels without severed ends; two hands/feet connected and pushup readable at 80px.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "dude stop fucking this up! fucking look at a fucking reference!!! its not that fucking hard!!!!!",
-        "tags": [
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-16T02:20:54.441221+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:20 PM PT (Sep 15, 2026 10:20 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "fec6639c6d900b4eb8d08499a8f8a43e249a763bb605c59dfcccf974f8c89a2c",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 322,
-      "key": "accessory_band_triceps_pressdown",
-      "movement_name": "Band Triceps Pressdown",
-      "primary_muscle_group": "triceps",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-322-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "bbf01e70ec8b26c7aa58a2aa",
-      "version": 2,
-      "supersedes_candidate_id": "5689589aaf21a56782d164f0",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "the band looks broken",
-        "tags": [],
-        "reviewed_at": "2026-09-15T21:56:58.915128+00:00",
-        "reviewed_at_display": "Sep 15, 2026 02:56 PM PT (Sep 15, 2026 05:56 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "a433ba48634f57a9fa06de5f128837082f5f08603c534cba1b4b21a5e3d0cffd",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/bbf01e70ec8b26c7aa58a2aa/master.png",
-          "sha256": "0387b61e49f8f6741efa7ccbc15ea26987d7a7213ee95a03e39319b5683d65a2",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1773739
-        },
-        "app": {
-          "path": "candidates/bbf01e70ec8b26c7aa58a2aa/app.png",
-          "sha256": "e8de7040303a6cc5b29a700c7faea3107c97fc6a85f86810d66822a9e67ad044",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 312547
-        },
-        "thumbnail": {
-          "path": "candidates/bbf01e70ec8b26c7aa58a2aa/thumbnail.png",
-          "sha256": "1b0f480cc08fd78d248722db313be55fb96520dc67d526ba2baec1f6707f7b35",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 45380
-        }
-      },
-      "candidate_asset": "candidates/bbf01e70ec8b26c7aa58a2aa/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "why the fuck do you think its a fine idea to have him hold the resistance with his fucking thumbs! he had hands for a fucking reason!!! no-one would ever fuckign do that",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "why the fuck do you think its a fine idea to have him hold the resistance with his fucking thumbs! he had hands for a fucking reason!!! no-one would ever fuckign do that",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:21:34.370351+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:21 PM PT (Sep 15, 2026 10:21 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "0387b61e49f8f6741efa7ccbc15ea26987d7a7213ee95a03e39319b5683d65a2",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:34:11.859938+00:00",
-      "created_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Every elastic resistance band MUST BE RED. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nBand Triceps Pressdown correction. Exact owner reason \"the band looks broken\". Rebuild clear ONE continuous red latex closed-loop resistance band girth-hitched onto center of tall rack high horizontal pullup bar. Athlete in front of rack facing its center; use front-facing camera looking from rack toward athlete, with symmetric rack uprights visible around him. Hands grip opposing sides of red loop low at front of thighs, elbows extended and upper arms alongside ribs. The bottom U of the loop MUST BE VISIBLE BELOW BOTH HANDS as ONE UNBROKEN RED CURVE connecting both descending taut lengths. No loose ends or extra bands. Head centered in sternum direction, gaze down toward hands. Bands run ahead of chest with visible air gap, do not cut through head/arms. Simple real 90-inch two-upright squat stand matching approved pull-up reference: exactly two equal parallel perforated square-steel uprights, two identical long horizontal feet projecting forward/backward, one rear lower crossmember joining feet, one straight horizontal pull-up crossbar fixed with matched brackets high overhead, steel bolts and gussets. No split crooked posts, no unexplained extra frame or bent bar. Whole rack fits frame. Camera and athlete centered on rack midline, athlete never rotated diagonally relative to rack. Entire rack and feet visible, no diagonal user-to-rack plane.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-471d011e-32f4-41bf-8d4d-a70b1ad7dc4e.png",
-      "test_only": false,
-      "secondary_muscle_groups": [],
-      "movement_family": "accessory_triceps",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Lower loop ends appear broken under hands; show continuous bottom U between grips and secure upper girth hitch.",
-        "exact_human_rejection": "the band looks broken",
-        "agent_master_check": "Closed red loop continuous from top bar to both hands with visible rounded U return; head faces down center, rack and athlete centered. Both elbows extended beside torso.",
-        "agent_enlarged_and_thumbnail_check": "Enlarged and 192/80px: Red loop is continuous around high bar and between hands, centered on symmetric rack; no broken band.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "why the fuck do you think its a fine idea to have him hold the resistance with his fucking thumbs! he had hands for a fucking reason!!! no-one would ever fuckign do that",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:21:34.370351+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:21 PM PT (Sep 15, 2026 10:21 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "0387b61e49f8f6741efa7ccbc15ea26987d7a7213ee95a03e39319b5683d65a2",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 189,
-      "key": "accessory_band_straight_arm_pulldown",
-      "movement_name": "Band Straight-Arm Pulldown",
-      "primary_muscle_group": "lats",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-189-a03",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "969c8c5659e5aa55e556b7d1",
-      "version": 2,
-      "supersedes_candidate_id": "7eb69062cf77ff771f70f889",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "I hate you",
-        "tags": [
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-15T21:58:28.096245+00:00",
-        "reviewed_at_display": "Sep 15, 2026 02:58 PM PT (Sep 15, 2026 05:58 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "badda7aded7fd0dc073c6fe6eff2ac896dddc69e62fc0415ca17215cb78855c0",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/969c8c5659e5aa55e556b7d1/master.png",
-          "sha256": "1900f3d3db67ce0f01d47704d20b4ba42d3da742e6442a739259a0894c4e734a",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1750054
-        },
-        "app": {
-          "path": "candidates/969c8c5659e5aa55e556b7d1/app.png",
-          "sha256": "5e470c8a9c18947a62b0f2c4929e04d0fdd30bd6544d27ae8d9744947fc0f934",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 324554
-        },
-        "thumbnail": {
-          "path": "candidates/969c8c5659e5aa55e556b7d1/thumbnail.png",
-          "sha256": "84a1ae41234ce83b09cfd29ea686b4f887ed2c1bb03c4ee7aadc569159c0180f",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 45454
-        }
-      },
-      "candidate_asset": "candidates/969c8c5659e5aa55e556b7d1/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "BAND/HAND INTERFACE IS DOG SHIT",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "BAND/HAND INTERFACE IS DOG SHIT",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:23:10.626504+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:23 PM PT (Sep 15, 2026 10:23 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "1900f3d3db67ce0f01d47704d20b4ba42d3da742e6442a739259a0894c4e734a",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:22:59.561439+00:00",
-      "created_at_display": "Sep 15, 2026 06:22 PM PT (Sep 15, 2026 09:22 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Every elastic resistance band MUST BE RED. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nGenerate Band Straight-Arm Pulldown using this image's accurate SIDE-VIEW rack and side-facing model as geometric reference. Keep entire rack exactly as reference, right side of frame, same 3D orientation. Athlete stands on LEFT facing RIGHT directly toward rack's center, whole torso/pelvis/knees/feet in the same sagittal plane, side-view head aligned with spine, NO look to camera. He hinges hips back moderately, knees soft, back neutral; both arms remain almost straight from shoulders down and slightly forward to fists just ahead of upper thighs. One closed RED loop girth-hitched to center of HIGH horizontal pull-up bar, two clearly separate tensioned strands descend diagonally down-left in OPEN AIR to his hands in front of hips. Bottom U of band visible between fists, bands never cross head/arms or enter torso. Show top attachment AND bottom closed bight. This is shoulder extension/lat straight-arm pull, NOT bent-elbow triceps pushdown. Entire connected rack, athlete head and feet in square frame with margin.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-0baed557-ff33-47cc-8ba7-ecac5c7a5854.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "biceps"
-      ],
-      "movement_family": "accessory_lats",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Repeat rack/body-plane ambiguity and disconnected-looking loop ends; center athlete facing anchor and show complete closed-loop path.",
-        "exact_human_rejection": "I hate you",
-        "agent_master_check": "Clear side profile finally shows high forward anchor and diagonal red loop to nearly straight hands in front of hips; no bands through arms/head. Rack complete and body/equipment plane agree.",
-        "agent_enlarged_and_thumbnail_check": "Detail crops and thumbnails: continuous high-anchored loop, two taut runs into hands, rack/athlete in same movement plane, full feet.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "BAND/HAND INTERFACE IS DOG SHIT",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:23:10.626504+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:23 PM PT (Sep 15, 2026 10:23 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "1900f3d3db67ce0f01d47704d20b4ba42d3da742e6442a739259a0894c4e734a",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 231,
-      "key": "accessory_band_high_row",
-      "movement_name": "Band High Row",
-      "primary_muscle_group": "upper_back",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-231-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "62032b267962a957d16ed20f",
-      "version": 2,
-      "supersedes_candidate_id": "f5368898c441f758fb4df1ae",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "are you fucking serious? you thought this was ok?",
-        "tags": [
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-15T21:59:11.383098+00:00",
-        "reviewed_at_display": "Sep 15, 2026 02:59 PM PT (Sep 15, 2026 05:59 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "2b8496ac2983e7c680c085b81b2e796023142479e85afc8555045ba3d29e382f",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/62032b267962a957d16ed20f/master.png",
-          "sha256": "de5165bb72371f78d6b8c873075865e129014d2c2e153d1291086c564c82b671",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1873545
-        },
-        "app": {
-          "path": "candidates/62032b267962a957d16ed20f/app.png",
-          "sha256": "b4f4e4ac40dbaf58c59dc52b6c03941014cab080af32a9cc54a4a68b044ef471",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 331414
-        },
-        "thumbnail": {
-          "path": "candidates/62032b267962a957d16ed20f/thumbnail.png",
-          "sha256": "c8cfa5d216f1ba96a870763e2fd7eb7c516f1c601f34950b922891d8728b7cc5",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 47008
-        }
-      },
-      "candidate_asset": "candidates/62032b267962a957d16ed20f/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "THIS LOOKS HORRID",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "THIS LOOKS HORRID",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:23:34.082152+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:23 PM PT (Sep 15, 2026 10:23 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "de5165bb72371f78d6b8c873075865e129014d2c2e153d1291086c564c82b671",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:34:04.386230+00:00",
-      "created_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Every elastic resistance band MUST BE RED. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nImage 1 defective Band High Row; image 2 rack/model/style reference. Human reason \"are you fucking serious? you thought this was ok?\" Observe source failure: body is sideways to rack and resistance crosses neck. Recompose from centered REAR view, athlete seated on a simple level black bench facing center of rack, shoulders/pelvis/feet square to it. Simple real 90-inch two-upright squat stand matching approved pull-up reference: exactly two equal parallel perforated square-steel uprights, two identical long horizontal feet projecting forward/backward, one rear lower crossmember joining feet, one straight horizontal pull-up crossbar fixed with matched brackets high overhead, steel bolts and gussets. No split crooked posts, no unexplained extra frame or bent bar. Whole rack fits frame. Camera and athlete centered on rack midline, athlete never rotated diagonally relative to rack. Feet planted ahead of hips toward rack, bench runs directly toward rack center. One RED loop band girth-hitched at center of rack top crossbar slopes DOWN symmetrically in clear air to hands at upper chest height, elbows flared out at shoulder height in high row. Band lies entirely ahead of the shoulders with no neck contact. Visible paired tension paths, hands each connected to elbows, both arms balanced. Head centered facing rack, no face turned to camera. Preserve complete tall rack and floor.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-e884d807-52dd-46bd-9b1a-ef8e7314a9e8.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "lats",
-        "rear_delts"
-      ],
-      "movement_family": "accessory_upper_back",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Rack/body mismatch pulls near band across neck; align torso, bench and feet to central high anchor with paths outside face.",
-        "exact_human_rejection": "are you fucking serious? you thought this was ok?",
-        "agent_master_check": "Centered rack, bench and body; symmetric high-row elbow/hand chain, paired closed red handle loops entirely above/ahead of shoulders, no neck intersection. Feet and bench grounded.",
-        "agent_enlarged_and_thumbnail_check": "Enlarged band high row: equal anchored loops, held handles, centered bench and rack plane; full grounded legs and readable thumbnail.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "THIS LOOKS HORRID",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:23:34.082152+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:23 PM PT (Sep 15, 2026 10:23 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "de5165bb72371f78d6b8c873075865e129014d2c2e153d1291086c564c82b671",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 232,
-      "key": "accessory_band_scapular_row",
-      "movement_name": "Band Scapular Row",
-      "primary_muscle_group": "upper_back",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-232-a02",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "7863752ea4b1291a85cc62df",
-      "version": 2,
-      "supersedes_candidate_id": "b9e4c4e64f19087668715840",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "his legs are not even infant of him",
-        "tags": [],
-        "reviewed_at": "2026-09-15T21:59:22.894093+00:00",
-        "reviewed_at_display": "Sep 15, 2026 02:59 PM PT (Sep 15, 2026 05:59 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "98dfed07288a8bfc9ea636b3a02ce373b9482e4d951477c021caccc858c0bba4",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/7863752ea4b1291a85cc62df/master.png",
-          "sha256": "3e87d5608379b4c2e62bdfb12d5752a0b024aca1c39ae0628aee8c3616e34f43",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1744513
-        },
-        "app": {
-          "path": "candidates/7863752ea4b1291a85cc62df/app.png",
-          "sha256": "b41e72357133584ec93501250a2fb0032b6112ede71ba52370d574b687b1990e",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 315868
-        },
-        "thumbnail": {
-          "path": "candidates/7863752ea4b1291a85cc62df/thumbnail.png",
-          "sha256": "abbd7f66bb41f989c856a00d574beb8e1917252cdfc21d1e37483137e33372ea",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 43471
-        }
-      },
-      "candidate_asset": "candidates/7863752ea4b1291a85cc62df/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "WHY IS THE RACK LIKE 4 FEET TALL! GET THE FUCKING PROPOTIONS RIGHT! THIS IS FUCKING HORSE SHIT",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "WHY IS THE RACK LIKE 4 FEET TALL! GET THE FUCKING PROPOTIONS RIGHT! THIS IS FUCKING HORSE SHIT",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:23:56.852665+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:23 PM PT (Sep 15, 2026 10:23 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "3e87d5608379b4c2e62bdfb12d5752a0b024aca1c39ae0628aee8c3616e34f43",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:34:04.784132+00:00",
-      "created_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Every elastic resistance band MUST BE RED. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nLocalized framing correction ONLY of Band Scapular Row. Keep this exact valid side-profile athlete, head, seated torso/pelvis/legs all facing right, long arms and red loop anchored visibly around rack post. Move camera back so FULL tall rack including both complete top ends, entire high bar, both grounded base feet and rear crossmember are visible WITH MARGIN in square composition. Preserve scene proportions and do not twist athlete toward camera. Machine feet should be simple complete connected steel, no cut edges. Do not change red band path, movement or model. Rack remains truly overhead height, not shrunken to waist.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-bf3d196d-8584-4df0-9f07-bae03a74f5b8.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "lats",
-        "rear_delts"
-      ],
-      "movement_family": "accessory_upper_back",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Torso faces away from leg/foot axis; align pelvis, sternum and forward legs in one unrotated seated posture.",
-        "exact_human_rejection": "his legs are not even infant of him",
-        "agent_master_check": "Complete connected rack now in frame; coherent side-profile athlete with legs ahead of pelvis, long elbows for scapular row, closed loop wrapped around front upright.",
-        "agent_enlarged_and_thumbnail_check": "Enlarged band scapular row: both legs visibly in front, feet clear of rack, continuous wrapped band to fists, thumbnail readable.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "WHY IS THE RACK LIKE 4 FEET TALL! GET THE FUCKING PROPOTIONS RIGHT! THIS IS FUCKING HORSE SHIT",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:23:56.852665+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:23 PM PT (Sep 15, 2026 10:23 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "3e87d5608379b4c2e62bdfb12d5752a0b024aca1c39ae0628aee8c3616e34f43",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 286,
-      "key": "accessory_band_preacher_curl",
-      "movement_name": "Band Preacher Curl",
-      "primary_muscle_group": "biceps",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-286-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "f6f86a076b7a5e52ccd3cb90",
-      "version": 2,
-      "supersedes_candidate_id": "b4861061e9b9d8ad4fe99989",
-      "prior_rejection": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "bad is clipping through the preacher pad",
-        "tags": [],
-        "reviewed_at": "2026-09-15T22:08:51.019842+00:00",
-        "reviewed_at_display": "Sep 15, 2026 03:08 PM PT (Sep 15, 2026 06:08 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "a4344871506b7e03fcb3ae602e6e043338ee0ac343f05045abc7baf1be4482cf",
-        "source": "human_review_ui"
-      },
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/f6f86a076b7a5e52ccd3cb90/master.png",
-          "sha256": "ecb7ee52aef2d363240e11e64531ef6971e247803815192874e7bd2ab9ab0b86",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1904725
-        },
-        "app": {
-          "path": "candidates/f6f86a076b7a5e52ccd3cb90/app.png",
-          "sha256": "cf98253d20a657ec2fa70bbffda73e548893d8e9d4f77437c282821522568bd0",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 341868
-        },
-        "thumbnail": {
-          "path": "candidates/f6f86a076b7a5e52ccd3cb90/thumbnail.png",
-          "sha256": "0ce444a4a92c76ffae38324bb20c0cfbbc7d29c77a26185a7cd68a315d7a2011",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 50157
-        }
-      },
-      "candidate_asset": "candidates/f6f86a076b7a5e52ccd3cb90/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "YOU HAVE AN ANCHOR BUT THE BAND DOESNT EVEN FUCKING GO THROUGH IT",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "YOU HAVE AN ANCHOR BUT THE BAND DOESNT EVEN FUCKING GO THROUGH IT",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:24:21.037585+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:24 PM PT (Sep 15, 2026 10:24 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "ecb7ee52aef2d363240e11e64531ef6971e247803815192874e7bd2ab9ab0b86",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:34:08.670163+00:00",
-      "created_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Every elastic resistance band MUST BE RED. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nPrecise correction of Band Preacher Curl. Exact rejection \"bad is clipping through the preacher pad\". Keep model/style, seated preacher curl, both upper arms planted on real black sloping pad. Move band anchor clearly IN FRONT OF entire pad front edge: a grounded black steel base with a secure low eye located beyond pad, not behind or directly beneath pad. TWO RED continuous bands with handles run diagonally UP/BACK from visible eye ahead of bench toward both supinated hands. The ENTIRE taut band segment must stay in open air at least 15cm in FRONT of pad edge, never pass through cushion, frame, elbows or knees. Use true SIDE THREE-QUARTER camera to reveal air gap and both paired arms; do not shorten far arm. Normal preacher bench seat, connected supports and grounded feet. Athlete body/arms/feet point at front anchor. No cropped equipment. Only correct defective setup; preserve family style.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-ef09ba7a-63ce-4354-a15d-82f43079a6c9.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "forearms"
-      ],
-      "movement_family": "accessory_biceps",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Band path overlaps/intersects preacher pad; shift physical anchor forward of pad and show clear air gap for both strands.",
-        "exact_human_rejection": "bad is clipping through the preacher pad",
-        "agent_master_check": "Both preacher band runs remain in front of pad and emerge from closed hand loops; hands, forearms and pad support coherent. Low anchor stands ahead of bench; inspect exact eyelet and shoe clearance enlarged.",
-        "agent_enlarged_and_thumbnail_check": "Enlarged and 192/80px: band passes in front of preacher pad rather than clipping; elbows supported, anchored band and full feet.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "YOU HAVE AN ANCHOR BUT THE BAND DOESNT EVEN FUCKING GO THROUGH IT",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:24:21.037585+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:24 PM PT (Sep 15, 2026 10:24 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "ecb7ee52aef2d363240e11e64531ef6971e247803815192874e7bd2ab9ab0b86",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 520,
-      "key": "accessory_band_crunch",
-      "movement_name": "Band Crunch",
-      "primary_muscle_group": "abs",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-520-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "6b665ab318983d9a8c7592c6",
-      "version": 2,
-      "supersedes_candidate_id": "a578fed61400e167def8d3e3",
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/6b665ab318983d9a8c7592c6/master.png",
-          "sha256": "37c979743341ed78f0072cb8a6c7562639e2ec94b521b751d56cde9668124596",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1687087
-        },
-        "app": {
-          "path": "candidates/6b665ab318983d9a8c7592c6/app.png",
-          "sha256": "43693697db1dfb398fa805ac357a3a481b0cfc2286cf7f23e05e3f80a23c0dc1",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 302555
-        },
-        "thumbnail": {
-          "path": "candidates/6b665ab318983d9a8c7592c6/thumbnail.png",
-          "sha256": "43b831d71bf800302cb106909393aebaefe4fd1f44970e3a2f454f03443ca0b6",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 42798
-        }
-      },
-      "candidate_asset": "candidates/6b665ab318983d9a8c7592c6/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "FUCK OFF!!!",
-      "tags": [
-        "visual_quality"
-      ],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "FUCK OFF!!!",
-          "tags": [
-            "visual_quality"
-          ],
-          "reviewed_at": "2026-09-16T02:24:39.467027+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:24 PM PT (Sep 15, 2026 10:24 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "37c979743341ed78f0072cb8a6c7562639e2ec94b521b751d56cde9668124596",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:34:17.757961+00:00",
-      "created_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Elastic rubber resistance bands MUST BE RED. Cable-machine wires are thin steel with dark/silver coating, NOT red rubber bands. Never turn a weight-stack cable into elastic. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nPrecisely reframe this Band Crunch photograph, pulling camera back to include COMPLETE equipment, top crossbar, both upright tops, all bases and athlete extremities with a small safe margin. Preserve EXACT exercise pose, contacts, movement identity and the same world-coordinate alignment between body and rack. Do not independently rotate any body part or apparatus. Do not change solid steel cables into rubber. Keep all elastic bands RED.  ",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-2333c137-cb05-422d-8dc6-6df0b1735d72.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "hip_flexors"
-      ],
-      "movement_family": "accessory_abs",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Kneeling band crunch uses legitimate red tube bands with clipped handles and high anchors; limbs and spine flexion coherent. Reframe complete rack because current single cropped post hides structural grounding.",
-        "exact_human_rejection": "",
-        "agent_master_check": "Full rack and braced feet visible; two red tubes run separately to two grips beside shoulders, flexed spine and grounded knees preserved.",
-        "agent_enlarged_and_thumbnail_check": "Enlarged and 192/80px: Kneeling band crunch: two red strands run behind head to intact handles; both knees/feet complete.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "preflight_replacement": {
-        "owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "defect": "Kneeling band crunch uses legitimate red tube bands with clipped handles and high anchors; limbs and spine flexion coherent. Reframe complete rack because current single cropped post hides structural grounding.",
-        "prior_master_sha256": "921610522a55bf72ed7360119177f498c02a35727bc924d235b06e2b6373368a",
-        "source": "owner_requested_agent_rescreen",
-        "recorded_at": "2026-09-16T01:34:17.757961+00:00",
-        "recorded_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-        "human_decision": false
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "FUCK OFF!!!",
-        "tags": [
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-16T02:24:39.467027+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:24 PM PT (Sep 15, 2026 10:24 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "37c979743341ed78f0072cb8a6c7562639e2ec94b521b751d56cde9668124596",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 522,
-      "key": "accessory_band_dead_bug",
-      "movement_name": "Band Dead Bug",
-      "primary_muscle_group": "abs",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-522-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "85ec3c5e62528ad7f21fe015",
-      "version": 2,
-      "supersedes_candidate_id": "95f65bef6cb5f1fa2deb23c4",
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/85ec3c5e62528ad7f21fe015/master.png",
-          "sha256": "4d062650ade3840ba352ca39eafd875ce0dc262153ac447ad0af98884dc7b9bd",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1770697
-        },
-        "app": {
-          "path": "candidates/85ec3c5e62528ad7f21fe015/app.png",
-          "sha256": "dc637c8553874fef80a6ed4ec6b163ac5d4c2a49aa5c11c6cd6c137ab733dc19",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 311808
-        },
-        "thumbnail": {
-          "path": "candidates/85ec3c5e62528ad7f21fe015/thumbnail.png",
-          "sha256": "6a861798de933f7e02816d6d56b73c1e1268701c9a28ab561464f841b6ba93c5",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 43881
-        }
-      },
-      "candidate_asset": "candidates/85ec3c5e62528ad7f21fe015/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "THE PROPORTIONS LOOK LIKE FUCKING SHIT",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "THE PROPORTIONS LOOK LIKE FUCKING SHIT",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:25:10.209010+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:25 PM PT (Sep 15, 2026 10:25 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "4d062650ade3840ba352ca39eafd875ce0dc262153ac447ad0af98884dc7b9bd",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:34:18.168668+00:00",
-      "created_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Elastic rubber resistance bands MUST BE RED. Cable-machine wires are thin steel with dark/silver coating, NOT red rubber bands. Never turn a weight-stack cable into elastic. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nPrecisely reframe this Band Dead Bug photograph, pulling camera back to include COMPLETE equipment, top crossbar, both upright tops, all bases and athlete extremities with a small safe margin. Preserve EXACT exercise pose, contacts, movement identity and the same world-coordinate alignment between body and rack. Do not independently rotate any body part or apparatus. Do not change solid steel cables into rubber. Keep all elastic bands RED.  ",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-480acfe7-8328-450d-84c7-b073dc323316.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "hip_flexors"
-      ],
-      "movement_family": "accessory_abs",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Band-loaded dead bug has long held arms, closed loop and opposite extended/bent legs with coherent anatomy. Preserve action and reframe full structurally connected rack rather than cropped isolated upright.",
-        "exact_human_rejection": "",
-        "agent_master_check": "Full rack visible; dead-bug opposite leg extension and both long arms preserved, closed red loop tied to post and grasped above chest.",
-        "agent_enlarged_and_thumbnail_check": "Enlarged and 192/80px: Band dead bug: continuous loop held above chest, opposite legs separate, low anchor and full body readable.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "preflight_replacement": {
-        "owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "defect": "Band-loaded dead bug has long held arms, closed loop and opposite extended/bent legs with coherent anatomy. Preserve action and reframe full structurally connected rack rather than cropped isolated upright.",
-        "prior_master_sha256": "aaf400093410e0616119f73430ccb64a290196b96348ef923fbe923b7c3cc456",
-        "source": "owner_requested_agent_rescreen",
-        "recorded_at": "2026-09-16T01:34:18.168668+00:00",
-        "recorded_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-        "human_decision": false
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "THE PROPORTIONS LOOK LIKE FUCKING SHIT",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:25:10.209010+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:25 PM PT (Sep 15, 2026 10:25 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "4d062650ade3840ba352ca39eafd875ce0dc262153ac447ad0af98884dc7b9bd",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 542,
-      "key": "accessory_band_pallof_press",
-      "movement_name": "Band Pallof Press",
-      "primary_muscle_group": "obliques",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-542-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "db33cb6a8b4f63e1a3d20baf",
-      "version": 2,
-      "supersedes_candidate_id": "68fbf7a60fb0e7c9b2ad5b62",
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/db33cb6a8b4f63e1a3d20baf/master.png",
-          "sha256": "89a0d0e8b0911167fadb6f7132624d063af10ee03d96abb08af4561fc548a758",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1787566
-        },
-        "app": {
-          "path": "candidates/db33cb6a8b4f63e1a3d20baf/app.png",
-          "sha256": "47cecf18435d264a04d7df3bfef4a39e61cf7f6e8bdf7714f6adea4c45183c64",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 317610
-        },
-        "thumbnail": {
-          "path": "candidates/db33cb6a8b4f63e1a3d20baf/thumbnail.png",
-          "sha256": "4a0fb2f00aa48c8b23719ac47f837b1fa7a9c04450cfc5a95f35c21736cb893b",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 44837
-        }
-      },
-      "candidate_asset": "candidates/db33cb6a8b4f63e1a3d20baf/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "WHY IS THE RACK SO FUCKIGN WIDE!",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "WHY IS THE RACK SO FUCKIGN WIDE!",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:25:21.372280+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:25 PM PT (Sep 15, 2026 10:25 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "89a0d0e8b0911167fadb6f7132624d063af10ee03d96abb08af4561fc548a758",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:34:19.335696+00:00",
-      "created_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Elastic rubber resistance bands MUST BE RED. Cable-machine wires are thin steel with dark/silver coating, NOT red rubber bands. Never turn a weight-stack cable into elastic. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nPrecisely reframe this Band Pallof Press photograph, pulling camera back to include COMPLETE equipment, top crossbar, both upright tops, all bases and athlete extremities with a small safe margin. Preserve EXACT exercise pose, contacts, movement identity and the same world-coordinate alignment between body and rack. Do not independently rotate any body part or apparatus. Do not change solid steel cables into rubber. Keep all elastic bands RED.  ",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-110e9f81-58cc-421c-a1c2-032ad7721486.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "abs"
-      ],
-      "movement_family": "accessory_obliques",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Band Pallof press correctly uses lateral closed-loop resistance and two-hand forward press. Rack is mostly clipped at left/top; reframe entire connected rack and retain perpendicular stance, clear hand loop and aligned gaze.",
-        "exact_human_rejection": "",
-        "agent_master_check": "Full equipment visible; lateral red band anchor maintains correct perpendicular Pallof relation, hands together on sternum midline with grounded symmetrical stance.",
-        "agent_enlarged_and_thumbnail_check": "Enlarged and 192/80px: Band Pallof: doubled loop anchors on post and wraps around joined hands, full rack and feet.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "preflight_replacement": {
-        "owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "defect": "Band Pallof press correctly uses lateral closed-loop resistance and two-hand forward press. Rack is mostly clipped at left/top; reframe entire connected rack and retain perpendicular stance, clear hand loop and aligned gaze.",
-        "prior_master_sha256": "0e46909ebe5b37007c96206ea54ae5d4dc67693be7b0487efb70967d1a0ee24d",
-        "source": "owner_requested_agent_rescreen",
-        "recorded_at": "2026-09-16T01:34:19.335696+00:00",
-        "recorded_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-        "human_decision": false
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "WHY IS THE RACK SO FUCKIGN WIDE!",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:25:21.372280+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:25 PM PT (Sep 15, 2026 10:25 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "89a0d0e8b0911167fadb6f7132624d063af10ee03d96abb08af4561fc548a758",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 544,
-      "key": "accessory_band_anti_rotation_hold",
-      "movement_name": "Band Anti-Rotation Hold",
-      "primary_muscle_group": "obliques",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-544-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "1fdc85f8bb41b30ebe7db7f4",
-      "version": 2,
-      "supersedes_candidate_id": "9288614fe667f3ca0f55c81b",
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/1fdc85f8bb41b30ebe7db7f4/master.png",
-          "sha256": "138840ac17a4488e4ea629b55051e5727c3bdfd1c43174c352aa1227fc0ec237",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1761698
-        },
-        "app": {
-          "path": "candidates/1fdc85f8bb41b30ebe7db7f4/app.png",
-          "sha256": "0d8455392f260b39b077061da1a3e675ad96fe909073a5f08ff9c7bbd53bcd00",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 308261
-        },
-        "thumbnail": {
-          "path": "candidates/1fdc85f8bb41b30ebe7db7f4/thumbnail.png",
-          "sha256": "30db7e95d80e450e187dde7b5c8645622f6a5757c53497757b2b5a8517da05bf",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 42876
-        }
-      },
-      "candidate_asset": "candidates/1fdc85f8bb41b30ebe7db7f4/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "WHAT IS YOUR FETISH WITH THIS SHIT RACK",
-      "tags": [
-        "visual_quality"
-      ],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "WHAT IS YOUR FETISH WITH THIS SHIT RACK",
-          "tags": [
-            "visual_quality"
-          ],
-          "reviewed_at": "2026-09-16T02:25:35.628848+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:25 PM PT (Sep 15, 2026 10:25 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "138840ac17a4488e4ea629b55051e5727c3bdfd1c43174c352aa1227fc0ec237",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:34:20.106285+00:00",
-      "created_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Elastic rubber resistance bands MUST BE RED. Cable-machine wires are thin steel with dark/silver coating, NOT red rubber bands. Never turn a weight-stack cable into elastic. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nPrecisely reframe this Band Anti-Rotation Hold photograph, pulling camera back to include COMPLETE equipment, top crossbar, both upright tops, all bases and athlete extremities with a small safe margin. Preserve EXACT exercise pose, contacts, movement identity and the same world-coordinate alignment between body and rack. Do not independently rotate any body part or apparatus. Do not change solid steel cables into rubber. Keep all elastic bands RED. Also align head with the torso without looking sideways. ",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-93ff7b68-ec67-427c-889d-1520e9b51b62.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "abs"
-      ],
-      "movement_family": "accessory_obliques",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Half-kneeling antirotation hold has coherent loop, long arms and stable base; mostly cropped rack and independently raised/rightward gaze. Show complete connected rack and center neutral head with sternum while preserving lateral resistance.",
-        "exact_human_rejection": "",
-        "agent_master_check": "Full tower now included; neck faces forward with sternum, half-kneeling Pallof has lateral band tension, complete knee-pad and front-foot contact.",
-        "agent_enlarged_and_thumbnail_check": "Enlarged and 192/80px: Half-kneeling band Pallof has continuous doubled band, joined hands, supported knee and complete feet.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "preflight_replacement": {
-        "owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "defect": "Half-kneeling antirotation hold has coherent loop, long arms and stable base; mostly cropped rack and independently raised/rightward gaze. Show complete connected rack and center neutral head with sternum while preserving lateral resistance.",
-        "prior_master_sha256": "2b94cf0d7a645e9193e3981f6b48e8be637c9145ab093d5423ba50d519cd0038",
-        "source": "owner_requested_agent_rescreen",
-        "recorded_at": "2026-09-16T01:34:20.106285+00:00",
-        "recorded_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-        "human_decision": false
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "WHAT IS YOUR FETISH WITH THIS SHIT RACK",
-        "tags": [
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-16T02:25:35.628848+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:25 PM PT (Sep 15, 2026 10:25 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "138840ac17a4488e4ea629b55051e5727c3bdfd1c43174c352aa1227fc0ec237",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 559,
-      "key": "accessory_band_back_extension",
-      "movement_name": "Band Back Extension",
-      "primary_muscle_group": "lower_back",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "remaining-20260915-559-a01",
-      "generation_batch": "remaining-2026-09-15",
-      "candidate_id": "9fbb42ef295c0413ff5b2044",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/9fbb42ef295c0413ff5b2044/master.png",
-          "sha256": "55ada55daf162d629727a5b4f09fbb7e50f3a7fbdc7a687e66527c152defa985",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1829805
-        },
-        "app": {
-          "path": "candidates/9fbb42ef295c0413ff5b2044/app.png",
-          "sha256": "bb9ddc69ab2aadff2602e708d895bbc4fee705066c4a0a8be2ffc2e4d666775a",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 329648
-        },
-        "thumbnail": {
-          "path": "candidates/9fbb42ef295c0413ff5b2044/thumbnail.png",
-          "sha256": "45169e827f17a4aa17858db30a73d5003e9d1a1e51907c02d8c556b139f52724",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 48516
-        }
-      },
-      "candidate_asset": "candidates/9fbb42ef295c0413ff5b2044/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "THE BAND IS CLIPPING THROUGH HIM!!!! FUKING STOP FOING THAT SHIT!",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "THE BAND IS CLIPPING THROUGH HIM!!!! FUKING STOP FOING THAT SHIT!",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:25:49.886872+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:25 PM PT (Sep 15, 2026 10:25 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "55ada55daf162d629727a5b4f09fbb7e50f3a7fbdc7a687e66527c152defa985",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-15T19:11:28.961871+00:00",
-      "created_at_display": "Sep 15, 2026 12:11 PM PT (Sep 15, 2026 03:11 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: Band Back Extension. Use this inspected 45-degree bench, athlete and correct ankle/thigh supports. New exact movement adds ONE RED long loop: loop passes over broad upper back behind shoulders, two taut red side strands descend outside both sides of chest directly to two matched pegs on FRONT low crossfoot of back-extension bench below head. Red shoulder contact visible, band never touches neck, never cuts flesh or support pads. Athlete torso extended in straight line with thighs, arms crossed chest holding band in position. Neutral spine and head. Both shoe supports and full bench visible.",
-      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/559/attempt-01.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "hamstrings",
-        "glutes"
-      ],
-      "movement_family": "accessory_lower_back",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "master_inspection": "Inspected established back-extension bench keeps pads and ankle supports aligned. Two red side paths from shoulders to stable front pegs, neutral spine and full body/bench.",
-        "thumbnail_inspection": "Inspected actual192px and80px previews: exact support position and red resistance remain visible, unclipped subject and distinctive knee/arm posture readable on dark surface.",
-        "reference_pages": "https://elitefts.com/products/elitefts-g3-45-degree-back-raise",
-        "setup": "Band Back Extension. Use this inspected 45-degree bench, athlete and correct ankle/thigh supports. New exact movement adds ONE RED long loop: loop passes over broad upper back behind shoulders, two taut red side strands descend outside both sides of chest directly to two matched pegs on FRONT low crossfoot of back-extension bench below head. Red shoulder contact visible, band never touches neck, never cuts flesh or support pads. Athlete torso extended in straight line with thighs, arms crossed chest holding band in position. Neutral spine and head. Both shoe supports and full bench visible.",
-        "band_color": "RED"
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "THE BAND IS CLIPPING THROUGH HIM!!!! FUKING STOP FOING THAT SHIT!",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:25:49.886872+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:25 PM PT (Sep 15, 2026 10:25 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "55ada55daf162d629727a5b4f09fbb7e50f3a7fbdc7a687e66527c152defa985",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 590,
-      "key": "accessory_band_neck_extension",
-      "movement_name": "Band Neck Extension",
-      "primary_muscle_group": "neck",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "remaining-20260915-590-a01",
-      "generation_batch": "remaining-2026-09-15",
-      "candidate_id": "b4389def30fea8cbcf439784",
-      "version": 1,
-      "supersedes_candidate_id": null,
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/b4389def30fea8cbcf439784/master.png",
-          "sha256": "8575ef9397089f519d1cb4f0b0b481ea27040081a87059e5ad4a8e7559ddaf2f",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1883469
-        },
-        "app": {
-          "path": "candidates/b4389def30fea8cbcf439784/app.png",
-          "sha256": "159d300ddb095aebd1aec9499c8739c73bcac20be707cbfbb14d7ea3f69b6507",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 328925
-        },
-        "thumbnail": {
-          "path": "candidates/b4389def30fea8cbcf439784/thumbnail.png",
-          "sha256": "546338d9bde4baa7a7ef578958ff8463fb2b20cf462d4a7b5b47b74c8c84eecc",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 45187
-        }
-      },
-      "candidate_asset": "candidates/b4389def30fea8cbcf439784/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "WHAT THE FUCK KIND OF BENCH IS THAT!!!! IVE SAID BEFORE TO USE FUCKING REAL EQUIPMENT!!! STOP DOING THIS SHIT!",
-      "tags": [
-        "visual_quality"
-      ],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "WHAT THE FUCK KIND OF BENCH IS THAT!!!! IVE SAID BEFORE TO USE FUCKING REAL EQUIPMENT!!! STOP DOING THIS SHIT!",
-          "tags": [
-            "visual_quality"
-          ],
-          "reviewed_at": "2026-09-16T02:26:33.959520+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:26 PM PT (Sep 15, 2026 10:26 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "8575ef9397089f519d1cb4f0b0b481ea27040081a87059e5ad4a8e7559ddaf2f",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-15T19:11:29.979383+00:00",
-      "created_at_display": "Sep 15, 2026 12:11 PM PT (Sep 15, 2026 03:11 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. One square premium exercise-library photograph. Input reference is ONLY the approved athlete, wardrobe and photographic style; replace its exercise and equipment with the exact task below. Same short-brown-haired athletic adult man, realistic proportions, charcoal tank top, black shorts/trainers. Near-black rubber-floor studio, soft upper-left neutral key light, subtle violet environment rim, natural skin, premium gym materials. Gaze aligned with the torso, no sideways glance. Full head, both hands, all essential equipment and both feet inside frame; compact readable composition, slight safe margins. No text, logo, watermark, diagram or collage. Trace two complete shoulder-elbow-wrist-hand chains, two complete legs, correct contacts. For any band: the elastic itself is RED natural latex, visibly red even under violet ambient light, uninterrupted physical band with realistic tension and anchored contacts.\nExact movement/setup: Band Neck Extension. Seated upright athlete side view on simple bench, feet grounded, shoulders relaxed. One wide RED open strip center cups BACK OF SKULL just above ears, TWO free ends held in hands extended forward at head height, gently pulling skull FORWARD while athlete resists with slight neck extension toward neutral. Strands travel on either side of head without crossing face, ears or throat, forehead eyes visible. Hands separated shoulder width IN FRONT of face, not behind ears. No excessive backward head tilt; full body hands and feet.",
-      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/remaining-2026-09-15/590/attempt-01.png",
-      "test_only": false,
-      "secondary_muscle_groups": [],
-      "movement_family": "accessory_neck",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "master_inspection": "Red strip cups rear skull and both held ends extend forward in clear space, neutral resisted extension pose, feet and hands complete.",
-        "thumbnail_inspection": "Inspected actual192px and80px previews: exact support position and red resistance remain visible, unclipped subject and distinctive knee/arm posture readable on dark surface.",
-        "reference_pages": "https://www.tumbltrak.com/content/pdf/Assembly_Instructions/TheraBand_User_Guide.pdf",
-        "setup": "Band Neck Extension. Seated upright athlete side view on simple bench, feet grounded, shoulders relaxed. One wide RED open strip center cups BACK OF SKULL just above ears, TWO free ends held in hands extended forward at head height, gently pulling skull FORWARD while athlete resists with slight neck extension toward neutral. Strands travel on either side of head without crossing face, ears or throat, forehead eyes visible. Hands separated shoulder width IN FRONT of face, not behind ears. No excessive backward head tilt; full body hands and feet.",
-        "band_color": "RED"
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "WHAT THE FUCK KIND OF BENCH IS THAT!!!! IVE SAID BEFORE TO USE FUCKING REAL EQUIPMENT!!! STOP DOING THIS SHIT!",
-        "tags": [
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-16T02:26:33.959520+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:26 PM PT (Sep 15, 2026 10:26 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "8575ef9397089f519d1cb4f0b0b481ea27040081a87059e5ad4a8e7559ddaf2f",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 190,
-      "key": "accessory_band_assisted_pull_up",
-      "movement_name": "Band-Assisted Pull-Up",
-      "primary_muscle_group": "lats",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-190-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "be0cb70685bdcdf5a7b2662c",
-      "version": 2,
-      "supersedes_candidate_id": "9cd014c8e0da631686f319d8",
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/be0cb70685bdcdf5a7b2662c/master.png",
-          "sha256": "01287c3d61736880e00470d456e5bf42e6c91412ccb68a3f468cea44ec1ec7e7",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1868158
-        },
-        "app": {
-          "path": "candidates/be0cb70685bdcdf5a7b2662c/app.png",
-          "sha256": "07c7f86aa756d036637429c0f3de2db80c454e10519713a9516968d988c2e571",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 328657
-        },
-        "thumbnail": {
-          "path": "candidates/be0cb70685bdcdf5a7b2662c/thumbnail.png",
-          "sha256": "79311a1f4c2ff533680f691f2894895f2a3c4b4bbbd34e96f6c83f79e93ae307",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 47884
-        }
-      },
-      "candidate_asset": "candidates/be0cb70685bdcdf5a7b2662c/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "THE FUCKING BAND IS NOT EVEN AROUND HIS KNEES ",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "THE FUCKING BAND IS NOT EVEN AROUND HIS KNEES ",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:26:45.885145+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:26 PM PT (Sep 15, 2026 10:26 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "01287c3d61736880e00470d456e5bf42e6c91412ccb68a3f468cea44ec1ec7e7",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:22:59.957602+00:00",
-      "created_at_display": "Sep 15, 2026 06:22 PM PT (Sep 15, 2026 09:22 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Elastic rubber resistance bands MUST BE RED. Cable-machine wires are thin steel with dark/silver coating, NOT red rubber bands. Never turn a weight-stack cable into elastic. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nCorrect exact Band-Assisted Pull-Up #190. Band-assisted pull-up: band closed loop supports knee and arms grasp bar, but rack repeats unsupported separate uprights/unequal feet with cropped top/base; head looks sideways. Rebuild complete symmetric rack with connected rear base, center athlete head/torso to bar; preserve knee assistance and red loop. Image2 supplies ONLY a structurally complete grounded pull-up rack: equal square posts, two long ground feet, rear bottom connecting crossmember, symmetric gussets and a high horizontal top bar. Do not copy image2's exercise. Keep image1's actual movement and only repair its equipment. Fit all equipment and body inside the square. Preserve red elastic loop, whole connected anatomy. Rack and athlete share matching physical axes and perspective; no sideways twisted subject relative to its support.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-b76eff8e-f20a-4844-bd01-280b641e2612.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "biceps"
-      ],
-      "movement_family": "accessory_lats",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Band-assisted pull-up: band closed loop supports knee and arms grasp bar, but rack repeats unsupported separate uprights/unequal feet with cropped top/base; head looks sideways. Rebuild complete symmetric rack with connected rear base, center athlete head/torso to bar; preserve knee assistance and red loop.",
-        "exact_human_rejection": "",
-        "agent_master_check": "Rack is symmetric and fully supported, two red loop strands reconnect beneath supported knee, bilateral bar grips and complete feet in air.",
-        "agent_enlarged_and_thumbnail_check": "Detail crops and thumbnails: real overhead bar supported both ends, continuous loop supporting knee, hands attached and both feet suspended clear of base.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "preflight_replacement": {
-        "owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "defect": "Band-assisted pull-up: band closed loop supports knee and arms grasp bar, but rack repeats unsupported separate uprights/unequal feet with cropped top/base; head looks sideways. Rebuild complete symmetric rack with connected rear base, center athlete head/torso to bar; preserve knee assistance and red loop.",
-        "prior_master_sha256": "d9f2af817b3dcdb8965f75e7234674874ae813e17c2467c10479dbae187a87f5",
-        "source": "owner_requested_agent_rescreen",
-        "recorded_at": "2026-09-16T01:22:59.957602+00:00",
-        "recorded_at_display": "Sep 15, 2026 06:22 PM PT (Sep 15, 2026 09:22 PM Eastern)",
-        "human_decision": false
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "THE FUCKING BAND IS NOT EVEN AROUND HIS KNEES ",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:26:45.885145+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:26 PM PT (Sep 15, 2026 10:26 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "01287c3d61736880e00470d456e5bf42e6c91412ccb68a3f468cea44ec1ec7e7",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 385,
-      "key": "accessory_band_spanish_squat",
-      "movement_name": "Band Spanish Squat",
-      "primary_muscle_group": "quads",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-385-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "474c44b61ea1870636153269",
-      "version": 2,
-      "supersedes_candidate_id": "eaa67483f7814641f44347dc",
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/474c44b61ea1870636153269/master.png",
-          "sha256": "af68fd04d5a3bb2fd9bee5839d7b1748b593fe0bd6c2e15db59bfd16265be7eb",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1823692
-        },
-        "app": {
-          "path": "candidates/474c44b61ea1870636153269/app.png",
-          "sha256": "a356fc16d73897ed8d62d03abae6eab8ceee99fb213b3e67fa681361c802c4e5",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 319539
-        },
-        "thumbnail": {
-          "path": "candidates/474c44b61ea1870636153269/thumbnail.png",
-          "sha256": "cfb039b492ac6486bb629d65be3462b2afa4ab6269f60e2b567fb695199df860",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 44018
-        }
-      },
-      "candidate_asset": "candidates/474c44b61ea1870636153269/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "STOP FUCKING UP A SIMPLE RACK! FUCK YOU! YOU LOVE TO PISS ME OFF",
-      "tags": [
-        "visual_quality"
-      ],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "STOP FUCKING UP A SIMPLE RACK! FUCK YOU! YOU LOVE TO PISS ME OFF",
-          "tags": [
-            "visual_quality"
-          ],
-          "reviewed_at": "2026-09-16T02:27:39.396335+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:27 PM PT (Sep 15, 2026 10:27 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "af68fd04d5a3bb2fd9bee5839d7b1748b593fe0bd6c2e15db59bfd16265be7eb",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:34:14.615792+00:00",
-      "created_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Elastic rubber resistance bands MUST BE RED. Cable-machine wires are thin steel with dark/silver coating, NOT red rubber bands. Never turn a weight-stack cable into elastic. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nPrecisely reframe this Band Spanish Squat photograph, pulling camera back to include COMPLETE equipment, top crossbar, both upright tops, all bases and athlete extremities with a small safe margin. Preserve EXACT exercise pose, contacts, movement identity and the same world-coordinate alignment between body and rack. Do not independently rotate any body part or apparatus. Do not change solid steel cables into rubber. Keep all elastic bands RED.  ",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-c37d4c12-d1db-4f86-97dd-4bbda3f30e73.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "glutes"
-      ],
-      "movement_family": "accessory_quads",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Spanish squat posture, vertical shins and closed red loop behind knees are coherent. Preserve body and bands; reframe complete rack because source cuts off its top and rear structure.",
-        "exact_human_rejection": "",
-        "agent_master_check": "Full anchored rack now included; Spanish-squat red loop behind both knees and low front post tie remain continuous; profile posture/feet align with anchor.",
-        "agent_enlarged_and_thumbnail_check": "Enlarged and 192/80px: Spanish squat: band wraps behind knees to front anchor, feet grounded and upright torso.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "preflight_replacement": {
-        "owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "defect": "Spanish squat posture, vertical shins and closed red loop behind knees are coherent. Preserve body and bands; reframe complete rack because source cuts off its top and rear structure.",
-        "prior_master_sha256": "5fe1c741c602fc0098161535bf6c916a0d86abfd18ae0b5b946eecbf7fdc3c18",
-        "source": "owner_requested_agent_rescreen",
-        "recorded_at": "2026-09-16T01:34:14.615792+00:00",
-        "recorded_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-        "human_decision": false
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "STOP FUCKING UP A SIMPLE RACK! FUCK YOU! YOU LOVE TO PISS ME OFF",
-        "tags": [
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-16T02:27:39.396335+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:27 PM PT (Sep 15, 2026 10:27 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "af68fd04d5a3bb2fd9bee5839d7b1748b593fe0bd6c2e15db59bfd16265be7eb",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 543,
-      "key": "accessory_band_wood_chop",
-      "movement_name": "Band Wood Chop",
-      "primary_muscle_group": "obliques",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-543-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "53fc3601a94497fe281ec5cc",
-      "version": 2,
-      "supersedes_candidate_id": "489bc8e52c402314c9b70287",
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/53fc3601a94497fe281ec5cc/master.png",
-          "sha256": "36135697d26ca46ab0b17d96cb3e00e37b7b6b2f814c8e246b2c9e1955c915d5",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1855604
-        },
-        "app": {
-          "path": "candidates/53fc3601a94497fe281ec5cc/app.png",
-          "sha256": "07503eb795dbe6f381aec97672fe6bb31d9fdeeb2c5b870b8f2942ec028fda9c",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 330640
-        },
-        "thumbnail": {
-          "path": "candidates/53fc3601a94497fe281ec5cc/thumbnail.png",
-          "sha256": "93755dfe166f0e48059d14b2e0e5daa9048fdbca335690cf8132553b70fb3c8f",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 47015
-        }
-      },
-      "candidate_asset": "candidates/53fc3601a94497fe281ec5cc/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "FUCK YOU AND THIS FUCKIGN STUPID RACK",
-      "tags": [
-        "visual_quality"
-      ],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "FUCK YOU AND THIS FUCKIGN STUPID RACK",
-          "tags": [
-            "visual_quality"
-          ],
-          "reviewed_at": "2026-09-16T02:27:57.026192+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:27 PM PT (Sep 15, 2026 10:27 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "36135697d26ca46ab0b17d96cb3e00e37b7b6b2f814c8e246b2c9e1955c915d5",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:34:19.707603+00:00",
-      "created_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Elastic rubber resistance bands MUST BE RED. Cable-machine wires are thin steel with dark/silver coating, NOT red rubber bands. Never turn a weight-stack cable into elastic. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nPrecisely reframe this Band Wood Chop photograph, pulling camera back to include COMPLETE equipment, top crossbar, both upright tops, all bases and athlete extremities with a small safe margin. Preserve EXACT exercise pose, contacts, movement identity and the same world-coordinate alignment between body and rack. Do not independently rotate any body part or apparatus. Do not change solid steel cables into rubber. Keep all elastic bands RED.  ",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-7d9e9edb-97d1-48c0-a096-3862ee6bf6c0.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "abs"
-      ],
-      "movement_family": "accessory_obliques",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Band chop has continuous paired red runs, high post wrap and intentional torso rotation with gaze toward hands. Full rack is cropped left/top; reframe actual complete apparatus without changing movement.",
-        "exact_human_rejection": "",
-        "agent_master_check": "Full equipment and both feet; continuous red closed loop follows high-to-low chop into two joined grips, task-directed head and connected arms.",
-        "agent_enlarged_and_thumbnail_check": "Enlarged and 192/80px: Band chop: two continuous diagonal strands, grounded wide stance and head follows movement.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "preflight_replacement": {
-        "owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "defect": "Band chop has continuous paired red runs, high post wrap and intentional torso rotation with gaze toward hands. Full rack is cropped left/top; reframe actual complete apparatus without changing movement.",
-        "prior_master_sha256": "5b79972e61beb67bb1f9ac732f5f5d62f02bef5cbb0e86d6ba052a8569e36999",
-        "source": "owner_requested_agent_rescreen",
-        "recorded_at": "2026-09-16T01:34:19.707603+00:00",
-        "recorded_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-        "human_decision": false
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "FUCK YOU AND THIS FUCKIGN STUPID RACK",
-        "tags": [
-          "visual_quality"
-        ],
-        "reviewed_at": "2026-09-16T02:27:57.026192+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:27 PM PT (Sep 15, 2026 10:27 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "36135697d26ca46ab0b17d96cb3e00e37b7b6b2f814c8e246b2c9e1955c915d5",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 567,
-      "key": "accessory_band_serratus_punch",
-      "movement_name": "Band Serratus Punch",
-      "primary_muscle_group": "serratus",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-567-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "49b0cef68fed66df32d0fa0c",
-      "version": 2,
-      "supersedes_candidate_id": "4526fab6510136662850346d",
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/49b0cef68fed66df32d0fa0c/master.png",
-          "sha256": "70ce71642af08925472cacecd1937a3381acd6ed2eac99074d0d88af3b266af5",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1741205
-        },
-        "app": {
-          "path": "candidates/49b0cef68fed66df32d0fa0c/app.png",
-          "sha256": "ccd8429498457ca9e0b75e47cdc0bf6d8c00960430f2d6df4dc6bdbeda3f8dfd",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 309889
-        },
-        "thumbnail": {
-          "path": "candidates/49b0cef68fed66df32d0fa0c/thumbnail.png",
-          "sha256": "c5f8b0429d271f288650f18b1d1ecb25df3aff6f0c64d2b8c2ceaa61bebdc823",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 43936
-        }
-      },
-      "candidate_asset": "candidates/49b0cef68fed66df32d0fa0c/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "FUCKED UP RACK AGIAN",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "FUCKED UP RACK AGIAN",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:28:08.882656+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:28 PM PT (Sep 15, 2026 10:28 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "70ce71642af08925472cacecd1937a3381acd6ed2eac99074d0d88af3b266af5",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:34:20.988159+00:00",
-      "created_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Elastic rubber resistance bands MUST BE RED. Cable-machine wires are thin steel with dark/silver coating, NOT red rubber bands. Never turn a weight-stack cable into elastic. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nPrecisely reframe this Band Serratus Punch photograph, pulling camera back to include COMPLETE equipment, top crossbar, both upright tops, all bases and athlete extremities with a small safe margin. Preserve EXACT exercise pose, contacts, movement identity and the same world-coordinate alignment between body and rack. Do not independently rotate any body part or apparatus. Do not change solid steel cables into rubber. Keep all elastic bands RED.  ",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-9166f1f7-0a67-47fc-8c6a-1e9dfd23fde3.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "chest"
-      ],
-      "movement_family": "accessory_serratus",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Band serratus punch uses continuous red tube with clipped anchor and handle, long protracted arm and coherent split stance. Preserve it; reframe whole rack currently cut at top/left.",
-        "exact_human_rejection": "",
-        "agent_master_check": "Whole connected rack and base restored; single red tube runs outside arm to grasped handle, free arm and step stance intact, neck forward.",
-        "agent_enlarged_and_thumbnail_check": "Enlarged and 192/80px: Band punch: single continuous red tube attaches to wrist/handle and rear rack, clear below arm.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "preflight_replacement": {
-        "owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "defect": "Band serratus punch uses continuous red tube with clipped anchor and handle, long protracted arm and coherent split stance. Preserve it; reframe whole rack currently cut at top/left.",
-        "prior_master_sha256": "3c714d6d523b7984d98ec43181f339f4b8381141bf9d718e6082504078d17a7c",
-        "source": "owner_requested_agent_rescreen",
-        "recorded_at": "2026-09-16T01:34:20.988159+00:00",
-        "recorded_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-        "human_decision": false
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "FUCKED UP RACK AGIAN",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:28:08.882656+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:28 PM PT (Sep 15, 2026 10:28 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "70ce71642af08925472cacecd1937a3381acd6ed2eac99074d0d88af3b266af5",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 589,
-      "key": "accessory_band_neck_flexion",
-      "movement_name": "Band Neck Flexion",
-      "primary_muscle_group": "neck",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-589-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "994fe20ad6c18abcff76735b",
-      "version": 2,
-      "supersedes_candidate_id": "44d23bd43b8e60596ae81ae2",
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/994fe20ad6c18abcff76735b/master.png",
-          "sha256": "85be80be54a09428895f19b50d3996356f6ec742bfaea9d515a7684ebf285a4a",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1789308
-        },
-        "app": {
-          "path": "candidates/994fe20ad6c18abcff76735b/app.png",
-          "sha256": "042e805f8313360ce8670c7619811edc59498672378045c32e1aab252e1d5b6b",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 318709
-        },
-        "thumbnail": {
-          "path": "candidates/994fe20ad6c18abcff76735b/thumbnail.png",
-          "sha256": "eea60449c80e90b5dab69968d4b8e8148b528501776a7c68300a5f0b4b0cffe9",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 46193
-        }
-      },
-      "candidate_asset": "candidates/994fe20ad6c18abcff76735b/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "FUCKED UP RACK AGAIN",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "FUCKED UP RACK AGAIN",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:28:15.946587+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:28 PM PT (Sep 15, 2026 10:28 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "85be80be54a09428895f19b50d3996356f6ec742bfaea9d515a7684ebf285a4a",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:42:27.565208+00:00",
-      "created_at_display": "Sep 15, 2026 06:42 PM PT (Sep 15, 2026 09:42 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Elastic rubber resistance bands MUST BE RED. Cable-machine wires are thin steel with dark/silver coating, NOT red rubber bands. Never turn a weight-stack cable into elastic. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nPrecisely reframe this Band Neck Flexion photograph, pulling camera back to include COMPLETE equipment, top crossbar, both upright tops, all bases and athlete extremities with a small safe margin. Preserve EXACT exercise pose, contacts, movement identity and the same world-coordinate alignment between body and rack. Do not independently rotate any body part or apparatus. Do not change solid steel cables into rubber. Keep all elastic bands RED.  The neck position is the intended neck exercise; preserve this intentional neck action exactly.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-3da15045-d579-4388-8647-c316e90ee1d6.png",
-      "test_only": false,
-      "secondary_muscle_groups": [],
-      "movement_family": "accessory_neck",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Neck flexion intentionally tips chin down against posteriorly anchored forehead band. Preserve exact neck action and band; reframe cropped rack into full structurally grounded apparatus.",
-        "exact_human_rejection": "",
-        "agent_master_check": "Full rack and bench restored; intentional neck flexion retained with forehead loop and rear resistance, both hands on thighs and feet grounded.",
-        "agent_enlarged_and_thumbnail_check": "Head band bears across forehead with two continuous strands to behind anchor; bench and feet clear; 192/80 previews retain neck-flexion silhouette.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "preflight_replacement": {
-        "owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "defect": "Neck flexion intentionally tips chin down against posteriorly anchored forehead band. Preserve exact neck action and band; reframe cropped rack into full structurally grounded apparatus.",
-        "prior_master_sha256": "8cbb0e49985171044b0b18b25b37acf60000b35e4753b1b3fec4a3f144f4f82b",
-        "source": "owner_requested_agent_rescreen",
-        "recorded_at": "2026-09-16T01:42:27.565208+00:00",
-        "recorded_at_display": "Sep 15, 2026 06:42 PM PT (Sep 15, 2026 09:42 PM Eastern)",
-        "human_decision": false
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "FUCKED UP RACK AGAIN",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:28:15.946587+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:28 PM PT (Sep 15, 2026 10:28 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "85be80be54a09428895f19b50d3996356f6ec742bfaea9d515a7684ebf285a4a",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 591,
-      "key": "accessory_band_lateral_neck_flexion",
-      "movement_name": "Band Lateral Neck Flexion",
-      "primary_muscle_group": "neck",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-591-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "be1450e38d727cb7c727a6fa",
-      "version": 2,
-      "supersedes_candidate_id": "c80cc1f080429f349e0b75df",
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/be1450e38d727cb7c727a6fa/master.png",
-          "sha256": "148ec5e2f357e03c84eff77461360b15296b3458d3d3191f76c94282687dfc53",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1757614
-        },
-        "app": {
-          "path": "candidates/be1450e38d727cb7c727a6fa/app.png",
-          "sha256": "0260c158964fa72b7b5c1aa8eff0cb10415b614f9c5ac23e26d394f225676bdd",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 320718
-        },
-        "thumbnail": {
-          "path": "candidates/be1450e38d727cb7c727a6fa/thumbnail.png",
-          "sha256": "76c6ba9cb24ae7699790102aa7d975f28b709a4717c424a98f7f9de8f49e975b",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 46101
-        }
-      },
-      "candidate_asset": "candidates/be1450e38d727cb7c727a6fa/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "SHIT RACK QUALITY!!",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "SHIT RACK QUALITY!!",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:33:14.359302+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:33 PM PT (Sep 15, 2026 10:33 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "148ec5e2f357e03c84eff77461360b15296b3458d3d3191f76c94282687dfc53",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:42:27.993606+00:00",
-      "created_at_display": "Sep 15, 2026 06:42 PM PT (Sep 15, 2026 09:42 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Elastic rubber resistance bands MUST BE RED. Cable-machine wires are thin steel with dark/silver coating, NOT red rubber bands. Never turn a weight-stack cable into elastic. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nPrecisely reframe this Band Lateral Neck Flexion photograph, pulling camera back to include COMPLETE equipment, top crossbar, both upright tops, all bases and athlete extremities with a small safe margin. Preserve EXACT exercise pose, contacts, movement identity and the same world-coordinate alignment between body and rack. Do not independently rotate any body part or apparatus. Do not change solid steel cables into rubber. Keep all elastic bands RED.  The neck position is the intended neck exercise; preserve this intentional neck action exactly.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-d3417c60-1cc3-4ec3-aff0-09092f88d5ee.png",
-      "test_only": false,
-      "secondary_muscle_groups": [],
-      "movement_family": "accessory_neck",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Lateral neck flexion intentionally tilts ear toward shoulder against side-anchored head band. Do NOT straighten the head: this is the actual exercise. Preserve pose and loop, reframe full connected rack now cut at top/right.",
-        "exact_human_rejection": "",
-        "agent_master_check": "Whole rack/base now visible; intentional lateral neck flexion retained, continuous red forehead loop to lateral anchor, level torso and complete limbs.",
-        "agent_enlarged_and_thumbnail_check": "Side anchor and continuous forehead loop oppose lateral flexion; straight rack and grounded seated anatomy; readable small previews.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "preflight_replacement": {
-        "owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "defect": "Lateral neck flexion intentionally tilts ear toward shoulder against side-anchored head band. Do NOT straighten the head: this is the actual exercise. Preserve pose and loop, reframe full connected rack now cut at top/right.",
-        "prior_master_sha256": "a194f152722977130daebd8bd4d742497ffe42fc386c7f8a640b5c01b9e91776",
-        "source": "owner_requested_agent_rescreen",
-        "recorded_at": "2026-09-16T01:42:27.993606+00:00",
-        "recorded_at_display": "Sep 15, 2026 06:42 PM PT (Sep 15, 2026 09:42 PM Eastern)",
-        "human_decision": false
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "SHIT RACK QUALITY!!",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:33:14.359302+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:33 PM PT (Sep 15, 2026 10:33 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "148ec5e2f357e03c84eff77461360b15296b3458d3d3191f76c94282687dfc53",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 384,
-      "key": "accessory_band_leg_extension",
-      "movement_name": "Band Leg Extension",
-      "primary_muscle_group": "quads",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-384-a01",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "b70943e1cbdd3281497f4b5f",
-      "version": 2,
-      "supersedes_candidate_id": "e179d83b843f0fb49f3dfec6",
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/b70943e1cbdd3281497f4b5f/master.png",
-          "sha256": "1b43ff641ccdee1e92379d04f22912189e09e02ebfb2c331c5a8d32fcfcecada",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1810946
-        },
-        "app": {
-          "path": "candidates/b70943e1cbdd3281497f4b5f/app.png",
-          "sha256": "626a863af5ccbedfe42aba97a8bcce07d1e1e49d5ab45147522bd0f17f7f9291",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 317593
-        },
-        "thumbnail": {
-          "path": "candidates/b70943e1cbdd3281497f4b5f/thumbnail.png",
-          "sha256": "c53feed308de05341c5852b3990798161e13a2373f95c9348a48a5449eaa2a85",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 46477
-        }
-      },
-      "candidate_asset": "candidates/b70943e1cbdd3281497f4b5f/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "band clipping through bench!",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "band clipping through bench!",
-          "tags": [],
-          "reviewed_at": "2026-09-16T02:39:08.274115+00:00",
-          "reviewed_at_display": "Sep 15, 2026 07:39 PM PT (Sep 15, 2026 10:39 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "1b43ff641ccdee1e92379d04f22912189e09e02ebfb2c331c5a8d32fcfcecada",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:34:14.216537+00:00",
-      "created_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Elastic rubber resistance bands MUST BE RED. Cable-machine wires are thin steel with dark/silver coating, NOT red rubber bands. Never turn a weight-stack cable into elastic. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nCorrect Band Leg Extension. Keep seated knee-extension pose. Align head with body, task-facing neutral. Route entire RED resistance band visibly along outside of bench frame and clear of supporting shin, from a low rear anchor secured with closed girth hitch to the ankle cuff on extended working leg. Move support/anchor sideways as needed so no band penetrates steel or shin. Full bench and both legs inside square.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-5527484b-b47a-48f5-8484-e00498600ac9.png",
-      "test_only": false,
-      "secondary_muscle_groups": [
-        "glutes"
-      ],
-      "movement_family": "accessory_quads",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Band leg-extension ankle cuff/rear bench anchor exist, but resistance path is obscured at bench support and supporting shin; head independently looks up-right. Show band continuously in open air outside bench structure and align gaze with task, preserving seated knee extension.",
-        "exact_human_rejection": "",
-        "agent_master_check": "Seated knee extension has a secured ankle cuff and taut red band to rear bench foot; band passes behind front support in a consistent straight line. Complete shoe, bench and body.",
-        "agent_enlarged_and_thumbnail_check": "Enlarged and 192/80px: Ankle cuff and rear bench anchor intact; band continues collinearly behind front support rather than terminating in it.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "preflight_replacement": {
-        "owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "defect": "Band leg-extension ankle cuff/rear bench anchor exist, but resistance path is obscured at bench support and supporting shin; head independently looks up-right. Show band continuously in open air outside bench structure and align gaze with task, preserving seated knee extension.",
-        "prior_master_sha256": "bbc078e0753b5798511406cc746a9bed8a8cbf928988a42ca4f1932a25cf0964",
-        "source": "owner_requested_agent_rescreen",
-        "recorded_at": "2026-09-16T01:34:14.216537+00:00",
-        "recorded_at_display": "Sep 15, 2026 06:34 PM PT (Sep 15, 2026 09:34 PM Eastern)",
-        "human_decision": false
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "band clipping through bench!",
-        "tags": [],
-        "reviewed_at": "2026-09-16T02:39:08.274115+00:00",
-        "reviewed_at_display": "Sep 15, 2026 07:39 PM PT (Sep 15, 2026 10:39 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "1b43ff641ccdee1e92379d04f22912189e09e02ebfb2c331c5a8d32fcfcecada",
-        "source": "human_review_ui"
-      }
-    },
-    {
-      "movement_definition_id": 462,
-      "key": "accessory_band_copenhagen_adduction",
-      "movement_name": "Band Copenhagen Adduction",
-      "primary_muscle_group": "adductors",
-      "equipment_type": "other",
-      "implement": "other",
-      "family": "canonical_remaining_accessories",
-      "generation_id": "rescreen-20260915-462-a02",
-      "generation_batch": "remaining-rescreen-2026-09-15",
-      "candidate_id": "c7bd348b07d2b5515061c004",
-      "version": 2,
-      "supersedes_candidate_id": "5c56092d80c57ae38e0bab5c",
-      "prior_rejection": null,
-      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
-      "files": {
-        "master": {
-          "path": "candidates/c7bd348b07d2b5515061c004/master.png",
-          "sha256": "0b699213ff59b89cc753900befb36469032798ac3ccc64b63be2fcf16c2a682c",
-          "dimensions": [
-            1254,
-            1254
-          ],
-          "bytes": 1692744
-        },
-        "app": {
-          "path": "candidates/c7bd348b07d2b5515061c004/app.png",
-          "sha256": "baa2fee6804b049cea2646847eb82ce7e48ecca07af5ba7d1a6075c7f0fec8d2",
-          "dimensions": [
-            512,
-            512
-          ],
-          "bytes": 288712
-        },
-        "thumbnail": {
-          "path": "candidates/c7bd348b07d2b5515061c004/thumbnail.png",
-          "sha256": "ff7667ecb9116e58c247c01d225f9784e4c680dde704a49a23b21bd4e88c7517",
-          "dimensions": [
-            192,
-            192
-          ],
-          "bytes": 43605
-        }
-      },
-      "candidate_asset": "candidates/c7bd348b07d2b5515061c004/master.png",
-      "status": "rejected",
-      "human_approved": false,
-      "automation_passed": true,
-      "reason": "why the fuck is the god damn rack so wide!!!",
-      "tags": [],
-      "review_history": [
-        {
-          "action": "reject",
-          "decision": "rejected",
-          "reason": "why the fuck is the god damn rack so wide!!!",
-          "tags": [],
-          "reviewed_at": "2026-09-16T16:25:51.485595+00:00",
-          "reviewed_at_display": "Sep 16, 2026 09:25 AM PT (Sep 16, 2026 12:25 PM Eastern)",
-          "reviewer": "dev_user_1",
-          "reviewer_user_id": 1,
-          "candidate_sha256": "0b699213ff59b89cc753900befb36469032798ac3ccc64b63be2fcf16c2a682c",
-          "source": "human_review_ui"
-        }
-      ],
-      "created_at": "2026-09-16T01:50:52.023961+00:00",
-      "created_at_display": "Sep 15, 2026 06:50 PM PT (Sep 15, 2026 09:50 PM Eastern)",
-      "generation_prompt": "Use case: photorealistic-natural. Exact Strength Ledger movement-library candidate, square photograph. Approved original model and style: athletic adult man, short brown hair, charcoal tank, black shorts and black trainers; near-black rubber-floor studio, soft white key and restrained violet rim. Natural anatomy, complete head, hands and both feet inside frame. Body, pelvis, knees, feet and movement axis must agree. Equipment constructed coherently and symmetrically, all load paths continuous in open air. Elastic rubber resistance bands MUST BE RED. Cable-machine wires are thin steel with dark/silver coating, NOT red rubber bands. Never turn a weight-stack cable into elastic. No text or logos. This is a replacement for a rejected/defective image; do not repeat source defects.\nInput image is edit target. Keep Copenhagen side plank. Remove the short third upright completely. Use ONLY the existing two-post rack. One closed red loop girth-hitched around existing TOP CROSSBAR directly ABOVE upper ankle, doubled vertical strands descend and cradle upper ankle without clipping. Both standard rack feet and high bar remain symmetric; no invented extra posts. Entire equipment and body within frame. All unchanged movement details and style preserved. No additional wires or limbs.",
-      "generation_source_asset": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-49c955d1-ffc8-4247-8b9f-23a31e520e50.png",
-      "test_only": false,
-      "secondary_muscle_groups": [],
-      "movement_family": "accessory_adductors",
-      "execution_family": "BAND",
-      "sidedness": "bilateral",
-      "loading_implementation": "unknown",
-      "load_convention": "no_external_load",
-      "measurement_type": "bodyweight_reps",
-      "presentation": {
-        "focalX": 0.5,
-        "focalY": 0.5,
-        "scale": 1,
-        "biasX": 0,
-        "biasY": 0,
-        "thumbnailFocalX": 0.5,
-        "thumbnailFocalY": 0.5,
-        "thumbnailScale": 1,
-        "cropMode": "contain"
-      },
-      "generation_context": {
-        "rescreen_owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "original_defect": "Band-supported Copenhagen side plank has correct upper-foot support, free lower leg and connected anatomy. Rack posts are cropped/disconnected and anchor-end continuity is unclear; show full structurally connected rack and continuous band wrapped around secured pegs, preserving pose.",
-        "exact_human_rejection": "",
-        "agent_master_check": "Two coherent rack posts, complete top bar and support feet; closed red loop descends from actual top bar to supported upper ankle, lower leg clear.",
-        "agent_enlarged_and_thumbnail_check": "Upper/lower and 192/80px inspected. Copenhagen assistance band visibly loops high bar and supports upper ankle; both legs distinct, grounded forearm, no band/foot clipping.",
-        "human_approval": "Pending. Agent visual inspection is not human approval."
-      },
-      "preflight_replacement": {
-        "owner_instruction": "I reviewed a few that I had time for now, but, um, take the feedback on the rejects. Fucking go through all the pending ones and make sure that I don't see the fucking repeated errors, please.",
-        "defect": "Band-supported Copenhagen side plank has correct upper-foot support, free lower leg and connected anatomy. Rack posts are cropped/disconnected and anchor-end continuity is unclear; show full structurally connected rack and continuous band wrapped around secured pegs, preserving pose.",
-        "prior_master_sha256": "307f893bcf421443f28677691e70e7175c71565d4d321501e717baa19d9422a4",
-        "source": "owner_requested_agent_rescreen",
-        "recorded_at": "2026-09-16T01:50:52.023961+00:00",
-        "recorded_at_display": "Sep 15, 2026 06:50 PM PT (Sep 15, 2026 09:50 PM Eastern)",
-        "human_decision": false
-      },
-      "review": {
-        "action": "reject",
-        "decision": "rejected",
-        "reason": "why the fuck is the god damn rack so wide!!!",
-        "tags": [],
-        "reviewed_at": "2026-09-16T16:25:51.485595+00:00",
-        "reviewed_at_display": "Sep 16, 2026 09:25 AM PT (Sep 16, 2026 12:25 PM Eastern)",
-        "reviewer": "dev_user_1",
-        "reviewer_user_id": 1,
-        "candidate_sha256": "0b699213ff59b89cc753900befb36469032798ac3ccc64b63be2fcf16c2a682c",
-        "source": "human_review_ui"
-      }
-    }
-  ]
+  "rejected": []
 }
