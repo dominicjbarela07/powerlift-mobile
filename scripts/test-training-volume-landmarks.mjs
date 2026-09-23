@@ -82,6 +82,8 @@ assert.match(experience, /testID="competition-total-volume"/);
 assert.match(experience, /data\.lifts\.map/);
 assert.match(experience, /minimumFontScale=\{safeVolumeLb\(currentLb\) >= 100_000_000 \? 0\.5 : 0\.78\}/, 'billion-scale totals retain the full value in the existing hero');
 assert.match(experience, /largeCompetitionTotal && styles\.competitionTotalValueLarge/, 'large competition totals receive full card width');
+assert.match(experience, /maxHeight: viewportHeight \* 0\.9/, 'expanded stories and revealed facts remain scrollable on short iPhones');
+assert.match(experience, /adjustsFontSizeToFit minimumFontScale=\{0\.5\} numberOfLines=\{1\} style=\{styles\.detailThreshold\}/, 'detail thresholds fit at 1B');
 assert.doesNotMatch(screen + experience, /['"`]workout/i);
 // Execute the shipping projection with distinct broad/competition/lift totals.
 const projectionBlock = screen.slice(screen.indexOf('  const volumePoints ='), screen.indexOf('  const canonicalStrengthTotal ='));
