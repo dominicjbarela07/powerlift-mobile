@@ -11,6 +11,9 @@ export const RETIRED_ACCESSORY_ARTWORK_IDENTITIES = {
 } as const;
 
 export const CANONICAL_ACCESSORY_ARTWORK_IDENTITIES = {
+  320: { key: 'accessory_assisted_dip', primary: 'triceps' },
+  14: { key: 'plank_duration', primary: 'abs' },
+  13: { key: 'pull_up_assisted', primary: 'lats' },
   20: { key: 'cable_lat_pulldown_unknown', primary: 'lats' },
   341: { key: 'accessory_cable_supination', primary: 'forearms' },
   340: { key: 'accessory_cable_pronation', primary: 'forearms' },

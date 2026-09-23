@@ -9,7 +9,7 @@ import { movementHeroGeometry, movementHeroSourceFrame } from '../lib/movement-a
 const read=file=>JSON.parse(fs.readFileSync(file));
 const state=read('artwork-review/review-state.json'), reuse=read('config/governed-movement-art-reuse.json');
 const catalog=read('config/governed-movement-art-taxonomy.json');
-const approvals=approvedExactArtworkPolicy(state), selected=new Set(), pending=[];
+const approvals=approvedExactArtworkPolicy(state), selected=new Set(), pending=[], pendingCrops=[];
 assertHumanArtworkGate();
 const digest=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 for(const active of reuse.active_accessory_identities) {
@@ -31,9 +31,18 @@ for(const active of reuse.active_accessory_identities) {
  const mapping=state.canonical_assets.find(row=>row.candidate_id===item.candidate_id);
  assert.ok(approvals.some(row=>row.candidate_id===item.candidate_id && row.app_sha256===result.app_sha256));
  assert.equal(digest(mapping.files.app.path),result.app_sha256);
- const crop=approvedLoggerCropPolicy(state,item);
- assert.ok(crop,`${definition.key}: every selected source must have the exact approved crop`);
- assert.deepEqual(approvedLoggerCrop(result.key),crop);
+ const crop=approvedLoggerCropPolicy(state,item) ?? undefined;
+ if(!crop) {
+  // A newly approved replacement cannot inherit its rejected predecessor's crop.
+  // Keep checking all existing approved crops; the replacement uses contain until reviewed.
+  const prior=state.items.find(row=>row.candidate_id===item.supersedes_candidate_id);
+  assert.ok(prior && prior.status==='rejected' && approvedLoggerCropPolicy(state,prior),`${definition.key}: missing expected approved crop`);
+  assert.notEqual(item.files.master.sha256,prior.files.master.sha256);
+  assert.equal(state.logger_crop_reviews[item.candidate_id],undefined,'new bytes must not receive the old crop decision');
+  assert.equal(item.presentation.cropMode,'contain','uncropped replacement preserves full equipment');
+  pendingCrops.push({id:definition.id,key:definition.key,candidate_id:item.candidate_id});
+ }
+ assert.deepEqual(approvedLoggerCrop(result.key),crop ?? undefined);
  for(const width of [320,375,393,430])for(const height of [220,300,360]) {
   const focal=movementHeroFocal(result.key), box=movementHeroGeometry(width,height,focal,crop);
   const frame=movementHeroSourceFrame(box,...item.files.app.dimensions);
@@ -52,5 +61,5 @@ for(const row of reuse.legacy_artwork_identities) {
  assert.deepEqual(input,before,'artwork reuse does not perform a Swap or rewrite historical provenance');
  assert.equal(resolveApprovedExactMovementArtwork({movement_definition_id:row.movement_definition_id,movement_identity:{...row.taxonomy,key:'fixture_wrong_key'}},true),null);
 }
-console.log(JSON.stringify({active_accessories:reuse.active_accessory_identities.length,approved_with_exact_crops:reuse.active_accessory_identities.length-pending.length,pending_source_approvals:pending,verified_legacy_artwork_redirects:reuse.legacy_artwork_identities.length,production_art_runtime_unchanged:true}));
+console.log(JSON.stringify({active_accessories:reuse.active_accessory_identities.length,approved_source_images:reuse.active_accessory_identities.length-pending.length,approved_with_exact_crops:reuse.active_accessory_identities.length-pending.length-pendingCrops.length,pending_source_approvals:pending,pending_replacement_crop_reviews:pendingCrops,verified_legacy_artwork_redirects:reuse.legacy_artwork_identities.length,production_art_runtime_unchanged:true}));
 if(process.argv.includes('--require-complete'))assert.deepEqual(pending,[],'all accessory source images require owner approval before declaring complete coverage');
