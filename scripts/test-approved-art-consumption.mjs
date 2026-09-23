@@ -17,7 +17,7 @@ const policy=JSON.parse(fs.readFileSync('artwork-review/runtime-policy.json'));
 const state=JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
 assertHumanArtworkGate();
 assert.deepEqual(policy.approved_exact_artwork,approvedExactArtworkPolicy(state));
-for (const [family, expected] of [['canonical_bodyweight_accessories',100],['canonical_machine_accessories',85]]) {
+for (const [family, expected] of [['canonical_bodyweight_accessories',103],['canonical_machine_accessories',85]]) {
  const mapped=state.canonical_assets.filter(a=>state.items.find(i=>i.candidate_id===a.candidate_id)?.family===family);
  assert.equal(mapped.length,expected,`${family}: complete approved family mapped`);
  for(const a of mapped) assert.equal(policy.approved_exact_artwork.some(r=>r.candidate_id===a.candidate_id), !policy.denied_keys.includes(a.key), `${a.key}: current approvals or explicit catalog withdrawal`);
