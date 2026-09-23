@@ -1,4 +1,6 @@
 // @ts-nocheck
+import { ActivePrescriptionEditor } from '@/components/workout-logger/active-prescription-editor';
+import { canEditActivePrescription } from '@/lib/active-session-prescription';
 import { KeyboardScrollView as ScrollView, KeyboardModal as Modal, KeyboardAvoidingView } from '@/components/keyboard/KeyboardSurface';
 // app/(tabs)/workout/[workoutId].tsx
 
@@ -587,6 +589,7 @@ type WorkoutPayload = {
     can_log: boolean;
     can_coach: boolean;
     is_self_coached: boolean;
+    can_edit_prescription?: boolean;
     can_hot_swap: boolean;
     can_browse_hot_swap_catalog?: boolean;
     can_create_custom_movement?: boolean;
@@ -2834,6 +2837,7 @@ export default function WorkoutViewerScreen() {
     transientRecognitionTrace(20, 'recognition dismissed');
   }, [feedbackState.recognition.currentEvent, rewardLoopDemoV2StorageScope, transientRecognitionTrace]);
 
+  const [prescriptionItemId, setPrescriptionItemId] = useState<number | null>(null);
   const [recapCorrection, setRecapCorrection] = useState<'sets' | 'note' | 'reflection' | null>(null);
   const [postSessionVisible, setPostSessionVisible] = useState(false);
   const [postSessionSubmitting, setPostSessionSubmitting] = useState(false);
@@ -8219,6 +8223,20 @@ export default function WorkoutViewerScreen() {
     return { loggerFocus, detailRows };
   };
 
+  const canEditPrescription = canEditActivePrescription(data.permissions?.can_edit_prescription,
+    data.permissions?.is_self_coached, workout.status, isCoachAthletePreview || coachPreviewRequested);
+  const openPrescription = (itemId: number) => {
+    if (!canEditPrescription || canonicalSetSubmissionControllerRef.current.isInFlight()) return;
+    setPrescriptionItemId(itemId);
+  };
+  const prescriptionAction = (itemId: number) => canEditPrescription ? (
+    <TouchableOpacity accessibilityRole="button" accessibilityLabel="Edit Prescription"
+      style={styles.accessoryInlineAction} onPress={() => openPrescription(itemId)}>
+      <Ionicons name="create-outline" size={18} color={SLColors.textMuted} />
+      <Text style={styles.accessoryInlineActionText}>Edit Prescription</Text>
+    </TouchableOpacity>
+  ) : null;
+
   const historyPeekFor = (item: WorkoutItem) => {
     const resolution = resolveMovementHistoryLaunchForItem({ athleteId: athlete.id, item });
     return resolution.ok ? <SessionHistoryPeek target={resolution.target} workoutId={workout.id} sessionDate={workout.date} ownerId={executionOwner} history={item.movement_history} semantics={itemLoadSemantics(item)} unit={unit} onOpen={() => openCanonicalMovementHistory(item)} /> : null;
@@ -8388,6 +8406,7 @@ export default function WorkoutViewerScreen() {
                   <Text adjustsFontSizeToFit minimumFontScale={0.82} numberOfLines={1} style={styles.accessoryInlineActionText}>Equipment</Text>
                 </TouchableOpacity>
               ) : null}
+              {prescriptionAction(it.id)}
               {swapLabel ? (
                 <TouchableOpacity
                   style={styles.accessoryInlineAction}
@@ -8565,6 +8584,17 @@ export default function WorkoutViewerScreen() {
   return (
     <View style={styles.screen}>
       <Tabs.Screen options={{ headerShown: loggerHeaderShown }} />
+      {canEditPrescription && prescriptionItemId != null ? <ActivePrescriptionEditor
+        key={`${executionScope}:${prescriptionItemId}`} workoutId={workout.id} itemId={prescriptionItemId} unit={unit}
+        onClose={() => setPrescriptionItemId(null)} onSaved={(payload: WorkoutPayload) => {
+          const validation = validateSessionLoggerPayload({ candidate: payload, current: dataRef.current, requestedWorkoutId: String(workoutId) });
+          if (!validation.ok) throw new Error('Prescription saved. Refresh the Session to see the update.');
+          workoutRequestManagerRef.current.cancel();
+          dataRef.current = payload;
+          setData(payload);
+          setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
+          showSetMutationNotice('Prescription updated');
+        }} /> : null}
       <SessionV3Header title={workout.label || 'Training Session'} subtitle={[workout.week_number ? `W${workout.week_number}` : null, workout.date ? new Date(`${workout.date.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : null].filter(Boolean).join(' · ')} active={isActiveSession} preview={isCoachAthletePreview ? athlete.name : null} inset={insets.top}
         logged={loggedSets} total={plannedSets} startedAt={workout.started_at}
         onBack={() => { if (isPreSession && focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else handleBackToTrainingHub(); }}
@@ -8896,6 +8926,7 @@ export default function WorkoutViewerScreen() {
                     type: opportunity.eyebrow,
                     item_id: movementPresentation.loggerFocus?.itemId || core.id,
                   })}
+                  auxAction={prescriptionAction(movementPresentation.loggerFocus?.itemId || core.id)}
                   sessionIndex={coreIndex + 1}
                   sessionLifecycle={screenMode}
                   onOpen={() => toggleMovementCard(`core:${core.id}`)}
@@ -8966,6 +8997,7 @@ export default function WorkoutViewerScreen() {
                       );
                       if (item) openCanonicalMovementHistory(item);
                     }}
+                    onEditPrescription={canEditPrescription ? openPrescription : undefined}
                     onSwapMovement={(itemId) => {
                       const item = grp.items.find(
                         (candidate) => candidate.id === itemId,

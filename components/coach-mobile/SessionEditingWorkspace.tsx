@@ -1563,7 +1563,7 @@ function PrescriptionValueControl({ accent, disabled, label, meta, onPress, valu
   </Pressable>;
 }
 
-function MovementQuickPrescriptionEditor({ draft, kind, editable, accessibilityReflow, onChange, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange }: { draft: CoachMovementDraft; kind: MovementKind; editable: boolean; accessibilityReflow: boolean; onChange: (patch: Partial<CoachMovementDraft>) => void; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void }) {
+export function MovementQuickPrescriptionEditor({ prescriptionOnly = false, draft, kind, editable, accessibilityReflow, onChange, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange }: { prescriptionOnly?: boolean; draft: CoachMovementDraft; kind: MovementKind; editable: boolean; accessibilityReflow: boolean; onChange: (patch: Partial<CoachMovementDraft>) => void; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void }) {
   const [openDropdown, setOpenDropdown] = useState<'designation' | 'set-type' | 'intensity-type' | 'rep-target' | null>(null);
   const isCoreVariant = kind === 'core' && isCoreVariantDraft(draft);
   const mainIntensityValue = draft.mode === 'PCT' ? draft.pct : draft.rpe;
@@ -1596,7 +1596,7 @@ function MovementQuickPrescriptionEditor({ draft, kind, editable, accessibilityR
           value={draft.designation}
           options={designationOptions}
           open={openDropdown === 'designation'}
-          disabled={!editable}
+          disabled={!editable || prescriptionOnly}
           onOpenChange={(open) => setOpenDropdown(open ? 'designation' : null)}
           onChange={(designation) => onChange({ designation })}
         />
@@ -1605,7 +1605,7 @@ function MovementQuickPrescriptionEditor({ draft, kind, editable, accessibilityR
           value={draft.scheme}
           options={schemeOptions}
           open={openDropdown === 'set-type'}
-          disabled={!editable || schemeOptions.length < 2}
+          disabled={!editable || prescriptionOnly || schemeOptions.length < 2}
           onOpenChange={(open) => setOpenDropdown(open ? 'set-type' : null)}
           onChange={(scheme) => onChange({ scheme: scheme as CoachMovementDraft['scheme'] })}
         /> : null}
@@ -1634,7 +1634,7 @@ function MovementQuickPrescriptionEditor({ draft, kind, editable, accessibilityR
             { key: 'sets', label: 'Sets', value: draft.sets, options: integerWheelOptions(1, 20, draft.sets), accessibilityValue: (value) => `${value} sets`, onChange: (sets) => onChange({ sets }), disabled: !editable },
             { key: 'reps', label: 'Reps', value: draft.reps, options: integerWheelOptions(1, 50, draft.reps), accessibilityValue: (value) => `${value} reps`, onChange: (reps) => onChange({ reps }), disabled: !editable },
           ]} />
-        ) : draft.scheme === 'TOP_BACKDOWN' && draft.sourceVariant !== 'BK' && kind === 'core' ? (
+        ) : draft.scheme === 'TOP_BACKDOWN' && draft.sourceVariant !== 'BK' && !prescriptionOnly && kind === 'core' ? (
           <View style={styles.topBackdownStack}>
             <PrescriptionWorkBlock label="Top Work" sets={draft.sets} reps={draft.reps} intensity={mainIntensityValue} intensityLabel={mainIntensityLabel} mode={draft.mode} editable={editable} onSets={(sets) => onChange({ sets })} onReps={(reps) => onChange({ reps })} onIntensity={(value) => onChange(draft.mode === 'PCT' ? { pct: value } : { rpe: value })} />
             <PrescriptionWorkBlock label="Backdown Work" sets={draft.backdownSets} reps={draft.backdownReps} intensity={draft.mode === 'PCT' ? draft.backdownPct : draft.backdownRpe} intensityLabel={mainIntensityLabel} mode={draft.mode} editable={editable} onSets={(backdownSets) => onChange({ backdownSets })} onReps={(backdownReps) => onChange({ backdownReps })} onIntensity={(value) => onChange(draft.mode === 'PCT' ? { backdownPct: value } : { backdownRpe: value })} />
@@ -1650,8 +1650,8 @@ function MovementQuickPrescriptionEditor({ draft, kind, editable, accessibilityR
         )}
       </View>}
 
-      {kind === 'core' && !isCoreVariant ? <View style={styles.quickSection}>
-        {draft.scheme === 'TOP_BACKDOWN' && draft.sourceVariant !== 'BK' && kind === 'core' ? (
+      {kind === 'core' && !isCoreVariant && !prescriptionOnly ? <View style={styles.quickSection}>
+        {draft.scheme === 'TOP_BACKDOWN' && draft.sourceVariant !== 'BK' && !prescriptionOnly && kind === 'core' ? (
           <View style={styles.topBackdownStack}>
             <CalculatedTargetPanel label="Top Work" calculated={calculatedTarget} calculating={calculatingTarget} displayUnit={displayUnit} />
             <CalculatedTargetPanel label="Backdown Work" calculated={backdownCalculatedTarget} calculating={calculatingTarget} displayUnit={displayUnit} />
@@ -1666,7 +1666,7 @@ function MovementQuickPrescriptionEditor({ draft, kind, editable, accessibilityR
       {<View style={styles.quickSection}>
         {isCoreVariant ? (
           <ManualOverrideBlock required draftLow={draft.targetLowLb} draftHigh={draft.targetHighLb} storageUnit={storageUnit} displayUnit={displayUnit} manualEnabled editable={editable} onManualEnabledChange={() => {}} onRangeChange={(targetLowLb, targetHighLb) => onChange({ targetLowLb, targetHighLb })} />
-        ) : draft.scheme === 'TOP_BACKDOWN' && draft.sourceVariant !== 'BK' ? (
+        ) : draft.scheme === 'TOP_BACKDOWN' && draft.sourceVariant !== 'BK' && !prescriptionOnly ? (
           <View style={styles.topBackdownStack}>
             <ManualOverrideBlock label="Top Work" draftLow={draft.targetLowLb} draftHigh={draft.targetHighLb} storageUnit={storageUnit} displayUnit={displayUnit} initialTarget={calculatedManualTargetValue(calculatedTarget, displayUnit)} manualEnabled={manualOverrideEnabled} editable={editable} onManualEnabledChange={(enabled) => { onManualOverrideEnabledChange(enabled); if (!enabled) onChange({ targetLowLb: '', targetHighLb: '' }); }} onRangeChange={(targetLowLb, targetHighLb) => onChange({ targetLowLb, targetHighLb })} />
             <ManualOverrideBlock label="Backdown Work" draftLow={draft.backdownTargetLowLb} draftHigh={draft.backdownTargetHighLb} storageUnit={storageUnit} displayUnit={displayUnit} initialTarget={calculatedManualTargetValue(backdownCalculatedTarget, displayUnit)} manualEnabled={backdownManualOverrideEnabled} editable={editable} onManualEnabledChange={(enabled) => { onBackdownManualOverrideEnabledChange(enabled); if (!enabled) onChange({ backdownTargetLowLb: '', backdownTargetHighLb: '' }); }} onRangeChange={(backdownTargetLowLb, backdownTargetHighLb) => onChange({ backdownTargetLowLb, backdownTargetHighLb })} />
