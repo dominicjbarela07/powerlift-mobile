@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from 'node:assert/strict';
+import { expectedDirectArtworkKey, assertReviewedArtworkReuse } from './artwork-review-expectations.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -75,9 +76,9 @@ assert.deepEqual(
 assert.deepEqual(
   resolveCanonicalMovementArtwork({
     kind: 'accessory',
-    movement_definition_id: 222,
+    movement_definition_id: 216,
     movement_identity: {
-      id: 222,
+      id: 216,
       family: 'accessory_upper_back',
       primary_muscle_group: 'upper_back',
       secondary_muscle_groups: ['lats', 'rear_delts', 'biceps'],
@@ -85,9 +86,9 @@ assert.deepEqual(
     performed_movement_identity: { id: 24, family: 'custom' },
     legacy: {
       state: 'canonical',
-      effective_movement_definition_id: 222,
+      effective_movement_definition_id: 216,
       effective_movement_identity: {
-        id: 222,
+        id: 216,
         family: 'accessory_upper_back',
         primary_muscle_group: 'upper_back',
         secondary_muscle_groups: ['lats', 'rear_delts', 'biceps'],
@@ -96,13 +97,13 @@ assert.deepEqual(
   }),
   {
     kind: 'accessory',
-    canonicalIdentityId: 222,
-    artworkKey: 'accessory_plate_loaded_seated_row',
+    canonicalIdentityId: 216,
+    artworkKey: 'accessory_chest_supported_machine_row',
     regionKey: 'upper_back',
     primaryMuscleGroup: 'upper_back',
     secondaryMuscleGroups: ['lats', 'rear_delts', 'biceps'],
   },
-  'Machine Seated Row must ignore its taxonomy-less performed equipment identity',
+  'Chest-Supported Machine Row must ignore its taxonomy-less performed equipment identity',
 );
 
 for (const [label, id, primary, secondary] of [
@@ -131,7 +132,7 @@ assert.deepEqual(
   {
     kind: 'accessory',
     canonicalIdentityId: 4,
-    artworkKey: 'barbell_row',
+    ...(expectedDirectArtworkKey('barbell_row') ? {artworkKey:'barbell_row'} : {}),
     regionKey: 'upper_back',
     primaryMuscleGroup: 'upper_back',
     secondaryMuscleGroups: [],
@@ -233,3 +234,5 @@ if (webProgrammingManagerPath && fs.existsSync(webProgrammingManagerPath)) {
 }
 
 console.log(`[canonical-movement-artwork] ${fixtures.length} screenshot fixtures + fail-closed and consumer enforcement passed`);
+
+assertReviewedArtworkReuse({kind:'accessory',movement_identity:{id:4,key:'barbell_row',family:'horizontal_pull'}},4,'barbell_row');

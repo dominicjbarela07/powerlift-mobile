@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { expectedDirectArtworkKey, assertReviewedArtworkReuse } from './artwork-review-expectations.mjs';
 import { resolveCanonicalMovementArtwork as resolve, normalizeCanonicalMovementArtSubject as subject, canonicalArtworkInputFromDefinition, CANONICAL_ACCESSORY_ARTWORK_IDENTITIES } from '../lib/canonical-movement-artwork.ts';
 import { canonicalArtworkInputForLoggerItem } from '../lib/logger-movement-identity.ts';
 import { resolveApprovedExactMovementArtwork } from '../lib/movement-artwork-hero.ts';
@@ -60,8 +61,9 @@ assert.equal(resolve(frozen).artworkKey,undefined,'changed taxonomy does not reu
 for(const [id,row] of Object.entries(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES)) {
   const identity={id:Number(id),key:row.key,primary_muscle_group:row.primary,secondary_muscle_groups:[]};
   invariant(identity);
+  assertReviewedArtworkReuse(completed(identity),Number(id),row.key);
   assert.equal(resolve({kind:'accessory',movement_definition_id:Number(id)}).regionKey,row.primary,'registered canonical ID may enrich missing taxonomy deterministically');
-  assert.equal(resolve({...completed(identity),sets:[]}).artworkKey,row.key,'all registered recap keys, not only Shoulder Press');
+  assert.equal(resolve({...completed(identity),sets:[]}).artworkKey,expectedDirectArtworkKey(row.key),'all registered recap keys, not only Shoulder Press');
   assert.equal(resolve({...completed(identity),sets:[],measurement:{canonical_identity_id:Number(id)}}).kind,'accessory','missing exact-art key cannot erase existing taxonomy');
 }
 console.log('Movement art lifecycle: all registered identities, saved/legacy recap contracts, substitution, equipment, superset, approval separation, frozen taxonomy and row-ID collision regressions PASS');
