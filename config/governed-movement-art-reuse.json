@@ -1,0 +1,3886 @@
+{
+  "schema_version": 1,
+  "source": "Read-only canonical DEV redirects and human consolidated artwork bindings; visual reuse only; no identity/history writes",
+  "shared_artwork_identities": [
+    {
+      "movement_definition_id": 220,
+      "key": "accessory_machine_t_bar_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 199,
+      "artwork_key": "accessory_chest_supported_t_bar_row",
+      "movement_name": "Machine T-Bar Row"
+    },
+    {
+      "movement_definition_id": 552,
+      "key": "accessory_sorenson_hold",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 549,
+      "artwork_key": "accessory_weighted_sorenson_hold",
+      "movement_name": "Sorenson Hold"
+    },
+    {
+      "movement_definition_id": 608,
+      "key": "front_squat",
+      "core_movement_definition_id": 40,
+      "artwork_movement_definition_id": 348,
+      "artwork_key": "accessory_front_squat",
+      "movement_name": "Front Squat"
+    },
+    {
+      "movement_definition_id": 610,
+      "key": "high_bar_squat",
+      "core_movement_definition_id": 42,
+      "artwork_movement_definition_id": 349,
+      "artwork_key": "accessory_high_bar_squat",
+      "movement_name": "High Bar Squat"
+    },
+    {
+      "movement_definition_id": 614,
+      "key": "larsen_press",
+      "core_movement_definition_id": 46,
+      "artwork_movement_definition_id": 44,
+      "artwork_key": "accessory_larsen_press",
+      "movement_name": "Larsen Press"
+    },
+    {
+      "movement_definition_id": 615,
+      "key": "spoto_press",
+      "core_movement_definition_id": 47,
+      "artwork_movement_definition_id": 43,
+      "artwork_key": "accessory_spoto_press",
+      "movement_name": "Spoto Press"
+    },
+    {
+      "movement_definition_id": 616,
+      "key": "close_grip_bench",
+      "core_movement_definition_id": 48,
+      "artwork_movement_definition_id": 289,
+      "artwork_key": "accessory_close_grip_bench_press",
+      "movement_name": "Close Grip Bench"
+    },
+    {
+      "movement_definition_id": 625,
+      "key": "romanian_deadlift",
+      "core_movement_definition_id": 57,
+      "artwork_movement_definition_id": 387,
+      "artwork_key": "accessory_romanian_deadlift",
+      "movement_name": "Romanian Deadlift (RDL)"
+    },
+    {
+      "movement_definition_id": 626,
+      "key": "stiff_leg_deadlift",
+      "core_movement_definition_id": 58,
+      "artwork_movement_definition_id": 391,
+      "artwork_key": "accessory_stiff_leg_deadlift",
+      "movement_name": "Stiff-Leg Deadlift"
+    }
+  ],
+  "legacy_artwork_identities": [
+    {
+      "movement_definition_id": 4,
+      "key": "barbell_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 191,
+      "artwork_key": "accessory_bent_over_barbell_row",
+      "governed_survivor_id": 191,
+      "governed_survivor_key": "accessory_bent_over_barbell_row",
+      "taxonomy": {
+        "id": 4,
+        "key": "barbell_row",
+        "display_name": "Barbell Row",
+        "kind": "accessory",
+        "family": "horizontal_pull",
+        "primary_muscle_group": "upper_back",
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ],
+        "equipment_type": "barbell"
+      }
+    },
+    {
+      "movement_definition_id": 5,
+      "key": "single_arm_dumbbell_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 154,
+      "artwork_key": "accessory_one_arm_dumbbell_row",
+      "governed_survivor_id": 154,
+      "governed_survivor_key": "accessory_one_arm_dumbbell_row",
+      "taxonomy": {
+        "id": 5,
+        "key": "single_arm_dumbbell_row",
+        "display_name": "Single-Arm Dumbbell Row",
+        "kind": "accessory",
+        "family": "horizontal_pull",
+        "primary_muscle_group": "upper_back",
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 7,
+      "key": "incline_dumbbell_press",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 33,
+      "artwork_key": "accessory_incline_dumbbell_bench_press",
+      "governed_survivor_id": 33,
+      "governed_survivor_key": "accessory_incline_dumbbell_bench_press",
+      "taxonomy": {
+        "id": 7,
+        "key": "incline_dumbbell_press",
+        "display_name": "Incline Dumbbell Press",
+        "kind": "accessory",
+        "family": "horizontal_push",
+        "primary_muscle_group": "chest",
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 8,
+      "key": "cable_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 207,
+      "artwork_key": "accessory_seated_cable_row",
+      "governed_survivor_id": 207,
+      "governed_survivor_key": "accessory_seated_cable_row",
+      "taxonomy": {
+        "id": 8,
+        "key": "cable_row",
+        "display_name": "Cable Row",
+        "kind": "accessory",
+        "family": "horizontal_pull",
+        "primary_muscle_group": "upper_back",
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 9,
+      "key": "selectorized_machine_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 216,
+      "artwork_key": "accessory_chest_supported_machine_row",
+      "governed_survivor_id": 216,
+      "governed_survivor_key": "accessory_chest_supported_machine_row",
+      "taxonomy": {
+        "id": 9,
+        "key": "selectorized_machine_row",
+        "display_name": "Selectorized Machine Row",
+        "kind": "accessory",
+        "family": "horizontal_pull",
+        "primary_muscle_group": null,
+        "secondary_muscle_groups": [],
+        "equipment_type": "selectorized_machine"
+      }
+    },
+    {
+      "movement_definition_id": 10,
+      "key": "plate_loaded_machine_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 216,
+      "artwork_key": "accessory_chest_supported_machine_row",
+      "governed_survivor_id": 216,
+      "governed_survivor_key": "accessory_chest_supported_machine_row",
+      "taxonomy": {
+        "id": 10,
+        "key": "plate_loaded_machine_row",
+        "display_name": "Plate-Loaded Machine Row",
+        "kind": "accessory",
+        "family": "horizontal_pull",
+        "primary_muscle_group": null,
+        "secondary_muscle_groups": [],
+        "equipment_type": "plate_loaded_machine"
+      }
+    },
+    {
+      "movement_definition_id": 12,
+      "key": "pull_up_added_weight",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 11,
+      "artwork_key": "pull_up_bodyweight",
+      "governed_survivor_id": 11,
+      "governed_survivor_key": "pull_up_bodyweight",
+      "taxonomy": {
+        "id": 12,
+        "key": "pull_up_added_weight",
+        "display_name": "Weighted Pull-Up",
+        "kind": "accessory",
+        "family": "accessory_lats",
+        "primary_muscle_group": "lats",
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ],
+        "equipment_type": "bodyweight"
+      }
+    },
+    {
+      "movement_definition_id": 16,
+      "key": "prime_lat_pulldown",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 15,
+      "artwork_key": "machine_lat_pulldown_broad",
+      "governed_survivor_id": 15,
+      "governed_survivor_key": "machine_lat_pulldown_broad",
+      "taxonomy": {
+        "id": 16,
+        "key": "prime_lat_pulldown",
+        "display_name": "Prime Lat Pulldown",
+        "kind": "accessory",
+        "family": "vertical_pull",
+        "primary_muscle_group": null,
+        "secondary_muscle_groups": [],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 17,
+      "key": "hammer_strength_lat_pulldown",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 15,
+      "artwork_key": "machine_lat_pulldown_broad",
+      "governed_survivor_id": 15,
+      "governed_survivor_key": "machine_lat_pulldown_broad",
+      "taxonomy": {
+        "id": 17,
+        "key": "hammer_strength_lat_pulldown",
+        "display_name": "Hammer Strength Lat Pulldown",
+        "kind": "accessory",
+        "family": "vertical_pull",
+        "primary_muscle_group": null,
+        "secondary_muscle_groups": [],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 18,
+      "key": "life_fitness_lat_pulldown",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 15,
+      "artwork_key": "machine_lat_pulldown_broad",
+      "governed_survivor_id": 15,
+      "governed_survivor_key": "machine_lat_pulldown_broad",
+      "taxonomy": {
+        "id": 18,
+        "key": "life_fitness_lat_pulldown",
+        "display_name": "Life Fitness Lat Pulldown",
+        "kind": "accessory",
+        "family": "vertical_pull",
+        "primary_muscle_group": null,
+        "secondary_muscle_groups": [],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 19,
+      "key": "panatta_lat_pulldown",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 15,
+      "artwork_key": "machine_lat_pulldown_broad",
+      "governed_survivor_id": 15,
+      "governed_survivor_key": "machine_lat_pulldown_broad",
+      "taxonomy": {
+        "id": 19,
+        "key": "panatta_lat_pulldown",
+        "display_name": "Panatta Lat Pulldown",
+        "kind": "accessory",
+        "family": "vertical_pull",
+        "primary_muscle_group": null,
+        "secondary_muscle_groups": [],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 21,
+      "key": "unknown_machine_lat_pulldown",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 15,
+      "artwork_key": "machine_lat_pulldown_broad",
+      "governed_survivor_id": 15,
+      "governed_survivor_key": "machine_lat_pulldown_broad",
+      "taxonomy": {
+        "id": 21,
+        "key": "unknown_machine_lat_pulldown",
+        "display_name": "Unknown Machine Lat Pulldown",
+        "kind": "accessory",
+        "family": "vertical_pull",
+        "primary_muscle_group": "lats",
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 38,
+      "key": "accessory_dumbbell_hex_press",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 37,
+      "artwork_key": "accessory_dumbbell_squeeze_press",
+      "governed_survivor_id": 37,
+      "governed_survivor_key": "accessory_dumbbell_squeeze_press",
+      "taxonomy": {
+        "id": 38,
+        "key": "accessory_dumbbell_hex_press",
+        "display_name": "Dumbbell Hex Press",
+        "kind": "accessory",
+        "family": "accessory_chest",
+        "primary_muscle_group": "chest",
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 43,
+      "key": "accessory_spoto_press",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 43,
+      "artwork_key": "accessory_spoto_press",
+      "governed_survivor_id": 615,
+      "governed_survivor_key": "spoto_press",
+      "taxonomy": {
+        "id": 43,
+        "key": "accessory_spoto_press",
+        "display_name": "Spoto Press",
+        "kind": "accessory",
+        "family": "accessory_chest",
+        "primary_muscle_group": "chest",
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 44,
+      "key": "accessory_larsen_press",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 44,
+      "artwork_key": "accessory_larsen_press",
+      "governed_survivor_id": 614,
+      "governed_survivor_key": "larsen_press",
+      "taxonomy": {
+        "id": 44,
+        "key": "accessory_larsen_press",
+        "display_name": "Larsen Press",
+        "kind": "accessory",
+        "family": "accessory_chest",
+        "primary_muscle_group": "chest",
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 52,
+      "key": "accessory_pec_deck",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 51,
+      "artwork_key": "accessory_machine_chest_flye",
+      "governed_survivor_id": 51,
+      "governed_survivor_key": "accessory_machine_chest_flye",
+      "taxonomy": {
+        "id": 52,
+        "key": "accessory_pec_deck",
+        "display_name": "Pec Deck",
+        "kind": "accessory",
+        "family": "accessory_chest",
+        "primary_muscle_group": "chest",
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 64,
+      "key": "accessory_mid_cable_flye",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 61,
+      "artwork_key": "accessory_cable_chest_flye",
+      "governed_survivor_id": 61,
+      "governed_survivor_key": "accessory_cable_chest_flye",
+      "taxonomy": {
+        "id": 64,
+        "key": "accessory_mid_cable_flye",
+        "display_name": "Mid-Cable Fly",
+        "kind": "accessory",
+        "family": "accessory_chest",
+        "primary_muscle_group": "chest",
+        "secondary_muscle_groups": [
+          "front_delts"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 73,
+      "key": "accessory_weighted_push_up",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 67,
+      "artwork_key": "accessory_push_up",
+      "governed_survivor_id": 67,
+      "governed_survivor_key": "accessory_push_up",
+      "taxonomy": {
+        "id": 73,
+        "key": "accessory_weighted_push_up",
+        "display_name": "Weighted Push-Up",
+        "kind": "accessory",
+        "family": "accessory_chest",
+        "primary_muscle_group": "chest",
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 117,
+      "key": "accessory_cuffed_cable_lateral_raise",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 113,
+      "artwork_key": "accessory_cable_lateral_raise",
+      "governed_survivor_id": 113,
+      "governed_survivor_key": "accessory_cable_lateral_raise",
+      "taxonomy": {
+        "id": 117,
+        "key": "accessory_cuffed_cable_lateral_raise",
+        "display_name": "Cuffed Cable Lateral Raise",
+        "kind": "accessory",
+        "family": "accessory_side_delts",
+        "primary_muscle_group": "side_delts",
+        "secondary_muscle_groups": [
+          "front_delts",
+          "traps"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 128,
+      "key": "accessory_incline_bench_rear_delt_flye",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 127,
+      "artwork_key": "accessory_chest_supported_dumbbell_reverse_flye",
+      "governed_survivor_id": 127,
+      "governed_survivor_key": "accessory_chest_supported_dumbbell_reverse_flye",
+      "taxonomy": {
+        "id": 128,
+        "key": "accessory_incline_bench_rear_delt_flye",
+        "display_name": "Incline-Bench Rear-Delt Fly",
+        "kind": "accessory",
+        "family": "accessory_rear_delts",
+        "primary_muscle_group": "rear_delts",
+        "secondary_muscle_groups": [
+          "upper_back"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 130,
+      "key": "accessory_wide_elbow_dumbbell_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 129,
+      "artwork_key": "accessory_rear_delt_dumbbell_row",
+      "governed_survivor_id": 129,
+      "governed_survivor_key": "accessory_rear_delt_dumbbell_row",
+      "taxonomy": {
+        "id": 130,
+        "key": "accessory_wide_elbow_dumbbell_row",
+        "display_name": "Wide-Elbow Dumbbell Row",
+        "kind": "accessory",
+        "family": "accessory_rear_delts",
+        "primary_muscle_group": "rear_delts",
+        "secondary_muscle_groups": [
+          "upper_back"
+        ],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 134,
+      "key": "accessory_reverse_pec_deck",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 135,
+      "artwork_key": "accessory_machine_reverse_flye",
+      "governed_survivor_id": 135,
+      "governed_survivor_key": "accessory_machine_reverse_flye",
+      "taxonomy": {
+        "id": 134,
+        "key": "accessory_reverse_pec_deck",
+        "display_name": "Reverse Pec Deck",
+        "kind": "accessory",
+        "family": "accessory_rear_delts",
+        "primary_muscle_group": "rear_delts",
+        "secondary_muscle_groups": [
+          "upper_back"
+        ],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 137,
+      "key": "accessory_chest_supported_rear_delt_machine_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 136,
+      "artwork_key": "accessory_rear_delt_row_machine",
+      "governed_survivor_id": 136,
+      "governed_survivor_key": "accessory_rear_delt_row_machine",
+      "taxonomy": {
+        "id": 137,
+        "key": "accessory_chest_supported_rear_delt_machine_row",
+        "display_name": "Chest-Supported Rear-Delt Machine Row",
+        "kind": "accessory",
+        "family": "accessory_rear_delts",
+        "primary_muscle_group": "rear_delts",
+        "secondary_muscle_groups": [
+          "upper_back"
+        ],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 144,
+      "key": "accessory_rope_face_pull",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 143,
+      "artwork_key": "accessory_cable_face_pull",
+      "governed_survivor_id": 143,
+      "governed_survivor_key": "accessory_cable_face_pull",
+      "taxonomy": {
+        "id": 144,
+        "key": "accessory_rope_face_pull",
+        "display_name": "Rope Face Pull",
+        "kind": "accessory",
+        "family": "accessory_rear_delts",
+        "primary_muscle_group": "rear_delts",
+        "secondary_muscle_groups": [
+          "upper_back",
+          "traps"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 158,
+      "key": "accessory_three_point_dumbbell_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 154,
+      "artwork_key": "accessory_one_arm_dumbbell_row",
+      "governed_survivor_id": 154,
+      "governed_survivor_key": "accessory_one_arm_dumbbell_row",
+      "taxonomy": {
+        "id": 158,
+        "key": "accessory_three_point_dumbbell_row",
+        "display_name": "Three-Point Dumbbell Row",
+        "kind": "accessory",
+        "family": "accessory_lats",
+        "primary_muscle_group": "lats",
+        "secondary_muscle_groups": [
+          "upper_back",
+          "biceps"
+        ],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 159,
+      "key": "accessory_landmine_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 197,
+      "artwork_key": "accessory_t_bar_row",
+      "governed_survivor_id": 197,
+      "governed_survivor_key": "accessory_t_bar_row",
+      "taxonomy": {
+        "id": 159,
+        "key": "accessory_landmine_row",
+        "display_name": "Landmine Row",
+        "kind": "accessory",
+        "family": "accessory_lats",
+        "primary_muscle_group": "lats",
+        "secondary_muscle_groups": [
+          "upper_back",
+          "biceps"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 171,
+      "key": "accessory_rope_straight_arm_pulldown",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 170,
+      "artwork_key": "accessory_straight_arm_cable_pulldown",
+      "governed_survivor_id": 170,
+      "governed_survivor_key": "accessory_straight_arm_cable_pulldown",
+      "taxonomy": {
+        "id": 171,
+        "key": "accessory_rope_straight_arm_pulldown",
+        "display_name": "Rope Straight-Arm Pulldown",
+        "kind": "accessory",
+        "family": "accessory_lats",
+        "primary_muscle_group": "lats",
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 172,
+      "key": "accessory_cable_pullover",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 170,
+      "artwork_key": "accessory_straight_arm_cable_pulldown",
+      "governed_survivor_id": 170,
+      "governed_survivor_key": "accessory_straight_arm_cable_pulldown",
+      "taxonomy": {
+        "id": 172,
+        "key": "accessory_cable_pullover",
+        "display_name": "Cable Pullover",
+        "kind": "accessory",
+        "family": "accessory_lats",
+        "primary_muscle_group": "lats",
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 196,
+      "key": "accessory_incline_bench_dumbbell_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 194,
+      "artwork_key": "accessory_chest_supported_dumbbell_row",
+      "governed_survivor_id": 194,
+      "governed_survivor_key": "accessory_chest_supported_dumbbell_row",
+      "taxonomy": {
+        "id": 196,
+        "key": "accessory_incline_bench_dumbbell_row",
+        "display_name": "Incline-Bench Dumbbell Row",
+        "kind": "accessory",
+        "family": "accessory_upper_back",
+        "primary_muscle_group": "upper_back",
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 199,
+      "key": "accessory_chest_supported_t_bar_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 199,
+      "artwork_key": "accessory_chest_supported_t_bar_row",
+      "governed_survivor_id": 220,
+      "governed_survivor_key": "accessory_machine_t_bar_row",
+      "taxonomy": {
+        "id": 199,
+        "key": "accessory_chest_supported_t_bar_row",
+        "display_name": "Chest-Supported T-Bar Row",
+        "kind": "accessory",
+        "family": "accessory_upper_back",
+        "primary_muscle_group": "upper_back",
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 204,
+      "key": "accessory_wide_elbow_barbell_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 131,
+      "artwork_key": "accessory_rear_delt_barbell_row",
+      "governed_survivor_id": 131,
+      "governed_survivor_key": "accessory_rear_delt_barbell_row",
+      "taxonomy": {
+        "id": 204,
+        "key": "accessory_wide_elbow_barbell_row",
+        "display_name": "Wide-Elbow Barbell Row",
+        "kind": "accessory",
+        "family": "accessory_upper_back",
+        "primary_muscle_group": "upper_back",
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ],
+        "equipment_type": "barbell"
+      }
+    },
+    {
+      "movement_definition_id": 205,
+      "key": "accessory_chest_supported_kelso_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 241,
+      "artwork_key": "accessory_chest_supported_kelso_shrug",
+      "governed_survivor_id": 241,
+      "governed_survivor_key": "accessory_chest_supported_kelso_shrug",
+      "taxonomy": {
+        "id": 205,
+        "key": "accessory_chest_supported_kelso_row",
+        "display_name": "Chest-Supported Kelso Row",
+        "kind": "accessory",
+        "family": "accessory_upper_back",
+        "primary_muscle_group": "upper_back",
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 212,
+      "key": "accessory_rope_cable_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 207,
+      "artwork_key": "accessory_seated_cable_row",
+      "governed_survivor_id": 207,
+      "governed_survivor_key": "accessory_seated_cable_row",
+      "taxonomy": {
+        "id": 212,
+        "key": "accessory_rope_cable_row",
+        "display_name": "Rope Cable Row",
+        "kind": "accessory",
+        "family": "accessory_upper_back",
+        "primary_muscle_group": "upper_back",
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 221,
+      "key": "accessory_machine_mid_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 216,
+      "artwork_key": "accessory_chest_supported_machine_row",
+      "governed_survivor_id": 216,
+      "governed_survivor_key": "accessory_chest_supported_machine_row",
+      "taxonomy": {
+        "id": 221,
+        "key": "accessory_machine_mid_row",
+        "display_name": "Machine Mid Row",
+        "kind": "accessory",
+        "family": "accessory_upper_back",
+        "primary_muscle_group": "upper_back",
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 222,
+      "key": "accessory_plate_loaded_seated_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 216,
+      "artwork_key": "accessory_chest_supported_machine_row",
+      "governed_survivor_id": 216,
+      "governed_survivor_key": "accessory_chest_supported_machine_row",
+      "taxonomy": {
+        "id": 222,
+        "key": "accessory_plate_loaded_seated_row",
+        "display_name": "Machine Seated Row",
+        "kind": "accessory",
+        "family": "accessory_upper_back",
+        "primary_muscle_group": "upper_back",
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 223,
+      "key": "accessory_chest_supported_high_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 217,
+      "artwork_key": "accessory_plate_loaded_high_row",
+      "governed_survivor_id": 217,
+      "governed_survivor_key": "accessory_plate_loaded_high_row",
+      "taxonomy": {
+        "id": 223,
+        "key": "accessory_chest_supported_high_row",
+        "display_name": "Chest-Supported High Row",
+        "kind": "accessory",
+        "family": "accessory_upper_back",
+        "primary_muscle_group": "upper_back",
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 224,
+      "key": "accessory_wide_elbow_machine_row",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 136,
+      "artwork_key": "accessory_rear_delt_row_machine",
+      "governed_survivor_id": 136,
+      "governed_survivor_key": "accessory_rear_delt_row_machine",
+      "taxonomy": {
+        "id": 224,
+        "key": "accessory_wide_elbow_machine_row",
+        "display_name": "Wide-Elbow Machine Row",
+        "kind": "accessory",
+        "family": "accessory_upper_back",
+        "primary_muscle_group": "upper_back",
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 242,
+      "key": "accessory_kelso_shrug",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 241,
+      "artwork_key": "accessory_chest_supported_kelso_shrug",
+      "governed_survivor_id": 241,
+      "governed_survivor_key": "accessory_chest_supported_kelso_shrug",
+      "taxonomy": {
+        "id": 242,
+        "key": "accessory_kelso_shrug",
+        "display_name": "Kelso Shrug",
+        "kind": "accessory",
+        "family": "accessory_traps",
+        "primary_muscle_group": "traps",
+        "secondary_muscle_groups": [
+          "forearms",
+          "upper_back"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 256,
+      "key": "accessory_standing_dumbbell_curl",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 253,
+      "artwork_key": "accessory_dumbbell_curl",
+      "governed_survivor_id": 253,
+      "governed_survivor_key": "accessory_dumbbell_curl",
+      "taxonomy": {
+        "id": 256,
+        "key": "accessory_standing_dumbbell_curl",
+        "display_name": "Standing Dumbbell Curl",
+        "kind": "accessory",
+        "family": "accessory_biceps",
+        "primary_muscle_group": "biceps",
+        "secondary_muscle_groups": [
+          "forearms"
+        ],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 270,
+      "key": "accessory_rope_cable_curl",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 279,
+      "artwork_key": "accessory_cable_hammer_curl",
+      "governed_survivor_id": 279,
+      "governed_survivor_key": "accessory_cable_hammer_curl",
+      "taxonomy": {
+        "id": 270,
+        "key": "accessory_rope_cable_curl",
+        "display_name": "Rope Cable Curl",
+        "kind": "accessory",
+        "family": "accessory_biceps",
+        "primary_muscle_group": "biceps",
+        "secondary_muscle_groups": [
+          "forearms"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 276,
+      "key": "accessory_dual_high_cable_curl",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 275,
+      "artwork_key": "accessory_high_cable_curl",
+      "governed_survivor_id": 275,
+      "governed_survivor_key": "accessory_high_cable_curl",
+      "taxonomy": {
+        "id": 276,
+        "key": "accessory_dual_high_cable_curl",
+        "display_name": "Dual High Cable Curl",
+        "kind": "accessory",
+        "family": "accessory_biceps",
+        "primary_muscle_group": "biceps",
+        "secondary_muscle_groups": [
+          "forearms"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 277,
+      "key": "accessory_hercules_cable_curl",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 275,
+      "artwork_key": "accessory_high_cable_curl",
+      "governed_survivor_id": 275,
+      "governed_survivor_key": "accessory_high_cable_curl",
+      "taxonomy": {
+        "id": 277,
+        "key": "accessory_hercules_cable_curl",
+        "display_name": "Hercules Cable Curl",
+        "kind": "accessory",
+        "family": "accessory_biceps",
+        "primary_muscle_group": "biceps",
+        "secondary_muscle_groups": [
+          "forearms"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 280,
+      "key": "accessory_behind_the_back_cable_curl",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 271,
+      "artwork_key": "accessory_bayesian_cable_curl",
+      "governed_survivor_id": 271,
+      "governed_survivor_key": "accessory_bayesian_cable_curl",
+      "taxonomy": {
+        "id": 280,
+        "key": "accessory_behind_the_back_cable_curl",
+        "display_name": "Behind-the-Back Cable Curl",
+        "kind": "accessory",
+        "family": "accessory_biceps",
+        "primary_muscle_group": "biceps",
+        "secondary_muscle_groups": [
+          "forearms"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 289,
+      "key": "accessory_close_grip_bench_press",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 289,
+      "artwork_key": "accessory_close_grip_bench_press",
+      "governed_survivor_id": 616,
+      "governed_survivor_key": "close_grip_bench",
+      "taxonomy": {
+        "id": 289,
+        "key": "accessory_close_grip_bench_press",
+        "display_name": "Close-Grip Bench Press",
+        "kind": "accessory",
+        "family": "accessory_triceps",
+        "primary_muscle_group": "triceps",
+        "secondary_muscle_groups": [
+          "chest",
+          "front_delts"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 302,
+      "key": "accessory_rope_triceps_pressdown",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 301,
+      "artwork_key": "accessory_cable_triceps_pressdown",
+      "governed_survivor_id": 301,
+      "governed_survivor_key": "accessory_cable_triceps_pressdown",
+      "taxonomy": {
+        "id": 302,
+        "key": "accessory_rope_triceps_pressdown",
+        "display_name": "Rope Triceps Pressdown",
+        "kind": "accessory",
+        "family": "accessory_triceps",
+        "primary_muscle_group": "triceps",
+        "secondary_muscle_groups": [],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 303,
+      "key": "accessory_straight_bar_triceps_pressdown",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 301,
+      "artwork_key": "accessory_cable_triceps_pressdown",
+      "governed_survivor_id": 301,
+      "governed_survivor_key": "accessory_cable_triceps_pressdown",
+      "taxonomy": {
+        "id": 303,
+        "key": "accessory_straight_bar_triceps_pressdown",
+        "display_name": "Straight-Bar Triceps Pressdown",
+        "kind": "accessory",
+        "family": "accessory_triceps",
+        "primary_muscle_group": "triceps",
+        "secondary_muscle_groups": [],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 304,
+      "key": "accessory_v_bar_triceps_pressdown",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 301,
+      "artwork_key": "accessory_cable_triceps_pressdown",
+      "governed_survivor_id": 301,
+      "governed_survivor_key": "accessory_cable_triceps_pressdown",
+      "taxonomy": {
+        "id": 304,
+        "key": "accessory_v_bar_triceps_pressdown",
+        "display_name": "V-Bar Triceps Pressdown",
+        "kind": "accessory",
+        "family": "accessory_triceps",
+        "primary_muscle_group": "triceps",
+        "secondary_muscle_groups": [],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 308,
+      "key": "accessory_rope_overhead_triceps_extension",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 307,
+      "artwork_key": "accessory_cable_overhead_triceps_extension",
+      "governed_survivor_id": 307,
+      "governed_survivor_key": "accessory_cable_overhead_triceps_extension",
+      "taxonomy": {
+        "id": 308,
+        "key": "accessory_rope_overhead_triceps_extension",
+        "display_name": "Rope Overhead Triceps Extension",
+        "kind": "accessory",
+        "family": "accessory_triceps",
+        "primary_muscle_group": "triceps",
+        "secondary_muscle_groups": [],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 321,
+      "key": "accessory_weighted_dip",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 316,
+      "artwork_key": "accessory_triceps_dip",
+      "governed_survivor_id": 316,
+      "governed_survivor_key": "accessory_triceps_dip",
+      "taxonomy": {
+        "id": 321,
+        "key": "accessory_weighted_dip",
+        "display_name": "Weighted Dip",
+        "kind": "accessory",
+        "family": "accessory_triceps",
+        "primary_muscle_group": "triceps",
+        "secondary_muscle_groups": [
+          "chest",
+          "front_delts"
+        ],
+        "equipment_type": "bodyweight"
+      }
+    },
+    {
+      "movement_definition_id": 348,
+      "key": "accessory_front_squat",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 348,
+      "artwork_key": "accessory_front_squat",
+      "governed_survivor_id": 608,
+      "governed_survivor_key": "front_squat",
+      "taxonomy": {
+        "id": 348,
+        "key": "accessory_front_squat",
+        "display_name": "Front Squat",
+        "kind": "accessory",
+        "family": "accessory_quads",
+        "primary_muscle_group": "quads",
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 349,
+      "key": "accessory_high_bar_squat",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 349,
+      "artwork_key": "accessory_high_bar_squat",
+      "governed_survivor_id": 610,
+      "governed_survivor_key": "high_bar_squat",
+      "taxonomy": {
+        "id": 349,
+        "key": "accessory_high_bar_squat",
+        "display_name": "High-Bar Squat",
+        "kind": "accessory",
+        "family": "accessory_quads",
+        "primary_muscle_group": "quads",
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 363,
+      "key": "accessory_dumbbell_step_down",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 383,
+      "artwork_key": "accessory_step_down",
+      "governed_survivor_id": 383,
+      "governed_survivor_key": "accessory_step_down",
+      "taxonomy": {
+        "id": 363,
+        "key": "accessory_dumbbell_step_down",
+        "display_name": "Dumbbell Step-Down",
+        "kind": "accessory",
+        "family": "accessory_quads",
+        "primary_muscle_group": "quads",
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 364,
+      "key": "accessory_spanish_squat_with_weight",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 382,
+      "artwork_key": "accessory_spanish_squat",
+      "governed_survivor_id": 382,
+      "governed_survivor_key": "accessory_spanish_squat",
+      "taxonomy": {
+        "id": 364,
+        "key": "accessory_spanish_squat_with_weight",
+        "display_name": "Spanish Squat with Weight",
+        "kind": "accessory",
+        "family": "accessory_quads",
+        "primary_muscle_group": "quads",
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 380,
+      "key": "accessory_bodyweight_walking_lunge",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 358,
+      "artwork_key": "accessory_walking_lunge",
+      "governed_survivor_id": 358,
+      "governed_survivor_key": "accessory_walking_lunge",
+      "taxonomy": {
+        "id": 380,
+        "key": "accessory_bodyweight_walking_lunge",
+        "display_name": "Bodyweight Walking Lunge",
+        "kind": "accessory",
+        "family": "accessory_quads",
+        "primary_muscle_group": "quads",
+        "secondary_muscle_groups": [
+          "glutes"
+        ],
+        "equipment_type": "bodyweight"
+      }
+    },
+    {
+      "movement_definition_id": 387,
+      "key": "accessory_romanian_deadlift",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 387,
+      "artwork_key": "accessory_romanian_deadlift",
+      "governed_survivor_id": 625,
+      "governed_survivor_key": "romanian_deadlift",
+      "taxonomy": {
+        "id": 387,
+        "key": "accessory_romanian_deadlift",
+        "display_name": "Romanian Deadlift",
+        "kind": "accessory",
+        "family": "accessory_hamstrings",
+        "primary_muscle_group": "hamstrings",
+        "secondary_muscle_groups": [
+          "glutes",
+          "lower_back"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 391,
+      "key": "accessory_stiff_leg_deadlift",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 391,
+      "artwork_key": "accessory_stiff_leg_deadlift",
+      "governed_survivor_id": 626,
+      "governed_survivor_key": "stiff_leg_deadlift",
+      "taxonomy": {
+        "id": 391,
+        "key": "accessory_stiff_leg_deadlift",
+        "display_name": "Stiff-Leg Deadlift",
+        "kind": "accessory",
+        "family": "accessory_hamstrings",
+        "primary_muscle_group": "hamstrings",
+        "secondary_muscle_groups": [
+          "glutes",
+          "lower_back"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 396,
+      "key": "accessory_glute_ham_raise_with_weight",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 412,
+      "artwork_key": "accessory_bodyweight_glute_ham_raise",
+      "governed_survivor_id": 412,
+      "governed_survivor_key": "accessory_bodyweight_glute_ham_raise",
+      "taxonomy": {
+        "id": 396,
+        "key": "accessory_glute_ham_raise_with_weight",
+        "display_name": "Glute-Ham Raise with Weight",
+        "kind": "accessory",
+        "family": "accessory_hamstrings",
+        "primary_muscle_group": "hamstrings",
+        "secondary_muscle_groups": [
+          "glutes",
+          "lower_back"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 403,
+      "key": "accessory_glute_ham_raise",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 412,
+      "artwork_key": "accessory_bodyweight_glute_ham_raise",
+      "governed_survivor_id": 412,
+      "governed_survivor_key": "accessory_bodyweight_glute_ham_raise",
+      "taxonomy": {
+        "id": 403,
+        "key": "accessory_glute_ham_raise",
+        "display_name": "Glute-Ham Raise",
+        "kind": "accessory",
+        "family": "accessory_hamstrings",
+        "primary_muscle_group": "hamstrings",
+        "secondary_muscle_groups": [
+          "glutes"
+        ],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 405,
+      "key": "accessory_standing_cable_leg_curl",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 404,
+      "artwork_key": "accessory_cable_leg_curl",
+      "governed_survivor_id": 404,
+      "governed_survivor_key": "accessory_cable_leg_curl",
+      "taxonomy": {
+        "id": 405,
+        "key": "accessory_standing_cable_leg_curl",
+        "display_name": "Standing Cable Leg Curl",
+        "kind": "accessory",
+        "family": "accessory_hamstrings",
+        "primary_muscle_group": "hamstrings",
+        "secondary_muscle_groups": [
+          "glutes"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 419,
+      "key": "accessory_dumbbell_hip_thrust",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 418,
+      "artwork_key": "accessory_barbell_hip_thrust",
+      "governed_survivor_id": 418,
+      "governed_survivor_key": "accessory_barbell_hip_thrust",
+      "taxonomy": {
+        "id": 419,
+        "key": "accessory_dumbbell_hip_thrust",
+        "display_name": "Dumbbell Hip Thrust",
+        "kind": "accessory",
+        "family": "accessory_glutes",
+        "primary_muscle_group": "glutes",
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 420,
+      "key": "accessory_barbell_glute_bridge",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 442,
+      "artwork_key": "accessory_bodyweight_glute_bridge",
+      "governed_survivor_id": 442,
+      "governed_survivor_key": "accessory_bodyweight_glute_bridge",
+      "taxonomy": {
+        "id": 420,
+        "key": "accessory_barbell_glute_bridge",
+        "display_name": "Barbell Glute Bridge",
+        "kind": "accessory",
+        "family": "accessory_glutes",
+        "primary_muscle_group": "glutes",
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ],
+        "equipment_type": "barbell"
+      }
+    },
+    {
+      "movement_definition_id": 421,
+      "key": "accessory_dumbbell_glute_bridge",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 442,
+      "artwork_key": "accessory_bodyweight_glute_bridge",
+      "governed_survivor_id": 442,
+      "governed_survivor_key": "accessory_bodyweight_glute_bridge",
+      "taxonomy": {
+        "id": 421,
+        "key": "accessory_dumbbell_glute_bridge",
+        "display_name": "Dumbbell Glute Bridge",
+        "kind": "accessory",
+        "family": "accessory_glutes",
+        "primary_muscle_group": "glutes",
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 430,
+      "key": "accessory_dumbbell_frog_pump",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 444,
+      "artwork_key": "accessory_frog_pump",
+      "governed_survivor_id": 444,
+      "governed_survivor_key": "accessory_frog_pump",
+      "taxonomy": {
+        "id": 430,
+        "key": "accessory_dumbbell_frog_pump",
+        "display_name": "Dumbbell Frog Pump",
+        "kind": "accessory",
+        "family": "accessory_glutes",
+        "primary_muscle_group": "glutes",
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 433,
+      "key": "accessory_glute_drive_machine",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 431,
+      "artwork_key": "accessory_machine_hip_thrust",
+      "governed_survivor_id": 431,
+      "governed_survivor_key": "accessory_machine_hip_thrust",
+      "taxonomy": {
+        "id": 433,
+        "key": "accessory_glute_drive_machine",
+        "display_name": "Glute Drive Machine",
+        "kind": "accessory",
+        "family": "accessory_glutes",
+        "primary_muscle_group": "glutes",
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 438,
+      "key": "accessory_standing_cable_hip_extension",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 437,
+      "artwork_key": "accessory_cable_glute_kickback",
+      "governed_survivor_id": 437,
+      "governed_survivor_key": "accessory_cable_glute_kickback",
+      "taxonomy": {
+        "id": 438,
+        "key": "accessory_standing_cable_hip_extension",
+        "display_name": "Standing Cable Hip Extension",
+        "kind": "accessory",
+        "family": "accessory_glutes",
+        "primary_muscle_group": "glutes",
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 455,
+      "key": "accessory_copenhagen_adduction",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 457,
+      "artwork_key": "accessory_long_lever_copenhagen_adduction",
+      "governed_survivor_id": 457,
+      "governed_survivor_key": "accessory_long_lever_copenhagen_adduction",
+      "taxonomy": {
+        "id": 455,
+        "key": "accessory_copenhagen_adduction",
+        "display_name": "Copenhagen Adduction",
+        "kind": "accessory",
+        "family": "accessory_adductors",
+        "primary_muscle_group": "adductors",
+        "secondary_muscle_groups": [
+          "obliques"
+        ],
+        "equipment_type": "bodyweight"
+      }
+    },
+    {
+      "movement_definition_id": 471,
+      "key": "accessory_band_hip_abduction",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 475,
+      "artwork_key": "accessory_standing_band_hip_abduction",
+      "governed_survivor_id": 475,
+      "governed_survivor_key": "accessory_standing_band_hip_abduction",
+      "taxonomy": {
+        "id": 471,
+        "key": "accessory_band_hip_abduction",
+        "display_name": "Band Hip Abduction",
+        "kind": "accessory",
+        "family": "accessory_abductors",
+        "primary_muscle_group": "abductors",
+        "secondary_muscle_groups": [
+          "glutes"
+        ],
+        "equipment_type": "other"
+      }
+    },
+    {
+      "movement_definition_id": 476,
+      "key": "accessory_standing_dumbbell_calf_raise",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 488,
+      "artwork_key": "accessory_standing_calf_raise",
+      "governed_survivor_id": 488,
+      "governed_survivor_key": "accessory_standing_calf_raise",
+      "taxonomy": {
+        "id": 476,
+        "key": "accessory_standing_dumbbell_calf_raise",
+        "display_name": "Standing Dumbbell Calf Raise",
+        "kind": "accessory",
+        "family": "accessory_calves",
+        "primary_muscle_group": "calves",
+        "secondary_muscle_groups": [],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 477,
+      "key": "accessory_single_leg_dumbbell_calf_raise",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 489,
+      "artwork_key": "accessory_single_leg_calf_raise",
+      "governed_survivor_id": 489,
+      "governed_survivor_key": "accessory_single_leg_calf_raise",
+      "taxonomy": {
+        "id": 477,
+        "key": "accessory_single_leg_dumbbell_calf_raise",
+        "display_name": "Single-Leg Dumbbell Calf Raise",
+        "kind": "accessory",
+        "family": "accessory_calves",
+        "primary_muscle_group": "calves",
+        "secondary_muscle_groups": [],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 478,
+      "key": "accessory_barbell_calf_raise",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 488,
+      "artwork_key": "accessory_standing_calf_raise",
+      "governed_survivor_id": 488,
+      "governed_survivor_key": "accessory_standing_calf_raise",
+      "taxonomy": {
+        "id": 478,
+        "key": "accessory_barbell_calf_raise",
+        "display_name": "Barbell Calf Raise",
+        "kind": "accessory",
+        "family": "accessory_calves",
+        "primary_muscle_group": "calves",
+        "secondary_muscle_groups": [],
+        "equipment_type": "barbell"
+      }
+    },
+    {
+      "movement_definition_id": 480,
+      "key": "accessory_donkey_calf_raise_with_weight",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 491,
+      "artwork_key": "accessory_donkey_calf_raise",
+      "governed_survivor_id": 491,
+      "governed_survivor_key": "accessory_donkey_calf_raise",
+      "taxonomy": {
+        "id": 480,
+        "key": "accessory_donkey_calf_raise_with_weight",
+        "display_name": "Donkey Calf Raise with Weight",
+        "kind": "accessory",
+        "family": "accessory_calves",
+        "primary_muscle_group": "calves",
+        "secondary_muscle_groups": [],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 486,
+      "key": "accessory_single_leg_calf_raise_machine",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 489,
+      "artwork_key": "accessory_single_leg_calf_raise",
+      "governed_survivor_id": 489,
+      "governed_survivor_key": "accessory_single_leg_calf_raise",
+      "taxonomy": {
+        "id": 486,
+        "key": "accessory_single_leg_calf_raise_machine",
+        "display_name": "Single-Leg Calf Raise Machine",
+        "kind": "accessory",
+        "family": "accessory_calves",
+        "primary_muscle_group": "calves",
+        "secondary_muscle_groups": [],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 495,
+      "key": "accessory_weighted_crunch",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 507,
+      "artwork_key": "accessory_crunch",
+      "governed_survivor_id": 507,
+      "governed_survivor_key": "accessory_crunch",
+      "taxonomy": {
+        "id": 495,
+        "key": "accessory_weighted_crunch",
+        "display_name": "Weighted Crunch",
+        "kind": "accessory",
+        "family": "accessory_abs",
+        "primary_muscle_group": "abs",
+        "secondary_muscle_groups": [
+          "hip_flexors"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 497,
+      "key": "accessory_plate_sit_up",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 496,
+      "artwork_key": "accessory_dumbbell_sit_up",
+      "governed_survivor_id": 496,
+      "governed_survivor_key": "accessory_dumbbell_sit_up",
+      "taxonomy": {
+        "id": 497,
+        "key": "accessory_plate_sit_up",
+        "display_name": "Plate Sit-Up",
+        "kind": "accessory",
+        "family": "accessory_abs",
+        "primary_muscle_group": "abs",
+        "secondary_muscle_groups": [
+          "hip_flexors"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 498,
+      "key": "accessory_weighted_decline_sit_up",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 509,
+      "artwork_key": "accessory_decline_sit_up",
+      "governed_survivor_id": 509,
+      "governed_survivor_key": "accessory_decline_sit_up",
+      "taxonomy": {
+        "id": 498,
+        "key": "accessory_weighted_decline_sit_up",
+        "display_name": "Weighted Decline Sit-Up",
+        "kind": "accessory",
+        "family": "accessory_abs",
+        "primary_muscle_group": "abs",
+        "secondary_muscle_groups": [
+          "hip_flexors"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 500,
+      "key": "accessory_dumbbell_dead_bug",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 516,
+      "artwork_key": "accessory_dead_bug",
+      "governed_survivor_id": 516,
+      "governed_survivor_key": "accessory_dead_bug",
+      "taxonomy": {
+        "id": 500,
+        "key": "accessory_dumbbell_dead_bug",
+        "display_name": "Dumbbell Dead Bug",
+        "kind": "accessory",
+        "family": "accessory_abs",
+        "primary_muscle_group": "abs",
+        "secondary_muscle_groups": [
+          "hip_flexors"
+        ],
+        "equipment_type": "dumbbell"
+      }
+    },
+    {
+      "movement_definition_id": 502,
+      "key": "accessory_kneeling_cable_crunch",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 501,
+      "artwork_key": "accessory_cable_crunch",
+      "governed_survivor_id": 501,
+      "governed_survivor_key": "accessory_cable_crunch",
+      "taxonomy": {
+        "id": 502,
+        "key": "accessory_kneeling_cable_crunch",
+        "display_name": "Kneeling Cable Crunch",
+        "kind": "accessory",
+        "family": "accessory_abs",
+        "primary_muscle_group": "abs",
+        "secondary_muscle_groups": [
+          "hip_flexors"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 532,
+      "key": "accessory_high_to_low_cable_chop",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 531,
+      "artwork_key": "accessory_cable_wood_chop",
+      "governed_survivor_id": 531,
+      "governed_survivor_key": "accessory_cable_wood_chop",
+      "taxonomy": {
+        "id": 532,
+        "key": "accessory_high_to_low_cable_chop",
+        "display_name": "High-to-Low Cable Chop",
+        "kind": "accessory",
+        "family": "accessory_obliques",
+        "primary_muscle_group": "obliques",
+        "secondary_muscle_groups": [
+          "abs"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 535,
+      "key": "accessory_cable_lift",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 533,
+      "artwork_key": "accessory_low_to_high_cable_chop",
+      "governed_survivor_id": 533,
+      "governed_survivor_key": "accessory_low_to_high_cable_chop",
+      "taxonomy": {
+        "id": 535,
+        "key": "accessory_cable_lift",
+        "display_name": "Cable Lift",
+        "kind": "accessory",
+        "family": "accessory_obliques",
+        "primary_muscle_group": "obliques",
+        "secondary_muscle_groups": [
+          "abs"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 545,
+      "key": "accessory_barbell_back_extension",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 551,
+      "artwork_key": "accessory_horizontal_back_extension",
+      "governed_survivor_id": 551,
+      "governed_survivor_key": "accessory_horizontal_back_extension",
+      "taxonomy": {
+        "id": 545,
+        "key": "accessory_barbell_back_extension",
+        "display_name": "Barbell Back Extension",
+        "kind": "accessory",
+        "family": "accessory_lower_back",
+        "primary_muscle_group": "lower_back",
+        "secondary_muscle_groups": [
+          "hamstrings",
+          "glutes"
+        ],
+        "equipment_type": "barbell"
+      }
+    },
+    {
+      "movement_definition_id": 546,
+      "key": "accessory_good_morning",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 393,
+      "artwork_key": "accessory_barbell_good_morning",
+      "governed_survivor_id": 393,
+      "governed_survivor_key": "accessory_barbell_good_morning",
+      "taxonomy": {
+        "id": 546,
+        "key": "accessory_good_morning",
+        "display_name": "Good Morning",
+        "kind": "accessory",
+        "family": "accessory_lower_back",
+        "primary_muscle_group": "lower_back",
+        "secondary_muscle_groups": [
+          "hamstrings",
+          "glutes"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 549,
+      "key": "accessory_weighted_sorenson_hold",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 549,
+      "artwork_key": "accessory_weighted_sorenson_hold",
+      "governed_survivor_id": 552,
+      "governed_survivor_key": "accessory_sorenson_hold",
+      "taxonomy": {
+        "id": 549,
+        "key": "accessory_weighted_sorenson_hold",
+        "display_name": "Weighted Sorenson Hold",
+        "kind": "accessory",
+        "family": "accessory_lower_back",
+        "primary_muscle_group": "lower_back",
+        "secondary_muscle_groups": [
+          "hamstrings",
+          "glutes"
+        ],
+        "equipment_type": "free_weight"
+      }
+    },
+    {
+      "movement_definition_id": 553,
+      "key": "accessory_bird_dog_back_extension",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 541,
+      "artwork_key": "accessory_bird_dog",
+      "governed_survivor_id": 541,
+      "governed_survivor_key": "accessory_bird_dog",
+      "taxonomy": {
+        "id": 553,
+        "key": "accessory_bird_dog_back_extension",
+        "display_name": "Bird Dog Back Extension",
+        "kind": "accessory",
+        "family": "accessory_lower_back",
+        "primary_muscle_group": "lower_back",
+        "secondary_muscle_groups": [
+          "hamstrings",
+          "glutes"
+        ],
+        "equipment_type": "bodyweight"
+      }
+    },
+    {
+      "movement_definition_id": 556,
+      "key": "accessory_reverse_hyperextension_machine",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 435,
+      "artwork_key": "accessory_reverse_hyperextension",
+      "governed_survivor_id": 435,
+      "governed_survivor_key": "accessory_reverse_hyperextension",
+      "taxonomy": {
+        "id": 556,
+        "key": "accessory_reverse_hyperextension_machine",
+        "display_name": "Reverse Hyperextension Machine",
+        "kind": "accessory",
+        "family": "accessory_lower_back",
+        "primary_muscle_group": "lower_back",
+        "secondary_muscle_groups": [
+          "hamstrings",
+          "glutes"
+        ],
+        "equipment_type": "machine"
+      }
+    },
+    {
+      "movement_definition_id": 558,
+      "key": "accessory_cable_pull_through_back_extension",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 439,
+      "artwork_key": "accessory_cable_pull_through",
+      "governed_survivor_id": 439,
+      "governed_survivor_key": "accessory_cable_pull_through",
+      "taxonomy": {
+        "id": 558,
+        "key": "accessory_cable_pull_through_back_extension",
+        "display_name": "Cable Pull-Through Back Extension",
+        "kind": "accessory",
+        "family": "accessory_lower_back",
+        "primary_muscle_group": "lower_back",
+        "secondary_muscle_groups": [
+          "hamstrings",
+          "glutes"
+        ],
+        "equipment_type": "cable"
+      }
+    },
+    {
+      "movement_definition_id": 570,
+      "key": "accessory_ankle_weight_hip_flexion",
+      "core_movement_definition_id": null,
+      "artwork_movement_definition_id": 574,
+      "artwork_key": "accessory_standing_hip_flexor_march",
+      "governed_survivor_id": 574,
+      "governed_survivor_key": "accessory_standing_hip_flexor_march",
+      "taxonomy": {
+        "id": 570,
+        "key": "accessory_ankle_weight_hip_flexion",
+        "display_name": "Ankle-Weight Hip Flexion",
+        "kind": "accessory",
+        "family": "accessory_hip_flexors",
+        "primary_muscle_group": "hip_flexors",
+        "secondary_muscle_groups": [
+          "abs"
+        ],
+        "equipment_type": "free_weight"
+      }
+    }
+  ],
+  "withdrawn_identities": [
+    {
+      "movement_definition_id": 97,
+      "key": "accessory_cable_shoulder_press"
+    },
+    {
+      "movement_definition_id": 98,
+      "key": "accessory_single_arm_cable_shoulder_press"
+    },
+    {
+      "movement_definition_id": 141,
+      "key": "accessory_cable_rear_delt_row"
+    },
+    {
+      "movement_definition_id": 142,
+      "key": "accessory_high_cable_rear_delt_row"
+    },
+    {
+      "movement_definition_id": 152,
+      "key": "accessory_archer_row"
+    },
+    {
+      "movement_definition_id": 169,
+      "key": "accessory_kneeling_cable_lat_pulldown"
+    },
+    {
+      "movement_definition_id": 177,
+      "key": "accessory_cross_bench_cable_pulldown"
+    },
+    {
+      "movement_definition_id": 188,
+      "key": "accessory_band_lat_pulldown"
+    },
+    {
+      "movement_definition_id": 248,
+      "key": "accessory_cable_kelso_shrug"
+    },
+    {
+      "movement_definition_id": 286,
+      "key": "accessory_band_preacher_curl"
+    },
+    {
+      "movement_definition_id": 395,
+      "key": "accessory_dumbbell_good_morning"
+    },
+    {
+      "movement_definition_id": 440,
+      "key": "accessory_cable_step_back_lunge"
+    },
+    {
+      "movement_definition_id": 441,
+      "key": "accessory_cable_hip_thrust"
+    },
+    {
+      "movement_definition_id": 448,
+      "key": "accessory_band_hip_thrust"
+    },
+    {
+      "movement_definition_id": 452,
+      "key": "accessory_single_leg_adductor_machine"
+    },
+    {
+      "movement_definition_id": 454,
+      "key": "accessory_side_lying_cable_hip_adduction"
+    },
+    {
+      "movement_definition_id": 462,
+      "key": "accessory_band_copenhagen_adduction"
+    },
+    {
+      "movement_definition_id": 466,
+      "key": "accessory_side_lying_cable_hip_abduction"
+    },
+    {
+      "movement_definition_id": 521,
+      "key": "accessory_band_reverse_crunch"
+    },
+    {
+      "movement_definition_id": 557,
+      "key": "accessory_cable_good_morning"
+    },
+    {
+      "movement_definition_id": 561,
+      "key": "accessory_dumbbell_pullover_serratus_reach"
+    },
+    {
+      "movement_definition_id": 569,
+      "key": "accessory_dumbbell_psoas_march"
+    },
+    {
+      "movement_definition_id": 583,
+      "key": "accessory_neck_flexion_machine"
+    },
+    {
+      "movement_definition_id": 584,
+      "key": "accessory_neck_extension_machine"
+    },
+    {
+      "movement_definition_id": 585,
+      "key": "accessory_four_way_neck_machine"
+    }
+  ],
+  "active_accessory_identities": [
+    {
+      "movement_definition_id": 6,
+      "key": "incline_barbell_press"
+    },
+    {
+      "movement_definition_id": 11,
+      "key": "pull_up_bodyweight"
+    },
+    {
+      "movement_definition_id": 13,
+      "key": "pull_up_assisted"
+    },
+    {
+      "movement_definition_id": 14,
+      "key": "plank_duration"
+    },
+    {
+      "movement_definition_id": 15,
+      "key": "machine_lat_pulldown_broad"
+    },
+    {
+      "movement_definition_id": 20,
+      "key": "cable_lat_pulldown_unknown"
+    },
+    {
+      "movement_definition_id": 32,
+      "key": "accessory_flat_dumbbell_bench_press"
+    },
+    {
+      "movement_definition_id": 33,
+      "key": "accessory_incline_dumbbell_bench_press"
+    },
+    {
+      "movement_definition_id": 34,
+      "key": "accessory_decline_dumbbell_bench_press"
+    },
+    {
+      "movement_definition_id": 35,
+      "key": "accessory_neutral_grip_dumbbell_bench_press"
+    },
+    {
+      "movement_definition_id": 36,
+      "key": "accessory_dumbbell_floor_press"
+    },
+    {
+      "movement_definition_id": 37,
+      "key": "accessory_dumbbell_squeeze_press"
+    },
+    {
+      "movement_definition_id": 39,
+      "key": "accessory_dumbbell_flye"
+    },
+    {
+      "movement_definition_id": 40,
+      "key": "accessory_incline_dumbbell_flye"
+    },
+    {
+      "movement_definition_id": 41,
+      "key": "accessory_decline_dumbbell_flye"
+    },
+    {
+      "movement_definition_id": 42,
+      "key": "accessory_barbell_floor_press"
+    },
+    {
+      "movement_definition_id": 45,
+      "key": "accessory_guillotine_press"
+    },
+    {
+      "movement_definition_id": 46,
+      "key": "accessory_reverse_grip_bench_press"
+    },
+    {
+      "movement_definition_id": 47,
+      "key": "accessory_cambered_bar_bench_press"
+    },
+    {
+      "movement_definition_id": 48,
+      "key": "accessory_machine_chest_press"
+    },
+    {
+      "movement_definition_id": 49,
+      "key": "accessory_incline_machine_chest_press"
+    },
+    {
+      "movement_definition_id": 50,
+      "key": "accessory_decline_machine_chest_press"
+    },
+    {
+      "movement_definition_id": 51,
+      "key": "accessory_machine_chest_flye"
+    },
+    {
+      "movement_definition_id": 53,
+      "key": "accessory_converging_chest_press"
+    },
+    {
+      "movement_definition_id": 54,
+      "key": "accessory_iso_lateral_chest_press"
+    },
+    {
+      "movement_definition_id": 55,
+      "key": "accessory_single_arm_machine_chest_press"
+    },
+    {
+      "movement_definition_id": 56,
+      "key": "accessory_smith_machine_bench_press"
+    },
+    {
+      "movement_definition_id": 57,
+      "key": "accessory_incline_smith_machine_bench_press"
+    },
+    {
+      "movement_definition_id": 58,
+      "key": "accessory_decline_smith_machine_bench_press"
+    },
+    {
+      "movement_definition_id": 59,
+      "key": "accessory_standing_cable_chest_press"
+    },
+    {
+      "movement_definition_id": 60,
+      "key": "accessory_single_arm_cable_chest_press"
+    },
+    {
+      "movement_definition_id": 61,
+      "key": "accessory_cable_chest_flye"
+    },
+    {
+      "movement_definition_id": 62,
+      "key": "accessory_low_to_high_cable_flye"
+    },
+    {
+      "movement_definition_id": 63,
+      "key": "accessory_high_to_low_cable_flye"
+    },
+    {
+      "movement_definition_id": 65,
+      "key": "accessory_single_arm_cable_flye"
+    },
+    {
+      "movement_definition_id": 66,
+      "key": "accessory_cable_squeeze_press"
+    },
+    {
+      "movement_definition_id": 67,
+      "key": "accessory_push_up"
+    },
+    {
+      "movement_definition_id": 68,
+      "key": "accessory_deficit_push_up"
+    },
+    {
+      "movement_definition_id": 69,
+      "key": "accessory_ring_push_up"
+    },
+    {
+      "movement_definition_id": 70,
+      "key": "accessory_wide_grip_push_up"
+    },
+    {
+      "movement_definition_id": 71,
+      "key": "accessory_decline_push_up"
+    },
+    {
+      "movement_definition_id": 72,
+      "key": "accessory_incline_push_up"
+    },
+    {
+      "movement_definition_id": 74,
+      "key": "accessory_chest_dip"
+    },
+    {
+      "movement_definition_id": 75,
+      "key": "accessory_ring_dip"
+    },
+    {
+      "movement_definition_id": 76,
+      "key": "accessory_band_chest_press"
+    },
+    {
+      "movement_definition_id": 77,
+      "key": "accessory_band_chest_flye"
+    },
+    {
+      "movement_definition_id": 78,
+      "key": "accessory_band_push_up"
+    },
+    {
+      "movement_definition_id": 79,
+      "key": "accessory_seated_dumbbell_shoulder_press"
+    },
+    {
+      "movement_definition_id": 80,
+      "key": "accessory_standing_dumbbell_shoulder_press"
+    },
+    {
+      "movement_definition_id": 81,
+      "key": "accessory_arnold_press"
+    },
+    {
+      "movement_definition_id": 82,
+      "key": "accessory_dumbbell_front_raise"
+    },
+    {
+      "movement_definition_id": 83,
+      "key": "accessory_alternating_dumbbell_front_raise"
+    },
+    {
+      "movement_definition_id": 84,
+      "key": "accessory_plate_front_raise"
+    },
+    {
+      "movement_definition_id": 85,
+      "key": "accessory_barbell_front_raise"
+    },
+    {
+      "movement_definition_id": 86,
+      "key": "accessory_landmine_press"
+    },
+    {
+      "movement_definition_id": 87,
+      "key": "accessory_half_kneeling_landmine_press"
+    },
+    {
+      "movement_definition_id": 88,
+      "key": "accessory_single_arm_landmine_press"
+    },
+    {
+      "movement_definition_id": 89,
+      "key": "accessory_z_press"
+    },
+    {
+      "movement_definition_id": 90,
+      "key": "accessory_bradford_press"
+    },
+    {
+      "movement_definition_id": 91,
+      "key": "accessory_machine_shoulder_press"
+    },
+    {
+      "movement_definition_id": 92,
+      "key": "accessory_iso_lateral_shoulder_press"
+    },
+    {
+      "movement_definition_id": 93,
+      "key": "accessory_smith_machine_shoulder_press"
+    },
+    {
+      "movement_definition_id": 94,
+      "key": "accessory_machine_front_raise"
+    },
+    {
+      "movement_definition_id": 95,
+      "key": "accessory_cable_front_raise"
+    },
+    {
+      "movement_definition_id": 96,
+      "key": "accessory_single_arm_cable_front_raise"
+    },
+    {
+      "movement_definition_id": 99,
+      "key": "accessory_band_front_raise"
+    },
+    {
+      "movement_definition_id": 100,
+      "key": "accessory_band_shoulder_press"
+    },
+    {
+      "movement_definition_id": 101,
+      "key": "accessory_pike_push_up"
+    },
+    {
+      "movement_definition_id": 102,
+      "key": "accessory_handstand_push_up"
+    },
+    {
+      "movement_definition_id": 103,
+      "key": "accessory_dumbbell_lateral_raise"
+    },
+    {
+      "movement_definition_id": 104,
+      "key": "accessory_seated_dumbbell_lateral_raise"
+    },
+    {
+      "movement_definition_id": 105,
+      "key": "accessory_incline_dumbbell_lateral_raise"
+    },
+    {
+      "movement_definition_id": 106,
+      "key": "accessory_lean_away_dumbbell_lateral_raise"
+    },
+    {
+      "movement_definition_id": 107,
+      "key": "accessory_lying_dumbbell_lateral_raise"
+    },
+    {
+      "movement_definition_id": 108,
+      "key": "accessory_chest_supported_dumbbell_lateral_raise"
+    },
+    {
+      "movement_definition_id": 109,
+      "key": "accessory_partial_dumbbell_lateral_raise"
+    },
+    {
+      "movement_definition_id": 110,
+      "key": "accessory_lu_raise"
+    },
+    {
+      "movement_definition_id": 111,
+      "key": "accessory_dumbbell_upright_row"
+    },
+    {
+      "movement_definition_id": 112,
+      "key": "accessory_wide_grip_barbell_upright_row"
+    },
+    {
+      "movement_definition_id": 113,
+      "key": "accessory_cable_lateral_raise"
+    },
+    {
+      "movement_definition_id": 114,
+      "key": "accessory_single_arm_cable_lateral_raise"
+    },
+    {
+      "movement_definition_id": 115,
+      "key": "accessory_lean_away_cable_lateral_raise"
+    },
+    {
+      "movement_definition_id": 116,
+      "key": "accessory_behind_the_back_cable_lateral_raise"
+    },
+    {
+      "movement_definition_id": 118,
+      "key": "accessory_single_arm_cable_y_raise"
+    },
+    {
+      "movement_definition_id": 119,
+      "key": "accessory_dual_cable_y_raise"
+    },
+    {
+      "movement_definition_id": 120,
+      "key": "accessory_cable_upright_row"
+    },
+    {
+      "movement_definition_id": 121,
+      "key": "accessory_machine_lateral_raise"
+    },
+    {
+      "movement_definition_id": 122,
+      "key": "accessory_machine_y_raise"
+    },
+    {
+      "movement_definition_id": 123,
+      "key": "accessory_band_lateral_raise"
+    },
+    {
+      "movement_definition_id": 124,
+      "key": "accessory_band_y_raise"
+    },
+    {
+      "movement_definition_id": 125,
+      "key": "accessory_band_upright_row"
+    },
+    {
+      "movement_definition_id": 126,
+      "key": "accessory_bent_over_dumbbell_reverse_flye"
+    },
+    {
+      "movement_definition_id": 127,
+      "key": "accessory_chest_supported_dumbbell_reverse_flye"
+    },
+    {
+      "movement_definition_id": 129,
+      "key": "accessory_rear_delt_dumbbell_row"
+    },
+    {
+      "movement_definition_id": 131,
+      "key": "accessory_rear_delt_barbell_row"
+    },
+    {
+      "movement_definition_id": 132,
+      "key": "accessory_wide_grip_chest_supported_rear_delt_row"
+    },
+    {
+      "movement_definition_id": 133,
+      "key": "accessory_prone_rear_delt_swing"
+    },
+    {
+      "movement_definition_id": 135,
+      "key": "accessory_machine_reverse_flye"
+    },
+    {
+      "movement_definition_id": 136,
+      "key": "accessory_rear_delt_row_machine"
+    },
+    {
+      "movement_definition_id": 138,
+      "key": "accessory_cable_reverse_flye"
+    },
+    {
+      "movement_definition_id": 139,
+      "key": "accessory_single_arm_cable_reverse_flye"
+    },
+    {
+      "movement_definition_id": 140,
+      "key": "accessory_cross_body_cable_rear_delt_flye"
+    },
+    {
+      "movement_definition_id": 143,
+      "key": "accessory_cable_face_pull"
+    },
+    {
+      "movement_definition_id": 145,
+      "key": "accessory_rope_face_pull_with_external_rotation"
+    },
+    {
+      "movement_definition_id": 146,
+      "key": "accessory_band_pull_apart"
+    },
+    {
+      "movement_definition_id": 147,
+      "key": "accessory_band_reverse_flye"
+    },
+    {
+      "movement_definition_id": 148,
+      "key": "accessory_band_face_pull"
+    },
+    {
+      "movement_definition_id": 149,
+      "key": "accessory_band_w_raise"
+    },
+    {
+      "movement_definition_id": 150,
+      "key": "accessory_dumbbell_archer_row"
+    },
+    {
+      "movement_definition_id": 151,
+      "key": "accessory_cable_archer_row"
+    },
+    {
+      "movement_definition_id": 153,
+      "key": "accessory_meadows_row"
+    },
+    {
+      "movement_definition_id": 154,
+      "key": "accessory_one_arm_dumbbell_row"
+    },
+    {
+      "movement_definition_id": 155,
+      "key": "accessory_dumbbell_pullover"
+    },
+    {
+      "movement_definition_id": 156,
+      "key": "accessory_barbell_pullover"
+    },
+    {
+      "movement_definition_id": 157,
+      "key": "accessory_kroc_row"
+    },
+    {
+      "movement_definition_id": 160,
+      "key": "accessory_one_arm_landmine_row"
+    },
+    {
+      "movement_definition_id": 161,
+      "key": "accessory_lat_biased_dumbbell_row"
+    },
+    {
+      "movement_definition_id": 162,
+      "key": "accessory_lat_biased_chest_supported_dumbbell_row"
+    },
+    {
+      "movement_definition_id": 163,
+      "key": "accessory_wide_grip_lat_pulldown"
+    },
+    {
+      "movement_definition_id": 164,
+      "key": "accessory_neutral_grip_lat_pulldown"
+    },
+    {
+      "movement_definition_id": 165,
+      "key": "accessory_close_grip_lat_pulldown"
+    },
+    {
+      "movement_definition_id": 166,
+      "key": "accessory_supinated_grip_lat_pulldown"
+    },
+    {
+      "movement_definition_id": 167,
+      "key": "accessory_single_arm_lat_pulldown"
+    },
+    {
+      "movement_definition_id": 168,
+      "key": "accessory_half_kneeling_single_arm_lat_pulldown"
+    },
+    {
+      "movement_definition_id": 170,
+      "key": "accessory_straight_arm_cable_pulldown"
+    },
+    {
+      "movement_definition_id": 173,
+      "key": "accessory_single_arm_cable_pullover"
+    },
+    {
+      "movement_definition_id": 174,
+      "key": "accessory_cable_lat_prayer"
+    },
+    {
+      "movement_definition_id": 175,
+      "key": "accessory_single_arm_cable_low_row"
+    },
+    {
+      "movement_definition_id": 176,
+      "key": "accessory_elbow_tucked_cable_row"
+    },
+    {
+      "movement_definition_id": 178,
+      "key": "accessory_machine_pullover"
+    },
+    {
+      "movement_definition_id": 179,
+      "key": "accessory_iso_lateral_lat_pulldown"
+    },
+    {
+      "movement_definition_id": 180,
+      "key": "accessory_iso_lateral_low_row"
+    },
+    {
+      "movement_definition_id": 181,
+      "key": "accessory_machine_low_row"
+    },
+    {
+      "movement_definition_id": 182,
+      "key": "accessory_single_arm_machine_low_row"
+    },
+    {
+      "movement_definition_id": 183,
+      "key": "accessory_neutral_grip_pull_up"
+    },
+    {
+      "movement_definition_id": 184,
+      "key": "accessory_wide_grip_pull_up"
+    },
+    {
+      "movement_definition_id": 185,
+      "key": "accessory_chin_up"
+    },
+    {
+      "movement_definition_id": 186,
+      "key": "accessory_sternum_chin_up"
+    },
+    {
+      "movement_definition_id": 187,
+      "key": "accessory_scapular_pull_up"
+    },
+    {
+      "movement_definition_id": 189,
+      "key": "accessory_band_straight_arm_pulldown"
+    },
+    {
+      "movement_definition_id": 190,
+      "key": "accessory_band_assisted_pull_up"
+    },
+    {
+      "movement_definition_id": 191,
+      "key": "accessory_bent_over_barbell_row"
+    },
+    {
+      "movement_definition_id": 192,
+      "key": "accessory_pendlay_row"
+    },
+    {
+      "movement_definition_id": 193,
+      "key": "accessory_seal_row"
+    },
+    {
+      "movement_definition_id": 194,
+      "key": "accessory_chest_supported_dumbbell_row"
+    },
+    {
+      "movement_definition_id": 195,
+      "key": "accessory_chest_supported_barbell_row"
+    },
+    {
+      "movement_definition_id": 197,
+      "key": "accessory_t_bar_row"
+    },
+    {
+      "movement_definition_id": 198,
+      "key": "accessory_wide_grip_t_bar_row"
+    },
+    {
+      "movement_definition_id": 200,
+      "key": "accessory_helms_row"
+    },
+    {
+      "movement_definition_id": 201,
+      "key": "accessory_batwing_row"
+    },
+    {
+      "movement_definition_id": 202,
+      "key": "accessory_gorilla_row"
+    },
+    {
+      "movement_definition_id": 203,
+      "key": "accessory_snatch_grip_barbell_row"
+    },
+    {
+      "movement_definition_id": 206,
+      "key": "accessory_dumbbell_high_row"
+    },
+    {
+      "movement_definition_id": 207,
+      "key": "accessory_seated_cable_row"
+    },
+    {
+      "movement_definition_id": 208,
+      "key": "accessory_wide_grip_seated_cable_row"
+    },
+    {
+      "movement_definition_id": 209,
+      "key": "accessory_neutral_grip_seated_cable_row"
+    },
+    {
+      "movement_definition_id": 210,
+      "key": "accessory_single_arm_seated_cable_row"
+    },
+    {
+      "movement_definition_id": 211,
+      "key": "accessory_cable_high_row"
+    },
+    {
+      "movement_definition_id": 213,
+      "key": "accessory_chest_supported_cable_row"
+    },
+    {
+      "movement_definition_id": 214,
+      "key": "accessory_standing_cable_row"
+    },
+    {
+      "movement_definition_id": 215,
+      "key": "accessory_cable_scapular_row"
+    },
+    {
+      "movement_definition_id": 216,
+      "key": "accessory_chest_supported_machine_row"
+    },
+    {
+      "movement_definition_id": 217,
+      "key": "accessory_plate_loaded_high_row"
+    },
+    {
+      "movement_definition_id": 218,
+      "key": "accessory_iso_lateral_high_row"
+    },
+    {
+      "movement_definition_id": 219,
+      "key": "accessory_single_arm_machine_high_row"
+    },
+    {
+      "movement_definition_id": 220,
+      "key": "accessory_machine_t_bar_row"
+    },
+    {
+      "movement_definition_id": 225,
+      "key": "accessory_inverted_row"
+    },
+    {
+      "movement_definition_id": 226,
+      "key": "accessory_feet_elevated_inverted_row"
+    },
+    {
+      "movement_definition_id": 227,
+      "key": "accessory_ring_row"
+    },
+    {
+      "movement_definition_id": 228,
+      "key": "accessory_suspension_trainer_row"
+    },
+    {
+      "movement_definition_id": 229,
+      "key": "accessory_scapular_inverted_row"
+    },
+    {
+      "movement_definition_id": 230,
+      "key": "accessory_band_row"
+    },
+    {
+      "movement_definition_id": 231,
+      "key": "accessory_band_high_row"
+    },
+    {
+      "movement_definition_id": 232,
+      "key": "accessory_band_scapular_row"
+    },
+    {
+      "movement_definition_id": 233,
+      "key": "accessory_single_arm_cable_high_row"
+    },
+    {
+      "movement_definition_id": 234,
+      "key": "accessory_barbell_shrug"
+    },
+    {
+      "movement_definition_id": 235,
+      "key": "accessory_dumbbell_shrug"
+    },
+    {
+      "movement_definition_id": 236,
+      "key": "accessory_trap_bar_shrug"
+    },
+    {
+      "movement_definition_id": 237,
+      "key": "accessory_behind_the_back_barbell_shrug"
+    },
+    {
+      "movement_definition_id": 238,
+      "key": "accessory_snatch_grip_shrug"
+    },
+    {
+      "movement_definition_id": 239,
+      "key": "accessory_overhead_barbell_shrug"
+    },
+    {
+      "movement_definition_id": 240,
+      "key": "accessory_farmer_carry"
+    },
+    {
+      "movement_definition_id": 241,
+      "key": "accessory_chest_supported_kelso_shrug"
+    },
+    {
+      "movement_definition_id": 243,
+      "key": "accessory_machine_shrug"
+    },
+    {
+      "movement_definition_id": 244,
+      "key": "accessory_smith_machine_shrug"
+    },
+    {
+      "movement_definition_id": 245,
+      "key": "accessory_machine_kelso_shrug"
+    },
+    {
+      "movement_definition_id": 246,
+      "key": "accessory_cable_shrug"
+    },
+    {
+      "movement_definition_id": 247,
+      "key": "accessory_single_arm_cable_shrug"
+    },
+    {
+      "movement_definition_id": 249,
+      "key": "accessory_band_shrug"
+    },
+    {
+      "movement_definition_id": 250,
+      "key": "accessory_band_overhead_shrug"
+    },
+    {
+      "movement_definition_id": 251,
+      "key": "accessory_barbell_curl"
+    },
+    {
+      "movement_definition_id": 252,
+      "key": "accessory_ez_bar_curl"
+    },
+    {
+      "movement_definition_id": 253,
+      "key": "accessory_dumbbell_curl"
+    },
+    {
+      "movement_definition_id": 254,
+      "key": "accessory_alternating_dumbbell_curl"
+    },
+    {
+      "movement_definition_id": 255,
+      "key": "accessory_seated_dumbbell_curl"
+    },
+    {
+      "movement_definition_id": 257,
+      "key": "accessory_incline_dumbbell_curl"
+    },
+    {
+      "movement_definition_id": 258,
+      "key": "accessory_spider_curl"
+    },
+    {
+      "movement_definition_id": 259,
+      "key": "accessory_single_arm_preacher_curl"
+    },
+    {
+      "movement_definition_id": 260,
+      "key": "accessory_dumbbell_preacher_curl"
+    },
+    {
+      "movement_definition_id": 261,
+      "key": "accessory_ez_bar_preacher_curl"
+    },
+    {
+      "movement_definition_id": 262,
+      "key": "accessory_concentration_curl"
+    },
+    {
+      "movement_definition_id": 263,
+      "key": "accessory_hammer_curl"
+    },
+    {
+      "movement_definition_id": 264,
+      "key": "accessory_cross_body_hammer_curl"
+    },
+    {
+      "movement_definition_id": 265,
+      "key": "accessory_zottman_curl"
+    },
+    {
+      "movement_definition_id": 266,
+      "key": "accessory_drag_curl"
+    },
+    {
+      "movement_definition_id": 267,
+      "key": "accessory_reverse_curl"
+    },
+    {
+      "movement_definition_id": 268,
+      "key": "accessory_cheat_curl"
+    },
+    {
+      "movement_definition_id": 269,
+      "key": "accessory_cable_curl"
+    },
+    {
+      "movement_definition_id": 271,
+      "key": "accessory_bayesian_cable_curl"
+    },
+    {
+      "movement_definition_id": 272,
+      "key": "accessory_single_arm_bayesian_cable_curl"
+    },
+    {
+      "movement_definition_id": 273,
+      "key": "accessory_cable_preacher_curl"
+    },
+    {
+      "movement_definition_id": 274,
+      "key": "accessory_single_arm_cable_preacher_curl"
+    },
+    {
+      "movement_definition_id": 275,
+      "key": "accessory_high_cable_curl"
+    },
+    {
+      "movement_definition_id": 278,
+      "key": "accessory_single_arm_cable_curl"
+    },
+    {
+      "movement_definition_id": 279,
+      "key": "accessory_cable_hammer_curl"
+    },
+    {
+      "movement_definition_id": 281,
+      "key": "accessory_machine_preacher_curl"
+    },
+    {
+      "movement_definition_id": 282,
+      "key": "accessory_single_arm_machine_preacher_curl"
+    },
+    {
+      "movement_definition_id": 283,
+      "key": "accessory_plate_loaded_biceps_curl"
+    },
+    {
+      "movement_definition_id": 284,
+      "key": "accessory_band_curl"
+    },
+    {
+      "movement_definition_id": 285,
+      "key": "accessory_band_hammer_curl"
+    },
+    {
+      "movement_definition_id": 287,
+      "key": "accessory_bodyweight_curl"
+    },
+    {
+      "movement_definition_id": 288,
+      "key": "accessory_ring_curl"
+    },
+    {
+      "movement_definition_id": 290,
+      "key": "accessory_jm_press"
+    },
+    {
+      "movement_definition_id": 291,
+      "key": "accessory_barbell_skull_crusher"
+    },
+    {
+      "movement_definition_id": 292,
+      "key": "accessory_ez_bar_skull_crusher"
+    },
+    {
+      "movement_definition_id": 293,
+      "key": "accessory_dumbbell_skull_crusher"
+    },
+    {
+      "movement_definition_id": 294,
+      "key": "accessory_incline_skull_crusher"
+    },
+    {
+      "movement_definition_id": 295,
+      "key": "accessory_decline_skull_crusher"
+    },
+    {
+      "movement_definition_id": 296,
+      "key": "accessory_dumbbell_overhead_triceps_extension"
+    },
+    {
+      "movement_definition_id": 297,
+      "key": "accessory_single_arm_dumbbell_overhead_triceps_extension"
+    },
+    {
+      "movement_definition_id": 298,
+      "key": "accessory_tate_press"
+    },
+    {
+      "movement_definition_id": 299,
+      "key": "accessory_rolling_dumbbell_triceps_extension"
+    },
+    {
+      "movement_definition_id": 300,
+      "key": "accessory_pjr_pullover"
+    },
+    {
+      "movement_definition_id": 301,
+      "key": "accessory_cable_triceps_pressdown"
+    },
+    {
+      "movement_definition_id": 305,
+      "key": "accessory_reverse_grip_triceps_pressdown"
+    },
+    {
+      "movement_definition_id": 306,
+      "key": "accessory_single_arm_cable_pressdown"
+    },
+    {
+      "movement_definition_id": 307,
+      "key": "accessory_cable_overhead_triceps_extension"
+    },
+    {
+      "movement_definition_id": 309,
+      "key": "accessory_single_arm_cable_overhead_triceps_extension"
+    },
+    {
+      "movement_definition_id": 310,
+      "key": "accessory_cross_body_cable_triceps_extension"
+    },
+    {
+      "movement_definition_id": 311,
+      "key": "accessory_cable_skull_crusher"
+    },
+    {
+      "movement_definition_id": 312,
+      "key": "accessory_cable_kickback"
+    },
+    {
+      "movement_definition_id": 313,
+      "key": "accessory_machine_triceps_extension"
+    },
+    {
+      "movement_definition_id": 314,
+      "key": "accessory_machine_dip"
+    },
+    {
+      "movement_definition_id": 315,
+      "key": "accessory_bench_dip"
+    },
+    {
+      "movement_definition_id": 316,
+      "key": "accessory_triceps_dip"
+    },
+    {
+      "movement_definition_id": 317,
+      "key": "accessory_diamond_push_up"
+    },
+    {
+      "movement_definition_id": 318,
+      "key": "accessory_bodyweight_skull_crusher"
+    },
+    {
+      "movement_definition_id": 319,
+      "key": "accessory_ring_triceps_extension"
+    },
+    {
+      "movement_definition_id": 320,
+      "key": "accessory_assisted_dip"
+    },
+    {
+      "movement_definition_id": 322,
+      "key": "accessory_band_triceps_pressdown"
+    },
+    {
+      "movement_definition_id": 323,
+      "key": "accessory_band_overhead_triceps_extension"
+    },
+    {
+      "movement_definition_id": 324,
+      "key": "accessory_band_kickback"
+    },
+    {
+      "movement_definition_id": 325,
+      "key": "accessory_barbell_wrist_curl"
+    },
+    {
+      "movement_definition_id": 326,
+      "key": "accessory_dumbbell_wrist_curl"
+    },
+    {
+      "movement_definition_id": 327,
+      "key": "accessory_behind_the_back_wrist_curl"
+    },
+    {
+      "movement_definition_id": 328,
+      "key": "accessory_reverse_wrist_curl"
+    },
+    {
+      "movement_definition_id": 329,
+      "key": "accessory_dumbbell_reverse_wrist_curl"
+    },
+    {
+      "movement_definition_id": 330,
+      "key": "accessory_wrist_roller"
+    },
+    {
+      "movement_definition_id": 331,
+      "key": "accessory_plate_pinch"
+    },
+    {
+      "movement_definition_id": 332,
+      "key": "accessory_fat_grip_hold"
+    },
+    {
+      "movement_definition_id": 333,
+      "key": "accessory_barbell_finger_curl"
+    },
+    {
+      "movement_definition_id": 334,
+      "key": "accessory_lever_bar_pronation"
+    },
+    {
+      "movement_definition_id": 335,
+      "key": "accessory_lever_bar_supination"
+    },
+    {
+      "movement_definition_id": 336,
+      "key": "accessory_radial_deviation"
+    },
+    {
+      "movement_definition_id": 337,
+      "key": "accessory_ulnar_deviation"
+    },
+    {
+      "movement_definition_id": 338,
+      "key": "accessory_cable_wrist_curl"
+    },
+    {
+      "movement_definition_id": 339,
+      "key": "accessory_cable_reverse_wrist_curl"
+    },
+    {
+      "movement_definition_id": 340,
+      "key": "accessory_cable_pronation"
+    },
+    {
+      "movement_definition_id": 341,
+      "key": "accessory_cable_supination"
+    },
+    {
+      "movement_definition_id": 342,
+      "key": "accessory_hand_gripper"
+    },
+    {
+      "movement_definition_id": 343,
+      "key": "accessory_towel_grip_hold"
+    },
+    {
+      "movement_definition_id": 344,
+      "key": "accessory_rice_bucket_hand_drill"
+    },
+    {
+      "movement_definition_id": 345,
+      "key": "accessory_dead_hang"
+    },
+    {
+      "movement_definition_id": 346,
+      "key": "accessory_towel_dead_hang"
+    },
+    {
+      "movement_definition_id": 347,
+      "key": "accessory_false_grip_hang"
+    },
+    {
+      "movement_definition_id": 350,
+      "key": "accessory_zercher_squat"
+    },
+    {
+      "movement_definition_id": 351,
+      "key": "accessory_goblet_squat"
+    },
+    {
+      "movement_definition_id": 352,
+      "key": "accessory_cyclist_squat"
+    },
+    {
+      "movement_definition_id": 353,
+      "key": "accessory_heel_elevated_goblet_squat"
+    },
+    {
+      "movement_definition_id": 354,
+      "key": "accessory_bulgarian_split_squat"
+    },
+    {
+      "movement_definition_id": 355,
+      "key": "accessory_front_foot_elevated_split_squat"
+    },
+    {
+      "movement_definition_id": 356,
+      "key": "accessory_heel_elevated_split_squat"
+    },
+    {
+      "movement_definition_id": 357,
+      "key": "accessory_reverse_lunge"
+    },
+    {
+      "movement_definition_id": 358,
+      "key": "accessory_walking_lunge"
+    },
+    {
+      "movement_definition_id": 359,
+      "key": "accessory_forward_lunge"
+    },
+    {
+      "movement_definition_id": 360,
+      "key": "accessory_lateral_lunge"
+    },
+    {
+      "movement_definition_id": 361,
+      "key": "accessory_step_up"
+    },
+    {
+      "movement_definition_id": 362,
+      "key": "accessory_peterson_step_up"
+    },
+    {
+      "movement_definition_id": 365,
+      "key": "accessory_leg_extension"
+    },
+    {
+      "movement_definition_id": 366,
+      "key": "accessory_single_leg_leg_extension"
+    },
+    {
+      "movement_definition_id": 367,
+      "key": "accessory_leg_press"
+    },
+    {
+      "movement_definition_id": 368,
+      "key": "accessory_single_leg_leg_press"
+    },
+    {
+      "movement_definition_id": 369,
+      "key": "accessory_hack_squat"
+    },
+    {
+      "movement_definition_id": 370,
+      "key": "accessory_pendulum_squat"
+    },
+    {
+      "movement_definition_id": 371,
+      "key": "accessory_belt_squat"
+    },
+    {
+      "movement_definition_id": 372,
+      "key": "accessory_v_squat"
+    },
+    {
+      "movement_definition_id": 373,
+      "key": "accessory_machine_split_squat"
+    },
+    {
+      "movement_definition_id": 374,
+      "key": "accessory_machine_sissy_squat"
+    },
+    {
+      "movement_definition_id": 375,
+      "key": "accessory_smith_machine_squat"
+    },
+    {
+      "movement_definition_id": 376,
+      "key": "accessory_smith_machine_split_squat"
+    },
+    {
+      "movement_definition_id": 377,
+      "key": "accessory_sissy_squat"
+    },
+    {
+      "movement_definition_id": 378,
+      "key": "accessory_reverse_nordic"
+    },
+    {
+      "movement_definition_id": 379,
+      "key": "accessory_bodyweight_split_squat"
+    },
+    {
+      "movement_definition_id": 381,
+      "key": "accessory_wall_sit"
+    },
+    {
+      "movement_definition_id": 382,
+      "key": "accessory_spanish_squat"
+    },
+    {
+      "movement_definition_id": 383,
+      "key": "accessory_step_down"
+    },
+    {
+      "movement_definition_id": 384,
+      "key": "accessory_band_leg_extension"
+    },
+    {
+      "movement_definition_id": 385,
+      "key": "accessory_band_spanish_squat"
+    },
+    {
+      "movement_definition_id": 386,
+      "key": "accessory_band_assisted_sissy_squat"
+    },
+    {
+      "movement_definition_id": 388,
+      "key": "accessory_dumbbell_romanian_deadlift"
+    },
+    {
+      "movement_definition_id": 389,
+      "key": "accessory_single_leg_romanian_deadlift"
+    },
+    {
+      "movement_definition_id": 390,
+      "key": "accessory_b_stance_romanian_deadlift"
+    },
+    {
+      "movement_definition_id": 392,
+      "key": "accessory_snatch_grip_romanian_deadlift"
+    },
+    {
+      "movement_definition_id": 393,
+      "key": "accessory_barbell_good_morning"
+    },
+    {
+      "movement_definition_id": 394,
+      "key": "accessory_seated_good_morning"
+    },
+    {
+      "movement_definition_id": 397,
+      "key": "accessory_seated_leg_curl"
+    },
+    {
+      "movement_definition_id": 398,
+      "key": "accessory_lying_leg_curl"
+    },
+    {
+      "movement_definition_id": 399,
+      "key": "accessory_standing_single_leg_curl"
+    },
+    {
+      "movement_definition_id": 400,
+      "key": "accessory_kneeling_leg_curl"
+    },
+    {
+      "movement_definition_id": 401,
+      "key": "accessory_single_leg_seated_leg_curl"
+    },
+    {
+      "movement_definition_id": 402,
+      "key": "accessory_single_leg_lying_leg_curl"
+    },
+    {
+      "movement_definition_id": 404,
+      "key": "accessory_cable_leg_curl"
+    },
+    {
+      "movement_definition_id": 406,
+      "key": "accessory_cable_romanian_deadlift"
+    },
+    {
+      "movement_definition_id": 407,
+      "key": "accessory_single_leg_cable_romanian_deadlift"
+    },
+    {
+      "movement_definition_id": 408,
+      "key": "accessory_nordic_hamstring_curl"
+    },
+    {
+      "movement_definition_id": 409,
+      "key": "accessory_assisted_nordic_hamstring_curl"
+    },
+    {
+      "movement_definition_id": 410,
+      "key": "accessory_sliding_leg_curl"
+    },
+    {
+      "movement_definition_id": 411,
+      "key": "accessory_stability_ball_leg_curl"
+    },
+    {
+      "movement_definition_id": 412,
+      "key": "accessory_bodyweight_glute_ham_raise"
+    },
+    {
+      "movement_definition_id": 413,
+      "key": "accessory_razor_curl"
+    },
+    {
+      "movement_definition_id": 414,
+      "key": "accessory_45_degree_back_extension_hamstring_bias"
+    },
+    {
+      "movement_definition_id": 415,
+      "key": "accessory_band_leg_curl"
+    },
+    {
+      "movement_definition_id": 416,
+      "key": "accessory_band_romanian_deadlift"
+    },
+    {
+      "movement_definition_id": 417,
+      "key": "accessory_band_good_morning"
+    },
+    {
+      "movement_definition_id": 418,
+      "key": "accessory_barbell_hip_thrust"
+    },
+    {
+      "movement_definition_id": 422,
+      "key": "accessory_single_leg_hip_thrust"
+    },
+    {
+      "movement_definition_id": 423,
+      "key": "accessory_b_stance_hip_thrust"
+    },
+    {
+      "movement_definition_id": 424,
+      "key": "accessory_kas_glute_bridge"
+    },
+    {
+      "movement_definition_id": 425,
+      "key": "accessory_sumo_romanian_deadlift"
+    },
+    {
+      "movement_definition_id": 426,
+      "key": "accessory_deficit_reverse_lunge"
+    },
+    {
+      "movement_definition_id": 427,
+      "key": "accessory_long_stride_reverse_lunge"
+    },
+    {
+      "movement_definition_id": 428,
+      "key": "accessory_glute_biased_step_up"
+    },
+    {
+      "movement_definition_id": 429,
+      "key": "accessory_long_stride_bulgarian_split_squat"
+    },
+    {
+      "movement_definition_id": 431,
+      "key": "accessory_machine_hip_thrust"
+    },
+    {
+      "movement_definition_id": 432,
+      "key": "accessory_machine_glute_bridge"
+    },
+    {
+      "movement_definition_id": 434,
+      "key": "accessory_machine_glute_kickback"
+    },
+    {
+      "movement_definition_id": 435,
+      "key": "accessory_reverse_hyperextension"
+    },
+    {
+      "movement_definition_id": 436,
+      "key": "accessory_smith_machine_hip_thrust"
+    },
+    {
+      "movement_definition_id": 437,
+      "key": "accessory_cable_glute_kickback"
+    },
+    {
+      "movement_definition_id": 439,
+      "key": "accessory_cable_pull_through"
+    },
+    {
+      "movement_definition_id": 442,
+      "key": "accessory_bodyweight_glute_bridge"
+    },
+    {
+      "movement_definition_id": 443,
+      "key": "accessory_single_leg_glute_bridge"
+    },
+    {
+      "movement_definition_id": 444,
+      "key": "accessory_frog_pump"
+    },
+    {
+      "movement_definition_id": 445,
+      "key": "accessory_quadruped_hip_extension"
+    },
+    {
+      "movement_definition_id": 446,
+      "key": "accessory_45_degree_back_extension_glute_bias"
+    },
+    {
+      "movement_definition_id": 447,
+      "key": "accessory_band_glute_bridge"
+    },
+    {
+      "movement_definition_id": 449,
+      "key": "accessory_band_glute_kickback"
+    },
+    {
+      "movement_definition_id": 450,
+      "key": "accessory_band_frog_pump"
+    },
+    {
+      "movement_definition_id": 451,
+      "key": "accessory_adductor_machine"
+    },
+    {
+      "movement_definition_id": 453,
+      "key": "accessory_standing_cable_hip_adduction"
+    },
+    {
+      "movement_definition_id": 456,
+      "key": "accessory_short_lever_copenhagen_adduction"
+    },
+    {
+      "movement_definition_id": 457,
+      "key": "accessory_long_lever_copenhagen_adduction"
+    },
+    {
+      "movement_definition_id": 458,
+      "key": "accessory_side_lying_hip_adduction"
+    },
+    {
+      "movement_definition_id": 459,
+      "key": "accessory_adductor_slide"
+    },
+    {
+      "movement_definition_id": 460,
+      "key": "accessory_sumo_squat_hold"
+    },
+    {
+      "movement_definition_id": 461,
+      "key": "accessory_band_hip_adduction"
+    },
+    {
+      "movement_definition_id": 463,
+      "key": "accessory_hip_abductor_machine"
+    },
+    {
+      "movement_definition_id": 464,
+      "key": "accessory_standing_hip_abductor_machine"
+    },
+    {
+      "movement_definition_id": 465,
+      "key": "accessory_standing_cable_hip_abduction"
+    },
+    {
+      "movement_definition_id": 467,
+      "key": "accessory_side_lying_hip_abduction"
+    },
+    {
+      "movement_definition_id": 468,
+      "key": "accessory_fire_hydrant"
+    },
+    {
+      "movement_definition_id": 469,
+      "key": "accessory_lateral_step_down"
+    },
+    {
+      "movement_definition_id": 470,
+      "key": "accessory_side_plank_hip_abduction"
+    },
+    {
+      "movement_definition_id": 472,
+      "key": "accessory_lateral_band_walk"
+    },
+    {
+      "movement_definition_id": 473,
+      "key": "accessory_monster_walk"
+    },
+    {
+      "movement_definition_id": 474,
+      "key": "accessory_clamshell"
+    },
+    {
+      "movement_definition_id": 475,
+      "key": "accessory_standing_band_hip_abduction"
+    },
+    {
+      "movement_definition_id": 479,
+      "key": "accessory_seated_dumbbell_calf_raise"
+    },
+    {
+      "movement_definition_id": 481,
+      "key": "accessory_standing_calf_raise_machine"
+    },
+    {
+      "movement_definition_id": 482,
+      "key": "accessory_seated_calf_raise_machine"
+    },
+    {
+      "movement_definition_id": 483,
+      "key": "accessory_leg_press_calf_raise"
+    },
+    {
+      "movement_definition_id": 484,
+      "key": "accessory_hack_squat_calf_raise"
+    },
+    {
+      "movement_definition_id": 485,
+      "key": "accessory_smith_machine_calf_raise"
+    },
+    {
+      "movement_definition_id": 487,
+      "key": "accessory_tibialis_raise_machine"
+    },
+    {
+      "movement_definition_id": 488,
+      "key": "accessory_standing_calf_raise"
+    },
+    {
+      "movement_definition_id": 489,
+      "key": "accessory_single_leg_calf_raise"
+    },
+    {
+      "movement_definition_id": 490,
+      "key": "accessory_bent_knee_calf_raise"
+    },
+    {
+      "movement_definition_id": 491,
+      "key": "accessory_donkey_calf_raise"
+    },
+    {
+      "movement_definition_id": 492,
+      "key": "accessory_tibialis_raise"
+    },
+    {
+      "movement_definition_id": 493,
+      "key": "accessory_band_calf_raise"
+    },
+    {
+      "movement_definition_id": 494,
+      "key": "accessory_band_tibialis_raise"
+    },
+    {
+      "movement_definition_id": 496,
+      "key": "accessory_dumbbell_sit_up"
+    },
+    {
+      "movement_definition_id": 499,
+      "key": "accessory_barbell_rollout"
+    },
+    {
+      "movement_definition_id": 501,
+      "key": "accessory_cable_crunch"
+    },
+    {
+      "movement_definition_id": 503,
+      "key": "accessory_standing_cable_crunch"
+    },
+    {
+      "movement_definition_id": 504,
+      "key": "accessory_cable_reverse_crunch"
+    },
+    {
+      "movement_definition_id": 505,
+      "key": "accessory_abdominal_crunch_machine"
+    },
+    {
+      "movement_definition_id": 506,
+      "key": "accessory_rotary_ab_crunch_machine"
+    },
+    {
+      "movement_definition_id": 507,
+      "key": "accessory_crunch"
+    },
+    {
+      "movement_definition_id": 508,
+      "key": "accessory_reverse_crunch"
+    },
+    {
+      "movement_definition_id": 509,
+      "key": "accessory_decline_sit_up"
+    },
+    {
+      "movement_definition_id": 510,
+      "key": "accessory_hanging_knee_raise"
+    },
+    {
+      "movement_definition_id": 511,
+      "key": "accessory_hanging_leg_raise"
+    },
+    {
+      "movement_definition_id": 512,
+      "key": "accessory_captain_s_chair_knee_raise"
+    },
+    {
+      "movement_definition_id": 513,
+      "key": "accessory_lying_leg_raise"
+    },
+    {
+      "movement_definition_id": 514,
+      "key": "accessory_ab_wheel_rollout"
+    },
+    {
+      "movement_definition_id": 515,
+      "key": "accessory_body_saw"
+    },
+    {
+      "movement_definition_id": 516,
+      "key": "accessory_dead_bug"
+    },
+    {
+      "movement_definition_id": 517,
+      "key": "accessory_hollow_body_hold"
+    },
+    {
+      "movement_definition_id": 518,
+      "key": "accessory_v_up"
+    },
+    {
+      "movement_definition_id": 519,
+      "key": "accessory_toe_touch"
+    },
+    {
+      "movement_definition_id": 520,
+      "key": "accessory_band_crunch"
+    },
+    {
+      "movement_definition_id": 522,
+      "key": "accessory_band_dead_bug"
+    },
+    {
+      "movement_definition_id": 523,
+      "key": "accessory_dumbbell_side_bend"
+    },
+    {
+      "movement_definition_id": 524,
+      "key": "accessory_suitcase_march"
+    },
+    {
+      "movement_definition_id": 525,
+      "key": "accessory_suitcase_carry"
+    },
+    {
+      "movement_definition_id": 526,
+      "key": "accessory_landmine_rotation"
+    },
+    {
+      "movement_definition_id": 527,
+      "key": "accessory_russian_twist_with_weight"
+    },
+    {
+      "movement_definition_id": 528,
+      "key": "accessory_barbell_windshield_wiper"
+    },
+    {
+      "movement_definition_id": 529,
+      "key": "accessory_pallof_press"
+    },
+    {
+      "movement_definition_id": 530,
+      "key": "accessory_half_kneeling_pallof_press"
+    },
+    {
+      "movement_definition_id": 531,
+      "key": "accessory_cable_wood_chop"
+    },
+    {
+      "movement_definition_id": 533,
+      "key": "accessory_low_to_high_cable_chop"
+    },
+    {
+      "movement_definition_id": 534,
+      "key": "accessory_cable_side_bend"
+    },
+    {
+      "movement_definition_id": 536,
+      "key": "accessory_side_plank"
+    },
+    {
+      "movement_definition_id": 537,
+      "key": "accessory_copenhagen_side_plank"
+    },
+    {
+      "movement_definition_id": 538,
+      "key": "accessory_bicycle_crunch"
+    },
+    {
+      "movement_definition_id": 539,
+      "key": "accessory_cross_body_mountain_climber"
+    },
+    {
+      "movement_definition_id": 540,
+      "key": "accessory_windshield_wiper"
+    },
+    {
+      "movement_definition_id": 541,
+      "key": "accessory_bird_dog"
+    },
+    {
+      "movement_definition_id": 542,
+      "key": "accessory_band_pallof_press"
+    },
+    {
+      "movement_definition_id": 543,
+      "key": "accessory_band_wood_chop"
+    },
+    {
+      "movement_definition_id": 544,
+      "key": "accessory_band_anti_rotation_hold"
+    },
+    {
+      "movement_definition_id": 547,
+      "key": "accessory_jefferson_curl"
+    },
+    {
+      "movement_definition_id": 548,
+      "key": "accessory_zercher_good_morning"
+    },
+    {
+      "movement_definition_id": 550,
+      "key": "accessory_45_degree_back_extension_lower_back_bias"
+    },
+    {
+      "movement_definition_id": 551,
+      "key": "accessory_horizontal_back_extension"
+    },
+    {
+      "movement_definition_id": 552,
+      "key": "accessory_sorenson_hold"
+    },
+    {
+      "movement_definition_id": 554,
+      "key": "accessory_superman_hold"
+    },
+    {
+      "movement_definition_id": 555,
+      "key": "accessory_lumbar_extension_machine"
+    },
+    {
+      "movement_definition_id": 559,
+      "key": "accessory_band_back_extension"
+    },
+    {
+      "movement_definition_id": 560,
+      "key": "accessory_dumbbell_serratus_punch"
+    },
+    {
+      "movement_definition_id": 562,
+      "key": "accessory_cable_serratus_punch"
+    },
+    {
+      "movement_definition_id": 563,
+      "key": "accessory_single_arm_cable_serratus_punch"
+    },
+    {
+      "movement_definition_id": 564,
+      "key": "accessory_push_up_plus"
+    },
+    {
+      "movement_definition_id": 565,
+      "key": "accessory_scapular_push_up"
+    },
+    {
+      "movement_definition_id": 566,
+      "key": "accessory_wall_slide_with_reach"
+    },
+    {
+      "movement_definition_id": 567,
+      "key": "accessory_band_serratus_punch"
+    },
+    {
+      "movement_definition_id": 568,
+      "key": "accessory_band_wall_slide"
+    },
+    {
+      "movement_definition_id": 571,
+      "key": "accessory_standing_cable_hip_flexion"
+    },
+    {
+      "movement_definition_id": 572,
+      "key": "accessory_supine_cable_hip_flexion"
+    },
+    {
+      "movement_definition_id": 573,
+      "key": "accessory_hip_flexion_machine"
+    },
+    {
+      "movement_definition_id": 574,
+      "key": "accessory_standing_hip_flexor_march"
+    },
+    {
+      "movement_definition_id": 575,
+      "key": "accessory_seated_leg_lift"
+    },
+    {
+      "movement_definition_id": 576,
+      "key": "accessory_l_sit"
+    },
+    {
+      "movement_definition_id": 577,
+      "key": "accessory_hanging_knee_raise_iso_hold"
+    },
+    {
+      "movement_definition_id": 578,
+      "key": "accessory_band_psoas_march"
+    },
+    {
+      "movement_definition_id": 579,
+      "key": "accessory_band_hip_flexion"
+    },
+    {
+      "movement_definition_id": 580,
+      "key": "accessory_plate_neck_flexion"
+    },
+    {
+      "movement_definition_id": 581,
+      "key": "accessory_plate_neck_extension"
+    },
+    {
+      "movement_definition_id": 582,
+      "key": "accessory_plate_lateral_neck_flexion"
+    },
+    {
+      "movement_definition_id": 586,
+      "key": "accessory_neck_bridge"
+    },
+    {
+      "movement_definition_id": 587,
+      "key": "accessory_isometric_neck_flexion"
+    },
+    {
+      "movement_definition_id": 588,
+      "key": "accessory_isometric_neck_extension"
+    },
+    {
+      "movement_definition_id": 589,
+      "key": "accessory_band_neck_flexion"
+    },
+    {
+      "movement_definition_id": 590,
+      "key": "accessory_band_neck_extension"
+    },
+    {
+      "movement_definition_id": 591,
+      "key": "accessory_band_lateral_neck_flexion"
+    },
+    {
+      "movement_definition_id": 646,
+      "key": "accessory_ankle_weight_psoas_march"
+    }
+  ]
+}

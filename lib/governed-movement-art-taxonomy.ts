@@ -1,8 +1,14 @@
 import projection from '@/config/governed-movement-art-taxonomy.json';
+import artworkReuse from '@/config/governed-movement-art-reuse.json';
 
 /** Public catalog taxonomy, independent of exact-image generation and approval. */
 export type GovernedArtworkTaxonomy = typeof projection.movements[number];
-const accessories = projection.movements.filter(row => row.kind === 'accessory');
+// Explicit retired definitions enrich old saved references without selecting a
+// different movement or changing the active catalog. Current definitions win.
+const accessories = [
+  ...artworkReuse.legacy_artwork_identities.map(row => row.taxonomy),
+  ...projection.movements.filter(row => row.kind === 'accessory'),
+];
 const byId = new Map(accessories.map(row => [row.id, row]));
 const byKey = new Map(accessories.map(row => [row.key, row]));
 const coreById = new Map(projection.movements.filter(row => row.kind === 'core' && row.core_movement_definition_id)

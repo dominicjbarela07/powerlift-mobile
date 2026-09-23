@@ -123,7 +123,7 @@ export function assertHumanArtworkGate(root = defaultRoot) {
   assert.ok(!mapping.includes('artwork-review/candidates'), 'candidate storage must never be bundled as canonical artwork');
   const policy = JSON.parse(fs.readFileSync(path.join(reviewRoot, 'runtime-policy.json'), 'utf8'));
   if (state.consolidated_artwork_bindings?.length) {
-    const taxonomy = JSON.parse(fs.readFileSync(path.join(root, 'config/governed-movement-art-taxonomy.json'), 'utf8'));
+    const taxonomy = JSON.parse(fs.readFileSync(path.join(root, 'config/governed-movement-art-reuse.json'), 'utf8'));
     for (const binding of state.consolidated_artwork_bindings) {
       assert.ok(consolidatedArtworkBinding(state, candidates.get(binding.candidate_id)), 'reuse retains exact source image and crop approval');
       assert.ok(taxonomy.shared_artwork_identities.some(row => row.movement_definition_id === binding.movement_definition_id

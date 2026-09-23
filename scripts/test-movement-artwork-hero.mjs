@@ -5,13 +5,16 @@ import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES } from '../lib/canonical-movemen
 import { movementHeroSourceFrame } from '../lib/movement-artwork-geometry.mjs';
 import { approvedExactArtworkPolicy, assertHumanArtworkGate } from './canonical-art-review-gate.mjs';
 const state=JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
+const reuse=JSON.parse(fs.readFileSync('config/governed-movement-art-reuse.json'));
+const reuseRows=[...reuse.shared_artwork_identities,...reuse.legacy_artwork_identities];
 const policy=JSON.parse(fs.readFileSync('artwork-review/runtime-policy.json'));
 const subject=id=>({ identity_type:'accessory', movement_definition_id:id, key:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.key, primary_muscle_group:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.primary });
 assertHumanArtworkGate();
 assert.deepEqual(policy.approved_exact_artwork,approvedExactArtworkPolicy(state));
 for (const row of state.canonical_assets) {
   const result=resolveApprovedExactMovementArtwork(subject(row.movement_definition_id),true,policy);
-  const receipt=policy.approved_exact_artwork.find(entry=>entry.key===row.key);
+  const binding=reuseRows.find(entry=>entry.movement_definition_id===row.movement_definition_id && entry.key===row.key);
+  const receipt=policy.approved_exact_artwork.find(entry=>entry.key===(binding?.artwork_key || row.key));
   assert.equal(Boolean(result),Boolean(receipt),'only current positive human receipts enable exact heroes');
   assert.equal(resolveApprovedExactMovementArtwork(subject(row.movement_definition_id),false,policy),null,'DEV-only enhancement cannot enter release runtime');
 }

@@ -7,7 +7,9 @@ import { canonicalArtworkInputForLoggerItem as logger } from '../lib/logger-move
 import { resolveApprovedExactMovementArtwork as approved } from '../lib/movement-artwork-hero.ts';
 
 const catalog = JSON.parse(fs.readFileSync('config/governed-movement-art-taxonomy.json', 'utf8')).movements;
-assert.ok(catalog.length > 500, 'test the full governed catalog, not a hand-picked art family');
+assert.ok(catalog.length > 450, 'test the full governed catalog after reviewed consolidation');
+const activeArtworkCatalog = JSON.parse(fs.readFileSync('config/governed-movement-art-reuse.json', 'utf8'));
+for (const row of activeArtworkCatalog.active_accessory_identities) assert.ok(catalog.some(d => d.id === row.movement_definition_id && d.key === row.key), 'every active accessory must be included');
 assert.equal(new Set(catalog.map(d => d.id)).size, catalog.length);
 assert.equal(new Set(catalog.map(d => d.key)).size, catalog.length);
 const counts = { approved_exact: 0, anatomy: 0, core_art: 0, unresolved: 0 };

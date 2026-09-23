@@ -2448,24 +2448,6 @@
       "core_kind": null
     },
     {
-      "id": 177,
-      "key": "accessory_cross_bench_cable_pulldown",
-      "display_name": "Cross-Bench Cable Pulldown",
-      "kind": "accessory",
-      "family": "accessory_lats",
-      "primary_muscle_group": "lats",
-      "secondary_muscle_groups": [
-        "biceps",
-        "upper_back"
-      ],
-      "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 178,
       "key": "accessory_machine_pullover",
       "display_name": "Machine Pullover",
@@ -3641,23 +3623,6 @@
       "core_kind": null
     },
     {
-      "id": 248,
-      "key": "accessory_cable_kelso_shrug",
-      "display_name": "Cable Kelso Shrug",
-      "kind": "accessory",
-      "family": "accessory_traps",
-      "primary_muscle_group": "traps",
-      "secondary_muscle_groups": [
-        "upper_back"
-      ],
-      "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 249,
       "key": "accessory_band_shrug",
       "display_name": "Band Shrug",
@@ -4188,23 +4153,6 @@
       "id": 285,
       "key": "accessory_band_hammer_curl",
       "display_name": "Band Hammer Curl",
-      "kind": "accessory",
-      "family": "accessory_biceps",
-      "primary_muscle_group": "biceps",
-      "secondary_muscle_groups": [
-        "forearms"
-      ],
-      "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 286,
-      "key": "accessory_band_preacher_curl",
-      "display_name": "Band Preacher Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -6659,23 +6607,6 @@
       "core_kind": null
     },
     {
-      "id": 441,
-      "key": "accessory_cable_hip_thrust",
-      "display_name": "Cable Hip Thrust",
-      "kind": "accessory",
-      "family": "accessory_glutes",
-      "primary_muscle_group": "glutes",
-      "secondary_muscle_groups": [
-        "hamstrings"
-      ],
-      "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 442,
       "key": "accessory_bodyweight_glute_bridge",
       "display_name": "Glute Bridge",
@@ -6874,41 +6805,9 @@
       "core_kind": null
     },
     {
-      "id": 452,
-      "key": "accessory_single_leg_adductor_machine",
-      "display_name": "Single-Leg Adductor Machine",
-      "kind": "accessory",
-      "family": "accessory_adductors",
-      "primary_muscle_group": "adductors",
-      "secondary_muscle_groups": [
-        "glutes"
-      ],
-      "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 453,
       "key": "accessory_standing_cable_hip_adduction",
       "display_name": "Standing Cable Hip Adduction",
-      "kind": "accessory",
-      "family": "accessory_adductors",
-      "primary_muscle_group": "adductors",
-      "secondary_muscle_groups": [],
-      "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 454,
-      "key": "accessory_side_lying_cable_hip_adduction",
-      "display_name": "Side-Lying Cable Hip Adduction",
       "kind": "accessory",
       "family": "accessory_adductors",
       "primary_muscle_group": "adductors",
@@ -7066,21 +6965,6 @@
       "core_kind": null
     },
     {
-      "id": 462,
-      "key": "accessory_band_copenhagen_adduction",
-      "display_name": "Band Copenhagen Adduction",
-      "kind": "accessory",
-      "family": "accessory_adductors",
-      "primary_muscle_group": "adductors",
-      "secondary_muscle_groups": [],
-      "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
       "id": 463,
       "key": "accessory_hip_abductor_machine",
       "display_name": "Hip Abductor Machine",
@@ -7118,23 +7002,6 @@
       "id": 465,
       "key": "accessory_standing_cable_hip_abduction",
       "display_name": "Standing Cable Hip Abduction",
-      "kind": "accessory",
-      "family": "accessory_abductors",
-      "primary_muscle_group": "abductors",
-      "secondary_muscle_groups": [
-        "glutes"
-      ],
-      "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 466,
-      "key": "accessory_side_lying_cable_hip_abduction",
-      "display_name": "Side-Lying Cable Hip Abduction",
       "kind": "accessory",
       "family": "accessory_abductors",
       "primary_muscle_group": "abductors",
@@ -8646,24 +8513,6 @@
         "glutes"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
-      "core_movement_definition_id": null,
-      "core_kind": null
-    },
-    {
-      "id": 557,
-      "key": "accessory_cable_good_morning",
-      "display_name": "Cable Good Morning",
-      "kind": "accessory",
-      "family": "accessory_lower_back",
-      "primary_muscle_group": "lower_back",
-      "secondary_muscle_groups": [
-        "hamstrings",
-        "glutes"
-      ],
-      "equipment_type": "cable",
       "programming_contexts": [
         "accessory"
       ],
