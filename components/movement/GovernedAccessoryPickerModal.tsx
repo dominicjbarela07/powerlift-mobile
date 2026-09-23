@@ -45,11 +45,14 @@ type AuthoringOptions = {
   muscle_groups?: { key: string; label: string }[];
   execution_families?: { key: string; label: string }[];
 };
-type DiscoveryStep = 'home' | 'regions' | 'muscles' | 'results';
+type DiscoveryStep = 'home' | 'core' | 'regions' | 'muscles' | 'results';
 type PickerMode = 'search' | 'favorites' | 'recent' | 'custom' | 'muscle';
 type CustomStep = 'name' | 'primary' | 'secondary' | 'execution' | 'review';
 type Props = {
-  context: 'in-session-substitution';
+  context: 'in-session-substitution' | 'in-session-addition';
+  coreLoading?: boolean;
+  coreChoices?: { id: number; display_name: string; lift: string }[];
+  onSelectCore?: (identity: { id: number; display_name: string; lift: string }) => void;
   visible: boolean;
   athleteId: number | null;
   athleteAnatomy?: { anatomy_display_preference?: string | null; sex?: string | null } | null;
@@ -94,7 +97,10 @@ function MuscleArtwork({
 }
 
 export function GovernedAccessorySubstitutionPickerModal({
-  context: _context,
+  context,
+  coreChoices = [],
+  coreLoading = false,
+  onSelectCore,
   visible,
   athleteId,
   athleteAnatomy,
@@ -305,6 +311,7 @@ export function GovernedAccessorySubstitutionPickerModal({
     </Pressable>
   );
 
+  const matchingCore = coreChoices.filter(row => row.display_name.toLowerCase().includes(query.trim().toLowerCase()));
   const muscles = authoring.muscle_groups || [];
   const executions = authoring.execution_families || [];
   const nextCustomStep = () => {
@@ -336,7 +343,7 @@ export function GovernedAccessorySubstitutionPickerModal({
     <Modal animationType="slide" onRequestClose={onCancel} presentationStyle="fullScreen" statusBarTranslucent visible={visible}>
       <View style={[styles.shell, { paddingTop: Math.max(insets.top, SLSpacing.sm), paddingBottom: Math.max(insets.bottom, SLSpacing.sm) }]}>
         <View style={styles.header}>
-          <Pressable accessibilityLabel={step === 'home' && !customStep ? 'Close Swap' : 'Back'} onPress={step === 'home' && !customStep ? onCancel : navigateBack} style={styles.headerButton}>
+          <Pressable accessibilityLabel={step === 'home' && !customStep ? (context === 'in-session-addition' ? 'Close Add Movement' : 'Close Swap') : 'Back'} onPress={step === 'home' && !customStep ? onCancel : navigateBack} style={styles.headerButton}>
             <Ionicons color={SLColors.textStrong} name={step === 'home' && !customStep ? 'close' : 'arrow-back'} size={23} />
           </Pressable>
           <View style={styles.headerCopy}><Text numberOfLines={1} style={styles.title}>{customStep ? 'Create Governed Movement' : title}</Text><Text numberOfLines={1} style={styles.subtitle}>Self-coached Session programming</Text></View>
@@ -345,16 +352,33 @@ export function GovernedAccessorySubstitutionPickerModal({
         {!customStep ? <>
           <View style={styles.searchOuter}><View style={styles.searchWrap}><Ionicons color={SLColors.textMuted} name="search" size={18} /><TextInput onChangeText={openSearch} placeholder="Search names, aliases, or taxonomy" placeholderTextColor={SLColors.textSubtle} style={styles.search} value={query} /></View></View>
           <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" style={styles.scroll}>
+            {context === 'in-session-addition' && (step === 'core' || step === 'results' && mode === 'search') && matchingCore.length ? <>
+              <Text style={styles.sectionLabel}>CORE LIFTS & VARIANTS</Text>
+              {matchingCore.map(row => <Pressable key={row.id} accessibilityRole="button" accessibilityLabel={`Select ${row.display_name}`}
+                onPress={() => onSelectCore?.(row)} style={styles.row}>
+                <View style={styles.rowCopy}><Text style={styles.rowTitle}>{row.display_name}</Text>
+                  <Text style={styles.rowMeta}>{row.lift === 'VR' ? 'Core variant · manual load' : 'Core lift'}</Text></View>
+                <Ionicons color={SLColors.textMuted} name="chevron-forward" size={20} />
+              </Pressable>)}
+            </> : null}
+            {step === 'core' && coreLoading ? <ActivityIndicator color={SLColors.accentViolet} /> : null}
+            {step === 'core' && !coreLoading && !matchingCore.length ? <Text style={styles.empty}>No Core lifts are available.</Text> : null}
             {step === 'home' ? <>
+              {context === 'in-session-addition' ? <Pressable accessibilityRole="button" accessibilityLabel="Browse Core lifts and variants"
+                onPress={() => setStep('core')} style={styles.browseButton}>
+                <Ionicons color="#FFFFFF" name="barbell-outline" size={24} /><View style={styles.browseCopy}>
+                  <Text style={styles.browseTitle}>Core Lifts & Variants</Text><Text style={styles.browseMeta}>Choose a lift, then its prescription</Text>
+                </View><Ionicons color="#FFFFFF" name="chevron-forward" size={20} />
+              </Pressable> : null}
               {currentIdentity ? <View style={styles.contextCard}>
                 <CanonicalMovementArtwork surface="GovernedAccessoryPickerModal" movement={{ kind: 'accessory', movement_identity: currentIdentity }} size={70} style={styles.contextArtwork} />
                 <View style={styles.contextCopy}><Text style={styles.sectionLabel}>SWAPPING</Text><Text numberOfLines={2} style={styles.contextName}>{currentIdentity.display_name}</Text><Text numberOfLines={1} style={styles.contextMeta}>{[accessoryTaxonomyLabel(currentIdentity.primary_muscle_group), currentIdentity.family_display_name || accessoryTaxonomyLabel(currentIdentity.family)].filter(Boolean).join(' · ')}</Text><Text style={styles.prescriptionLabel}>Current prescription</Text><Text style={styles.prescription}>{currentPrescription || 'No prescription'}</Text></View>
               </View> : null}
-              <Text style={styles.sectionLabel}>SIMILAR MOVEMENTS</Text>
+              {currentIdentity ? <Text style={styles.sectionLabel}>SIMILAR MOVEMENTS</Text> : null}
               {similarLoading ? <ActivityIndicator color={SLColors.accent} style={styles.loadingCompact} /> : null}
               {!similarLoading && similar.length ? similar.map((candidate) => renderIdentity(candidate.identity, candidate.reason)) : null}
-              {!similarLoading && !similar.length ? <Text style={styles.helper}>No authoritative taxonomy matches are available. Browse deliberately below.</Text> : null}
-              <Pressable onPress={() => setStep('regions')} style={({ pressed }) => [styles.browseButton, pressed && styles.pressed]}><Ionicons color="#FFFFFF" name="body-outline" size={24} /><View style={styles.browseCopy}><Text style={styles.browseTitle}>Browse by Muscle Group</Text><Text style={styles.browseMeta}>Canonical Session Workspace drill-down</Text></View><Ionicons color="#FFFFFF" name="chevron-forward" size={20} /></Pressable>
+              {currentIdentity && !similarLoading && !similar.length ? <Text style={styles.helper}>No authoritative taxonomy matches are available. Browse deliberately below.</Text> : null}
+              <Pressable onPress={() => setStep('regions')} style={({ pressed }) => [styles.browseButton, pressed && styles.pressed]}><Ionicons color="#FFFFFF" name="body-outline" size={24} /><View style={styles.browseCopy}><Text style={styles.browseTitle}>Browse by Muscle Group</Text><Text style={styles.browseMeta}>Browse movements by muscle</Text></View><Ionicons color="#FFFFFF" name="chevron-forward" size={20} /></Pressable>
               <Text style={styles.sectionLabel}>QUICK ACCESS</Text><View style={styles.accelerators}>{ACCELERATORS.map((entry) => <Pressable key={entry.key} onPress={() => openAccelerator(entry.key)} style={({ pressed }) => [styles.accelerator, pressed && styles.pressed]}><Ionicons color={SLColors.accentViolet} name={entry.icon} size={20} /><Text style={styles.acceleratorText}>{entry.label}</Text></Pressable>)}</View>
             </> : null}
 
@@ -362,7 +386,7 @@ export function GovernedAccessorySubstitutionPickerModal({
 
             {step === 'muscles' && selectedRegion ? <><View style={styles.regionHero}><Image accessibilityIgnoresInvertColors resizeMode="contain" source={accessoryRegionalArtworkAsset(selectedRegion.artwork).source} style={styles.regionHeroArtwork} /><View style={styles.rowCopy}><Text style={styles.pageTitle}>{selectedRegion.label}</Text><Text style={styles.pageMeta}>Choose the primary muscle target.</Text></View></View>{selectedRegion.muscles.map((muscle) => <Pressable key={muscle} onPress={() => { setSelectedMuscle(muscle); setSelectedExecutionFamily(''); setExecutionFamilyFacets([]); setMode('muscle'); setQuery(''); setStep('results'); }} style={({ pressed }) => [styles.row, pressed && styles.pressed]}><MuscleArtwork athlete={athleteAnatomy} muscle={muscle} /><Text style={[styles.rowTitle, styles.rowCopy]}>{accessoryTaxonomyLabel(muscle)}</Text><Ionicons color={SLColors.textMuted} name="chevron-forward" size={20} /></Pressable>)}</> : null}
 
-            {step === 'results' ? <><Text style={styles.pageTitle}>{resultTitle}</Text>{mode === 'muscle' ? <><Text style={styles.pageMeta}>Primary matches first, followed by movements that also train this target.</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.equipmentFilterRail} testID="swap-equipment-type-filters"><Pressable accessibilityRole="button" accessibilityState={{ selected: !selectedExecutionFamily }} onPress={() => setSelectedExecutionFamily('')} style={[styles.equipmentFilterChip, !selectedExecutionFamily && styles.equipmentFilterChipActive]}><Text style={[styles.equipmentFilterText, !selectedExecutionFamily && styles.equipmentFilterTextActive]}>All</Text></Pressable>{equipmentTypeFilters.map((filter) => <Pressable accessibilityLabel={`Filter by ${filter.label}`} accessibilityRole="button" accessibilityState={{ selected: selectedExecutionFamily === filter.key }} key={filter.key} onPress={() => setSelectedExecutionFamily(filter.key)} style={[styles.equipmentFilterChip, selectedExecutionFamily === filter.key && styles.equipmentFilterChipActive]}><Text style={[styles.equipmentFilterText, selectedExecutionFamily === filter.key && styles.equipmentFilterTextActive]}>{filter.label}</Text></Pressable>)}</ScrollView></> : null}{loading ? <ActivityIndicator color={SLColors.accent} style={styles.loading} /> : null}{!loading ? rows.map((identity) => renderIdentity(identity)) : null}{!loading && !rows.length ? <Text style={styles.empty}>{error || canonicalMovementSearchEmptyCopy(query, mode === 'search' ? 'Search for a movement.' : 'No matching accessory movements.')}</Text> : null}{canCreateCustom && mode === 'custom' ? <Pressable onPress={() => void beginCustom()} style={styles.primaryAction}><Ionicons color={SLColors.textStrong} name="add-circle-outline" size={20} /><Text style={styles.primaryActionText}>Create Governed Movement</Text></Pressable> : null}</> : null}
+            {step === 'results' ? <><Text style={styles.pageTitle}>{resultTitle}</Text>{mode === 'muscle' ? <><Text style={styles.pageMeta}>Primary matches first, followed by movements that also train this target.</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.equipmentFilterRail} testID="swap-equipment-type-filters"><Pressable accessibilityRole="button" accessibilityState={{ selected: !selectedExecutionFamily }} onPress={() => setSelectedExecutionFamily('')} style={[styles.equipmentFilterChip, !selectedExecutionFamily && styles.equipmentFilterChipActive]}><Text style={[styles.equipmentFilterText, !selectedExecutionFamily && styles.equipmentFilterTextActive]}>All</Text></Pressable>{equipmentTypeFilters.map((filter) => <Pressable accessibilityLabel={`Filter by ${filter.label}`} accessibilityRole="button" accessibilityState={{ selected: selectedExecutionFamily === filter.key }} key={filter.key} onPress={() => setSelectedExecutionFamily(filter.key)} style={[styles.equipmentFilterChip, selectedExecutionFamily === filter.key && styles.equipmentFilterChipActive]}><Text style={[styles.equipmentFilterText, selectedExecutionFamily === filter.key && styles.equipmentFilterTextActive]}>{filter.label}</Text></Pressable>)}</ScrollView></> : null}{loading ? <ActivityIndicator color={SLColors.accent} style={styles.loading} /> : null}{!loading ? rows.map((identity) => renderIdentity(identity)) : null}{!loading && !rows.length && !(context === 'in-session-addition' && mode === 'search' && matchingCore.length) ? <Text style={styles.empty}>{error || canonicalMovementSearchEmptyCopy(query, mode === 'search' ? 'Search for a movement.' : 'No matching accessory movements.')}</Text> : null}{canCreateCustom && mode === 'custom' ? <Pressable onPress={() => void beginCustom()} style={styles.primaryAction}><Ionicons color={SLColors.textStrong} name="add-circle-outline" size={20} /><Text style={styles.primaryActionText}>Create Governed Movement</Text></Pressable> : null}</> : null}
           </ScrollView>
         </> : <ScrollView contentContainerStyle={styles.customBody} keyboardShouldPersistTaps="handled" style={styles.scroll}>
           <Text style={styles.stepLabel}>STEP {['name', 'primary', 'secondary', 'execution', 'review'].indexOf(customStep) + 1} OF 5</Text>
