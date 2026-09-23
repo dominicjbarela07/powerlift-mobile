@@ -359,6 +359,7 @@ function LiftVolumeAchievement({ entry, totalLb, unit, onSelect }: { entry: Volu
 
 function VolumeMilestoneDetail({ selection, unit, onClose }: { selection: Selection | null; unit: VolumeDisplayUnit; onClose: () => void }) {
   const reduceMotion = useSLReducedMotion();
+  const { height: viewportHeight } = useWindowDimensions();
   const [factRevealed, setFactRevealed] = useState(false);
   const factRevealProgress = useRef(new Animated.Value(0)).current;
 
@@ -393,13 +394,14 @@ function VolumeMilestoneDetail({ selection, unit, onClose }: { selection: Select
 
   return <StrengthLedgerSheetModalAdapter transparent visible animationType={reduceMotion ? 'none' : 'fade'} onRequestClose={onClose}>
     <Pressable accessibilityRole="button" accessibilityLabel="Close achievement details" style={styles.modalScrim} onPress={onClose}>
+      <ScrollView style={{ maxHeight: viewportHeight * 0.9, flexGrow: 0 }} showsVerticalScrollIndicator={false}>
       <Pressable accessibilityViewIsModal onPress={(event) => event.stopPropagation()} style={[styles.detailSheet, { borderColor: `${tone}55` }]}>
         <StrengthLedgerSheetDragRegion><View style={styles.detailHandle} /></StrengthLedgerSheetDragRegion>
         <ThemedText style={[styles.detailState, { color: tone }]}>ACHIEVED · {selection.contextLabel.toUpperCase()}</ThemedText>
         <View style={styles.detailPhotoStage}>
           <VolumeComparisonPhoto comparison={comparison} tone={tone} surfaceColor="#111823" fadeDirection="bottom" style={styles.detailPhoto} />
         </View>
-        <ThemedText typographyRole="heroNumeric" style={styles.detailThreshold}>{formatVolumeLb(milestone.thresholdLb, unit)}</ThemedText>
+        <ThemedText typographyRole="heroNumeric" adjustsFontSizeToFit minimumFontScale={0.5} numberOfLines={1} style={styles.detailThreshold}>{formatVolumeLb(milestone.thresholdLb, unit)}</ThemedText>
         <ThemedText typographyRole="dynamicName" style={styles.detailTitle}>{comparison.title}</ThemedText>
         <ThemedText typographyRole="modalBody" style={styles.detailBody}>{comparison.achievedCopy}</ThemedText>
         <ThemedText typographyRole="supportingBody" style={styles.detailDescription}>{comparison.description}</ThemedText>
@@ -437,6 +439,7 @@ function VolumeMilestoneDetail({ selection, unit, onClose }: { selection: Select
           <ThemedText typographyRole="longButtonLabel" style={styles.detailCloseText}>Done</ThemedText>
         </Pressable>
       </Pressable>
+      </ScrollView>
     </Pressable>
   </StrengthLedgerSheetModalAdapter>;
 }
