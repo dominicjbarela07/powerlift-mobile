@@ -9152,6 +9152,12 @@
       "movement_definition_id": 13,
       "candidate_id": "f81cfed37700615c4c284487",
       "app_sha256": "4d161b84fdc80cf048e6745d07c90ecdd5608c74f554ffc2f1bc42e4e1626d52",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.95,
+        "x": 0.16,
+        "y": 0.23
+      },
       "presentation": {
         "focalX": 0.5,
         "focalY": 0.5,
