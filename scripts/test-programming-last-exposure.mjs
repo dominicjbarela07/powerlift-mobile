@@ -17,7 +17,7 @@ assert.equal(real12.independent_evidence_count, 87);
 assert.equal(real12.sample_legacy_evidence.resolution_source, 'constrained_legacy_lift_code');
 const cache = cacheModule.sessionExposureCache;
 const effects = [], calls = [];
-let response = real12.canonical_history, failure = false;
+let response = real12.canonical_history, failure = false, responseForPath = null;
 const react = { useEffect: effect => effects.push(effect), useSyncExternalStore: (_subscribe, snapshot) => snapshot(),
   createElement: (type, props, ...children) => typeof type === 'function' ? type({ ...props, children }) : ({ type, props: props || {}, children }), Fragment: 'Fragment' };
 function load(file, dependencies) {
@@ -28,7 +28,7 @@ function load(file, dependencies) {
 }
 // Exercise the actual network boundary, including its athlete / Core namespace checks.
 const api = load('lib/canonical-movement-history.ts', {
-  '@/lib/api': { fetchJson: async path => { calls.push(path); if (failure) throw Error('offline'); return { ok: true, json: { ok: true, movement_history: response } }; } },
+  '@/lib/api': { fetchJson: async path => { calls.push(path); if (failure) throw Error('offline'); return { ok: true, json: { ok: true, movement_history: responseForPath ? responseForPath(path) : response } }; } },
   '@/lib/movement-strength-metric': metric, '@/lib/performed-load-semantics': loadSemantics, '@/lib/canonical-movement-history-contract': contract,
 });
 const hook = load('lib/use-session-exposure.ts', { react, './canonical-movement-history': api,
@@ -44,7 +44,7 @@ const text = node => node == null || node === false ? '' : typeof node === 'obje
 const render = props => component.ProgrammingLastExposure(props);
 const settle = async () => { effects.splice(0).forEach(effect => effect()); for (let i = 0; i < 5; i++) await new Promise(resolve => setImmediate(resolve)); };
 const expectFound = async (props, value) => { render(props); await settle(); const tree = render(props); assert.ok(text(tree).includes(value), text(tree)); return tree; };
-const reset = () => { cache.clear(); effects.length = 0; calls.length = 0; failure = false; response = real12.canonical_history; };
+const reset = () => { cache.clear(); effects.length = 0; calls.length = 0; failure = false; responseForPath = null; response = real12.canonical_history; };
 reset();
 assert.match(text(render(props12)), /Loading previous exposure/);
 await settle();
@@ -109,7 +109,7 @@ for (const bad of [real4.canonical_history,
 }
 assert.equal(hook.sessionExposureIdentity({ ...context(real12), athleteId: 4 }, { athleteId: 12, coreMovementId: 1 }), null);
 assert.equal(hook.sessionExposureIdentity(context(real12), { athleteId: 12, coreMovementId: 1, movementDefinitionId: 1 }), null);
-assert.match(text(render({ ...props12, item: { movement: 'Competition Squat' } })), /Exact movement history is unavailable/);
+assert.match(text(render({ ...props12, item: { movement: 'Competition Squat' } })), /resolved movement and Session/);
 // Accessories retain hydration/equipment rules and perform zero fallback queries.
 reset();
 const accessoryId = { ...context(real12), movementDefinitionId: 314, equipmentId: 17 };
@@ -119,9 +119,81 @@ assert.equal(hook.hydratedSessionExposureRead(hydrated, { ...accessoryId, equipm
 assert.equal(hook.hydratedSessionExposureRead(null, accessoryId).status, 'unresolved');
 assert.equal(hook.hydratedSessionExposureRead({ ...hydrated, previous_exposure: null }, accessoryId).status, 'empty');
 assert.equal(calls.length, 0);
+
+// Regression: the Editor used to declare a governed accessory unavailable when
+// its Session summary was null/unresolved, while this exact History API worked.
+const accessoryItem = { id: 9901, lift: 'AX', variant: 'ACC', movement_identity_contract: 1,
+  movement_definition_id: 314, movement_identity: { id: 314 },
+  // These are provenance/stale compatibility fields, never the current subject.
+  is_substituted: true, original_movement: 'Original prescription', selected_sub_movement: 'Historical label',
+  effective_movement_definition_id: 315, performed_canonical_movement_definition_id: 315,
+  performed_canonical_movement_identity: { id: 315 }, movement_history: null };
+const accessoryHistory = { ...real12.canonical_history, scope: 'exact_identity',
+  identity_resolution: { ...real12.canonical_history.identity_resolution, subject_type: 'accessory', subject_id: 314 },
+  movement: { id: 314, key: 'test_exact_accessory', identity_type: 'accessory', requires_equipment_configuration: true },
+  filters: { ...real12.canonical_history.filters, selected_scope: 'all_history', analytics_scope: 'no_comparable_series' },
+  comparison_allowed: false, performance_trend: [], load_progression: [], load_rep_profile: [],
+  summary: { exposure_count: 1, set_count: 3, first_performed_on: '2026-09-01', last_performed_on: '2026-09-01' },
+  exposures: [{ id: '10:0', workout_id: 10, date: '2026-09-01', set_count: 3,
+    comparison_scope: 'not_comparable', comparison_identity_key: null, equipment: null,
+    best_set: { id: 77, weight_kg: 20, reps: 12, rir: 2 } }], has_more: false, next_cursor: null };
+let destination;
+const accessoryProps = { ...props12, item: accessoryItem, displayUnit: 'kg', onOpenHistory: () => {
+  const resolution = launch.resolveMovementHistoryLaunchForItem({ athleteId: props12.context.athleteId, item: accessoryItem });
+  assert.equal(resolution.ok, true);
+  destination = launch.movementHistorySheetRoute(resolution.target);
+} };
+const findAction = node => node?.props?.accessibilityLabel === 'Open exact movement history' ? node
+  : (node?.children || []).map(findAction).find(Boolean);
+for (const summary of [null, { identity_scope: 'unresolved_identity' }, hydrated,
+  { ...hydrated, movement_definition_id: 315, previous_exposure: null }]) {
+  reset(); response = accessoryHistory;
+  const props = { ...accessoryProps, item: { ...accessoryItem, movement_history: summary } };
+  assert.match(text(render(props)), /Loading previous exposure/);
+  const tree = await expectFound(props, '20 kg × 12 @2 RIR');
+  assert.doesNotMatch(text(tree), /unavailable|No previous exact exposure/);
+  assert.match(text(tree), /Sep 1.*3 recorded sets.*Equipment not recorded/);
+  findAction(tree).props.onPress();
+  assert.equal(destination.params.movementDefinitionId, '314');
+  const full = await api.fetchCanonicalMovementHistory({ athleteId: Number(destination.params.athleteId),
+    movementDefinitionId: Number(destination.params.movementDefinitionId), range: 'all', limit: 12 });
+  assert.equal(full.exposures[0].best_set.id, 77);
+  assert.equal(cache.get(hook.sessionExposureIdentity(props.context, { athleteId: 12, movementDefinitionId: 314 })).set.id, 77);
+  for (const path of calls) assert.match(path, /movement_definition_id=314/);
+  for (let i = 0; i < 20; i++) { render({ ...props, item: { ...props.item, reps: i }, displayUnit: i % 2 ? 'lb' : 'kg' }); await settle(); }
+  assert.equal(calls.length, 2, 'one Editor read plus one intentional full History read');
+  assert.equal(props.item.performed_canonical_movement_definition_id, 315, 'reading never mutates provenance');
+}
+// An older Session must page past later/current evidence; no six-card cutoff.
+reset();
+responseForPath = path => path.includes('analytics_cursor=') ? accessoryHistory : { ...accessoryHistory,
+  exposures: [{ ...accessoryHistory.exposures[0], workout_id: props12.context.workoutId, date: props12.context.sessionDate }],
+  has_more: true, next_cursor: 'offset:6' };
+await expectFound(accessoryProps, '20 kg × 12'); assert.equal(calls.length, 2);
+assert.match(calls[1], /analytics_cursor=offset%3A6/);
+// Empty and errors are distinct; failures, wrong subjects and unusable evidence
+// cannot become a definitive no-history result. Retry uses the same identity.
+reset(); response = { ...accessoryHistory, exposures: [], summary: { set_count: 0, exposure_count: 0 } };
+render(accessoryProps); await settle(); assert.match(text(render(accessoryProps)), /No previous exact exposure/);
+for (const bad of [real4.canonical_history, { ...accessoryHistory, identity_resolution: { ...accessoryHistory.identity_resolution, subject_id: 315 } },
+  { ...accessoryHistory, exposures: [] }, { ...accessoryHistory, exposures: [], has_more: true, next_cursor: 'offset:0' }]) {
+  reset(); response = bad; render(accessoryProps); await settle();
+  assert.match(text(render(accessoryProps)), /History unavailable right now/);
+  assert.doesNotMatch(text(render(accessoryProps)), /No previous exact exposure/);
+}
+reset(); failure = true; render(accessoryProps); await settle();
+assert.match(text(render(accessoryProps)), /History unavailable right now/);
+failure = false; response = accessoryHistory;
+cache.retry(hook.sessionExposureIdentity(accessoryProps.context, { athleteId: 12, movementDefinitionId: 314 }));
+await expectFound(accessoryProps, '20 kg × 12');
+// The Logger retains its stricter equipment-comparable hydrated contract.
+reset();
+assert.equal(hook.useSessionExposure({ context: accessoryProps.context,
+  target: { athleteId: 12, movementDefinitionId: 314 }, history: null }).status, 'unresolved');
+await settle(); assert.equal(calls.length, 0);
 const route = fs.readFileSync('app/(tabs)/workout/session-workspace/[workoutId].tsx', 'utf8');
 assert.match(route, /assertProgrammingResponseSubject/);
 assert.match(route, /athleteId: payload\?\.athlete\?\.id/);
 assert.match(route, /history=summary/);
 assert.match(fs.readFileSync('components/workout-logger/session-history-peek.tsx', 'utf8'), /useSessionExposure/);
-console.log('PASS — real DEV modern/legacy Squat, exact Core namespace, variants, self/Team/workspace isolation, draft stability, date cutoff, current Session exclusion, exhaustive empty, failure/retry, denial, hydration equipment policy and shared Logger reader');
+console.log('PASS — Editor/History same canonical accessory and SetLog despite missing/stale hydration/provenance; pagination, empty/error/retry, equipment context, unchanged Logger; real Core history, variants, self/Team isolation and stable cache');

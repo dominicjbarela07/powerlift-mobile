@@ -2,7 +2,7 @@ import { useEffect, useSyncExternalStore } from 'react';
 import { fetchCanonicalMovementHistory } from './canonical-movement-history';
 import type { MovementHistoryLaunchTarget } from './movement-history-launch';
 import { exposureSnapshotKey, sessionExposureCache, type ExposureSnapshotIdentity, type SessionExposureContext } from './session-exposure-cache';
-import { exposureFromCoreHistory, exposureFromHydration, type HydratedExposureHistory, type SessionExposure } from './session-exposure-snapshot';
+import { exposureFromAccessoryHistory, exposureFromCoreHistory, exposureFromHydration, type HydratedExposureHistory, type SessionExposure } from './session-exposure-snapshot';
 
 export type SessionExposureRead = Readonly<{
   status: 'loading' | 'found' | 'empty' | 'error' | 'unresolved' | 'unavailable';
@@ -40,6 +40,35 @@ export async function loadCoreSessionExposure(identity: ExposureSnapshotIdentity
   return exposure;
 }
 
+/** Same canonical subject and All History query as the History destination.
+ * A missing/stale Session summary says nothing about this endpoint's evidence.
+ * Page until prior usable evidence or an authoritative end, including when an
+ * older scheduled Session falls outside the first six exposure cards. */
+export async function loadAccessoryEditorExposure(identity: ExposureSnapshotIdentity): Promise<SessionExposure> {
+  let cursor: string | undefined;
+  const seen = new Set<string>();
+  do {
+    const history = await fetchCanonicalMovementHistory({ athleteId: identity.athleteId,
+      movementDefinitionId: identity.movementDefinitionId,
+      equipmentContextDefinitionId: identity.equipmentId, range: 'all', limit: 6, cursor });
+    if (history.scope !== 'exact_identity' || history.filters.date_range !== 'all'
+      || history.filters.selected_scope !== 'all_history') throw new Error('Exact exposure could not be determined.');
+    const exposure = exposureFromAccessoryHistory(history, identity);
+    if (exposure) return exposure;
+    if (!history.has_more) {
+      if (history.summary.set_count > 0
+        && String(history.summary.first_performed_on || '').slice(0, 10) < identity.sessionDate.slice(0, 10)) {
+        throw new Error('Prior evidence is unavailable for this summary.');
+      }
+      return null;
+    }
+    if (!history.next_cursor || seen.has(history.next_cursor)) throw new Error('Exact exposure history is incomplete.');
+    cursor = history.next_cursor;
+    seen.add(cursor);
+  } while (cursor);
+  return null;
+}
+
 export function hydratedSessionExposureRead(history: HydratedExposureHistory | null | undefined, identity: ExposureSnapshotIdentity): SessionExposureRead {
   if (!history || history.identity_scope === 'unresolved_identity') return { status: 'unresolved', exposure: null };
   if (history.identity_scope !== 'exact_identity' || history.movement_definition_id !== identity.movementDefinitionId
@@ -55,21 +84,23 @@ export function hydratedSessionExposureRead(history: HydratedExposureHistory | n
  * athlete; the canonical movement resolver supplies the exact subject. Draft
  * prescription, units, scrolling, focus and render clocks are not cache keys.
  */
-export function useSessionExposure({ context, target, history }: {
+export function useSessionExposure({ context, target, history, canonicalEditorHistory = false }: {
   context?: SessionExposureContext; target: MovementHistoryLaunchTarget | null;
   history?: HydratedExposureHistory | null;
+  canonicalEditorHistory?: boolean;
 }): SessionExposureRead {
   const identity = sessionExposureIdentity(context, target);
   const key = identity ? exposureSnapshotKey(identity) : null;
   const revision = useSyncExternalStore(sessionExposureCache.subscribe, sessionExposureCache.snapshot);
   useEffect(() => {
-    if (!identity?.coreMovementId) return;
-    void sessionExposureCache.ensure(identity, () => loadCoreSessionExposure(identity));
+    if (!identity || (!identity.coreMovementId && !canonicalEditorHistory)) return;
+    void sessionExposureCache.ensure(identity, () => identity.coreMovementId
+      ? loadCoreSessionExposure(identity) : loadAccessoryEditorExposure(identity));
     // Only the exact subject and explicit evidence invalidation drive reads.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, revision]);
+  }, [key, revision, canonicalEditorHistory]);
   if (!identity) return { status: 'unresolved', exposure: null };
-  if (!identity.coreMovementId) return hydratedSessionExposureRead(history, identity);
+  if (!identity.coreMovementId && !canonicalEditorHistory) return hydratedSessionExposureRead(history, identity);
   const exposure = sessionExposureCache.get(identity);
   const retry = () => sessionExposureCache.retry(identity);
   if (exposure) return { status: 'found', exposure };

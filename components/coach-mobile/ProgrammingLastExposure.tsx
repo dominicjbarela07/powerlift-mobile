@@ -15,11 +15,11 @@ export function ProgrammingLastExposure({ context, item, displayUnit, onOpenHist
 }) {
   const resolution = resolveMovementHistoryLaunchForItem({ athleteId: context?.athleteId, item });
   const target = resolution.ok ? resolution.target : null;
-  const read = useSessionExposure({ context, target, history: item.movement_history });
+  const read = useSessionExposure({ context, target, history: item.movement_history, canonicalEditorHistory: true });
   const content = presentSessionExposure(read.exposure, displayUnit, target?.coreMovementId ? 'core' : 'accessory');
   const message = read.status === 'empty' ? 'No previous exact exposure.'
     : read.status === 'loading' ? 'Loading previous exposure…'
-    : read.status === 'unresolved' ? 'Exact movement history is unavailable.' : 'History unavailable right now.';
+    : read.status === 'unresolved' ? 'A resolved movement and Session are required to load history.' : 'History unavailable right now.';
   return <View style={s.section} testID="programming-last-exposure">
     <View style={s.heading}>
       <Text style={s.label}>LAST EXPOSURE</Text>
