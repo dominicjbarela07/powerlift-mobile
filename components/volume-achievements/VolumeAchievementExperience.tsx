@@ -2,7 +2,7 @@ import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '
 import { Ionicons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Animated, Image, Pressable, StyleSheet, useWindowDimensions, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
+import { AccessibilityInfo, Animated, Image, Pressable, ScrollView, StyleSheet, useWindowDimensions, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
@@ -18,6 +18,7 @@ import {
   poundsToDisplayValue,
   safeVolumeLb,
   volumeSharePercent,
+  volumeStepPercent,
   type VolumeAchievementContextId,
   type VolumeAchievementMilestone,
   type VolumeAchievementProgress,
@@ -134,7 +135,15 @@ function VolumeScaleLadder({
 }) {
   const { width } = useWindowDimensions();
   const compact = width < 390;
-  return <View style={styles.ladder} accessibilityLabel={`${contextLabel} achievement scale`}>
+  const expanded = progress.milestones.length > 7;
+  const railRef = useRef<ScrollView>(null);
+  const [railWidth, setRailWidth] = useState(0);
+  const targetIndex = progress.milestones.findIndex(({ thresholdLb }) => thresholdLb === (progress.next ?? progress.achieved)?.thresholdLb);
+  const focusTarget = () => railRef.current?.scrollTo({
+    x: Math.max(0, targetIndex * 76 - (railWidth - 76) / 2), y: 0, animated: false,
+  });
+  useEffect(() => { if (expanded) focusTarget(); }, [expanded, targetIndex, railWidth]);
+  const ladder = <View style={[styles.ladder, expanded && { width: progress.milestones.length * 76 }]} accessibilityLabel={`${contextLabel} achievement scale`}>
     <View pointerEvents="none" style={styles.ladderLine} />
     {progress.milestones.map((milestone) => {
       const presentation = deriveVolumeComparisonPresentation(milestone, contextId, progress.currentLb);
@@ -171,22 +180,35 @@ function VolumeScaleLadder({
       </Pressable>;
     })}
   </View>;
+  if (!expanded) return ladder;
+  return <View testID="complete-volume-landmarks">
+    <View style={styles.ladderHeading}>
+      <ThemedText style={styles.ladderCaption}>LIFETIME LANDMARKS</ThemedText>
+      <ThemedText style={styles.ladderHint}>Swipe to explore · {progress.milestones.length}</ThemedText>
+    </View>
+    <ScrollView ref={railRef} horizontal showsHorizontalScrollIndicator={false}
+      onLayout={({ nativeEvent }) => setRailWidth(nativeEvent.layout.width)}
+      onContentSizeChange={focusTarget}
+      testID="complete-volume-landmark-rail">
+      {ladder}
+    </ScrollView>
+  </View>;
 }
 
 function TotalVolumeAchievement({ entry, unit, onSelect }: { entry: VolumeAchievementEntry; unit: VolumeDisplayUnit; onSelect: (selection: Selection) => void }) {
   const { width } = useWindowDimensions();
   const compact = width < 390;
   const currentLb = entry.current.lb;
-  const progress = useMemo(() => deriveVolumeAchievement(currentLb), [currentLb]);
+  const progress = useMemo(() => deriveVolumeAchievement(currentLb, entry.id), [currentLb, entry.id]);
   const earned = progress.achieved;
   const next = progress.next;
   const earnedPresentation = earned ? deriveVolumeComparisonPresentation(earned, entry.id, progress.currentLb) : null;
   const earnedComparison = earnedPresentation?.comparison ?? null;
-  const progressPercent = Math.round(progress.segmentProgress * 100);
+  const progressPercent = volumeStepPercent(progress);
   const ringSize = compact ? 92 : 104;
 
   return <View style={[styles.case, styles.totalCase, { borderColor: `${entry.tone}58` }]}>
-    <View style={[styles.totalHeroStage, compact && styles.totalHeroStageCompact]}>
+    <View style={[styles.totalHeroStage, compact && styles.totalHeroStageCompact, !earned && styles.totalHeroStageEmpty]}>
       {earnedComparison ? <VolumeComparisonPhoto comparison={earnedComparison} tone={entry.tone} surfaceColor="#07111D" fadeDirection="hero" style={styles.totalBackdrop} /> : null}
       <View style={styles.totalHeader}>
         <View style={styles.totalMetricCopy}>
@@ -220,7 +242,7 @@ function TotalVolumeAchievement({ entry, unit, onSelect }: { entry: VolumeAchiev
         accessibilityLabel={`Latest landmark at ${formatVolumeLb(earned.thresholdLb, unit)}: ${earnedComparison.title}. ${earnedComparison.achievedCopy}`}
         accessibilityHint="Shows the earned comparison details"
         onPress={() => onSelect({ contextId: entry.id, contextLabel: entry.label, currentLb: progress.currentLb, milestone: earned, tone: entry.tone })}
-        style={({ pressed }) => [styles.totalLandmark, pressed && styles.pressed]}
+        style={({ pressed }) => [styles.totalLandmark, earned.completeOnly && styles.totalLandmarkExpanded, pressed && styles.pressed]}
       >
         <View style={styles.storyKickerRow}>
           <ThemedText style={[styles.storyEyebrow, { color: entry.tone }]}>LATEST LANDMARK ·</ThemedText>
@@ -247,12 +269,12 @@ function LiftVolumeAchievement({ entry, totalLb, unit, onSelect }: { entry: Volu
   const { width } = useWindowDimensions();
   const compact = width < 390;
   const currentLb = entry.current.lb;
-  const progress = useMemo(() => deriveVolumeAchievement(currentLb), [currentLb]);
+  const progress = useMemo(() => deriveVolumeAchievement(currentLb, entry.id), [currentLb, entry.id]);
   const earned = progress.achieved;
   const next = progress.next;
   const earnedPresentation = earned ? deriveVolumeComparisonPresentation(earned, entry.id, progress.currentLb) : null;
   const earnedComparison = earnedPresentation?.comparison ?? null;
-  const stepPercent = Math.round(progress.segmentProgress * 100);
+  const stepPercent = volumeStepPercent(progress);
   const remainingValue = formatVolumeValue(poundsToDisplayValue(progress.remainingLb, unit));
 
   if (!(typeof entry.current.lb === 'number' && entry.current.lb > 0)) {
@@ -444,6 +466,8 @@ const styles = StyleSheet.create({
   totalCase: { paddingBottom: SLSpacing.md, backgroundColor: 'transparent' },
   totalHeroStage: { minHeight: 282, position: 'relative', overflow: 'hidden' },
   totalHeroStageCompact: { minHeight: 278 },
+  totalHeroStageEmpty: { minHeight: 180 },
+  totalLandmarkExpanded: { width: '78%' },
   totalBackdrop: { ...StyleSheet.absoluteFillObject },
   totalHeader: { flexDirection: 'row', alignItems: 'flex-start', paddingTop: 15, paddingHorizontal: 15, zIndex: 2 },
   totalMetricCopy: { flex: 1, minWidth: 0, maxWidth: '67%' },
@@ -475,6 +499,9 @@ const styles = StyleSheet.create({
   storyBodyRow: { flexDirection: 'row', alignItems: 'center', gap: 7, marginTop: 5 },
   storyBody: { fontFamily: SLFontFamilies.body, fontWeight: '400', flex: 1, color: '#D8DDE5', fontSize: 12, lineHeight: 16 },
   totalLadder: { paddingHorizontal: SLSpacing.sm, paddingTop: SLSpacing.sm },
+  ladderHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 4, paddingBottom: 10, gap: 8 },
+  ladderCaption: { fontFamily: SLFontFamilies.bodySemiBold, fontSize: 10, lineHeight: 14, color: '#B9C4D2', letterSpacing: 0.7 },
+  ladderHint: { fontFamily: SLFontFamilies.body, fontSize: 11, lineHeight: 14, color: '#8492A5' },
   ladder: { minHeight: 70, flexDirection: 'row', alignItems: 'flex-start', position: 'relative' },
   ladderLine: { position: 'absolute', left: 24, right: 24, top: 18, height: 1, backgroundColor: '#2B3646' },
   ladderStop: { flex: 1, flexBasis: 0, minWidth: 0, minHeight: 66, alignItems: 'center', justifyContent: 'flex-start', paddingHorizontal: 1 },

@@ -37,6 +37,7 @@
     "test:plate-stack-render-resolver": "node --import tsx scripts/test-plate-stack-render-resolver.mjs",
     "test:dev-mock-plate-club-renderer": "node scripts/test-dev-mock-plate-club-renderer.mjs",
     "test:animation-library": "node scripts/test-animation-library.mjs",
+    "test:training-volume-landmarks": "node --import tsx scripts/test-training-volume-landmarks.mjs",
     "test:major-volume-medallions": "node scripts/test-major-volume-medallion-assets.mjs",
     "test:post-session-ledger-ceremony": "node scripts/test-post-session-ledger-ceremony.mjs",
     "test:movement-history-race": "node scripts/test-movement-history-request-race.mjs",

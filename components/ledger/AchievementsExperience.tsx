@@ -100,7 +100,7 @@ const LIFT_PRESENTATIONS: LiftPresentation[] = [
   { key: 'deadlift', name: 'Deadlift', icon: 'fitness-outline', tone: SLMetricTones.deadlift.solid, glow: '#B93451', softTone: '#431621' },
 ];
 
-const PRIMARY_ACHIEVEMENT_SECTIONS = ['hub', 'milestones', 'clubs', 'trophies', 'medallions'] as const satisfies readonly AchievementSection[];
+const PRIMARY_ACHIEVEMENT_SECTIONS = ['hub', 'volume', 'milestones', 'clubs', 'trophies', 'medallions'] as const satisfies readonly AchievementSection[];
 
 const VOLUME_PRESENTATION: VolumeAchievementDataset = {
   total: { id: 'total', label: 'Complete Training Volume', current: { lb: null, kg: null }, tone: SLMetricTones.total.solid, glow: '#8A2C9E' },
@@ -238,7 +238,7 @@ const ACHIEVEMENT_SECTION_LABELS: Record<AchievementSection, string> = {
   clubs: 'Clubs',
   trophies: 'Trophies',
   medallions: 'Medallions',
-  volume: 'Volume',
+  volume: 'Training Volume',
   prs: 'PR History',
   streaks: 'Streaks',
 };
@@ -292,6 +292,7 @@ function formatPrEvent(event: AccomplishmentEvent, unit: Unit): { title: string;
 function AchievementFamilyRail({ section, onSelect }: { section: AchievementSection; onSelect: (section: AchievementSection) => void }) {
   return <SLCompactTabRail
     accent="#C89B52"
+    testID="achievement-category-navigation"
     items={PRIMARY_ACHIEVEMENT_SECTIONS.map((item) => ({ key: item, label: ACHIEVEMENT_SECTION_LABELS[item] }))}
     onSelect={(item) => onSelect(item as AchievementSection)}
     selectedKey={section}

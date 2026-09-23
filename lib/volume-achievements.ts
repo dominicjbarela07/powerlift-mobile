@@ -74,6 +74,7 @@ export type VolumeComparisonCandidate = {
 
 export type VolumeAchievementMilestone = {
   thresholdLb: number;
+  completeOnly?: boolean;
   compactLabel: string;
   importance: VolumeAchievementImportance;
   primaryComparisonId: string;
@@ -119,7 +120,7 @@ const KG_PER_LB = 0.45359237;
  * Canonical pound-based lifetime-volume ladder. Each threshold has one stable
  * primary comparison and reviewed alternatives for future deterministic use.
  */
-export const VOLUME_ACHIEVEMENT_MILESTONES: readonly VolumeAchievementMilestone[] = [
+const SHARED_VOLUME_LANDMARKS: readonly VolumeAchievementMilestone[] = [
   {
     thresholdLb: 100_000,
     compactLabel: '100K',
@@ -1079,6 +1080,61 @@ export const VOLUME_ACHIEVEMENT_MILESTONES: readonly VolumeAchievementMilestone[
   },
 ] as const;
 
+/**
+ * Larger Complete Training Volume landmarks reuse the verified object masses and
+ * licensed photographs already registered above. Counts are scale equivalents,
+ * not claims that these fleets exist. Individual-lift ladders remain unchanged.
+ */
+function completeVolumeScale(
+  thresholdLb: number,
+  compactLabel: string,
+  comparisonId: string,
+  count: number,
+  title: string,
+): VolumeAchievementMilestone {
+  const reference = SHARED_VOLUME_LANDMARKS.flatMap(({ comparisons }) => comparisons)
+    .find(({ id }) => id === comparisonId);
+  if (!reference) throw new Error(`Unknown volume scale reference: ${comparisonId}`);
+  const approximateWeightLb = reference.approximateWeightLb * count;
+  const id = `${comparisonId}-scale-${count}`;
+  const scale = title.charAt(0).toLowerCase() + title.slice(1);
+  const comparison: VolumeComparisonCandidate = {
+    ...reference,
+    id,
+    title,
+    approximateWeightLb,
+    weightConfiguration: `${count.toLocaleString('en-US')} equivalents. ${reference.weightConfiguration}`,
+    relation: Math.abs(approximateWeightLb / thresholdLb - 1) < 0.1
+      ? 'approximately_equal' : approximateWeightLb < thresholdLb ? 'slightly_below' : 'slightly_above',
+    whyItMaps: `${count} × ${reference.approximateWeightLb.toLocaleString('en-US')} lb = ${approximateWeightLb.toLocaleString('en-US')} lb; an approximate scale comparison.`,
+    recommendedCopy: `About the combined mass of ${scale}.`,
+    achievedCopy: 'About their combined mass, accumulated rep by rep.',
+    targetCopy: `Build toward the combined mass of ${scale}.`,
+    description: `${reference.description} This landmark compares ${count.toLocaleString('en-US')} equivalents, about ${approximateWeightLb.toLocaleString('en-US')} lb combined.`,
+    perspectiveFact: 'An equivalent combined mass, accumulated one rep at a time. The photograph shows the reference object.',
+    // Keep source-backed object facts and photo attribution; the multiplier is our arithmetic.
+    source: { ...reference.source, reference: `${reference.source.reference} Scale comparison: ${count} equivalents.` },
+  };
+  return { thresholdLb, compactLabel, importance: 'elite', completeOnly: true, primaryComparisonId: id, comparisons: [comparison] };
+}
+
+export const VOLUME_ACHIEVEMENT_MILESTONES: readonly VolumeAchievementMilestone[] = [
+  ...SHARED_VOLUME_LANDMARKS,
+  completeVolumeScale(25_000_000, '25M', 'nasa-crawler-transporter', 4, 'Four NASA crawler-transporters'),
+  completeVolumeScale(50_000_000, '50M', 'national-security-cutter-full-load', 5, 'Five National Security Cutters'),
+  completeVolumeScale(75_000_000, '75M', 'space-shuttle-launch-stack', 17, 'Seventeen Shuttle launch stacks'),
+  completeVolumeScale(100_000_000, '100M', 'hoover-dam-generator', 25, 'Twenty-five Hoover Dam generators'),
+  completeVolumeScale(150_000_000, '150M', 'international-space-station', 160, '160 International Space Stations'),
+  completeVolumeScale(250_000_000, '250M', 'national-security-cutter-full-load', 25, 'Twenty-five National Security Cutters'),
+  completeVolumeScale(500_000_000, '500M', 'hoover-dam-generator', 125, '125 Hoover Dam generators'),
+  completeVolumeScale(750_000_000, '750M', 'nasa-crawler-transporter', 114, '114 NASA crawler-transporters'),
+  completeVolumeScale(1_000_000_000, '1B', 'space-shuttle-launch-stack', 222, '222 Shuttle launch stacks'),
+];
+
+export function volumeMilestonesForContext(contextId: VolumeAchievementContextId) {
+  return VOLUME_ACHIEVEMENT_MILESTONES.filter((milestone) => contextId === 'total' || !milestone.completeOnly);
+}
+
 export const VOLUME_ACHIEVEMENT_THRESHOLDS_LB = VOLUME_ACHIEVEMENT_MILESTONES.map(({ thresholdLb }) => thresholdLb);
 
 if (!VOLUME_ACHIEVEMENT_THRESHOLDS_LB.every((threshold, index, values) => index === 0 || threshold > values[index - 1])) {
@@ -1121,10 +1177,11 @@ export function safeVolumeLb(value: number | null | undefined): number {
   return Number.isFinite(value) ? Math.max(0, value ?? 0) : 0;
 }
 
-export function deriveVolumeAchievement(valueLb: number | null | undefined): VolumeAchievementProgress {
+export function deriveVolumeAchievement(valueLb: number | null | undefined, contextId: VolumeAchievementContextId = 'total'): VolumeAchievementProgress {
+  const milestones = volumeMilestonesForContext(contextId);
   const currentLb = safeVolumeLb(valueLb);
-  const achieved = [...VOLUME_ACHIEVEMENT_MILESTONES].reverse().find(({ thresholdLb }) => thresholdLb <= currentLb) ?? null;
-  const next = VOLUME_ACHIEVEMENT_MILESTONES.find(({ thresholdLb }) => thresholdLb > currentLb) ?? null;
+  const achieved = [...milestones].reverse().find(({ thresholdLb }) => thresholdLb <= currentLb) ?? null;
+  const next = milestones.find(({ thresholdLb }) => thresholdLb > currentLb) ?? null;
   const priorThresholdLb = achieved?.thresholdLb ?? 0;
   const segmentProgress = next
     ? Math.max(0, Math.min(1, (currentLb - priorThresholdLb) / (next.thresholdLb - priorThresholdLb)))
@@ -1136,7 +1193,7 @@ export function deriveVolumeAchievement(valueLb: number | null | undefined): Vol
     next,
     remainingLb: next ? Math.max(0, next.thresholdLb - currentLb) : 0,
     segmentProgress,
-    milestones: VOLUME_ACHIEVEMENT_MILESTONES.map((milestone) => ({
+    milestones: milestones.map((milestone) => ({
       ...milestone,
       state: milestone.thresholdLb <= currentLb ? 'achieved' : milestone.thresholdLb === next?.thresholdLb ? 'current' : 'locked',
     })),
@@ -1154,7 +1211,7 @@ export function deriveVolumeComparisonPresentation(
   contextId: VolumeAchievementContextId,
   valueLb: number | null | undefined,
 ): VolumeComparisonPresentation {
-  const progress = deriveVolumeAchievement(valueLb);
+  const progress = deriveVolumeAchievement(valueLb, contextId);
   const derivedMilestone = progress.milestones.find(({ thresholdLb }) => thresholdLb === milestone.thresholdLb);
   if (!derivedMilestone) throw new Error(`Unknown volume achievement threshold: ${milestone.thresholdLb}`);
 
@@ -1172,6 +1229,10 @@ export function deriveVolumeComparisonPresentation(
     visibleDetailAccess: isUnlocked,
     comparison,
   };
+}
+
+export function volumeStepPercent(progress: VolumeAchievementProgress): number {
+  return progress.next ? Math.min(99, Math.round(progress.segmentProgress * 100)) : 100;
 }
 
 export function volumeSharePercent(valueLb: number | null | undefined, totalLb: number | null | undefined): number {
@@ -1194,6 +1255,7 @@ export function formatVolumeLb(valueLb: number, unit: VolumeDisplayUnit): string
 
 export function formatCompactVolumeLb(valueLb: number, unit: VolumeDisplayUnit): string {
   const value = poundsToDisplayValue(valueLb, unit);
+  if (value >= 1_000_000_000) return `${Number((value / 1_000_000_000).toFixed(2))}B`;
   if (value >= 1_000_000) return `${Number((value / 1_000_000).toFixed(2))}M`;
   if (value >= 1_000) return `${Math.round(value / 1_000)}K`;
   return formatVolumeValue(value);
