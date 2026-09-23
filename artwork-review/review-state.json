@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": 2856,
-  "updated_at": "2026-09-23T21:06:04.209135+00:00",
-  "updated_at_display": "Sep 23, 2026 02:06 PM PT (Sep 23, 2026 05:06 PM Eastern)",
+  "revision": 2857,
+  "updated_at": "2026-09-23T21:14:22.774229+00:00",
+  "updated_at_display": "Sep 23, 2026 02:14 PM PT (Sep 23, 2026 05:14 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -219956,6 +219956,50 @@
           "reviewer_user_id": 1,
           "candidate_sha256": "d8636c3d23a114ef774a00ee118bdf2aa2defdbee0e2a0f0efe93551e514d996",
           "app_sha256": "fc26b36c43929ec7473952f3dd5610e7332373a8a3323368631a5fb117f49073",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "f81cfed37700615c4c284487": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.95,
+        "x": 0.16,
+        "y": 0.23
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.95,
+          "x": 0.16,
+          "y": 0.23
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-23T21:14:22.774161+00:00",
+        "reviewed_at_display": "Sep 23, 2026 02:14 PM PT (Sep 23, 2026 05:14 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ac61896776a0cae4b7d314554bc424f3af2bea533e5a98e34dbc94237c30d6d9",
+        "app_sha256": "4d161b84fdc80cf048e6745d07c90ecdd5608c74f554ffc2f1bc42e4e1626d52",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.95,
+            "x": 0.16,
+            "y": 0.23
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-23T21:14:22.774161+00:00",
+          "reviewed_at_display": "Sep 23, 2026 02:14 PM PT (Sep 23, 2026 05:14 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ac61896776a0cae4b7d314554bc424f3af2bea533e5a98e34dbc94237c30d6d9",
+          "app_sha256": "4d161b84fdc80cf048e6745d07c90ecdd5608c74f554ffc2f1bc42e4e1626d52",
           "source": "human_logger_crop_ui"
         }
       ]
