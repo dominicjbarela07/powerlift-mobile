@@ -9,6 +9,7 @@ import { canonicalMajorVolumeMedallions, nextMajorVolumeThreshold } from '../lib
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const families = ['total','squat','bench','deadlift'];
+const packageProof = JSON.parse(read('assets/images/major-volume-medallions/kg-atlases/manifest.json'));
 const atlasScope = { exports: {}, require: path => path };
 vm.runInNewContext(ts.transpileModule(read('lib/major-volume-medallion-kg-atlases.ts'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
@@ -32,6 +33,10 @@ for (const family of families) {
     assert.equal(earned.length,1); assert.equal(earned[0].thresholdLb,threshold);
     const lb=majorVolumeMedallionAsset(family,threshold,'lb');
     const kg=majorVolumeMedallionAsset(family,threshold,'kg');
+    const packed = packageProof.entries.find(entry => entry.family === family && entry.marker === threshold);
+    assert.ok(packed, 'every displayed award must match a pixel-verified original');
+    assert.equal(kg.source, `@/${packed.atlas}`);
+    for (const key of ['columns','rows','column','row']) assert.equal(kg[key],packed[key]);
     assert.notEqual(lb,kg,'KG must select engraved KG art, never an LB asset');
     for (const asset of [lb,kg]) assert.ok(existsSync(new URL(`../${asset.source.slice(2)}`,import.meta.url)),asset.source);
     for (const tile of [lb,kg]) {
