@@ -74,6 +74,8 @@ export type VolumeComparisonCandidate = {
 
 export type VolumeAchievementMilestone = {
   thresholdLb: number;
+  milestoneUnit?: VolumeDisplayUnit;
+  thresholdValue?: number;
   completeOnly?: boolean;
   compactLabel: string;
   importance: VolumeAchievementImportance;
@@ -1131,8 +1133,38 @@ export const VOLUME_ACHIEVEMENT_MILESTONES: readonly VolumeAchievementMilestone[
   completeVolumeScale(1_000_000_000, '1B', 'space-shuttle-launch-stack', 222, '222 Shuttle launch stacks'),
 ];
 
-export function volumeMilestonesForContext(contextId: VolumeAchievementContextId) {
-  return VOLUME_ACHIEVEMENT_MILESTONES.filter((milestone) => contextId === 'total' || !milestone.completeOnly);
+// Award markers are round values in each unit. thresholdLb remains the internal
+// physical mass used by comparison photographs and existing volume projections.
+export const VOLUME_ACHIEVEMENT_MILESTONES_KG: readonly VolumeAchievementMilestone[] = VOLUME_ACHIEVEMENT_MILESTONES.map((milestone) => {
+  const thresholdValue = milestone.thresholdLb;
+  const thresholdLb = thresholdValue / KG_PER_LB;
+  const comparisons = milestone.comparisons.map((comparison) => {
+    const reference = SHARED_VOLUME_LANDMARKS.flatMap((landmark) => landmark.comparisons)
+      .find((candidate) => candidate.photoId === comparison.photoId) ?? comparison;
+    const count = Math.max(1, Math.floor(thresholdLb / reference.approximateWeightLb));
+    const approximateWeightLb = reference.approximateWeightLb * count;
+    const title = count === 1 ? reference.title : `${count.toLocaleString('en-US')} × ${reference.title}`;
+    return {
+      ...reference,
+      id: `${comparison.id}-kg-${count}`,
+      title,
+      approximateWeightLb,
+      relation: (approximateWeightLb / thresholdLb > 0.9 ? 'approximately_equal' : 'slightly_below') as VolumeComparisonRelation,
+      weightConfiguration: `${count.toLocaleString('en-US')} equivalents. ${reference.weightConfiguration}`,
+      whyItMaps: `${count} × ${reference.approximateWeightLb.toLocaleString('en-US')} lb = ${approximateWeightLb.toLocaleString('en-US')} lb; below this ${thresholdValue.toLocaleString('en-US')} KG milestone.`,
+      recommendedCopy: `More than the mass of ${title}.`,
+      achievedCopy: 'More than their equivalent mass, accumulated rep by rep.',
+      targetCopy: `Build beyond the mass of ${title}.`,
+      description: `${reference.description} This comparison uses ${count.toLocaleString('en-US')} equivalents.`,
+      perspectiveFact: 'An equivalent combined mass, accumulated one rep at a time. The photograph shows the reference object.',
+    };
+  });
+  return { ...milestone, thresholdLb, thresholdValue, milestoneUnit: 'kg', comparisons, primaryComparisonId: comparisons[0].id };
+});
+
+export function volumeMilestonesForContext(contextId: VolumeAchievementContextId, unit: VolumeDisplayUnit = 'lb') {
+  const ladder = unit === 'kg' ? VOLUME_ACHIEVEMENT_MILESTONES_KG : VOLUME_ACHIEVEMENT_MILESTONES;
+  return ladder.filter((milestone) => contextId === 'total' || !milestone.completeOnly);
 }
 
 export const VOLUME_ACHIEVEMENT_THRESHOLDS_LB = VOLUME_ACHIEVEMENT_MILESTONES.map(({ thresholdLb }) => thresholdLb);
@@ -1177,8 +1209,8 @@ export function safeVolumeLb(value: number | null | undefined): number {
   return Number.isFinite(value) ? Math.max(0, value ?? 0) : 0;
 }
 
-export function deriveVolumeAchievement(valueLb: number | null | undefined, contextId: VolumeAchievementContextId = 'total'): VolumeAchievementProgress {
-  const milestones = volumeMilestonesForContext(contextId);
+export function deriveVolumeAchievement(valueLb: number | null | undefined, contextId: VolumeAchievementContextId = 'total', unit: VolumeDisplayUnit = 'lb'): VolumeAchievementProgress {
+  const milestones = volumeMilestonesForContext(contextId, unit);
   const currentLb = safeVolumeLb(valueLb);
   const achieved = [...milestones].reverse().find(({ thresholdLb }) => thresholdLb <= currentLb) ?? null;
   const next = milestones.find(({ thresholdLb }) => thresholdLb > currentLb) ?? null;
@@ -1211,7 +1243,7 @@ export function deriveVolumeComparisonPresentation(
   contextId: VolumeAchievementContextId,
   valueLb: number | null | undefined,
 ): VolumeComparisonPresentation {
-  const progress = deriveVolumeAchievement(valueLb, contextId);
+  const progress = deriveVolumeAchievement(valueLb, contextId, milestone.milestoneUnit ?? 'lb');
   const derivedMilestone = progress.milestones.find(({ thresholdLb }) => thresholdLb === milestone.thresholdLb);
   if (!derivedMilestone) throw new Error(`Unknown volume achievement threshold: ${milestone.thresholdLb}`);
 

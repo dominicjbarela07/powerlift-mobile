@@ -117,7 +117,7 @@ assert.match(majorMilestone, /MAJOR_VOLUME_TIMING_SCALE = 2/, 'major-volume reco
 assert.match(majorMilestone, /MAJOR_VOLUME_SETTLED_HERO_HOLD_MS = 650/, 'major-volume recognition must hold the fully settled landmark for an additional 650 ms');
 assert.match(majorMilestone, /EARNED_ARTIFACT_PHASE_INDEX[\s\S]*Animated\.delay\(settledHeroHoldMs\)/s, 'the additional hold must occur after the earned artifact settles and before evidence');
 assert.doesNotMatch(majorMilestone, /<Svg|<Polygon|artifactThreshold/, 'the recognition surface must not rebuild canonical medallion artwork from SVG or text overlays');
-assert.equal((majorMilestoneAssets.match(/require\('@\/assets\/images\/major-volume-medallions\//g) || []).length, 28, 'the canonical medallion registry must contain all 28 static assets');
+assert.equal((majorMilestoneAssets.match(/require\('@\/assets\/images\/major-volume-medallions\//g) || []).length, 74, 'the canonical medallion registry must contain all 74 unit-specific static assets');
 assert.doesNotMatch(majorMilestone, /SLTrophy|emoji/i, 'major landmarks must not reuse a PR trophy or emoji');
 assert.match(registry, /\['weight-pr', 'rep-max-pr'\]\.includes\(entry\.id\)[\s\S]*WeightPrRecognitionPreview[\s\S]*SLTrophy[\s\S]*LinearGradient[\s\S]*Deterministic fragments/, 'Weight PR and Rep-Max inspector metadata must name their shared DEV preview and atmosphere dependencies');
 assert.match(registry, /\['weight-pr', 'rep-max-pr'\]\.includes\(entry\.id\)[\s\S]*Eight-phase takeover → atmosphere → evidence settle/, 'Weight PR and Rep-Max metadata must describe the shared storyboard choreography');

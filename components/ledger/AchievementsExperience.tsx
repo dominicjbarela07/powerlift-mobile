@@ -29,6 +29,7 @@ import {
   type PlateClubState,
   type StrengthTierState,
 } from '@/lib/ledger-rewards';
+import { formatCompactVolumeLb } from '@/lib/volume-achievements';
 import { majorVolumeMedallionAsset } from '@/lib/major-volume-medallion-assets';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -390,16 +391,16 @@ function StrengthClubCabinet({ club, unit, complete, onOpen }: { club: StrengthT
 function MedallionGallery({ items, onOpen, unit }: { items: readonly MajorVolumeMedallionEvidence[]; onOpen: (label: string, value: string, state: MilestoneState, remaining?: string, sourceHref?: string, note?: string) => void; unit: Unit }) {
   if (!items.length) return <View testID="ledger-medallion-gallery"><AchievementRequestState kind="empty" message="No recorded lifetime-volume medallions yet" /></View>;
   return <View testID="ledger-medallion-gallery" style={styles.medallionGallery}>
-    <View style={styles.cabinetHeader}><ThemedText typographyRole="sectionTitle" style={styles.cabinetTitle}>MAJOR VOLUME MEDALLIONS</ThemedText><ThemedText typographyRole="supportingBody" style={styles.cabinetCopy}>Earned only from canonical threshold-crossing events. The engraved artwork is the record.</ThemedText></View>
+    <View style={styles.cabinetHeader}><ThemedText typographyRole="sectionTitle" style={styles.cabinetTitle}>MAJOR VOLUME MEDALLIONS</ThemedText><ThemedText typographyRole="supportingBody" style={styles.cabinetCopy}>Your earned volume landmarks, accumulated rep by rep.</ThemedText></View>
     <View style={styles.medallionGrid}>{items.map((item) => {
       const tone = MEDALLION_TONES[item.family];
       const date = formatEarnedDate(item.occurredAt);
       const sourceHref = item.sourceSetLogId ? archiveDetailHref('set', item.sourceSetLogId) : undefined;
-      const displayThreshold = number(convertDisplayWeightValue(item.thresholdLb, 'lb', unit));
-      return <Pressable key={item.event.id} onPress={() => onOpen(`${item.family === 'total' ? 'Total' : item.family[0].toUpperCase() + item.family.slice(1)} Lifetime Volume`, `${displayThreshold} ${unit.toUpperCase()}`, 'completed', undefined, sourceHref, date ? `Earned ${date}.` : undefined)} style={({ pressed }) => [styles.medallionItem, { borderColor: `${tone}52` }, pressed && styles.pressed]}>
-        <Image source={majorVolumeMedallionAsset(item.family, item.thresholdLb)} resizeMode="contain" style={styles.medallionImage} />
+      const displayThreshold = number(item.thresholdLb);
+      return <Pressable key={item.event.id} accessibilityLabel={`${item.family} lifetime volume, ${displayThreshold} ${unit.toUpperCase()}${date ? `, earned ${date}` : ''}`} onPress={() => onOpen(`${item.family === 'total' ? 'Total' : item.family[0].toUpperCase() + item.family.slice(1)} Lifetime Volume`, `${displayThreshold} ${unit.toUpperCase()}`, 'completed', undefined, sourceHref, date ? `Earned ${date}.` : undefined)} style={({ pressed }) => [styles.medallionItem, { borderColor: `${tone}52` }, pressed && styles.pressed]}>
+        <Image source={majorVolumeMedallionAsset(item.family, item.thresholdLb, unit)} resizeMode="contain" style={styles.medallionImage} />
         <ThemedText typographyRole="shortTechnicalLabel" style={[styles.medallionFamily, { color: tone }]}>{item.family.toUpperCase()}</ThemedText>
-        <ThemedText typographyRole="milestoneThreshold" style={styles.medallionThreshold}>{displayThreshold} {unit.toUpperCase()}</ThemedText>
+        <ThemedText typographyRole="milestoneThreshold" style={styles.medallionThreshold}>{formatCompactVolumeLb(item.thresholdLb, 'lb')} {unit.toUpperCase()}</ThemedText>
         {date ? <ThemedText typographyRole="caption" style={styles.medallionDate}>{date}</ThemedText> : null}
       </Pressable>;
     })}</View>
@@ -554,10 +555,11 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   const [detail, setDetail] = useState<Detail>(null);
   const [artifactDetail, setArtifactDetail] = useState<ArtifactDetail>(null);
   const needsHistory = ['prs', 'medallions', 'milestones'].includes(section);
-  const history = useLedgerResource(`achievement-history:${ledgerSubject.athleteId}:${ledgerSubject.valid}:${needsHistory}`, async () => {
+  const history = useLedgerResource(`achievement-history:${ledgerSubject.athleteId}:${ledgerSubject.valid}:${needsHistory}:${section === 'medallions'}`, async () => {
     if (__DEV__ && devFixture) return [...(devFixture.accomplishments ?? [])];
     if (!ledgerSubject.valid) return [];
-    if (needsHistory) return fetchLedgerAccomplishmentHistory(20, ledgerSubject.athleteId);
+    if (needsHistory) return fetchLedgerAccomplishmentHistory(20, ledgerSubject.athleteId,
+      section === 'medallions' ? ['CORE_LIFETIME_VOLUME_MILESTONE', 'TOTAL_LIFETIME_VOLUME_MILESTONE'] : undefined);
     return (await fetchLedgerAccomplishmentPage(50, null, ledgerSubject.athleteId, undefined,
       ['CORE_WEIGHT_PR', 'CORE_REP_MAX_PR', 'CORE_E1RM_PR'])).items;
   });
@@ -569,7 +571,7 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   const errorKind = liveData.errorKind;
   const reload = liveData.reload;
   const timelineEvents = history.data?.length ? history.data : liveData.accomplishments;
-  const volumeMedallions = canonicalMajorVolumeMedallions(timelineEvents);
+  const volumeMedallions = canonicalMajorVolumeMedallions(timelineEvents, unit);
   const prHistory = canonicalPrHistory(timelineEvents);
   const clubsRuntime = resolveLedgerClubsRuntimeState(
     currentBests,
@@ -613,7 +615,7 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   const hasVolumeData = totalVolumeKg > 0 || competitionTotalVolumeKg > 0;
   const volumeDataset: VolumeAchievementDataset = {
     ...VOLUME_PRESENTATION,
-    total: { ...VOLUME_PRESENTATION.total, current: { kg: Math.round(totalVolumeKg), lb: Math.round(kilogramsToDisplayValue(totalVolumeKg, 'lb')) } },
+    total: { ...VOLUME_PRESENTATION.total, current: { kg: totalVolumeKg, lb: totalVolumeKg / 0.45359237 } },
     competitionTotal: {
       label: 'Competition Total Volume',
       current: competitionTotalVolumeKg > 0
@@ -623,7 +625,7 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
     lifts: VOLUME_PRESENTATION.lifts.map((lift) => {
       const kg = byLiftKg[lift.id as 'squat' | 'bench' | 'deadlift'];
       return typeof kg === 'number' && kg > 0
-        ? { ...lift, current: { kg: Math.round(kg), lb: Math.round(kilogramsToDisplayValue(kg, 'lb')) } }
+        ? { ...lift, current: { kg, lb: kg / 0.45359237 } }
         : { ...lift, current: { kg: null, lb: null } };
     }),
   };
@@ -920,8 +922,8 @@ const styles = StyleSheet.create({
   medallionGallery: { paddingTop: 8 },
   medallionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   medallionItem: { width: '48.5%', minHeight: 232, alignItems: 'center', padding: 11, borderRadius: 15, borderWidth: 1, backgroundColor: '#0C0D11' },
-  medallionImage: { width: 142, height: 148 },
-  medallionFamily: { fontSize: 8, lineHeight: 10, letterSpacing: 0.8 },
+  medallionImage: { width: '100%', height: 160 },
+  medallionFamily: { fontSize: 10, lineHeight: 13, letterSpacing: 0.8 },
   medallionThreshold: { color: '#ECECF0', fontSize: 13, lineHeight: 16, marginTop: 3 },
   medallionDate: { color: '#858D99', textAlign: 'center', marginTop: 5 },
   prHistory: { paddingTop: 8 },

@@ -77,7 +77,7 @@ assert.match(read('components/ui/sl-contextual-header.tsx'), /<ScrollView[\s\S]*
 const experience = read('components/volume-achievements/VolumeAchievementExperience.tsx');
 assert.match(experience, /<ScrollView ref=\{railRef\} horizontal/);
 assert.match(experience, /width: progress\.milestones\.length \* 76/, 'expanded labels retain readable cells at every viewport width');
-assert.match(experience, /deriveVolumeAchievement\(currentLb, entry\.id\)/, 'each scope uses its governed ladder');
+assert.match(experience, /deriveVolumeAchievement\(currentLb, entry\.id, unit\)/, 'each scope uses its governed ladder');
 assert.match(experience, /testID="competition-total-volume"/);
 assert.match(experience, /data\.lifts\.map/);
 assert.match(experience, /minimumFontScale=\{safeVolumeLb\(currentLb\) >= 100_000_000 \? 0\.48 : 0\.78\}/, 'billion-scale totals retain the full value in the existing hero');
@@ -113,7 +113,7 @@ console.log('PASS: 16 threshold boundaries/midpoints, 1B math, earned/reveal sta
 // The adjacent ceremony keeps its existing medallion rail and reads future goals
 // from the same canonical ladder, including legacy 10M events with a null next.
 const recognition = read('components/workout-logger/major-volume-milestone-recognition.tsx');
-assert.match(recognition, /MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB\.map/);
+assert.match(recognition, /railThresholds\.map/);
 assert.doesNotMatch(recognition, /VOLUME_ACHIEVEMENT_THRESHOLDS_LB/);
 const presentationFunction = recognition.slice(recognition.indexOf('function milestonePresentation('), recognition.indexOf('const LIFT_ACCENT'));
 const eventScope = { deriveVolumeAchievement, KG_PER_LB: 0.45359237 };
