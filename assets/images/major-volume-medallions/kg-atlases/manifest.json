@@ -1,0 +1,473 @@
+{
+  "assets": [
+    {
+      "path": "assets/images/major-volume-medallions/kg-atlases/kg-01.png",
+      "sha256": "39c1138d38b1a8ac7dba0d3893423aee870d4964aa5e4b95da7ed2d58a63eb08",
+      "width": 2508,
+      "height": 2508
+    },
+    {
+      "path": "assets/images/major-volume-medallions/kg-atlases/kg-02.png",
+      "sha256": "52603a4fb3da9d88c37ac7b6f6bc897dbb132505584e51d87bac89df632826db",
+      "width": 2508,
+      "height": 2508
+    },
+    {
+      "path": "assets/images/major-volume-medallions/kg-atlases/kg-03.png",
+      "sha256": "54a58132a5be1b7e5f1cbb9722869f26aec5b900b9afbc6c04fe56c828dcbf6c",
+      "width": 2508,
+      "height": 2508
+    },
+    {
+      "path": "assets/images/major-volume-medallions/kg-atlases/kg-04.png",
+      "sha256": "4f76965fda2406436dcbec7f54a0b942d5d7c9f4842f6df386cafa40763d50a3",
+      "width": 2508,
+      "height": 2508
+    },
+    {
+      "path": "assets/images/major-volume-medallions/kg-atlases/kg-05.png",
+      "sha256": "8328c810f176c8254aa4f5343b92713bb5c8d80b2db04a3d4f894d296572d788",
+      "width": 2508,
+      "height": 2508
+    },
+    {
+      "path": "assets/images/major-volume-medallions/kg-atlases/kg-06.png",
+      "sha256": "c46a678409b6f2220bbe896b48e4640c2ece244d8b8df491d70bc80cb28a5cb2",
+      "width": 2508,
+      "height": 2508
+    },
+    {
+      "path": "assets/images/major-volume-medallions/kg-atlases/kg-07.png",
+      "sha256": "b1afb19f8140c015e0f0bf92da59dd7ba0e469b28f3e01ff151cd8a8f137ab5a",
+      "width": 2508,
+      "height": 2508
+    },
+    {
+      "path": "assets/images/major-volume-medallions/kg-atlases/kg-08.png",
+      "sha256": "ee42ca8c2cf2c822c95cd45d497ecef0879b056564713fdd36b2d6e9ec301bff",
+      "width": 2508,
+      "height": 2508
+    },
+    {
+      "path": "assets/images/major-volume-medallions/kg-atlases/kg-09.png",
+      "sha256": "1c8ec7e58b40c821a9a26244947dd4096a6dd63cec7be7b0171f8f70ab067245",
+      "width": 2508,
+      "height": 2508
+    },
+    {
+      "path": "assets/images/major-volume-medallions/kg-atlases/kg-10.png",
+      "sha256": "48ee1f493ef10624f9084cc897e8c716bcb859a3b5925ad2edc56d03a37f53ab",
+      "width": 1254,
+      "height": 1254
+    }
+  ],
+  "entries": [
+    {
+      "family": "total",
+      "marker": 100000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-100k-kg.png",
+      "originalSha256": "d459f7f3dd85c539e16e6a1b20dbabdcdf0ed599003d305424941ccf0510e8ee",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-01.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 0
+    },
+    {
+      "family": "total",
+      "marker": 250000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-250k-kg.png",
+      "originalSha256": "3f36555d58453c878910882bb7af1d44f349ba9c45eb3cf856d48e9abccde4d8",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-01.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 0
+    },
+    {
+      "family": "total",
+      "marker": 500000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-500k-kg.png",
+      "originalSha256": "326c9aeecd90ad13e6ec2841e2211ae5771a56c0eb2003074de6108b85f15584",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-01.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 1
+    },
+    {
+      "family": "total",
+      "marker": 1000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-1m-kg.png",
+      "originalSha256": "0a3db3a4d1a6654fcc5703fe4d261cc87b1b1309b3edbb65ae27c674bffeddc7",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-01.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 1
+    },
+    {
+      "family": "total",
+      "marker": 2000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-2m-kg.png",
+      "originalSha256": "192fa0d8e29616d7510e832cfe74e5d9fec943ee9f395a6a8b285ff7594c7dbd",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-02.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 0
+    },
+    {
+      "family": "total",
+      "marker": 5000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-5m-kg.png",
+      "originalSha256": "a6a72c655b3e41d5c9d053457d7892a4970a14dabed6865f29c457ac60dbe48e",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-02.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 0
+    },
+    {
+      "family": "total",
+      "marker": 10000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-10m-kg.png",
+      "originalSha256": "dc89083a842e22ed4db8d17e6a4732c51a4f9e865b56776dd42c488decfba97c",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-02.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 1
+    },
+    {
+      "family": "total",
+      "marker": 25000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-25m-kg.png",
+      "originalSha256": "86892286c671823b2f5173fb846f5ae1cfbae97ec99cae022b688e84b6be8319",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-02.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 1
+    },
+    {
+      "family": "total",
+      "marker": 50000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-50m-kg.png",
+      "originalSha256": "985b37ba1b1b2858e5d0db9036de8ac0293a2c62a391c992ad26ec755df9d90b",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-03.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 0
+    },
+    {
+      "family": "total",
+      "marker": 75000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-75m-kg.png",
+      "originalSha256": "23a08ecf2295c974a1203a97d1c1b179bdb64f13152c0444a401d2ffc36576d5",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-03.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 0
+    },
+    {
+      "family": "total",
+      "marker": 100000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-100m-kg.png",
+      "originalSha256": "ee74c82544c684cabb30b998aec9d0a9e0c8a1fb8eed6f80e9636cf834ba4449",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-03.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 1
+    },
+    {
+      "family": "total",
+      "marker": 150000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-150m-kg.png",
+      "originalSha256": "2f9b13c4a2a393ea29988ade2c6f9d9301cef9433ed5e0de43e512e8888d19c2",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-03.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 1
+    },
+    {
+      "family": "total",
+      "marker": 250000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-250m-kg.png",
+      "originalSha256": "be394dd15b5eaaac815befe08063d150c7e7508cc04f6a11d27cd4dcec7c6330",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-04.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 0
+    },
+    {
+      "family": "total",
+      "marker": 500000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-500m-kg.png",
+      "originalSha256": "8b83a7093647a8f44ff8adfb90cec3b8d75d9aa1ce9e6a2d9ed1d510ecde75d4",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-04.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 0
+    },
+    {
+      "family": "total",
+      "marker": 750000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-750m-kg.png",
+      "originalSha256": "c1e6c50516f6cff821e2a1d0f4d155424a03738cfb53df2ccc7277e21acf0308",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-04.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 1
+    },
+    {
+      "family": "total",
+      "marker": 1000000000,
+      "original": "assets/images/major-volume-medallions/kg/total/total-1b-kg.png",
+      "originalSha256": "941274f35688677f34d2b64f3e3e95ab85a8b80ea8c62a5dee26d9907b0bba73",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-04.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 1
+    },
+    {
+      "family": "squat",
+      "marker": 100000,
+      "original": "assets/images/major-volume-medallions/kg/squat/squat-100k-kg.png",
+      "originalSha256": "cf20548e801a55bae10317112d11c1b5bc88c166361caa5402085dc987ca1b8a",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-05.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 0
+    },
+    {
+      "family": "squat",
+      "marker": 250000,
+      "original": "assets/images/major-volume-medallions/kg/squat/squat-250k-kg.png",
+      "originalSha256": "c2296330646184712bbea32bc1c912ef874cb7c1046a6a3eb1bc7d884d7ffa1f",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-05.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 0
+    },
+    {
+      "family": "squat",
+      "marker": 500000,
+      "original": "assets/images/major-volume-medallions/kg/squat/squat-500k-kg.png",
+      "originalSha256": "e65a2631149680992cc0e2ce164532f515fb75aec188d1af5dadaf3b40ef3931",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-05.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 1
+    },
+    {
+      "family": "squat",
+      "marker": 1000000,
+      "original": "assets/images/major-volume-medallions/kg/squat/squat-1m-kg.png",
+      "originalSha256": "695bd8cf061ad7e04763d369a873ff8860bd7a1beec89057fb65c13d64dd212f",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-05.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 1
+    },
+    {
+      "family": "squat",
+      "marker": 2000000,
+      "original": "assets/images/major-volume-medallions/kg/squat/squat-2m-kg.png",
+      "originalSha256": "2056bbc9a2a1f685a31c8969b92a6bd3867022e7dd9c3cfaab42c99d9a938dfb",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-06.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 0
+    },
+    {
+      "family": "squat",
+      "marker": 5000000,
+      "original": "assets/images/major-volume-medallions/kg/squat/squat-5m-kg.png",
+      "originalSha256": "7beeb4bd08cff3a13f549678776757576ac7720fc7386507f39a1f0699d45869",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-06.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 0
+    },
+    {
+      "family": "squat",
+      "marker": 10000000,
+      "original": "assets/images/major-volume-medallions/kg/squat/squat-10m-kg.png",
+      "originalSha256": "9e0d20c0cc955f93730e76d7216661a8cdc527db71f8b71e0effebe3688f0eb0",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-06.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 1
+    },
+    {
+      "family": "bench",
+      "marker": 100000,
+      "original": "assets/images/major-volume-medallions/kg/bench/bench-100k-kg.png",
+      "originalSha256": "7925be66dfeb1652dccfbb8a998e985b9d981f51c653333087c843f952135396",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-06.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 1
+    },
+    {
+      "family": "bench",
+      "marker": 250000,
+      "original": "assets/images/major-volume-medallions/kg/bench/bench-250k-kg.png",
+      "originalSha256": "eb65d08e4a919dce186850baf61c649b2ed57aedf7c2bc438ed406f020ad913d",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-07.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 0
+    },
+    {
+      "family": "bench",
+      "marker": 500000,
+      "original": "assets/images/major-volume-medallions/kg/bench/bench-500k-kg.png",
+      "originalSha256": "724cf3d946447b105ea2d1abd023b8908549a32af6a47ec6b20cd3ca00a61c2f",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-07.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 0
+    },
+    {
+      "family": "bench",
+      "marker": 1000000,
+      "original": "assets/images/major-volume-medallions/kg/bench/bench-1m-kg.png",
+      "originalSha256": "e310e256fa17808664437ca201b08ebc8446d5330e7bd73bc5420e8799926d7d",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-07.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 1
+    },
+    {
+      "family": "bench",
+      "marker": 2000000,
+      "original": "assets/images/major-volume-medallions/kg/bench/bench-2m-kg.png",
+      "originalSha256": "5aac665af4256dc1a41831e12e9524768e14afb05896d1da86f426cb2d109877",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-07.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 1
+    },
+    {
+      "family": "bench",
+      "marker": 5000000,
+      "original": "assets/images/major-volume-medallions/kg/bench/bench-5m-kg.png",
+      "originalSha256": "fa695b4ea1ff93a3759fdefd667e5f34319b3eaab34c7b2929e99bc547c8e823",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-08.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 0
+    },
+    {
+      "family": "bench",
+      "marker": 10000000,
+      "original": "assets/images/major-volume-medallions/kg/bench/bench-10m-kg.png",
+      "originalSha256": "cd7b3ba32331f4be7572c53d255a7f8ef9f87371ce4041fb776548279005bea6",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-08.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 0
+    },
+    {
+      "family": "deadlift",
+      "marker": 100000,
+      "original": "assets/images/major-volume-medallions/kg/deadlift/deadlift-100k-kg.png",
+      "originalSha256": "f381ca26c1a89c7f3126d175ae5ed5b6556a9c857c9ae8f31f9534ab417d9967",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-08.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 1
+    },
+    {
+      "family": "deadlift",
+      "marker": 250000,
+      "original": "assets/images/major-volume-medallions/kg/deadlift/deadlift-250k-kg.png",
+      "originalSha256": "ef4c02f12f2a5ae109bb4026d80146f93afe0322a70334e004cb497116b1e799",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-08.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 1
+    },
+    {
+      "family": "deadlift",
+      "marker": 500000,
+      "original": "assets/images/major-volume-medallions/kg/deadlift/deadlift-500k-kg.png",
+      "originalSha256": "5e9b825619c6a3bffee14fdf0a393382eb1e5aef94ad42b6e8d5b413c2931f85",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-09.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 0
+    },
+    {
+      "family": "deadlift",
+      "marker": 1000000,
+      "original": "assets/images/major-volume-medallions/kg/deadlift/deadlift-1m-kg.png",
+      "originalSha256": "5fc982ec2dfc4b0176ebb5d8bd4d38ec416000cfae609eac84662b2e90313d29",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-09.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 0
+    },
+    {
+      "family": "deadlift",
+      "marker": 2000000,
+      "original": "assets/images/major-volume-medallions/kg/deadlift/deadlift-2m-kg.png",
+      "originalSha256": "cf0ba32a4533c06c2119b1bb77b6eee44b581e947eaa9130e69488817db8faa7",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-09.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 0,
+      "row": 1
+    },
+    {
+      "family": "deadlift",
+      "marker": 5000000,
+      "original": "assets/images/major-volume-medallions/kg/deadlift/deadlift-5m-kg.png",
+      "originalSha256": "022bde944028d9e0e6a978614da4db13b127bd515c3fc2a7f340056e49ace44e",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-09.png",
+      "columns": 2,
+      "rows": 2,
+      "column": 1,
+      "row": 1
+    },
+    {
+      "family": "deadlift",
+      "marker": 10000000,
+      "original": "assets/images/major-volume-medallions/kg/deadlift/deadlift-10m-kg.png",
+      "originalSha256": "20b69cecbbe614c47a6fe10bcd3f2a929d9098ab42233d603465d4fd5fc90bde",
+      "atlas": "assets/images/major-volume-medallions/kg-atlases/kg-10.png",
+      "columns": 1,
+      "rows": 1,
+      "column": 0,
+      "row": 0
+    }
+  ]
+}

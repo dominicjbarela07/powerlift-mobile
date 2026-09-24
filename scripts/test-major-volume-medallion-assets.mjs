@@ -3,6 +3,7 @@ import { Buffer } from 'node:buffer';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 import { inflateSync } from 'node:zlib';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -110,22 +111,35 @@ for (const relativePath of expectedRelativePaths) {
   const filePath = path.join(assetRoot, relativePath);
   assert.ok(fs.existsSync(filePath), `${relativePath} must exist`);
   inspectRgbaPng(filePath);
-  assert.match(
-    registry,
-    new RegExp(`require\\('@\\/assets\\/images\\/major-volume-medallions\\/${relativePath.replaceAll('.', '\\.')}'\\)`),
-    `${relativePath} must have a literal Metro registry entry`,
-  );
+  if (!relativePath.startsWith('kg/')) assert.ok(registry.includes(`require('@/assets/images/major-volume-medallions/${relativePath}')`));
 }
 
 const actualRelativePaths = fs
   .readdirSync(assetRoot, { recursive: true, withFileTypes: true })
-  .filter((entry) => entry.isFile() && entry.name.endsWith('.png'))
+  .filter((entry) => entry.isFile() && entry.name.endsWith('.png') && !entry.parentPath.endsWith('kg-atlases'))
   .map((entry) => path.relative(assetRoot, path.join(entry.parentPath, entry.name)).replaceAll(path.sep, '/'))
   .sort();
 
 assert.deepEqual(actualRelativePaths, [...expectedRelativePaths].sort(), 'the canonical library must contain exactly the expected 74 unit-specific medallions');
-assert.equal((registry.match(/require\('@\/assets\/images\/major-volume-medallions\//g) || []).length, 74);
-assert.match(recognition, /<Image[\s\S]*source=\{majorVolumeMedallionAsset\(family, thresholdLb, unit\)\}/s);
+assert.equal((registry.match(/require\('@\/assets\/images\/major-volume-medallions\//g) || []).length, 37);
+assert.match(recognition, /<MedallionImage[\s\S]*source=\{majorVolumeMedallionAsset\(family, thresholdLb, unit\)\}/s);
 assert.doesNotMatch(recognition, /react-native-svg|<Svg|<Polygon|artifactThreshold/);
 
 console.log('Major volume medallion assets: 74/74 RGBA Retina assets (37 awards × 2 units) validated.');
+
+const packed = JSON.parse(fs.readFileSync(path.join(assetRoot, 'kg-atlases/manifest.json'), 'utf8'));
+assert.equal(packed.entries.length, 37);
+assert.equal(packed.assets.length, 10);
+const sha = file => createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex');
+const seen = new Set();
+for (const asset of packed.assets) assert.equal(sha(asset.path), asset.sha256, 'atlas bytes must match the pixel-verified package');
+for (const entry of packed.entries) {
+  assert.equal(sha(entry.original), entry.originalSha256, 'original artwork must match the pixel-verified package');
+  const tile = `${entry.atlas}:${entry.column}:${entry.row}`;
+  assert.ok(!seen.has(tile), 'each award must own a distinct tile'); seen.add(tile);
+  assert.ok(entry.column < entry.columns && entry.row < entry.rows);
+  const atlas = packed.assets.find(asset => asset.path === entry.atlas);
+  assert.equal(atlas.width, entry.columns * 1254); assert.equal(atlas.height, entry.rows * 1254);
+}
+assert.deepEqual(packed.entries.map(entry => entry.original.replace('assets/images/major-volume-medallions/', '')).sort(), expectedRelativePaths.filter(path => path.startsWith('kg/')).sort());
+console.log('KG asset packaging: 37 exact awards, 10 pixel-verified atlases, unique bounded tile mappings.');

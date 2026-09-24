@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Image, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 import { LinearGradient as ExpoLinearGradient } from 'expo-linear-gradient';
 
 import { POST_SESSION_LEDGER_ARTWORK } from '@/components/workout-logger/post-session-ledger-ceremony';
@@ -8,6 +8,7 @@ import { SLColors, SLSpacing, SLTypography } from '@/constants/theme';
 import type { LoggerRecognitionEvent } from '@/lib/logger-feedback';
 import type { LoggerDisplayUnit } from '@/lib/logger-weight-format';
 import { majorVolumeMedallionRail } from '@/lib/major-volume-milestones';
+import { MedallionImage } from '@/components/volume-achievements/MedallionImage';
 import { majorVolumeMedallionAsset } from '@/lib/major-volume-medallion-assets';
 import { SLEasing } from '@/lib/motion';
 import { useSLMotionPreviewOverrides } from '@/lib/motion-preview';
@@ -100,10 +101,8 @@ export function MajorVolumeMilestoneArtifact({
   const family = liftFamily ?? 'total';
   const threshold = formatCompactVolumeLb(thresholdLb, 'lb');
   return (
-    <Image
+    <MedallionImage
       accessibilityLabel={`${threshold} ${unit === 'kg' ? 'kilogram' : 'pound'} ${liftFamily ? `${liftFamily} ` : ''}lifetime volume landmark`}
-      accessibilityRole="image"
-      resizeMode="contain"
       source={majorVolumeMedallionAsset(family, thresholdLb, unit)}
       style={{ width: size, height: size }}
     />
