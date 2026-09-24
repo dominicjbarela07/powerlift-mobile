@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['pinned compatibility holdbacks cannot introduce release-only behavior', ['scripts/test-release-holdback-policy.mjs']],
   ['keyboard visibility across composers, forms and sheets', ['scripts/test-keyboard-visibility.mjs']],
   ['initial hydration equals same-movement Swap identity', ['scripts/test-initial-hydration-movement-identity.mjs']],
   ['entire governed catalog retains artwork through thin payloads', ['scripts/test-governed-movement-art-taxonomy.mjs']],

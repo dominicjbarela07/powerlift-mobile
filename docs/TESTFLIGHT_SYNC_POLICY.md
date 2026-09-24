@@ -24,6 +24,14 @@ commit. A release projection may differ only in the allowlisted release
 configuration recorded in `config/protected-fix-manifest.json`; product behavior
 must never evolve independently on a release branch.
 
+When canonical DEV contains a separately held backend-dependent change, a release
+may retain the current known-good TestFlight bytes through `releaseHoldbacks` in
+the same manifest. Each path is pinned to its exact Git blob and prior shipped
+commit, with a concrete release reason. The lineage guard verifies that the
+shipped commit is an ancestor and both provenance and candidate blobs match.
+This exception only preserves existing behavior; it cannot authorize new
+release-only product edits or a catalog/history migration.
+
 Any emergency change made in an isolated TestFlight or Production worktree is
 incomplete until the equivalent source and regression guard have been committed
 to canonical DEV. A later candidate must descend from the current canonical DEV

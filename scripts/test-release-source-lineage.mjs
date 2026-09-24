@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { validateReleaseHoldbacks } from './release-holdback-policy.mjs';
 
 const root = process.cwd();
 const manifest = JSON.parse(readFileSync(path.join(root, 'config', 'protected-fix-manifest.json'), 'utf8'));
@@ -32,10 +33,11 @@ assert.equal(mergeBase, canonicalSha, `release blocked: candidate ${candidateSha
 assert.equal(behind, 0, `release blocked: canonical DEV contains ${behind} commit(s) absent from the candidate`);
 
 const allowedProjectionPaths = new Set(manifest.releaseProjectionPaths || []);
+const heldPaths = validateReleaseHoldbacks(manifest.releaseHoldbacks, candidateSha, git);
 const candidateOnlyFiles = ahead > 0
   ? git('diff', '--name-only', `${canonicalSha}..${candidateSha}`).split('\n').filter(Boolean)
   : [];
-const illegalCandidateFiles = candidateOnlyFiles.filter((file) => !allowedProjectionPaths.has(file));
+const illegalCandidateFiles = candidateOnlyFiles.filter((file) => !allowedProjectionPaths.has(file) && !heldPaths.has(file));
 assert.deepEqual(illegalCandidateFiles, [], `release blocked: candidate-only product changes are forbidden (${illegalCandidateFiles.join(', ')})`);
 
 for (const fix of manifest.protectedFixes || []) {
