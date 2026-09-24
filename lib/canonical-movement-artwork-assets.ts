@@ -1947,6 +1947,42 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Partial<Record<
     source: require('@/assets/images/movement-artwork/core-sbd-v1/competition_deadlift-app.png'),
     label: 'Athlete performing Competition Deadlift',
   },
+  pin_squat: {
+    source: require('@/assets/images/movement-artwork/core-variants-v1/pin_squat-app.png'),
+    label: 'Athlete performing Pin Squat',
+  },
+  safety_bar_squat: {
+    source: require('@/assets/images/movement-artwork/core-variants-v1/safety_bar_squat-app.png'),
+    label: 'Athlete performing Safety Bar Squat (SSB)',
+  },
+  hatfield_squat: {
+    source: require('@/assets/images/movement-artwork/core-variants-v1/hatfield_squat-app.png'),
+    label: 'Athlete performing Hatfield Squat',
+  },
+  pin_press: {
+    source: require('@/assets/images/movement-artwork/core-variants-v1/pin_press-app.png'),
+    label: 'Athlete performing Pin Press',
+  },
+  board_press_2_board: {
+    source: require('@/assets/images/movement-artwork/core-variants-v1/board_press_2_board-app.png'),
+    label: 'Athlete performing Board Press (2-Board)',
+  },
+  deficit_deadlift: {
+    source: require('@/assets/images/movement-artwork/core-variants-v1/deficit_deadlift-app.png'),
+    label: 'Athlete performing Deficit Deadlift',
+  },
+  block_pull: {
+    source: require('@/assets/images/movement-artwork/core-variants-v1/block_pull-app.png'),
+    label: 'Athlete performing Block Pull',
+  },
+  snatch_grip_deadlift: {
+    source: require('@/assets/images/movement-artwork/core-variants-v1/snatch_grip_deadlift-app.png'),
+    label: 'Athlete performing Snatch Grip Deadlift',
+  },
+  sumo_deadlift: {
+    source: require('@/assets/images/movement-artwork/core-variants-v1/sumo_deadlift-app.png'),
+    label: 'Athlete performing Sumo Deadlift',
+  },
   // Archive bytes remain reviewable locally and are removed from release exports.
   ...(__DEV__ ? {
   barbell_row: {

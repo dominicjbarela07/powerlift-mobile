@@ -1,4 +1,5 @@
 import { normalizeSessionMovementResponse } from '@/lib/current-session-movement';
+import { filterRetiredMovementLibraryResponse } from '@/lib/retired-movement-discovery';
 import { evidenceReadCache, invalidateEvidenceReads, isEvidenceRead } from './evidence-read-cache';
 import { sessionExposureCache } from './session-exposure-cache';
 // app/lib/api.ts
@@ -402,6 +403,7 @@ export async function fetchJson<T = any>(
       try {
         json = JSON.parse(trimmed) as T;
         if (res.ok && /\/workouts\/mobile\//.test(url)) json = normalizeSessionMovementResponse(json);
+        if (res.ok && method === 'GET') json = filterRetiredMovementLibraryResponse(path, json);
       } catch {
         console.log('fetchJson parse failed:', res.status, url, trimmed.slice(0, 300));
         json = null;

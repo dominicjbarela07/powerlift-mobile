@@ -1,4 +1,5 @@
 import { normalizeSessionMovementResponse } from '../lib/current-session-movement.ts';
+import { filterRetiredMovementLibraryResponse } from '../lib/retired-movement-discovery.ts';
 import assert from 'node:assert/strict';
 import ts from 'typescript';
 import { readFileSync } from 'node:fs';
@@ -21,6 +22,7 @@ let account = 'account-a'; let mode = 'coach'; let calls = [];
 let implementation = async () => new Response(JSON.stringify({ ok: true, weight_kg: 100 }), { status: 200 });
 const modules = {
   '@/lib/current-session-movement': { normalizeSessionMovementResponse },
+  '@/lib/retired-movement-discovery': { filterRetiredMovementLibraryResponse },
   './evidence-read-cache': cache,
   './session-exposure-cache': exposure,
   'expo-secure-store': { getItemAsync: async (key) => key === 'auth_token' ? account : null },
@@ -69,4 +71,14 @@ while (!finish) await new Promise((resolve) => setTimeout(resolve, 0));
 controller.abort(); finish(new Response(JSON.stringify({ ok: true }), { status: 200 }));
 assert.equal((await cancelled).name, 'AbortError');
 assert.equal((await survivor).ok, true, 'One caller leaving cannot cancel another caller’s read.');
+const retiredDefinition = { id: 177, key: 'accessory_cross_bench_cable_pulldown', ownership_scope: 'global', identity_status: 'canonical' };
+const activeDefinition = { id: 253, key: 'accessory_cable_curl', ownership_scope: 'global', identity_status: 'canonical' };
+const libraryPayload = { ok: true, items: [retiredDefinition, activeDefinition] };
+implementation = async () => new Response(JSON.stringify(libraryPayload), { status: 200 });
+for (const query of ['', '?favorites_only=1', '?recent_only=1']) {
+  const response = await api.fetchJson('/workouts/mobile/movement-definitions/search' + query);
+  assert.deepEqual(JSON.parse(JSON.stringify(response.json.items)), [activeDefinition], 'actual API boundary removes retired selections for every picker');
+}
+const historyResponse = await api.fetchJson('/workouts/mobile/movement-definitions/177/history?athlete_id=4');
+assert.deepEqual(JSON.parse(JSON.stringify(historyResponse.json)), libraryPayload, 'history bypasses discovery filtering');
 console.log('PASS: real API dedupe, workspace/account scope, mutation invalidation, authorization notifications, and independent cancellation');
