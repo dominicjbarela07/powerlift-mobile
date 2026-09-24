@@ -30,6 +30,7 @@ import {
   type StrengthTierState,
 } from '@/lib/ledger-rewards';
 import { formatCompactVolumeLb } from '@/lib/volume-achievements';
+import { MedallionImage } from '@/components/volume-achievements/MedallionImage';
 import { majorVolumeMedallionAsset } from '@/lib/major-volume-medallion-assets';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -398,7 +399,7 @@ function MedallionGallery({ items, onOpen, unit }: { items: readonly MajorVolume
       const sourceHref = item.sourceSetLogId ? archiveDetailHref('set', item.sourceSetLogId) : undefined;
       const displayThreshold = number(item.thresholdLb);
       return <Pressable key={item.event.id} accessibilityLabel={`${item.family} lifetime volume, ${displayThreshold} ${unit.toUpperCase()}${date ? `, earned ${date}` : ''}`} onPress={() => onOpen(`${item.family === 'total' ? 'Total' : item.family[0].toUpperCase() + item.family.slice(1)} Lifetime Volume`, `${displayThreshold} ${unit.toUpperCase()}`, 'completed', undefined, sourceHref, date ? `Earned ${date}.` : undefined)} style={({ pressed }) => [styles.medallionItem, { borderColor: `${tone}52` }, pressed && styles.pressed]}>
-        <Image source={majorVolumeMedallionAsset(item.family, item.thresholdLb, unit)} resizeMode="contain" style={styles.medallionImage} />
+        <MedallionImage source={majorVolumeMedallionAsset(item.family, item.thresholdLb, unit)} style={styles.medallionImage} />
         <ThemedText typographyRole="shortTechnicalLabel" style={[styles.medallionFamily, { color: tone }]}>{item.family.toUpperCase()}</ThemedText>
         <ThemedText typographyRole="milestoneThreshold" style={styles.medallionThreshold}>{formatCompactVolumeLb(item.thresholdLb, 'lb')} {unit.toUpperCase()}</ThemedText>
         {date ? <ThemedText typographyRole="caption" style={styles.medallionDate}>{date}</ThemedText> : null}

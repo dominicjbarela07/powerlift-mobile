@@ -9,7 +9,12 @@ import { canonicalMajorVolumeMedallions, nextMajorVolumeThreshold } from '../lib
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const families = ['total','squat','bench','deadlift'];
-const registryScope = { exports: {}, require: path => path === '@/lib/major-volume-milestones' ? taxonomy : path };
+const atlasScope = { exports: {}, require: path => path };
+vm.runInNewContext(ts.transpileModule(read('lib/major-volume-medallion-kg-atlases.ts'), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+}).outputText, atlasScope);
+const registryScope = { exports: {}, require: path => path === '@/lib/major-volume-milestones' ? taxonomy
+  : path === './major-volume-medallion-kg-atlases' ? atlasScope.exports : path };
 vm.runInNewContext(ts.transpileModule(read('lib/major-volume-medallion-assets.ts'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText, registryScope);
@@ -28,9 +33,13 @@ for (const family of families) {
     const lb=majorVolumeMedallionAsset(family,threshold,'lb');
     const kg=majorVolumeMedallionAsset(family,threshold,'kg');
     assert.notEqual(lb,kg,'KG must select engraved KG art, never an LB asset');
-    for (const asset of [lb,kg]) assert.ok(existsSync(new URL(`../${asset.slice(2)}`,import.meta.url)),asset);
-    assert.match(kg,/\/kg\//); assert.match(kg,/-kg\.png$/);
-    assert.equal(majorVolumeMedallionAsset(family,threshold),lb,'old calls retain LB default');
+    for (const asset of [lb,kg]) assert.ok(existsSync(new URL(`../${asset.source.slice(2)}`,import.meta.url)),asset.source);
+    for (const tile of [lb,kg]) {
+      assert.ok(tile.column >= 0 && tile.column < tile.columns);
+      assert.ok(tile.row >= 0 && tile.row < tile.rows);
+    }
+    assert.match(kg.source,/\/kg-atlases\//);
+    assert.deepEqual(majorVolumeMedallionAsset(family,threshold),lb,'old calls retain LB default');
     assert.equal(nextMajorVolumeThreshold(threshold,family),thresholds[index+1]??null);
     const rail=taxonomy.majorVolumeMedallionRail(threshold,family);
     assert.ok(rail.includes(threshold)); assert.equal(rail.length,7);
