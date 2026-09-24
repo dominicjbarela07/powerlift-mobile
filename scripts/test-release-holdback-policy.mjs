@@ -5,6 +5,9 @@ const policy = { sourceCommit: source, reason: 'Retain shipped catalog until sep
 const git = (...args) => args[0] === 'merge-base' ? '' : blob;
 assert.deepEqual([...validateReleaseHoldbacks(policy, candidate, git)], ['lib/catalog.ts']);
 assert.equal(validateReleaseHoldbacks(null, candidate, git).size, 0);
+const absent = {...policy, files: [{path:'scripts/held-dev-feature.mjs',blob:null}]};
+assert.equal(validateReleaseHoldbacks(absent,candidate,(...args)=>{if(args[0]==='cat-file')throw Error('absent');return '';}).size,1);
+assert.throws(()=>validateReleaseHoldbacks(absent,candidate,git),/absent from the shipped baseline/);
 for (const bad of [{...policy,reason:''},{...policy,sourceCommit:'unknown'},
   {...policy,files:[...policy.files,...policy.files]},
   {...policy,files:[{path:'../escape',blob}]}]) assert.throws(() => validateReleaseHoldbacks(bad,candidate,git));

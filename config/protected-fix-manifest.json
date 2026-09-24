@@ -232,6 +232,10 @@
       {
         "path": "scripts/test-swap-equipment-type-filter.mjs",
         "blob": "8da15aff2a20f39abf14cd9d3c548df7c2fff90a"
+      },
+      {
+        "path": "scripts/test-shared-movement-programming-context.mjs",
+        "blob": null
       }
     ]
   }
