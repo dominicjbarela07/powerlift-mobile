@@ -7,7 +7,7 @@ import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLSpacing, SLTypography } from '@/constants/theme';
 import type { LoggerRecognitionEvent } from '@/lib/logger-feedback';
 import type { LoggerDisplayUnit } from '@/lib/logger-weight-format';
-import { MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB } from '@/lib/major-volume-milestones';
+import { majorVolumeMedallionRail } from '@/lib/major-volume-milestones';
 import { majorVolumeMedallionAsset } from '@/lib/major-volume-medallion-assets';
 import { SLEasing } from '@/lib/motion';
 import { useSLMotionPreviewOverrides } from '@/lib/motion-preview';
@@ -45,6 +45,7 @@ type MilestonePresentation = {
   scope: 'total' | 'lift';
   liftFamily: 'squat' | 'bench' | 'deadlift' | null;
   thresholdLb: number;
+  milestoneUnit: LoggerDisplayUnit;
   previousTotalKg: number;
   newTotalKg: number;
   accumulatedReps: number;
@@ -56,11 +57,13 @@ function milestonePresentation(event: LoggerRecognitionEvent): MilestonePresenta
   const liftFamily = ['squat', 'bench', 'deadlift'].includes(String(evidence.lift_family))
     ? String(evidence.lift_family) as MilestonePresentation['liftFamily']
     : null;
-  const thresholdLb = Math.max(1, Number(evidence.threshold_lb) || Math.round(Number(event.current_value || 0) / KG_PER_LB));
+  const milestoneUnit: LoggerDisplayUnit = evidence.milestone_unit === 'kg' ? 'kg' : 'lb';
+  const thresholdLb = Number(evidence.threshold_value ?? evidence.threshold_lb);
   return {
     scope: evidence.milestone_scope === 'lift' ? 'lift' : 'total',
     liftFamily,
     thresholdLb,
+    milestoneUnit,
     previousTotalKg: Math.max(0, Number(evidence.previous_total_kg ?? event.prior_value) || 0),
     newTotalKg: Math.max(0, Number(evidence.new_total_kg) || Number(event.current_value) || 0),
     accumulatedReps: Math.max(0, Math.round(Number(evidence.accumulated_reps) || 0)),
@@ -98,11 +101,10 @@ export function MajorVolumeMilestoneArtifact({
   const threshold = formatCompactVolumeLb(thresholdLb, 'lb');
   return (
     <Image
-      accessibilityHint={unit === 'lb' ? undefined : `The surrounding view displays values in ${unit}`}
-      accessibilityLabel={`${threshold} pound ${liftFamily ? `${liftFamily} ` : ''}lifetime volume landmark`}
+      accessibilityLabel={`${threshold} ${unit === 'kg' ? 'kilogram' : 'pound'} ${liftFamily ? `${liftFamily} ` : ''}lifetime volume landmark`}
       accessibilityRole="image"
       resizeMode="contain"
-      source={majorVolumeMedallionAsset(family, thresholdLb)}
+      source={majorVolumeMedallionAsset(family, thresholdLb, unit)}
       style={{ width: size, height: size }}
     />
   );
@@ -118,6 +120,7 @@ export function MajorVolumeMilestoneMark({
   size?: number;
 }) {
   const presentation = milestonePresentation(event);
+  if (presentation.milestoneUnit !== displayUnit) return null;
   return (
     <MajorVolumeMilestoneArtifact
       thresholdLb={presentation.thresholdLb}
@@ -145,6 +148,7 @@ export function MajorVolumeMilestoneRecognition({
 }) {
   const previewMotion = useSLMotionPreviewOverrides();
   const presentation = useMemo(() => milestonePresentation(event), [event]);
+  const railThresholds = majorVolumeMedallionRail(presentation.thresholdLb, presentation.liftFamily ?? 'total');
   const accent = presentation.liftFamily ? LIFT_ACCENT[presentation.liftFamily] : '#D9A84D';
   const progress = useRef(new Animated.Value(reduceMotion ? 1 : 0)).current;
   const [risingTotalKg, setRisingTotalKg] = useState(presentation.previousTotalKg);
@@ -212,7 +216,7 @@ export function MajorVolumeMilestoneRecognition({
       const now = Date.now();
       if (accumulationProgress < 1 && now - lastTallyUpdateAt < 50) return;
       lastTallyUpdateAt = now;
-      const thresholdKg = presentation.thresholdLb * KG_PER_LB;
+      const thresholdKg = presentation.thresholdLb * (presentation.milestoneUnit === 'lb' ? KG_PER_LB : 1);
       setRisingTotalKg(presentation.previousTotalKg + (thresholdKg - presentation.previousTotalKg) * accumulationProgress);
     });
     const animation = Animated.sequence(stops.flatMap((toValue, index) => [
@@ -230,7 +234,7 @@ export function MajorVolumeMilestoneRecognition({
       progress.removeListener(listener);
       timers.forEach(clearTimeout);
     };
-  }, [event.id, phaseDurations, presentation.previousTotalKg, presentation.thresholdLb, progress, reduceMotion, settledHeroHoldMs]);
+  }, [event.id, phaseDurations, presentation.previousTotalKg, presentation.thresholdLb, presentation.milestoneUnit, progress, reduceMotion, settledHeroHoldMs]);
 
   const ledgerOpacity = progress.interpolate({ inputRange: [0, 0.1, 0.22, 0.63, 0.9, 1], outputRange: [0, 0.2, 0.72, 0.32, 0.1, 0] });
   const systemOpacity = progress.interpolate({ inputRange: [0, 0.1, 0.22, 0.51, 0.63], outputRange: [0, 0, 1, 1, 0] });
@@ -243,12 +247,13 @@ export function MajorVolumeMilestoneRecognition({
   const evidenceOpacity = progress.interpolate({ inputRange: [0, 0.76, 0.9, 1], outputRange: [0, 0, 1, 1] });
   const evidenceTranslate = progress.interpolate({ inputRange: [0, 0.76, 1], outputRange: [SLSpacing.lg, SLSpacing.lg, 0] });
   const fragmentOpacity = reduceMotion ? 0 : progress.interpolate({ inputRange: [0, 0.48, 0.53, 0.72, 1], outputRange: [0, 0, 0.7, 0, 0] });
-  const thresholdLabel = formatCompactVolumeLb(presentation.thresholdLb, displayUnit);
+  const thresholdLabel = formatCompactVolumeLb(presentation.thresholdLb, 'lb');
   const risingDisplay = displayUnit === 'kg' ? risingTotalKg : risingTotalKg / KG_PER_LB;
   const exactDisplay = displayUnit === 'kg' ? presentation.newTotalKg : presentation.newTotalKg / KG_PER_LB;
   const liftLabel = presentation.liftFamily?.toUpperCase() || null;
   const landmarkTitle = liftLabel ? `${liftLabel} LANDMARK` : 'MAJOR LANDMARK';
   const volumeLabel = liftLabel ? `LIFETIME ${liftLabel} VOLUME` : 'LIFETIME VOLUME';
+  if (presentation.milestoneUnit !== displayUnit) return null;
 
   return (
     <View
@@ -265,13 +270,13 @@ export function MajorVolumeMilestoneRecognition({
         <Text style={styles.runningValue}>{formatVolumeValue(risingDisplay)} <Text style={styles.runningUnit}>{displayUnit.toUpperCase()}</Text></Text>
         <View style={styles.rail}>
           <Animated.View style={[styles.railEnergy, { backgroundColor: accent, transform: [{ scaleX: railScale }] }]} />
-          {MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB.map((threshold) => {
+          {railThresholds.map((threshold) => {
             const current = threshold === presentation.thresholdLb;
             const achieved = threshold <= presentation.thresholdLb;
             return (
               <View key={threshold} style={styles.railStop}>
                 <View style={[styles.railNode, achieved && { borderColor: accent }, current && styles.railNodeCurrent]} />
-                <Text style={[styles.railLabel, current && { color: '#F5C873' }]}>{formatCompactVolumeLb(threshold, displayUnit)}</Text>
+                <Text style={[styles.railLabel, current && { color: '#F5C873' }]}>{formatCompactVolumeLb(threshold, 'lb')}</Text>
               </View>
             );
           })}
@@ -314,12 +319,12 @@ export function MajorVolumeMilestoneRecognition({
           {presentation.nextThresholdLb ? (
             <View style={styles.nextRow}>
               <Text style={styles.nextLabel}>NEXT LANDMARK</Text>
-              <Text style={styles.nextValue}>{formatVolumeLb(presentation.nextThresholdLb, displayUnit)}</Text>
+              <Text style={styles.nextValue}>{`${formatVolumeValue(presentation.nextThresholdLb)} ${displayUnit.toUpperCase()}`}</Text>
             </View>
           ) : null}
         </View>
         <View style={styles.evidenceRail}>
-          {MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB.map((threshold) => (
+          {railThresholds.map((threshold) => (
             <View key={threshold} style={styles.evidenceRailStop}>
               <View
                 style={[
@@ -327,7 +332,7 @@ export function MajorVolumeMilestoneRecognition({
                   threshold <= presentation.thresholdLb && { backgroundColor: accent, borderColor: accent },
                 ]}
               />
-              <Text style={styles.evidenceRailLabel}>{formatCompactVolumeLb(threshold, displayUnit)}</Text>
+              <Text style={styles.evidenceRailLabel}>{formatCompactVolumeLb(threshold, 'lb')}</Text>
             </View>
           ))}
         </View>

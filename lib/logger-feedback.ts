@@ -10,6 +10,7 @@ const formatVolumeValue = (value: number) => Math.round(value).toLocaleString('e
 const formatVolumeLb = (valueLb: number, unit: LoggerDisplayUnit) => `${formatVolumeValue(volumeDisplayValue(valueLb, unit))} ${unit.toUpperCase()}`;
 const formatCompactVolumeLb = (valueLb: number, unit: LoggerDisplayUnit) => {
   const value = volumeDisplayValue(valueLb, unit);
+  if (value >= 1_000_000_000) return `${Number((value / 1_000_000_000).toFixed(2))}B`;
   if (value >= 1_000_000) return `${Number((value / 1_000_000).toFixed(2))}M`;
   if (value >= 1_000) return `${Math.round(value / 1_000)}K`;
   return formatVolumeValue(value);
@@ -188,8 +189,10 @@ function isEligibleSessionHighlight(event: LoggerRecognitionEvent): boolean {
     && event.valid !== false;
 }
 
-export function selectCelebrationEvents(events: LoggerRecognitionEvent[] = []): LoggerRecognitionEvent[] {
-  return curateRecognitionEvents(normalizeRecognitionEvents(events));
+export function selectCelebrationEvents(events: LoggerRecognitionEvent[] = [], preferredUnit?: LoggerDisplayUnit): LoggerRecognitionEvent[] {
+  const preferred = preferredUnit ? events.filter((event) => !MAJOR_VOLUME_MILESTONE_EVENT_TYPES.has(event.event_type)
+    || (event.evidence?.milestone_unit ?? 'lb') === preferredUnit) : events;
+  return curateRecognitionEvents(normalizeRecognitionEvents(preferred));
 }
 
 export function selectSessionHighlights(events: LoggerRecognitionEvent[] = [], workoutId?: number): LoggerRecognitionEvent[] {
@@ -304,15 +307,18 @@ export function recognitionPresentation(event: LoggerRecognitionEvent, displayUn
   if (mode === 'transient' && ['CORE_E1RM_PR', 'CORE_BLOCK_E1RM_BEST'].includes(event.event_type)) return null;
   if (MAJOR_VOLUME_MILESTONE_EVENT_TYPES.has(event.event_type)) {
     const evidence = event.evidence || {};
-    const thresholdLb = Math.max(1, Number(evidence.threshold_lb) || Math.round(Number(event.current_value || 0) / 0.45359237));
+    const milestoneUnit = evidence.milestone_unit ?? 'lb';
+    if (milestoneUnit !== displayUnit) return null;
+    const thresholdLb = Number(evidence.threshold_value ?? evidence.threshold_lb);
+    if (!Number.isFinite(thresholdLb) || thresholdLb <= 0) return null;
     const exactKg = Math.max(0, Number(evidence.new_total_kg) || Number(event.current_value) || 0);
     const exactValue = displayUnit === 'kg' ? exactKg : exactKg / 0.45359237;
     const liftFamily = String(evidence.lift_family || '').trim();
     const isLift = event.event_type === 'CORE_LIFETIME_VOLUME_MILESTONE';
     const eyebrow = isLift ? `${liftFamily.toUpperCase()} LIFETIME VOLUME LANDMARK` : 'MAJOR LIFETIME VOLUME LANDMARK';
-    const nextThresholdLb = Number(evidence.next_threshold_lb);
-    const next = nextThresholdLb > 0 ? `Next ${formatVolumeLb(nextThresholdLb, displayUnit)}` : null;
-    const value = `${formatCompactVolumeLb(thresholdLb, displayUnit)} ${displayUnit.toUpperCase()}`;
+    const nextThresholdLb = Number(evidence.next_threshold_value ?? evidence.next_threshold_lb);
+    const next = nextThresholdLb > 0 ? `Next ${formatVolumeValue(nextThresholdLb)} ${displayUnit.toUpperCase()}` : null;
+    const value = `${formatCompactVolumeLb(thresholdLb, 'lb')} ${displayUnit.toUpperCase()}`;
     const detail = `${formatVolumeValue(exactValue)} ${displayUnit.toUpperCase()} accumulated`;
     return {
       eyebrow,

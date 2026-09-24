@@ -1,6 +1,6 @@
 import {
-  MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB,
   isMajorVolumeMedallionThresholdLb,
+  majorVolumeThresholdsForFamily,
   type MajorVolumeMedallionFamily,
   type MajorVolumeMedallionThresholdLb,
 } from '@/lib/major-volume-milestones';
@@ -171,7 +171,8 @@ export type LedgerClubsRuntimeState = Readonly<{
 export type MajorVolumeMedallionEvidence = Readonly<{
   event: AccomplishmentEvent;
   family: MajorVolumeMedallionFamily;
-  thresholdLb: MajorVolumeMedallionThresholdLb;
+  thresholdLb: MajorVolumeMedallionThresholdLb; // Legacy field name; marker value in milestoneUnit.
+  milestoneUnit: LedgerUnit;
   occurredAt: string;
   sourceSetLogId: number | null;
 }>;
@@ -512,28 +513,32 @@ export function resolveLedgerClubsRuntimeState(
 
 export function majorVolumeMedallionEvidence(event: AccomplishmentEvent): MajorVolumeMedallionEvidence | null {
   if (!MAJOR_VOLUME_EVENT_TYPES.has(event.event_type)) return null;
-  const thresholdLb = evidenceNumber(event, 'threshold_lb');
+  const milestoneUnit = evidenceString(event, 'milestone_unit') ?? 'lb';
+  if (milestoneUnit !== 'lb' && milestoneUnit !== 'kg') return null;
+  const thresholdLb = evidenceNumber(event, 'threshold_value') ?? evidenceNumber(event, `threshold_${milestoneUnit}`);
   const occurredAt = event.occurred_at || event.workout_date;
-  if (thresholdLb == null || !isMajorVolumeMedallionThresholdLb(thresholdLb) || !occurredAt) return null;
+  if (thresholdLb == null || !occurredAt) return null;
 
   const family = event.event_type === 'TOTAL_LIFETIME_VOLUME_MILESTONE'
     ? 'total'
     : evidenceString(event, 'lift_family');
   if (family !== 'total' && family !== 'squat' && family !== 'bench' && family !== 'deadlift') return null;
+  if (!isMajorVolumeMedallionThresholdLb(thresholdLb, family)) return null;
 
   return {
     event,
     family,
     thresholdLb,
+    milestoneUnit,
     occurredAt,
     sourceSetLogId: event.source_set_log_id ?? null,
   };
 }
 
-export function canonicalMajorVolumeMedallions(events: readonly AccomplishmentEvent[]): MajorVolumeMedallionEvidence[] {
+export function canonicalMajorVolumeMedallions(events: readonly AccomplishmentEvent[], unit: LedgerUnit = 'lb'): MajorVolumeMedallionEvidence[] {
   return events
     .map(majorVolumeMedallionEvidence)
-    .filter((item): item is MajorVolumeMedallionEvidence => item !== null)
+    .filter((item): item is MajorVolumeMedallionEvidence => item !== null && item.milestoneUnit === unit)
     .sort((left, right) => Date.parse(right.occurredAt) - Date.parse(left.occurredAt) || right.event.id - left.event.id);
 }
 
@@ -543,6 +548,6 @@ export function canonicalPrHistory(events: readonly AccomplishmentEvent[]): Acco
     .sort((left, right) => Date.parse(right.occurred_at || right.workout_date || '') - Date.parse(left.occurred_at || left.workout_date || '') || right.id - left.id);
 }
 
-export function nextMajorVolumeThreshold(currentLb: number): MajorVolumeMedallionThresholdLb | null {
-  return MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB.find((threshold) => threshold > currentLb) ?? null;
+export function nextMajorVolumeThreshold(currentLb: number, family: MajorVolumeMedallionFamily = 'total'): MajorVolumeMedallionThresholdLb | null {
+  return majorVolumeThresholdsForFamily(family).find((threshold) => threshold > currentLb) ?? null;
 }

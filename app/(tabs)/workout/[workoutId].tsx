@@ -153,6 +153,7 @@ import {
   createTimerHandoffReleaseController,
   finalAssignedSetOpportunity,
   initialLoggerFeedbackState,
+  MAJOR_VOLUME_MILESTONE_EVENT_TYPES,
   isNewCanonicalSessionFinalSet,
   loggerFeedbackReducer,
   logSetActionPresentation,
@@ -2372,7 +2373,7 @@ export default function WorkoutViewerScreen() {
       workoutId: String(workoutId || json?.workout_id || ''),
       clientSubmissionId,
     });
-    const events = selectCelebrationEvents(rawEvents);
+    const events = selectCelebrationEvents(rawEvents, user?.preferred_units === 'kg' ? 'kg' : 'lb');
     const primary = events[0] || null;
     transientTraceContextRef.current = {
       workoutItemId: Number(primary?.source?.workout_item_id || feedbackStateRef.current.submission.activeItemId || 0) || null,
@@ -2451,7 +2452,7 @@ export default function WorkoutViewerScreen() {
     saveFeedbackTimerRef.current = setTimeout(() => {
       feedbackDispatch({ type: 'SAVE_CONFIRMATION_FINISHED' });
     }, SLMotion.saveConfirmationMs);
-  }, [rewardLoopDemoV2Log, rewardLoopDemoV2StorageScope, transientRecognitionTrace, workoutId]);
+  }, [rewardLoopDemoV2Log, rewardLoopDemoV2StorageScope, transientRecognitionTrace, workoutId, user?.preferred_units]);
 
   const handleCanonicalSetFailure = useCallback((error: any) => {
     acceptedSheetHandoffControllerRef.current.cancelPending();
@@ -2749,11 +2750,11 @@ export default function WorkoutViewerScreen() {
     loadLoggerFeedbackStorage(rewardLoopDemoV2StorageScope).then(({ pending, consumed }) => {
       if (!active) return;
       feedbackDispatch({ type: 'RESTORE_CONSUMED', deliveryIds: consumed });
-      feedbackDispatch({ type: 'RESTORE_PENDING', events: pending });
+      feedbackDispatch({ type: 'RESTORE_PENDING', events: selectCelebrationEvents(pending, user?.preferred_units === 'kg' ? 'kg' : 'lb') });
       if (pending.length) feedbackAnalytics('recognition_event_queued', { restored: true, count: pending.length });
     }).catch(() => feedbackAnalytics('recognition_restore_storage_failed', { workout_id: rewardLoopDemoV2StorageScope }));
     return () => { active = false; };
-  }, [rewardLoopDemoV2StorageScope]);
+  }, [rewardLoopDemoV2StorageScope, user?.preferred_units]);
 
   useEffect(() => {
     const blockers = {
@@ -8641,7 +8642,7 @@ export default function WorkoutViewerScreen() {
         event={feedbackState.recognition.currentEvent}
         secondaryHighlightCount={feedbackState.recognition.currentEvent?.secondary_highlight_count || 0}
         reduceMotion={reduceMotion}
-        displayUnit={unit}
+        displayUnit={MAJOR_VOLUME_MILESTONE_EVENT_TYPES.has(feedbackState.recognition.currentEvent?.event_type ?? '') ? (user?.preferred_units === 'kg' ? 'kg' : 'lb') : unit}
         onPresentationStarted={handleRecognitionPresentationStarted}
         onDismissEvent={dismissCurrentRecognition}
       />
