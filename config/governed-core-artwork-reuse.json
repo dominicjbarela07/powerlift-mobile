@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "source": "Explicit canonical Core artwork assignments; visual reuse only, never movement identity or history consolidation",
+  "mappings": [
+    {
+      "movement_definition_id": 1,
+      "key": "competition_squat",
+      "core_movement_definition_id": 1,
+      "movement_name": "Competition Squat",
+      "artwork_movement_definition_id": 1,
+      "artwork_key": "competition_squat",
+      "reuse_basis": "Canonical competition lift candidate."
+    },
+    {
+      "movement_definition_id": 2,
+      "key": "competition_bench",
+      "core_movement_definition_id": 2,
+      "movement_name": "Competition Bench",
+      "artwork_movement_definition_id": 2,
+      "artwork_key": "competition_bench",
+      "reuse_basis": "Canonical competition lift candidate."
+    },
+    {
+      "movement_definition_id": 3,
+      "key": "competition_deadlift",
+      "core_movement_definition_id": 3,
+      "movement_name": "Competition Deadlift",
+      "artwork_movement_definition_id": 3,
+      "artwork_key": "competition_deadlift",
+      "reuse_basis": "Canonical competition lift candidate."
+    },
+    {
+      "movement_definition_id": 605,
+      "key": "pause_squat",
+      "core_movement_definition_id": 37,
+      "movement_name": "Pause Squat",
+      "artwork_movement_definition_id": 1,
+      "artwork_key": "competition_squat",
+      "reuse_basis": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 606,
+      "key": "tempo_squat_3_0_3",
+      "core_movement_definition_id": 38,
+      "movement_name": "Tempo Squat (3-0-3)",
+      "artwork_movement_definition_id": 1,
+      "artwork_key": "competition_squat",
+      "reuse_basis": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 611,
+      "key": "low_bar_squat",
+      "core_movement_definition_id": 43,
+      "movement_name": "Low Bar Squat",
+      "artwork_movement_definition_id": 1,
+      "artwork_key": "competition_squat",
+      "reuse_basis": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 613,
+      "key": "pause_bench_press",
+      "core_movement_definition_id": 45,
+      "movement_name": "Pause Bench Press",
+      "artwork_movement_definition_id": 2,
+      "artwork_key": "competition_bench",
+      "reuse_basis": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 617,
+      "key": "wide_grip_bench",
+      "core_movement_definition_id": 49,
+      "movement_name": "Wide Grip Bench",
+      "artwork_movement_definition_id": 2,
+      "artwork_key": "competition_bench",
+      "reuse_basis": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 619,
+      "key": "tempo_bench_3_0_3",
+      "core_movement_definition_id": 51,
+      "movement_name": "Tempo Bench (3-0-3)",
+      "artwork_movement_definition_id": 2,
+      "artwork_key": "competition_bench",
+      "reuse_basis": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 621,
+      "key": "pause_deadlift",
+      "core_movement_definition_id": 53,
+      "movement_name": "Pause Deadlift",
+      "artwork_movement_definition_id": 3,
+      "artwork_key": "competition_deadlift",
+      "reuse_basis": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 624,
+      "key": "tempo_deadlift_3_0_3",
+      "core_movement_definition_id": 56,
+      "movement_name": "Tempo Deadlift (3-0-3)",
+      "artwork_movement_definition_id": 3,
+      "artwork_key": "competition_deadlift",
+      "reuse_basis": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 629,
+      "key": "conventional_deadlift",
+      "core_movement_definition_id": 61,
+      "movement_name": "Conventional Deadlift",
+      "artwork_movement_definition_id": 3,
+      "artwork_key": "competition_deadlift",
+      "reuse_basis": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 630,
+      "key": "three_count_pause_squat",
+      "core_movement_definition_id": 70,
+      "movement_name": "3ct Pause Squat",
+      "artwork_movement_definition_id": 1,
+      "artwork_key": "competition_squat",
+      "reuse_basis": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 631,
+      "key": "two_count_pause_bench",
+      "core_movement_definition_id": 71,
+      "movement_name": "2ct Pause Bench",
+      "artwork_movement_definition_id": 2,
+      "artwork_key": "competition_bench",
+      "reuse_basis": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    }
+  ],
+  "awaiting_specific_artwork": [
+    {
+      "movement_definition_id": 607,
+      "key": "pin_squat",
+      "movement_name": "Pin Squat",
+      "core_movement_definition_id": 39,
+      "movement_family": "squat",
+      "core_kind": "variant",
+      "plan": "flagged",
+      "artwork_movement_definition_id": null,
+      "rationale": "A pin squat requires visible pins supporting the bar at the starting height."
+    },
+    {
+      "movement_definition_id": 609,
+      "key": "safety_bar_squat",
+      "movement_name": "Safety Bar Squat (SSB)",
+      "core_movement_definition_id": 41,
+      "movement_family": "squat",
+      "core_kind": "variant",
+      "plan": "flagged",
+      "artwork_movement_definition_id": null,
+      "rationale": "A safety-bar squat requires a safety squat bar and its handles."
+    },
+    {
+      "movement_definition_id": 612,
+      "key": "hatfield_squat",
+      "movement_name": "Hatfield Squat",
+      "core_movement_definition_id": 44,
+      "movement_family": "squat",
+      "core_kind": "variant",
+      "plan": "flagged",
+      "artwork_movement_definition_id": null,
+      "rationale": "Hatfield squat requires hands on supports and a safety squat bar."
+    },
+    {
+      "movement_definition_id": 618,
+      "key": "pin_press",
+      "movement_name": "Pin Press",
+      "core_movement_definition_id": 50,
+      "movement_family": "bench",
+      "core_kind": "variant",
+      "plan": "flagged",
+      "artwork_movement_definition_id": null,
+      "rationale": "Pin press needs visible pins at the prescribed starting height."
+    },
+    {
+      "movement_definition_id": 620,
+      "key": "board_press_2_board",
+      "movement_name": "Board Press (2-Board)",
+      "core_movement_definition_id": 52,
+      "movement_family": "bench",
+      "core_kind": "variant",
+      "plan": "flagged",
+      "artwork_movement_definition_id": null,
+      "rationale": "Two-board press needs the board on the chest and shortened bar travel."
+    },
+    {
+      "movement_definition_id": 622,
+      "key": "deficit_deadlift",
+      "movement_name": "Deficit Deadlift",
+      "core_movement_definition_id": 54,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "flagged",
+      "artwork_movement_definition_id": null,
+      "rationale": "Deficit deadlift requires an elevated standing surface."
+    },
+    {
+      "movement_definition_id": 623,
+      "key": "block_pull",
+      "movement_name": "Block Pull",
+      "core_movement_definition_id": 55,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "flagged",
+      "artwork_movement_definition_id": null,
+      "rationale": "Block pull requires plates supported on blocks."
+    },
+    {
+      "movement_definition_id": 627,
+      "key": "snatch_grip_deadlift",
+      "movement_name": "Snatch Grip Deadlift",
+      "core_movement_definition_id": 59,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "flagged",
+      "artwork_movement_definition_id": null,
+      "rationale": "Snatch-grip deadlift requires a visibly wider grip."
+    },
+    {
+      "movement_definition_id": 628,
+      "key": "sumo_deadlift",
+      "movement_name": "Sumo Deadlift",
+      "core_movement_definition_id": 60,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "flagged",
+      "artwork_movement_definition_id": null,
+      "rationale": "Sumo deadlift requires a wide stance with arms inside the legs."
+    }
+  ]
+}

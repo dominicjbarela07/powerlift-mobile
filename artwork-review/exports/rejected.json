@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 2857,
+  "revision": 2884,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-23T21:14:22.774229+00:00",
-  "updated_at_display": "Sep 23, 2026 02:14 PM PT (Sep 23, 2026 05:14 PM Eastern)",
+  "updated_at": "2026-09-24T17:34:48.858481+00:00",
+  "updated_at_display": "Sep 24, 2026 10:34 AM PT (Sep 24, 2026 01:34 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -127,6 +127,46 @@
     },
     "canonical_remaining_accessories": {
       "label": "Remaining Accessories",
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "test_only": false,
+      "baseline": {
+        "movement_definition_id": 33,
+        "key": "accessory_incline_dumbbell_bench_press",
+        "movement_name": "Incline Dumbbell Bench Press",
+        "candidate_asset": "candidates/existing-33-e05a3bf38fa7/master.png",
+        "files": {
+          "master": {
+            "path": "candidates/existing-33-e05a3bf38fa7/master.png",
+            "dimensions": [
+              1254,
+              1254
+            ],
+            "bytes": 1871026,
+            "sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe"
+          },
+          "app": {
+            "path": "candidates/existing-33-e05a3bf38fa7/app.png",
+            "dimensions": [
+              512,
+              512
+            ],
+            "bytes": 317984,
+            "sha256": "14df7b7e03afa5cc37074a53a00117f7da58771821873de5ec0f94fa3e7d60a4"
+          },
+          "thumbnail": {
+            "path": "candidates/existing-33-e05a3bf38fa7/thumbnail.png",
+            "dimensions": [
+              192,
+              192
+            ],
+            "bytes": 46716,
+            "sha256": "741dde3985a23db10a37e71fed4aec03292f95d92758f657e71cea860c4e6cf1"
+          }
+        }
+      }
+    },
+    "canonical_core_sbd": {
+      "label": "Core SBD — source then framing",
       "baseline_candidate_id": "existing-33-e05a3bf38fa7",
       "test_only": false,
       "baseline": {
@@ -27146,6 +27186,182 @@
           "reviewer_user_id": 1,
           "candidate_sha256": "ac61896776a0cae4b7d314554bc424f3af2bea533e5a98e34dbc94237c30d6d9",
           "app_sha256": "4d161b84fdc80cf048e6745d07c90ecdd5608c74f554ffc2f1bc42e4e1626d52",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "cf418260405f8affab901404": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.07,
+        "y": -0.07
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.8,
+          "x": 0.07,
+          "y": -0.07
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T02:15:26.764628+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:15 PM PT (Sep 23, 2026 10:15 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+        "app_sha256": "7541a61a7251e6a90389d211db3e1c9eca82fed604b76e5c064ee755e1395edc",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.8,
+            "x": 0.07,
+            "y": -0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T02:15:26.764628+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:15 PM PT (Sep 23, 2026 10:15 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+          "app_sha256": "7541a61a7251e6a90389d211db3e1c9eca82fed604b76e5c064ee755e1395edc",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "45de1291e0b89701daf66161": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.75,
+        "x": 0.07,
+        "y": -0.02
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.75,
+          "x": 0.07,
+          "y": -0.02
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T02:15:36.876758+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:15 PM PT (Sep 23, 2026 10:15 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+        "app_sha256": "34ce5798659d9be3d3c405f07afa20f15f1639c0bcad77e83a6224828779049a",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.75,
+            "x": 0.07,
+            "y": -0.02
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T02:15:36.876758+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:15 PM PT (Sep 23, 2026 10:15 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+          "app_sha256": "34ce5798659d9be3d3c405f07afa20f15f1639c0bcad77e83a6224828779049a",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "d3645cd2a9b0fdc03ca8f03f": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.1,
+        "y": -0.15
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.7,
+          "x": 0.1,
+          "y": -0.15
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T17:29:06.157109+00:00",
+        "reviewed_at_display": "Sep 24, 2026 10:29 AM PT (Sep 24, 2026 01:29 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+        "app_sha256": "2c2439f2c2b90aaaafa137aff4b1328d8c2ec3a182a501c24180a66912bbbed6",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.1,
+            "y": -0.15
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T17:29:06.157109+00:00",
+          "reviewed_at_display": "Sep 24, 2026 10:29 AM PT (Sep 24, 2026 01:29 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+          "app_sha256": "2c2439f2c2b90aaaafa137aff4b1328d8c2ec3a182a501c24180a66912bbbed6",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "6cb1bd3afd78018b9538aac5": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.75,
+        "x": 0.08,
+        "y": -0.06
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.75,
+          "x": 0.08,
+          "y": -0.06
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T17:29:17.075854+00:00",
+        "reviewed_at_display": "Sep 24, 2026 10:29 AM PT (Sep 24, 2026 01:29 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+        "app_sha256": "4955e749892a946660fc80858e14a716ebc22df8634877c05ce13da2eb5c9b2b",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.75,
+            "x": 0.08,
+            "y": -0.06
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T17:29:17.075854+00:00",
+          "reviewed_at_display": "Sep 24, 2026 10:29 AM PT (Sep 24, 2026 01:29 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+          "app_sha256": "4955e749892a946660fc80858e14a716ebc22df8634877c05ce13da2eb5c9b2b",
           "source": "human_logger_crop_ui"
         }
       ]

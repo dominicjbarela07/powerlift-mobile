@@ -19,7 +19,7 @@ const start = original.indexOf('export const CANONICAL_ACCESSORY_MOVEMENT_ARTWOR
 const end = original.indexOf('\nexport function canonicalMovementArtworkSource', start);
 assert.ok(start > 0 && end > start);
 const generated = original.slice(0, start) + `export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Partial<Record<
-  CanonicalAccessoryArtworkKey,
+  CanonicalMovementArtworkKey,
   Readonly<{ source: ImageSourcePropType; label: string }>
 >>> = (__DEV__ || process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight') ? {
 ${visible.join('\n')}

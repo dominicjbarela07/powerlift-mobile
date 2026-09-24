@@ -20,6 +20,27 @@ assert.equal(isMovementArtworkReviewDenied('different', true, ['example']), fals
 assert.equal(isMovementArtworkReviewDenied('example', false, ['example']), false, 'disabled artwork runtime preserves existing fallback');
 
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'sl-art-approval-gate-'));
+// In-memory fixture only: source approval cannot substitute for Core framing.
+{
+  const source = structuredClone(state.items.find(row => row.movement_definition_id === 33 && row.status === 'approved_existing'));
+  source.family = 'canonical_core_sbd';
+  const fixture = {items:[source], canonical_assets:[{key:source.key,
+    movement_definition_id:source.movement_definition_id,candidate_id:source.candidate_id,files:source.files}]};
+  assert.deepEqual(approvedExactArtworkPolicy(fixture), [], 'Core source approval alone is insufficient');
+  const crop = {fit:'contain',zoom:1,x:0,y:0};
+  const receipt = {action:'approve',source:'human_logger_crop_ui',reviewer_user_id:1,
+    candidate_sha256:source.files.master.sha256,app_sha256:source.files.app.sha256,crop};
+  fixture.logger_crop_reviews = {[source.candidate_id]:{status:'approved',crop,review:receipt,history:[receipt]}};
+  assert.equal(approvedExactArtworkPolicy(fixture).length,1,'Both independent approvals pass Core gates');
+  fixture.logger_crop_reviews[source.candidate_id].status='flagged';
+  assert.deepEqual(approvedExactArtworkPolicy(fixture), [], 'Flagging Core framing removes eligibility');
+  fixture.logger_crop_reviews[source.candidate_id].status='approved';
+  receipt.app_sha256='stale';
+  assert.deepEqual(approvedExactArtworkPolicy(fixture), [], 'A stale crop receipt cannot pass the Core gate');
+  receipt.app_sha256=source.files.app.sha256;
+  source.test_only=true;
+  assert.deepEqual(approvedExactArtworkPolicy(fixture), [], 'QA cannot pass either runtime gate');
+}
 try {
   const original = state.grandfathered_assets.find(row => row.movement_definition_id === 33);
   const candidate = state.items.find(row => row.candidate_id === original.candidate_id);

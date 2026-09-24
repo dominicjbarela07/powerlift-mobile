@@ -2,6 +2,9 @@ import { type FocusedAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-gro
 import { normalizeCanonicalMovementArtSubject, type MovementArtInput, type MovementArtFailure, type CanonicalCoreArtworkFamily } from './canonical-movement-art-subject';
 import { isMovementArtworkReviewDenied } from '@/lib/movement-art-review-policy';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, RETIRED_ACCESSORY_ARTWORK_IDENTITIES, REGISTERED_ACCESSORY_ARTWORK_KEYS, type CanonicalAccessoryArtworkKey } from './canonical-accessory-artwork-identities';
+import type { CanonicalCoreArtworkKey } from './canonical-core-artwork-identities';
+
+export type CanonicalMovementArtworkKey = CanonicalAccessoryArtworkKey | CanonicalCoreArtworkKey;
 
 export { normalizeCanonicalMovementArtSubject, canonicalArtworkInputFromDefinition } from './canonical-movement-art-subject';
 export type { CanonicalMovementArtworkInput, CanonicalMovementArtSubject, MovementArtInput, CanonicalCoreArtworkFamily } from './canonical-movement-art-subject';
