@@ -82,11 +82,8 @@ export function availableSwapEquipmentTypeFilters(
     });
   } else {
     fallbackItems.forEach((item) => {
-      (item.discovery_execution_families?.length
-        ? item.discovery_execution_families : [item.execution_family]).forEach((value) => {
-        const key = governedAccessoryExecutionFamilyKey(value);
-        if (key) available.add(key);
-      });
+      const key = governedAccessoryExecutionFamilyKey(item.execution_family);
+      if (key) available.add(key);
     });
   }
   return SWAP_EQUIPMENT_TYPE_FILTERS.filter(({ key }) => available.has(key));
@@ -128,7 +125,6 @@ export type AccessoryDiscoveryIdentity = {
   primary_muscle_group?: string | null;
   secondary_muscle_groups?: string[] | null;
   execution_family?: string | null;
-  discovery_execution_families?: readonly string[] | null;
   requires_equipment_configuration?: boolean | null;
 };
 

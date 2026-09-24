@@ -61,9 +61,6 @@ assert.deepEqual(
 );
 assert.equal(governedAccessoryExecutionFamilyKey('machine'), 'MACHINE');
 assert.equal(governedAccessoryExecutionFamilyKey('unknown'), null);
-assert.deepEqual(availableSwapEquipmentTypeFilters(null, [
-  {id:67,display_name:'Push-Up',execution_family:'BODYWEIGHT',discovery_execution_families:['BODYWEIGHT','FREE_WEIGHT']},
-]).map(({key})=>key), ['FREE_WEIGHT','BODYWEIGHT']);
 assert.deepEqual(
   availableSwapEquipmentTypeFilters(null, [
     { id: 20, display_name: 'Machine-Named Dumbbell Curl', execution_family: 'FREE_WEIGHT' },

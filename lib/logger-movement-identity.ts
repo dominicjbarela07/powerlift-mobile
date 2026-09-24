@@ -75,9 +75,7 @@ export function resolveLoggerMovementIdentity(
   const item = normalizeCurrentWorkoutItem(input);
   const performedCore = withId(item.performed_core_movement);
   const programmedCore = withId(item.core_movement);
-  const accessorySlot = String(item.variant || '').toUpperCase() === 'ACC'
-    || ['AX', 'ACC'].includes(String(item.lift || '').toUpperCase());
-  if (!accessorySlot && (performedCore || programmedCore)) {
+  if (performedCore || programmedCore) {
     const effective = performedCore || programmedCore;
     return {
       kind: 'core',

@@ -8,7 +8,6 @@ export type EquipmentFlowSubject = Readonly<{
   displayName: string;
   domain: 'machine' | 'cable';
   allowedTypes: readonly MachineEquipmentType[];
-  allowsPortableLoading: boolean;
 }>;
 type Item = LoggerMovementIdentityItem & { effective_movement_definition_id?: number | null };
 const stale = () => new Error('This movement changed. Close Equipment and reopen it from the movement you want to configure.');
@@ -31,16 +30,15 @@ export function equipmentFlowSubject(item: Item): EquipmentFlowSubject {
   const taxonomy = identity.material_parameters?.accessory_taxonomy;
   const family = String(identity.execution_family || taxonomy?.execution_family || '').toUpperCase();
   const equipment = String(identity.equipment_type || '').toLowerCase();
-  const optionalMachine = identity.optional_equipment_domains?.includes('machine');
-  if (!optionalMachine && ((family === 'MACHINE' && equipment === 'cable')
-      || (family && !['MACHINE', 'CABLE', 'ASSISTED'].includes(family)))) throw stale();
-  const domain = optionalMachine ? 'machine' : family === 'CABLE' || equipment === 'cable' ? 'cable'
+  if ((family === 'MACHINE' && equipment === 'cable')
+      || (family && !['MACHINE', 'CABLE', 'ASSISTED'].includes(family))) throw stale();
+  const domain = family === 'CABLE' || equipment === 'cable' ? 'cable'
     : family === 'MACHINE' || ['machine', 'selectorized_machine', 'plate_loaded_machine', 'selectorized', 'plate_loaded', 'smith_machine'].includes(equipment) ? 'machine' : null;
-  if (!domain || (!optionalMachine && (identity.requires_equipment_configuration === false || taxonomy?.requires_equipment_configuration === false))) {
+  if (!domain || identity.requires_equipment_configuration === false || taxonomy?.requires_equipment_configuration === false) {
     throw new Error('This movement does not support machine or cable equipment setup. Use Swap to choose a different movement.');
   }
   return Object.freeze({ itemId: item.id, movementDefinitionId: identity.id, movementKey: identity.key,
-    displayName: identity.display_name, domain, allowsPortableLoading: Boolean(optionalMachine),
+    displayName: identity.display_name, domain,
     allowedTypes: Object.freeze(equipment === 'plate_loaded_machine' ? ['plate_loaded'] as const
       : equipment === 'selectorized_machine' ? ['selectorized'] as const
       : ['plate_loaded', 'selectorized'] as const) });
@@ -51,8 +49,7 @@ export function assertEquipmentFlowSubject(subject: EquipmentFlowSubject, item: 
   const current = equipmentFlowSubject(item);
   if (current.itemId !== subject.itemId || current.movementDefinitionId !== subject.movementDefinitionId
       || current.movementKey !== subject.movementKey || current.domain !== subject.domain
-      || current.allowedTypes.join() !== subject.allowedTypes.join()
-      || current.allowsPortableLoading !== subject.allowsPortableLoading) throw stale();
+      || current.allowedTypes.join() !== subject.allowedTypes.join()) throw stale();
   return current;
 }
 
@@ -71,9 +68,4 @@ export function equipmentFlowWrite(subject: EquipmentFlowSubject, manufacturerKe
   // Existing API contract configures physical equipment only. Never send a
   // movement_definition_id here: that legacy field accepts a different subject.
   return { manufacturer_key: manufacturerKey, equipment_type: equipmentType };
-}
-
-export function portableLoadingWrite(subject: EquipmentFlowSubject) {
-  if (!subject.allowsPortableLoading) throw new Error('This movement requires machine equipment.');
-  return { movement_definition_id: subject.movementDefinitionId };
 }

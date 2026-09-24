@@ -2,10 +2,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
-import { equipmentFlowSubject, assertEquipmentFlowSubject, assertEquipmentResponseSubject, equipmentFlowVariants, equipmentFlowWrite, portableLoadingWrite } from '../lib/equipment-flow-subject.ts';
+import { equipmentFlowSubject, assertEquipmentFlowSubject, assertEquipmentResponseSubject, equipmentFlowVariants, equipmentFlowWrite } from '../lib/equipment-flow-subject.ts';
 import { resolveLoggerMovementIdentity, canonicalArtworkInputForLoggerItem } from '../lib/logger-movement-identity.ts';
-import { activeEquipmentIdentity, orderEquipmentChoices, equipmentSelectionOperation, canConfigureMachineEquipment, needsEquipmentSelection, optionalMachineLoadIdentity } from '../lib/equipment-selection.ts';
-import { formatPerformedLoad } from '../lib/performed-load-semantics.ts';
+import { activeEquipmentIdentity, orderEquipmentChoices, equipmentSelectionOperation } from '../lib/equipment-selection.ts';
 const identity=(id,key,name,equipment,extra={})=>({id,key,display_name:name,equipment_type:equipment,primary_muscle_group:'triceps',...extra});
 const machine=identity(60001,'qa_machine_overhead_triceps','Machine Overhead Triceps Extension','machine');
 const cable=identity(307,'accessory_cable_overhead_triceps_extension','Cable Overhead Triceps Extension','cable');
@@ -61,7 +60,7 @@ const declarations=[];
 const visit=node=>{if(ts.isVariableDeclaration(node)&&names.has(node.name.getText(ast)))declarations.push(`const ${node.getText(ast)};`);ts.forEachChild(node,visit);};visit(ast);
 assert.equal(declarations.length,names.size);
 const requests=[],notices=[];
-const ctx={equipmentFlowSubject,assertEquipmentFlowSubject,assertEquipmentResponseSubject,equipmentFlowVariants,equipmentFlowWrite,portableLoadingWrite,
+const ctx={equipmentFlowSubject,assertEquipmentFlowSubject,assertEquipmentResponseSubject,equipmentFlowVariants,equipmentFlowWrite,
  resolveLoggerMovementIdentity,activeEquipmentIdentity,orderEquipmentChoices,equipmentSelectionOperation,
  useCallback:fn=>fn,executionScope:'user:1:session:8',executionScopeRef:{current:'user:1:session:8'},workoutId:'8',API_BASE:'http://qa.invalid',
  data:{athlete:{id:1},workout:{status:'in_progress',accessory_groups:[{group:'A',items:[a,b]}]}},
@@ -119,55 +118,6 @@ ctx.executionScopeRef.current='other-user:session:8';
 requests.at(-1).resolve({ok:true,json:{ok:true,usage_movement_definition_id:cable.id,items:[{id:2,key:'private',display_name:'Old account'}]}});
 await otherAccount;
 assert.equal(ctx.identityPickerRows.length,0,'account changes discard pending responses even before effects run');
-// One physical calf raise supports portable and machine loading. Exercise the
-// actual save handler in both directions; neither transition changes its ID.
-ctx.executionScopeRef.current=ctx.executionScope;
-handlers.closeIdentityPicker();
-const calf=make(103,identity(70090,'qa_single_leg_calf','Single-Leg Calf Raise','bodyweight',{
- execution_family:'BODYWEIGHT',requires_equipment_configuration:false,
- optional_equipment_domains:['machine'],load_convention:'added_bodyweight',measurement_type:'added_weight_reps'}));
-ctx.data={athlete:{id:1},workout:{status:'in_progress',accessory_groups:[{group:'A',items:[calf]}]}};
-ctx.dataRef.current=ctx.data;
-assert(canConfigureMachineEquipment(calf));assert(!needsEquipmentSelection(calf));
-assert.equal(optionalMachineLoadIdentity(calf),null);
-const originalArt=canonicalArtworkInputForLoggerItem(calf);
-handlers.openIdentityPicker(calf);
-assert.equal(ctx.identityPickerSubject.allowsPortableLoading,true);
-const machineSave=handlers.commitPerformedIdentity({id:77,manufacturer:{key:'prime'}},'selectorized');
-const calfEquipment={id:991,key:'machine_equipment_prime_selectorized',display_name:'Prime Fitness',
- equipment_type:'selectorized_machine',identity_specificity:'exact',implementation_key:'prime:selectorized',
- load_convention:'machine_stack_display',measurement_type:'load_reps',manufacturer:{id:77,key:'prime',display_name:'Prime Fitness'}};
-requests.at(-1).resolve({ok:true,json:{ok:true,performed_movement_identity:calfEquipment}});await machineSave;
-const machineCalf=ctx.dataRef.current.workout.accessory_groups[0].items[0];
-assert.equal(activeEquipmentIdentity(machineCalf).id,991);
-assert.equal(optionalMachineLoadIdentity(machineCalf).load_convention,'machine_stack_display');
-assert.deepEqual(canonicalArtworkInputForLoggerItem(machineCalf),originalArt);
-handlers.openIdentityPicker(machineCalf);
-const portableSave=handlers.commitPerformedIdentity(resolveLoggerMovementIdentity(machineCalf).effective);
-assert.equal(requests.at(-1).options.body.movement_definition_id,70090);
-requests.at(-1).resolve({ok:true,json:{ok:true,performed_movement_identity:calf.movement_identity}});await portableSave;
-const portableCalf=ctx.dataRef.current.workout.accessory_groups[0].items[0];
-assert.equal(activeEquipmentIdentity(portableCalf),null);
-assert(!needsEquipmentSelection(portableCalf));
-assert.deepEqual(canonicalArtworkInputForLoggerItem(portableCalf),originalArt);
-assert.throws(()=>portableLoadingWrite(equipmentFlowSubject(b)));
-// Execute the logger's display and zero-load rules, including old portable
-// sets after machine selection and old machine sets after returning to BW.
-const loadFunctions=[];
-const loadNames=new Set(['itemLoadSemantics','loggedSetText','loadWheelAllowsZero']);
-const findLoad=node=>{if(ts.isFunctionDeclaration(node)&&loadNames.has(node.name?.text))loadFunctions.push(node.getText(ast));ts.forEachChild(node,findLoad);};findLoad(ast);
-assert.equal(loadFunctions.length,3);
-const loadCode=ts.transpileModule(loadFunctions.join('\n')+'\n({itemLoadSemantics,loggedSetText,loadWheelAllowsZero});',{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
-const load=vm.runInNewContext(loadCode,{optionalMachineLoadIdentity,formatPerformedLoad,formatWeight:value=>String(value)});
-assert.equal(load.itemLoadSemantics(machineCalf).loadConvention,'machine_stack_display');
-assert.equal(load.itemLoadSemantics(portableCalf).loadConvention,'added_bodyweight');
-assert(load.loadWheelAllowsZero(portableCalf));assert(!load.loadWheelAllowsZero(machineCalf));
-for (const convention of ['per_hand','total_external_load']) {
- assert(load.loadWheelAllowsZero({lift:'AX',variant:'ACC',movement_identity:{load_convention:convention}}));
- assert(!load.loadWheelAllowsZero({lift:'SQ',variant:'COMP',movement_identity:{load_convention:convention}}));
-}
-assert.equal(load.loggedSetText({actual_weight_kg:0,actual_reps:10,load_convention_snapshot:'bodyweight_only',measurement_type_snapshot:'bodyweight_reps'},'kg',machineCalf),'BW × 10');
-assert.equal(load.loggedSetText({actual_weight_kg:20,actual_reps:10,load_convention_snapshot:'machine_stack_display',measurement_type_snapshot:'load_reps'},'kg',portableCalf),'20 kg × 10');
 assert.match(source,/identityPickerSubject\?\.displayName/);
 assert.doesNotMatch(source,/simplifyMobileMovementName\(identityPickerItem\.movement\)/);
 assert.match(source,/onConfigureEquipment=\{\(itemId\)[\s\S]*?candidate\.id === itemId[\s\S]*?openIdentityPicker\(item\)/);

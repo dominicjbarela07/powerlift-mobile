@@ -23,7 +23,6 @@ export type EquipmentIdentityLike = {
   load_convention?: string | null;
   measurement_type?: string | null;
   sidedness?: string | null;
-  optional_equipment_domains?: readonly string[] | null;
   implementation_key?: string | null;
   manufacturer?: {
     id: number;
@@ -222,9 +221,6 @@ export function isMachineAccessoryItem(
   if (!item) return false;
   if (item.movement_definition_id || item.movement_identity_contract === 1) {
     const current = normalizeCurrentWorkoutItem(item);
-    if (current.movement_identity?.optional_equipment_domains?.includes('machine')) {
-      return isConfiguredMachineIdentity(current.performed_movement_identity);
-    }
     return equipmentClassification(current.movement_identity as EquipmentIdentityLike | null) === 'machine';
   }
   const performedClassification = equipmentClassification(
@@ -249,18 +245,6 @@ export function isMachineAccessoryItem(
     return false;
   }
   return false;
-}
-
-/** An optional machine setup does not force bodyweight/added-weight logging
- * through equipment selection. The selected setup owns load comparisons. */
-export function canConfigureMachineEquipment(item: EquipmentAwareWorkoutItem | null | undefined): boolean {
-  return Boolean(item && (normalizeCurrentWorkoutItem(item).movement_identity?.optional_equipment_domains?.includes('machine')
-    || isMachineAccessoryItem(item)));
-}
-
-export function optionalMachineLoadIdentity(item: EquipmentAwareWorkoutItem | null | undefined): EquipmentIdentityLike | null {
-  if (!item || !normalizeCurrentWorkoutItem(item).movement_identity?.optional_equipment_domains?.includes('machine')) return null;
-  return activeEquipmentIdentity(item);
 }
 
 function isConfiguredMachineIdentity(
