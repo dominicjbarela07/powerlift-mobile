@@ -202,7 +202,7 @@ function TotalVolumeAchievement({ entry, unit, onSelect }: { entry: VolumeAchiev
   const { width } = useWindowDimensions();
   const compact = width < 390;
   const currentLb = entry.current.lb;
-  const progress = useMemo(() => deriveVolumeAchievement(currentLb, entry.id), [currentLb, entry.id]);
+  const progress = useMemo(() => deriveVolumeAchievement(currentLb, entry.id, unit), [currentLb, entry.id, unit]);
   const earned = progress.achieved;
   const next = progress.next;
   const earnedPresentation = earned ? deriveVolumeComparisonPresentation(earned, entry.id, progress.currentLb) : null;
@@ -272,7 +272,7 @@ function LiftVolumeAchievement({ entry, totalLb, unit, onSelect }: { entry: Volu
   const { width } = useWindowDimensions();
   const compact = width < 390;
   const currentLb = entry.current.lb;
-  const progress = useMemo(() => deriveVolumeAchievement(currentLb, entry.id), [currentLb, entry.id]);
+  const progress = useMemo(() => deriveVolumeAchievement(currentLb, entry.id, unit), [currentLb, entry.id, unit]);
   const earned = progress.achieved;
   const next = progress.next;
   const earnedPresentation = earned ? deriveVolumeComparisonPresentation(earned, entry.id, progress.currentLb) : null;
@@ -446,6 +446,7 @@ function VolumeMilestoneDetail({ selection, unit, onClose }: { selection: Select
 
 export function VolumeAchievementExperience({ data, unit }: Props) {
   const [selection, setSelection] = useState<Selection | null>(null);
+  useEffect(() => setSelection(null), [unit]);
   const totalLb = safeVolumeLb(data.total.current.lb);
   const largeCompetitionTotal = safeVolumeLb(data.competitionTotal?.current[unit]) >= 100_000_000;
 
