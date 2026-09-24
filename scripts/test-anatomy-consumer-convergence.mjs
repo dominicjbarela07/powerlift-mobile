@@ -88,7 +88,7 @@ for (const relative of [
   assert.match(source(relative), /ProgrammingMuscleRegionArt/, `${relative} must render aggregate evidence through ProgrammingMuscleRegionArt`);
 }
 
-assert.match(source('app/(tabs)/workout/session-workspace/[workoutId].tsx'), /GovernedMuscleThumbnail/, 'Programming muscle drill-down must use governed aggregate thumbnails');
+assert.match(source('app/(tabs)/workout/session-workspace/[workoutId].tsx'), /GovernedMuscleThumbnail/, 'Programming movement targeting review must retain governed anatomy');
 assert.doesNotMatch(source('components/ledger/AccessoriesExperience.tsx'), /libraryAnatomy:\s*\{[^}]*transform/s, 'Accessories thumbnails may not apply a private geometry transform');
 assert.doesNotMatch(source('components/ledger/exploration-experiences.tsx'), /muscleRowAnatomy:\s*\{[^}]*transform/s, 'Ledger muscle rows may not apply a private geometry transform');
 assert.doesNotMatch(source('components/coach-mobile/CoachActivityHome.tsx'), /anatomy:\s*\{[^}]*transform/s, 'Coach activity may not apply a private geometry transform');
@@ -115,3 +115,6 @@ for (const relative of [
 assert.doesNotMatch(source('lib/canonical-movement-artwork.ts'), /MuscleMap|anatomy-v2\/masters/, 'individual movement resolution may not fall back to aggregate anatomy');
 
 console.log('[anatomy-consumer-convergence] shared renderer and exact-movement boundary: PASS');
+
+assert.doesNotMatch(source('components/movement/GovernedAccessoryPickerModal.tsx'), /GovernedMuscleThumbnail|MuscleMap/, 'navigation cannot fall through to anatomy');
+assert.match(source('app/(tabs)/workout/session-workspace/[workoutId].tsx'), /CanonicalMuscleGroupArtwork/, 'Programming taxonomy navigation uses dedicated art');

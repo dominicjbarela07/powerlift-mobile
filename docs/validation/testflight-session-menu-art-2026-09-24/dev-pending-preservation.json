@@ -1,0 +1,5 @@
+{
+  "file": "app/(tabs)/workout/[workoutId].tsx",
+  "workingSha256": "ae0b29216fc7a1ab60a47453daac1b9a31786ebcdee9c5a067a122d7abc8e860",
+  "note": "Preserve full DEV working bytes. Stage shipped Logger baseline plus only the approved Session actions integration; pending equipment/history changes remain in the DEV worktree."
+}

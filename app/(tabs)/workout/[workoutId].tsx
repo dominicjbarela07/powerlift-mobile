@@ -1,9 +1,9 @@
 // @ts-nocheck
 import { ActiveCompositionEditor } from '@/components/workout-logger/active-composition-editor';
+import { SessionActionsSheet } from '@/components/workout-logger/session-actions-sheet';
 import { canEditActiveComposition, orderSessionMovementRows, focusAfterCompositionChange, validateCompositionResponse, type SessionComposition } from '@/lib/active-session-composition';
 import { ActivePrescriptionEditor } from '@/components/workout-logger/active-prescription-editor';
 import { canEditActivePrescription } from '@/lib/active-session-prescription';
-import { SessionEquipmentContext } from '@/components/workout-logger/session-equipment-context';
 import { KeyboardScrollView as ScrollView, KeyboardModal as Modal, KeyboardAvoidingView } from '@/components/keyboard/KeyboardSurface';
 // app/(tabs)/workout/[workoutId].tsx
 
@@ -315,8 +315,6 @@ import {
   equipmentSnapshotForSet,
   equipmentTypeSelectionStatusLabels,
   isMachineAccessoryItem,
-  canConfigureMachineEquipment,
-  optionalMachineLoadIdentity,
   needsEquipmentSelection,
   orderEquipmentChoices,
   type EquipmentSelectionContinuation,
@@ -336,7 +334,7 @@ import {
 } from '@/lib/equipment-presentation';
 import { type MachineEquipmentType } from '@/lib/machine-equipment';
 import { equipmentFlowSubject, assertEquipmentFlowSubject, assertEquipmentResponseSubject,
-  equipmentFlowVariants, equipmentFlowWrite, portableLoadingWrite, type EquipmentFlowSubject } from '@/lib/equipment-flow-subject';
+  equipmentFlowVariants, equipmentFlowWrite, type EquipmentFlowSubject } from '@/lib/equipment-flow-subject';
 import {
   accessoryRepeatDraft,
   coreRepeatDraft,
@@ -372,8 +370,6 @@ type SetLog = {
   implementation_key_snapshot?: string | null;
   performed_label_snapshot?: string | null;
   identity_source_snapshot?: string | null;
-  load_convention_snapshot?: string | null;
-  measurement_type_snapshot?: string | null;
 };
 
 type SetSubmissionAttempt = {
@@ -670,8 +666,7 @@ function formatWeight(
 }
 
 function itemLoadSemantics(item?: WorkoutItem | null): PerformedLoadSemantics {
-  const identity = optionalMachineLoadIdentity(item)
-    || item?.performed_canonical_movement_identity
+  const identity = item?.performed_canonical_movement_identity
     || item?.performed_movement_identity
     || item?.effective_movement_identity
     || item?.movement_identity
@@ -685,10 +680,7 @@ function itemLoadSemantics(item?: WorkoutItem | null): PerformedLoadSemantics {
 
 function loggedSetText(log?: SetLog | null, unit: 'kg' | 'lb' = 'kg', item?: WorkoutItem | null) {
   if (!log) return null;
-  const semantics = log.load_convention_snapshot || log.measurement_type_snapshot
-    ? { loadConvention: log.load_convention_snapshot, measurementType: log.measurement_type_snapshot }
-    : itemLoadSemantics(item);
-  let text = formatPerformedLoad(log.actual_weight_kg, unit, semantics)
+  let text = formatPerformedLoad(log.actual_weight_kg, unit, itemLoadSemantics(item))
     || `${formatWeight(log.actual_weight_kg, unit)} ${unit}`;
   if (log.actual_reps === 0) text += ' × Failed';
   else if (log.actual_reps != null) text += ` × ${log.actual_reps}`;
@@ -1485,11 +1477,9 @@ function nearestWheelValue(options: string[], value: string, fallback: string) {
 }
 
 function loadWheelAllowsZero(item: WorkoutItem): boolean {
-  const convention = String(itemLoadSemantics(item).loadConvention || '').trim().toLowerCase();
-  const accessorySlot = String(item.variant || '').toUpperCase() === 'ACC'
-    || ['AX', 'ACC'].includes(String(item.lift || '').toUpperCase());
-  return ['bodyweight_only', 'no_external_load', 'added_bodyweight'].includes(convention)
-    || (accessorySlot && ['total_external_load', 'per_hand'].includes(convention));
+  const identity = item.performed_movement_identity || item.movement_identity || null;
+  const convention = String(identity?.load_convention || '').trim().toLowerCase();
+  return convention === 'bodyweight_only' || convention === 'no_external_load';
 }
 
 function nextSetIndexFromEvidence(evidence: readonly SetLoggerLoadEvidence[]): number {
@@ -2690,6 +2680,7 @@ export default function WorkoutViewerScreen() {
   const acceptedRestOfferRef = useRef<{ setLogId: number; offer: boolean } | null>(null);
   const timerWheelRef = useRef<ScrollView | null>(null);
   const [cancelConfirmVisible, setCancelConfirmVisible] = useState(false);
+  const [sessionActionsVisible, setSessionActionsVisible] = useState(false);
   const [tardyReasonVisible, setTardyReasonVisible] = useState(false);
   const [tardyReason, setTardyReason] = useState('');
 
@@ -3880,8 +3871,6 @@ export default function WorkoutViewerScreen() {
     const equipmentOwner = executionScope;
     const pickerItem = identityPickerItem;
     const continuation = identityPickerContinuation;
-    const portableLoading = !equipmentVariant && identity.id === entry.subject.movementDefinitionId
-      && entry.subject.allowsPortableLoading && continuation.kind !== 'evidence_correction';
     const previousIdentityId = activeEquipmentIdentity(pickerItem)?.id ?? null;
     identityPickerSaveRef.current = entry;
     setIdentityPickerLoading(true);
@@ -3927,8 +3916,7 @@ export default function WorkoutViewerScreen() {
         auth: true,
         body: {
           ...(continuation.kind === 'evidence_correction' ? { intent: 'evidence_correction' } : {}),
-          ...(portableLoading ? portableLoadingWrite(entry.subject)
-            : equipmentFlowWrite(entry.subject, identity.manufacturer?.key || 'other', equipmentVariant as MachineEquipmentType)),
+          ...equipmentFlowWrite(entry.subject, identity.manufacturer?.key || 'other', equipmentVariant as MachineEquipmentType),
         },
       });
       if (executionScopeRef.current !== equipmentOwner || identityPickerEntryRef.current !== entry) return;
@@ -3946,8 +3934,7 @@ export default function WorkoutViewerScreen() {
         performed_movement_identity:
           response.json?.performed_movement_identity,
       };
-      if (portableLoading ? nextItem.performed_movement_identity?.id !== entry.subject.movementDefinitionId
-        : !nextItem.performed_movement_identity?.key?.startsWith('machine_equipment_')) {
+      if (!nextItem.performed_movement_identity?.key?.startsWith('machine_equipment_')) {
         throw new Error('The server did not return a supported equipment configuration. Refresh the Session.');
       }
       assertEquipmentFlowSubject(entry.subject, nextItem);
@@ -8146,7 +8133,7 @@ export default function WorkoutViewerScreen() {
       id: item.id,
       title: simplifyMobileMovementName(executionName) || 'Accessory',
       canConfigureEquipment:
-        !isCoachAthletePreview && canConfigureMachineEquipment(item),
+        !isCoachAthletePreview && isMachineAccessoryItem(item),
       equipmentContext: equipmentPresentation?.contextLabel || null,
       equipmentRequired: needsEquipmentSelection(item),
       movementArtwork: canonicalArtworkInputForLoggerItem(item),
@@ -8381,8 +8368,30 @@ export default function WorkoutViewerScreen() {
           expanded={accessoryIsExpanded}
           detailRows={accessoryIsExpanded ? movementPresentation.detailRows : undefined}
           expandedIdentityContext={accessoryIsExpanded && machineAccessory ? (
-            <SessionEquipmentContext selected={Boolean(currentEquipment)} manufacturer={currentManufacturer}
-              name={currentEquipmentName} variant={currentEquipmentVariantLabel} />
+            <View style={[
+              styles.currentEquipmentContext,
+              !currentEquipment && styles.currentEquipmentContextRequired,
+            ]}>
+              <ManufacturerBrandMark
+                compact
+                manufacturerName={currentManufacturer}
+              />
+              <View style={styles.currentEquipmentCopy}>
+                <Text style={styles.currentEquipmentEyebrow}>
+                  {currentEquipment ? 'CURRENT EQUIPMENT' : 'EQUIPMENT NEEDED'}
+                </Text>
+                <Text numberOfLines={2} style={styles.currentEquipmentName}>
+                  {currentEquipment ? currentEquipmentName : 'Choose the machine you are using'}
+                </Text>
+                <Text numberOfLines={2} style={styles.currentEquipmentMeta}>
+                  {currentEquipment
+                    ? [currentManufacturer || 'Other', currentEquipmentVariantLabel]
+                        .filter(Boolean)
+                        .join(' · ')
+                    : 'Manufacturer and type keep machine history comparable.'}
+                </Text>
+              </View>
+            </View>
           ) : null}
           meta={accessoryIsComplete ? accessorySummary.meta : `${loggedCount}/${totalSets || 0} sets logged`}
           top={accessoryIsComplete ? accessorySummary.top : lookbackLine}
@@ -8403,7 +8412,7 @@ export default function WorkoutViewerScreen() {
           sessionLifecycle={screenMode}
           auxAction={isCoachAthletePreview ? null : (
             <>
-              {canConfigureMachineEquipment(it) ? (
+              {machineAccessory ? (
                 <TouchableOpacity
                   style={styles.accessoryInlineAction}
                   onPress={() => openIdentityPicker(it)}
@@ -8622,13 +8631,17 @@ export default function WorkoutViewerScreen() {
       <SessionV3Header title={workout.label || 'Training Session'} subtitle={[workout.week_number ? `W${workout.week_number}` : null, workout.date ? new Date(`${workout.date.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : null].filter(Boolean).join(' · ')} active={isActiveSession} preview={isCoachAthletePreview ? athlete.name : null} inset={insets.top}
         logged={loggedSets} total={plannedSets} startedAt={workout.started_at}
         onBack={() => { if (isPreSession && focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else handleBackToTrainingHub(); }}
-        onActions={() => Alert.alert('Session actions', undefined, [
+        onActions={() => canLog ? setSessionActionsVisible(true) : Alert.alert('Session actions', undefined, [
           ...(isCoachAthletePreview ? [{ text: 'Return to Coach Editor', onPress: handleReturnToCoachEditor }] : [
             ...(canEdit ? [{ text: 'Edit Session', onPress: handleEditWorkout }] : []),
-            ...(canEditComposition ? [{ text: 'Add Movement', onPress: () => openComposition('add') }, { text: 'Remove Movement', onPress: () => openComposition('remove') }] : []),
-            ...(canLog ? [{ text: 'Rest timer', onPress: openTimerPicker }, { text: 'Finish Session', onPress: requestCompleteWorkout }, { text: 'Cancel Session', style: 'destructive', onPress: () => setCancelConfirmVisible(true) }] : []),
           ]), { text: 'Close', style: 'cancel' },
         ])} />
+      <SessionActionsSheet visible={sessionActionsVisible && canLog} canEditComposition={canEditComposition}
+        removeUnavailableReason={workout.composition?.items.some(item => item.can_remove && item.set_log_count === 0
+          && !acceptedSetEvidenceItemIds.has(item.id)) ? undefined : 'No movements without logged Sets are available to remove.'}
+        onDismiss={() => setSessionActionsVisible(false)}
+        onAdd={() => openComposition('add')} onRemove={() => openComposition('remove')}
+        onRest={openTimerPicker} onFinish={requestCompleteWorkout} onCancel={() => setCancelConfirmVisible(true)} />
       <LoggerFeedbackSurface
         saveConfirmationVisible={feedbackState.recognition.saveConfirmationVisible}
         statusMessage={setMutationNotice}
@@ -10047,13 +10060,6 @@ export default function WorkoutViewerScreen() {
                       : 'Upcoming set'}
                   </Text>
                 </View>
-                {identityPickerSubject?.allowsPortableLoading && identityPickerContinuation.kind !== 'evidence_correction' ? (
-                  <TouchableOpacity style={styles.equipmentVariantRow} disabled={identityPickerLoading}
-                    onPress={() => void commitPerformedIdentity(resolveLoggerMovementIdentity(identityPickerItem).effective as GeneralMovementIdentity)}>
-                    <Text style={styles.equipmentVariantLabel}>Bodyweight or added weight</Text>
-                    <Text style={styles.identityPickerStatus}>No machine</Text>
-                  </TouchableOpacity>
-                ) : null}
                 {identityPickerManufacturer ? (
                   <>
                     <View style={styles.equipmentPickerHeader}>
@@ -12929,6 +12935,42 @@ const styles = StyleSheet.create({
     color: SLColors.textStrong,
     fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
+  },
+  currentEquipmentContext: {
+    marginTop: 16,
+    marginHorizontal: 26,
+    paddingTop: 14,
+    paddingBottom: 14,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(167,139,250,0.16)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  currentEquipmentContextRequired: {
+    borderColor: 'rgba(251,146,60,0.28)',
+  },
+  currentEquipmentCopy: {
+    flex: 1,
+    gap: 2,
+  },
+  currentEquipmentEyebrow: {
+    color: SLColors.review,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '900',
+    letterSpacing: 0.7,
+  },
+  currentEquipmentName: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    lineHeight: 20,
+    fontWeight: '900',
+  },
+  currentEquipmentMeta: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 17,
   },
   swapOptionButton: {
     alignItems: 'center',

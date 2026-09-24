@@ -60,8 +60,9 @@ const workspace = read('app', '(tabs)', 'workout', 'session-workspace', '[workou
 
 assert.match(thumbnail, /<MuscleMap[\s\S]*framingPreset="thumbnail"[\s\S]*semanticLevel="session"[\s\S]*size="thumbnail"[\s\S]*view="auto"/, 'shared rows must use full-figure thumbnail framing');
 assert.doesNotMatch(thumbnail, /\bImage\b|accessoryMuscleRegionAsset|surface=/, 'shared rows must not use pre-cropped fragments or crop surfaces');
-assert.match(picker, /<GovernedMuscleThumbnail[\s\S]*testID=\{`swap-muscle-thumbnail-\$\{muscle\}`\}/);
-assert.doesNotMatch(picker, /accessoryMuscleRegionAsset|StyleSheet\.absoluteFillObject/);
+assert.match(picker, /<CanonicalMuscleGroupArtwork group=\{muscle\}[\s\S]*testID=\{`swap-muscle-thumbnail-\$\{muscle\}`\}/);
+assert.doesNotMatch(picker, /GovernedMuscleThumbnail|MuscleMap/, 'taxonomy navigation must not render anatomical evidence');
+assert.doesNotMatch(picker, /StyleSheet\.absoluteFillObject/);
 assert.match(picker, /Browse by Muscle Group[\s\S]*setSelectedRegion\(region\)[\s\S]*selectedRegion\.muscles/);
 assert.match(picker, /setSelectedMuscle\(muscle\)[\s\S]*setMode\('muscle'\)[\s\S]*setStep\('results'\)/);
 assert.match(logger, /athleteAnatomy=\{\{[\s\S]*anatomy_display_preference[\s\S]*sex:/);
@@ -69,4 +70,4 @@ assert.match(workspace, /<GovernedMuscleThumbnail[\s\S]*workspace-muscle-thumbna
 assert.match(workspace, /<CanonicalMovementArtwork[\s\S]*kind: 'accessory'/);
 assert.doesNotMatch(workspace, /<MuscleMap/);
 
-console.log(`[swap-muscle-thumbnail-framing] PASS — ${pickerMuscles.length}/${GOVERNED_MUSCLE_IDS.length} governed full-figure thumbnails and exact-movement boundary`);
+console.log(`[swap-muscle-thumbnail-framing] PASS — ${pickerMuscles.length}/${GOVERNED_MUSCLE_IDS.length} governed anatomy framing and separate taxonomy artwork boundary`);

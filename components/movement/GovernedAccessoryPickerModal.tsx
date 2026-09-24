@@ -1,11 +1,11 @@
 import { KeyboardModal as Modal, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
-import { GovernedMuscleThumbnail } from '@/components/anatomy/GovernedMuscleThumbnail';
+import { CanonicalMuscleGroupArtwork } from '@/components/movement/CanonicalMuscleGroupArtwork';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
@@ -19,7 +19,6 @@ import {
   type AccessoryPickerRegion,
   type SimilarAccessoryCandidate,
 } from '@/lib/canonical-accessory-discovery';
-import { accessoryRegionalArtworkAsset } from '@/lib/accessory-muscle-region-assets';
 import {
   CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS,
   canonicalMovementSearchEmptyCopy,
@@ -79,22 +78,6 @@ function uniqueIdentities(items: GovernedAccessoryIdentity[], excludedId?: numbe
   return [...unique.values()];
 }
 
-function MuscleArtwork({
-  athlete,
-  muscle,
-}: {
-  athlete?: Props['athleteAnatomy'];
-  muscle: string;
-}) {
-  return (
-    <GovernedMuscleThumbnail
-      athlete={athlete}
-      primary={muscle}
-      style={styles.muscleArtwork}
-      testID={`swap-muscle-thumbnail-${muscle}`}
-    />
-  );
-}
 
 export function GovernedAccessorySubstitutionPickerModal({
   context,
@@ -103,7 +86,6 @@ export function GovernedAccessorySubstitutionPickerModal({
   onSelectCore,
   visible,
   athleteId,
-  athleteAnatomy,
   title = 'Swap Accessory',
   currentIdentity,
   currentPrescription = '',
@@ -382,9 +364,9 @@ export function GovernedAccessorySubstitutionPickerModal({
               <Text style={styles.sectionLabel}>QUICK ACCESS</Text><View style={styles.accelerators}>{ACCELERATORS.map((entry) => <Pressable key={entry.key} onPress={() => openAccelerator(entry.key)} style={({ pressed }) => [styles.accelerator, pressed && styles.pressed]}><Ionicons color={SLColors.accentViolet} name={entry.icon} size={20} /><Text style={styles.acceleratorText}>{entry.label}</Text></Pressable>)}</View>
             </> : null}
 
-            {step === 'regions' ? <><Text style={styles.pageTitle}>What are you trying to train?</Text><Text style={styles.pageMeta}>Choose a region, then an exact governed muscle target.</Text><View style={styles.regionGrid}>{ACCESSORY_PICKER_REGIONS.map((region) => <Pressable key={region.key} onPress={() => { setSelectedRegion(region); setStep('muscles'); }} style={({ pressed }) => [styles.regionCard, pressed && styles.pressed]}><Image accessibilityIgnoresInvertColors resizeMode="contain" source={accessoryRegionalArtworkAsset(region.artwork).source} style={styles.regionArtwork} /><Text style={styles.regionLabel}>{region.label}</Text></Pressable>)}</View></> : null}
+            {step === 'regions' ? <><Text style={styles.pageTitle}>What are you trying to train?</Text><Text style={styles.pageMeta}>Choose a region, then an exact governed muscle target.</Text><View style={styles.regionGrid}>{ACCESSORY_PICKER_REGIONS.map((region) => <Pressable key={region.key} onPress={() => { setSelectedRegion(region); setStep('muscles'); }} style={({ pressed }) => [styles.regionCard, pressed && styles.pressed]}><CanonicalMuscleGroupArtwork group={region.artwork} style={styles.regionArtwork} /><Text style={styles.regionLabel}>{region.label}</Text></Pressable>)}</View></> : null}
 
-            {step === 'muscles' && selectedRegion ? <><View style={styles.regionHero}><Image accessibilityIgnoresInvertColors resizeMode="contain" source={accessoryRegionalArtworkAsset(selectedRegion.artwork).source} style={styles.regionHeroArtwork} /><View style={styles.rowCopy}><Text style={styles.pageTitle}>{selectedRegion.label}</Text><Text style={styles.pageMeta}>Choose the primary muscle target.</Text></View></View>{selectedRegion.muscles.map((muscle) => <Pressable key={muscle} onPress={() => { setSelectedMuscle(muscle); setSelectedExecutionFamily(''); setExecutionFamilyFacets([]); setMode('muscle'); setQuery(''); setStep('results'); }} style={({ pressed }) => [styles.row, pressed && styles.pressed]}><MuscleArtwork athlete={athleteAnatomy} muscle={muscle} /><Text style={[styles.rowTitle, styles.rowCopy]}>{accessoryTaxonomyLabel(muscle)}</Text><Ionicons color={SLColors.textMuted} name="chevron-forward" size={20} /></Pressable>)}</> : null}
+            {step === 'muscles' && selectedRegion ? <><View style={styles.regionHero}><CanonicalMuscleGroupArtwork group={selectedRegion.artwork} style={styles.regionHeroArtwork} /><View style={styles.rowCopy}><Text style={styles.pageTitle}>{selectedRegion.label}</Text><Text style={styles.pageMeta}>Choose the primary muscle target.</Text></View></View>{selectedRegion.muscles.map((muscle) => <Pressable key={muscle} onPress={() => { setSelectedMuscle(muscle); setSelectedExecutionFamily(''); setExecutionFamilyFacets([]); setMode('muscle'); setQuery(''); setStep('results'); }} style={({ pressed }) => [styles.row, pressed && styles.pressed]}><CanonicalMuscleGroupArtwork group={muscle} style={styles.muscleArtwork} testID={`swap-muscle-thumbnail-${muscle}`} /><Text style={[styles.rowTitle, styles.rowCopy]}>{accessoryTaxonomyLabel(muscle)}</Text><Ionicons color={SLColors.textMuted} name="chevron-forward" size={20} /></Pressable>)}</> : null}
 
             {step === 'results' ? <><Text style={styles.pageTitle}>{resultTitle}</Text>{mode === 'muscle' ? <><Text style={styles.pageMeta}>Primary matches first, followed by movements that also train this target.</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.equipmentFilterRail} testID="swap-equipment-type-filters"><Pressable accessibilityRole="button" accessibilityState={{ selected: !selectedExecutionFamily }} onPress={() => setSelectedExecutionFamily('')} style={[styles.equipmentFilterChip, !selectedExecutionFamily && styles.equipmentFilterChipActive]}><Text style={[styles.equipmentFilterText, !selectedExecutionFamily && styles.equipmentFilterTextActive]}>All</Text></Pressable>{equipmentTypeFilters.map((filter) => <Pressable accessibilityLabel={`Filter by ${filter.label}`} accessibilityRole="button" accessibilityState={{ selected: selectedExecutionFamily === filter.key }} key={filter.key} onPress={() => setSelectedExecutionFamily(filter.key)} style={[styles.equipmentFilterChip, selectedExecutionFamily === filter.key && styles.equipmentFilterChipActive]}><Text style={[styles.equipmentFilterText, selectedExecutionFamily === filter.key && styles.equipmentFilterTextActive]}>{filter.label}</Text></Pressable>)}</ScrollView></> : null}{loading ? <ActivityIndicator color={SLColors.accent} style={styles.loading} /> : null}{!loading ? rows.map((identity) => renderIdentity(identity)) : null}{!loading && !rows.length && !(context === 'in-session-addition' && mode === 'search' && matchingCore.length) ? <Text style={styles.empty}>{error || canonicalMovementSearchEmptyCopy(query, mode === 'search' ? 'Search for a movement.' : 'No matching accessory movements.')}</Text> : null}{canCreateCustom && mode === 'custom' ? <Pressable onPress={() => void beginCustom()} style={styles.primaryAction}><Ionicons color={SLColors.textStrong} name="add-circle-outline" size={20} /><Text style={styles.primaryActionText}>Create Governed Movement</Text></Pressable> : null}</> : null}
           </ScrollView>

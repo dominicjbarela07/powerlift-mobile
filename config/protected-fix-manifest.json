@@ -195,12 +195,8 @@
   ],
   "releaseHoldbacks": {
     "sourceCommit": "fcf8191bc77b848da9877aed4ca848589098309e",
-    "reason": "Preserve current TestFlight catalog and Session/equipment behavior until separately governed catalog/history migration and compatible backend release. Artwork-only release authorization excludes those changes.",
+    "reason": "Preserve current TestFlight catalog and equipment behavior until the separately governed catalog/history and compatible backend release. The Session actions and taxonomy artwork promotion adds no equipment/history behavior.",
     "files": [
-      {
-        "path": "app/(tabs)/workout/[workoutId].tsx",
-        "blob": "22e161badbaf5a3b275483965a5d6fdc1baf9745"
-      },
       {
         "path": "config/governed-movement-art-taxonomy.json",
         "blob": "a253d05bb987ca050e2fe19906b031b716c2aec3"

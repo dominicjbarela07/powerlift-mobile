@@ -9,6 +9,8 @@ required by the Individual Movement Artwork Law.
 
 The distinction is semantic, not cosmetic:
 
+- Taxonomy / muscle-group navigation → `CanonicalMuscleGroupArtwork` and the
+  dedicated muscle-region registry; missing dedicated assets are explicit.
 - Aggregate evidence → `MuscleMap`, normally through
   `ProgrammingMuscleRegionArt` or `GovernedMuscleThumbnail`.
 - Exact movement identity → `CanonicalMovementArtwork` and its governed Core,
@@ -116,10 +118,11 @@ normalized values and ramp as the body.
 | Post-Session hero and performed-muscle evidence | performed Session aggregate | `ProgrammingMuscleRegionArt` |
 | Accessories development hero | period aggregate | `MuscleMap` |
 | Accessories muscle library and Ledger muscle drill-down | muscle aggregate | `MuscleMap`; library highlight arrays remain stable across display-unit changes |
-| Session Workspace muscle discovery | muscle aggregate | `GovernedMuscleThumbnail` |
+| Session Workspace muscle discovery | taxonomy navigation | `CanonicalMuscleGroupArtwork` |
+| Custom movement targeting review | primary/secondary anatomical context | `GovernedMuscleThumbnail` |
 | Session Logger, including standalone and Superset movements | exact movement with compact targeted-muscle context | `CanonicalMovementArtwork`; `accessoryPresentation="muscle-focus"` keeps the governed regional cue left of the name, including when an approved exact hero is visible |
-| Swap Accessory confirmation and results | exact movement plus muscle aggregate browse | `CanonicalMovementArtwork` / `GovernedMuscleThumbnail` |
-| Programming/Editor movement rows and picker | exact movement plus muscle aggregate browse | `CanonicalMovementArtwork` / `GovernedMuscleThumbnail` |
+| Active Session Add/Swap Accessory | exact movement results / taxonomy navigation | `CanonicalMovementArtwork` / `CanonicalMuscleGroupArtwork` |
+| Programming/Editor movement rows and picker | exact movement results / taxonomy navigation | `CanonicalMovementArtwork` / `CanonicalMuscleGroupArtwork` |
 | Ledger movement cards, history, and Accessory progress cards | exact movement | `CanonicalMovementArtwork` |
 | Post-Session movement rows and Coach movement review | exact movement | `CanonicalMovementArtwork` |
 

@@ -84,7 +84,7 @@ assert.match(route, /Browse by muscle[\s\S]*Search accessory movements/, 'search
 assert.match(route, /useState<'muscle' \| 'movement'>\('movement'\)/, 'known movements start in direct search');
 assert.match(route, /selectLibraryMode\('favorites'\)[\s\S]*selectLibraryMode\('recent'\)[\s\S]*selectLibraryMode\('custom'\)/, 'Favorites, Recent, and My Movements must remain deliberate shortcuts');
 assert.match(route, /ACCESSORY_PICKER_REGIONS[\s\S]*selectedRegion\.muscles/, 'regional navigation must drill into governed primary-muscle targets');
-assert.match(route, /function AnatomyTargetArt[\s\S]*<GovernedMuscleThumbnail[\s\S]*primary=\{primary\}[\s\S]*secondary=\{_secondary\}/, 'muscle discovery must use the shared governed Dynamic Anatomy thumbnail');
+assert.match(route, /function AnatomyTargetArt[\s\S]*<GovernedMuscleThumbnail[\s\S]*primary=\{primary\}[\s\S]*secondary=\{_secondary\}/, 'custom movement targeting review must retain the shared Dynamic Anatomy thumbnail');
 assert.doesNotMatch(route, /<MuscleMap/, 'individual movement picker surfaces must never render full-figure anatomy');
 assert.match(route, /<CanonicalMovementArtwork[\s\S]*kind: 'accessory'/, 'individual picker results must use the canonical identity artwork component');
 assert.match(route, /const confirmMovement[\s\S]*setPickerStep\('review'\)[\s\S]*const confirmAndApplyMovement[\s\S]*await onApply\(selectedSetup\)[\s\S]*setPickerStep\('success'\)/, 'custom and ambiguous selections retain their review and confirmation path');
@@ -123,3 +123,7 @@ assert.doesNotMatch(
 );
 
 console.log('[session-workspace-accessory-picker] live add-accessory integration checks passed');
+
+assert.match(route, /<CanonicalMuscleGroupArtwork group=\{muscle\} style=\{styles.accessoryPickerTargetArt\}/, 'taxonomy choices use dedicated group art');
+assert.match(route, /<CanonicalMuscleGroupArtwork group=\{primaryMuscleFilter\}/, 'selected taxonomy heading uses the same group art');
+assert.match(route, /<AnatomyTargetArt athlete=\{athleteAnatomy\} primary=\{setup.primaryMuscleGroup\} secondary=\{setup.secondaryMuscleGroups\}/, 'combined movement targeting review remains Dynamic Anatomy');

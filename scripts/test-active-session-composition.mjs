@@ -38,7 +38,9 @@ assert.equal(validateCompositionResponse({ ...payload([item(11)]), composition_m
 assert.equal(validateCompositionResponse(payload([item(11), { ...item(12, [{ id: 100 }]), movement_definition_id: 999 }]), old, '7'), false);
 const logger = fs.readFileSync('app/(tabs)/workout/[workoutId].tsx', 'utf8');
 const editor = fs.readFileSync('components/workout-logger/active-composition-editor.tsx', 'utf8');
-assert.match(logger, /text: 'Add Movement'/); assert.match(logger, /text: 'Remove Movement'/);
+assert.match(logger, /<SessionActionsSheet/);
+assert.match(logger, /onAdd=\{\(\) => openComposition\('add'\)\}/);
+assert.match(logger, /onRemove=\{\(\) => openComposition\('remove'\)\}/);
 assert.match(logger, /orderSessionMovementRows\(rows, workout.item_order\)/);
 assert.match(editor, /GovernedAccessorySubstitutionPickerModal/); assert.match(editor, /MovementQuickPrescriptionEditor/);
 const handler = logger.slice(logger.indexOf('{canEditComposition && compositionMode'), logger.indexOf('{canEditPrescription && prescriptionItemId'));

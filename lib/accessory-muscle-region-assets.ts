@@ -5,6 +5,8 @@ import type { AccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 export type AccessoryMuscleRegionAsset = Readonly<{
   label: string;
   source: ImageSourcePropType;
+  /** False for legacy aliases that have no dedicated muscle-group image. */
+  dedicated?: boolean;
 }>;
 
 export type AccessoryRegionalArtworkKey = AccessoryMuscleRegionKey | 'back_region';
@@ -36,8 +38,8 @@ export const ACCESSORY_MUSCLE_REGION_ASSETS: Readonly<
   abductors: { label: 'Abductors', source: require('../assets/images/muscle-regions/abductors.png') },
   hip_flexors: { label: 'Hip flexors', source: require('../assets/images/muscle-regions/hip-flexors.png') },
   calves: { label: 'Calves', source: require('../assets/images/muscle-regions/calves.png') },
-  serratus: { label: 'Serratus', source: require('../assets/images/muscle-regions/chest.png') },
-  neck: { label: 'Neck', source: require('../assets/images/muscle-regions/traps.png') },
+  serratus: { label: 'Serratus', source: require('../assets/images/muscle-regions/chest.png'), dedicated: false },
+  neck: { label: 'Neck', source: require('../assets/images/muscle-regions/traps.png'), dedicated: false },
   full_body: { label: 'Full body', source: require('../assets/images/muscle-regions/full-body.png') },
 };
 
@@ -65,4 +67,11 @@ export function accessoryRegionalArtworkAsset(
   key?: AccessoryRegionalArtworkKey | null,
 ): AccessoryMuscleRegionAsset {
   return ACCESSORY_REGIONAL_ARTWORK_ASSETS[key || 'full_body'];
+}
+
+/** Taxonomy navigation uses dedicated art only, never aliases or anatomy. */
+export function canonicalMuscleGroupArtwork(key?: string | null): AccessoryMuscleRegionAsset | null {
+  if (!key || !Object.prototype.hasOwnProperty.call(ACCESSORY_REGIONAL_ARTWORK_ASSETS, key)) return null;
+  const asset = ACCESSORY_REGIONAL_ARTWORK_ASSETS[key as AccessoryRegionalArtworkKey];
+  return asset.dedicated === false ? null : asset;
 }

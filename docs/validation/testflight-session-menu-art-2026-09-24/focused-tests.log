@@ -1,0 +1,151 @@
+test-session-actions-sheet.mjs
+PASS Session actions: semantic groups, unchanged handlers, safe dismissal, deferred single dispatch, self-coach eligibility, disabled removal, and cancellation confirmation wiring
+
+test-muscle-group-navigation-artwork.mjs
+{
+  "parents": 8,
+  "muscleGroups": [
+    {
+      "key": "chest",
+      "label": "Chest",
+      "file": "chest.png"
+    },
+    {
+      "key": "front_delts",
+      "label": "Front Delts",
+      "file": "front-delts.png"
+    },
+    {
+      "key": "side_delts",
+      "label": "Side Delts",
+      "file": "side-delts.png"
+    },
+    {
+      "key": "rear_delts",
+      "label": "Rear Delts",
+      "file": "rear-delts.png"
+    },
+    {
+      "key": "lats",
+      "label": "Lats",
+      "file": "lats.png"
+    },
+    {
+      "key": "upper_back",
+      "label": "Upper Back",
+      "file": "upper-back.png"
+    },
+    {
+      "key": "traps",
+      "label": "Traps",
+      "file": "traps.png"
+    },
+    {
+      "key": "biceps",
+      "label": "Biceps",
+      "file": "biceps.png"
+    },
+    {
+      "key": "triceps",
+      "label": "Triceps",
+      "file": "triceps.png"
+    },
+    {
+      "key": "forearms",
+      "label": "Forearms",
+      "file": "forearms.png"
+    },
+    {
+      "key": "quads",
+      "label": "Quads",
+      "file": "quads.png"
+    },
+    {
+      "key": "hamstrings",
+      "label": "Hamstrings",
+      "file": "hamstrings.png"
+    },
+    {
+      "key": "glutes",
+      "label": "Glutes",
+      "file": "glutes.png"
+    },
+    {
+      "key": "adductors",
+      "label": "Adductors",
+      "file": "adductors.png"
+    },
+    {
+      "key": "abductors",
+      "label": "Abductors",
+      "file": "abductors.png"
+    },
+    {
+      "key": "calves",
+      "label": "Calves",
+      "file": "calves.png"
+    },
+    {
+      "key": "abs",
+      "label": "Abs",
+      "file": "abs.png"
+    },
+    {
+      "key": "obliques",
+      "label": "Obliques",
+      "file": "obliques.png"
+    },
+    {
+      "key": "lower_back",
+      "label": "Lower Back",
+      "file": "lower-back.png"
+    },
+    {
+      "key": "serratus",
+      "label": "Serratus",
+      "file": null
+    },
+    {
+      "key": "hip_flexors",
+      "label": "Hip Flexors",
+      "file": "hip-flexors.png"
+    },
+    {
+      "key": "neck",
+      "label": "Neck",
+      "file": null
+    }
+  ],
+  "missingDedicatedArt": [
+    "neck",
+    "serratus"
+  ]
+}
+[muscle-group-navigation-artwork] shared Add/Swap + Programming taxonomy, strict missing state, and anatomy boundary PASS
+
+test-active-session-composition.mjs
+PASS active Session composition: permissions, canonical requests, units, Core/Backdowns, insertion, focus, empty removal, evidence reconciliation and Logger wiring
+
+test-bottom-sheet-gestures.mjs
+Bottom sheets: actual canonical/legacy/inline gesture trees; body ownership, reversal/long lists, keyboard, deliberate pull, cancel/spring, explicit/guarded close and reduced motion PASS
+
+test-bottom-sheet-consumer-convergence.mjs
+Bottom-sheet inventory: 71 classified modal presentations, 37 canonical sheet consumers, 3 embedded bottom panels; top regions exclude scroll/input/wheel content PASS
+
+test-session-logger-resume-contract.mjs
+Session Logger resume contract passed: coherent foreground refresh, retained-data protection, bounded body recovery, and explicit retry.
+
+test-governed-accessory-picker-layout.mjs
+[governed-accessory-picker-layout] contextual full-width discovery layout passed
+
+test-session-workspace-accessory-picker.mjs
+[session-workspace-accessory-picker] live add-accessory integration checks passed
+
+test-swap-muscle-thumbnail-framing.mjs
+[swap-muscle-thumbnail-framing] PASS — 22/22 governed anatomy framing and separate taxonomy artwork boundary
+
+test-anatomy-consumer-convergence.mjs
+[anatomy-consumer-convergence] shared renderer and exact-movement boundary: PASS
+
+test-canonical-movement-artwork.mjs
+[canonical-movement-artwork] 6 screenshot fixtures + fail-closed and consumer enforcement passed

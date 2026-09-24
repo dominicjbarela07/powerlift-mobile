@@ -1,0 +1,120 @@
+{
+  "parents": 8,
+  "muscleGroups": [
+    {
+      "key": "chest",
+      "label": "Chest",
+      "file": "chest.png"
+    },
+    {
+      "key": "front_delts",
+      "label": "Front Delts",
+      "file": "front-delts.png"
+    },
+    {
+      "key": "side_delts",
+      "label": "Side Delts",
+      "file": "side-delts.png"
+    },
+    {
+      "key": "rear_delts",
+      "label": "Rear Delts",
+      "file": "rear-delts.png"
+    },
+    {
+      "key": "lats",
+      "label": "Lats",
+      "file": "lats.png"
+    },
+    {
+      "key": "upper_back",
+      "label": "Upper Back",
+      "file": "upper-back.png"
+    },
+    {
+      "key": "traps",
+      "label": "Traps",
+      "file": "traps.png"
+    },
+    {
+      "key": "biceps",
+      "label": "Biceps",
+      "file": "biceps.png"
+    },
+    {
+      "key": "triceps",
+      "label": "Triceps",
+      "file": "triceps.png"
+    },
+    {
+      "key": "forearms",
+      "label": "Forearms",
+      "file": "forearms.png"
+    },
+    {
+      "key": "quads",
+      "label": "Quads",
+      "file": "quads.png"
+    },
+    {
+      "key": "hamstrings",
+      "label": "Hamstrings",
+      "file": "hamstrings.png"
+    },
+    {
+      "key": "glutes",
+      "label": "Glutes",
+      "file": "glutes.png"
+    },
+    {
+      "key": "adductors",
+      "label": "Adductors",
+      "file": "adductors.png"
+    },
+    {
+      "key": "abductors",
+      "label": "Abductors",
+      "file": "abductors.png"
+    },
+    {
+      "key": "calves",
+      "label": "Calves",
+      "file": "calves.png"
+    },
+    {
+      "key": "abs",
+      "label": "Abs",
+      "file": "abs.png"
+    },
+    {
+      "key": "obliques",
+      "label": "Obliques",
+      "file": "obliques.png"
+    },
+    {
+      "key": "lower_back",
+      "label": "Lower Back",
+      "file": "lower-back.png"
+    },
+    {
+      "key": "serratus",
+      "label": "Serratus",
+      "file": null
+    },
+    {
+      "key": "hip_flexors",
+      "label": "Hip Flexors",
+      "file": "hip-flexors.png"
+    },
+    {
+      "key": "neck",
+      "label": "Neck",
+      "file": null
+    }
+  ],
+  "missingDedicatedArt": [
+    "neck",
+    "serratus"
+  ]
+}
+[muscle-group-navigation-artwork] shared Add/Swap + Programming taxonomy, strict missing state, and anatomy boundary PASS

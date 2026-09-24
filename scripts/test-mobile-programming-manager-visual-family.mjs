@@ -67,7 +67,8 @@ assert.match(manager, /SLMotionPressable/, 'tactile controls must use the reduce
 assert.match(manager, /Haptics\.selectionAsync\(\)/, 'Block, Week, day, and Session selection must retain restrained feedback');
 assert.match(manager, /<StrengthLedgerBottomSheet[\s\S]*?<MobileSessionWorkspaceContent/, 'Session Workspace must open over the mounted Programming Manager');
 assert.match(manager, /<MobileSessionWorkspaceContent[\s\S]*?embedded[\s\S]*?athleteId=\{managedAthleteId \|\| hub\?\.athlete\?\.id \|\| null\}/, 'the in-place workspace must preserve the managed athlete');
-assert.match(workspace, /<GovernedMuscleThumbnail/, 'Session Workspace muscle discovery must preserve governed full-figure thumbnails');
+assert.match(workspace, /<CanonicalMuscleGroupArtwork/, 'Session Workspace taxonomy navigation must use dedicated group art');
+assert.match(workspace, /<GovernedMuscleThumbnail/, 'movement targeting review must preserve governed anatomy');
 
 for (const asset of [
   'assets/images/gym_vibe.jpg',

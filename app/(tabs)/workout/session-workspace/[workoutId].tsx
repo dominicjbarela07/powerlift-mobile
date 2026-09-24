@@ -10,6 +10,7 @@ import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { GovernedMuscleThumbnail } from '@/components/anatomy/GovernedMuscleThumbnail';
+import { CanonicalMuscleGroupArtwork } from '@/components/movement/CanonicalMuscleGroupArtwork';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -54,7 +55,6 @@ import {
 } from '@/components/coach-mobile/CompletedSessionRecap';
 import { SL_TAB_ROW_CONTROL } from '@/components/navigation/sl-tab-row-control';
 import {
-  accessoryRegionalArtworkAsset,
   type AccessoryRegionalArtworkKey,
 } from '@/lib/accessory-muscle-region-assets';
 import {
@@ -1963,7 +1963,7 @@ function AccessoryEditorModal({
             ? json.regional_groups.map((region: any) => ({
               key: String(region.key || ''),
               label: String(region.label || ''),
-              artwork: String(region.artwork_key || 'full_body') as AccessoryRegionalArtworkKey,
+              artwork: String(region.artwork_key || '') as AccessoryRegionalArtworkKey,
               muscles: Array.isArray(region.primary_muscle_groups)
                 ? region.primary_muscle_groups.map(String)
                 : [],
@@ -2511,7 +2511,7 @@ function AccessoryEditorModal({
                           }}
                           style={({ pressed }) => [styles.accessoryPickerRegionCard, pressed && styles.pressed]}
                         >
-                          <Image source={accessoryRegionalArtworkAsset(region.artwork).source} resizeMode="contain" style={styles.accessoryPickerRegionArt} />
+                          <CanonicalMuscleGroupArtwork group={region.artwork} style={styles.accessoryPickerRegionArt} />
                           <Text style={styles.accessoryPickerRegionLabel}>{region.label}</Text>
                         </Pressable>
                       ))}
@@ -2540,7 +2540,7 @@ function AccessoryEditorModal({
               {pickerStep === 'targets' && selectedRegion ? (
                 <>
                   <View style={styles.accessoryPickerHero}>
-                    <Image source={accessoryRegionalArtworkAsset(selectedRegion.artwork).source} resizeMode="contain" style={styles.accessoryPickerHeroArt} />
+                    <CanonicalMuscleGroupArtwork group={selectedRegion.artwork} style={styles.accessoryPickerHeroArt} />
                   </View>
                   <View style={styles.accessoryPickerIntro}>
                     <Text style={styles.accessoryPickerKicker}>Select a primary target</Text>
@@ -2560,7 +2560,7 @@ function AccessoryEditorModal({
                         }}
                         style={({ pressed }) => [styles.accessoryPickerTargetCard, pressed && styles.pressed]}
                       >
-                        <AnatomyTargetArt athlete={athleteAnatomy} primary={muscle} style={styles.accessoryPickerTargetArt} />
+                        <CanonicalMuscleGroupArtwork group={muscle} style={styles.accessoryPickerTargetArt} />
                         <View style={styles.accessoryPickerTargetCopy}>
                           <Text style={styles.accessoryPickerTargetLabel}>{accessoryTaxonomyLabel(muscle)}</Text>
                           <Text style={styles.accessoryPickerTargetMeta}>Primary muscle</Text>
@@ -2608,12 +2608,12 @@ function AccessoryEditorModal({
                 <>
                   {primaryMuscleFilter ? (
                     <View style={styles.accessoryPickerHeroCompact}>
-                      <AnatomyTargetArt athlete={athleteAnatomy} primary={primaryMuscleFilter} scale={1.12} style={styles.accessoryPickerHeroCompactArt} />
+                      <CanonicalMuscleGroupArtwork group={primaryMuscleFilter} style={styles.accessoryPickerHeroCompactArt} />
                       <View><Text style={styles.accessoryPickerKicker}>Muscle focus</Text><Text style={styles.accessoryPickerIntroTitle}>{accessoryTaxonomyLabel(primaryMuscleFilter)}</Text></View>
                     </View>
                   ) : regionalMuscleFilters.length && selectedRegion ? (
                     <View style={styles.accessoryPickerHeroCompact}>
-                      <Image source={accessoryRegionalArtworkAsset(selectedRegion.artwork).source} resizeMode="contain" style={styles.accessoryPickerHeroCompactArt} />
+                      <CanonicalMuscleGroupArtwork group={selectedRegion.artwork} style={styles.accessoryPickerHeroCompactArt} />
                       <View><Text style={styles.accessoryPickerKicker}>Regional browse</Text><Text style={styles.accessoryPickerIntroTitle}>{selectedRegion.label}</Text></View>
                     </View>
                   ) : null}
@@ -2789,7 +2789,7 @@ function AccessoryEditorModal({
                       <View style={styles.customMovementRegionGrid}>
                         {pickerRegions.map((region) => {
                           const selected = customPrimaryRegion?.key === region.key;
-                          return <Pressable key={region.key} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => setCustomPrimaryRegionKey(region.key)} style={[styles.customMovementRegionCard, selected && styles.customMovementChoiceActive]}><Image source={accessoryRegionalArtworkAsset(region.artwork).source} resizeMode="contain" style={styles.customMovementRegionArt} /><Text style={styles.customMovementChoiceLabel}>{region.label}</Text></Pressable>;
+                          return <Pressable key={region.key} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => setCustomPrimaryRegionKey(region.key)} style={[styles.customMovementRegionCard, selected && styles.customMovementChoiceActive]}><CanonicalMuscleGroupArtwork group={region.artwork} style={styles.customMovementRegionArt} /><Text style={styles.customMovementChoiceLabel}>{region.label}</Text></Pressable>;
                         })}
                       </View>
                       {customPrimaryRegion ? (
@@ -2798,7 +2798,7 @@ function AccessoryEditorModal({
                           <View style={styles.customMovementMuscleGrid}>
                             {customPrimaryRegion.muscles.map((muscle) => {
                               const selected = setup.primaryMuscleGroup === muscle;
-                              return <Pressable key={muscle} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => patchSetup({ primaryMuscleGroup: muscle, secondaryMuscleGroups: setup.secondaryMuscleGroups.filter((value) => value !== muscle) })} style={[styles.customMovementMuscleCard, selected && styles.customMovementChoiceActive]}><AnatomyTargetArt athlete={athleteAnatomy} primary={muscle} style={styles.customMovementMuscleArt} /><Text style={styles.customMovementChoiceLabel}>{accessoryTaxonomyLabel(muscle)}</Text>{selected ? <Ionicons name="checkmark-circle" size={18} color={colors.violet} /> : null}</Pressable>;
+                              return <Pressable key={muscle} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => patchSetup({ primaryMuscleGroup: muscle, secondaryMuscleGroups: setup.secondaryMuscleGroups.filter((value) => value !== muscle) })} style={[styles.customMovementMuscleCard, selected && styles.customMovementChoiceActive]}><CanonicalMuscleGroupArtwork group={muscle} style={styles.customMovementMuscleArt} /><Text style={styles.customMovementChoiceLabel}>{accessoryTaxonomyLabel(muscle)}</Text>{selected ? <Ionicons name="checkmark-circle" size={18} color={colors.violet} /> : null}</Pressable>;
                             })}
                           </View>
                         </View>
@@ -2816,7 +2816,7 @@ function AccessoryEditorModal({
                       <View style={styles.customMovementMuscleGrid}>
                         {visibleSecondaryMuscles.map((option) => {
                           const selected = setup.secondaryMuscleGroups.includes(option.key);
-                          return <Pressable key={option.key} accessibilityRole="checkbox" accessibilityState={{ checked: selected }} onPress={() => { const next = selected ? setup.secondaryMuscleGroups.filter((value) => value !== option.key) : [...setup.secondaryMuscleGroups, option.key]; if (next.length <= 3) patchSetup({ secondaryMuscleGroups: next }); }} style={[styles.customMovementMuscleCard, selected && styles.customMovementChoiceActive]}><AnatomyTargetArt athlete={athleteAnatomy} primary={option.key} style={styles.customMovementMuscleArt} /><Text style={styles.customMovementChoiceLabel}>{option.label}</Text>{selected ? <Ionicons name="checkmark-circle" size={18} color={colors.violet} /> : null}</Pressable>;
+                          return <Pressable key={option.key} accessibilityRole="checkbox" accessibilityState={{ checked: selected }} onPress={() => { const next = selected ? setup.secondaryMuscleGroups.filter((value) => value !== option.key) : [...setup.secondaryMuscleGroups, option.key]; if (next.length <= 3) patchSetup({ secondaryMuscleGroups: next }); }} style={[styles.customMovementMuscleCard, selected && styles.customMovementChoiceActive]}><CanonicalMuscleGroupArtwork group={option.key} style={styles.customMovementMuscleArt} /><Text style={styles.customMovementChoiceLabel}>{option.label}</Text>{selected ? <Ionicons name="checkmark-circle" size={18} color={colors.violet} /> : null}</Pressable>;
                         })}
                       </View>
                       {!customSecondaryExpanded && contextualSecondaryMuscles.length > visibleSecondaryMuscles.length ? <Pressable onPress={() => setCustomSecondaryExpanded(true)} style={styles.trainingLiftSecondaryButton}><Text style={styles.trainingLiftSecondaryText}>View all governed muscles</Text></Pressable> : null}
