@@ -9090,6 +9090,42 @@
       }
     },
     {
+      "key": "competition_bench",
+      "movement_definition_id": 2,
+      "candidate_id": "cf418260405f8affab901404",
+      "app_sha256": "7541a61a7251e6a90389d211db3e1c9eca82fed604b76e5c064ee755e1395edc",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.07,
+        "y": -0.07
+      }
+    },
+    {
+      "key": "competition_deadlift",
+      "movement_definition_id": 3,
+      "candidate_id": "6cb1bd3afd78018b9538aac5",
+      "app_sha256": "4955e749892a946660fc80858e14a716ebc22df8634877c05ce13da2eb5c9b2b",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.75,
+        "x": 0.08,
+        "y": -0.06
+      }
+    },
+    {
+      "key": "competition_squat",
+      "movement_definition_id": 1,
+      "candidate_id": "d3645cd2a9b0fdc03ca8f03f",
+      "app_sha256": "2c2439f2c2b90aaaafa137aff4b1328d8c2ec3a182a501c24180a66912bbbed6",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.1,
+        "y": -0.15
+      }
+    },
+    {
       "key": "incline_barbell_press",
       "movement_definition_id": 6,
       "candidate_id": "existing-6-6df024b1f109",

@@ -63,6 +63,7 @@ export function approvedExactArtworkPolicy(state) {
         || row.human_approved !== true || row.review?.candidate_sha256 !== row.files.master.sha256
         || !['master', 'app', 'thumbnail'].every(role => active.files[role].sha256 === row.files[role].sha256)) return [];
     const loggerCrop = approvedLoggerCropPolicy(state, row);
+    if (row.family === 'canonical_core_sbd' && !loggerCrop) return [];
     return [{ key: active.key, movement_definition_id: active.movement_definition_id,
       candidate_id: row.candidate_id, app_sha256: active.files.app.sha256,
       ...(row.presentation ? {presentation: row.presentation} : {}),
@@ -81,13 +82,16 @@ export function assertHumanArtworkGate(root = defaultRoot) {
   const allowedPaths = new Set();
   const denied = [];
   const identities = fs.readFileSync(path.join(root, 'lib/canonical-accessory-artwork-identities.ts'), 'utf8');
+  const coreIdentitiesPath = path.join(root, 'lib/canonical-core-artwork-identities.ts');
+  const coreIdentities = fs.existsSync(coreIdentitiesPath) ? fs.readFileSync(coreIdentitiesPath, 'utf8') : '';
   const mapping = fs.readFileSync(path.join(root, 'lib/canonical-movement-artwork-assets.ts'), 'utf8');
   for (const active of state.canonical_assets) {
     const candidate = candidates.get(active.candidate_id);
     assert.ok(candidate && !candidate.test_only, 'canonical artwork must identify its non-QA candidate');
     assert.equal(active.key, candidate.key);
     assert.equal(active.movement_definition_id, candidate.movement_definition_id);
-    assert.ok(identities.includes(`${active.movement_definition_id}: { key: '${active.key}',`), 'numeric ID and key must remain governed');
+    const registry = candidate.family === 'canonical_core_sbd' ? coreIdentities : identities;
+    assert.ok(registry.includes(`${active.movement_definition_id}: { key: '${active.key}',`), 'numeric ID and key must remain governed');
     const prior = grandfathered.get(active.key);
     if (active.approval_source === 'preserved_existing_dev_backfill') {
       assert.deepEqual(active, prior, 'backfill exception permits only the exact pre-gate asset triples');

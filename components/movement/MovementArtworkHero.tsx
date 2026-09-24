@@ -4,12 +4,12 @@ import { Image as NativeImage, StyleSheet, View, type LayoutChangeEvent } from '
 import { Image, type ImageProps } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CANONICAL_ACCESSORY_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-artwork-assets';
-import type { CanonicalAccessoryArtworkKey } from '@/lib/canonical-movement-artwork';
+import type { CanonicalMovementArtworkKey } from '@/lib/canonical-movement-artwork';
 import { movementHeroFocal, movementHeroGeometry, approvedLoggerCrop, reportApprovedArtworkBypass, type MovementHeroFocal } from '@/lib/movement-artwork-hero';
 import { movementHeroSourceFrame, type LoggerCrop } from '@/lib/movement-artwork-geometry.mjs';
 
 type LayerProps = Readonly<{
-  artworkKey: CanonicalAccessoryArtworkKey;
+  artworkKey: CanonicalMovementArtworkKey;
   receiptId: string;
   movementDefinitionId?: number;
   surface?: 'black' | 'superset';

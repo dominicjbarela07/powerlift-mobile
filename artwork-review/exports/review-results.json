@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 2857,
+  "revision": 2884,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-23T21:14:22.774229+00:00",
-  "updated_at_display": "Sep 23, 2026 02:14 PM PT (Sep 23, 2026 05:14 PM Eastern)",
+  "updated_at": "2026-09-24T17:34:48.858481+00:00",
+  "updated_at_display": "Sep 24, 2026 10:34 AM PT (Sep 24, 2026 01:34 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -127,6 +127,46 @@
     },
     "canonical_remaining_accessories": {
       "label": "Remaining Accessories",
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "test_only": false,
+      "baseline": {
+        "movement_definition_id": 33,
+        "key": "accessory_incline_dumbbell_bench_press",
+        "movement_name": "Incline Dumbbell Bench Press",
+        "candidate_asset": "candidates/existing-33-e05a3bf38fa7/master.png",
+        "files": {
+          "master": {
+            "path": "candidates/existing-33-e05a3bf38fa7/master.png",
+            "dimensions": [
+              1254,
+              1254
+            ],
+            "bytes": 1871026,
+            "sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe"
+          },
+          "app": {
+            "path": "candidates/existing-33-e05a3bf38fa7/app.png",
+            "dimensions": [
+              512,
+              512
+            ],
+            "bytes": 317984,
+            "sha256": "14df7b7e03afa5cc37074a53a00117f7da58771821873de5ec0f94fa3e7d60a4"
+          },
+          "thumbnail": {
+            "path": "candidates/existing-33-e05a3bf38fa7/thumbnail.png",
+            "dimensions": [
+              192,
+              192
+            ],
+            "bytes": 46716,
+            "sha256": "741dde3985a23db10a37e71fed4aec03292f95d92758f657e71cea860c4e6cf1"
+          }
+        }
+      }
+    },
+    "canonical_core_sbd": {
+      "label": "Core SBD — source then framing",
       "baseline_candidate_id": "existing-33-e05a3bf38fa7",
       "test_only": false,
       "baseline": {
@@ -27149,6 +27189,182 @@
           "source": "human_logger_crop_ui"
         }
       ]
+    },
+    "cf418260405f8affab901404": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.07,
+        "y": -0.07
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.8,
+          "x": 0.07,
+          "y": -0.07
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T02:15:26.764628+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:15 PM PT (Sep 23, 2026 10:15 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+        "app_sha256": "7541a61a7251e6a90389d211db3e1c9eca82fed604b76e5c064ee755e1395edc",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.8,
+            "x": 0.07,
+            "y": -0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T02:15:26.764628+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:15 PM PT (Sep 23, 2026 10:15 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+          "app_sha256": "7541a61a7251e6a90389d211db3e1c9eca82fed604b76e5c064ee755e1395edc",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "45de1291e0b89701daf66161": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.75,
+        "x": 0.07,
+        "y": -0.02
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.75,
+          "x": 0.07,
+          "y": -0.02
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T02:15:36.876758+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:15 PM PT (Sep 23, 2026 10:15 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+        "app_sha256": "34ce5798659d9be3d3c405f07afa20f15f1639c0bcad77e83a6224828779049a",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.75,
+            "x": 0.07,
+            "y": -0.02
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T02:15:36.876758+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:15 PM PT (Sep 23, 2026 10:15 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+          "app_sha256": "34ce5798659d9be3d3c405f07afa20f15f1639c0bcad77e83a6224828779049a",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "d3645cd2a9b0fdc03ca8f03f": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.1,
+        "y": -0.15
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.7,
+          "x": 0.1,
+          "y": -0.15
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T17:29:06.157109+00:00",
+        "reviewed_at_display": "Sep 24, 2026 10:29 AM PT (Sep 24, 2026 01:29 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+        "app_sha256": "2c2439f2c2b90aaaafa137aff4b1328d8c2ec3a182a501c24180a66912bbbed6",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.1,
+            "y": -0.15
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T17:29:06.157109+00:00",
+          "reviewed_at_display": "Sep 24, 2026 10:29 AM PT (Sep 24, 2026 01:29 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+          "app_sha256": "2c2439f2c2b90aaaafa137aff4b1328d8c2ec3a182a501c24180a66912bbbed6",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "6cb1bd3afd78018b9538aac5": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.75,
+        "x": 0.08,
+        "y": -0.06
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.75,
+          "x": 0.08,
+          "y": -0.06
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T17:29:17.075854+00:00",
+        "reviewed_at_display": "Sep 24, 2026 10:29 AM PT (Sep 24, 2026 01:29 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+        "app_sha256": "4955e749892a946660fc80858e14a716ebc22df8634877c05ce13da2eb5c9b2b",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.75,
+            "x": 0.08,
+            "y": -0.06
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T17:29:17.075854+00:00",
+          "reviewed_at_display": "Sep 24, 2026 10:29 AM PT (Sep 24, 2026 01:29 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+          "app_sha256": "4955e749892a946660fc80858e14a716ebc22df8634877c05ce13da2eb5c9b2b",
+          "source": "human_logger_crop_ui"
+        }
+      ]
     }
   },
   "consolidated_artwork_bindings": [
@@ -27217,9 +27433,9 @@
       "recorded_at_display": "Sep 20, 2026 04:12 PM PT (Sep 20, 2026 07:12 PM Eastern)"
     }
   ],
-  "total": 475,
+  "total": 478,
   "counts": {
-    "approved": 475,
+    "approved": 478,
     "rejected": 0,
     "pending": 0
   },
@@ -78060,6 +78276,341 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "a4ef5a331017e47e72b75651ec1fd538b3beb95dcf810f8848129e486029c28c",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 1,
+      "key": "competition_squat",
+      "movement_name": "Competition Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-squat-lowbar-shoes-20260924-v7",
+      "generation_batch": "Core SBD / low-bar squat and powerlifting footwear correction / 2026-09-24",
+      "candidate_id": "d3645cd2a9b0fdc03ca8f03f",
+      "version": 7,
+      "supersedes_candidate_id": "3e1b9f05601506c40d1b9adf",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "PLEASE PUT THE USER IN PROPER FOOTWARE! THIS IS THE POWERLIFTING SQUAT! IT SHOULD APPEAR TO BE LOW BAR",
+        "tags": [],
+        "reviewed_at": "2026-09-24T16:38:34.856185+00:00",
+        "reviewed_at_display": "Sep 24, 2026 09:38 AM PT (Sep 24, 2026 12:38 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e8d026bdfcc922182eaab0e954b5cd3a4d6da0de1a7ea9ad9bca96bca10e4914",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/d3645cd2a9b0fdc03ca8f03f/master.png",
+          "sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1739996
+        },
+        "app": {
+          "path": "candidates/d3645cd2a9b0fdc03ca8f03f/app.png",
+          "sha256": "2c2439f2c2b90aaaafa137aff4b1328d8c2ec3a182a501c24180a66912bbbed6",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 333798
+        },
+        "thumbnail": {
+          "path": "candidates/d3645cd2a9b0fdc03ca8f03f/thumbnail.png",
+          "sha256": "a74a2bcad5da1270f964d990c5182651bbf55413085117bb8f2219587d9bcad7",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 52373
+        }
+      },
+      "candidate_asset": "candidates/d3645cd2a9b0fdc03ca8f03f/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T17:28:36.743855+00:00",
+          "reviewed_at_display": "Sep 24, 2026 10:28 AM PT (Sep 24, 2026 01:28 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T16:53:24.114487+00:00",
+      "created_at_display": "Sep 24, 2026 09:53 AM PT (Sep 24, 2026 12:53 PM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Edit reference 2, the Competition Squat artwork.\nReference 1 remains the immutable athlete, clothing, lighting and photography baseline.\nReference 3 is the footwear construction reference only.\n\nMake TWO corrections:\n1. Replace BOTH cushioned running shoes with dedicated black weightlifting shoes matching reference 3's firm straight outsole, solid modest raised heel, structured upper, laces and broad secure instep strap. Keep them unbranded black without stripes or lettering. Both shoes are planted flat and naturally attached to the ankles; no foam running-shoe rocker.\n2. Make this unmistakably a LOW-BAR POWERLIFTING SQUAT. Move the SAME straight loaded bar down from the upper trapezius/neck onto the muscular REAR-DELTOID shelf, just below the spine of the scapula. The bar must visibly contact the upper back behind the shoulder caps, clearly below the neck. Retract the shoulders, adjust BOTH grips and elbows naturally to secure the lower bar with neutral wrists, and lean the braced torso farther forward from the hips. Preserve neutral spine/neck and balanced bar projection over midfoot. Show a credible bottom position just below parallel, hips back, knees following the turned-out toes. This is still a squat, not a good morning. The shoulders and hips remain one stable unit; hands stabilize the bar rather than lifting it off the back.\n\nPRESERVE the strong FRONT-DIAGONAL camera angle, same muscular man and dark clothing, full-body movement-centered composition, red calibrated plates/collars, dark studio and subtle violet rim. Preserve the exact existing combo-rack near upright/lever mechanism at the right edge, the rack continuing outside the frame, and the generous walkout clearance. Do not rotate the camera, add a belt or people, redesign the rack, change the bar loading, crop the hands/weights/feet, or add text. Recalculate the bar, arms and torso together for a real low-bar squat.\n\nFOLLOW-UP REFINEMENT:\n\nReference 1 is only the immutable athlete/style baseline. EDIT reference 2, keeping its lifting shoes, diagonal camera, rack, floor, clothing and composition.\n\nThe bar is STILL TOO HIGH. Make the visible correction a REAL LOW-BAR position: lower the entire straight bar, BOTH sleeves/plate stacks and BOTH hands by roughly 5 cm relative to the shoulders. In this 1254-pixel image the current shaft is around y=430; its contact on the near posterior deltoid should be approximately y=475–485, clearly BELOW the rounded top of the visible shoulder cap. The bar must be behind the upper arms on the contracted REAR DELTOID shelf, NOT against the neck or on the upper trapezius. Keep the bar continuous and its plate-center axis straight. The shaft behind the torso is naturally occluded by the shoulder, not painted across the front of the shoulder. Both forearms and grips follow the lower shaft with credible wrists and elbows.\n\nLean the braced torso slightly more forward through the hips to support the lower bar over midfoot. Shoulders are pulled back to form the shelf. Keep squat depth, planted strap-secured lifting shoes, knees tracking toes and neutral neck. Do not make the squat shallower, turn the athlete, alter the rack, move the camera or change the footwear. This edit must VISIBLY lower the bar relative to his shoulders; merely lowering the whole athlete does not accomplish it.\n\nFOLLOW-UP REFINEMENT:\n\nReference 1: immutable athlete/style only. Reference 2: edit target.\nKeep the low-bar squat, both black lifting shoes with straps, pose, diagonal camera, rack and framing exactly unchanged.\n\nCorrect one defect: the steel bar must be ONE STRAIGHT UNBENT SHAFT through both plate-center holes. In reference 2 the visible near-side shaft slopes upward toward the neck; straighten that segment so it lies on the axis joining the two plate centers, approximately y=484 across the image. Keep the entire bar at this lower rear-deltoid height. It passes BEHIND the posterior shoulders, just below the top of the near deltoid, and is occluded where it contacts the upper back. Do not angle the middle up toward the neck. Both hands must grip this same straight line with natural wrists. Retain the same red plate stacks, sleeves and collars, and all other details. Do not raise the bar or reposition the rack.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/squat-v7-correction/selected.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 1,
+      "generation_context": {
+        "owner_feedback": "PLEASE PUT THE USER IN PROPER FOOTWARE! THIS IS THE POWERLIFTING SQUAT! IT SHOULD APPEAR TO BE LOW BAR",
+        "reference_sources": "https://www.adidas.com/bh/en/powerlift-5-weightlifting-shoes/JP6198.html ; https://www.barbellmedicine.com/blog/how-to-squat/",
+        "generation_tool": "built-in image_gen",
+        "baseline": "existing-33-e05a3bf38fa7 used first for each generation/edit",
+        "internal_preflight": "Lower rear-deltoid bar position with firm, strap-secured lifting shoes. Master, bar contact, footwear, 192px and 80px inspected. Two internal attempts withheld. Selected for owner review only.",
+        "attempt_log": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/squat-v7-correction/generation-attempts.json",
+        "scope": "DEV pending candidate only; no source approval, crop approval, promotion, or release."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-24T17:28:36.743855+00:00",
+        "reviewed_at_display": "Sep 24, 2026 10:28 AM PT (Sep 24, 2026 01:28 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 2,
+      "key": "competition_bench",
+      "movement_name": "Competition Bench",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-sbd-20260923-bench_v6",
+      "generation_batch": "Core SBD / 2026-09-23",
+      "candidate_id": "cf418260405f8affab901404",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/cf418260405f8affab901404/master.png",
+          "sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1875902
+        },
+        "app": {
+          "path": "candidates/cf418260405f8affab901404/app.png",
+          "sha256": "7541a61a7251e6a90389d211db3e1c9eca82fed604b76e5c064ee755e1395edc",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 335692
+        },
+        "thumbnail": {
+          "path": "candidates/cf418260405f8affab901404/thumbnail.png",
+          "sha256": "f288d0e9ed113e12231e076296309dab709ead1a44e4a89b0079c729e9909695",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 50634
+        }
+      },
+      "candidate_asset": "candidates/cf418260405f8affab901404/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T02:04:52.534881+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:04 PM PT (Sep 23, 2026 10:04 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T02:01:16.197555+00:00",
+      "created_at_display": "Sep 23, 2026 07:01 PM PT (Sep 23, 2026 10:01 PM Eastern)",
+      "generation_prompt": "Create one photograph of a male powerlifter doing a FLAT BARBELL BENCH PRESS at full arm extension on a competition combo rack and platform. He is completely lying down, looking at the ceiling, both head and butt resting on one horizontal flat bench pad, shoulder blades retracted, a small natural lumbar arch, feet planted. Both straight arms hold one continuous barbell directly over shoulder joints at LOCKOUT, firm wide symmetrical overhand grip. Proper bar oriented perpendicular to the length of the bench. The rack has two identical uprights beyond the athlete's head. The bar is unracked and clear of hooks. Two red calibrated powerlifting plates with collars on each sleeve. Match reference 1 only for man's identity/clothes and realistic dark studio/purple-rim photographic style; DO NOT use the incline bench or seated posture from reference 1. Reference 2 is real flat bench press mechanics. Reference 3 is rack equipment. Elevated side-quarter camera, full equipment, full athlete, both bar ends with at least 10% black breathing space around all sides. Charcoal sleeveless shirt, black shorts and flat black shoes, matte dark competition platform. No other people, text or logos. Body and rack must share one coherent perspective.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-23/selected/bench_v6.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "bench",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 2,
+      "generation_context": {
+        "preflight": "Selected for human review: flat bench, supported head/upper back/pelvis, planted feet, symmetric grip, continuous bar at lockout, coherent matched rack and plate loads. Minor foreshortening remains for owner judgment.",
+        "reference_roles": "Original #33: style/athlete. Eleiko combo sheet: equipment geometry. IPF/Eleiko bench photo: mechanics.",
+        "workflow": "Pending source review; human source approval then separate Logger framing approval; DEV only."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-24T02:04:52.534881+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:04 PM PT (Sep 23, 2026 10:04 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 3,
+      "key": "competition_deadlift",
+      "movement_name": "Competition Deadlift",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-deadlift-slippers-20260924-v2",
+      "generation_batch": "Core SBD / low-bar squat and powerlifting footwear correction / 2026-09-24",
+      "candidate_id": "6cb1bd3afd78018b9538aac5",
+      "version": 2,
+      "supersedes_candidate_id": "45de1291e0b89701daf66161",
+      "prior_rejection": {
+        "source": "explicit_owner_chat",
+        "owner_instruction": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "recorded_by": "codex_at_owner_request",
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+        "tags": [],
+        "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+        "reviewer": "owner_via_chat",
+        "reviewed_at": "2026-09-24T16:46:57.484715+00:00",
+        "reviewed_at_display": "Sep 24, 2026 09:46 AM PT (Sep 24, 2026 12:46 PM Eastern)",
+        "superseded_decision": {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T02:05:00.726632+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:05 PM PT (Sep 23, 2026 10:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+          "source": "human_review_ui"
+        }
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/6cb1bd3afd78018b9538aac5/master.png",
+          "sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1683337
+        },
+        "app": {
+          "path": "candidates/6cb1bd3afd78018b9538aac5/app.png",
+          "sha256": "4955e749892a946660fc80858e14a716ebc22df8634877c05ce13da2eb5c9b2b",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 313947
+        },
+        "thumbnail": {
+          "path": "candidates/6cb1bd3afd78018b9538aac5/thumbnail.png",
+          "sha256": "2339b0079028bb0c4a38420565dec7571fca9a7b138f2ea9e5bf43cdef781ef8",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45528
+        }
+      },
+      "candidate_asset": "candidates/6cb1bd3afd78018b9538aac5/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T17:28:40.190862+00:00",
+          "reviewed_at_display": "Sep 24, 2026 10:28 AM PT (Sep 24, 2026 01:28 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T16:53:40.205509+00:00",
+      "created_at_display": "Sep 24, 2026 09:53 AM PT (Sep 24, 2026 12:53 PM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit.\nReference 1 supplies the immutable Strength Ledger athlete/photographic style. Reference 2 is the exact Competition Deadlift image to edit.\n\nChange ONLY BOTH SHOES. Replace the thick-soled running trainers with actual black DEADLIFT SLIPPERS: very low-profile, snug sock-like fabric uppers, one broad black Velcro strap crossing each instep, and a paper-thin grippy rubber outsole. Zero heel elevation, no raised heel wedge, no foam cushioning, no bulky sneaker toe box, no laces, no running-shoe sole. These are closed-toe powerlifting deadlift slippers that enclose the heel and fit closely around the foot; not socks alone, house slippers, sandals or ballet shoes. Both entire feet must remain planted firmly on the existing platform, in exactly the same stance and orientation.\n\nPreserve the exact athlete, face, conventional deadlift phase, arm/hand placement, straight bar, red calibrated plates/collars, camera angle, platform, charcoal tank, black shorts, black studio and restrained purple rim. Do not change the approved pose, grip, loading, crop, anatomy or rack-free scene. Make only the smallest lower-ankle contact adjustment needed for the thin sole. No labels, text, stripes or brand logos.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/deadlift-v2-correction/selected.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "deadlift",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 3,
+      "generation_context": {
+        "owner_feedback": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+        "reference_sources": "https://cdn.jtsstrength.com/wp-content/uploads/2022/11/22065452/JTS_DEADLIFT_MANUAL_2020_LR.pdf",
+        "generation_tool": "built-in image_gen",
+        "baseline": "existing-33-e05a3bf38fa7 used first for each generation/edit",
+        "internal_preflight": "Thin flat deadlift slippers with snug uppers and instep straps. Master, footwear, grip/bar detail, 192px and 80px inspected. Existing conventional deadlift pose retained. Selected for owner review only.",
+        "attempt_log": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/deadlift-v2-correction/generation-attempts.json",
+        "scope": "DEV pending candidate only; no source approval, crop approval, promotion, or release."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-24T17:28:40.190862+00:00",
+        "reviewed_at_display": "Sep 24, 2026 10:28 AM PT (Sep 24, 2026 01:28 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
         "source": "human_review_ui"
       }
     }
@@ -219529,6 +220080,1126 @@
         "reviewer": "owner_via_chat",
         "reviewed_at": "2026-09-23T21:06:03.884899+00:00",
         "reviewed_at_display": "Sep 23, 2026 02:06 PM PT (Sep 23, 2026 05:06 PM Eastern)"
+      }
+    },
+    {
+      "movement_definition_id": 1,
+      "key": "competition_squat",
+      "movement_name": "Competition Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-sbd-20260923-squat",
+      "generation_batch": "Core SBD / 2026-09-23",
+      "candidate_id": "138c6b5ea1c29121f0440e56",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/138c6b5ea1c29121f0440e56/master.png",
+          "sha256": "4a60efbf50520db171ca60d5618e0199d93524c10173696c7e6a0844e2df2329",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1797385
+        },
+        "app": {
+          "path": "candidates/138c6b5ea1c29121f0440e56/app.png",
+          "sha256": "8ef2e6a942525966f8a950eb6df34308f5961d0f9c08df2e4592f72fa615c22e",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 325369
+        },
+        "thumbnail": {
+          "path": "candidates/138c6b5ea1c29121f0440e56/thumbnail.png",
+          "sha256": "6b5105f3d6d09e4ed31631e9423d4951bd780343d595eff15b2771fa423e3d0d",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48279
+        }
+      },
+      "candidate_asset": "candidates/138c6b5ea1c29121f0440e56/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "I want the actual squat to be the main character here",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "I want the actual squat to be the main character here",
+          "tags": [],
+          "reviewed_at": "2026-09-24T02:04:34.786174+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:04 PM PT (Sep 23, 2026 10:04 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "4a60efbf50520db171ca60d5618e0199d93524c10173696c7e6a0844e2df2329",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T02:01:15.672455+00:00",
+      "created_at_display": "Sep 23, 2026 07:01 PM PT (Sep 23, 2026 10:01 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement artwork photograph. Reference 1 is ONLY the approved athlete, clothing, realistic photographic style, black background and subtle purple rim lighting. Keep his charcoal sleeveless top, black shorts and dark shoes. The athlete is actually performing the lift, never posing for the camera. Full athlete, both bar ends, plates and all equipment visible with 8% black margin. Normal 65mm lens, believable scale, crisp readable movement silhouette, restrained rim light, OLED-black background. A modest raised matte black competition platform is visible under the lifter. No words, branding, numbers, watermarks or extra people. One continuous straight steel barbell with equal calibrated red competition plates and collars on both sleeves, anatomically normal hands firmly around the bar. Reference 2 is equipment geometry only: use that competition combo rack in SQUAT configuration, bench removed, two matching chrome adjustable uprights, correctly oriented hooks, rigid black base. Photograph a competition low-bar back squat at just below parallel, from a clear side/front quarter camera position so depth and both feet are readable. The bar rests across the rear deltoid shelf, hands outside shoulders, elbows naturally back/down, torso braced inclined forward, hips back, knees tracking toes, whole feet flat shoulder-width apart, hip crease slightly below knees. Bar vertically over mid-foot. He has unracked and stepped BACK away from the hooks, faces the rack in front of him, clear open floor under him; rack upright pair belongs in front of his gaze, not behind his back. The rack must not intersect his body, bar, or plates. Show only this one squat, not a collage.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-23/selected/squat.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 1,
+      "generation_context": {
+        "preflight": "Selected for human review: rear shoulder bar position, bent knees tracking feet, below-parallel position, feet planted, clear unracked bar, matched uprights in front of athlete on platform.",
+        "reference_roles": "Original #33: style/athlete. Eleiko combo sheet: equipment geometry. IPF/Eleiko bench photo: mechanics.",
+        "workflow": "Pending source review; human source approval then separate Logger framing approval; DEV only."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "I want the actual squat to be the main character here",
+        "tags": [],
+        "reviewed_at": "2026-09-24T02:04:34.786174+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:04 PM PT (Sep 23, 2026 10:04 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "4a60efbf50520db171ca60d5618e0199d93524c10173696c7e6a0844e2df2329",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 2,
+      "key": "competition_bench",
+      "movement_name": "Competition Bench",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-sbd-20260923-bench_v6",
+      "generation_batch": "Core SBD / 2026-09-23",
+      "candidate_id": "cf418260405f8affab901404",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/cf418260405f8affab901404/master.png",
+          "sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1875902
+        },
+        "app": {
+          "path": "candidates/cf418260405f8affab901404/app.png",
+          "sha256": "7541a61a7251e6a90389d211db3e1c9eca82fed604b76e5c064ee755e1395edc",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 335692
+        },
+        "thumbnail": {
+          "path": "candidates/cf418260405f8affab901404/thumbnail.png",
+          "sha256": "f288d0e9ed113e12231e076296309dab709ead1a44e4a89b0079c729e9909695",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 50634
+        }
+      },
+      "candidate_asset": "candidates/cf418260405f8affab901404/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T02:04:52.534881+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:04 PM PT (Sep 23, 2026 10:04 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T02:01:16.197555+00:00",
+      "created_at_display": "Sep 23, 2026 07:01 PM PT (Sep 23, 2026 10:01 PM Eastern)",
+      "generation_prompt": "Create one photograph of a male powerlifter doing a FLAT BARBELL BENCH PRESS at full arm extension on a competition combo rack and platform. He is completely lying down, looking at the ceiling, both head and butt resting on one horizontal flat bench pad, shoulder blades retracted, a small natural lumbar arch, feet planted. Both straight arms hold one continuous barbell directly over shoulder joints at LOCKOUT, firm wide symmetrical overhand grip. Proper bar oriented perpendicular to the length of the bench. The rack has two identical uprights beyond the athlete's head. The bar is unracked and clear of hooks. Two red calibrated powerlifting plates with collars on each sleeve. Match reference 1 only for man's identity/clothes and realistic dark studio/purple-rim photographic style; DO NOT use the incline bench or seated posture from reference 1. Reference 2 is real flat bench press mechanics. Reference 3 is rack equipment. Elevated side-quarter camera, full equipment, full athlete, both bar ends with at least 10% black breathing space around all sides. Charcoal sleeveless shirt, black shorts and flat black shoes, matte dark competition platform. No other people, text or logos. Body and rack must share one coherent perspective.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-23/selected/bench_v6.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "bench",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 2,
+      "generation_context": {
+        "preflight": "Selected for human review: flat bench, supported head/upper back/pelvis, planted feet, symmetric grip, continuous bar at lockout, coherent matched rack and plate loads. Minor foreshortening remains for owner judgment.",
+        "reference_roles": "Original #33: style/athlete. Eleiko combo sheet: equipment geometry. IPF/Eleiko bench photo: mechanics.",
+        "workflow": "Pending source review; human source approval then separate Logger framing approval; DEV only."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-24T02:04:52.534881+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:04 PM PT (Sep 23, 2026 10:04 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 3,
+      "key": "competition_deadlift",
+      "movement_name": "Competition Deadlift",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-sbd-20260923-deadlift",
+      "generation_batch": "Core SBD / 2026-09-23",
+      "candidate_id": "45de1291e0b89701daf66161",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/45de1291e0b89701daf66161/master.png",
+          "sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1791579
+        },
+        "app": {
+          "path": "candidates/45de1291e0b89701daf66161/app.png",
+          "sha256": "34ce5798659d9be3d3c405f07afa20f15f1639c0bcad77e83a6224828779049a",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 321711
+        },
+        "thumbnail": {
+          "path": "candidates/45de1291e0b89701daf66161/thumbnail.png",
+          "sha256": "120d61b24b56a2fd29c52dc95580d9ee37e25c02e378833a5ffdda72b96b6673",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45213
+        }
+      },
+      "candidate_asset": "candidates/45de1291e0b89701daf66161/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T02:05:00.726632+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:05 PM PT (Sep 23, 2026 10:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+          "source": "human_review_ui"
+        },
+        {
+          "source": "explicit_owner_chat",
+          "owner_instruction": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+          "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+          "recorded_by": "codex_at_owner_request",
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+          "tags": [],
+          "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+          "reviewer": "owner_via_chat",
+          "reviewed_at": "2026-09-24T16:46:57.484715+00:00",
+          "reviewed_at_display": "Sep 24, 2026 09:46 AM PT (Sep 24, 2026 12:46 PM Eastern)",
+          "superseded_decision": {
+            "action": "approve",
+            "decision": "approved",
+            "reason": "",
+            "tags": [],
+            "reviewed_at": "2026-09-24T02:05:00.726632+00:00",
+            "reviewed_at_display": "Sep 23, 2026 07:05 PM PT (Sep 23, 2026 10:05 PM Eastern)",
+            "reviewer": "dev_user_1",
+            "reviewer_user_id": 1,
+            "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+            "source": "human_review_ui"
+          }
+        }
+      ],
+      "created_at": "2026-09-24T02:01:16.719896+00:00",
+      "created_at_display": "Sep 23, 2026 07:01 PM PT (Sep 23, 2026 10:01 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement artwork photograph. Reference 1 is ONLY the approved athlete, clothing, realistic photographic style, black background and subtle purple rim lighting. Keep his charcoal sleeveless top, black shorts and dark shoes. The athlete is actually performing the lift, never posing for the camera. Full athlete, both bar ends, plates and all equipment visible with 8% black margin. Normal 65mm lens, believable scale, crisp readable movement silhouette, restrained rim light, OLED-black background. A modest raised matte black competition platform is visible under the lifter. No words, branding, numbers, watermarks or extra people. One continuous straight steel barbell with equal calibrated red competition plates and collars on both sleeves, anatomically normal hands firmly around the bar. Depict a CONVENTIONAL competition deadlift on the raised matte black powerlifting platform, no rack or bench needed. Side/front quarter view clearly showing both feet, both straight arms and continuous bar. Bar just BELOW knees during the ascent. Feet hip-width, whole soles flat, knees flexed naturally and hips hinged back above knee height, braced neutral back, shoulders slightly in front of bar, neck neutral with gaze toward floor ahead, arms straight down OUTSIDE both legs. Symmetrical shoulder-width double-overhand grip immediately outside thighs, hands visibly grasp same bar. Bar skims shins just below kneecaps, vertical line above midfoot; balanced mirrored red competition plates off platform at equal height. Powerful natural pull, no shrug, no bent elbows, no sumo stance, no posed camera glance, no rack, no straps, no absurdly arched spine.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-23/selected/deadlift.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "deadlift",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 3,
+      "generation_context": {
+        "preflight": "Selected for human review: conventional stance, hands outside legs, straight arms, bar close to shins below knees, neutral braced back and symmetrical suspended plates on platform.",
+        "reference_roles": "Original #33: style/athlete. Eleiko combo sheet: equipment geometry. IPF/Eleiko bench photo: mechanics.",
+        "workflow": "Pending source review; human source approval then separate Logger framing approval; DEV only."
+      },
+      "review": {
+        "source": "explicit_owner_chat",
+        "owner_instruction": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "recorded_by": "codex_at_owner_request",
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+        "tags": [],
+        "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+        "reviewer": "owner_via_chat",
+        "reviewed_at": "2026-09-24T16:46:57.484715+00:00",
+        "reviewed_at_display": "Sep 24, 2026 09:46 AM PT (Sep 24, 2026 12:46 PM Eastern)",
+        "superseded_decision": {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T02:05:00.726632+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:05 PM PT (Sep 23, 2026 10:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+          "source": "human_review_ui"
+        }
+      }
+    },
+    {
+      "movement_definition_id": 1,
+      "key": "competition_squat",
+      "movement_name": "Competition Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-squat-focus-20260923-v2",
+      "generation_batch": "Core SBD / owner squat correction / 2026-09-23",
+      "candidate_id": "e0ea43d02b08759e11bbd217",
+      "version": 2,
+      "supersedes_candidate_id": "138c6b5ea1c29121f0440e56",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "I want the actual squat to be the main character here",
+        "tags": [],
+        "reviewed_at": "2026-09-24T02:04:34.786174+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:04 PM PT (Sep 23, 2026 10:04 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "4a60efbf50520db171ca60d5618e0199d93524c10173696c7e6a0844e2df2329",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/e0ea43d02b08759e11bbd217/master.png",
+          "sha256": "9b861bffd1a72dd656aa2f4add8a55381fa241d46c5ebc81e32268165720b484",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1863781
+        },
+        "app": {
+          "path": "candidates/e0ea43d02b08759e11bbd217/app.png",
+          "sha256": "b1a6e26c128844d6260d7f88d140cd876e400ab9dbe81352f8f40900485cae99",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 331763
+        },
+        "thumbnail": {
+          "path": "candidates/e0ea43d02b08759e11bbd217/thumbnail.png",
+          "sha256": "bccd629b6ef0ea53d72888b5d8259efc46086ab84ed4c38d8b88da436933f56c",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48066
+        }
+      },
+      "candidate_asset": "candidates/e0ea43d02b08759e11bbd217/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "no the little combo rack ghost is fucking stupid!!! the combo rack can be there but it doesnt fully need to be in frame! also ensure proper proportions, alignment, and fucking distancing! please dont make silly mistakes",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "no the little combo rack ghost is fucking stupid!!! the combo rack can be there but it doesnt fully need to be in frame! also ensure proper proportions, alignment, and fucking distancing! please dont make silly mistakes",
+          "tags": [],
+          "reviewed_at": "2026-09-24T02:14:54.799887+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:14 PM PT (Sep 23, 2026 10:14 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9b861bffd1a72dd656aa2f4add8a55381fa241d46c5ebc81e32268165720b484",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T02:08:55.798813+00:00",
+      "created_at_display": "Sep 23, 2026 07:08 PM PT (Sep 23, 2026 10:08 PM Eastern)",
+      "generation_prompt": "Revise the SQUAT artwork in reference 2 according to the owner's exact feedback: 'I want the actual squat to be the main character here'. Reference 1 remains the approved Strength Ledger athlete/clothing/photographic style, NOT its exercise. Make the actively squatting athlete and loaded bar the dominant subject. Recompose closer so the entire squatting athlete fills the CENTER of the square from head at upper quarter to both planted feet at lower eighth, with whole loaded bar spanning most image width; no cropped plates, hands or feet. Keep credible below-parallel low-bar back squat mechanics: bar supported on rear-deltoid shelf, rigid braced naturally inclined torso, hip crease below knee tops, knees tracking toes, shoulders and hips aligned, bar over midfoot, both flat feet on platform. Preserve man charcoal tank/black shorts/black flat shoes and natural two-hand bar grip. Use same competition platform and mechanically coherent combo rack, but the rack is only a SECONDARY dim background/edge context cue outside the athlete's movement space, not large bright foreground uprights competing with him. Athlete faces the rack from the stepped-back unracked position, no equipment intersections. It is fine for background rack extremities to leave the composition; absolutely keep whole athlete and whole bar. Photo subject is the squat itself, not an equipment catalog image. Black backdrop, subtle purple rim, crisp lifter, less illuminated background chrome. No text or logos. One lifter and one loaded straight bar, equal red plates and collars.\n\nFraming refinement:\nKeep this exact squatting athlete, his natural pose, low-bar placement, proportions, lighting, outfit and dominant composition. Fix framing: show the ENTIRE BARBELL including full steel sleeves beyond BOTH red plate stacks and collars, with a small black margin left and right; neither bar end may be clipped. Pull framing back only enough for this. Keep athlete large and central and feet fully visible; do not reintroduce a prominent foreground rack. Darken the background rack further so its uprights are only a faint context cue; the athlete and bar are the obvious star. Preserve correct solid shaft through both grips, realistic plates, platform, and overall square photograph.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-23/selected/squat-correction-2.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 1,
+      "generation_context": {
+        "owner_feedback": "I want the actual squat to be the main character here",
+        "internal_preflight": "Lifter and whole loaded bar dominate centrally; background rack subdued; squat depth, two grips, planted feet and complete bar/plate silhouette inspected. Pending owner decision."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "no the little combo rack ghost is fucking stupid!!! the combo rack can be there but it doesnt fully need to be in frame! also ensure proper proportions, alignment, and fucking distancing! please dont make silly mistakes",
+        "tags": [],
+        "reviewed_at": "2026-09-24T02:14:54.799887+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:14 PM PT (Sep 23, 2026 10:14 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9b861bffd1a72dd656aa2f4add8a55381fa241d46c5ebc81e32268165720b484",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 1,
+      "key": "competition_squat",
+      "movement_name": "Competition Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-squat-solid-rack-20260923-v3",
+      "generation_batch": "Core SBD / solid rack correction / 2026-09-23",
+      "candidate_id": "878d7b2765b7b3bd31412863",
+      "version": 3,
+      "supersedes_candidate_id": "e0ea43d02b08759e11bbd217",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "no the little combo rack ghost is fucking stupid!!! the combo rack can be there but it doesnt fully need to be in frame! also ensure proper proportions, alignment, and fucking distancing! please dont make silly mistakes",
+        "tags": [],
+        "reviewed_at": "2026-09-24T02:14:54.799887+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:14 PM PT (Sep 23, 2026 10:14 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9b861bffd1a72dd656aa2f4add8a55381fa241d46c5ebc81e32268165720b484",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/878d7b2765b7b3bd31412863/master.png",
+          "sha256": "98e8663ddc7bc6cbcdc272b091008e137e531f4e3cdd01a25075b3287f647a81",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1749650
+        },
+        "app": {
+          "path": "candidates/878d7b2765b7b3bd31412863/app.png",
+          "sha256": "2e0dfe03d75770e274d3e76fc6dc16832ed2b06bb56cb701eab06100e327bf22",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 332893
+        },
+        "thumbnail": {
+          "path": "candidates/878d7b2765b7b3bd31412863/thumbnail.png",
+          "sha256": "f21fc3ef3f429facca35492eb3950cbc0a450801ad0ea9ad8354e88ad2535068",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 52834
+        }
+      },
+      "candidate_asset": "candidates/878d7b2765b7b3bd31412863/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "bad angle, too close to the squat rack. and I called for a fucking combo rack not a squat rack you dunce!",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "bad angle, too close to the squat rack. and I called for a fucking combo rack not a squat rack you dunce!",
+          "tags": [],
+          "reviewed_at": "2026-09-24T02:23:46.117354+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:23 PM PT (Sep 23, 2026 10:23 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "98e8663ddc7bc6cbcdc272b091008e137e531f4e3cdd01a25075b3287f647a81",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T02:21:19.276396+00:00",
+      "created_at_display": "Sep 23, 2026 07:21 PM PT (Sep 23, 2026 10:21 PM Eastern)",
+      "generation_prompt": "Create one square Strength Ledger squat artwork using these two references with distinct roles.\nREFERENCE 1 is a REAL SQUAT: preserve its actual athlete/bar/rack geometry, camera angle, upright spacing, walkout distance and perspective. It shows how the squatting lifter is centered behind and facing the two uprights, with bar parallel to the line joining the uprights, bar clear of hooks and rack. Use this spatial arrangement faithfully. Deepen his squat slightly to just below parallel while keeping both flat feet, braced forward-inclined torso, neutral neck, rear-shoulder bar placement and both hands gripping the same bar.\nREFERENCE 2 supplies ONLY our familiar athlete's appearance/clothing and dark realistic photographic style: man with short brown hair, charcoal tank, black shorts, black shoes, natural muscular proportions, subtle purple edge light. Do NOT use its bench, dumbbells or sitting pose.\nReplace the bright gym with the established black background and a matte dark competition platform. Solid realistic steel combo rack with bench removed, evenly loaded red calibrated plates and collars on one continuous straight bar. No writing/logos anywhere.\nThe athlete performing the squat is the dominant subject: compose close around the COMPLETE lifter, both feet, both hands and complete loaded bar including both sleeve tips. The real-size rack's outer feet/crossmember and uppermost uprights may be cropped by the square frame. Do NOT shrink the rack to fit. Do NOT make it translucent or a faint ghost. Real materials, appropriate contact shadows, whole scene shares one consistent scale and perspective. No equipment/body collisions. No other people. Keep clear readable movement silhouette, authentic action, neither a camera pose nor equipment catalog composition.\n\nEdit this squat photograph with THREE equipment/framing corrections; preserve the athlete, pose, body proportions, plate sizes, realistic rack scale, and solid materials.\n1. Both empty J-hooks currently sit far too low, below the loaded bar. Remove those low protruding hooks and put one matching J-hook on each upright at standing upper-chest unrack height, around 35–40 cm ABOVE the athlete's current squatting shoulder/bar height. Each hook's opening faces BACK toward the athlete behind the uprights, so he could stand up, walk forward and rack this bar. Neither hook touches the current bar.\n2. Show the COMPLETE steel bar sleeves beyond both collars. The left bar tip is clipped now. Reframe only a little wider and center the bar to leave a visible black margin beyond both ends. The uprights may still extend through the top image edge and rack bases may extend beyond bottom/side edges. Keep the squatting lifter large and dominant.\n3. Preserve real walkout clearance: the athlete and loaded bar are physically behind the uprights, with clear gap between the bar/plates and steel posts, all aligned square to one another. Keep the bar parallel to the imaginary line connecting the two hooks; no apparatus intersections.\nEverything else stays: below-parallel squat, whole planted feet, charcoal tank and black shorts, black platform and background, subtle purple rim, no writing or branding.\n\nMake a precise equipment correction to image 1. Use image 2 as the REAL HARDWARE reference.\nThe J-hooks high on the two upright posts in image 1 are wrong: they point sideways toward one another. Replace both with the actual hook heads seen in image 2. On BOTH uprights, the hook opening projects in the SAME fore-aft direction, BACK toward the squatting lifter, perpendicular to the bar. From this front camera we mainly see the tall flat exterior BACK PLATE of each hook head, exactly like the flat silver plates at the tops in reference 2; do not show sideways inward-facing U shapes. Keep their current height high above the squatting bar, correct for standing unrack. Make the two hardware assemblies identical, turned the same way.\nAlso add a secure realistic competition collar OUTSIDE the outermost red plate on the RIGHT sleeve, matching the outer collar on the left sleeve, with a little bare steel continuing outward beyond the collar. Both whole steel bar ends remain visible.\nPreserve the exact athlete, squat, rack position/spacing/scale, walkout floor spacing, full body framing, dark platform and Strength Ledger lighting of image 1. Keep the lifter centered and behind the actual rack as in the real reference. No bench, no lettering/logos, no other alterations.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-23/squat-v3-correction/selected.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 1,
+      "generation_context": {
+        "owner_feedback": "no the little combo rack ghost is fucking stupid!!! the combo rack can be there but it doesnt fully need to be in frame! also ensure proper proportions, alignment, and fucking distancing! please dont make silly mistakes",
+        "reference_url": "https://strengthshop.eu/products/pro-competition-combo-rack",
+        "internal_preflight": "Selected for human review: opaque full-size rack in front, matched upright plane parallel to bar, hooks above squat bar with reference-based back plates, two outer collars, whole bar/athlete visible and planted feet. Rack extremities intentionally leave frame. No approval granted.",
+        "workflow": "Pending owner source decision; separate crop approval required; DEV only."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "bad angle, too close to the squat rack. and I called for a fucking combo rack not a squat rack you dunce!",
+        "tags": [],
+        "reviewed_at": "2026-09-24T02:23:46.117354+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:23 PM PT (Sep 23, 2026 10:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "98e8663ddc7bc6cbcdc272b091008e137e531f4e3cdd01a25075b3287f647a81",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 1,
+      "key": "competition_squat",
+      "movement_name": "Competition Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-squat-combo-side-view-20260923-v4",
+      "generation_batch": "Core SBD / combo rack, side view and walkout correction / 2026-09-23",
+      "candidate_id": "82318e2e34431668032edceb",
+      "version": 4,
+      "supersedes_candidate_id": "878d7b2765b7b3bd31412863",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "bad angle, too close to the squat rack. and I called for a fucking combo rack not a squat rack you dunce!",
+        "tags": [],
+        "reviewed_at": "2026-09-24T02:23:46.117354+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:23 PM PT (Sep 23, 2026 10:23 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "98e8663ddc7bc6cbcdc272b091008e137e531f4e3cdd01a25075b3287f647a81",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/82318e2e34431668032edceb/master.png",
+          "sha256": "60b4234aa5744dc06776c7273712799a4e960b1b57bd1f2319085daa5b370154",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1711249
+        },
+        "app": {
+          "path": "candidates/82318e2e34431668032edceb/app.png",
+          "sha256": "d0faf3b1c49287fde89d601fd9ce9e08be0ee9c5ace8627275c6ade81b54b066",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 319696
+        },
+        "thumbnail": {
+          "path": "candidates/82318e2e34431668032edceb/thumbnail.png",
+          "sha256": "00f33ecabb020aadba625cbdc31dea38f0b31f00aafce798ed9bc54878c17972",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47289
+        }
+      },
+      "candidate_asset": "candidates/82318e2e34431668032edceb/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "no I want a clean from-diagonal angle",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "no I want a clean from-diagonal angle",
+          "tags": [],
+          "reviewed_at": "2026-09-24T11:06:45.697083+00:00",
+          "reviewed_at_display": "Sep 24, 2026 04:06 AM PT (Sep 24, 2026 07:06 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "60b4234aa5744dc06776c7273712799a4e960b1b57bd1f2319085daa5b370154",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T02:45:05.426550+00:00",
+      "created_at_display": "Sep 23, 2026 07:45 PM PT (Sep 23, 2026 10:45 PM Eastern)",
+      "generation_prompt": "Create one square photorealistic Strength Ledger COMPETITION BACK SQUAT artwork.\nReference 1 specifies the real Eleiko-style COMBO RACK hardware and side-three-quarter viewing direction. Convert it to its actual squat configuration: removable bench AND bench safety arms removed; retain the connected low steel base, two telescoping polished uprights, roller hook heads at standing shoulder height, and their long lever-adjustment assemblies. This must visibly be a competition combo rack, not separate squat stands, not a cage, not tall black gym posts.\nReference 2 supplies ONLY our athlete appearance, clothes and dark photographic art style: naturally muscular man, short brown hair, charcoal tank, black shorts and black shoes. Do not copy its bench or seated pose.\n\nCompose from a clear THREE-QUARTER SIDE VIEW, not a frontal view through the uprights. The combo rack sits toward the LEFT edge in front of the lifter. The athlete is on the RIGHT facing LEFT toward his empty roller hooks, square to the rack, after a proper backward walkout. There is about 75 cm of clear fore-aft distance between his loaded bar's squat path and the hook/upright plane. Show that gap unambiguously. The rack and athlete have realistic matching scale; rack extremities may extend off the left edge. No post crosses the athlete's body or the loaded bar.\n\nCapture him performing a real below-parallel powerlifting back squat, hips back, braced forward-inclined torso, head following the spine, knees tracking slightly outward over toes, both heels firmly planted. One straight bar rests across his rear shoulders, both hands grip it outside the shoulders. Bar balanced over midfoot and parallel to the imaginary line joining the two rack hook heads. Equal red calibrated plates on both sleeves, secure collars, intact sleeve tips. Normal full-size 45 cm plates and 2.2 m bar. The unloaded rack hooks remain at standing unrack height, well above the current squatting bar.\nAthlete and squat action dominate the composition; preserve full head-to-shoes body and both ends of the bar. Rack is solid and recognizable but peripheral. Black competition platform, OLED-black background, neutral dramatic light with very subtle purple rim matching reference 2. No text, logos, other people, bench, extra barbell, haze, ghost equipment, or collisions. Natural action, not posing for a camera.\n\nCorrect this artwork's spatial alignment. The COMBO RACK on the left is correctly built and must stay exactly as it is, including its two uprights and connected base. The athlete is wrongly turned toward the camera instead of facing into that rack.\nRotate the ENTIRE athlete, his stance, his two hands and his loaded barbell together about 65 degrees toward screen LEFT, keeping his floor location and below-parallel squat. We should now see essentially his SIDE PROFILE, nose pointing left at the roller hooks, the near side of his torso, and overlapping far leg, NOT his broad frontal chest or two knees splayed toward the camera.\nHis bar now points much more toward/away from the camera: the near circular plate should be strongly foreshortened in distance from the far plate. In this projection the near sleeve/plate is down-left of the far sleeve/plate, just as the near combo upright is down-left of the far upright. This parallel relationship is mandatory: the loaded bar shaft and the line joining the two empty roller hooks must share the same vanishing direction. The rack must be directly IN FRONT of where his body is facing, not off his left shoulder. He should be able to stand up and walk straight forward to rack the bar without turning.\nKeep about 75 cm of real walkout clearance between loaded bar path and uprights. Keep his torso braced and leaning naturally forward, bar on rear shoulders over midfoot, feet flat, hip crease just below knees. Preserve charcoal tank, black shorts, recognizable athlete, lighting, platform and solid rack. Natural camera-side plate occlusion is preferable to rotating the athlete incorrectly to show his chest. Full athlete and intact bar ends visible; no text.\n\nEdit ONLY the empty combo rack in this image to correct its perspective relative to the athlete. Keep the squatting athlete, all anatomy, pose, barbell, plates, clothes, lighting, platform and framing unchanged.\n\nThe rack's upright pair currently has the wrong vanishing direction. The NEAR rack upright must appear to the RIGHT of the FAR rack upright, exactly as the athlete's NEAR large plate is to the RIGHT of his FAR small plate. Rebuild the two-post combo-rack assembly at the left of the picture from this correct camera side.\nPlace the NEAR upright at about x=310 pixels and the FAR upright at about x=150 pixels in this square 1254-pixel composition. Both hooks open toward screen RIGHT toward the athlete. Connect the two posts with the real low structural base, retaining credible competition combo-rack telescoping steel, roller hooks, paired lever-height adjustment mechanisms and angled feet. No bench or safety arms. Taller-looking nearer hook at upper left; far hook smaller and slightly lower in the image due to perspective. The implied line across the two roller centers must share the loaded bar's perspective: near is right-and-up, far is left-and-down. All hardware is at realistic matching scale to the athlete.\nThe athlete faces directly between the two posts in three-dimensional space. Preserve his generous walkout gap; no rack metal reaches into his legs or bar path. The left extremities of the rack may leave the frame. Do not turn the athlete back toward the camera. No other changes, no writing.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-23/squat-v4-correction/selected.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 1,
+      "generation_context": {
+        "owner_feedback": "bad angle, too close to the squat rack. and I called for a fucking combo rack not a squat rack you dunce!",
+        "reference_url": "https://equipfit.com/eleiko-ipf-competition-combo-rack-charcoal/",
+        "reference_image": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-23/squat-v4-correction/references/eleiko-combo-product.png",
+        "generation_tool": "built-in image_gen",
+        "internal_preflight": "Two attempts withheld for athlete/rack angle mismatch. Selected third attempt for human review: side-view squat with visible fore-aft walkout gap; solid connected-base combo rack with telescoping uprights and lever mechanisms, bench and bench safety arms removed; loaded bar clear of rack, full body and planted feet. Near/far rack posts corrected to the same side ordering as near/far plates. This is an internal inspection, not human approval.",
+        "workflow": "Pending owner source decision, followed by separate crop review. DEV only."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "no I want a clean from-diagonal angle",
+        "tags": [],
+        "reviewed_at": "2026-09-24T11:06:45.697083+00:00",
+        "reviewed_at_display": "Sep 24, 2026 04:06 AM PT (Sep 24, 2026 07:06 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "60b4234aa5744dc06776c7273712799a4e960b1b57bd1f2319085daa5b370154",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 1,
+      "key": "competition_squat",
+      "movement_name": "Competition Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-squat-front-diagonal-20260924-v5",
+      "generation_batch": "Core SBD / front-diagonal camera correction / 2026-09-24",
+      "candidate_id": "68c02da2786a8ff4cd1dea68",
+      "version": 5,
+      "supersedes_candidate_id": "82318e2e34431668032edceb",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "no I want a clean from-diagonal angle",
+        "tags": [],
+        "reviewed_at": "2026-09-24T11:06:45.697083+00:00",
+        "reviewed_at_display": "Sep 24, 2026 04:06 AM PT (Sep 24, 2026 07:06 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "60b4234aa5744dc06776c7273712799a4e960b1b57bd1f2319085daa5b370154",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/68c02da2786a8ff4cd1dea68/master.png",
+          "sha256": "17074c806bf93eb2294a69969f6c9b318de73f34c58f6578719292985fc7ce2e",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2168323
+        },
+        "app": {
+          "path": "candidates/68c02da2786a8ff4cd1dea68/app.png",
+          "sha256": "89bfd7f836ffb02cd7f349e141a58f8182194f0f24db5ad7b1ee6e0f4e6fcc50",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 383843
+        },
+        "thumbnail": {
+          "path": "candidates/68c02da2786a8ff4cd1dea68/thumbnail.png",
+          "sha256": "7c139f9275430df5363749930a075291140444cb7fc519d34a34ea5fd580461a",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 56101
+        }
+      },
+      "candidate_asset": "candidates/68c02da2786a8ff4cd1dea68/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "THAT IS A POOR LOOKING COMBO RACK! WHAT IS SO FUCKING DIFFICULT!!! THIS IS ALWO NOT FRONT-DIAGONAL ENOUGH!!!",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "THAT IS A POOR LOOKING COMBO RACK! WHAT IS SO FUCKING DIFFICULT!!! THIS IS ALWO NOT FRONT-DIAGONAL ENOUGH!!!",
+          "tags": [],
+          "reviewed_at": "2026-09-24T11:27:31.712106+00:00",
+          "reviewed_at_display": "Sep 24, 2026 04:27 AM PT (Sep 24, 2026 07:27 AM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "17074c806bf93eb2294a69969f6c9b318de73f34c58f6578719292985fc7ce2e",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T11:16:03.114645+00:00",
+      "created_at_display": "Sep 24, 2026 04:16 AM PT (Sep 24, 2026 07:16 AM Eastern)",
+      "generation_prompt": "Create one square Strength Ledger Competition Squat artwork.\nREFERENCE 1 is the real spatial template. Preserve its front-diagonal camera direction and the geometrically consistent relationship between the squatting athlete, loaded bar, and BOTH combo-rack uprights. The athlete faces the hooks squarely; loaded bar and the line across the hooks are parallel in 3D. This whole arrangement must remain coherent. Do not independently rotate one object.\nREFERENCE 2 supplies only our familiar athlete and photographic styling: naturally muscular man, short brown hair, charcoal tank, black shorts, black shoes, black environment with subtle purple edge lighting. Do not copy its seated pose or equipment.\n\nDepict a credible below-parallel powerlifting back squat, both heels planted, knees tracking over toes, braced leaning torso, neutral neck, bar across the rear shoulders, two hands gripping one straight bar. He has walked backward far enough to have about 90 cm of clearance from the front hook/upright plane. Both feet are on the unobstructed platform.\nUse the real polished-steel competition COMBO RACK from reference 1, with telescoping uprights, roller hook heads at standing shoulder height, lever-height-adjustment hardware and connected low frame. Remove the plate storage tree and all extraneous foreground gym equipment seen in the photograph. No bench. Only one combo rack and one loaded bar.\n\nThe camera is in front and diagonally to one side, with BOTH the front and side of his torso visible: a clean front THREE-QUARTER view, no profile. Compose tightly on the full athlete and full bar while allowing peripheral full-size rack parts to leave the frame. Empty hooks above the squatting bar, clear real walkout spacing, rack hardware kept away from the athlete silhouette. Evenly loaded red calibrated plates and secure outer collars, no lettering. He is actually doing the squat, not twisting to face the camera.\nMatte black competition platform, OLED-black background, realistic solid metal, natural photographic anatomy/materials. No other people, no logos, no ghost equipment.\n\nRefine this physically coherent squat scene into a clearer FRONT-DIAGONAL view. Move the camera about 15 degrees farther to the athlete's front-left side, so it is roughly a 40-degree front three-quarter view. Keep every object in its existing real-world location and orientation; recalculate the perspective of the entire scene together, including the two combo-rack uprights, their shared floor frame, the lifter and his bar. The athlete continues to face straight toward the rack's hooks, never toward the new camera. Show the front and near side of his torso, both knees and both complete feet. Maintain the existing generous walkout clearance, authentic deep squat and large movement-centered framing.\n\nPreserve this actual competition combo-rack design and serious scale: polished telescoping posts, lever adjustment assemblies, connected low base. Its peripheral parts may leave the frame, as they already do. Keep the posts away from his body outline. One continuous straight loaded bar, symmetric plate loading. Ensure there is a secure competition collar OUTSIDE the outermost plate at BOTH ends, including the currently bare far-right sleeve, with a short visible steel tip beyond each collar. No bar/post collisions.\n\nKeep the same athlete, charcoal tank, black shorts/shoes, black platform/background, natural anatomy and restrained purple edge light. No text, logos, other people, bench or extra equipment. This is a camera-angle refinement with complete bar hardware, not a new pose.\nFrom this new angle the walkout space must be visibly clear: the athlete's squat and entire bar are about one full step (80–100 cm) behind the line of the uprights. He is not squatting in the rack. The forward posts must not overlap either shoulder or knee; show real floor space separating the squat from the rack. Preserve a correct rigid, parallel orientation between the bar and the line connecting the two rack uprights.\n\nRe-photograph this entire scene from a distinctly diagonal FRONT THREE-QUARTER angle. Move the CAMERA 45 degrees around the athlete toward his right side, and raise it to chest height, aiming slightly downward. Do not rotate the athlete toward the camera. He continues to squat facing the rack, with his back straight, both feet grounded, hip crease below the knee and both hands gripping the same bar across his upper back. We must see both his chest and the near side of his torso. This must look like a candid action photo of a real squat, not a symmetrical portrait.\n\nThe camera change applies to the WHOLE SCENE: rack, floor frame, bar, plates and athlete all have the same perspective. Strong natural foreshortening makes the near plate visibly larger than the far plate; the shaft recedes diagonally across the picture. The two rack posts recede in exactly the same direction as the bar. The athlete is a full step behind the rack's hooks, facing them. The combo rack now sits toward the LEFT edge of the composition, in front of the athlete, who is centered toward the RIGHT. Preserve realistic rack width and connected base. No upright obscures his legs or torso. No bar/post collision. Correct full plate loading and secure outer collars on both ends.\n\nFrame the complete athlete and both shoes prominently. Peripheral rack hardware may extend off the edge. Same charcoal tank, black shorts/shoes, natural anatomy, black background and restrained purple rim light. No logos or text. The requested change is an unmistakable front-diagonal camera view with real depth, NOT the present nearly frontal view.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-23/squat-v5-correction/selected.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 1,
+      "generation_context": {
+        "owner_feedback": "no I want a clean from-diagonal angle",
+        "reference_url": "https://eleiko.com/de/stories/using-velocity-based-training",
+        "reference_image": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-23/squat-v4-correction/references/eleiko-vbt-squat.webp",
+        "generation_tool": "built-in image_gen",
+        "internal_preflight": "Three attempts withheld while correcting camera direction. Selected front three-quarter view for owner review: chest and near side visible, full planted feet, both hands on loaded bar; competition combo-rack telescoping posts and lever hardware in front of athlete with visible walkout floor gap. Internal visual inspection is not human approval.",
+        "workflow": "Pending owner source decision, separate crop approval, DEV only."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THAT IS A POOR LOOKING COMBO RACK! WHAT IS SO FUCKING DIFFICULT!!! THIS IS ALWO NOT FRONT-DIAGONAL ENOUGH!!!",
+        "tags": [],
+        "reviewed_at": "2026-09-24T11:27:31.712106+00:00",
+        "reviewed_at_display": "Sep 24, 2026 04:27 AM PT (Sep 24, 2026 07:27 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "17074c806bf93eb2294a69969f6c9b318de73f34c58f6578719292985fc7ce2e",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 1,
+      "key": "competition_squat",
+      "movement_name": "Competition Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-squat-rack-diagonal-20260924-v6",
+      "generation_batch": "Core SBD / combo-rack and diagonal correction / 2026-09-24",
+      "candidate_id": "3e1b9f05601506c40d1b9adf",
+      "version": 6,
+      "supersedes_candidate_id": "68c02da2786a8ff4cd1dea68",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "THAT IS A POOR LOOKING COMBO RACK! WHAT IS SO FUCKING DIFFICULT!!! THIS IS ALWO NOT FRONT-DIAGONAL ENOUGH!!!",
+        "tags": [],
+        "reviewed_at": "2026-09-24T11:27:31.712106+00:00",
+        "reviewed_at_display": "Sep 24, 2026 04:27 AM PT (Sep 24, 2026 07:27 AM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "17074c806bf93eb2294a69969f6c9b318de73f34c58f6578719292985fc7ce2e",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/3e1b9f05601506c40d1b9adf/master.png",
+          "sha256": "e8d026bdfcc922182eaab0e954b5cd3a4d6da0de1a7ea9ad9bca96bca10e4914",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1931464
+        },
+        "app": {
+          "path": "candidates/3e1b9f05601506c40d1b9adf/app.png",
+          "sha256": "aaff541135e64a96416d605364db9b80d1ae85425863134240f8503e3c3161d1",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 360730
+        },
+        "thumbnail": {
+          "path": "candidates/3e1b9f05601506c40d1b9adf/thumbnail.png",
+          "sha256": "9b6f565e1a4ba346d998107c7120808d8f747084ab383fa743e3ed8a4361b307",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 53056
+        }
+      },
+      "candidate_asset": "candidates/3e1b9f05601506c40d1b9adf/master.png",
+      "status": "rejected",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "PLEASE PUT THE USER IN PROPER FOOTWARE! THIS IS THE POWERLIFTING SQUAT! IT SHOULD APPEAR TO BE LOW BAR",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "reject",
+          "decision": "rejected",
+          "reason": "PLEASE PUT THE USER IN PROPER FOOTWARE! THIS IS THE POWERLIFTING SQUAT! IT SHOULD APPEAR TO BE LOW BAR",
+          "tags": [],
+          "reviewed_at": "2026-09-24T16:38:34.856185+00:00",
+          "reviewed_at_display": "Sep 24, 2026 09:38 AM PT (Sep 24, 2026 12:38 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "e8d026bdfcc922182eaab0e954b5cd3a4d6da0de1a7ea9ad9bca96bca10e4914",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T11:48:50.824318+00:00",
+      "created_at_display": "Sep 24, 2026 04:48 AM PT (Sep 24, 2026 07:48 AM Eastern)",
+      "generation_prompt": "Produce a single square photographic Competition Squat movement illustration. Use reference 1 ONLY for the SAME athlete, charcoal tank top, black shorts/shoes, realistic texture and dark purple-edged studio style. Reference 2 is the accurate combo-rack hardware and actual exercise arrangement.\n\nCAMERA / ACTION: A strong front three-quarter angle, much closer to side view than front view, approximately 60 degrees around from straight in front. See the athlete's near side clearly plus part of his chest. His head, chest, pelvis and feet share the squat's natural orientation; do NOT give a frontal body a sideways head. A candid powerlifting squat at below parallel, braced torso leaning forward, hip crease below knee, whole feet planted, knees tracking toes. Both hands hold the same straight bar on the rear deltoids. The bar visibly recedes into depth, with naturally foreshortened far side. Matching red calibrated steel plates and a thick locking competition collar at each OUTER end. Keep all bar ends and shoes inside the frame. Athlete large and central, movement is the hero.\n\nRACK: One real full-size Eleiko-style competition combo rack, exactly like reference 2: telescoping silver posts, top forked roller heads, slim articulated lever-jack mechanisms and connected steel floor base. No ordinary squat rack, no bench. The athlete has walked BACKWARD a full metre from it and still faces its empty hooks. Position the rack one metre directly IN FRONT of the athlete along his facing line, not behind him. Its two posts span the same direction as his loaded bar, perfectly parallel in 3D. The open rollers face back toward him. Rack parts may be cropped at the foreground edges; they are peripheral scenery and must not cover his body. Do not try to squeeze all the rack into view.\n\nOne athlete, one bar, one rack in a black studio. Natural controlled effort, no camera pose. No text, logos, extra people or equipment.\n\nFOLLOW-UP REFINEMENT:\n\nReference 1 remains the sole athlete/style reference. Reference 2 is the current squat image to EDIT.\n\nRephotograph the WHOLE scene from a substantially more diagonal front-side viewpoint: move the camera 25 degrees farther toward the athlete's near side and raise it to standing chest height, looking slightly down at the squat. Show a clear oblique three-quarter view, with his near shoulder, upper arm, torso side and hip prominent and a smaller part of the chest visible. The athlete continues facing straight toward the combo rack, with the same deep squat; his head does not turn toward the camera. Use a neutral neck with chin slightly tucked rather than craning upward. Stronger natural foreshortening of the bar and near/far thighs must make this a clearly diagonal view.\n\nRecompute the projection of athlete, loaded bar and complete combo rack together. Maintain the full metre of empty floor between athlete and rack. Preserve the reference's real competition combo-rack design: top roller forks, two telescoping silver posts, articulated lever height adjusters and connected base. Both post heads are at equal standing bar height in real space; their common axis remains parallel to the loaded bar. Peripheral rack is allowed to exit the frame. It must not obscure the lifter.\n\nPull the camera back just enough to keep BOTH complete sleeves inside the image with at least 5% margin, and both shoes. Exactly matching three red calibrated steel plates on each side, BOTH secured with a real metal competition collar OUTSIDE the plates. One continuous straight shaft through the plate centers, firmly supported on rear shoulders. Two anatomically normal hands/wrists. Remove ALL printed branding and numbers from rack and plates.\n\nKeep the same athlete, charcoal tank, shorts, shoes, black studio and realistic skin/metal. Improve only the camera view, neck neutrality and complete bar hardware.\n\nFOLLOW-UP REFINEMENT:\n\nReference 1 is the immutable athlete and photographic style baseline. Reference 2 is the squat image to refine. Reference 3 is the REAL competition combo-rack engineering reference.\n\nKeep the athlete, his squat pose, the stronger front-diagonal camera angle, complete loaded bar, planted feet, clothing, lighting and black studio exactly as in reference 2. Keep the generous walkout space.\n\nCorrect ONLY the rack's physical width and its placement in this crop. Its two upright heads must be roughly 1.1 metres apart, along an axis parallel to the athlete's straight bar. The current two posts are much too close together in the image. Keep the near full-size upright at the RIGHT foreground edge, faithfully copying reference 3's telescoping steel, fork/roller head, lever-jack linkage and low welded base. Move the far upright to its correct full-width position OUTSIDE the RIGHT boundary of this close movement photograph. The rack continues naturally outside the frame: show its connected crossmember leaving the right edge, but do not squeeze the far post back into view. There is ONE visible upright in this tightly cropped photograph of a full two-post combo rack. Remove every trace of the previous too-close far upright and its associated extra hardware. No independent narrow pair of squat stands, no miniature rack.\n\nRetain the exact front-diagonal athlete photograph and clear movement silhouette. Keep equipment edges and welds photographic and mechanically connected. No labels, lettering, logos, extra objects or changes to the athlete.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/squat-v6-correction/selected.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 1,
+      "generation_context": {
+        "owner_feedback": "THAT IS A POOR LOOKING COMBO RACK! WHAT IS SO FUCKING DIFFICULT!!! THIS IS ALWO NOT FRONT-DIAGONAL ENOUGH!!!",
+        "style_reference": "Immutable approved Incline Dumbbell Bench Press #33, first reference for every attempt.",
+        "mechanics_reference": "Local Eleiko operating photograph: docs/validation/core-sbd-art-2026-09-23/squat-v4-correction/references/eleiko-vbt-squat.webp; https://eleiko.com/de/stories/using-velocity-based-training",
+        "equipment_reference": "https://eleiko.com/en/equipment/benches/competitionbenches/3085245-060-eleiko-ipf-competition-combo-rack-pur-charcoal",
+        "generation_tool": "built-in image_gen",
+        "inspection": "Full master, bar/grip region, rack linkage and foot contacts inspected without stretched crops; 192px and 80px inspected. Selected after four withheld attempts. Stronger front-side oblique view with near shoulder/hip prominent, chest visible, braced deep squat, planted feet, no cosmetic head turn. Real reference-derived near combo-rack post, telescoping adjustment and jack linkage; far post intentionally outside image, connected frame exits right. Do not claim inspection of the unseen far upright or occluded far-side collar.",
+        "prior_requirements": "Squat and loaded bar remain the main subject; full human-scale rack may leave frame; clear walkout floor gap; preserve exact current movement identity.",
+        "workflow": "Pending human source review only. No source approval, crop approval, runtime mapping, TestFlight publication or production change."
+      },
+      "review": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "PLEASE PUT THE USER IN PROPER FOOTWARE! THIS IS THE POWERLIFTING SQUAT! IT SHOULD APPEAR TO BE LOW BAR",
+        "tags": [],
+        "reviewed_at": "2026-09-24T16:38:34.856185+00:00",
+        "reviewed_at_display": "Sep 24, 2026 09:38 AM PT (Sep 24, 2026 12:38 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e8d026bdfcc922182eaab0e954b5cd3a4d6da0de1a7ea9ad9bca96bca10e4914",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 1,
+      "key": "competition_squat",
+      "movement_name": "Competition Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-squat-lowbar-shoes-20260924-v7",
+      "generation_batch": "Core SBD / low-bar squat and powerlifting footwear correction / 2026-09-24",
+      "candidate_id": "d3645cd2a9b0fdc03ca8f03f",
+      "version": 7,
+      "supersedes_candidate_id": "3e1b9f05601506c40d1b9adf",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "PLEASE PUT THE USER IN PROPER FOOTWARE! THIS IS THE POWERLIFTING SQUAT! IT SHOULD APPEAR TO BE LOW BAR",
+        "tags": [],
+        "reviewed_at": "2026-09-24T16:38:34.856185+00:00",
+        "reviewed_at_display": "Sep 24, 2026 09:38 AM PT (Sep 24, 2026 12:38 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e8d026bdfcc922182eaab0e954b5cd3a4d6da0de1a7ea9ad9bca96bca10e4914",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/d3645cd2a9b0fdc03ca8f03f/master.png",
+          "sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1739996
+        },
+        "app": {
+          "path": "candidates/d3645cd2a9b0fdc03ca8f03f/app.png",
+          "sha256": "2c2439f2c2b90aaaafa137aff4b1328d8c2ec3a182a501c24180a66912bbbed6",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 333798
+        },
+        "thumbnail": {
+          "path": "candidates/d3645cd2a9b0fdc03ca8f03f/thumbnail.png",
+          "sha256": "a74a2bcad5da1270f964d990c5182651bbf55413085117bb8f2219587d9bcad7",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 52373
+        }
+      },
+      "candidate_asset": "candidates/d3645cd2a9b0fdc03ca8f03f/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T17:28:36.743855+00:00",
+          "reviewed_at_display": "Sep 24, 2026 10:28 AM PT (Sep 24, 2026 01:28 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T16:53:24.114487+00:00",
+      "created_at_display": "Sep 24, 2026 09:53 AM PT (Sep 24, 2026 12:53 PM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Edit reference 2, the Competition Squat artwork.\nReference 1 remains the immutable athlete, clothing, lighting and photography baseline.\nReference 3 is the footwear construction reference only.\n\nMake TWO corrections:\n1. Replace BOTH cushioned running shoes with dedicated black weightlifting shoes matching reference 3's firm straight outsole, solid modest raised heel, structured upper, laces and broad secure instep strap. Keep them unbranded black without stripes or lettering. Both shoes are planted flat and naturally attached to the ankles; no foam running-shoe rocker.\n2. Make this unmistakably a LOW-BAR POWERLIFTING SQUAT. Move the SAME straight loaded bar down from the upper trapezius/neck onto the muscular REAR-DELTOID shelf, just below the spine of the scapula. The bar must visibly contact the upper back behind the shoulder caps, clearly below the neck. Retract the shoulders, adjust BOTH grips and elbows naturally to secure the lower bar with neutral wrists, and lean the braced torso farther forward from the hips. Preserve neutral spine/neck and balanced bar projection over midfoot. Show a credible bottom position just below parallel, hips back, knees following the turned-out toes. This is still a squat, not a good morning. The shoulders and hips remain one stable unit; hands stabilize the bar rather than lifting it off the back.\n\nPRESERVE the strong FRONT-DIAGONAL camera angle, same muscular man and dark clothing, full-body movement-centered composition, red calibrated plates/collars, dark studio and subtle violet rim. Preserve the exact existing combo-rack near upright/lever mechanism at the right edge, the rack continuing outside the frame, and the generous walkout clearance. Do not rotate the camera, add a belt or people, redesign the rack, change the bar loading, crop the hands/weights/feet, or add text. Recalculate the bar, arms and torso together for a real low-bar squat.\n\nFOLLOW-UP REFINEMENT:\n\nReference 1 is only the immutable athlete/style baseline. EDIT reference 2, keeping its lifting shoes, diagonal camera, rack, floor, clothing and composition.\n\nThe bar is STILL TOO HIGH. Make the visible correction a REAL LOW-BAR position: lower the entire straight bar, BOTH sleeves/plate stacks and BOTH hands by roughly 5 cm relative to the shoulders. In this 1254-pixel image the current shaft is around y=430; its contact on the near posterior deltoid should be approximately y=475–485, clearly BELOW the rounded top of the visible shoulder cap. The bar must be behind the upper arms on the contracted REAR DELTOID shelf, NOT against the neck or on the upper trapezius. Keep the bar continuous and its plate-center axis straight. The shaft behind the torso is naturally occluded by the shoulder, not painted across the front of the shoulder. Both forearms and grips follow the lower shaft with credible wrists and elbows.\n\nLean the braced torso slightly more forward through the hips to support the lower bar over midfoot. Shoulders are pulled back to form the shelf. Keep squat depth, planted strap-secured lifting shoes, knees tracking toes and neutral neck. Do not make the squat shallower, turn the athlete, alter the rack, move the camera or change the footwear. This edit must VISIBLY lower the bar relative to his shoulders; merely lowering the whole athlete does not accomplish it.\n\nFOLLOW-UP REFINEMENT:\n\nReference 1: immutable athlete/style only. Reference 2: edit target.\nKeep the low-bar squat, both black lifting shoes with straps, pose, diagonal camera, rack and framing exactly unchanged.\n\nCorrect one defect: the steel bar must be ONE STRAIGHT UNBENT SHAFT through both plate-center holes. In reference 2 the visible near-side shaft slopes upward toward the neck; straighten that segment so it lies on the axis joining the two plate centers, approximately y=484 across the image. Keep the entire bar at this lower rear-deltoid height. It passes BEHIND the posterior shoulders, just below the top of the near deltoid, and is occluded where it contacts the upper back. Do not angle the middle up toward the neck. Both hands must grip this same straight line with natural wrists. Retain the same red plate stacks, sleeves and collars, and all other details. Do not raise the bar or reposition the rack.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/squat-v7-correction/selected.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 1,
+      "generation_context": {
+        "owner_feedback": "PLEASE PUT THE USER IN PROPER FOOTWARE! THIS IS THE POWERLIFTING SQUAT! IT SHOULD APPEAR TO BE LOW BAR",
+        "reference_sources": "https://www.adidas.com/bh/en/powerlift-5-weightlifting-shoes/JP6198.html ; https://www.barbellmedicine.com/blog/how-to-squat/",
+        "generation_tool": "built-in image_gen",
+        "baseline": "existing-33-e05a3bf38fa7 used first for each generation/edit",
+        "internal_preflight": "Lower rear-deltoid bar position with firm, strap-secured lifting shoes. Master, bar contact, footwear, 192px and 80px inspected. Two internal attempts withheld. Selected for owner review only.",
+        "attempt_log": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/squat-v7-correction/generation-attempts.json",
+        "scope": "DEV pending candidate only; no source approval, crop approval, promotion, or release."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-24T17:28:36.743855+00:00",
+        "reviewed_at_display": "Sep 24, 2026 10:28 AM PT (Sep 24, 2026 01:28 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 3,
+      "key": "competition_deadlift",
+      "movement_name": "Competition Deadlift",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-deadlift-slippers-20260924-v2",
+      "generation_batch": "Core SBD / low-bar squat and powerlifting footwear correction / 2026-09-24",
+      "candidate_id": "6cb1bd3afd78018b9538aac5",
+      "version": 2,
+      "supersedes_candidate_id": "45de1291e0b89701daf66161",
+      "prior_rejection": {
+        "source": "explicit_owner_chat",
+        "owner_instruction": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "recorded_by": "codex_at_owner_request",
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+        "tags": [],
+        "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+        "reviewer": "owner_via_chat",
+        "reviewed_at": "2026-09-24T16:46:57.484715+00:00",
+        "reviewed_at_display": "Sep 24, 2026 09:46 AM PT (Sep 24, 2026 12:46 PM Eastern)",
+        "superseded_decision": {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T02:05:00.726632+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:05 PM PT (Sep 23, 2026 10:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+          "source": "human_review_ui"
+        }
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/6cb1bd3afd78018b9538aac5/master.png",
+          "sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1683337
+        },
+        "app": {
+          "path": "candidates/6cb1bd3afd78018b9538aac5/app.png",
+          "sha256": "4955e749892a946660fc80858e14a716ebc22df8634877c05ce13da2eb5c9b2b",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 313947
+        },
+        "thumbnail": {
+          "path": "candidates/6cb1bd3afd78018b9538aac5/thumbnail.png",
+          "sha256": "2339b0079028bb0c4a38420565dec7571fca9a7b138f2ea9e5bf43cdef781ef8",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45528
+        }
+      },
+      "candidate_asset": "candidates/6cb1bd3afd78018b9538aac5/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T17:28:40.190862+00:00",
+          "reviewed_at_display": "Sep 24, 2026 10:28 AM PT (Sep 24, 2026 01:28 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T16:53:40.205509+00:00",
+      "created_at_display": "Sep 24, 2026 09:53 AM PT (Sep 24, 2026 12:53 PM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit.\nReference 1 supplies the immutable Strength Ledger athlete/photographic style. Reference 2 is the exact Competition Deadlift image to edit.\n\nChange ONLY BOTH SHOES. Replace the thick-soled running trainers with actual black DEADLIFT SLIPPERS: very low-profile, snug sock-like fabric uppers, one broad black Velcro strap crossing each instep, and a paper-thin grippy rubber outsole. Zero heel elevation, no raised heel wedge, no foam cushioning, no bulky sneaker toe box, no laces, no running-shoe sole. These are closed-toe powerlifting deadlift slippers that enclose the heel and fit closely around the foot; not socks alone, house slippers, sandals or ballet shoes. Both entire feet must remain planted firmly on the existing platform, in exactly the same stance and orientation.\n\nPreserve the exact athlete, face, conventional deadlift phase, arm/hand placement, straight bar, red calibrated plates/collars, camera angle, platform, charcoal tank, black shorts, black studio and restrained purple rim. Do not change the approved pose, grip, loading, crop, anatomy or rack-free scene. Make only the smallest lower-ankle contact adjustment needed for the thin sole. No labels, text, stripes or brand logos.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/deadlift-v2-correction/selected.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "deadlift",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 3,
+      "generation_context": {
+        "owner_feedback": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+        "reference_sources": "https://cdn.jtsstrength.com/wp-content/uploads/2022/11/22065452/JTS_DEADLIFT_MANUAL_2020_LR.pdf",
+        "generation_tool": "built-in image_gen",
+        "baseline": "existing-33-e05a3bf38fa7 used first for each generation/edit",
+        "internal_preflight": "Thin flat deadlift slippers with snug uppers and instep straps. Master, footwear, grip/bar detail, 192px and 80px inspected. Existing conventional deadlift pose retained. Selected for owner review only.",
+        "attempt_log": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/deadlift-v2-correction/generation-attempts.json",
+        "scope": "DEV pending candidate only; no source approval, crop approval, promotion, or release."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-24T17:28:40.190862+00:00",
+        "reviewed_at_display": "Sep 24, 2026 10:28 AM PT (Sep 24, 2026 01:28 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+        "source": "human_review_ui"
       }
     }
   ]

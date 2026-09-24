@@ -1,14 +1,15 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { resolveApprovedExactMovementArtwork, movementHeroFocal, movementHeroGeometry } from '../lib/movement-artwork-hero.ts';
-import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES } from '../lib/canonical-movement-artwork.ts';
+import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, canonicalArtworkInputFromDefinition } from '../lib/canonical-movement-artwork.ts';
 import { movementHeroSourceFrame } from '../lib/movement-artwork-geometry.mjs';
 import { approvedExactArtworkPolicy, assertHumanArtworkGate } from './canonical-art-review-gate.mjs';
 const state=JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
 const reuse=JSON.parse(fs.readFileSync('config/governed-movement-art-reuse.json'));
 const reuseRows=[...reuse.shared_artwork_identities,...reuse.legacy_artwork_identities];
 const policy=JSON.parse(fs.readFileSync('artwork-review/runtime-policy.json'));
-const subject=id=>({ identity_type:'accessory', movement_definition_id:id, key:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.key, primary_muscle_group:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.primary });
+const coreCatalog=JSON.parse(fs.readFileSync('config/governed-movement-art-taxonomy.json')).movements.filter(row=>row.kind==='core');
+const subject=id=>coreCatalog.some(row=>row.id===id) ? canonicalArtworkInputFromDefinition(coreCatalog.find(row=>row.id===id)) : ({ identity_type:'accessory', movement_definition_id:id, key:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.key, primary_muscle_group:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.primary });
 assertHumanArtworkGate();
 assert.deepEqual(policy.approved_exact_artwork,approvedExactArtworkPolicy(state));
 for (const row of state.canonical_assets) {

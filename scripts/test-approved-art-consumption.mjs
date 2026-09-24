@@ -15,6 +15,7 @@ const reuse=JSON.parse(fs.readFileSync('config/governed-movement-art-reuse.json'
 const reuseRows=[...reuse.shared_artwork_identities,...reuse.legacy_artwork_identities];
 const policy=JSON.parse(fs.readFileSync('artwork-review/runtime-policy.json'));
 const state=JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
+const coreCatalog=JSON.parse(fs.readFileSync('config/governed-movement-art-taxonomy.json')).movements.filter(row=>row.kind==='core');
 assertHumanArtworkGate();
 assert.deepEqual(policy.approved_exact_artwork,approvedExactArtworkPolicy(state));
 for (const [family, expected] of [['canonical_bodyweight_accessories',103],['canonical_machine_accessories',85]]) {
@@ -58,7 +59,7 @@ const {CanonicalMovementArtwork:thumbnail}=load('components/movement/CanonicalMo
 const {SessionV3Movement:single}=load('components/workout-logger/session-v3-movement.tsx');
 const {SupersetRoundWorkspace:superset}=load('components/workout-logger/superset-round-workspace.tsx');
 const nodes=(tree,type)=>{const out=[];function walk(n){if(!n||typeof n!=='object')return;if(Array.isArray(n)){n.forEach(walk);return;}if(n.type===type)out.push(n);walk(n.props?.children);}walk(tree);return out;};
-const subject=id=>{const row=identity.CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id] || ({91:{key:'accessory_machine_shoulder_press',primary:'front_delts'},999999:{key:'fixture_unapproved_accessory',primary:'side_delts'}})[id];return {identity_type:'accessory',movement_definition_id:id,key:row.key,primary_muscle_group:row.primary};};
+const subject=id=>{const core=coreCatalog.find(row=>row.id===id);if(core)return identity.canonicalArtworkInputFromDefinition(core);const row=identity.CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id] || ({91:{key:'accessory_machine_shoulder_press',primary:'front_delts'},999999:{key:'fixture_unapproved_accessory',primary:'side_delts'}})[id];return {identity_type:'accessory',movement_definition_id:id,key:row.key,primary_muscle_group:row.primary};};
 const renderSingle=(id,expanded,active)=>single({title:'Deliberately unrelated label',index:1,expanded,complete:false,active,onOpen:()=>{},visual:{movementArtworkInput:subject(id)},focus:{currentSetRepsLabel:'6–8 reps',currentSetEffortLabel:'1 RIR'}});
 const renderGroup=(ids,selected,phase)=>superset({groupLabel:'A',expanded:selected!=null,selectedItemId:selected,phase,canLog:phase==='active',swapActionForItem:()=>null,model:{status:'pending',roundCount:1,currentRoundIndex:1,completedRounds:0,rounds:[{index:1,entries:ids.map((id,position)=>({itemId:id,position:position+1}))}],movements:ids.map((id,position)=>({item:{id,title:'Unrelated label',prescription:'1×6–8',movementArtwork:subject(id)},position:position+1,requiredSets:1,loggedRequiredSets:0,nextSetIndex:1,complete:false}))}});
 for(const equipment of [null,{type:'View',props:{children:['Manufacturer']}}]) {
@@ -75,7 +76,7 @@ for(const equipment of [null,{type:'View',props:{children:['Manufacturer']}}]) {
  assert.equal(stage().props.pointerEvents,'none','background never intercepts equipment/picker interaction');
 }
 measuredArtworkEnd=0;
-function assertCue(tree,exact,key){const image=nodes(thumbnail(nodes(tree,'CanonicalMovementArtwork')[0].props),'Image')[0];assert.ok(image);assert.equal(image.props.source,exact?assets.CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[key].source:`anatomy:${identity.resolveCanonicalMovementArtwork(nodes(tree,'CanonicalMovementArtwork')[0].props.movement).regionKey}`);}
+function assertCue(tree,exact,key){const props=nodes(tree,'CanonicalMovementArtwork')[0].props;const resolution=identity.resolveCanonicalMovementArtwork(props.movement);const image=nodes(thumbnail(props),'Image')[0];assert.ok(image);const context=resolution.kind==='core'?assets.CANONICAL_CORE_MOVEMENT_ARTWORK[resolution.family]:`anatomy:${resolution.regionKey}`;assert.equal(image.props.source,exact?assets.CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[key].source:context);}
 for(const receipt of policy.approved_exact_artwork){
  const id=receipt.movement_definition_id,key=receipt.key;
  const resolved=art.resolveApprovedExactMovementArtwork(subject(id),true);

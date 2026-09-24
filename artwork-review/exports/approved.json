@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 2857,
+  "revision": 2884,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-23T21:14:22.774229+00:00",
-  "updated_at_display": "Sep 23, 2026 02:14 PM PT (Sep 23, 2026 05:14 PM Eastern)",
+  "updated_at": "2026-09-24T17:34:48.858481+00:00",
+  "updated_at_display": "Sep 24, 2026 10:34 AM PT (Sep 24, 2026 01:34 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -127,6 +127,46 @@
     },
     "canonical_remaining_accessories": {
       "label": "Remaining Accessories",
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "test_only": false,
+      "baseline": {
+        "movement_definition_id": 33,
+        "key": "accessory_incline_dumbbell_bench_press",
+        "movement_name": "Incline Dumbbell Bench Press",
+        "candidate_asset": "candidates/existing-33-e05a3bf38fa7/master.png",
+        "files": {
+          "master": {
+            "path": "candidates/existing-33-e05a3bf38fa7/master.png",
+            "dimensions": [
+              1254,
+              1254
+            ],
+            "bytes": 1871026,
+            "sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe"
+          },
+          "app": {
+            "path": "candidates/existing-33-e05a3bf38fa7/app.png",
+            "dimensions": [
+              512,
+              512
+            ],
+            "bytes": 317984,
+            "sha256": "14df7b7e03afa5cc37074a53a00117f7da58771821873de5ec0f94fa3e7d60a4"
+          },
+          "thumbnail": {
+            "path": "candidates/existing-33-e05a3bf38fa7/thumbnail.png",
+            "dimensions": [
+              192,
+              192
+            ],
+            "bytes": 46716,
+            "sha256": "741dde3985a23db10a37e71fed4aec03292f95d92758f657e71cea860c4e6cf1"
+          }
+        }
+      }
+    },
+    "canonical_core_sbd": {
+      "label": "Core SBD — source then framing",
       "baseline_candidate_id": "existing-33-e05a3bf38fa7",
       "test_only": false,
       "baseline": {
@@ -27146,6 +27186,182 @@
           "reviewer_user_id": 1,
           "candidate_sha256": "ac61896776a0cae4b7d314554bc424f3af2bea533e5a98e34dbc94237c30d6d9",
           "app_sha256": "4d161b84fdc80cf048e6745d07c90ecdd5608c74f554ffc2f1bc42e4e1626d52",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "cf418260405f8affab901404": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.07,
+        "y": -0.07
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.8,
+          "x": 0.07,
+          "y": -0.07
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T02:15:26.764628+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:15 PM PT (Sep 23, 2026 10:15 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+        "app_sha256": "7541a61a7251e6a90389d211db3e1c9eca82fed604b76e5c064ee755e1395edc",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.8,
+            "x": 0.07,
+            "y": -0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T02:15:26.764628+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:15 PM PT (Sep 23, 2026 10:15 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+          "app_sha256": "7541a61a7251e6a90389d211db3e1c9eca82fed604b76e5c064ee755e1395edc",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "45de1291e0b89701daf66161": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.75,
+        "x": 0.07,
+        "y": -0.02
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.75,
+          "x": 0.07,
+          "y": -0.02
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T02:15:36.876758+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:15 PM PT (Sep 23, 2026 10:15 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+        "app_sha256": "34ce5798659d9be3d3c405f07afa20f15f1639c0bcad77e83a6224828779049a",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.75,
+            "x": 0.07,
+            "y": -0.02
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T02:15:36.876758+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:15 PM PT (Sep 23, 2026 10:15 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+          "app_sha256": "34ce5798659d9be3d3c405f07afa20f15f1639c0bcad77e83a6224828779049a",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "d3645cd2a9b0fdc03ca8f03f": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.1,
+        "y": -0.15
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.7,
+          "x": 0.1,
+          "y": -0.15
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T17:29:06.157109+00:00",
+        "reviewed_at_display": "Sep 24, 2026 10:29 AM PT (Sep 24, 2026 01:29 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+        "app_sha256": "2c2439f2c2b90aaaafa137aff4b1328d8c2ec3a182a501c24180a66912bbbed6",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.1,
+            "y": -0.15
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T17:29:06.157109+00:00",
+          "reviewed_at_display": "Sep 24, 2026 10:29 AM PT (Sep 24, 2026 01:29 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+          "app_sha256": "2c2439f2c2b90aaaafa137aff4b1328d8c2ec3a182a501c24180a66912bbbed6",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "6cb1bd3afd78018b9538aac5": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.75,
+        "x": 0.08,
+        "y": -0.06
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.75,
+          "x": 0.08,
+          "y": -0.06
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T17:29:17.075854+00:00",
+        "reviewed_at_display": "Sep 24, 2026 10:29 AM PT (Sep 24, 2026 01:29 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+        "app_sha256": "4955e749892a946660fc80858e14a716ebc22df8634877c05ce13da2eb5c9b2b",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.75,
+            "x": 0.08,
+            "y": -0.06
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T17:29:17.075854+00:00",
+          "reviewed_at_display": "Sep 24, 2026 10:29 AM PT (Sep 24, 2026 01:29 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+          "app_sha256": "4955e749892a946660fc80858e14a716ebc22df8634877c05ce13da2eb5c9b2b",
           "source": "human_logger_crop_ui"
         }
       ]
@@ -78053,6 +78269,341 @@
         "reviewer": "dev_user_1",
         "reviewer_user_id": 1,
         "candidate_sha256": "a4ef5a331017e47e72b75651ec1fd538b3beb95dcf810f8848129e486029c28c",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 1,
+      "key": "competition_squat",
+      "movement_name": "Competition Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-squat-lowbar-shoes-20260924-v7",
+      "generation_batch": "Core SBD / low-bar squat and powerlifting footwear correction / 2026-09-24",
+      "candidate_id": "d3645cd2a9b0fdc03ca8f03f",
+      "version": 7,
+      "supersedes_candidate_id": "3e1b9f05601506c40d1b9adf",
+      "prior_rejection": {
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "PLEASE PUT THE USER IN PROPER FOOTWARE! THIS IS THE POWERLIFTING SQUAT! IT SHOULD APPEAR TO BE LOW BAR",
+        "tags": [],
+        "reviewed_at": "2026-09-24T16:38:34.856185+00:00",
+        "reviewed_at_display": "Sep 24, 2026 09:38 AM PT (Sep 24, 2026 12:38 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "e8d026bdfcc922182eaab0e954b5cd3a4d6da0de1a7ea9ad9bca96bca10e4914",
+        "source": "human_review_ui"
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/d3645cd2a9b0fdc03ca8f03f/master.png",
+          "sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1739996
+        },
+        "app": {
+          "path": "candidates/d3645cd2a9b0fdc03ca8f03f/app.png",
+          "sha256": "2c2439f2c2b90aaaafa137aff4b1328d8c2ec3a182a501c24180a66912bbbed6",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 333798
+        },
+        "thumbnail": {
+          "path": "candidates/d3645cd2a9b0fdc03ca8f03f/thumbnail.png",
+          "sha256": "a74a2bcad5da1270f964d990c5182651bbf55413085117bb8f2219587d9bcad7",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 52373
+        }
+      },
+      "candidate_asset": "candidates/d3645cd2a9b0fdc03ca8f03f/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T17:28:36.743855+00:00",
+          "reviewed_at_display": "Sep 24, 2026 10:28 AM PT (Sep 24, 2026 01:28 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T16:53:24.114487+00:00",
+      "created_at_display": "Sep 24, 2026 09:53 AM PT (Sep 24, 2026 12:53 PM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit. Edit reference 2, the Competition Squat artwork.\nReference 1 remains the immutable athlete, clothing, lighting and photography baseline.\nReference 3 is the footwear construction reference only.\n\nMake TWO corrections:\n1. Replace BOTH cushioned running shoes with dedicated black weightlifting shoes matching reference 3's firm straight outsole, solid modest raised heel, structured upper, laces and broad secure instep strap. Keep them unbranded black without stripes or lettering. Both shoes are planted flat and naturally attached to the ankles; no foam running-shoe rocker.\n2. Make this unmistakably a LOW-BAR POWERLIFTING SQUAT. Move the SAME straight loaded bar down from the upper trapezius/neck onto the muscular REAR-DELTOID shelf, just below the spine of the scapula. The bar must visibly contact the upper back behind the shoulder caps, clearly below the neck. Retract the shoulders, adjust BOTH grips and elbows naturally to secure the lower bar with neutral wrists, and lean the braced torso farther forward from the hips. Preserve neutral spine/neck and balanced bar projection over midfoot. Show a credible bottom position just below parallel, hips back, knees following the turned-out toes. This is still a squat, not a good morning. The shoulders and hips remain one stable unit; hands stabilize the bar rather than lifting it off the back.\n\nPRESERVE the strong FRONT-DIAGONAL camera angle, same muscular man and dark clothing, full-body movement-centered composition, red calibrated plates/collars, dark studio and subtle violet rim. Preserve the exact existing combo-rack near upright/lever mechanism at the right edge, the rack continuing outside the frame, and the generous walkout clearance. Do not rotate the camera, add a belt or people, redesign the rack, change the bar loading, crop the hands/weights/feet, or add text. Recalculate the bar, arms and torso together for a real low-bar squat.\n\nFOLLOW-UP REFINEMENT:\n\nReference 1 is only the immutable athlete/style baseline. EDIT reference 2, keeping its lifting shoes, diagonal camera, rack, floor, clothing and composition.\n\nThe bar is STILL TOO HIGH. Make the visible correction a REAL LOW-BAR position: lower the entire straight bar, BOTH sleeves/plate stacks and BOTH hands by roughly 5 cm relative to the shoulders. In this 1254-pixel image the current shaft is around y=430; its contact on the near posterior deltoid should be approximately y=475–485, clearly BELOW the rounded top of the visible shoulder cap. The bar must be behind the upper arms on the contracted REAR DELTOID shelf, NOT against the neck or on the upper trapezius. Keep the bar continuous and its plate-center axis straight. The shaft behind the torso is naturally occluded by the shoulder, not painted across the front of the shoulder. Both forearms and grips follow the lower shaft with credible wrists and elbows.\n\nLean the braced torso slightly more forward through the hips to support the lower bar over midfoot. Shoulders are pulled back to form the shelf. Keep squat depth, planted strap-secured lifting shoes, knees tracking toes and neutral neck. Do not make the squat shallower, turn the athlete, alter the rack, move the camera or change the footwear. This edit must VISIBLY lower the bar relative to his shoulders; merely lowering the whole athlete does not accomplish it.\n\nFOLLOW-UP REFINEMENT:\n\nReference 1: immutable athlete/style only. Reference 2: edit target.\nKeep the low-bar squat, both black lifting shoes with straps, pose, diagonal camera, rack and framing exactly unchanged.\n\nCorrect one defect: the steel bar must be ONE STRAIGHT UNBENT SHAFT through both plate-center holes. In reference 2 the visible near-side shaft slopes upward toward the neck; straighten that segment so it lies on the axis joining the two plate centers, approximately y=484 across the image. Keep the entire bar at this lower rear-deltoid height. It passes BEHIND the posterior shoulders, just below the top of the near deltoid, and is occluded where it contacts the upper back. Do not angle the middle up toward the neck. Both hands must grip this same straight line with natural wrists. Retain the same red plate stacks, sleeves and collars, and all other details. Do not raise the bar or reposition the rack.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/squat-v7-correction/selected.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 1,
+      "generation_context": {
+        "owner_feedback": "PLEASE PUT THE USER IN PROPER FOOTWARE! THIS IS THE POWERLIFTING SQUAT! IT SHOULD APPEAR TO BE LOW BAR",
+        "reference_sources": "https://www.adidas.com/bh/en/powerlift-5-weightlifting-shoes/JP6198.html ; https://www.barbellmedicine.com/blog/how-to-squat/",
+        "generation_tool": "built-in image_gen",
+        "baseline": "existing-33-e05a3bf38fa7 used first for each generation/edit",
+        "internal_preflight": "Lower rear-deltoid bar position with firm, strap-secured lifting shoes. Master, bar contact, footwear, 192px and 80px inspected. Two internal attempts withheld. Selected for owner review only.",
+        "attempt_log": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/squat-v7-correction/generation-attempts.json",
+        "scope": "DEV pending candidate only; no source approval, crop approval, promotion, or release."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-24T17:28:36.743855+00:00",
+        "reviewed_at_display": "Sep 24, 2026 10:28 AM PT (Sep 24, 2026 01:28 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 2,
+      "key": "competition_bench",
+      "movement_name": "Competition Bench",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-sbd-20260923-bench_v6",
+      "generation_batch": "Core SBD / 2026-09-23",
+      "candidate_id": "cf418260405f8affab901404",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/cf418260405f8affab901404/master.png",
+          "sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1875902
+        },
+        "app": {
+          "path": "candidates/cf418260405f8affab901404/app.png",
+          "sha256": "7541a61a7251e6a90389d211db3e1c9eca82fed604b76e5c064ee755e1395edc",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 335692
+        },
+        "thumbnail": {
+          "path": "candidates/cf418260405f8affab901404/thumbnail.png",
+          "sha256": "f288d0e9ed113e12231e076296309dab709ead1a44e4a89b0079c729e9909695",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 50634
+        }
+      },
+      "candidate_asset": "candidates/cf418260405f8affab901404/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T02:04:52.534881+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:04 PM PT (Sep 23, 2026 10:04 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T02:01:16.197555+00:00",
+      "created_at_display": "Sep 23, 2026 07:01 PM PT (Sep 23, 2026 10:01 PM Eastern)",
+      "generation_prompt": "Create one photograph of a male powerlifter doing a FLAT BARBELL BENCH PRESS at full arm extension on a competition combo rack and platform. He is completely lying down, looking at the ceiling, both head and butt resting on one horizontal flat bench pad, shoulder blades retracted, a small natural lumbar arch, feet planted. Both straight arms hold one continuous barbell directly over shoulder joints at LOCKOUT, firm wide symmetrical overhand grip. Proper bar oriented perpendicular to the length of the bench. The rack has two identical uprights beyond the athlete's head. The bar is unracked and clear of hooks. Two red calibrated powerlifting plates with collars on each sleeve. Match reference 1 only for man's identity/clothes and realistic dark studio/purple-rim photographic style; DO NOT use the incline bench or seated posture from reference 1. Reference 2 is real flat bench press mechanics. Reference 3 is rack equipment. Elevated side-quarter camera, full equipment, full athlete, both bar ends with at least 10% black breathing space around all sides. Charcoal sleeveless shirt, black shorts and flat black shoes, matte dark competition platform. No other people, text or logos. Body and rack must share one coherent perspective.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-23/selected/bench_v6.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "bench",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 2,
+      "generation_context": {
+        "preflight": "Selected for human review: flat bench, supported head/upper back/pelvis, planted feet, symmetric grip, continuous bar at lockout, coherent matched rack and plate loads. Minor foreshortening remains for owner judgment.",
+        "reference_roles": "Original #33: style/athlete. Eleiko combo sheet: equipment geometry. IPF/Eleiko bench photo: mechanics.",
+        "workflow": "Pending source review; human source approval then separate Logger framing approval; DEV only."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-24T02:04:52.534881+00:00",
+        "reviewed_at_display": "Sep 23, 2026 07:04 PM PT (Sep 23, 2026 10:04 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "94aa883e7f27df1733a041fe237325d0d3d0eca2ce526bbf08a175026d73d092",
+        "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 3,
+      "key": "competition_deadlift",
+      "movement_name": "Competition Deadlift",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_sbd",
+      "generation_id": "core-deadlift-slippers-20260924-v2",
+      "generation_batch": "Core SBD / low-bar squat and powerlifting footwear correction / 2026-09-24",
+      "candidate_id": "6cb1bd3afd78018b9538aac5",
+      "version": 2,
+      "supersedes_candidate_id": "45de1291e0b89701daf66161",
+      "prior_rejection": {
+        "source": "explicit_owner_chat",
+        "owner_instruction": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "recorded_by": "codex_at_owner_request",
+        "action": "reject",
+        "decision": "rejected",
+        "reason": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+        "tags": [],
+        "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+        "reviewer": "owner_via_chat",
+        "reviewed_at": "2026-09-24T16:46:57.484715+00:00",
+        "reviewed_at_display": "Sep 24, 2026 09:46 AM PT (Sep 24, 2026 12:46 PM Eastern)",
+        "superseded_decision": {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T02:05:00.726632+00:00",
+          "reviewed_at_display": "Sep 23, 2026 07:05 PM PT (Sep 23, 2026 10:05 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "ee552d5d9551e9c1f958ab2547a2a0bb097af4adb943df306e048170ab811193",
+          "source": "human_review_ui"
+        }
+      },
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/6cb1bd3afd78018b9538aac5/master.png",
+          "sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1683337
+        },
+        "app": {
+          "path": "candidates/6cb1bd3afd78018b9538aac5/app.png",
+          "sha256": "4955e749892a946660fc80858e14a716ebc22df8634877c05ce13da2eb5c9b2b",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 313947
+        },
+        "thumbnail": {
+          "path": "candidates/6cb1bd3afd78018b9538aac5/thumbnail.png",
+          "sha256": "2339b0079028bb0c4a38420565dec7571fca9a7b138f2ea9e5bf43cdef781ef8",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45528
+        }
+      },
+      "candidate_asset": "candidates/6cb1bd3afd78018b9538aac5/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "reviewed_at": "2026-09-24T17:28:40.190862+00:00",
+          "reviewed_at_display": "Sep 24, 2026 10:28 AM PT (Sep 24, 2026 01:28 PM Eastern)",
+          "reviewer": "dev_user_1",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
+          "source": "human_review_ui"
+        }
+      ],
+      "created_at": "2026-09-24T16:53:40.205509+00:00",
+      "created_at_display": "Sep 24, 2026 09:53 AM PT (Sep 24, 2026 12:53 PM Eastern)",
+      "generation_prompt": "Use case: precise-object-edit.\nReference 1 supplies the immutable Strength Ledger athlete/photographic style. Reference 2 is the exact Competition Deadlift image to edit.\n\nChange ONLY BOTH SHOES. Replace the thick-soled running trainers with actual black DEADLIFT SLIPPERS: very low-profile, snug sock-like fabric uppers, one broad black Velcro strap crossing each instep, and a paper-thin grippy rubber outsole. Zero heel elevation, no raised heel wedge, no foam cushioning, no bulky sneaker toe box, no laces, no running-shoe sole. These are closed-toe powerlifting deadlift slippers that enclose the heel and fit closely around the foot; not socks alone, house slippers, sandals or ballet shoes. Both entire feet must remain planted firmly on the existing platform, in exactly the same stance and orientation.\n\nPreserve the exact athlete, face, conventional deadlift phase, arm/hand placement, straight bar, red calibrated plates/collars, camera angle, platform, charcoal tank, black shorts, black studio and restrained purple rim. Do not change the approved pose, grip, loading, crop, anatomy or rack-free scene. Make only the smallest lower-ankle contact adjustment needed for the thin sole. No labels, text, stripes or brand logos.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/deadlift-v2-correction/selected.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "deadlift",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "competition",
+      "core_movement_definition_id": 3,
+      "generation_context": {
+        "owner_feedback": "while you are at it... reject the deadlift too for some proper shoes like deadlifrt slippers",
+        "reference_sources": "https://cdn.jtsstrength.com/wp-content/uploads/2022/11/22065452/JTS_DEADLIFT_MANUAL_2020_LR.pdf",
+        "generation_tool": "built-in image_gen",
+        "baseline": "existing-33-e05a3bf38fa7 used first for each generation/edit",
+        "internal_preflight": "Thin flat deadlift slippers with snug uppers and instep straps. Master, footwear, grip/bar detail, 192px and 80px inspected. Existing conventional deadlift pose retained. Selected for owner review only.",
+        "attempt_log": "/Users/dominic/powerlifting_app_dev/docs/validation/core-sbd-art-2026-09-24/deadlift-v2-correction/generation-attempts.json",
+        "scope": "DEV pending candidate only; no source approval, crop approval, promotion, or release."
+      },
+      "review": {
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "reviewed_at": "2026-09-24T17:28:40.190862+00:00",
+        "reviewed_at_display": "Sep 24, 2026 10:28 AM PT (Sep 24, 2026 01:28 PM Eastern)",
+        "reviewer": "dev_user_1",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
         "source": "human_review_ui"
       }
     }

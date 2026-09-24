@@ -4,7 +4,7 @@ import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets
 import { resolveApprovedExactMovementArtwork } from '@/lib/movement-artwork-hero';
 import {
   resolveCanonicalMovementArtwork,
-  type CanonicalAccessoryArtworkKey,
+  type CanonicalMovementArtworkKey,
   type CanonicalCoreArtworkFamily,
   type CanonicalMovementArtworkInput,
 } from '@/lib/canonical-movement-artwork';
@@ -24,7 +24,7 @@ export const CANONICAL_CORE_MOVEMENT_ARTWORK: Readonly<
 // Reuse the approved 512px app image at every size. Separate review thumbnails
 // remain audited on disk but must not consume another OTA asset per movement.
 export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Partial<Record<
-  CanonicalAccessoryArtworkKey,
+  CanonicalMovementArtworkKey,
   Readonly<{ source: ImageSourcePropType; label: string }>
 >>> = (__DEV__ || process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight') ? {
   incline_barbell_press: {
@@ -1934,6 +1934,18 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Partial<Record<
   accessory_assisted_dip: {
     source: require('@/assets/images/movement-artwork/approved-completion-v1/accessory_assisted_dip-v1.png'),
     label: "Athlete performing Assisted Dip",
+  },
+  competition_squat: {
+    source: require('@/assets/images/movement-artwork/core-sbd-v1/competition_squat-app.png'),
+    label: 'Athlete performing Competition Squat',
+  },
+  competition_bench: {
+    source: require('@/assets/images/movement-artwork/core-sbd-v1/competition_bench-app.png'),
+    label: 'Athlete performing Competition Bench',
+  },
+  competition_deadlift: {
+    source: require('@/assets/images/movement-artwork/core-sbd-v1/competition_deadlift-app.png'),
+    label: 'Athlete performing Competition Deadlift',
   },
   // Archive bytes remain reviewable locally and are removed from release exports.
   ...(__DEV__ ? {
