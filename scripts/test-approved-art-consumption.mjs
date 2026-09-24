@@ -76,7 +76,17 @@ for(const equipment of [null,{type:'View',props:{children:['Manufacturer']}}]) {
  assert.equal(stage().props.pointerEvents,'none','background never intercepts equipment/picker interaction');
 }
 measuredArtworkEnd=0;
-function assertCue(tree,exact,key){const props=nodes(tree,'CanonicalMovementArtwork')[0].props;const resolution=identity.resolveCanonicalMovementArtwork(props.movement);const image=nodes(thumbnail(props),'Image')[0];assert.ok(image);const context=resolution.kind==='core'?assets.CANONICAL_CORE_MOVEMENT_ARTWORK[resolution.family]:`anatomy:${resolution.regionKey}`;assert.equal(image.props.source,exact?assets.CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[key].source:context);}
+function assertCue(tree,exact,key){
+ const props=nodes(tree,'CanonicalMovementArtwork')[0].props;
+ const resolution=identity.resolveCanonicalMovementArtwork(props.movement), rendered=thumbnail(props);
+ if(!exact && resolution.kind==='core_variant'){
+  const badge=nodes(rendered,'CoreVariantBadge')[0];assert.ok(badge,'expanded variant retains its established contextual badge');
+  assert.equal(badge.props.family,resolution.family);assert.equal(badge.props.liftArtworkSource,assets.CANONICAL_CORE_MOVEMENT_ARTWORK[resolution.family]);return;
+ }
+ const image=nodes(rendered,'Image')[0];assert.ok(image);
+ const context=resolution.kind==='core'?assets.CANONICAL_CORE_MOVEMENT_ARTWORK[resolution.family]:`anatomy:${resolution.regionKey}`;
+ assert.equal(image.props.source,exact?assets.CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[key].source:context);
+}
 for(const receipt of policy.approved_exact_artwork){
  const id=receipt.movement_definition_id,key=receipt.key;
  const resolved=art.resolveApprovedExactMovementArtwork(subject(id),true);

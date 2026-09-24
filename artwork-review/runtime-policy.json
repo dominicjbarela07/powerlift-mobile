@@ -9067,6 +9067,30 @@
       }
     },
     {
+      "key": "block_pull",
+      "movement_definition_id": 623,
+      "candidate_id": "7cd2d4198df556b025b4dbdb",
+      "app_sha256": "1eac91df53c0d64f37fa0a7311320c11186c3f3acbf50114893ef20c88119852",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.06,
+        "y": -0.17
+      }
+    },
+    {
+      "key": "board_press_2_board",
+      "movement_definition_id": 620,
+      "candidate_id": "c74776e88ad21dd8adb47980",
+      "app_sha256": "9101ca42b792e25424cb08509ff2ebc300a5267bcc1c58a4ffb61fc0600c18eb",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.11,
+        "y": 0
+      }
+    },
+    {
       "key": "cable_lat_pulldown_unknown",
       "movement_definition_id": 20,
       "candidate_id": "9848870bec52e3328a139740",
@@ -9126,6 +9150,30 @@
       }
     },
     {
+      "key": "deficit_deadlift",
+      "movement_definition_id": 622,
+      "candidate_id": "d224a191da6cb034d98f0601",
+      "app_sha256": "a731909502e6fa74a17fbdec51f443c0ceb1ff21d3ff2cb3249c100e4f83f874",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.07,
+        "y": -0.16
+      }
+    },
+    {
+      "key": "hatfield_squat",
+      "movement_definition_id": 612,
+      "candidate_id": "9ff2dac8872113befca8ce53",
+      "app_sha256": "6aa86f28bec8b6b277eb469437cf8f35ce618c5c9df48fc3af48e0d2d91362e3",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.12,
+        "y": -0.08
+      }
+    },
+    {
       "key": "incline_barbell_press",
       "movement_definition_id": 6,
       "candidate_id": "existing-6-6df024b1f109",
@@ -9158,6 +9206,30 @@
         "thumbnailFocalY": 0.5,
         "thumbnailScale": 1,
         "cropMode": "contain"
+      }
+    },
+    {
+      "key": "pin_press",
+      "movement_definition_id": 618,
+      "candidate_id": "a135a2de63295f71c6251d5a",
+      "app_sha256": "5a979dbcdd6a976f718cb12e378e24f2abd6219110eda48a8e6a7708b00467bd",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.86,
+        "x": 0.12,
+        "y": -0.09
+      }
+    },
+    {
+      "key": "pin_squat",
+      "movement_definition_id": 607,
+      "candidate_id": "7bd0cf2afee8acae79a8eae3",
+      "app_sha256": "5ff1cdb4901c22668806196b8d7c09c4940948db6e95753ec5b46da53b622c28",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.1,
+        "y": -0.04
       }
     },
     {
@@ -9227,6 +9299,42 @@
         "thumbnailFocalY": 0.5,
         "thumbnailScale": 1,
         "cropMode": "contain"
+      }
+    },
+    {
+      "key": "safety_bar_squat",
+      "movement_definition_id": 609,
+      "candidate_id": "8cf1c1d1e444cf63483a25e9",
+      "app_sha256": "f33b8aad1b47058e5e656871073b219dae6be5671d96469c02c1faeeadd3c295",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.1,
+        "y": -0.08
+      }
+    },
+    {
+      "key": "snatch_grip_deadlift",
+      "movement_definition_id": 627,
+      "candidate_id": "b5036f37e2df3b17777b04cc",
+      "app_sha256": "2f572c65f24a5dc61420f2fff70991d5b460fb2391d03c692ede01d945d615a4",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.09,
+        "y": -0.11
+      }
+    },
+    {
+      "key": "sumo_deadlift",
+      "movement_definition_id": 628,
+      "candidate_id": "044eace0f2b108099b93ae89",
+      "app_sha256": "31b72cbcb7594eeb60dbab318bda1577ef253c8f0c8bb9d2c3d410b758c4dbd0",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.09,
+        "y": -0.07
       }
     }
   ]

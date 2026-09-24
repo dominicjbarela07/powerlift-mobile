@@ -127,107 +127,88 @@
       "artwork_movement_definition_id": 2,
       "artwork_key": "competition_bench",
       "reuse_basis": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
-    }
-  ],
-  "awaiting_specific_artwork": [
+    },
     {
       "movement_definition_id": 607,
       "key": "pin_squat",
-      "movement_name": "Pin Squat",
       "core_movement_definition_id": 39,
-      "movement_family": "squat",
-      "core_kind": "variant",
-      "plan": "flagged",
-      "artwork_movement_definition_id": null,
-      "rationale": "A pin squat requires visible pins supporting the bar at the starting height."
+      "movement_name": "Pin Squat",
+      "artwork_movement_definition_id": 607,
+      "artwork_key": "pin_squat",
+      "reuse_basis": "Exact variant image and Logger framing approved by the owner."
     },
     {
       "movement_definition_id": 609,
       "key": "safety_bar_squat",
-      "movement_name": "Safety Bar Squat (SSB)",
       "core_movement_definition_id": 41,
-      "movement_family": "squat",
-      "core_kind": "variant",
-      "plan": "flagged",
-      "artwork_movement_definition_id": null,
-      "rationale": "A safety-bar squat requires a safety squat bar and its handles."
+      "movement_name": "Safety Bar Squat (SSB)",
+      "artwork_movement_definition_id": 609,
+      "artwork_key": "safety_bar_squat",
+      "reuse_basis": "Exact variant image and Logger framing approved by the owner."
     },
     {
       "movement_definition_id": 612,
       "key": "hatfield_squat",
-      "movement_name": "Hatfield Squat",
       "core_movement_definition_id": 44,
-      "movement_family": "squat",
-      "core_kind": "variant",
-      "plan": "flagged",
-      "artwork_movement_definition_id": null,
-      "rationale": "Hatfield squat requires hands on supports and a safety squat bar."
+      "movement_name": "Hatfield Squat",
+      "artwork_movement_definition_id": 612,
+      "artwork_key": "hatfield_squat",
+      "reuse_basis": "Exact variant image and Logger framing approved by the owner."
     },
     {
       "movement_definition_id": 618,
       "key": "pin_press",
-      "movement_name": "Pin Press",
       "core_movement_definition_id": 50,
-      "movement_family": "bench",
-      "core_kind": "variant",
-      "plan": "flagged",
-      "artwork_movement_definition_id": null,
-      "rationale": "Pin press needs visible pins at the prescribed starting height."
+      "movement_name": "Pin Press",
+      "artwork_movement_definition_id": 618,
+      "artwork_key": "pin_press",
+      "reuse_basis": "Exact variant image and Logger framing approved by the owner."
     },
     {
       "movement_definition_id": 620,
       "key": "board_press_2_board",
-      "movement_name": "Board Press (2-Board)",
       "core_movement_definition_id": 52,
-      "movement_family": "bench",
-      "core_kind": "variant",
-      "plan": "flagged",
-      "artwork_movement_definition_id": null,
-      "rationale": "Two-board press needs the board on the chest and shortened bar travel."
+      "movement_name": "Board Press (2-Board)",
+      "artwork_movement_definition_id": 620,
+      "artwork_key": "board_press_2_board",
+      "reuse_basis": "Exact variant image and Logger framing approved by the owner."
     },
     {
       "movement_definition_id": 622,
       "key": "deficit_deadlift",
-      "movement_name": "Deficit Deadlift",
       "core_movement_definition_id": 54,
-      "movement_family": "deadlift",
-      "core_kind": "variant",
-      "plan": "flagged",
-      "artwork_movement_definition_id": null,
-      "rationale": "Deficit deadlift requires an elevated standing surface."
+      "movement_name": "Deficit Deadlift",
+      "artwork_movement_definition_id": 622,
+      "artwork_key": "deficit_deadlift",
+      "reuse_basis": "Exact variant image and Logger framing approved by the owner."
     },
     {
       "movement_definition_id": 623,
       "key": "block_pull",
-      "movement_name": "Block Pull",
       "core_movement_definition_id": 55,
-      "movement_family": "deadlift",
-      "core_kind": "variant",
-      "plan": "flagged",
-      "artwork_movement_definition_id": null,
-      "rationale": "Block pull requires plates supported on blocks."
+      "movement_name": "Block Pull",
+      "artwork_movement_definition_id": 623,
+      "artwork_key": "block_pull",
+      "reuse_basis": "Exact variant image and Logger framing approved by the owner."
     },
     {
       "movement_definition_id": 627,
       "key": "snatch_grip_deadlift",
-      "movement_name": "Snatch Grip Deadlift",
       "core_movement_definition_id": 59,
-      "movement_family": "deadlift",
-      "core_kind": "variant",
-      "plan": "flagged",
-      "artwork_movement_definition_id": null,
-      "rationale": "Snatch-grip deadlift requires a visibly wider grip."
+      "movement_name": "Snatch Grip Deadlift",
+      "artwork_movement_definition_id": 627,
+      "artwork_key": "snatch_grip_deadlift",
+      "reuse_basis": "Exact variant image and Logger framing approved by the owner."
     },
     {
       "movement_definition_id": 628,
       "key": "sumo_deadlift",
-      "movement_name": "Sumo Deadlift",
       "core_movement_definition_id": 60,
-      "movement_family": "deadlift",
-      "core_kind": "variant",
-      "plan": "flagged",
-      "artwork_movement_definition_id": null,
-      "rationale": "Sumo deadlift requires a wide stance with arms inside the legs."
+      "movement_name": "Sumo Deadlift",
+      "artwork_movement_definition_id": 628,
+      "artwork_key": "sumo_deadlift",
+      "reuse_basis": "Exact variant image and Logger framing approved by the owner."
     }
-  ]
+  ],
+  "awaiting_specific_artwork": []
 }

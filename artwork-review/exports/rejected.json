@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 2884,
+  "revision": 2927,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-24T17:34:48.858481+00:00",
-  "updated_at_display": "Sep 24, 2026 10:34 AM PT (Sep 24, 2026 01:34 PM Eastern)",
+  "updated_at": "2026-09-24T19:59:43.103765+00:00",
+  "updated_at_display": "Sep 24, 2026 12:59 PM PT (Sep 24, 2026 03:59 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -167,6 +167,46 @@
     },
     "canonical_core_sbd": {
       "label": "Core SBD — source then framing",
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "test_only": false,
+      "baseline": {
+        "movement_definition_id": 33,
+        "key": "accessory_incline_dumbbell_bench_press",
+        "movement_name": "Incline Dumbbell Bench Press",
+        "candidate_asset": "candidates/existing-33-e05a3bf38fa7/master.png",
+        "files": {
+          "master": {
+            "path": "candidates/existing-33-e05a3bf38fa7/master.png",
+            "dimensions": [
+              1254,
+              1254
+            ],
+            "bytes": 1871026,
+            "sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe"
+          },
+          "app": {
+            "path": "candidates/existing-33-e05a3bf38fa7/app.png",
+            "dimensions": [
+              512,
+              512
+            ],
+            "bytes": 317984,
+            "sha256": "14df7b7e03afa5cc37074a53a00117f7da58771821873de5ec0f94fa3e7d60a4"
+          },
+          "thumbnail": {
+            "path": "candidates/existing-33-e05a3bf38fa7/thumbnail.png",
+            "dimensions": [
+              192,
+              192
+            ],
+            "bytes": 46716,
+            "sha256": "741dde3985a23db10a37e71fed4aec03292f95d92758f657e71cea860c4e6cf1"
+          }
+        }
+      }
+    },
+    "canonical_core_variants": {
+      "label": "Core variants — source then framing",
       "baseline_candidate_id": "existing-33-e05a3bf38fa7",
       "test_only": false,
       "baseline": {
@@ -27362,6 +27402,402 @@
           "reviewer_user_id": 1,
           "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
           "app_sha256": "4955e749892a946660fc80858e14a716ebc22df8634877c05ce13da2eb5c9b2b",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "d224a191da6cb034d98f0601": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.07,
+        "y": -0.16
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.7,
+          "x": 0.07,
+          "y": -0.16
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T19:49:30.005851+00:00",
+        "reviewed_at_display": "Sep 24, 2026 12:49 PM PT (Sep 24, 2026 03:49 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5ba80bffaf5c22def85f3a83a5b774b35bfc71c582eb8b682c6c6f01be54f847",
+        "app_sha256": "a731909502e6fa74a17fbdec51f443c0ceb1ff21d3ff2cb3249c100e4f83f874",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.07,
+            "y": -0.16
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T19:49:30.005851+00:00",
+          "reviewed_at_display": "Sep 24, 2026 12:49 PM PT (Sep 24, 2026 03:49 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5ba80bffaf5c22def85f3a83a5b774b35bfc71c582eb8b682c6c6f01be54f847",
+          "app_sha256": "a731909502e6fa74a17fbdec51f443c0ceb1ff21d3ff2cb3249c100e4f83f874",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "7cd2d4198df556b025b4dbdb": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.06,
+        "y": -0.17
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.7,
+          "x": 0.06,
+          "y": -0.17
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T19:49:40.365054+00:00",
+        "reviewed_at_display": "Sep 24, 2026 12:49 PM PT (Sep 24, 2026 03:49 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "87a47e793d5c39a33198613b5bb41bae5f16164e8f7f2d97abe2f091efa619a9",
+        "app_sha256": "1eac91df53c0d64f37fa0a7311320c11186c3f3acbf50114893ef20c88119852",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.06,
+            "y": -0.17
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T19:49:40.365054+00:00",
+          "reviewed_at_display": "Sep 24, 2026 12:49 PM PT (Sep 24, 2026 03:49 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "87a47e793d5c39a33198613b5bb41bae5f16164e8f7f2d97abe2f091efa619a9",
+          "app_sha256": "1eac91df53c0d64f37fa0a7311320c11186c3f3acbf50114893ef20c88119852",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "b5036f37e2df3b17777b04cc": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.09,
+        "y": -0.11
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.7,
+          "x": 0.09,
+          "y": -0.11
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T19:49:48.467448+00:00",
+        "reviewed_at_display": "Sep 24, 2026 12:49 PM PT (Sep 24, 2026 03:49 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "c4837497b7cb86912620c9e946bbe9038dbb7eb6ecc2815a89e012fe52557ccd",
+        "app_sha256": "2f572c65f24a5dc61420f2fff70991d5b460fb2391d03c692ede01d945d615a4",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.09,
+            "y": -0.11
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T19:49:48.467448+00:00",
+          "reviewed_at_display": "Sep 24, 2026 12:49 PM PT (Sep 24, 2026 03:49 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "c4837497b7cb86912620c9e946bbe9038dbb7eb6ecc2815a89e012fe52557ccd",
+          "app_sha256": "2f572c65f24a5dc61420f2fff70991d5b460fb2391d03c692ede01d945d615a4",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "044eace0f2b108099b93ae89": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.09,
+        "y": -0.07
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.7,
+          "x": 0.09,
+          "y": -0.07
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T19:50:04.941755+00:00",
+        "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "2d8f580c00218e5694041f285ff59994106f7f4f317096f1d3e7602219b22545",
+        "app_sha256": "31b72cbcb7594eeb60dbab318bda1577ef253c8f0c8bb9d2c3d410b758c4dbd0",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.09,
+            "y": -0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T19:50:04.941755+00:00",
+          "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "2d8f580c00218e5694041f285ff59994106f7f4f317096f1d3e7602219b22545",
+          "app_sha256": "31b72cbcb7594eeb60dbab318bda1577ef253c8f0c8bb9d2c3d410b758c4dbd0",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "8cf1c1d1e444cf63483a25e9": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.7,
+        "x": 0.1,
+        "y": -0.08
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.7,
+          "x": 0.1,
+          "y": -0.08
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T19:50:17.594108+00:00",
+        "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "f5275d4b16fb92025f9920bf5547c860b164929b3806aa32a9520a06253ed6e7",
+        "app_sha256": "f33b8aad1b47058e5e656871073b219dae6be5671d96469c02c1faeeadd3c295",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.1,
+            "y": -0.08
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T19:50:17.594108+00:00",
+          "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f5275d4b16fb92025f9920bf5547c860b164929b3806aa32a9520a06253ed6e7",
+          "app_sha256": "f33b8aad1b47058e5e656871073b219dae6be5671d96469c02c1faeeadd3c295",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "7bd0cf2afee8acae79a8eae3": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.9,
+        "x": 0.1,
+        "y": -0.04
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.9,
+          "x": 0.1,
+          "y": -0.04
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T19:50:31.695748+00:00",
+        "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d8e6d93f56d7cb3b366bbcb9a40d7d94a7f7966d4a927090e33ef22861874249",
+        "app_sha256": "5ff1cdb4901c22668806196b8d7c09c4940948db6e95753ec5b46da53b622c28",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.9,
+            "x": 0.1,
+            "y": -0.04
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T19:50:31.695748+00:00",
+          "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d8e6d93f56d7cb3b366bbcb9a40d7d94a7f7966d4a927090e33ef22861874249",
+          "app_sha256": "5ff1cdb4901c22668806196b8d7c09c4940948db6e95753ec5b46da53b622c28",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "9ff2dac8872113befca8ce53": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.12,
+        "y": -0.08
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.8,
+          "x": 0.12,
+          "y": -0.08
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T19:50:47.829902+00:00",
+        "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5e3f3eccd0af6f64e36106f307c5938b5213f099fe0dfdec5a2fe6eba3cb862d",
+        "app_sha256": "6aa86f28bec8b6b277eb469437cf8f35ce618c5c9df48fc3af48e0d2d91362e3",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.8,
+            "x": 0.12,
+            "y": -0.08
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T19:50:47.829902+00:00",
+          "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5e3f3eccd0af6f64e36106f307c5938b5213f099fe0dfdec5a2fe6eba3cb862d",
+          "app_sha256": "6aa86f28bec8b6b277eb469437cf8f35ce618c5c9df48fc3af48e0d2d91362e3",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "a135a2de63295f71c6251d5a": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.86,
+        "x": 0.12,
+        "y": -0.09
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.86,
+          "x": 0.12,
+          "y": -0.09
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T19:50:59.134468+00:00",
+        "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "5993833c52ae778f3a1d25004cd7564e215bbd09b5ca63d604e6fceb129f494c",
+        "app_sha256": "5a979dbcdd6a976f718cb12e378e24f2abd6219110eda48a8e6a7708b00467bd",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.86,
+            "x": 0.12,
+            "y": -0.09
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T19:50:59.134468+00:00",
+          "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5993833c52ae778f3a1d25004cd7564e215bbd09b5ca63d604e6fceb129f494c",
+          "app_sha256": "5a979dbcdd6a976f718cb12e378e24f2abd6219110eda48a8e6a7708b00467bd",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "c74776e88ad21dd8adb47980": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.8,
+        "x": 0.11,
+        "y": 0
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.8,
+          "x": 0.11,
+          "y": 0
+        },
+        "reason": "",
+        "reviewed_at": "2026-09-24T19:51:11.310775+00:00",
+        "reviewed_at_display": "Sep 24, 2026 12:51 PM PT (Sep 24, 2026 03:51 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "d5a0b572646e1b43f05e1d72ff2b50d14d13bdec84f2dd3d7323b4f2656b6f67",
+        "app_sha256": "9101ca42b792e25424cb08509ff2ebc300a5267bcc1c58a4ffb61fc0600c18eb",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.8,
+            "x": 0.11,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-09-24T19:51:11.310775+00:00",
+          "reviewed_at_display": "Sep 24, 2026 12:51 PM PT (Sep 24, 2026 03:51 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d5a0b572646e1b43f05e1d72ff2b50d14d13bdec84f2dd3d7323b4f2656b6f67",
+          "app_sha256": "9101ca42b792e25424cb08509ff2ebc300a5267bcc1c58a4ffb61fc0600c18eb",
           "source": "human_logger_crop_ui"
         }
       ]

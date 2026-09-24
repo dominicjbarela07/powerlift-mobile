@@ -15,9 +15,11 @@ import { MovementArtworkHeroLayer } from '@/components/movement/MovementArtworkH
 import { movementHeroDefaultFocal } from '@/lib/movement-artwork-hero';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, type CanonicalAccessoryArtworkKey } from '@/lib/canonical-movement-artwork';
 import type { Presentation, LoggerCrop } from '@/lib/movement-artwork-geometry.mjs';
+import { canonicalArtworkInputFromDefinition } from '@/lib/canonical-movement-art-subject';
 
 type Preview = { candidate_id: string; movement_definition_id: number; key: string; movement_name: string;
-  primary_muscle_group: string; equipment_type: string; presentation?: Presentation;
+  primary_muscle_group: string | null; equipment_type: string; presentation?: Presentation;
+  kind?: string; core_kind?: string; core_movement_definition_id?: number; movement_family?: string;
   testOnly: boolean; source: string; dimensions: [number, number]; crop: LoggerCrop; machineSelected: boolean };
 const send = (data: object) => window.parent.postMessage(data, location.origin);
 function PreviewApp() {
@@ -55,9 +57,12 @@ function PreviewApp() {
   if (!fontsLoaded || !item) return <Text style={{color:'#b9a7cb',padding:20}}>Loading canonical Logger…</Text>;
   const machine = item.equipment_type === 'machine';
   const selected = item.machineSelected;
-  const identityId = item.testOnly ? Number(Object.entries(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES).find(([, row]) => row.key === item.key)?.[0]) || item.movement_definition_id : item.movement_definition_id;
-  const movement = { identity_type: 'accessory' as const, movement_definition_id: identityId,
-    key: item.key, primary_muscle_group: item.primary_muscle_group };
+  const core = item.kind === 'core';
+  const identityId = item.testOnly && !core ? Number(Object.entries(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES).find(([, row]) => row.key === item.key)?.[0]) || item.movement_definition_id : item.movement_definition_id;
+  const movement = canonicalArtworkInputFromDefinition({id:identityId,key:item.key,
+    kind:core?'core':'accessory',family:item.movement_family,core_kind:item.core_kind,
+    core_movement_definition_id:item.core_movement_definition_id,
+    equipment_type:item.equipment_type,primary_muscle_group:item.primary_muscle_group});
   return <SafeAreaProvider initialMetrics={{frame:{x:0,y:0,width:window.innerWidth,height:window.innerHeight},insets:{top:0,left:0,right:0,bottom:0}}}>
     <View style={{backgroundColor:'#000'}} onLayout={event => send({type:'logger-height',height:event.nativeEvent.layout.height})}>
       <SessionV3Header title="Session" subtitle="Movement art preview" active={false} inset={8}
@@ -66,7 +71,7 @@ function PreviewApp() {
         <SessionV3MovementLayout title={item.movement_name} index={1} expanded complete={false} reduceMotion onOpen={() => undefined}
           visual={{liftLabel:item.movement_name,liftAccentColor:'#ab83e3',movementArtworkInput:movement}}
           focus={{movementName:item.movement_name,currentSetLabel:'Set 1',currentSetPositionLabel:'SET 1 OF 3',
-            currentSetLoadLabel:item.equipment_type==='bodyweight' ? undefined : '100 lb',currentSetRepsLabel:'12–15',currentSetEffortLabel:'1 RIR',progressionLabel:'0 / 3',rail:[],canLog:false,canRepeat:false}}
+            currentSetLoadLabel:item.equipment_type==='bodyweight' ? undefined : core?'225 lb':'100 lb',currentSetRepsLabel:core?'3':'12–15',currentSetEffortLabel:core?'2 RIR':'1 RIR',progressionLabel:'0 / 3',rail:[],canLog:false,canRepeat:false}}
           artwork={<MovementArtworkHeroLayer key={item.candidate_id} source={{uri:item.source}} sourceWidth={item.dimensions[0]} sourceHeight={item.dimensions[1]}
             focal={item.presentation || movementHeroDefaultFocal(item.key as CanonicalAccessoryArtworkKey)} crop={item.crop} receiptId={item.candidate_id} reduceMotion
             onLoad={() => setLoadedId(item.candidate_id)}

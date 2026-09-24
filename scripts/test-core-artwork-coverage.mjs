@@ -43,7 +43,7 @@ for (const definition of catalog) {
   covered.push(definition.id);
 }
 assert.equal(new Set([...covered, ...uncovered.keys()]).size, catalog.length);
-for (const id of [1, 2, 3]) {
+for (const id of reuse.mappings.filter(row => row.movement_definition_id === row.artwork_movement_definition_id).map(row => row.movement_definition_id)) {
   const changed = structuredClone(state);
   const source = changed.items.find(row => row.candidate_id === changed.canonical_assets.find(row => row.movement_definition_id === id).candidate_id);
   delete changed.logger_crop_reviews[source.candidate_id];
