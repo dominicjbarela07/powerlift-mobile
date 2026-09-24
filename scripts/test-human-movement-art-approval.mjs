@@ -21,9 +21,9 @@ assert.equal(isMovementArtworkReviewDenied('example', false, ['example']), false
 
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'sl-art-approval-gate-'));
 // In-memory fixture only: source approval cannot substitute for Core framing.
-{
+for (const coreFamily of ['canonical_core_sbd', 'canonical_core_variants']) {
   const source = structuredClone(state.items.find(row => row.movement_definition_id === 33 && row.status === 'approved_existing'));
-  source.family = 'canonical_core_sbd';
+  source.family = coreFamily;
   const fixture = {items:[source], canonical_assets:[{key:source.key,
     movement_definition_id:source.movement_definition_id,candidate_id:source.candidate_id,files:source.files}]};
   assert.deepEqual(approvedExactArtworkPolicy(fixture), [], 'Core source approval alone is insufficient');

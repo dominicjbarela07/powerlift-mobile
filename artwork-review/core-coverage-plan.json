@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "scope": "DEV review proposal only; not a runtime registry",
+  "movements": [
+    {
+      "movement_definition_id": 1,
+      "key": "competition_squat",
+      "movement_name": "Competition Squat",
+      "core_movement_definition_id": 1,
+      "movement_family": "squat",
+      "core_kind": "competition",
+      "plan": "new_parent",
+      "artwork_movement_definition_id": 1,
+      "rationale": "Canonical competition lift candidate."
+    },
+    {
+      "movement_definition_id": 2,
+      "key": "competition_bench",
+      "movement_name": "Competition Bench",
+      "core_movement_definition_id": 2,
+      "movement_family": "bench",
+      "core_kind": "competition",
+      "plan": "new_parent",
+      "artwork_movement_definition_id": 2,
+      "rationale": "Canonical competition lift candidate."
+    },
+    {
+      "movement_definition_id": 3,
+      "key": "competition_deadlift",
+      "movement_name": "Competition Deadlift",
+      "core_movement_definition_id": 3,
+      "movement_family": "deadlift",
+      "core_kind": "competition",
+      "plan": "new_parent",
+      "artwork_movement_definition_id": 3,
+      "rationale": "Canonical competition lift candidate."
+    },
+    {
+      "movement_definition_id": 605,
+      "key": "pause_squat",
+      "movement_name": "Pause Squat",
+      "core_movement_definition_id": 37,
+      "movement_family": "squat",
+      "core_kind": "variant",
+      "plan": "proposed_reuse",
+      "artwork_movement_definition_id": 1,
+      "rationale": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 606,
+      "key": "tempo_squat_3_0_3",
+      "movement_name": "Tempo Squat (3-0-3)",
+      "core_movement_definition_id": 38,
+      "movement_family": "squat",
+      "core_kind": "variant",
+      "plan": "proposed_reuse",
+      "artwork_movement_definition_id": 1,
+      "rationale": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 607,
+      "key": "pin_squat",
+      "movement_name": "Pin Squat",
+      "core_movement_definition_id": 39,
+      "movement_family": "squat",
+      "core_kind": "variant",
+      "plan": "dedicated_variant",
+      "artwork_movement_definition_id": 607,
+      "rationale": "A pin squat requires visible pins supporting the bar at the starting height."
+    },
+    {
+      "movement_definition_id": 608,
+      "key": "front_squat",
+      "movement_name": "Front Squat",
+      "core_movement_definition_id": 40,
+      "movement_family": "squat",
+      "core_kind": "variant",
+      "plan": "retain_exact",
+      "artwork_movement_definition_id": 348,
+      "rationale": "Retain the existing approved exact image and its original crop receipt."
+    },
+    {
+      "movement_definition_id": 609,
+      "key": "safety_bar_squat",
+      "movement_name": "Safety Bar Squat (SSB)",
+      "core_movement_definition_id": 41,
+      "movement_family": "squat",
+      "core_kind": "variant",
+      "plan": "dedicated_variant",
+      "artwork_movement_definition_id": 609,
+      "rationale": "A safety-bar squat requires a safety squat bar and its handles."
+    },
+    {
+      "movement_definition_id": 610,
+      "key": "high_bar_squat",
+      "movement_name": "High Bar Squat",
+      "core_movement_definition_id": 42,
+      "movement_family": "squat",
+      "core_kind": "variant",
+      "plan": "retain_exact",
+      "artwork_movement_definition_id": 349,
+      "rationale": "Retain the existing approved exact image and its original crop receipt."
+    },
+    {
+      "movement_definition_id": 611,
+      "key": "low_bar_squat",
+      "movement_name": "Low Bar Squat",
+      "core_movement_definition_id": 43,
+      "movement_family": "squat",
+      "core_kind": "variant",
+      "plan": "proposed_reuse",
+      "artwork_movement_definition_id": 1,
+      "rationale": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 612,
+      "key": "hatfield_squat",
+      "movement_name": "Hatfield Squat",
+      "core_movement_definition_id": 44,
+      "movement_family": "squat",
+      "core_kind": "variant",
+      "plan": "dedicated_variant",
+      "artwork_movement_definition_id": 612,
+      "rationale": "Hatfield squat requires hands on supports and a safety squat bar."
+    },
+    {
+      "movement_definition_id": 613,
+      "key": "pause_bench_press",
+      "movement_name": "Pause Bench Press",
+      "core_movement_definition_id": 45,
+      "movement_family": "bench",
+      "core_kind": "variant",
+      "plan": "proposed_reuse",
+      "artwork_movement_definition_id": 2,
+      "rationale": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 614,
+      "key": "larsen_press",
+      "movement_name": "Larsen Press",
+      "core_movement_definition_id": 46,
+      "movement_family": "bench",
+      "core_kind": "variant",
+      "plan": "retain_exact",
+      "artwork_movement_definition_id": 44,
+      "rationale": "Retain the existing approved exact image and its original crop receipt."
+    },
+    {
+      "movement_definition_id": 615,
+      "key": "spoto_press",
+      "movement_name": "Spoto Press",
+      "core_movement_definition_id": 47,
+      "movement_family": "bench",
+      "core_kind": "variant",
+      "plan": "retain_exact",
+      "artwork_movement_definition_id": 43,
+      "rationale": "Retain the existing approved exact image and its original crop receipt."
+    },
+    {
+      "movement_definition_id": 616,
+      "key": "close_grip_bench",
+      "movement_name": "Close Grip Bench",
+      "core_movement_definition_id": 48,
+      "movement_family": "bench",
+      "core_kind": "variant",
+      "plan": "retain_exact",
+      "artwork_movement_definition_id": 289,
+      "rationale": "Retain the existing approved exact image and its original crop receipt."
+    },
+    {
+      "movement_definition_id": 617,
+      "key": "wide_grip_bench",
+      "movement_name": "Wide Grip Bench",
+      "core_movement_definition_id": 49,
+      "movement_family": "bench",
+      "core_kind": "variant",
+      "plan": "proposed_reuse",
+      "artwork_movement_definition_id": 2,
+      "rationale": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 618,
+      "key": "pin_press",
+      "movement_name": "Pin Press",
+      "core_movement_definition_id": 50,
+      "movement_family": "bench",
+      "core_kind": "variant",
+      "plan": "dedicated_variant",
+      "artwork_movement_definition_id": 618,
+      "rationale": "Pin press needs visible pins at the prescribed starting height."
+    },
+    {
+      "movement_definition_id": 619,
+      "key": "tempo_bench_3_0_3",
+      "movement_name": "Tempo Bench (3-0-3)",
+      "core_movement_definition_id": 51,
+      "movement_family": "bench",
+      "core_kind": "variant",
+      "plan": "proposed_reuse",
+      "artwork_movement_definition_id": 2,
+      "rationale": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 620,
+      "key": "board_press_2_board",
+      "movement_name": "Board Press (2-Board)",
+      "core_movement_definition_id": 52,
+      "movement_family": "bench",
+      "core_kind": "variant",
+      "plan": "dedicated_variant",
+      "artwork_movement_definition_id": 620,
+      "rationale": "Two-board press needs the board on the chest and shortened bar travel."
+    },
+    {
+      "movement_definition_id": 621,
+      "key": "pause_deadlift",
+      "movement_name": "Pause Deadlift",
+      "core_movement_definition_id": 53,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "proposed_reuse",
+      "artwork_movement_definition_id": 3,
+      "rationale": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 622,
+      "key": "deficit_deadlift",
+      "movement_name": "Deficit Deadlift",
+      "core_movement_definition_id": 54,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "dedicated_variant",
+      "artwork_movement_definition_id": 622,
+      "rationale": "Deficit deadlift requires an elevated standing surface."
+    },
+    {
+      "movement_definition_id": 623,
+      "key": "block_pull",
+      "movement_name": "Block Pull",
+      "core_movement_definition_id": 55,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "dedicated_variant",
+      "artwork_movement_definition_id": 623,
+      "rationale": "Block pull requires plates supported on blocks."
+    },
+    {
+      "movement_definition_id": 624,
+      "key": "tempo_deadlift_3_0_3",
+      "movement_name": "Tempo Deadlift (3-0-3)",
+      "core_movement_definition_id": 56,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "proposed_reuse",
+      "artwork_movement_definition_id": 3,
+      "rationale": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 625,
+      "key": "romanian_deadlift",
+      "movement_name": "Romanian Deadlift (RDL)",
+      "core_movement_definition_id": 57,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "retain_exact",
+      "artwork_movement_definition_id": 387,
+      "rationale": "Retain the existing approved exact image and its original crop receipt."
+    },
+    {
+      "movement_definition_id": 626,
+      "key": "stiff_leg_deadlift",
+      "movement_name": "Stiff-Leg Deadlift",
+      "core_movement_definition_id": 58,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "retain_exact",
+      "artwork_movement_definition_id": 391,
+      "rationale": "Retain the existing approved exact image and its original crop receipt."
+    },
+    {
+      "movement_definition_id": 627,
+      "key": "snatch_grip_deadlift",
+      "movement_name": "Snatch Grip Deadlift",
+      "core_movement_definition_id": 59,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "dedicated_variant",
+      "artwork_movement_definition_id": 627,
+      "rationale": "Snatch-grip deadlift requires a visibly wider grip."
+    },
+    {
+      "movement_definition_id": 628,
+      "key": "sumo_deadlift",
+      "movement_name": "Sumo Deadlift",
+      "core_movement_definition_id": 60,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "dedicated_variant",
+      "artwork_movement_definition_id": 628,
+      "rationale": "Sumo deadlift requires a wide stance with arms inside the legs."
+    },
+    {
+      "movement_definition_id": 629,
+      "key": "conventional_deadlift",
+      "movement_name": "Conventional Deadlift",
+      "core_movement_definition_id": 61,
+      "movement_family": "deadlift",
+      "core_kind": "variant",
+      "plan": "proposed_reuse",
+      "artwork_movement_definition_id": 3,
+      "rationale": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 630,
+      "key": "three_count_pause_squat",
+      "movement_name": "3ct Pause Squat",
+      "core_movement_definition_id": 70,
+      "movement_family": "squat",
+      "core_kind": "variant",
+      "plan": "proposed_reuse",
+      "artwork_movement_definition_id": 1,
+      "rationale": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 631,
+      "key": "two_count_pause_bench",
+      "movement_name": "2ct Pause Bench",
+      "core_movement_definition_id": 71,
+      "movement_family": "bench",
+      "core_kind": "variant",
+      "plan": "proposed_reuse",
+      "artwork_movement_definition_id": 2,
+      "rationale": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    }
+  ],
+  "generation_authorization": {
+    "source": "explicit_owner_chat",
+    "instruction": "Create specific images for separate review",
+    "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+    "date": "2026-09-24",
+    "review_required": "Separate source approval then exact-image Logger crop approval; no automatic promotion."
+  }
+}

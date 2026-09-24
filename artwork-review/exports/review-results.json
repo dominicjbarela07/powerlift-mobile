@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 2884,
+  "revision": 2894,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-24T17:34:48.858481+00:00",
-  "updated_at_display": "Sep 24, 2026 10:34 AM PT (Sep 24, 2026 01:34 PM Eastern)",
+  "updated_at": "2026-09-24T18:12:39.389611+00:00",
+  "updated_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -167,6 +167,46 @@
     },
     "canonical_core_sbd": {
       "label": "Core SBD — source then framing",
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "test_only": false,
+      "baseline": {
+        "movement_definition_id": 33,
+        "key": "accessory_incline_dumbbell_bench_press",
+        "movement_name": "Incline Dumbbell Bench Press",
+        "candidate_asset": "candidates/existing-33-e05a3bf38fa7/master.png",
+        "files": {
+          "master": {
+            "path": "candidates/existing-33-e05a3bf38fa7/master.png",
+            "dimensions": [
+              1254,
+              1254
+            ],
+            "bytes": 1871026,
+            "sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe"
+          },
+          "app": {
+            "path": "candidates/existing-33-e05a3bf38fa7/app.png",
+            "dimensions": [
+              512,
+              512
+            ],
+            "bytes": 317984,
+            "sha256": "14df7b7e03afa5cc37074a53a00117f7da58771821873de5ec0f94fa3e7d60a4"
+          },
+          "thumbnail": {
+            "path": "candidates/existing-33-e05a3bf38fa7/thumbnail.png",
+            "dimensions": [
+              192,
+              192
+            ],
+            "bytes": 46716,
+            "sha256": "741dde3985a23db10a37e71fed4aec03292f95d92758f657e71cea860c4e6cf1"
+          }
+        }
+      }
+    },
+    "canonical_core_variants": {
+      "label": "Core variants — source then framing",
       "baseline_candidate_id": "existing-33-e05a3bf38fa7",
       "test_only": false,
       "baseline": {
@@ -27433,13 +27473,13 @@
       "recorded_at_display": "Sep 20, 2026 04:12 PM PT (Sep 20, 2026 07:12 PM Eastern)"
     }
   ],
-  "total": 478,
+  "total": 487,
   "counts": {
     "approved": 478,
     "rejected": 0,
-    "pending": 0
+    "pending": 9
   },
-  "batch_fully_approved": true,
+  "batch_fully_approved": false,
   "items": [
     {
       "movement_definition_id": 6,
@@ -78612,6 +78652,681 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
         "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 622,
+      "key": "deficit_deadlift",
+      "movement_name": "Deficit Deadlift",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-622-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "d224a191da6cb034d98f0601",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/d224a191da6cb034d98f0601/master.png",
+          "sha256": "5ba80bffaf5c22def85f3a83a5b774b35bfc71c582eb8b682c6c6f01be54f847",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1783419
+        },
+        "app": {
+          "path": "candidates/d224a191da6cb034d98f0601/app.png",
+          "sha256": "a731909502e6fa74a17fbdec51f443c0ceb1ff21d3ff2cb3249c100e4f83f874",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 322333
+        },
+        "thumbnail": {
+          "path": "candidates/d224a191da6cb034d98f0601/thumbnail.png",
+          "sha256": "2bf41c7c2beeb4ef06b2980c79d1ba1d7ca41a97bc6f1b95e1c8c48d3bda7a6a",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46631
+        }
+      },
+      "candidate_asset": "candidates/d224a191da6cb034d98f0601/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:30.439245+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement photograph. Reference 1 is the immutable athlete/clothing/lighting baseline. Reference 2 supplies the deadlift slippers, realistic competition bar, calibrated red plates and black platform. Same athlete and charcoal tank/black shorts. Black snug deadlift slippers with paper-thin flat soles and straps, no running shoes. Athlete actively performs the movement, never posing for the camera. Strong front-diagonal camera at torso height, natural proportions, straight bar through aligned plate holes, locking collars outside matched stacks, genuine two-handed grip and normal wrists. Whole athlete and both loaded sleeves in frame; no text, logos, watermarks or extra people. OLED-black studio, subtle violet rim. Depict DEFICIT CONVENTIONAL DEADLIFT at the moment the plates break from the floor. Both feet hip-width on ONE low rigid rectangular black riser only 5cm thick, entirely on the large platform. The riser fits under the feet only and clearly ends before the plate stacks; both loaded plate stacks are OUTSIDE this riser over the lower platform surface. Knees naturally bent, hips hinged above knees, neutral braced back/neck, straight arms outside legs with conventional shoulder-width grip. Bar close to shins above midfoot. Both feet fully planted on the top of the riser. Plates just 1cm above the lower main platform; no plates on the riser and no blocks beneath the weights.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/deficit_deadlift/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "deadlift",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 54,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/6cb1bd3afd78018b9538aac5/master.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
+      }
+    },
+    {
+      "movement_definition_id": 623,
+      "key": "block_pull",
+      "movement_name": "Block Pull",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-623-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "7cd2d4198df556b025b4dbdb",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/7cd2d4198df556b025b4dbdb/master.png",
+          "sha256": "87a47e793d5c39a33198613b5bb41bae5f16164e8f7f2d97abe2f091efa619a9",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1801705
+        },
+        "app": {
+          "path": "candidates/7cd2d4198df556b025b4dbdb/app.png",
+          "sha256": "1eac91df53c0d64f37fa0a7311320c11186c3f3acbf50114893ef20c88119852",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 329688
+        },
+        "thumbnail": {
+          "path": "candidates/7cd2d4198df556b025b4dbdb/thumbnail.png",
+          "sha256": "33d6004ed88423e88c68a089fe68545537b3b15cae87b17d62403526dc5ba978",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48349
+        }
+      },
+      "candidate_asset": "candidates/7cd2d4198df556b025b4dbdb/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:31.562381+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement photograph. Reference 1 is the immutable athlete/clothing/lighting baseline. Reference 2 supplies the deadlift slippers, realistic competition bar, calibrated red plates and black platform. Same athlete and charcoal tank/black shorts. Black snug deadlift slippers with paper-thin flat soles and straps, no running shoes. Athlete actively performs the movement, never posing for the camera. Strong front-diagonal camera at torso height, natural proportions, straight bar through aligned plate holes, locking collars outside matched stacks, genuine two-handed grip and normal wrists. Whole athlete and both loaded sleeves in frame; no text, logos, watermarks or extra people. OLED-black studio, subtle violet rim. Depict conventional BLOCK PULL at the dead-stop starting position. Add TWO identical broad low rectangular wooden pulling blocks, about 15cm tall, on the black platform, one entirely under each red plate stack. Each plate stack's bottom rim rests firmly and visibly on its block's flat top; bar shaft touches neither block. The athlete stands with both feet hip-width on the LOWER platform BETWEEN the blocks, never on a raised block. Hips hinged, bar slightly below knees, shoulders just ahead of bar, braced neutral back/neck, arms straight with normal shoulder-width overhand grip outside legs. Recalculate the pose and block heights together; clear load contact, no floating plates.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/block_pull/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "deadlift",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 55,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/6cb1bd3afd78018b9538aac5/master.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
+      }
+    },
+    {
+      "movement_definition_id": 627,
+      "key": "snatch_grip_deadlift",
+      "movement_name": "Snatch Grip Deadlift",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-627-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "b5036f37e2df3b17777b04cc",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/b5036f37e2df3b17777b04cc/master.png",
+          "sha256": "c4837497b7cb86912620c9e946bbe9038dbb7eb6ecc2815a89e012fe52557ccd",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1776929
+        },
+        "app": {
+          "path": "candidates/b5036f37e2df3b17777b04cc/app.png",
+          "sha256": "2f572c65f24a5dc61420f2fff70991d5b460fb2391d03c692ede01d945d615a4",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 323733
+        },
+        "thumbnail": {
+          "path": "candidates/b5036f37e2df3b17777b04cc/thumbnail.png",
+          "sha256": "71371f5403e18af80712f1013b82e979dadb97530733e6e9de8a781cf0488b6b",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47227
+        }
+      },
+      "candidate_asset": "candidates/b5036f37e2df3b17777b04cc/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:32.675347+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement photograph. Reference 1 is the immutable athlete/clothing/lighting baseline. Reference 2 supplies the deadlift slippers, realistic competition bar, calibrated red plates and black platform. Same athlete and charcoal tank/black shorts. Black snug deadlift slippers with paper-thin flat soles and straps, no running shoes. Athlete actively performs the movement, never posing for the camera. Strong front-diagonal camera at torso height, natural proportions, straight bar through aligned plate holes, locking collars outside matched stacks, genuine two-handed grip and normal wrists. Whole athlete and both loaded sleeves in frame; no text, logos, watermarks or extra people. OLED-black studio, subtle violet rim. Depict a SNATCH-GRIP CONVENTIONAL DEADLIFT just after the plates leave the flat platform. Feet are hip-width, both legs BETWEEN the straight arms. Both hands take a very wide symmetrical overhand grip near the OUTER RINGS of the shaft, roughly 1 metre apart, clearly much wider than shoulder width, but remain INSIDE the sleeves and clear of plates. Arms extend diagonally down/out from shoulders to these wide grip points. Hips are lower and torso more inclined than in the conventional reference because the wide grip shortens the vertical reach. Neutral braced back and neck, no shrugged shoulders, no bent elbows. Bar close to shins over midfoot; knees track toes. Full feet in slippers, flat floor, no blocks, no deficit riser. The wide GRIP, not a wide stance, defines this movement.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/snatch_grip_deadlift/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "deadlift",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 59,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/6cb1bd3afd78018b9538aac5/master.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
+      }
+    },
+    {
+      "movement_definition_id": 628,
+      "key": "sumo_deadlift",
+      "movement_name": "Sumo Deadlift",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-628-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "044eace0f2b108099b93ae89",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/044eace0f2b108099b93ae89/master.png",
+          "sha256": "2d8f580c00218e5694041f285ff59994106f7f4f317096f1d3e7602219b22545",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1741397
+        },
+        "app": {
+          "path": "candidates/044eace0f2b108099b93ae89/app.png",
+          "sha256": "31b72cbcb7594eeb60dbab318bda1577ef253c8f0c8bb9d2c3d410b758c4dbd0",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 318833
+        },
+        "thumbnail": {
+          "path": "candidates/044eace0f2b108099b93ae89/thumbnail.png",
+          "sha256": "158445624cfc8f0a08488509ffa34a53fb6f06dd0692d778a1690e6fe6a9e3bd",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47213
+        }
+      },
+      "candidate_asset": "candidates/044eace0f2b108099b93ae89/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:33.780588+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement photograph. Reference 1 is the immutable athlete/clothing/lighting baseline. Reference 2 supplies the deadlift slippers, realistic competition bar, calibrated red plates and black platform. Same athlete and charcoal tank/black shorts. Black snug deadlift slippers with paper-thin flat soles and straps, no running shoes. Athlete actively performs the movement, never posing for the camera. Strong front-diagonal camera at torso height, natural proportions, straight bar through aligned plate holes, locking collars outside matched stacks, genuine two-handed grip and normal wrists. Whole athlete and both loaded sleeves in frame; no text, logos, watermarks or extra people. OLED-black studio, subtle violet rim. Depict a SUMO DEADLIFT as the bar leaves the flat platform. Both feet widely spaced almost twice shoulder width, toes turned outward about 40 degrees, knees opened and tracking toes. Both straight arms descend vertically INSIDE the spread thighs; hands take a narrow shoulder-width symmetrical overhand grip on the bar BETWEEN the knees. Hips close to bar, chest tall, back braced neutral, shoulders slightly ahead of bar, bar skimming inner shins at lower shin height above midfoot. Entire soles of the thin flat slippers planted. Recompute full human anatomy for the wide stance; do not merely spread the legs of the reference without repositioning torso and grips. No conventional narrow stance, no arms outside legs, no blocks, no deficit.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/sumo_deadlift/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "deadlift",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 60,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/6cb1bd3afd78018b9538aac5/master.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
+      }
+    },
+    {
+      "movement_definition_id": 607,
+      "key": "pin_squat",
+      "movement_name": "Pin Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-607-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "461e15e014e787c202d2f5fd",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/461e15e014e787c202d2f5fd/master.png",
+          "sha256": "1d0704daef2bd081a8335ad21eae08de294cfd016ed49035ce4ff00a1b70e3a0",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2025167
+        },
+        "app": {
+          "path": "candidates/461e15e014e787c202d2f5fd/app.png",
+          "sha256": "8d9aa9011f66a0c88628575962b67c290640f708f99f91ab7da2aa12e3b7ca77",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 355915
+        },
+        "thumbnail": {
+          "path": "candidates/461e15e014e787c202d2f5fd/thumbnail.png",
+          "sha256": "27e0bfcf0bb27170e4a284082fd173fcf05b892c7d2c610a4bad6455043628c4",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 52478
+        }
+      },
+      "candidate_asset": "candidates/461e15e014e787c202d2f5fd/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:34.890932+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Framing-only edit of reference2. Reference1 remains the immutable style baseline. Preserve reference2 exact athlete, pose, bar shaft, both hands, both plates and foreground safety-pipe contact/angle. Widen the square frame by about20percent so the entire right bar sleeve tip and both safety-support uprights fit, with black studio margin. Add proper small locking collars outside each red plate. Complete the support pipe to the upright offscreen exactly along its existing line, don't move pipe or bar. Keep all foreground mechanical geometry, no new pose, no shortened pipes, no extra bars. Natural black-violet studio.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/pin_squat/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 39,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-2535ee2c-2407-4362-9c41-a1fdb7216cc0.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Pin squat during the lift above visible safety pins"
+      }
+    },
+    {
+      "movement_definition_id": 609,
+      "key": "safety_bar_squat",
+      "movement_name": "Safety Bar Squat (SSB)",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-609-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "8cf1c1d1e444cf63483a25e9",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/8cf1c1d1e444cf63483a25e9/master.png",
+          "sha256": "f5275d4b16fb92025f9920bf5547c860b164929b3806aa32a9520a06253ed6e7",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1825631
+        },
+        "app": {
+          "path": "candidates/8cf1c1d1e444cf63483a25e9/app.png",
+          "sha256": "f33b8aad1b47058e5e656871073b219dae6be5671d96469c02c1faeeadd3c295",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 329785
+        },
+        "thumbnail": {
+          "path": "candidates/8cf1c1d1e444cf63483a25e9/thumbnail.png",
+          "sha256": "e3e81ba86b7b9dd74a61685c32752756e1e4a1eeb55ef61310fca33b15271a45",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49140
+        }
+      },
+      "candidate_asset": "candidates/8cf1c1d1e444cf63483a25e9/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:36.012170+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Create one square photorealistic Strength Ledger movement photograph. Reference 1 is the immutable athlete, charcoal tank and black shorts, detailed realism, black studio and subdued violet rim light baseline. Reference 2 is the approved competition lift; retain the same athlete/build and natural proportions. The movement itself is the subject, no posing for camera. Entire athlete, equipment contacts and loaded bar fit in frame. Correct human anatomy, realistic steel fabrication and gravity, no floating or disconnected parts. No text, lettering, watermarks or brand logos. Reference 3 specifies the exact safety squat bar geometry, ignore its white background. Depict SAFETY BAR SQUAT at just-above-parallel depth, three-quarter front view. Use the real safety squat yoke: ONE central padded transverse section rests across upper trapezius behind the neck, TWO padded forward shoulders extend evenly around either side of neck, TWO short parallel handles project forward/down in front of chest. Athlete grasps ONLY these two handles with neutral wrists, elbows hanging naturally. Symmetrical bent steel camber on each outer side places the two loaded sleeves below and slightly forward of upper-back bar axis. Bar connects visibly from yoke to camber to horizontal sleeves, never straight-bar-with-random-handles. Matched red plates and collars on sleeves, full bar in view. More upright braced torso than low-bar squat, heels flat in black lifting shoes, knees track toes, hips between knees. No rack needed, no hand support and no extra people.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/safety_bar_squat/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 41,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/d3645cd2a9b0fdc03ca8f03f/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/references/elitefts-ssb.jpg\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
+      }
+    },
+    {
+      "movement_definition_id": 612,
+      "key": "hatfield_squat",
+      "movement_name": "Hatfield Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-612-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "be944dd71f6fff535abd4029",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/be944dd71f6fff535abd4029/master.png",
+          "sha256": "ee0cde3cf2a33fe3be78abd756f44439eb63c5f17406af0ead20eafa4c9ba1b7",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1943049
+        },
+        "app": {
+          "path": "candidates/be944dd71f6fff535abd4029/app.png",
+          "sha256": "32175a70f81e2bde2af9b79a89dff28910f13b3d850f4bcf562bfb3213369b26",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 352952
+        },
+        "thumbnail": {
+          "path": "candidates/be944dd71f6fff535abd4029/thumbnail.png",
+          "sha256": "6e6c0a98a6973f705ad4402fc2fb48f64a4d2a1e612fb6ed5d2238fea5e6a370",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 53442
+        }
+      },
+      "candidate_asset": "candidates/be944dd71f6fff535abd4029/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:37.158493+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Create one square photorealistic Strength Ledger movement photograph. Reference 1 is the immutable athlete, charcoal tank and black shorts, detailed realism, black studio and subdued violet rim light baseline. Reference 2 is the approved competition lift; retain the same athlete/build and natural proportions. The movement itself is the subject, no posing for camera. Entire athlete, equipment contacts and loaded bar fit in frame. Correct human anatomy, realistic steel fabrication and gravity, no floating or disconnected parts. No text, lettering, watermarks or brand logos. Reference 3 specifies a real safety squat bar, ignore white background. Depict HATFIELD SQUAT, side-biased three-quarter view at just-above-parallel depth. Athlete has a padded SAFETY SQUAT BAR balanced securely on upper traps: central rear pad and two forward shoulder pads, with its short yoke handles visible but UNTOUCHED; symmetric cambered ends and red plates. The athlete faces a sturdy fixed rack support positioned in front of him. BOTH arms extend forward with slight elbow bend and both hands wrap TWO fixed horizontal support handles attached to opposite rack uprights at chest height. These handles are separate from the safety bar, attached securely to rack steel, neither floating nor crossing athlete. His hands are NOT holding the bar and NOT holding a free floating rod. Rack front uprights/supports ahead of athlete, sufficient room for bar sleeves and plates clear of rack throughout squat. Hips sit back, knees bent naturally, heels planted, neutral braced back, natural head facing the supports. The fixed hand support plus shoulder-supported safety bar distinguishes Hatfield squat. Single athlete only.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/hatfield_squat/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 44,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/d3645cd2a9b0fdc03ca8f03f/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/references/elitefts-ssb.jpg\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
+      }
+    },
+    {
+      "movement_definition_id": 618,
+      "key": "pin_press",
+      "movement_name": "Pin Press",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-618-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "6a116112ef1697bab797c063",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/6a116112ef1697bab797c063/master.png",
+          "sha256": "d6eac6133087328ab904aad41ec284561209b2980452f7b627da359c679b2c7b",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1854391
+        },
+        "app": {
+          "path": "candidates/6a116112ef1697bab797c063/app.png",
+          "sha256": "49d0081ca46b1fd2a7d54f6f4052db2b5269a5061ef8dbfa4e5a761e9658a780",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 324157
+        },
+        "thumbnail": {
+          "path": "candidates/6a116112ef1697bab797c063/thumbnail.png",
+          "sha256": "1714007c8521d2927baea65f064de43a24cc17810a60403908b44e5cc0e03adb",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44471
+        }
+      },
+      "candidate_asset": "candidates/6a116112ef1697bab797c063/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:38.278130+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Framing-only edit of reference2 to a SQUARE 1:1 image using black studio space above/below. Reference1 is the same approved art style baseline. Preserve the actual SIDE view, bench, athlete pose, near red plate circular face covering hands, bar pointing away from camera, and long horizontal safety pins beneath bar. Make no rotation of camera, no change of bar orientation, no rebuilding the rack. Keep the exact high pin-press geometry. Only improve centered full-body square framing with natural black-violet studio floor margins.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/pin_press/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "bench",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 50,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-26383383-9181-4af2-9923-ce3778580ca2.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "High pin press setup, side view"
+      }
+    },
+    {
+      "movement_definition_id": 620,
+      "key": "board_press_2_board",
+      "movement_name": "Board Press (2-Board)",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-620-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "158bcf8fa8926332f8f06718",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/158bcf8fa8926332f8f06718/master.png",
+          "sha256": "0fc429a1ff47da17f32e8d1099c58fea55172dc20292990bcccbe04abc3b2353",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1869029
+        },
+        "app": {
+          "path": "candidates/158bcf8fa8926332f8f06718/app.png",
+          "sha256": "a890a5b4f246d5e5aee2cfd84bc5f46f522eabe418cb0c9887ec3ed1d786384e",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 331250
+        },
+        "thumbnail": {
+          "path": "candidates/158bcf8fa8926332f8f06718/thumbnail.png",
+          "sha256": "d06c990d1e2f277bd426c3b42a48b1d8f296214da39233ad5f3048d172fd9b83",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48070
+        }
+      },
+      "candidate_asset": "candidates/158bcf8fa8926332f8f06718/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:39.389386+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Reference1 style baseline. Reference2 is the final two-board press candidate. Perform ONLY an outpainting/framing adjustment: zoom out about15percent into a square canvas so the ENTIRE LEFT BARBELL SLEEVE TIP is visible with margin, and both shoes remain visible. Keep all internal pixels visually identical: same athlete, same pose, same bar/board/chest contact, same compact TWO wood layers, same straight bar, same flat bench. Preserve exactly where bar touches boards and boards touch chest. Complete the cropped sleeve as a straight steel cylinder extending from the existing left collar with a dark circular end cap, consistent with right sleeve. Black studio and faint violet rim. Do not change equipment, pose, board position or perspective.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/board_press_2_board/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "bench",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 52,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-65311a75-449c-47c3-a58b-725a6f20209d.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
       }
     }
   ],
@@ -221200,6 +221915,681 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "50fa51440e21a89f3af44df7b60df4e2019dfbf14345ca731998ed73dec4cee9",
         "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 622,
+      "key": "deficit_deadlift",
+      "movement_name": "Deficit Deadlift",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-622-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "d224a191da6cb034d98f0601",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/d224a191da6cb034d98f0601/master.png",
+          "sha256": "5ba80bffaf5c22def85f3a83a5b774b35bfc71c582eb8b682c6c6f01be54f847",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1783419
+        },
+        "app": {
+          "path": "candidates/d224a191da6cb034d98f0601/app.png",
+          "sha256": "a731909502e6fa74a17fbdec51f443c0ceb1ff21d3ff2cb3249c100e4f83f874",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 322333
+        },
+        "thumbnail": {
+          "path": "candidates/d224a191da6cb034d98f0601/thumbnail.png",
+          "sha256": "2bf41c7c2beeb4ef06b2980c79d1ba1d7ca41a97bc6f1b95e1c8c48d3bda7a6a",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46631
+        }
+      },
+      "candidate_asset": "candidates/d224a191da6cb034d98f0601/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:30.439245+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement photograph. Reference 1 is the immutable athlete/clothing/lighting baseline. Reference 2 supplies the deadlift slippers, realistic competition bar, calibrated red plates and black platform. Same athlete and charcoal tank/black shorts. Black snug deadlift slippers with paper-thin flat soles and straps, no running shoes. Athlete actively performs the movement, never posing for the camera. Strong front-diagonal camera at torso height, natural proportions, straight bar through aligned plate holes, locking collars outside matched stacks, genuine two-handed grip and normal wrists. Whole athlete and both loaded sleeves in frame; no text, logos, watermarks or extra people. OLED-black studio, subtle violet rim. Depict DEFICIT CONVENTIONAL DEADLIFT at the moment the plates break from the floor. Both feet hip-width on ONE low rigid rectangular black riser only 5cm thick, entirely on the large platform. The riser fits under the feet only and clearly ends before the plate stacks; both loaded plate stacks are OUTSIDE this riser over the lower platform surface. Knees naturally bent, hips hinged above knees, neutral braced back/neck, straight arms outside legs with conventional shoulder-width grip. Bar close to shins above midfoot. Both feet fully planted on the top of the riser. Plates just 1cm above the lower main platform; no plates on the riser and no blocks beneath the weights.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/deficit_deadlift/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "deadlift",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 54,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/6cb1bd3afd78018b9538aac5/master.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
+      }
+    },
+    {
+      "movement_definition_id": 623,
+      "key": "block_pull",
+      "movement_name": "Block Pull",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-623-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "7cd2d4198df556b025b4dbdb",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/7cd2d4198df556b025b4dbdb/master.png",
+          "sha256": "87a47e793d5c39a33198613b5bb41bae5f16164e8f7f2d97abe2f091efa619a9",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1801705
+        },
+        "app": {
+          "path": "candidates/7cd2d4198df556b025b4dbdb/app.png",
+          "sha256": "1eac91df53c0d64f37fa0a7311320c11186c3f3acbf50114893ef20c88119852",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 329688
+        },
+        "thumbnail": {
+          "path": "candidates/7cd2d4198df556b025b4dbdb/thumbnail.png",
+          "sha256": "33d6004ed88423e88c68a089fe68545537b3b15cae87b17d62403526dc5ba978",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48349
+        }
+      },
+      "candidate_asset": "candidates/7cd2d4198df556b025b4dbdb/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:31.562381+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement photograph. Reference 1 is the immutable athlete/clothing/lighting baseline. Reference 2 supplies the deadlift slippers, realistic competition bar, calibrated red plates and black platform. Same athlete and charcoal tank/black shorts. Black snug deadlift slippers with paper-thin flat soles and straps, no running shoes. Athlete actively performs the movement, never posing for the camera. Strong front-diagonal camera at torso height, natural proportions, straight bar through aligned plate holes, locking collars outside matched stacks, genuine two-handed grip and normal wrists. Whole athlete and both loaded sleeves in frame; no text, logos, watermarks or extra people. OLED-black studio, subtle violet rim. Depict conventional BLOCK PULL at the dead-stop starting position. Add TWO identical broad low rectangular wooden pulling blocks, about 15cm tall, on the black platform, one entirely under each red plate stack. Each plate stack's bottom rim rests firmly and visibly on its block's flat top; bar shaft touches neither block. The athlete stands with both feet hip-width on the LOWER platform BETWEEN the blocks, never on a raised block. Hips hinged, bar slightly below knees, shoulders just ahead of bar, braced neutral back/neck, arms straight with normal shoulder-width overhand grip outside legs. Recalculate the pose and block heights together; clear load contact, no floating plates.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/block_pull/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "deadlift",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 55,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/6cb1bd3afd78018b9538aac5/master.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
+      }
+    },
+    {
+      "movement_definition_id": 627,
+      "key": "snatch_grip_deadlift",
+      "movement_name": "Snatch Grip Deadlift",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-627-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "b5036f37e2df3b17777b04cc",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/b5036f37e2df3b17777b04cc/master.png",
+          "sha256": "c4837497b7cb86912620c9e946bbe9038dbb7eb6ecc2815a89e012fe52557ccd",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1776929
+        },
+        "app": {
+          "path": "candidates/b5036f37e2df3b17777b04cc/app.png",
+          "sha256": "2f572c65f24a5dc61420f2fff70991d5b460fb2391d03c692ede01d945d615a4",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 323733
+        },
+        "thumbnail": {
+          "path": "candidates/b5036f37e2df3b17777b04cc/thumbnail.png",
+          "sha256": "71371f5403e18af80712f1013b82e979dadb97530733e6e9de8a781cf0488b6b",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47227
+        }
+      },
+      "candidate_asset": "candidates/b5036f37e2df3b17777b04cc/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:32.675347+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement photograph. Reference 1 is the immutable athlete/clothing/lighting baseline. Reference 2 supplies the deadlift slippers, realistic competition bar, calibrated red plates and black platform. Same athlete and charcoal tank/black shorts. Black snug deadlift slippers with paper-thin flat soles and straps, no running shoes. Athlete actively performs the movement, never posing for the camera. Strong front-diagonal camera at torso height, natural proportions, straight bar through aligned plate holes, locking collars outside matched stacks, genuine two-handed grip and normal wrists. Whole athlete and both loaded sleeves in frame; no text, logos, watermarks or extra people. OLED-black studio, subtle violet rim. Depict a SNATCH-GRIP CONVENTIONAL DEADLIFT just after the plates leave the flat platform. Feet are hip-width, both legs BETWEEN the straight arms. Both hands take a very wide symmetrical overhand grip near the OUTER RINGS of the shaft, roughly 1 metre apart, clearly much wider than shoulder width, but remain INSIDE the sleeves and clear of plates. Arms extend diagonally down/out from shoulders to these wide grip points. Hips are lower and torso more inclined than in the conventional reference because the wide grip shortens the vertical reach. Neutral braced back and neck, no shrugged shoulders, no bent elbows. Bar close to shins over midfoot; knees track toes. Full feet in slippers, flat floor, no blocks, no deficit riser. The wide GRIP, not a wide stance, defines this movement.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/snatch_grip_deadlift/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "deadlift",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 59,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/6cb1bd3afd78018b9538aac5/master.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
+      }
+    },
+    {
+      "movement_definition_id": 628,
+      "key": "sumo_deadlift",
+      "movement_name": "Sumo Deadlift",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-628-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "044eace0f2b108099b93ae89",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/044eace0f2b108099b93ae89/master.png",
+          "sha256": "2d8f580c00218e5694041f285ff59994106f7f4f317096f1d3e7602219b22545",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1741397
+        },
+        "app": {
+          "path": "candidates/044eace0f2b108099b93ae89/app.png",
+          "sha256": "31b72cbcb7594eeb60dbab318bda1577ef253c8f0c8bb9d2c3d410b758c4dbd0",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 318833
+        },
+        "thumbnail": {
+          "path": "candidates/044eace0f2b108099b93ae89/thumbnail.png",
+          "sha256": "158445624cfc8f0a08488509ffa34a53fb6f06dd0692d778a1690e6fe6a9e3bd",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47213
+        }
+      },
+      "candidate_asset": "candidates/044eace0f2b108099b93ae89/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:33.780588+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural. Create one square Strength Ledger movement photograph. Reference 1 is the immutable athlete/clothing/lighting baseline. Reference 2 supplies the deadlift slippers, realistic competition bar, calibrated red plates and black platform. Same athlete and charcoal tank/black shorts. Black snug deadlift slippers with paper-thin flat soles and straps, no running shoes. Athlete actively performs the movement, never posing for the camera. Strong front-diagonal camera at torso height, natural proportions, straight bar through aligned plate holes, locking collars outside matched stacks, genuine two-handed grip and normal wrists. Whole athlete and both loaded sleeves in frame; no text, logos, watermarks or extra people. OLED-black studio, subtle violet rim. Depict a SUMO DEADLIFT as the bar leaves the flat platform. Both feet widely spaced almost twice shoulder width, toes turned outward about 40 degrees, knees opened and tracking toes. Both straight arms descend vertically INSIDE the spread thighs; hands take a narrow shoulder-width symmetrical overhand grip on the bar BETWEEN the knees. Hips close to bar, chest tall, back braced neutral, shoulders slightly ahead of bar, bar skimming inner shins at lower shin height above midfoot. Entire soles of the thin flat slippers planted. Recompute full human anatomy for the wide stance; do not merely spread the legs of the reference without repositioning torso and grips. No conventional narrow stance, no arms outside legs, no blocks, no deficit.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/sumo_deadlift/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "deadlift",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 60,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/6cb1bd3afd78018b9538aac5/master.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
+      }
+    },
+    {
+      "movement_definition_id": 607,
+      "key": "pin_squat",
+      "movement_name": "Pin Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-607-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "461e15e014e787c202d2f5fd",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/461e15e014e787c202d2f5fd/master.png",
+          "sha256": "1d0704daef2bd081a8335ad21eae08de294cfd016ed49035ce4ff00a1b70e3a0",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2025167
+        },
+        "app": {
+          "path": "candidates/461e15e014e787c202d2f5fd/app.png",
+          "sha256": "8d9aa9011f66a0c88628575962b67c290640f708f99f91ab7da2aa12e3b7ca77",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 355915
+        },
+        "thumbnail": {
+          "path": "candidates/461e15e014e787c202d2f5fd/thumbnail.png",
+          "sha256": "27e0bfcf0bb27170e4a284082fd173fcf05b892c7d2c610a4bad6455043628c4",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 52478
+        }
+      },
+      "candidate_asset": "candidates/461e15e014e787c202d2f5fd/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:34.890932+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Framing-only edit of reference2. Reference1 remains the immutable style baseline. Preserve reference2 exact athlete, pose, bar shaft, both hands, both plates and foreground safety-pipe contact/angle. Widen the square frame by about20percent so the entire right bar sleeve tip and both safety-support uprights fit, with black studio margin. Add proper small locking collars outside each red plate. Complete the support pipe to the upright offscreen exactly along its existing line, don't move pipe or bar. Keep all foreground mechanical geometry, no new pose, no shortened pipes, no extra bars. Natural black-violet studio.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/pin_squat/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 39,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-2535ee2c-2407-4362-9c41-a1fdb7216cc0.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Pin squat during the lift above visible safety pins"
+      }
+    },
+    {
+      "movement_definition_id": 609,
+      "key": "safety_bar_squat",
+      "movement_name": "Safety Bar Squat (SSB)",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-609-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "8cf1c1d1e444cf63483a25e9",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/8cf1c1d1e444cf63483a25e9/master.png",
+          "sha256": "f5275d4b16fb92025f9920bf5547c860b164929b3806aa32a9520a06253ed6e7",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1825631
+        },
+        "app": {
+          "path": "candidates/8cf1c1d1e444cf63483a25e9/app.png",
+          "sha256": "f33b8aad1b47058e5e656871073b219dae6be5671d96469c02c1faeeadd3c295",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 329785
+        },
+        "thumbnail": {
+          "path": "candidates/8cf1c1d1e444cf63483a25e9/thumbnail.png",
+          "sha256": "e3e81ba86b7b9dd74a61685c32752756e1e4a1eeb55ef61310fca33b15271a45",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49140
+        }
+      },
+      "candidate_asset": "candidates/8cf1c1d1e444cf63483a25e9/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:36.012170+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Create one square photorealistic Strength Ledger movement photograph. Reference 1 is the immutable athlete, charcoal tank and black shorts, detailed realism, black studio and subdued violet rim light baseline. Reference 2 is the approved competition lift; retain the same athlete/build and natural proportions. The movement itself is the subject, no posing for camera. Entire athlete, equipment contacts and loaded bar fit in frame. Correct human anatomy, realistic steel fabrication and gravity, no floating or disconnected parts. No text, lettering, watermarks or brand logos. Reference 3 specifies the exact safety squat bar geometry, ignore its white background. Depict SAFETY BAR SQUAT at just-above-parallel depth, three-quarter front view. Use the real safety squat yoke: ONE central padded transverse section rests across upper trapezius behind the neck, TWO padded forward shoulders extend evenly around either side of neck, TWO short parallel handles project forward/down in front of chest. Athlete grasps ONLY these two handles with neutral wrists, elbows hanging naturally. Symmetrical bent steel camber on each outer side places the two loaded sleeves below and slightly forward of upper-back bar axis. Bar connects visibly from yoke to camber to horizontal sleeves, never straight-bar-with-random-handles. Matched red plates and collars on sleeves, full bar in view. More upright braced torso than low-bar squat, heels flat in black lifting shoes, knees track toes, hips between knees. No rack needed, no hand support and no extra people.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/safety_bar_squat/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 41,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/d3645cd2a9b0fdc03ca8f03f/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/references/elitefts-ssb.jpg\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
+      }
+    },
+    {
+      "movement_definition_id": 612,
+      "key": "hatfield_squat",
+      "movement_name": "Hatfield Squat",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-612-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "be944dd71f6fff535abd4029",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/be944dd71f6fff535abd4029/master.png",
+          "sha256": "ee0cde3cf2a33fe3be78abd756f44439eb63c5f17406af0ead20eafa4c9ba1b7",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1943049
+        },
+        "app": {
+          "path": "candidates/be944dd71f6fff535abd4029/app.png",
+          "sha256": "32175a70f81e2bde2af9b79a89dff28910f13b3d850f4bcf562bfb3213369b26",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 352952
+        },
+        "thumbnail": {
+          "path": "candidates/be944dd71f6fff535abd4029/thumbnail.png",
+          "sha256": "6e6c0a98a6973f705ad4402fc2fb48f64a4d2a1e612fb6ed5d2238fea5e6a370",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 53442
+        }
+      },
+      "candidate_asset": "candidates/be944dd71f6fff535abd4029/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:37.158493+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Create one square photorealistic Strength Ledger movement photograph. Reference 1 is the immutable athlete, charcoal tank and black shorts, detailed realism, black studio and subdued violet rim light baseline. Reference 2 is the approved competition lift; retain the same athlete/build and natural proportions. The movement itself is the subject, no posing for camera. Entire athlete, equipment contacts and loaded bar fit in frame. Correct human anatomy, realistic steel fabrication and gravity, no floating or disconnected parts. No text, lettering, watermarks or brand logos. Reference 3 specifies a real safety squat bar, ignore white background. Depict HATFIELD SQUAT, side-biased three-quarter view at just-above-parallel depth. Athlete has a padded SAFETY SQUAT BAR balanced securely on upper traps: central rear pad and two forward shoulder pads, with its short yoke handles visible but UNTOUCHED; symmetric cambered ends and red plates. The athlete faces a sturdy fixed rack support positioned in front of him. BOTH arms extend forward with slight elbow bend and both hands wrap TWO fixed horizontal support handles attached to opposite rack uprights at chest height. These handles are separate from the safety bar, attached securely to rack steel, neither floating nor crossing athlete. His hands are NOT holding the bar and NOT holding a free floating rod. Rack front uprights/supports ahead of athlete, sufficient room for bar sleeves and plates clear of rack throughout squat. Hips sit back, knees bent naturally, heels planted, neutral braced back, natural head facing the supports. The fixed hand support plus shoulder-supported safety bar distinguishes Hatfield squat. Single athlete only.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/hatfield_squat/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "squat",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 44,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/d3645cd2a9b0fdc03ca8f03f/master.png\", \"/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/references/elitefts-ssb.jpg\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
+      }
+    },
+    {
+      "movement_definition_id": 618,
+      "key": "pin_press",
+      "movement_name": "Pin Press",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-618-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "6a116112ef1697bab797c063",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/6a116112ef1697bab797c063/master.png",
+          "sha256": "d6eac6133087328ab904aad41ec284561209b2980452f7b627da359c679b2c7b",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1854391
+        },
+        "app": {
+          "path": "candidates/6a116112ef1697bab797c063/app.png",
+          "sha256": "49d0081ca46b1fd2a7d54f6f4052db2b5269a5061ef8dbfa4e5a761e9658a780",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 324157
+        },
+        "thumbnail": {
+          "path": "candidates/6a116112ef1697bab797c063/thumbnail.png",
+          "sha256": "1714007c8521d2927baea65f064de43a24cc17810a60403908b44e5cc0e03adb",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44471
+        }
+      },
+      "candidate_asset": "candidates/6a116112ef1697bab797c063/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:38.278130+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Framing-only edit of reference2 to a SQUARE 1:1 image using black studio space above/below. Reference1 is the same approved art style baseline. Preserve the actual SIDE view, bench, athlete pose, near red plate circular face covering hands, bar pointing away from camera, and long horizontal safety pins beneath bar. Make no rotation of camera, no change of bar orientation, no rebuilding the rack. Keep the exact high pin-press geometry. Only improve centered full-body square framing with natural black-violet studio floor margins.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/pin_press/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "bench",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 50,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-26383383-9181-4af2-9923-ce3778580ca2.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "High pin press setup, side view"
+      }
+    },
+    {
+      "movement_definition_id": 620,
+      "key": "board_press_2_board",
+      "movement_name": "Board Press (2-Board)",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "core-variants-20260924-620-review-v1",
+      "generation_batch": "Nine exact Core variants — separate source and framing review — 2026-09-24",
+      "candidate_id": "158bcf8fa8926332f8f06718",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/158bcf8fa8926332f8f06718/master.png",
+          "sha256": "0fc429a1ff47da17f32e8d1099c58fea55172dc20292990bcccbe04abc3b2353",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1869029
+        },
+        "app": {
+          "path": "candidates/158bcf8fa8926332f8f06718/app.png",
+          "sha256": "a890a5b4f246d5e5aee2cfd84bc5f46f522eabe418cb0c9887ec3ed1d786384e",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 331250
+        },
+        "thumbnail": {
+          "path": "candidates/158bcf8fa8926332f8f06718/thumbnail.png",
+          "sha256": "d06c990d1e2f277bd426c3b42a48b1d8f296214da39233ad5f3048d172fd9b83",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48070
+        }
+      },
+      "candidate_asset": "candidates/158bcf8fa8926332f8f06718/master.png",
+      "status": "pending",
+      "human_approved": false,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [],
+      "created_at": "2026-09-24T18:12:39.389386+00:00",
+      "created_at_display": "Sep 24, 2026 11:12 AM PT (Sep 24, 2026 02:12 PM Eastern)",
+      "generation_prompt": "Reference1 style baseline. Reference2 is the final two-board press candidate. Perform ONLY an outpainting/framing adjustment: zoom out about15percent into a square canvas so the ENTIRE LEFT BARBELL SLEEVE TIP is visible with margin, and both shoes remain visible. Keep all internal pixels visually identical: same athlete, same pose, same bar/board/chest contact, same compact TWO wood layers, same straight bar, same flat bench. Preserve exactly where bar touches boards and boards touch chest. Complete the cropped sleeve as a straight steel cylinder extending from the existing left collar with a dark circular end cap, consistent with right sleeve. Black studio and faint violet rim. Do not change equipment, pose, board position or perspective.",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/selected/board_press_2_board/master.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "bench",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 52,
+      "generation_context": {
+        "owner_instruction": "Create specific images for separate review",
+        "conversation_id": "01a0a813-c63f-7081-a3c9-475e7bea8368",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/.codex/generated_images/01a0a813-c63f-7081-a3c9-475e7bea8368/exec-65311a75-449c-47c3-a58b-725a6f20209d.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/core-variant-art-2026-09-24/candidate-generation-records.json",
+        "review_scope": "Pending candidate only. Requires owner source approval followed by independent Logger framing approval. No runtime promotion.",
+        "phase": "Movement execution; no approval inferred from preflight inspection"
       }
     }
   ]
