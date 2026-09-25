@@ -2581,7 +2581,7 @@ export default function WorkoutViewerScreen() {
   >({});
   const uploadedQueueRefreshRef = useRef<Set<string>>(new Set());
   const [actionLoading, setActionLoading] = useState<
-    null | 'begin' | 'complete' | 'cancel'
+    null | 'begin' | 'verify' | 'complete' | 'cancel'
   >(null);
 
   const restSnapshot = useSyncExternalStore(subscribeRestTimerCompletion, getRestTimerCompletionState);
@@ -2850,6 +2850,11 @@ export default function WorkoutViewerScreen() {
   const [recapCorrection, setRecapCorrection] = useState<'sets' | 'note' | 'reflection' | null>(null);
   const [postSessionVisible, setPostSessionVisible] = useState(false);
   const [postSessionSubmitting, setPostSessionSubmitting] = useState(false);
+  const [postSessionError, setPostSessionError] = useState<string | null>(null);
+  const postSessionSubmitRef = useRef(false);
+  const postSessionDraftWorkoutIdRef = useRef<number | null>(null);
+  const postSessionSavedRef = useRef<{ workoutId: number; answers: string } | null>(null);
+  const completionEntryRef = useRef(false);
   const [missingCompletionSets, setMissingCompletionSets] = useState<string[] | null>(null);
   const [finalSessionCompletion, finalSessionCompletionDispatch] = useReducer(
     finalSessionCompletionReducer,
@@ -2858,6 +2863,7 @@ export default function WorkoutViewerScreen() {
   const finalSessionEndTransitionRef = useRef(false);
   const [postSessionTimeError, setPostSessionTimeError] = useState<string | null>(null);
   const [postSessionTimeManuallyCorrected, setPostSessionTimeManuallyCorrected] = useState(false);
+  const postSessionEndManuallyCorrectedRef = useRef(false);
   const [postSessionFallbackTimeZone, setPostSessionFallbackTimeZone] = useState(
     () => getDeviceTimezone() || 'America/Los_Angeles',
   );
@@ -2866,14 +2872,15 @@ export default function WorkoutViewerScreen() {
   const [postSessionTimePickerMode, setPostSessionTimePickerMode] = useState<'date' | 'time'>('date');
   const [postSessionForm, setPostSessionForm] = useState({
     sessionRpe: null as number | null,
-    strengthFeeling: '' as '' | 'much_weaker' | 'slightly_weaker' | 'normal' | 'slightly_stronger' | 'much_stronger',
-    fatigueFeeling: '' as '' | 'very_fresh' | 'slightly_fatigued' | 'moderately_fatigued' | 'very_fatigued',
+    strengthFeeling: '' as '' | 'weaker' | 'normal' | 'stronger',
+    fatigueFeeling: '' as '' | 'low' | 'medium' | 'high',
     note: '',
     sessionStart: null as Date | null,
     sessionEnd: null as Date | null,
   });
   const [postSessionNotesExpanded, setPostSessionNotesExpanded] = useState(false);
   const [postSessionEffortRailWidth, setPostSessionEffortRailWidth] = useState(0);
+  const [postSessionEffortDragging, setPostSessionEffortDragging] = useState(false);
   const postSessionEffortRailRef = useRef<View>(null);
   const postSessionEffortRailWindowX = useRef<number | null>(null);
   const postSessionEffortThumbScale = useRef(new Animated.Value(1)).current;
@@ -6095,7 +6102,9 @@ export default function WorkoutViewerScreen() {
       );
 
       if (!done.ok || !done.json?.ok) {
-        Alert.alert('Error', done.json?.error || `Failed to complete session (HTTP ${done.status})`);
+        const message = done.json?.error || `Could not complete Session (HTTP ${done.status}). Try again.`;
+        if (postSessionVisible) setPostSessionError(message);
+        else Alert.alert('Error', message);
         return false;
       }
 
@@ -6136,7 +6145,8 @@ export default function WorkoutViewerScreen() {
       return true;
     } catch (err) {
       console.error('completeWorkout error', err);
-      Alert.alert('Error', 'Failed to complete session');
+      if (postSessionVisible) setPostSessionError('Could not complete Session. Your answers are saved; try again.');
+      else Alert.alert('Error', 'Failed to complete Session');
       return false;
     } finally {
       setActionLoading(null);
@@ -6157,6 +6167,17 @@ export default function WorkoutViewerScreen() {
   }, []);
 
   const openPostSessionSurvey = () => {
+    const currentWorkoutId = Number(dataRef.current?.workout?.id || workoutId || 0);
+    if (postSessionDraftWorkoutIdRef.current === currentWorkoutId) {
+      if (!postSessionEndManuallyCorrectedRef.current) {
+        setPostSessionForm((previous) => ({ ...previous, sessionEnd: new Date() }));
+      }
+      setPostSessionError(null);
+      setPostSessionVisible(true);
+      return;
+    }
+    postSessionDraftWorkoutIdRef.current = currentWorkoutId;
+    postSessionSavedRef.current = null;
     const isCompleted = String(data?.workout?.status || '').toLowerCase() === 'completed';
     const timeDraft = createSessionTimeDraft(
       data?.workout?.started_at,
@@ -6172,7 +6193,9 @@ export default function WorkoutViewerScreen() {
       sessionEnd: timeDraft.end,
     });
     setPostSessionTimeError(null);
+    setPostSessionError(null);
     setPostSessionTimeManuallyCorrected(false);
+    postSessionEndManuallyCorrectedRef.current = false;
     setPostSessionTimePicker(null);
     setPostSessionTimePickerDraft(null);
     setPostSessionTimePickerMode('date');
@@ -6184,6 +6207,7 @@ export default function WorkoutViewerScreen() {
   const openPostSessionTimePicker = (target: 'start' | 'end') => {
     Keyboard.dismiss();
     setPostSessionTimeError(null);
+    setPostSessionError(null);
     setPostSessionTimePickerMode('date');
     const current = target === 'start'
       ? postSessionForm.sessionStart
@@ -6236,16 +6260,18 @@ export default function WorkoutViewerScreen() {
     }
     setPostSessionForm(nextForm);
     setPostSessionTimeManuallyCorrected(true);
+    if (postSessionTimePicker === 'end') postSessionEndManuallyCorrectedRef.current = true;
     setPostSessionTimeError(null);
     closePostSessionTimePicker();
   };
 
   const setPostSessionEffort = (value: number) => {
     const next = Math.max(6, Math.min(10, Math.round(value * 2) / 2));
-    if (postSessionEffortRailValueRef.current !== next) {
+    if (!reduceMotion && postSessionEffortRailValueRef.current !== next) {
       void Haptics.selectionAsync().catch(() => undefined);
     }
     postSessionEffortRailValueRef.current = next;
+    setPostSessionError(null);
     setPostSessionForm((prev) => prev.sessionRpe === next ? prev : { ...prev, sessionRpe: next });
   };
 
@@ -6280,14 +6306,39 @@ export default function WorkoutViewerScreen() {
     setPostSessionEffort(6 + (ratio * 4));
   };
 
-  const requestCompleteWorkout = () => {
-    if (!data?.workout) return;
-    const missingSets = missingSetLabelsForWorkout(data.workout);
-    if (missingSets.length > 0) {
-      setMissingCompletionSets(missingSets);
-      return;
+  const requestCompleteWorkout = async () => {
+    if (!dataRef.current?.workout || completionEntryRef.current || actionLoading || postSessionVisible
+      || postSessionSubmitRef.current || canonicalSetSubmissionControllerRef.current.isInFlight()
+      || feedbackState.submission.status === 'submitting') return;
+    completionEntryRef.current = true;
+    setActionLoading('verify');
+    try {
+      // Recheck the server-owned Session after the last Set and any composition edit.
+      // A stale local count must never open a completion flow for unfinished work.
+      const refreshed = await fetchWorkout({ silent: true, reason: 'manual' });
+      if (!refreshed || !dataRef.current?.workout) {
+        setError('Could not verify the saved Sets. Refresh the Session and try again.');
+        return;
+      }
+      const currentWorkout = dataRef.current.workout;
+      if (currentWorkout.status !== 'in_progress') return;
+      const missingSets = missingSetLabelsForWorkout(currentWorkout);
+      if (missingSets.length > 0) {
+        setMissingCompletionSets(missingSets);
+        return;
+      }
+      openPostSessionSurvey();
+    } finally {
+      completionEntryRef.current = false;
+      setActionLoading(null);
     }
-    openPostSessionSurvey();
+  };
+
+  const dismissPostSessionSurvey = () => {
+    if (postSessionSubmitting || postSessionSubmitRef.current) return;
+    Keyboard.dismiss();
+    closePostSessionTimePicker();
+    setPostSessionVisible(false);
   };
 
   useEffect(() => {
@@ -6325,6 +6376,7 @@ export default function WorkoutViewerScreen() {
   };
 
   const skipPostSessionAndComplete = async () => {
+    if (postSessionSubmitRef.current) return;
     const timing = resolveSessionCompletionTiming(
       { start: postSessionForm.sessionStart, end: postSessionForm.sessionEnd },
       { manuallyCorrected: postSessionTimeManuallyCorrected },
@@ -6333,7 +6385,9 @@ export default function WorkoutViewerScreen() {
       setPostSessionTimeError(timing.error);
       return;
     }
+    postSessionSubmitRef.current = true;
     setPostSessionSubmitting(true);
+    setPostSessionError(null);
     try {
       const completed = await completeWorkout({
         skipIncompleteWarning: true,
@@ -6345,11 +6399,13 @@ export default function WorkoutViewerScreen() {
         setPostSessionVisible(false);
       }
     } finally {
+      postSessionSubmitRef.current = false;
       setPostSessionSubmitting(false);
     }
   };
 
   const submitPostSessionAndComplete = async () => {
+    if (postSessionSubmitRef.current) return;
     const timing = resolveSessionCompletionTiming(
       { start: postSessionForm.sessionStart, end: postSessionForm.sessionEnd },
       { manuallyCorrected: postSessionTimeManuallyCorrected },
@@ -6363,35 +6419,36 @@ export default function WorkoutViewerScreen() {
       !postSessionForm.strengthFeeling ||
       !postSessionForm.fatigueFeeling
     ) {
-      setError('Complete the post-session check-in or choose Skip & Complete.');
+      setPostSessionError('Choose Session RPE, strength, and fatigue to save your reflection.');
       return;
     }
 
     if (!workoutId) {
-      setError('Missing Session id');
+      setPostSessionError('Missing Session id. Reopen this Session and try again.');
       return;
     }
 
+    postSessionSubmitRef.current = true;
     try {
       setPostSessionSubmitting(true);
-      setError(null);
-
-      const { ok, status, json } = await fetchJson(
-        `${API_BASE}/workouts/mobile/${workoutId}/post_session_survey`,
-        {
-          method: 'POST',
-          auth: true,
-          body: {
-            session_rpe: postSessionForm.sessionRpe,
-            strength_feeling: postSessionForm.strengthFeeling,
-            fatigue_feeling: postSessionForm.fatigueFeeling,
-            note: postSessionForm.note,
-          },
+      setPostSessionError(null);
+      const answers = {
+        session_rpe: postSessionForm.sessionRpe,
+        strength_feeling: postSessionForm.strengthFeeling,
+        fatigue_feeling: postSessionForm.fatigueFeeling,
+        note: postSessionForm.note,
+      };
+      const signature = JSON.stringify(answers);
+      if (postSessionSavedRef.current?.workoutId !== Number(workoutId)
+        || postSessionSavedRef.current.answers !== signature) {
+        const { ok, status, json } = await fetchJson(
+          `${API_BASE}/workouts/mobile/${workoutId}/post_session_survey`,
+          { method: 'POST', auth: true, body: answers },
+        );
+        if (!ok || !json?.ok) {
+          throw new Error(json?.error || `Failed to save Session reflection (HTTP ${status})`);
         }
-      );
-
-      if (!ok || !json?.ok) {
-        throw new Error(json?.error || `Failed to save post-session survey (HTTP ${status})`);
+        postSessionSavedRef.current = { workoutId: Number(workoutId), answers: signature };
       }
 
       const completed = await completeWorkout({
@@ -6405,8 +6462,10 @@ export default function WorkoutViewerScreen() {
       }
     } catch (err: any) {
       console.log('submitPostSessionAndComplete error', err);
-      setError(err?.message || 'Failed to submit post-session survey');
+      setPostSessionError(err?.message || 'Could not save the reflection. Your answers are still here; try again.');
+      void triggerSubmissionFailureHaptic();
     } finally {
+      postSessionSubmitRef.current = false;
       setPostSessionSubmitting(false);
     }
   };
@@ -7306,6 +7365,8 @@ export default function WorkoutViewerScreen() {
   const isFinishedSession = screenMode === 'finished_session';
   const loggedSets = loggedSetCountForWorkout(workout);
   const plannedSets = plannedSetCountForWorkout(workout);
+  const sessionAllSetsSaved = isActiveSession && plannedSets > 0
+    && missingSetLabelsForWorkout(workout).length === 0;
   const durationEstimate = durationEstimateForWorkout(workout);
   const coreMovementCount = workout.core_items.filter(
     (item) => !(isBackdownWorkoutItem(item) && item.parent_item_id != null),
@@ -9126,9 +9187,9 @@ export default function WorkoutViewerScreen() {
       </RefreshScreen>
 
       <SessionV3Footer bottom={insets.bottom} unit={unit} onUnit={() => switchDisplayUnit(unit === 'kg' ? 'lb' : 'kg')}
-        label={isCoachAthletePreview ? (isActiveSession ? 'Log set · Preview' : 'Begin Session · Preview') : isPreSession ? 'Begin Session' : focusedSetLabel}
-        disabled={(isCoachAthletePreview && !isPreSession) || !!actionLoading || readinessVisible || readinessSubmitting || (isPreSession && !isCoachAthletePreview && !canBegin) || feedbackState.submission.status === 'submitting'}
-        onPress={isPreSession ? () => { void handleBeginWorkoutPress(); } : focusedSetAction || (() => setNavigatorVisible(true))}
+        label={isCoachAthletePreview ? (isActiveSession ? 'Log set · Preview' : 'Begin Session · Preview') : isPreSession ? 'Begin Session' : sessionAllSetsSaved ? 'Complete Session' : focusedSetLabel}
+        disabled={(isCoachAthletePreview && !isPreSession) || !!actionLoading || readinessVisible || readinessSubmitting || (isPreSession && !isCoachAthletePreview && !canBegin) || feedbackState.submission.status === 'submitting' || canonicalSetSubmissionControllerRef.current.isInFlight()}
+        onPress={isPreSession ? () => { void handleBeginWorkoutPress(); } : sessionAllSetsSaved ? requestCompleteWorkout : focusedSetAction || (() => setNavigatorVisible(true))}
         secondary={isPreSession ? (focusedMovementKey ? 'Back to Session plan' : isCoachAthletePreview ? 'Session movements' : null) : `${getOrderedWorkoutMovements(workout).findIndex(row => row.key === focusedMovementKey) + 1} of ${getOrderedWorkoutMovements(workout).length} movements`}
         onSecondary={() => { if (isPreSession) { if (focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else if (isCoachAthletePreview) setNavigatorVisible(true);  } else setNavigatorVisible(true); }}
         rest={activeRestTimer} onRest={() => openTimerPicker()} onSkip={stopRestTimer} onAddRest={addRestTime} onRestSecond={deliverRestTimerCue}
@@ -10453,14 +10514,8 @@ export default function WorkoutViewerScreen() {
       <Modal
         visible={postSessionVisible}
         transparent
-        animationType="fade"
-        onRequestClose={() => {
-          if (!postSessionSubmitting) {
-            setPostSessionTimePicker(null);
-            setPostSessionTimePickerDraft(null);
-            setPostSessionVisible(false);
-          }
-        }}
+        animationType={reduceMotion ? 'none' : 'fade'}
+        onRequestClose={dismissPostSessionSurvey}
       >
         <KeyboardAvoidingView
           style={{ flex: 1 }}
@@ -10468,16 +10523,156 @@ export default function WorkoutViewerScreen() {
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={[styles.modalBackdrop, styles.postSessionBackdrop]}>
-              <View style={[styles.modalCard, styles.postSessionModal]}>
-                <Text style={[styles.postSessionTitle, styles.postSessionReflectionTitle]}>How did that feel?</Text>
-                <Text style={styles.postSessionReflectionSubtitle}>Capture today&apos;s session while it&apos;s still fresh.</Text>
+              <View style={[styles.modalCard, styles.postSessionModal]} accessibilityViewIsModal>
+                <View style={styles.postSessionHeadingRow}>
+                  <View style={styles.postSessionHeadingCopy}>
+                    <Text style={styles.postSessionEyebrow}>SESSION REFLECTION</Text>
+                    <Text accessibilityRole="header" style={[styles.postSessionTitle, styles.postSessionReflectionTitle]}>How did that feel?</Text>
+                  </View>
+                  <Pressable accessibilityRole="button" accessibilityLabel="Close Session reflection"
+                    disabled={postSessionSubmitting} onPress={dismissPostSessionSurvey} style={styles.postSessionClose}>
+                    <Ionicons name="close" size={22} color={SLColors.textMuted} />
+                  </Pressable>
+                </View>
+                <Text style={styles.postSessionReflectionSubtitle}>Record how this Session felt before you finish.</Text>
 
                 <ScrollView
                   style={styles.postSessionScroll}
                   contentContainerStyle={styles.postSessionScrollContent}
                   keyboardShouldPersistTaps="handled"
+                  scrollEnabled={!postSessionEffortDragging}
                   showsVerticalScrollIndicator={false}
                 >
+                <View style={styles.postSessionEffortSection}>
+                  <View style={styles.postSessionEffortHeader}>
+                    <Text style={styles.surveyLabel}>Session RPE</Text>
+                    <View style={styles.postSessionEffortReadout}>
+                      <Text style={styles.postSessionEffortValue}>{postSessionForm.sessionRpe ?? '—'}</Text>
+                      <Text style={styles.postSessionEffortDenominator}>/ 10</Text>
+                    </View>
+                  </View>
+                  <View style={styles.postSessionEffortEndpoints}>
+                    <Text style={styles.postSessionEffortEndpoint}>Easy</Text>
+                    <Text style={styles.postSessionEffortEndpoint}>Max effort</Text>
+                  </View>
+                  <View
+                    ref={postSessionEffortRailRef}
+                    accessible
+                    accessibilityRole="adjustable"
+                    accessibilityLabel="Session RPE. Easy to max effort."
+                    accessibilityHint="Slide to select from 6 to 10 in half steps."
+                    accessibilityValue={{ text: postSessionForm.sessionRpe == null ? 'Not selected' : `${postSessionForm.sessionRpe} RPE` }}
+                    accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+                    onAccessibilityAction={(event) => setPostSessionEffort((postSessionForm.sessionRpe ?? 6) + (event.nativeEvent.actionName === 'increment' ? 0.5 : -0.5))}
+                    onLayout={(event) => {
+                      setPostSessionEffortRailWidth(event.nativeEvent.layout.width);
+                      measurePostSessionEffortRail();
+                    }}
+                    onStartShouldSetResponderCapture={() => true}
+                    onStartShouldSetResponder={() => true}
+                    onMoveShouldSetResponder={() => true}
+                    onResponderTerminationRequest={() => false}
+                    onResponderGrant={(event) => {
+                      measurePostSessionEffortRail();
+                      setPostSessionEffortDragging(true);
+                      setPostSessionEffortHeld(true);
+                      updatePostSessionEffortFromEvent(event);
+                    }}
+                    onResponderMove={updatePostSessionEffortFromEvent}
+                    onResponderRelease={(event) => {
+                      updatePostSessionEffortFromEvent(event);
+                      setPostSessionEffortDragging(false);
+                      setPostSessionEffortHeld(false);
+                    }}
+                    onResponderTerminate={() => {
+                      setPostSessionEffortDragging(false);
+                      setPostSessionEffortHeld(false);
+                    }}
+                    style={styles.postSessionEffortRailTouchTarget}
+                  >
+                    <View style={styles.postSessionEffortRail} />
+                    <View
+                      pointerEvents="none"
+                      style={[
+                        styles.postSessionEffortRailFill,
+                        { width: postSessionEffortRailWidth ? ((postSessionForm.sessionRpe ?? 6) - 6) / 4 * postSessionEffortRailWidth : 0 },
+                      ]}
+                    />
+                    <Animated.View
+                      pointerEvents="none"
+                      style={[
+                        styles.postSessionEffortThumb,
+                        {
+                          left: postSessionEffortRailWidth ? ((postSessionForm.sessionRpe ?? 6) - 6) / 4 * (postSessionEffortRailWidth - 26) : 0,
+                          transform: [{ scale: postSessionEffortThumbScale }],
+                        },
+                      ]}
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.surveySection}>
+                  <Text style={styles.surveyLabel}>Strength</Text>
+                  <View style={styles.postSessionSegmentedControl}>
+                    {[
+                      ['weaker', 'Weaker'],
+                      ['normal', 'Normal'],
+                      ['stronger', 'Stronger'],
+                    ].map(([value, label]) => {
+                      const selected = postSessionForm.strengthFeeling === value;
+                      return (
+                        <TouchableOpacity
+                          key={value}
+                          accessibilityRole="radio"
+                          accessibilityLabel={label}
+                          accessibilityState={{ selected }}
+                          style={[styles.postSessionSegment, selected && styles.postSessionSegmentActive]}
+                          onPress={() => {
+                            if (!reduceMotion) void Haptics.selectionAsync().catch(() => undefined);
+                            setPostSessionError(null);
+                            setPostSessionForm((prev) => ({ ...prev, strengthFeeling: value as any }));
+                          }}
+                          disabled={postSessionSubmitting}
+                        >
+                          <Text style={[styles.postSessionSegmentText, selected && styles.postSessionSegmentTextActive]}>{label}</Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
+
+                <View style={styles.surveySection}>
+                  <Text style={styles.surveyLabel}>Fatigue</Text>
+                  <View style={styles.postSessionFatigueChoices}>
+                    {[
+                      ['low', 'Low'],
+                      ['medium', 'Medium'],
+                      ['high', 'High'],
+                    ].map(([value, label]) => {
+                      const selected = postSessionForm.fatigueFeeling === value;
+                      return (
+                        <TouchableOpacity
+                          key={value}
+                          accessibilityRole="radio"
+                          accessibilityLabel={label}
+                          accessibilityState={{ selected }}
+                          style={[styles.postSessionFatigueChoice, selected && styles.postSessionFatigueChoiceActive]}
+                          onPress={() => {
+                            if (!reduceMotion) void Haptics.selectionAsync().catch(() => undefined);
+                            setPostSessionError(null);
+                            setPostSessionForm((prev) => ({ ...prev, fatigueFeeling: value as any }));
+                          }}
+                          disabled={postSessionSubmitting}
+                        >
+                          <View style={[styles.postSessionFatigueMarker, selected && styles.postSessionFatigueMarkerActive]} />
+                          <Text style={[styles.postSessionSegmentText, selected && styles.postSessionSegmentTextActive]}>{label}</Text>
+                          {selected ? <Ionicons name="checkmark" size={18} color={SLColors.accentViolet} /> : null}
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
+
                 <View style={styles.postSessionTimeSection}>
                   <Text style={styles.surveyLabel}>Session time</Text>
                   <Text style={styles.postSessionTimeHint}>
@@ -10531,109 +10726,6 @@ export default function WorkoutViewerScreen() {
                     </Text>
                   ) : null}
                 </View>
-                <View style={styles.postSessionEffortSection}>
-                  <View style={styles.postSessionEffortHeader}>
-                    <Text style={styles.surveyLabel}>Session RPE</Text>
-                    <Text style={styles.postSessionEffortValue}>{postSessionForm.sessionRpe ?? '—'}</Text>
-                  </View>
-                  <View style={styles.postSessionEffortEndpoints}>
-                    <Text style={styles.postSessionEffortEndpoint}>Easy</Text>
-                    <Text style={styles.postSessionEffortEndpoint}>Max effort</Text>
-                  </View>
-                  <View
-                    ref={postSessionEffortRailRef}
-                    accessible
-                    accessibilityRole="adjustable"
-                    accessibilityLabel="Session RPE. Easy to max effort."
-                    accessibilityValue={{ text: postSessionForm.sessionRpe == null ? 'Not selected' : `${postSessionForm.sessionRpe} RPE` }}
-                    accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
-                    onAccessibilityAction={(event) => setPostSessionEffort((postSessionForm.sessionRpe ?? 6) + (event.nativeEvent.actionName === 'increment' ? 0.5 : -0.5))}
-                    onLayout={(event) => {
-                      setPostSessionEffortRailWidth(event.nativeEvent.layout.width);
-                      measurePostSessionEffortRail();
-                    }}
-                    onStartShouldSetResponder={() => true}
-                    onMoveShouldSetResponder={() => true}
-                    onResponderGrant={(event) => {
-                      measurePostSessionEffortRail();
-                      setPostSessionEffortHeld(true);
-                      updatePostSessionEffortFromEvent(event);
-                    }}
-                    onResponderMove={updatePostSessionEffortFromEvent}
-                    onResponderRelease={(event) => {
-                      updatePostSessionEffortFromEvent(event);
-                      setPostSessionEffortHeld(false);
-                    }}
-                    onResponderTerminate={() => setPostSessionEffortHeld(false)}
-                    style={styles.postSessionEffortRailTouchTarget}
-                  >
-                    <View style={styles.postSessionEffortRail} />
-                    <View
-                      pointerEvents="none"
-                      style={[
-                        styles.postSessionEffortRailFill,
-                        { width: postSessionEffortRailWidth ? ((postSessionForm.sessionRpe ?? 6) - 6) / 4 * postSessionEffortRailWidth : 0 },
-                      ]}
-                    />
-                    <Animated.View
-                      pointerEvents="none"
-                      style={[
-                        styles.postSessionEffortThumb,
-                        {
-                          left: postSessionEffortRailWidth ? ((postSessionForm.sessionRpe ?? 6) - 6) / 4 * (postSessionEffortRailWidth - 22) : 0,
-                          transform: [{ scale: postSessionEffortThumbScale }],
-                        },
-                      ]}
-                    />
-                  </View>
-                </View>
-
-                <View style={styles.surveySection}>
-                  <Text style={styles.surveyLabel}>Strength</Text>
-                  <View style={styles.postSessionSegmentedControl}>
-                    {[
-                      ['weaker', 'Weaker'],
-                      ['normal', 'Normal'],
-                      ['stronger', 'Stronger'],
-                    ].map(([value, label]) => {
-                      const selected = postSessionForm.strengthFeeling === value;
-                      return (
-                        <TouchableOpacity
-                          key={value}
-                          style={[styles.postSessionSegment, selected && styles.postSessionSegmentActive]}
-                          onPress={() => setPostSessionForm((prev) => ({ ...prev, strengthFeeling: value as any }))}
-                          disabled={postSessionSubmitting}
-                        >
-                          <Text style={[styles.postSessionSegmentText, selected && styles.postSessionSegmentTextActive]}>{label}</Text>
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </View>
-                </View>
-
-                <View style={styles.surveySection}>
-                  <Text style={styles.surveyLabel}>Fatigue</Text>
-                  <View style={styles.postSessionSegmentedControl}>
-                    {[
-                      ['low', 'Low'],
-                      ['medium', 'Medium'],
-                      ['high', 'High'],
-                    ].map(([value, label]) => {
-                      const selected = postSessionForm.fatigueFeeling === value;
-                      return (
-                        <TouchableOpacity
-                          key={value}
-                          style={[styles.postSessionSegment, selected && styles.postSessionSegmentActive]}
-                          onPress={() => setPostSessionForm((prev) => ({ ...prev, fatigueFeeling: value as any }))}
-                          disabled={postSessionSubmitting}
-                        >
-                          <Text style={[styles.postSessionSegmentText, selected && styles.postSessionSegmentTextActive]}>{label}</Text>
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </View>
-                </View>
-
                 <View style={styles.postSessionNotesSection}>
                   <TouchableOpacity
                     accessibilityRole="button"
@@ -10652,8 +10744,8 @@ export default function WorkoutViewerScreen() {
                     <TextInput
                       style={[styles.modalInput, styles.surveyNoteInput]}
                       value={postSessionForm.note}
-                      onChangeText={(txt) => setPostSessionForm((prev) => ({ ...prev, note: txt }))}
-                      placeholder="Anything worth remembering today?\n\nbench felt explosive\nsleep was poor\nshoulder tightened up\ntechnique clicked today"
+                      onChangeText={(txt) => { setPostSessionError(null); setPostSessionForm((prev) => ({ ...prev, note: txt })); }}
+                      placeholder="Anything worth remembering today?"
                       placeholderTextColor={SLColors.textSubtle}
                       multiline
                       textAlignVertical="top"
@@ -10666,12 +10758,13 @@ export default function WorkoutViewerScreen() {
                 </ScrollView>
 
                 <View style={[styles.modalActionsRow, styles.postSessionActions, { paddingBottom: Math.max(insets.bottom, SLSpacing.sm) }]}>
+                  {postSessionError ? <Text accessibilityRole="alert" style={styles.postSessionError}>{postSessionError}</Text> : null}
                   <TouchableOpacity
                     style={[styles.actionButton, styles.actionPrimary, styles.postSessionCompleteAction]}
                     onPress={submitPostSessionAndComplete}
                     disabled={postSessionSubmitting}
                   >
-                    {postSessionSubmitting ? <ActivityIndicator size="small" color={SLColors.textInverted} /> : <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Complete Session</Text>}
+                    {postSessionSubmitting ? <><ActivityIndicator size="small" color={SLColors.textInverted} /><Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Saving Session…</Text></> : <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Complete Session</Text>}
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.postSessionSkipAction}
@@ -12458,16 +12551,19 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   postSessionModal: {
-    width: '95%',
+    width: '100%',
     maxWidth: 520,
-    maxHeight: '88%',
+    maxHeight: '90%',
     alignSelf: 'center',
     flexShrink: 1,
     overflow: 'hidden',
-    paddingTop: SLSpacing.lg,
+    paddingTop: SLSpacing.md,
+    borderColor: 'rgba(153, 107, 225, 0.34)',
+    backgroundColor: '#0C0A12',
   },
   postSessionBackdrop: {
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.88)',
   },
   postSessionScroll: {
     flexShrink: 1,
@@ -12480,10 +12576,33 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   postSessionReflectionSubtitle: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.body.fontSize,
+    lineHeight: 21,
+    marginBottom: SLSpacing.sm,
+  },
+  postSessionHeadingRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: SLSpacing.sm,
+  },
+  postSessionHeadingCopy: {
+    flex: 1,
+  },
+  postSessionEyebrow: {
     color: SLColors.accentViolet,
-    fontSize: SLTypography.rowTitle.fontSize,
-    lineHeight: 20,
-    fontWeight: '700',
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '900',
+    letterSpacing: 1.6,
+    marginBottom: 5,
+  },
+  postSessionClose: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: SLRadius.md,
+    backgroundColor: '#18131F',
   },
   sessionCompletePromptIcon: {
     alignSelf: 'center',
@@ -12498,10 +12617,10 @@ const styles = StyleSheet.create({
     marginBottom: SLSpacing.sm,
   },
   postSessionTimeSection: {
-    marginTop: SLSpacing.lg,
-    paddingTop: SLSpacing.md,
+    marginTop: 14,
+    paddingTop: 10,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: SLColors.border,
+    borderTopColor: 'rgba(153, 107, 225, 0.22)',
   },
   postSessionTimeHint: {
     color: SLColors.textMuted,
@@ -12604,7 +12723,7 @@ const styles = StyleSheet.create({
     marginTop: SLSpacing.lg,
   },
   postSessionEffortSection: {
-    marginTop: 22,
+    marginTop: SLSpacing.sm,
   },
   postSessionEffortHeader: {
     flexDirection: 'row',
@@ -12612,9 +12731,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   postSessionEffortValue: {
-    color: SLColors.textStrong,
-    fontSize: SLTypography.sectionTitle.fontSize,
+    color: SLColors.accentViolet,
+    fontSize: 30,
     fontWeight: '900',
+    fontVariant: ['tabular-nums'],
+  },
+  postSessionEffortReadout: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
+  },
+  postSessionEffortDenominator: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
   },
   postSessionEffortEndpoints: {
     flexDirection: 'row',
@@ -12627,41 +12756,41 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   postSessionEffortRailTouchTarget: {
-    height: 42,
+    height: 50,
     justifyContent: 'center',
   },
   postSessionEffortRail: {
     position: 'absolute',
     left: 0,
     right: 0,
-    height: 4,
+    height: 7,
     borderRadius: SLRadius.pill,
     backgroundColor: SLColors.borderStrong,
   },
   postSessionEffortRailFill: {
     position: 'absolute',
     left: 0,
-    height: 4,
+    height: 7,
     borderRadius: SLRadius.pill,
     backgroundColor: SLColors.accent,
   },
   postSessionEffortThumb: {
     position: 'absolute',
-    width: 22,
-    height: 22,
+    width: 26,
+    height: 26,
     borderRadius: SLRadius.pill,
     borderWidth: 3,
     borderColor: SLColors.backgroundRaised,
     backgroundColor: SLColors.accent,
   },
   postSessionSegmentedControl: {
-    minHeight: 50,
+    minHeight: 52,
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: SLColors.borderStrong,
+    borderColor: 'rgba(153, 107, 225, 0.30)',
     borderRadius: SLRadius.md,
     overflow: 'hidden',
-    backgroundColor: SLColors.surface,
+    backgroundColor: '#15111C',
   },
   postSessionSegment: {
     flex: 1,
@@ -12670,15 +12799,46 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   postSessionSegmentActive: {
-    backgroundColor: SLColors.surfaceMuted,
+    backgroundColor: 'rgba(139, 92, 219, 0.34)',
+    borderBottomWidth: 3,
+    borderBottomColor: SLColors.accentViolet,
   },
   postSessionSegmentText: {
     color: SLColors.textMuted,
-    fontSize: SLTypography.label.fontSize,
+    fontSize: 15,
     fontWeight: '800',
   },
   postSessionSegmentTextActive: {
     color: SLColors.textStrong,
+  },
+  postSessionFatigueChoices: {
+    gap: 4,
+  },
+  postSessionFatigueChoice: {
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 14,
+    borderRadius: SLRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(153, 107, 225, 0.22)',
+    backgroundColor: '#15111C',
+  },
+  postSessionFatigueChoiceActive: {
+    borderColor: SLColors.accentViolet,
+    backgroundColor: 'rgba(139, 92, 219, 0.17)',
+  },
+  postSessionFatigueMarker: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: SLColors.textMuted,
+  },
+  postSessionFatigueMarkerActive: {
+    borderColor: SLColors.accentViolet,
+    backgroundColor: SLColors.accentViolet,
   },
   postSessionNotesSection: {
     marginTop: 12,
@@ -12712,9 +12872,22 @@ const styles = StyleSheet.create({
   postSessionActions: {
     flexDirection: 'column',
     marginTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(153, 107, 225, 0.22)',
+    paddingTop: 12,
   },
   postSessionCompleteAction: {
     width: '100%',
+    minHeight: 56,
+    backgroundColor: SLColors.accentViolet,
+    borderColor: SLColors.accentViolet,
+    gap: 8,
+  },
+  postSessionError: {
+    color: SLColors.danger,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 19,
+    marginBottom: 4,
   },
   postSessionSkipAction: {
     minHeight: 42,
@@ -12790,7 +12963,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   surveySection: {
-    marginTop: 14,
+    marginTop: 10,
   },
   surveyChipRow: {
     flexDirection: 'row',

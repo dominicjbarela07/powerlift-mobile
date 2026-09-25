@@ -26,6 +26,7 @@ import { type LedgerMovementProgress } from '@/lib/ledger-exploration';
 import { LEDGER_INDEX_ASSETS, ledgerCoreLiftAsset, ledgerIndexChapterAsset } from '@/lib/ledger-index-assets';
 import { fetchLedgerRecordSummary, type JourneyEntry } from '@/lib/ledger-journey';
 import { formatPerformedLoad } from '@/lib/performed-load-semantics';
+import { reportedBodyweightDate, reportedBodyweightNumber } from '@/lib/ledger-bodyweight-presentation';
 import { canonicalTotal, projectedStrengthTierState, supportedStrengthStandard, totalStrengthTierState } from '@/lib/ledger-rewards';
 import { SL_STRENGTH_TIER_ASSETS } from '@/lib/trophy-assets';
 import { CORE_LIFT_PRESENTATION } from './model';
@@ -424,14 +425,15 @@ export function LedgerIndexExperience() {
     ? ((latestVolumeWeek!.value_kg - previousVolumeWeek.value_kg) / previousVolumeWeek.value_kg) * 100
     : null;
   const bodyweight = context?.reported_bodyweight?.latest?.reported_bodyweight_kg;
+  const bodyweightValue = reportedBodyweightNumber(bodyweight, model.unit);
   const bodyweightPoints = (context?.reported_bodyweight?.recent_observations ?? []).map((point) => point.reported_bodyweight_kg).filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
   const latestReportedBodyweight = context?.reported_bodyweight?.latest;
   const reportedBodyweightComparison = context?.reported_bodyweight?.comparison;
   const bodyweightContextLine = latestReportedBodyweight?.training_date
-    ? `Latest reported · ${dateLabel(latestReportedBodyweight.training_date)}`
+    ? `Latest reported · ${reportedBodyweightDate(latestReportedBodyweight.training_date) || 'Date unavailable'}`
     : 'No reported pre-session bodyweight';
   const bodyweightTrendLine = reportedBodyweightComparison
-    ? `${displayWeight(reportedBodyweightComparison.start.reported_bodyweight_kg, model.unit)} → ${displayWeight(reportedBodyweightComparison.end.reported_bodyweight_kg, model.unit)} ${model.unit.toUpperCase()} · ${reportedBodyweightComparison.span_days} days`
+    ? `${reportedBodyweightNumber(reportedBodyweightComparison.start.reported_bodyweight_kg, model.unit) || '—'} → ${reportedBodyweightNumber(reportedBodyweightComparison.end.reported_bodyweight_kg, model.unit) || '—'} ${model.unit.toUpperCase()} · ${reportedBodyweightComparison.span_days} days`
     : null;
   const strengthTierArtifact = SL_STRENGTH_TIER_ASSETS[model.strengthTierIndex];
   const openRoom = (room: LedgerChapterRoom) => router.push(ledgerHrefFor(room) as any);
@@ -503,7 +505,7 @@ export function LedgerIndexExperience() {
         </Pressable>
         <Pressable accessibilityRole="button" accessibilityLabel="Open completed training volume in Archive" onPress={() => openRoom('archive')} style={({ pressed }) => [styles.contextCard, pressed && styles.pressed]}><Text style={styles.contextLabel}>VOLUME · COMPLETED WEEK</Text><Text adjustsFontSizeToFit minimumFontScale={0.74} numberOfLines={1} style={styles.contextMetric}>{displayVolume(latestVolumeWeek?.value_kg, model.unit)}</Text><Text style={styles.contextDetail}>{shortWeekLabel(latestVolumeWeek?.date)}</Text>{volumeDeltaPct != null ? <Text style={[styles.contextTrend, volumeDeltaPct < 0 && styles.contextTrendDown]}>{volumeDeltaPct >= 0 ? '+' : ''}{volumeDeltaPct.toFixed(0)}% vs prior week</Text> : <Text style={styles.contextEvidence}>No adjacent-week comparison</Text>}<ContextBars values={volumeWeeks.map((point) => point.value_kg)} tone="#A557F0" /></Pressable>
         <Pressable accessibilityRole="button" accessibilityLabel="Open training frequency in Journey" onPress={() => openRoom('journey')} style={({ pressed }) => [styles.contextCard, pressed && styles.pressed]}><Text style={styles.contextLabel}>TRAINING FREQUENCY</Text><Text style={styles.contextMetric}>{frequency == null ? '—' : Number(frequency).toFixed(1)}</Text><Text style={styles.contextDetail}>Sessions / week</Text><Text style={styles.contextEvidence}>Last 8 completed weeks</Text><ContextBars values={frequencyPoints} /></Pressable>
-        <Pressable accessibilityRole="button" accessibilityLabel="Open reported bodyweight history in Journey" onPress={() => openRoom('journey')} style={({ pressed }) => [styles.contextCard, pressed && styles.pressed]}><Text style={styles.contextLabel}>REPORTED BODYWEIGHT</Text><Text style={styles.contextMetric}>{bodyweight != null ? `${displayWeight(bodyweight, model.unit)} ${model.unit.toUpperCase()}` : '—'}</Text><Text numberOfLines={2} style={styles.contextDetail}>{bodyweightContextLine}</Text>{bodyweightTrendLine ? <Text numberOfLines={1} style={styles.contextTrend}>{bodyweightTrendLine}</Text> : <Text style={styles.contextEvidence}>No fabricated trend</Text>}<MiniLine values={bodyweightPoints.slice(-8)} tone="#76CBD0" label="Reported pre-session bodyweight trend" /></Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="Open reported bodyweight history in Journey" onPress={() => openRoom('journey')} style={({ pressed }) => [styles.contextCard, pressed && styles.pressed]}><Text style={styles.contextLabel}>REPORTED BODYWEIGHT</Text><Text style={styles.contextMetric}>{bodyweightValue ? `${bodyweightValue} ${model.unit.toUpperCase()}` : '—'}</Text><Text numberOfLines={2} style={styles.contextDetail}>{bodyweightContextLine}</Text>{bodyweightTrendLine ? <Text numberOfLines={1} style={styles.contextTrend}>{bodyweightTrendLine}</Text> : <Text style={styles.contextEvidence}>No fabricated trend</Text>}<MiniLine values={bodyweightPoints.slice(-8)} tone="#76CBD0" label="Reported pre-session bodyweight trend" /></Pressable>
         {typeof progression?.readiness?.average === 'number' ? <View accessibilityLabel={`Readiness 7-day average ${progression.readiness.average.toFixed(1)}`} style={styles.contextCard}><Text style={styles.contextLabel}>READINESS TREND</Text><Text style={styles.contextMetric}>{progression.readiness.average.toFixed(1)}</Text><Text style={styles.contextDetail}>7-day average</Text><Text numberOfLines={2} style={styles.contextEvidence}>{progression.readiness.context_line || progression.readiness.trend || 'Reported readiness evidence'}</Text><View style={styles.readinessSignal}><Ionicons name="pulse-outline" size={30} color="#68D16F" /><Text style={styles.readinessSignalText}>{progression.readiness.trend || 'CURRENT'}</Text></View></View> : null}
       </ScrollView>
 

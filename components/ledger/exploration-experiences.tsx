@@ -12,6 +12,7 @@ import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { SLColors } from '@/constants/theme';
 import { displayWeight, type LedgerUnit } from '@/lib/ledger-data';
 import { kilogramsToDisplayValue } from '@/lib/display-units';
+import { reportedBodyweightNumber } from '@/lib/ledger-bodyweight-presentation';
 import {
   fetchLedgerExplorationIndex,
   type LedgerExplorationIndex,
@@ -72,7 +73,7 @@ function ContextBar({ data }: { data: LedgerExplorationIndex }) {
   const context = data.context;
   const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
   const progress = context.block_progress == null ? null : Math.round(context.block_progress * 100);
-  return <View testID="ledger-context-bar" style={styles.contextBar}><View style={styles.contextPrimary}><Text style={styles.contextKicker}>{context.block?.name || 'NO CURRENT BLOCK'}</Text><Text style={styles.contextDetail}>{context.week_number ? `Week ${context.week_number}${context.total_weeks ? ` of ${context.total_weeks}` : ''}` : 'No dated week'} · {context.block_completed_sessions}/{context.block_total_sessions || '—'} sessions</Text></View><View style={styles.contextFacts}><View><Text style={styles.contextFactValue}>{context.bodyweight_kg ? `${displayWeight(context.bodyweight_kg, unit)} ${unit}` : '—'}</Text><Text style={styles.contextFactLabel}>BODYWEIGHT</Text></View><View><Text style={styles.contextFactValue}>{context.training_frequency_per_week.toFixed(1)}</Text><Text style={styles.contextFactLabel}>SESSIONS/WK</Text></View><View style={styles.contextProgress}><Text style={styles.contextFactValue}>{progress == null ? '—' : `${progress}%`}</Text><Text style={styles.contextFactLabel}>BLOCK</Text></View></View></View>;
+  return <View testID="ledger-context-bar" style={styles.contextBar}><View style={styles.contextPrimary}><Text style={styles.contextKicker}>{context.block?.name || 'NO CURRENT BLOCK'}</Text><Text style={styles.contextDetail}>{context.week_number ? `Week ${context.week_number}${context.total_weeks ? ` of ${context.total_weeks}` : ''}` : 'No dated week'} · {context.block_completed_sessions}/{context.block_total_sessions || '—'} sessions</Text></View><View style={styles.contextFacts}><View><Text style={styles.contextFactValue}>{context.bodyweight_kg ? `${reportedBodyweightNumber(context.bodyweight_kg, unit)} ${unit}` : '—'}</Text><Text style={styles.contextFactLabel}>BODYWEIGHT</Text></View><View><Text style={styles.contextFactValue}>{context.training_frequency_per_week.toFixed(1)}</Text><Text style={styles.contextFactLabel}>SESSIONS/WK</Text></View><View style={styles.contextProgress}><Text style={styles.contextFactValue}>{progress == null ? '—' : `${progress}%`}</Text><Text style={styles.contextFactLabel}>BLOCK</Text></View></View></View>;
 }
 
 function MovementArtwork({ movement, size = 58 }: { movement: LedgerMovementProgress; size?: number }) {

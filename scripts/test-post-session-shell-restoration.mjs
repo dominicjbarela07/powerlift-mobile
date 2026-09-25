@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import { buildPostSessionTabs } from '../lib/post-session-shell.ts';
 
 const surface = fs.readFileSync('components/coach-mobile/CompletedSessionRecap.tsx', 'utf8');
+const logger = fs.readFileSync('app/(tabs)/workout/[workoutId].tsx', 'utf8');
 const activeSurface = surface.split('/* Retired athlete-recap renderer')[0];
 const tabKeys = (viewerMode, hasPersonalBests) => buildPostSessionTabs({
   viewerMode,
@@ -19,6 +20,9 @@ assert.deepEqual(tabKeys('coach', true), ['overview', 'performed', 'plan', 'pers
 
 assert.match(activeSurface, /buildPostSessionTabs\(\{[\s\S]*viewerMode,[\s\S]*hasPersonalBests: personalBestEvidence\.length > 0/, 'the canonical tab policy must drive the visible shell');
 assert.match(activeSurface, /<Text style=\{styles\.topSubtitle\}>Post-Session Review<\/Text>/, 'the header must identify the canonical Post-Session surface rather than the active lens');
+assert.doesNotMatch(activeSurface, /SessionV3Closeout|showCloseout|entryPresentation/, 'completed Logger entry must not render a parallel closeout destination');
+assert.doesNotMatch(logger, /entryPresentation="logger"/, 'the Logger must enter the canonical Post-Session surface directly');
+assert.match(activeSurface, /<ReflectionOverview analytics=\{analytics\} recap=\{recap\} onEditReflection=\{onEditReflection\}/, 'reflection correction must remain available in the canonical Overview');
 assert.doesNotMatch(activeSurface, /Post-Session \$\{activeTabLabel\}|Coach Post-Session \$\{activeTabLabel\}/, 'the route title must not collapse into an active-tab title');
 
 const heroIndex = activeSurface.indexOf('<View style={styles.canonicalHero}>');
