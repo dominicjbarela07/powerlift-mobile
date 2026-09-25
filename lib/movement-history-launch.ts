@@ -66,9 +66,9 @@ export function resolveMovementHistoryLaunchForItem({
   );
   const equipmentContextDefinitionId = positiveId(normalized.equipment?.id);
 
-  const coreMovementId = positiveId((normalized.effective as { core_movement_definition_id?: number } | null)?.core_movement_definition_id) || (normalized.kind === 'core'
+  const coreMovementId = normalized.kind === 'core'
     ? positiveId(normalized.effective?.id)
-    : null);
+    : null;
   if (coreMovementId) {
     return {
       ok: true,

@@ -11,9 +11,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 1,
       "core_kind": "competition"
     },
@@ -26,9 +23,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 2,
       "core_kind": "competition"
     },
@@ -41,11 +35,40 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 3,
       "core_kind": "competition"
+    },
+    {
+      "id": 4,
+      "key": "barbell_row",
+      "display_name": "Barbell Row",
+      "kind": "accessory",
+      "family": "horizontal_pull",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "equipment_type": "barbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 5,
+      "key": "single_arm_dumbbell_row",
+      "display_name": "Single-Arm Dumbbell Row",
+      "kind": "accessory",
+      "family": "horizontal_pull",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "equipment_type": "dumbbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
     },
     {
       "id": 6,
@@ -59,9 +82,37 @@
         "triceps"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 7,
+      "key": "incline_dumbbell_press",
+      "display_name": "Incline Dumbbell Press",
+      "kind": "accessory",
+      "family": "horizontal_push",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
       ],
+      "equipment_type": "dumbbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 8,
+      "key": "cable_row",
+      "display_name": "Cable Row",
+      "kind": "accessory",
+      "family": "horizontal_pull",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "equipment_type": "cable",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -77,20 +128,23 @@
         "upper_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
+    },
+    {
+      "id": 12,
+      "key": "pull_up_added_weight",
+      "display_name": "Weighted Pull-Up",
+      "kind": "accessory",
+      "family": "accessory_lats",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "equipment_type": "bodyweight",
+      "core_movement_definition_id": null,
+      "core_kind": null
     },
     {
       "id": 13,
@@ -104,9 +158,6 @@
         "upper_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -121,20 +172,8 @@
         "obliques"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "duration",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 15,
@@ -148,9 +187,6 @@
         "upper_back"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -166,9 +202,21 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 21,
+      "key": "unknown_machine_lat_pulldown",
+      "display_name": "Unknown Machine Lat Pulldown",
+      "kind": "accessory",
+      "family": "vertical_pull",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
       ],
+      "equipment_type": "machine",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -184,9 +232,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -202,9 +247,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -220,9 +262,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -238,9 +277,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -256,9 +292,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -274,9 +307,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -292,9 +322,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -310,9 +337,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -328,9 +352,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -346,9 +367,36 @@
         "triceps"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 43,
+      "key": "accessory_spoto_press",
+      "display_name": "Spoto Press",
+      "kind": "accessory",
+      "family": "accessory_chest",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
       ],
+      "equipment_type": "free_weight",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 44,
+      "key": "accessory_larsen_press",
+      "display_name": "Larsen Press",
+      "kind": "accessory",
+      "family": "accessory_chest",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -364,9 +412,6 @@
         "triceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -382,9 +427,6 @@
         "triceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -400,9 +442,6 @@
         "triceps"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -418,9 +457,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -436,9 +472,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -454,9 +487,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -472,9 +502,21 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 52,
+      "key": "accessory_pec_deck",
+      "display_name": "Pec Deck",
+      "kind": "accessory",
+      "family": "accessory_chest",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
       ],
+      "equipment_type": "machine",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -490,9 +532,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -508,9 +547,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -526,9 +562,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -544,9 +577,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -562,9 +592,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -580,9 +607,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -597,9 +621,6 @@
         "front_delts"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -614,9 +635,6 @@
         "front_delts"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -631,9 +649,6 @@
         "front_delts"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -648,9 +663,6 @@
         "front_delts"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -665,9 +677,6 @@
         "front_delts"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -682,9 +691,6 @@
         "front_delts"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -699,9 +705,6 @@
         "front_delts"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -717,20 +720,8 @@
         "triceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 68,
@@ -744,20 +735,8 @@
         "triceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 69,
@@ -771,20 +750,8 @@
         "triceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 70,
@@ -798,20 +765,8 @@
         "triceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 71,
@@ -825,20 +780,8 @@
         "triceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 72,
@@ -852,20 +795,23 @@
         "triceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
+    },
+    {
+      "id": 73,
+      "key": "accessory_weighted_push_up",
+      "display_name": "Weighted Push-Up",
+      "kind": "accessory",
+      "family": "accessory_chest",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "equipment_type": "free_weight",
+      "core_movement_definition_id": null,
+      "core_kind": null
     },
     {
       "id": 74,
@@ -879,20 +825,8 @@
         "triceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 75,
@@ -906,20 +840,8 @@
         "triceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 76,
@@ -932,9 +854,6 @@
         "front_delts"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -949,9 +868,6 @@
         "front_delts"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -966,9 +882,6 @@
         "front_delts"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -984,9 +897,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1002,9 +912,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1020,9 +927,6 @@
         "triceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1038,9 +942,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1056,9 +957,6 @@
         "triceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1074,9 +972,6 @@
         "triceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1092,9 +987,6 @@
         "triceps"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1110,9 +1002,6 @@
         "triceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1128,9 +1017,6 @@
         "triceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1146,9 +1032,6 @@
         "triceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1164,9 +1047,6 @@
         "triceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1182,9 +1062,6 @@
         "triceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1200,9 +1077,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1218,9 +1092,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1236,9 +1107,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1254,9 +1122,6 @@
         "triceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1272,9 +1137,6 @@
         "triceps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1290,9 +1152,6 @@
         "triceps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1307,9 +1166,6 @@
         "side_delts"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1324,9 +1180,6 @@
         "side_delts"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1342,20 +1195,8 @@
         "triceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 102,
@@ -1369,20 +1210,8 @@
         "triceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 103,
@@ -1396,9 +1225,6 @@
         "traps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1414,9 +1240,6 @@
         "traps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1432,9 +1255,6 @@
         "traps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1450,9 +1270,6 @@
         "traps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1468,9 +1285,6 @@
         "traps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1486,9 +1300,6 @@
         "traps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1504,9 +1315,6 @@
         "traps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1522,9 +1330,6 @@
         "traps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1540,9 +1345,6 @@
         "traps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1558,9 +1360,6 @@
         "traps"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1576,9 +1375,6 @@
         "traps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1594,9 +1390,6 @@
         "traps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1612,9 +1405,6 @@
         "traps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1630,9 +1420,6 @@
         "traps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1648,9 +1435,6 @@
         "traps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1666,9 +1450,6 @@
         "traps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1684,9 +1465,6 @@
         "traps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1701,9 +1479,6 @@
         "traps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1718,9 +1493,6 @@
         "traps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1735,9 +1507,6 @@
         "traps"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1752,9 +1521,6 @@
         "traps"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1769,9 +1535,6 @@
         "traps"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1786,9 +1549,6 @@
         "upper_back"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1803,9 +1563,20 @@
         "upper_back"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 128,
+      "key": "accessory_incline_bench_rear_delt_flye",
+      "display_name": "Incline-Bench Rear-Delt Fly",
+      "kind": "accessory",
+      "family": "accessory_rear_delts",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
       ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1820,9 +1591,20 @@
         "upper_back"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 130,
+      "key": "accessory_wide_elbow_dumbbell_row",
+      "display_name": "Wide-Elbow Dumbbell Row",
+      "kind": "accessory",
+      "family": "accessory_rear_delts",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
       ],
+      "equipment_type": "dumbbell",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1837,9 +1619,6 @@
         "upper_back"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1854,9 +1633,6 @@
         "upper_back"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1871,9 +1647,20 @@
         "upper_back"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 134,
+      "key": "accessory_reverse_pec_deck",
+      "display_name": "Reverse Pec Deck",
+      "kind": "accessory",
+      "family": "accessory_rear_delts",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
       ],
+      "equipment_type": "machine",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1888,9 +1675,6 @@
         "upper_back"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1905,9 +1689,20 @@
         "upper_back"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 137,
+      "key": "accessory_chest_supported_rear_delt_machine_row",
+      "display_name": "Chest-Supported Rear-Delt Machine Row",
+      "kind": "accessory",
+      "family": "accessory_rear_delts",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
       ],
+      "equipment_type": "machine",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1923,9 +1718,6 @@
         "traps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1941,9 +1733,6 @@
         "traps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1959,9 +1748,6 @@
         "traps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1977,9 +1763,6 @@
         "traps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -1995,9 +1778,6 @@
         "traps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2012,9 +1792,6 @@
         "upper_back"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2029,9 +1806,6 @@
         "upper_back"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2046,9 +1820,6 @@
         "upper_back"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2063,9 +1834,6 @@
         "upper_back"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2081,9 +1849,6 @@
         "lats"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2099,9 +1864,6 @@
         "lats"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2117,9 +1879,6 @@
         "biceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2135,9 +1894,6 @@
         "biceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2153,9 +1909,6 @@
         "biceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2171,9 +1924,6 @@
         "biceps"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2189,9 +1939,36 @@
         "biceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 158,
+      "key": "accessory_three_point_dumbbell_row",
+      "display_name": "Three-Point Dumbbell Row",
+      "kind": "accessory",
+      "family": "accessory_lats",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "biceps"
       ],
+      "equipment_type": "dumbbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 159,
+      "key": "accessory_landmine_row",
+      "display_name": "Landmine Row",
+      "kind": "accessory",
+      "family": "accessory_lats",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "biceps"
+      ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2207,9 +1984,6 @@
         "biceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2225,9 +1999,6 @@
         "biceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2243,9 +2014,6 @@
         "biceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2261,9 +2029,6 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2279,9 +2044,6 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2297,9 +2059,6 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2315,9 +2074,6 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2333,9 +2089,6 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2351,9 +2104,6 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2369,9 +2119,6 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2387,9 +2134,6 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2405,9 +2149,6 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2423,9 +2164,6 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2441,9 +2179,21 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 177,
+      "key": "accessory_cross_bench_cable_pulldown",
+      "display_name": "Cross-Bench Cable Pulldown",
+      "kind": "accessory",
+      "family": "accessory_lats",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
       ],
+      "equipment_type": "cable",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2459,9 +2209,6 @@
         "upper_back"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2477,9 +2224,6 @@
         "upper_back"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2495,9 +2239,6 @@
         "upper_back"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2513,9 +2254,6 @@
         "upper_back"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2531,9 +2269,6 @@
         "upper_back"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2549,20 +2284,8 @@
         "upper_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 184,
@@ -2576,20 +2299,8 @@
         "upper_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 185,
@@ -2603,20 +2314,8 @@
         "upper_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 186,
@@ -2630,20 +2329,8 @@
         "upper_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 187,
@@ -2657,20 +2344,8 @@
         "upper_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 189,
@@ -2683,9 +2358,6 @@
         "biceps"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2700,9 +2372,6 @@
         "biceps"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2719,9 +2388,6 @@
         "biceps"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2738,9 +2404,6 @@
         "biceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2757,9 +2420,6 @@
         "biceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2776,9 +2436,6 @@
         "biceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2795,9 +2452,22 @@
         "biceps"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 196,
+      "key": "accessory_incline_bench_dumbbell_row",
+      "display_name": "Incline-Bench Dumbbell Row",
+      "kind": "accessory",
+      "family": "accessory_upper_back",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
       ],
+      "equipment_type": "dumbbell",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2814,9 +2484,6 @@
         "biceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2833,9 +2500,22 @@
         "biceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 199,
+      "key": "accessory_chest_supported_t_bar_row",
+      "display_name": "Chest-Supported T-Bar Row",
+      "kind": "accessory",
+      "family": "accessory_upper_back",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
       ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2852,9 +2532,6 @@
         "biceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2871,9 +2548,6 @@
         "biceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2890,9 +2564,6 @@
         "biceps"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2909,9 +2580,38 @@
         "biceps"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 204,
+      "key": "accessory_wide_elbow_barbell_row",
+      "display_name": "Wide-Elbow Barbell Row",
+      "kind": "accessory",
+      "family": "accessory_upper_back",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
       ],
+      "equipment_type": "barbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 205,
+      "key": "accessory_chest_supported_kelso_row",
+      "display_name": "Chest-Supported Kelso Row",
+      "kind": "accessory",
+      "family": "accessory_upper_back",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2928,9 +2628,6 @@
         "biceps"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2947,9 +2644,6 @@
         "biceps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2966,9 +2660,6 @@
         "biceps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -2985,9 +2676,6 @@
         "biceps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3004,9 +2692,6 @@
         "biceps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3023,9 +2708,6 @@
         "biceps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3042,9 +2724,6 @@
         "biceps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3061,9 +2740,6 @@
         "biceps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3080,9 +2756,6 @@
         "biceps"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3099,9 +2772,6 @@
         "biceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3118,9 +2788,6 @@
         "biceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3137,9 +2804,6 @@
         "biceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3156,9 +2820,6 @@
         "biceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3175,9 +2836,70 @@
         "biceps"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 221,
+      "key": "accessory_machine_mid_row",
+      "display_name": "Machine Mid Row",
+      "kind": "accessory",
+      "family": "accessory_upper_back",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
       ],
+      "equipment_type": "machine",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 222,
+      "key": "accessory_plate_loaded_seated_row",
+      "display_name": "Machine Seated Row",
+      "kind": "accessory",
+      "family": "accessory_upper_back",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "equipment_type": "machine",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 223,
+      "key": "accessory_chest_supported_high_row",
+      "display_name": "Chest-Supported High Row",
+      "kind": "accessory",
+      "family": "accessory_upper_back",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "equipment_type": "machine",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 224,
+      "key": "accessory_wide_elbow_machine_row",
+      "display_name": "Wide-Elbow Machine Row",
+      "kind": "accessory",
+      "family": "accessory_upper_back",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "equipment_type": "machine",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3194,20 +2916,8 @@
         "biceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 226,
@@ -3222,20 +2932,8 @@
         "biceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 227,
@@ -3250,20 +2948,8 @@
         "biceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 228,
@@ -3278,20 +2964,8 @@
         "biceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 229,
@@ -3306,20 +2980,8 @@
         "biceps"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 230,
@@ -3333,9 +2995,6 @@
         "rear_delts"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3351,9 +3010,6 @@
         "rear_delts"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3369,9 +3025,6 @@
         "rear_delts"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3387,9 +3040,6 @@
         "lats"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3405,9 +3055,6 @@
         "upper_back"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3423,9 +3070,6 @@
         "upper_back"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3441,9 +3085,6 @@
         "upper_back"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3459,9 +3100,6 @@
         "upper_back"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3477,9 +3115,6 @@
         "upper_back"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3495,9 +3130,6 @@
         "upper_back"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3513,9 +3145,6 @@
         "upper_back"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3531,9 +3160,21 @@
         "upper_back"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 242,
+      "key": "accessory_kelso_shrug",
+      "display_name": "Kelso Shrug",
+      "kind": "accessory",
+      "family": "accessory_traps",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "forearms",
+        "upper_back"
       ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3548,9 +3189,6 @@
         "upper_back"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3565,9 +3203,6 @@
         "upper_back"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3582,9 +3217,6 @@
         "upper_back"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3599,9 +3231,6 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3616,9 +3245,20 @@
         "upper_back"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 248,
+      "key": "accessory_cable_kelso_shrug",
+      "display_name": "Cable Kelso Shrug",
+      "kind": "accessory",
+      "family": "accessory_traps",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "upper_back"
       ],
+      "equipment_type": "cable",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3633,9 +3273,6 @@
         "upper_back"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3650,9 +3287,6 @@
         "upper_back"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3667,9 +3301,6 @@
         "forearms"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3684,16 +3315,13 @@
         "forearms"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
     {
       "id": 253,
       "key": "accessory_dumbbell_curl",
-      "display_name": "Standing Dumbbell Curl",
+      "display_name": "Dumbbell Curl",
       "kind": "accessory",
       "family": "accessory_biceps",
       "primary_muscle_group": "biceps",
@@ -3701,9 +3329,6 @@
         "forearms"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3718,9 +3343,6 @@
         "forearms"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3735,9 +3357,20 @@
         "forearms"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 256,
+      "key": "accessory_standing_dumbbell_curl",
+      "display_name": "Standing Dumbbell Curl",
+      "kind": "accessory",
+      "family": "accessory_biceps",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
       ],
+      "equipment_type": "dumbbell",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3752,9 +3385,6 @@
         "forearms"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3769,9 +3399,6 @@
         "forearms"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3786,9 +3413,6 @@
         "forearms"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3803,9 +3427,6 @@
         "forearms"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3820,9 +3441,6 @@
         "forearms"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3837,9 +3455,6 @@
         "forearms"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3854,9 +3469,6 @@
         "forearms"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3871,9 +3483,6 @@
         "forearms"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3888,9 +3497,6 @@
         "forearms"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3905,9 +3511,6 @@
         "forearms"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3922,9 +3525,6 @@
         "forearms"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3939,9 +3539,6 @@
         "forearms"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3956,9 +3553,6 @@
         "forearms"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3973,9 +3567,6 @@
         "forearms"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -3990,9 +3581,6 @@
         "forearms"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4007,9 +3595,6 @@
         "forearms"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4024,9 +3609,6 @@
         "forearms"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4041,9 +3623,6 @@
         "forearms"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4058,9 +3637,6 @@
         "forearms"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4075,9 +3651,6 @@
         "forearms"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4092,9 +3665,6 @@
         "forearms"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4109,9 +3679,6 @@
         "forearms"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4126,9 +3693,6 @@
         "forearms"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4143,9 +3707,6 @@
         "forearms"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4160,9 +3721,20 @@
         "forearms"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 286,
+      "key": "accessory_band_preacher_curl",
+      "display_name": "Band Preacher Curl",
+      "kind": "accessory",
+      "family": "accessory_biceps",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
       ],
+      "equipment_type": "other",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4177,20 +3749,8 @@
         "forearms"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 288,
@@ -4203,20 +3763,23 @@
         "forearms"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
+    },
+    {
+      "id": 289,
+      "key": "accessory_close_grip_bench_press",
+      "display_name": "Close-Grip Bench Press",
+      "kind": "accessory",
+      "family": "accessory_triceps",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "equipment_type": "free_weight",
+      "core_movement_definition_id": null,
+      "core_kind": null
     },
     {
       "id": 290,
@@ -4230,9 +3793,6 @@
         "front_delts"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4248,9 +3808,6 @@
         "front_delts"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4266,9 +3823,6 @@
         "front_delts"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4284,9 +3838,6 @@
         "front_delts"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4302,9 +3853,6 @@
         "front_delts"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4320,9 +3868,6 @@
         "front_delts"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4338,9 +3883,6 @@
         "front_delts"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4356,9 +3898,6 @@
         "front_delts"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4374,9 +3913,6 @@
         "front_delts"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4392,9 +3928,6 @@
         "front_delts"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4410,9 +3943,6 @@
         "front_delts"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4425,9 +3955,6 @@
       "primary_muscle_group": "triceps",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4440,9 +3967,6 @@
       "primary_muscle_group": "triceps",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4455,9 +3979,6 @@
       "primary_muscle_group": "triceps",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4470,9 +3991,6 @@
       "primary_muscle_group": "triceps",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4485,9 +4003,6 @@
       "primary_muscle_group": "triceps",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4500,9 +4015,6 @@
       "primary_muscle_group": "triceps",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4515,9 +4027,6 @@
       "primary_muscle_group": "triceps",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4530,9 +4039,6 @@
       "primary_muscle_group": "triceps",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4547,9 +4053,6 @@
         "chest"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4564,9 +4067,6 @@
         "chest"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4582,20 +4082,8 @@
         "front_delts"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 316,
@@ -4609,20 +4097,8 @@
         "front_delts"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 317,
@@ -4636,20 +4112,8 @@
         "front_delts"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 318,
@@ -4663,20 +4127,8 @@
         "front_delts"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 319,
@@ -4690,20 +4142,8 @@
         "front_delts"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 320,
@@ -4717,9 +4157,21 @@
         "front_delts"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 321,
+      "key": "accessory_weighted_dip",
+      "display_name": "Weighted Dip",
+      "kind": "accessory",
+      "family": "accessory_triceps",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
       ],
+      "equipment_type": "bodyweight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4732,9 +4184,6 @@
       "primary_muscle_group": "triceps",
       "secondary_muscle_groups": [],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4747,9 +4196,6 @@
       "primary_muscle_group": "triceps",
       "secondary_muscle_groups": [],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4762,9 +4208,6 @@
       "primary_muscle_group": "triceps",
       "secondary_muscle_groups": [],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4777,9 +4220,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4792,9 +4232,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4807,9 +4244,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4822,9 +4256,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4837,9 +4268,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4852,9 +4280,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4867,9 +4292,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4882,9 +4304,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4897,9 +4316,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4912,9 +4328,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4927,9 +4340,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4942,9 +4352,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4957,9 +4364,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4972,9 +4376,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -4987,9 +4388,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5002,9 +4400,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5017,9 +4412,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5032,9 +4424,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5047,9 +4436,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5062,9 +4448,6 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5077,20 +4460,8 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 346,
@@ -5101,20 +4472,8 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 347,
@@ -5125,20 +4484,38 @@
       "primary_muscle_group": "forearms",
       "secondary_muscle_groups": [],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
+    },
+    {
+      "id": 348,
+      "key": "accessory_front_squat",
+      "display_name": "Front Squat",
+      "kind": "accessory",
+      "family": "accessory_quads",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "equipment_type": "free_weight",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 349,
+      "key": "accessory_high_bar_squat",
+      "display_name": "High-Bar Squat",
+      "kind": "accessory",
+      "family": "accessory_quads",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "equipment_type": "free_weight",
+      "core_movement_definition_id": null,
+      "core_kind": null
     },
     {
       "id": 350,
@@ -5152,9 +4529,6 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5170,9 +4544,6 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5188,9 +4559,6 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5206,9 +4574,6 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5224,9 +4589,6 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5242,9 +4604,6 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5260,9 +4619,6 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5278,9 +4634,6 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5296,20 +4649,8 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "FREE_WEIGHT",
-        "BODYWEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 359,
@@ -5323,9 +4664,6 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5341,9 +4679,6 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5359,9 +4694,6 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5377,9 +4709,36 @@
         "adductors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 363,
+      "key": "accessory_dumbbell_step_down",
+      "display_name": "Dumbbell Step-Down",
+      "kind": "accessory",
+      "family": "accessory_quads",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
       ],
+      "equipment_type": "dumbbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 364,
+      "key": "accessory_spanish_squat_with_weight",
+      "display_name": "Spanish Squat with Weight",
+      "kind": "accessory",
+      "family": "accessory_quads",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5395,9 +4754,6 @@
         "adductors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5413,9 +4769,6 @@
         "adductors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5431,9 +4784,6 @@
         "adductors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5449,9 +4799,6 @@
         "adductors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5467,9 +4814,6 @@
         "adductors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5485,9 +4829,6 @@
         "adductors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5503,9 +4844,6 @@
         "adductors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5521,9 +4859,6 @@
         "adductors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5539,9 +4874,6 @@
         "adductors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5557,9 +4889,6 @@
         "adductors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5575,9 +4904,6 @@
         "adductors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5593,9 +4919,6 @@
         "adductors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5610,20 +4933,8 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 378,
@@ -5636,25 +4947,13 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 379,
       "key": "accessory_bodyweight_split_squat",
-      "display_name": "Split Squat",
+      "display_name": "Bodyweight Split Squat",
       "kind": "accessory",
       "family": "accessory_quads",
       "primary_muscle_group": "quads",
@@ -5662,20 +4961,22 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
+    },
+    {
+      "id": 380,
+      "key": "accessory_bodyweight_walking_lunge",
+      "display_name": "Bodyweight Walking Lunge",
+      "kind": "accessory",
+      "family": "accessory_quads",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "equipment_type": "bodyweight",
+      "core_movement_definition_id": null,
+      "core_kind": null
     },
     {
       "id": 381,
@@ -5688,20 +4989,8 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 382,
@@ -5714,20 +5003,8 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 383,
@@ -5740,20 +5017,8 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 384,
@@ -5766,9 +5031,6 @@
         "glutes"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5783,9 +5045,6 @@
         "glutes"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5800,9 +5059,21 @@
         "glutes"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 387,
+      "key": "accessory_romanian_deadlift",
+      "display_name": "Romanian Deadlift",
+      "kind": "accessory",
+      "family": "accessory_hamstrings",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
       ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5818,9 +5089,6 @@
         "lower_back"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5836,9 +5104,6 @@
         "lower_back"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5854,9 +5119,21 @@
         "lower_back"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 391,
+      "key": "accessory_stiff_leg_deadlift",
+      "display_name": "Stiff-Leg Deadlift",
+      "kind": "accessory",
+      "family": "accessory_hamstrings",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
       ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5872,9 +5149,6 @@
         "lower_back"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5890,9 +5164,6 @@
         "lower_back"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5908,9 +5179,21 @@
         "lower_back"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 396,
+      "key": "accessory_glute_ham_raise_with_weight",
+      "display_name": "Glute-Ham Raise with Weight",
+      "kind": "accessory",
+      "family": "accessory_hamstrings",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
       ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5925,9 +5208,6 @@
         "glutes"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5942,9 +5222,6 @@
         "glutes"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5959,9 +5236,6 @@
         "glutes"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5976,9 +5250,6 @@
         "glutes"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -5993,9 +5264,6 @@
         "glutes"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6010,9 +5278,20 @@
         "glutes"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 403,
+      "key": "accessory_glute_ham_raise",
+      "display_name": "Glute-Ham Raise",
+      "kind": "accessory",
+      "family": "accessory_hamstrings",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
       ],
+      "equipment_type": "machine",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6027,9 +5306,6 @@
         "glutes"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6044,9 +5320,6 @@
         "glutes"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6061,9 +5334,6 @@
         "glutes"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6079,20 +5349,8 @@
         "lower_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 409,
@@ -6106,9 +5364,6 @@
         "lower_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6124,20 +5379,8 @@
         "lower_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 411,
@@ -6151,25 +5394,13 @@
         "lower_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 412,
       "key": "accessory_bodyweight_glute_ham_raise",
-      "display_name": "Glute-Ham Raise",
+      "display_name": "Bodyweight Glute-Ham Raise",
       "kind": "accessory",
       "family": "accessory_hamstrings",
       "primary_muscle_group": "hamstrings",
@@ -6178,20 +5409,8 @@
         "lower_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 413,
@@ -6205,20 +5424,8 @@
         "lower_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 414,
@@ -6232,20 +5439,8 @@
         "lower_back"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 415,
@@ -6258,9 +5453,6 @@
         "glutes"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6275,9 +5467,6 @@
         "glutes"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6292,37 +5481,64 @@
         "glutes"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
     {
       "id": 418,
       "key": "accessory_barbell_hip_thrust",
-      "display_name": "Hip Thrust",
+      "display_name": "Barbell Hip Thrust",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
       "secondary_muscle_groups": [
         "hamstrings"
       ],
-      "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
+      "equipment_type": "barbell",
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "FREE_WEIGHT",
-        "BODYWEIGHT"
-      ]
+      "core_kind": null
+    },
+    {
+      "id": 419,
+      "key": "accessory_dumbbell_hip_thrust",
+      "display_name": "Dumbbell Hip Thrust",
+      "kind": "accessory",
+      "family": "accessory_glutes",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "equipment_type": "dumbbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 420,
+      "key": "accessory_barbell_glute_bridge",
+      "display_name": "Barbell Glute Bridge",
+      "kind": "accessory",
+      "family": "accessory_glutes",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "equipment_type": "barbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 421,
+      "key": "accessory_dumbbell_glute_bridge",
+      "display_name": "Dumbbell Glute Bridge",
+      "kind": "accessory",
+      "family": "accessory_glutes",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "equipment_type": "dumbbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
     },
     {
       "id": 422,
@@ -6335,20 +5551,8 @@
         "hamstrings"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "FREE_WEIGHT",
-        "BODYWEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 423,
@@ -6361,20 +5565,8 @@
         "hamstrings"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "FREE_WEIGHT",
-        "BODYWEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 424,
@@ -6387,20 +5579,8 @@
         "hamstrings"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "FREE_WEIGHT",
-        "BODYWEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 425,
@@ -6413,9 +5593,6 @@
         "hamstrings"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6430,9 +5607,6 @@
         "hamstrings"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6447,9 +5621,6 @@
         "hamstrings"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6464,9 +5635,6 @@
         "hamstrings"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6481,9 +5649,20 @@
         "hamstrings"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 430,
+      "key": "accessory_dumbbell_frog_pump",
+      "display_name": "Dumbbell Frog Pump",
+      "kind": "accessory",
+      "family": "accessory_glutes",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
       ],
+      "equipment_type": "dumbbell",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6498,9 +5677,6 @@
         "hamstrings"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6515,9 +5691,20 @@
         "hamstrings"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 433,
+      "key": "accessory_glute_drive_machine",
+      "display_name": "Glute Drive Machine",
+      "kind": "accessory",
+      "family": "accessory_glutes",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
       ],
+      "equipment_type": "machine",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6532,9 +5719,6 @@
         "hamstrings"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6549,9 +5733,6 @@
         "hamstrings"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6566,9 +5747,6 @@
         "hamstrings"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6583,9 +5761,6 @@
         "hamstrings"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6600,16 +5775,41 @@
         "hamstrings"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 440,
+      "key": "accessory_cable_step_back_lunge",
+      "display_name": "Cable Step-Back Lunge",
+      "kind": "accessory",
+      "family": "accessory_glutes",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
       ],
+      "equipment_type": "cable",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 441,
+      "key": "accessory_cable_hip_thrust",
+      "display_name": "Cable Hip Thrust",
+      "kind": "accessory",
+      "family": "accessory_glutes",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "equipment_type": "cable",
       "core_movement_definition_id": null,
       "core_kind": null
     },
     {
       "id": 442,
       "key": "accessory_bodyweight_glute_bridge",
-      "display_name": "Glute Bridge",
+      "display_name": "Bodyweight Glute Bridge",
       "kind": "accessory",
       "family": "accessory_glutes",
       "primary_muscle_group": "glutes",
@@ -6617,20 +5817,8 @@
         "hamstrings"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 443,
@@ -6643,20 +5831,8 @@
         "hamstrings"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 444,
@@ -6669,20 +5845,8 @@
         "hamstrings"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 445,
@@ -6695,20 +5859,8 @@
         "hamstrings"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 446,
@@ -6721,20 +5873,8 @@
         "hamstrings"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 447,
@@ -6747,9 +5887,6 @@
         "hamstrings"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6764,9 +5901,6 @@
         "hamstrings"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6781,9 +5915,6 @@
         "hamstrings"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6798,9 +5929,20 @@
         "glutes"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 452,
+      "key": "accessory_single_leg_adductor_machine",
+      "display_name": "Single-Leg Adductor Machine",
+      "kind": "accessory",
+      "family": "accessory_adductors",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [
+        "glutes"
       ],
+      "equipment_type": "machine",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6813,9 +5955,32 @@
       "primary_muscle_group": "adductors",
       "secondary_muscle_groups": [],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 454,
+      "key": "accessory_side_lying_cable_hip_adduction",
+      "display_name": "Side-Lying Cable Hip Adduction",
+      "kind": "accessory",
+      "family": "accessory_adductors",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [],
+      "equipment_type": "cable",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 455,
+      "key": "accessory_copenhagen_adduction",
+      "display_name": "Copenhagen Adduction",
+      "kind": "accessory",
+      "family": "accessory_adductors",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [
+        "obliques"
       ],
+      "equipment_type": "bodyweight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6830,20 +5995,8 @@
         "obliques"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 457,
@@ -6856,20 +6009,8 @@
         "obliques"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 458,
@@ -6882,20 +6023,8 @@
         "obliques"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 459,
@@ -6908,20 +6037,8 @@
         "obliques"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 460,
@@ -6934,20 +6051,8 @@
         "obliques"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 461,
@@ -6958,9 +6063,18 @@
       "primary_muscle_group": "adductors",
       "secondary_muscle_groups": [],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 462,
+      "key": "accessory_band_copenhagen_adduction",
+      "display_name": "Band Copenhagen Adduction",
+      "kind": "accessory",
+      "family": "accessory_adductors",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [],
+      "equipment_type": "other",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6975,9 +6089,6 @@
         "glutes"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -6992,9 +6103,6 @@
         "glutes"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7009,9 +6117,20 @@
         "glutes"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 466,
+      "key": "accessory_side_lying_cable_hip_abduction",
+      "display_name": "Side-Lying Cable Hip Abduction",
+      "kind": "accessory",
+      "family": "accessory_abductors",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
       ],
+      "equipment_type": "cable",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7026,20 +6145,8 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 468,
@@ -7052,20 +6159,8 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 469,
@@ -7078,20 +6173,8 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 470,
@@ -7104,20 +6187,22 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
+    },
+    {
+      "id": 471,
+      "key": "accessory_band_hip_abduction",
+      "display_name": "Band Hip Abduction",
+      "kind": "accessory",
+      "family": "accessory_abductors",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "equipment_type": "other",
+      "core_movement_definition_id": null,
+      "core_kind": null
     },
     {
       "id": 472,
@@ -7130,9 +6215,6 @@
         "glutes"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7147,9 +6229,6 @@
         "glutes"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7164,9 +6243,6 @@
         "glutes"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7181,9 +6257,42 @@
         "glutes"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 476,
+      "key": "accessory_standing_dumbbell_calf_raise",
+      "display_name": "Standing Dumbbell Calf Raise",
+      "kind": "accessory",
+      "family": "accessory_calves",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "equipment_type": "dumbbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 477,
+      "key": "accessory_single_leg_dumbbell_calf_raise",
+      "display_name": "Single-Leg Dumbbell Calf Raise",
+      "kind": "accessory",
+      "family": "accessory_calves",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "equipment_type": "dumbbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 478,
+      "key": "accessory_barbell_calf_raise",
+      "display_name": "Barbell Calf Raise",
+      "kind": "accessory",
+      "family": "accessory_calves",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "equipment_type": "barbell",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7196,9 +6305,18 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 480,
+      "key": "accessory_donkey_calf_raise_with_weight",
+      "display_name": "Donkey Calf Raise with Weight",
+      "kind": "accessory",
+      "family": "accessory_calves",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7211,9 +6329,6 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7226,9 +6341,6 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7241,9 +6353,6 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7256,9 +6365,6 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7271,9 +6377,18 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 486,
+      "key": "accessory_single_leg_calf_raise_machine",
+      "display_name": "Single-Leg Calf Raise Machine",
+      "kind": "accessory",
+      "family": "accessory_calves",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "equipment_type": "machine",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7286,9 +6401,6 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7301,20 +6413,8 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 489,
@@ -7325,23 +6425,8 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [
-        "machine"
-      ],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT",
-        "MACHINE"
-      ]
+      "core_kind": null
     },
     {
       "id": 490,
@@ -7352,20 +6437,8 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 491,
@@ -7376,20 +6449,8 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 492,
@@ -7400,20 +6461,8 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 493,
@@ -7424,9 +6473,6 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7439,16 +6485,13 @@
       "primary_muscle_group": "calves",
       "secondary_muscle_groups": [],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
     {
-      "id": 496,
-      "key": "accessory_dumbbell_sit_up",
-      "display_name": "Sit-Up",
+      "id": 495,
+      "key": "accessory_weighted_crunch",
+      "display_name": "Weighted Crunch",
       "kind": "accessory",
       "family": "accessory_abs",
       "primary_muscle_group": "abs",
@@ -7456,20 +6499,50 @@
         "hip_flexors"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "FREE_WEIGHT",
-        "BODYWEIGHT"
-      ]
+      "core_kind": null
+    },
+    {
+      "id": 496,
+      "key": "accessory_dumbbell_sit_up",
+      "display_name": "Dumbbell Sit-Up",
+      "kind": "accessory",
+      "family": "accessory_abs",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "equipment_type": "dumbbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 497,
+      "key": "accessory_plate_sit_up",
+      "display_name": "Plate Sit-Up",
+      "kind": "accessory",
+      "family": "accessory_abs",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "equipment_type": "free_weight",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 498,
+      "key": "accessory_weighted_decline_sit_up",
+      "display_name": "Weighted Decline Sit-Up",
+      "kind": "accessory",
+      "family": "accessory_abs",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "equipment_type": "free_weight",
+      "core_movement_definition_id": null,
+      "core_kind": null
     },
     {
       "id": 499,
@@ -7482,20 +6555,22 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
+    },
+    {
+      "id": 500,
+      "key": "accessory_dumbbell_dead_bug",
+      "display_name": "Dumbbell Dead Bug",
+      "kind": "accessory",
+      "family": "accessory_abs",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "equipment_type": "dumbbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
     },
     {
       "id": 501,
@@ -7508,9 +6583,6 @@
         "hip_flexors"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7525,9 +6597,6 @@
         "hip_flexors"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7542,9 +6611,6 @@
         "hip_flexors"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7559,9 +6625,6 @@
         "hip_flexors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7576,9 +6639,6 @@
         "hip_flexors"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7593,20 +6653,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 508,
@@ -7619,20 +6667,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 509,
@@ -7645,20 +6681,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 510,
@@ -7671,20 +6695,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 511,
@@ -7697,20 +6709,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 512,
@@ -7723,20 +6723,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 513,
@@ -7749,20 +6737,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 514,
@@ -7775,20 +6751,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 515,
@@ -7801,20 +6765,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 516,
@@ -7827,20 +6779,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 517,
@@ -7853,20 +6793,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 518,
@@ -7879,20 +6807,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 519,
@@ -7905,20 +6821,8 @@
         "hip_flexors"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 520,
@@ -7931,9 +6835,6 @@
         "hip_flexors"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7948,9 +6849,6 @@
         "hip_flexors"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7965,9 +6863,6 @@
         "abs"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7982,9 +6877,6 @@
         "abs"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -7999,9 +6891,6 @@
         "abs"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8016,16 +6905,13 @@
         "abs"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
     {
       "id": 527,
       "key": "accessory_russian_twist_with_weight",
-      "display_name": "Russian Twist",
+      "display_name": "Russian Twist with Weight",
       "kind": "accessory",
       "family": "accessory_obliques",
       "primary_muscle_group": "obliques",
@@ -8033,20 +6919,8 @@
         "abs"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "FREE_WEIGHT",
-        "BODYWEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 528,
@@ -8059,9 +6933,6 @@
         "abs"
       ],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8076,9 +6947,6 @@
         "abs"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8093,9 +6961,6 @@
         "abs"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8110,9 +6975,6 @@
         "abs"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8127,9 +6989,6 @@
         "abs"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8144,9 +7003,6 @@
         "abs"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8161,20 +7017,8 @@
         "abs"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 537,
@@ -8187,20 +7031,8 @@
         "abs"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 538,
@@ -8213,20 +7045,8 @@
         "abs"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 539,
@@ -8239,20 +7059,8 @@
         "abs"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 540,
@@ -8265,20 +7073,8 @@
         "abs"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 541,
@@ -8291,20 +7087,8 @@
         "abs"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 542,
@@ -8317,9 +7101,6 @@
         "abs"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8334,9 +7115,6 @@
         "abs"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8351,9 +7129,36 @@
         "abs"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 545,
+      "key": "accessory_barbell_back_extension",
+      "display_name": "Barbell Back Extension",
+      "kind": "accessory",
+      "family": "accessory_lower_back",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
       ],
+      "equipment_type": "barbell",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 546,
+      "key": "accessory_good_morning",
+      "display_name": "Good Morning",
+      "kind": "accessory",
+      "family": "accessory_lower_back",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8369,9 +7174,6 @@
         "glutes"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8387,9 +7189,21 @@
         "glutes"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 549,
+      "key": "accessory_weighted_sorenson_hold",
+      "display_name": "Weighted Sorenson Hold",
+      "kind": "accessory",
+      "family": "accessory_lower_back",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
       ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8405,20 +7219,8 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 551,
@@ -8432,20 +7234,8 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 552,
@@ -8459,20 +7249,23 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
+    },
+    {
+      "id": 553,
+      "key": "accessory_bird_dog_back_extension",
+      "display_name": "Bird Dog Back Extension",
+      "kind": "accessory",
+      "family": "accessory_lower_back",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "equipment_type": "bodyweight",
+      "core_movement_definition_id": null,
+      "core_kind": null
     },
     {
       "id": 554,
@@ -8486,20 +7279,8 @@
         "glutes"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 555,
@@ -8513,9 +7294,36 @@
         "glutes"
       ],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 556,
+      "key": "accessory_reverse_hyperextension_machine",
+      "display_name": "Reverse Hyperextension Machine",
+      "kind": "accessory",
+      "family": "accessory_lower_back",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
       ],
+      "equipment_type": "machine",
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 557,
+      "key": "accessory_cable_good_morning",
+      "display_name": "Cable Good Morning",
+      "kind": "accessory",
+      "family": "accessory_lower_back",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "equipment_type": "cable",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8531,9 +7339,6 @@
         "glutes"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8548,9 +7353,6 @@
         "chest"
       ],
       "equipment_type": "dumbbell",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8565,9 +7367,6 @@
         "chest"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8582,9 +7381,6 @@
         "chest"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8599,20 +7395,8 @@
         "chest"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 565,
@@ -8625,20 +7409,8 @@
         "chest"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 566,
@@ -8651,20 +7423,8 @@
         "chest"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 567,
@@ -8677,9 +7437,6 @@
         "chest"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8694,9 +7451,20 @@
         "chest"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
+      "core_movement_definition_id": null,
+      "core_kind": null
+    },
+    {
+      "id": 570,
+      "key": "accessory_ankle_weight_hip_flexion",
+      "display_name": "Ankle-Weight Hip Flexion",
+      "kind": "accessory",
+      "family": "accessory_hip_flexors",
+      "primary_muscle_group": "hip_flexors",
+      "secondary_muscle_groups": [
+        "abs"
       ],
+      "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8711,9 +7479,6 @@
         "abs"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8728,9 +7493,6 @@
         "abs"
       ],
       "equipment_type": "cable",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8743,9 +7505,6 @@
       "primary_muscle_group": "hip_flexors",
       "secondary_muscle_groups": [],
       "equipment_type": "machine",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8760,20 +7519,8 @@
         "abs"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 575,
@@ -8786,20 +7533,8 @@
         "abs"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 576,
@@ -8812,20 +7547,8 @@
         "abs"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 577,
@@ -8838,20 +7561,8 @@
         "abs"
       ],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 578,
@@ -8864,9 +7575,6 @@
         "abs"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8881,9 +7589,6 @@
         "abs"
       ],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8896,9 +7601,6 @@
       "primary_muscle_group": "neck",
       "secondary_muscle_groups": [],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8911,9 +7613,6 @@
       "primary_muscle_group": "neck",
       "secondary_muscle_groups": [],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8926,9 +7625,6 @@
       "primary_muscle_group": "neck",
       "secondary_muscle_groups": [],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -8941,20 +7637,8 @@
       "primary_muscle_group": "neck",
       "secondary_muscle_groups": [],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 587,
@@ -8965,20 +7649,8 @@
       "primary_muscle_group": "neck",
       "secondary_muscle_groups": [],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 588,
@@ -8989,20 +7661,8 @@
       "primary_muscle_group": "neck",
       "secondary_muscle_groups": [],
       "equipment_type": "bodyweight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
-      "core_kind": null,
-      "optional_equipment_domains": [],
-      "load_convention": "added_bodyweight",
-      "measurement_type": "added_weight_reps",
-      "loading_implementation": "added_bodyweight",
-      "supports_added_load": true,
-      "discovery_execution_families": [
-        "BODYWEIGHT",
-        "FREE_WEIGHT"
-      ]
+      "core_kind": null
     },
     {
       "id": 589,
@@ -9013,9 +7673,6 @@
       "primary_muscle_group": "neck",
       "secondary_muscle_groups": [],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -9028,9 +7685,6 @@
       "primary_muscle_group": "neck",
       "secondary_muscle_groups": [],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -9043,9 +7697,6 @@
       "primary_muscle_group": "neck",
       "secondary_muscle_groups": [],
       "equipment_type": "other",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
     },
@@ -9058,9 +7709,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 37,
       "core_kind": "variant"
     },
@@ -9073,9 +7721,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 38,
       "core_kind": "variant"
     },
@@ -9088,9 +7733,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 39,
       "core_kind": "variant"
     },
@@ -9100,16 +7742,9 @@
       "display_name": "Front Squat",
       "kind": "core",
       "family": "squat",
-      "primary_muscle_group": "quads",
-      "secondary_muscle_groups": [
-        "glutes",
-        "adductors"
-      ],
+      "primary_muscle_group": null,
+      "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core",
-        "accessory"
-      ],
       "core_movement_definition_id": 40,
       "core_kind": "variant"
     },
@@ -9122,9 +7757,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 41,
       "core_kind": "variant"
     },
@@ -9134,16 +7766,9 @@
       "display_name": "High Bar Squat",
       "kind": "core",
       "family": "squat",
-      "primary_muscle_group": "quads",
-      "secondary_muscle_groups": [
-        "glutes",
-        "adductors"
-      ],
+      "primary_muscle_group": null,
+      "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core",
-        "accessory"
-      ],
       "core_movement_definition_id": 42,
       "core_kind": "variant"
     },
@@ -9156,9 +7781,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 43,
       "core_kind": "variant"
     },
@@ -9171,9 +7793,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 44,
       "core_kind": "variant"
     },
@@ -9186,9 +7805,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 45,
       "core_kind": "variant"
     },
@@ -9198,16 +7814,9 @@
       "display_name": "Larsen Press",
       "kind": "core",
       "family": "bench",
-      "primary_muscle_group": "chest",
-      "secondary_muscle_groups": [
-        "front_delts",
-        "triceps"
-      ],
+      "primary_muscle_group": null,
+      "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core",
-        "accessory"
-      ],
       "core_movement_definition_id": 46,
       "core_kind": "variant"
     },
@@ -9217,16 +7826,9 @@
       "display_name": "Spoto Press",
       "kind": "core",
       "family": "bench",
-      "primary_muscle_group": "chest",
-      "secondary_muscle_groups": [
-        "front_delts",
-        "triceps"
-      ],
+      "primary_muscle_group": null,
+      "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core",
-        "accessory"
-      ],
       "core_movement_definition_id": 47,
       "core_kind": "variant"
     },
@@ -9236,16 +7838,9 @@
       "display_name": "Close Grip Bench",
       "kind": "core",
       "family": "bench",
-      "primary_muscle_group": "triceps",
-      "secondary_muscle_groups": [
-        "chest",
-        "front_delts"
-      ],
+      "primary_muscle_group": null,
+      "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core",
-        "accessory"
-      ],
       "core_movement_definition_id": 48,
       "core_kind": "variant"
     },
@@ -9258,9 +7853,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 49,
       "core_kind": "variant"
     },
@@ -9273,9 +7865,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 50,
       "core_kind": "variant"
     },
@@ -9288,9 +7877,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 51,
       "core_kind": "variant"
     },
@@ -9303,9 +7889,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 52,
       "core_kind": "variant"
     },
@@ -9318,9 +7901,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 53,
       "core_kind": "variant"
     },
@@ -9333,9 +7913,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 54,
       "core_kind": "variant"
     },
@@ -9348,9 +7925,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 55,
       "core_kind": "variant"
     },
@@ -9363,9 +7937,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 56,
       "core_kind": "variant"
     },
@@ -9375,16 +7946,9 @@
       "display_name": "Romanian Deadlift (RDL)",
       "kind": "core",
       "family": "deadlift",
-      "primary_muscle_group": "hamstrings",
-      "secondary_muscle_groups": [
-        "glutes",
-        "lower_back"
-      ],
+      "primary_muscle_group": null,
+      "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core",
-        "accessory"
-      ],
       "core_movement_definition_id": 57,
       "core_kind": "variant"
     },
@@ -9394,16 +7958,9 @@
       "display_name": "Stiff-Leg Deadlift",
       "kind": "core",
       "family": "deadlift",
-      "primary_muscle_group": "hamstrings",
-      "secondary_muscle_groups": [
-        "glutes",
-        "lower_back"
-      ],
+      "primary_muscle_group": null,
+      "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core",
-        "accessory"
-      ],
       "core_movement_definition_id": 58,
       "core_kind": "variant"
     },
@@ -9416,9 +7973,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 59,
       "core_kind": "variant"
     },
@@ -9431,9 +7985,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 60,
       "core_kind": "variant"
     },
@@ -9446,9 +7997,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 61,
       "core_kind": "variant"
     },
@@ -9461,9 +8009,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 70,
       "core_kind": "variant"
     },
@@ -9476,9 +8021,6 @@
       "primary_muscle_group": null,
       "secondary_muscle_groups": [],
       "equipment_type": "barbell",
-      "programming_contexts": [
-        "core"
-      ],
       "core_movement_definition_id": 71,
       "core_kind": "variant"
     },
@@ -9493,85 +8035,8 @@
         "abs"
       ],
       "equipment_type": "free_weight",
-      "programming_contexts": [
-        "accessory"
-      ],
       "core_movement_definition_id": null,
       "core_kind": null
-    }
-  ],
-  "shared_artwork_identities": [
-    {
-      "movement_definition_id": 220,
-      "key": "accessory_machine_t_bar_row",
-      "core_movement_definition_id": null,
-      "artwork_movement_definition_id": 199,
-      "artwork_key": "accessory_chest_supported_t_bar_row",
-      "movement_name": "Machine T-Bar Row"
-    },
-    {
-      "movement_definition_id": 552,
-      "key": "accessory_sorenson_hold",
-      "core_movement_definition_id": null,
-      "artwork_movement_definition_id": 549,
-      "artwork_key": "accessory_weighted_sorenson_hold",
-      "movement_name": "Sorenson Hold"
-    },
-    {
-      "movement_definition_id": 608,
-      "key": "front_squat",
-      "core_movement_definition_id": 40,
-      "artwork_movement_definition_id": 348,
-      "artwork_key": "accessory_front_squat",
-      "movement_name": "Front Squat"
-    },
-    {
-      "movement_definition_id": 610,
-      "key": "high_bar_squat",
-      "core_movement_definition_id": 42,
-      "artwork_movement_definition_id": 349,
-      "artwork_key": "accessory_high_bar_squat",
-      "movement_name": "High Bar Squat"
-    },
-    {
-      "movement_definition_id": 614,
-      "key": "larsen_press",
-      "core_movement_definition_id": 46,
-      "artwork_movement_definition_id": 44,
-      "artwork_key": "accessory_larsen_press",
-      "movement_name": "Larsen Press"
-    },
-    {
-      "movement_definition_id": 615,
-      "key": "spoto_press",
-      "core_movement_definition_id": 47,
-      "artwork_movement_definition_id": 43,
-      "artwork_key": "accessory_spoto_press",
-      "movement_name": "Spoto Press"
-    },
-    {
-      "movement_definition_id": 616,
-      "key": "close_grip_bench",
-      "core_movement_definition_id": 48,
-      "artwork_movement_definition_id": 289,
-      "artwork_key": "accessory_close_grip_bench_press",
-      "movement_name": "Close Grip Bench"
-    },
-    {
-      "movement_definition_id": 625,
-      "key": "romanian_deadlift",
-      "core_movement_definition_id": 57,
-      "artwork_movement_definition_id": 387,
-      "artwork_key": "accessory_romanian_deadlift",
-      "movement_name": "Romanian Deadlift (RDL)"
-    },
-    {
-      "movement_definition_id": 626,
-      "key": "stiff_leg_deadlift",
-      "core_movement_definition_id": 58,
-      "artwork_movement_definition_id": 391,
-      "artwork_key": "accessory_stiff_leg_deadlift",
-      "movement_name": "Stiff-Leg Deadlift"
     }
   ]
 }
