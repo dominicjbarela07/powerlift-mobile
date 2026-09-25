@@ -8610,7 +8610,6 @@ export default function WorkoutViewerScreen() {
           </View>
         ) : (
           <CompletedSessionRecap
-            entryPresentation="logger"
             onEditReflection={!executionCapabilities.canCorrect ? undefined : () => setRecapCorrection('reflection')}
             recap={workout.completed_recap}
             impactSummary={workout.impact_summary}
