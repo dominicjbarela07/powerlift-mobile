@@ -2,6 +2,7 @@ import { normalizeCurrentWorkoutItem } from './current-session-movement';
 import { equipmentPresentationLabel } from '@/lib/equipment-presentation';
 import { exposureFromHistoryRecord, presentSessionExposure, type RecordedExposure } from './session-exposure-snapshot';
 import type { PerformedLoadSemantics } from './performed-load-semantics';
+import { KG_PER_LB } from './logger-weight-format';
 
 export type EquipmentSelectionContinuation =
   | { kind: 'none' }
@@ -412,6 +413,12 @@ export type EquipmentLastSetDraft = Readonly<{
   rir: number;
   date: string;
 }>;
+
+export function equipmentDraftDisplayWeight(weightKg: number, unit: 'kg' | 'lb'): string {
+  if (!Number.isFinite(weightKg) || weightKg < 0) return '';
+  const displayed = unit === 'kg' ? weightKg : weightKg / KG_PER_LB;
+  return displayed.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+}
 
 /** A draft may only come from a prior saved Set on the selected exact equipment. */
 export function equipmentLastSetDraft(

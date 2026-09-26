@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { equipmentLastSetDraft } from '../lib/equipment-selection.ts';
+import { equipmentLastSetDraft, equipmentDraftDisplayWeight } from '../lib/equipment-selection.ts';
 
 const record = {
   id: 111, workout_id: 40, date: '2026-09-16', performed_at: '2026-09-16T18:00:00',
@@ -14,6 +14,8 @@ const row = { manufacturer: { id: 7 }, equipment_context: {
 assert.deepEqual(equipmentLastSetDraft([row], 649, 50), {
   equipmentDefinitionId: 649, weightKg: 45.3592, reps: 12, rir: 1, date: '2026-09-16',
 });
+assert.equal(equipmentDraftDisplayWeight(45.3592, 'kg'), '45.36');
+assert.equal(equipmentDraftDisplayWeight(45.3592, 'lb'), '100');
 assert.equal(equipmentLastSetDraft([row], 650, 50), null, 'no neighboring equipment history');
 assert.equal(equipmentLastSetDraft([row], 649, 40), null, 'current Session cannot prefill from itself');
 assert.equal(equipmentLastSetDraft([{...row, manufacturer: {id: 8}}], 649, 50), null,
@@ -30,6 +32,8 @@ assert.match(route, /offerEquipmentLastSetDraft\(confirmedItem!, continuation, e
   'offer happens after the saved identity is confirmed');
 assert.match(route, /onPress: \(\) => finish\(draft\)/, 'the athlete explicitly chooses the prefill');
 assert.match(route, /openAccessoryWheel\(nextItem, true, draft\)/, 'the choice opens editable Logger inputs');
+assert.match(route, /equipmentDraftDisplayWeight\(equipmentDraft\.weightKg, unit\)/,
+  'the draft load uses recorded precision in the editable wheel');
 assert.doesNotMatch(route.slice(route.indexOf('const offerEquipmentLastSetDraft'),
   route.indexOf('const commitPerformedIdentity')), /queueAccessoryWheelLog|setPendingAccessoryLogItemId/,
   'offer does not submit a Set');
