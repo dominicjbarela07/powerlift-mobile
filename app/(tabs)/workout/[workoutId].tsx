@@ -315,6 +315,7 @@ import {
   equipmentSelectionOperation,
   equipmentSnapshotForSet,
   equipmentLastSetDraft,
+  equipmentDraftDisplayWeight,
   isMachineAccessoryItem,
   canConfigureMachineEquipment,
   optionalMachineLoadIdentity,
@@ -4164,7 +4165,7 @@ export default function WorkoutViewerScreen() {
       ...(acceptedSet ? [acceptedSet] : []),
     ]);
     const restoredDraft = journal?.draft(item.id, journalIdentityForItem(item), Number(item.evidence_revision || 1), currentSetIndex);
-    const rawWeight = (equipmentDraft ? displayWeightFromKg(equipmentDraft.weightKg, unit) : '')
+    const rawWeight = (equipmentDraft ? equipmentDraftDisplayWeight(equipmentDraft.weightKg, unit) : '')
       || (restoredDraft ? displayWeightFromKg(restoredDraft.weightKg, unit) : '') || idealSuggestedWeight
       || defaultAccessoryWeight({ item: executionItem, unit, currentSetIndex, acceptedSet });
     const weightOptions = buildAccessoryWeightOptions(unit, rawWeight);
@@ -4255,7 +4256,7 @@ export default function WorkoutViewerScreen() {
           ? equipmentPrefill.draft : null;
         const weight = log
           ? toWheelWeight(log as SetLog, unit)
-          : (selectedDraft ? displayWeightFromKg(selectedDraft.weightKg, unit) : '') || suggestedWeight
+          : (selectedDraft ? equipmentDraftDisplayWeight(selectedDraft.weightKg, unit) : '') || suggestedWeight
             || defaultAccessoryWeight({
               item: executionItem,
               unit,
