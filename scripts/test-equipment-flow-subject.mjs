@@ -70,6 +70,7 @@ const ctx={equipmentFlowSubject,assertEquipmentFlowSubject,assertEquipmentRespon
  Keyboard:{dismiss(){}},Alert:{alert(...args){notices.push(args)}},manufacturerMatchesSearch:()=>true,
  fetchJson:(url,options)=>new Promise(resolve=>requests.push({url,options,resolve})),
  setData(value){ctx.data=value;ctx.dataRef.current=value},fetchWorkout:async()=>true,showSetMutationNotice:()=>{},resumeAfterEquipmentSelection:(...args)=>notices.push(args),
+ offerEquipmentLastSetDraft:(...args)=>notices.push(args),
 };
 ctx.dataRef={current:ctx.data};
 for(const field of ['Item','Rows','Subject','Query','Error','Loading','Continuation','Manufacturer'])ctx[`setIdentityPicker${field}`]=value=>{ctx[`identityPicker${field}`]=value;};
