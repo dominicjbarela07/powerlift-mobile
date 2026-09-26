@@ -172,8 +172,8 @@ assert.equal(
 );
 assert.match(
   routeSource,
-  /equipmentTypeSelectionStatusLabels\([\s\S]*variant\.key[\s\S]*\.join\(' · '\)/,
-  'The type drilldown must present exact Used/Not Used state.',
+  /presentEquipmentHistory\(identityPickerManufacturer, unit, current,[\s\S]*variant\.key/,
+  'The type drilldown must present performed evidence for that equipment type.',
 );
 assert.match(
   routeSource,

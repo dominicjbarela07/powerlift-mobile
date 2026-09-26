@@ -69,6 +69,8 @@
     "test:accessory-logger-prescription": "node --import tsx scripts/test-accessory-logger-prescription.mjs",
     "test:equipment-gating-regression": "node --import tsx scripts/test-equipment-gating-regression.mjs",
     "test:equipment-selection": "node --import tsx scripts/test-equipment-selection.mjs",
+    "test:equipment-last-set-draft": "node --import tsx scripts/test-equipment-last-set-draft.mjs",
+    "test:logger-equipment-recency": "node --import tsx scripts/test-logger-equipment-recency.mjs",
     "test:canonical-equipment-picker": "node --import tsx scripts/test-canonical-equipment-picker.mjs",
     "test:completed-session-equipment-correction": "node --import tsx scripts/test-completed-session-equipment-correction.mjs",
     "test:superset-equipment-context": "node --import tsx scripts/test-superset-equipment-context.mjs",

@@ -5,17 +5,19 @@ import { SLColors, SLTypography } from '@/constants/theme';
 import { ManufacturerBrandMark } from './manufacturer-brand-mark';
 
 /** The same measured manufacturer row in the Session and the crop reviewer. */
-export function SessionEquipmentContext({ selected, manufacturer, name, variant }: {
+export function SessionEquipmentContext({ selected, manufacturer, name, variant, domain = 'machine' }: {
   selected: boolean; manufacturer?: string | null; name?: string | null; variant?: string | null;
+  domain?: 'machine' | 'cable';
 }) {
   return <View style={[s.context, !selected && s.required]}>
     <ManufacturerBrandMark compact manufacturerName={manufacturer} />
     <View style={s.copy}>
       <Text style={s.eyebrow}>{selected ? 'CURRENT EQUIPMENT' : 'EQUIPMENT NEEDED'}</Text>
-      <Text numberOfLines={2} style={s.name}>{selected ? name || 'Other' : 'Choose the machine you are using'}</Text>
+      <Text numberOfLines={2} style={s.name}>{selected ? name || 'Other' : `Choose the ${domain === 'cable' ? 'cable station' : 'machine'} you are using`}</Text>
       <Text numberOfLines={2} style={s.meta}>{selected
         ? [manufacturer || 'Other', variant].filter(Boolean).join(' · ')
-        : 'Manufacturer and type keep machine history comparable.'}</Text>
+        : domain === 'cable' ? 'Manufacturer and type identify your cable station.'
+          : 'Manufacturer and type keep machine history comparable.'}</Text>
     </View>
   </View>;
 }

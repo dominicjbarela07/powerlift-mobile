@@ -1,5 +1,7 @@
 import { normalizeCurrentWorkoutItem } from './current-session-movement';
 import { equipmentPresentationLabel } from '@/lib/equipment-presentation';
+import { exposureFromHistoryRecord, presentSessionExposure, type RecordedExposure } from './session-exposure-snapshot';
+import type { PerformedLoadSemantics } from './performed-load-semantics';
 
 export type EquipmentSelectionContinuation =
   | { kind: 'none' }
@@ -44,6 +46,9 @@ export type EquipmentIdentityLike = {
     usage_status?: 'used' | 'not_used' | string | null;
     is_current?: boolean | null;
     last_used_at?: string | null;
+    last_exposure?: RecordedExposure | null;
+    equipment_type_last_exposure?: Record<string, RecordedExposure> | null;
+    equipment_latest_exposures?: Record<string, RecordedExposure> | null;
     used_equipment_type_keys?: string[] | null;
     equipment_type_last_used_at?: Record<string, string | null> | null;
     used_equipment_definition_ids?: number[] | null;
@@ -350,10 +355,11 @@ export function orderEquipmentChoices<T extends EquipmentIdentityLike>(
   choices: readonly T[],
   activeIdentityId?: number | null,
 ): T[] {
-  // Current and historical state are presentation metadata, never sort keys.
-  // Keep the parameter for source compatibility with existing consumers.
+  // Current selection never outranks actual movement-specific performed use.
   void activeIdentityId;
   return [...choices].sort((left, right) => {
+    const recencyDelta = equipmentRecency(right) - equipmentRecency(left);
+    if (recencyDelta !== 0) return recencyDelta;
     const sectionDelta = equipmentChoiceSection(left) - equipmentChoiceSection(right);
     if (sectionDelta !== 0) return sectionDelta;
     const leftLabel = canonicalEquipmentChoiceLabel(left);
@@ -373,6 +379,107 @@ export function orderEquipmentChoices<T extends EquipmentIdentityLike>(
     if (keyDelta !== 0) return keyDelta;
     return Number(left.id) - Number(right.id);
   });
+}
+
+function equipmentRecency(identity: EquipmentIdentityLike, equipmentType?: string): number {
+  const context = identity.equipment_context;
+  const exposure = equipmentType ? context?.equipment_type_last_exposure?.[equipmentType] : context?.last_exposure;
+  const used = Boolean(exposure) || (equipmentType
+    ? equipmentTypeWasPreviouslyUsed(identity, equipmentType) : equipmentWasPreviouslyUsed(identity));
+  if (!used) return 0;
+  const date = exposure?.performed_at || exposure?.date || (equipmentType
+    ? context?.equipment_type_last_used_at?.[equipmentType] : context?.last_used_at);
+  const time = Date.parse(date || '');
+  return Number.isFinite(time) ? time : 1;
+}
+
+export function orderEquipmentTypeChoices<T extends { key: string }>(choices: readonly T[], identity: EquipmentIdentityLike): T[] {
+  return [...choices].sort((left, right) => equipmentRecency(identity, right.key) - equipmentRecency(identity, left.key)
+    || left.key.localeCompare(right.key, 'en-US'));
+}
+
+export type RecentEquipmentChoice<T extends EquipmentIdentityLike> = Readonly<{
+  manufacturer: T;
+  equipmentType: 'plate_loaded' | 'selectorized';
+  equipmentDefinitionId: number;
+  exposure: RecordedExposure;
+}>;
+
+export type EquipmentLastSetDraft = Readonly<{
+  equipmentDefinitionId: number;
+  weightKg: number;
+  reps: number;
+  rir: number;
+  date: string;
+}>;
+
+/** A draft may only come from a prior saved Set on the selected exact equipment. */
+export function equipmentLastSetDraft(
+  rows: readonly EquipmentIdentityLike[], equipmentDefinitionId: number,
+  currentWorkoutId: number,
+): EquipmentLastSetDraft | null {
+  if (!Number.isInteger(equipmentDefinitionId) || equipmentDefinitionId <= 0) return null;
+  for (const row of rows) {
+    const record = row.equipment_context?.equipment_latest_exposures?.[String(equipmentDefinitionId)];
+    const set = record?.last_set;
+    if (!record || Number(record.equipment?.id) !== equipmentDefinitionId
+      || Number(record.equipment?.manufacturer?.id) !== Number(row.manufacturer?.id)
+      || Number(record.workout_id) <= 0 || Number(record.workout_id) === currentWorkoutId
+      || !/^\d{4}-\d{2}-\d{2}/.test(record.date)
+      || !set || typeof set.weight_kg !== 'number' || !Number.isFinite(set.weight_kg) || set.weight_kg < 0
+      || typeof set.reps !== 'number' || !Number.isInteger(set.reps) || set.reps < 1 || set.reps > 30
+      || typeof set.rir !== 'number' || !Number.isFinite(set.rir) || set.rir < 0 || set.rir > 5
+      || set.rir * 2 !== Math.round(set.rir * 2)) continue;
+    return { equipmentDefinitionId, weightKg: set.weight_kg, reps: set.reps,
+      rir: set.rir, date: record.date };
+  }
+  return null;
+}
+
+function recordedEquipmentType(record: RecordedExposure): 'plate_loaded' | 'selectorized' | null {
+  const equipment = record.equipment;
+  const implementation = String(equipment?.implementation_key || '');
+  const type = String(equipment?.equipment_type || '');
+  if (implementation.endsWith(':plate_loaded') || type === 'plate_loaded_machine') return 'plate_loaded';
+  if (implementation.endsWith(':selectorized') || type === 'selectorized_machine') return 'selectorized';
+  return null;
+}
+
+/** The first selectable canonical equipment ID from this movement's History evidence. */
+export function mostRecentEquipmentChoice<T extends EquipmentIdentityLike>(
+  rows: readonly T[], allowedTypes: readonly ('plate_loaded' | 'selectorized')[],
+): RecentEquipmentChoice<T> | null {
+  const candidates = rows.flatMap((manufacturer) => Object.values(
+    manufacturer.equipment_context?.equipment_latest_exposures || {},
+  ).flatMap((exposure) => {
+    const equipmentType = recordedEquipmentType(exposure);
+    const equipmentDefinitionId = Number(exposure.equipment?.id);
+    if (!equipmentType || !allowedTypes.includes(equipmentType)
+        || !Number.isInteger(equipmentDefinitionId) || equipmentDefinitionId <= 0
+        || exposure.equipment?.manufacturer?.id !== manufacturer.manufacturer?.id
+        || !exposureFromHistoryRecord(exposure)) return [];
+    return [{ manufacturer, equipmentType, equipmentDefinitionId, exposure }];
+  }));
+  candidates.sort((left, right) => (Date.parse(right.exposure.performed_at || right.exposure.date) || 0)
+    - (Date.parse(left.exposure.performed_at || left.exposure.date) || 0)
+    || right.exposure.workout_id - left.exposure.workout_id
+    || right.equipmentDefinitionId - left.equipmentDefinitionId);
+  return candidates[0] || null;
+}
+
+export type EquipmentHistoryPresentation = Readonly<{ performance?: string; detail: string; status: string }>;
+
+export function presentEquipmentHistory(identity: EquipmentIdentityLike, unit: 'kg' | 'lb', current: boolean,
+  equipmentType?: string, semantics?: PerformedLoadSemantics): EquipmentHistoryPresentation {
+  const context = identity.equipment_context;
+  const record = equipmentType ? context?.equipment_type_last_exposure?.[equipmentType] : context?.last_exposure;
+  const content = presentSessionExposure(record ? exposureFromHistoryRecord(record) : null, unit, 'accessory', semantics);
+  const equipmentDetail = record?.equipment?.equipment_model?.display_name || (!equipmentType && record?.equipment?.equipment_type
+    ? equipmentPresentationLabel(record.equipment.equipment_type, 'Machine') : null);
+  if (content) return { performance: [content.performance, content.effort].filter(Boolean).join(' '),
+    detail: [`Last used ${content.date}`, equipmentDetail].filter(Boolean).join(' · '), status: current ? 'CURRENT' : '' };
+  const used = equipmentType ? equipmentTypeWasPreviouslyUsed(identity, equipmentType) : equipmentWasPreviouslyUsed(identity);
+  return { detail: used ? 'Previous performance unavailable' : 'Not used for this movement', status: current ? 'CURRENT' : '' };
 }
 
 function normalizedUsageValue(value: unknown): string {

@@ -4,6 +4,7 @@ import { SessionActionsSheet } from '@/components/workout-logger/session-actions
 import { canEditActiveComposition, orderSessionMovementRows, focusAfterCompositionChange, validateCompositionResponse, type SessionComposition } from '@/lib/active-session-composition';
 import { ActivePrescriptionEditor } from '@/components/workout-logger/active-prescription-editor';
 import { canEditActivePrescription } from '@/lib/active-session-prescription';
+import { SessionEquipmentContext } from '@/components/workout-logger/session-equipment-context';
 import { KeyboardScrollView as ScrollView, KeyboardModal as Modal, KeyboardAvoidingView } from '@/components/keyboard/KeyboardSurface';
 // app/(tabs)/workout/[workoutId].tsx
 
@@ -13,6 +14,7 @@ import { createLoggerJournal } from '@/lib/session-logger-journal';
 import { CompletedSessionCorrection } from '@/components/workout-logger/completed-session-correction';
 import { SessionSetEntryContext } from '@/components/workout-logger/session-set-entry-context';
 import { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator } from '@/components/workout-logger/session-v3-shell';
+import { EquipmentHistoryEvidence } from '@/components/workout-logger/equipment-history-evidence';
 import { SessionHistoryPeek } from '@/components/workout-logger/session-history-peek';
 import { invalidateEvidenceReads } from '@/lib/evidence-read-cache';
 import { sessionExecutionCapabilities } from '@/lib/session-logger-lifecycle';
@@ -311,13 +313,19 @@ import {
   activeEquipmentIdentity,
   activeEquipmentPresentation,
   equipmentSelectionOperation,
-  equipmentSelectionStatusLabels,
   equipmentSnapshotForSet,
-  equipmentTypeSelectionStatusLabels,
+  equipmentLastSetDraft,
   isMachineAccessoryItem,
+  canConfigureMachineEquipment,
+  optionalMachineLoadIdentity,
   needsEquipmentSelection,
+  mostRecentEquipmentChoice,
   orderEquipmentChoices,
+  orderEquipmentTypeChoices,
+  presentEquipmentHistory,
+  type EquipmentIdentityLike,
   type EquipmentSelectionContinuation,
+  type EquipmentLastSetDraft,
 } from '@/lib/equipment-selection';
 import {
   movementHistorySheetRoute,
@@ -334,7 +342,7 @@ import {
 } from '@/lib/equipment-presentation';
 import { type MachineEquipmentType } from '@/lib/machine-equipment';
 import { equipmentFlowSubject, assertEquipmentFlowSubject, assertEquipmentResponseSubject,
-  equipmentFlowVariants, equipmentFlowWrite, type EquipmentFlowSubject } from '@/lib/equipment-flow-subject';
+  equipmentFlowVariants, equipmentFlowWrite, portableLoadingWrite, type EquipmentFlowSubject } from '@/lib/equipment-flow-subject';
 import {
   accessoryRepeatDraft,
   coreRepeatDraft,
@@ -370,6 +378,8 @@ type SetLog = {
   implementation_key_snapshot?: string | null;
   performed_label_snapshot?: string | null;
   identity_source_snapshot?: string | null;
+  load_convention_snapshot?: string | null;
+  measurement_type_snapshot?: string | null;
 };
 
 type SetSubmissionAttempt = {
@@ -470,17 +480,7 @@ type GeneralMovementIdentity = {
     note?: string | null;
     custom_manufacturer_name?: string | null;
   } | null;
-  equipment_context?: {
-    remembered_status?: string | null;
-    usage_status?: 'used' | 'not_used' | string | null;
-    is_current?: boolean | null;
-    last_used_at?: string | null;
-    used_equipment_type_keys?: string[] | null;
-    equipment_type_last_used_at?: Record<string, string | null> | null;
-    used_equipment_definition_ids?: number[] | null;
-    used_equipment_model_ids?: number[] | null;
-    option_kind?: 'catalog' | 'other' | 'unknown' | string;
-  } | null;
+  equipment_context?: EquipmentIdentityLike['equipment_context'];
   comparison_policy?: { confidence: string; comparison_scope: string; recognition_enabled: false } | null;
 };
 
@@ -666,7 +666,8 @@ function formatWeight(
 }
 
 function itemLoadSemantics(item?: WorkoutItem | null): PerformedLoadSemantics {
-  const identity = item?.performed_canonical_movement_identity
+  const identity = optionalMachineLoadIdentity(item)
+    || item?.performed_canonical_movement_identity
     || item?.performed_movement_identity
     || item?.effective_movement_identity
     || item?.movement_identity
@@ -680,7 +681,10 @@ function itemLoadSemantics(item?: WorkoutItem | null): PerformedLoadSemantics {
 
 function loggedSetText(log?: SetLog | null, unit: 'kg' | 'lb' = 'kg', item?: WorkoutItem | null) {
   if (!log) return null;
-  let text = formatPerformedLoad(log.actual_weight_kg, unit, itemLoadSemantics(item))
+  const semantics = log.load_convention_snapshot || log.measurement_type_snapshot
+    ? { loadConvention: log.load_convention_snapshot, measurementType: log.measurement_type_snapshot }
+    : itemLoadSemantics(item);
+  let text = formatPerformedLoad(log.actual_weight_kg, unit, semantics)
     || `${formatWeight(log.actual_weight_kg, unit)} ${unit}`;
   if (log.actual_reps === 0) text += ' × Failed';
   else if (log.actual_reps != null) text += ` × ${log.actual_reps}`;
@@ -1477,9 +1481,11 @@ function nearestWheelValue(options: string[], value: string, fallback: string) {
 }
 
 function loadWheelAllowsZero(item: WorkoutItem): boolean {
-  const identity = item.performed_movement_identity || item.movement_identity || null;
-  const convention = String(identity?.load_convention || '').trim().toLowerCase();
-  return convention === 'bodyweight_only' || convention === 'no_external_load';
+  const convention = String(itemLoadSemantics(item).loadConvention || '').trim().toLowerCase();
+  const accessorySlot = String(item.variant || '').toUpperCase() === 'ACC'
+    || ['AX', 'ACC'].includes(String(item.lift || '').toUpperCase());
+  return ['bodyweight_only', 'no_external_load', 'added_bodyweight'].includes(convention)
+    || (accessorySlot && ['total_external_load', 'per_hand'].includes(convention));
 }
 
 function nextSetIndexFromEvidence(evidence: readonly SetLoggerLoadEvidence[]): number {
@@ -3009,6 +3015,9 @@ export default function WorkoutViewerScreen() {
     useState<GeneralMovementIdentity | null>(null);
   const identityPickerRequestRef = useRef(0);
   const [identityPickerSubject, setIdentityPickerSubject] = useState<EquipmentFlowSubject | null>(null);
+  const recentEquipment = identityPickerSubject && !identityPickerManufacturer && !identityPickerQuery.trim()
+    ? mostRecentEquipmentChoice(identityPickerRows, identityPickerSubject.allowedTypes)
+    : null;
   const identityPickerEntryRef = useRef<{ subject: EquipmentFlowSubject; scope: string } | null>(null);
   const identityPickerSaveRef = useRef<object | null>(null);
   const [swapAccForm, setSwapAccForm] = useState({
@@ -3848,10 +3857,11 @@ export default function WorkoutViewerScreen() {
     nextItem: WorkoutItem,
     continuation: EquipmentSelectionContinuation,
     nextPayload?: WorkoutPayload | null,
+    draft?: EquipmentLastSetDraft | null,
   ) => {
     const continuationOwner = executionScope;
     if (continuation.kind === 'accessory_set') {
-      requestAnimationFrame(() => { if (executionScopeRef.current === continuationOwner) openAccessoryWheel(nextItem, true); });
+      requestAnimationFrame(() => { if (executionScopeRef.current === continuationOwner) openAccessoryWheel(nextItem, true, draft); });
       return;
     }
     if (continuation.kind === 'group_round') {
@@ -3863,21 +3873,65 @@ export default function WorkoutViewerScreen() {
         requestAnimationFrame(() => {
           // Re-run the gate so tri-sets/giant sets can resolve the next
           // machine without discarding the round context.
-          if (executionScopeRef.current === continuationOwner) openSupersetRoundLogger(group, continuation.roundIndex);
+          if (executionScopeRef.current === continuationOwner) openSupersetRoundLogger(group, continuation.roundIndex,
+            draft ? { itemId: Number(nextItem.id), draft } : null);
         });
       }
+      return;
     }
+    if (draft && continuation.kind === 'none') {
+      requestAnimationFrame(() => { if (executionScopeRef.current === continuationOwner) openAccessoryWheel(nextItem, true, draft); });
+    }
+  };
+
+  const offerEquipmentLastSetDraft = (
+    nextItem: WorkoutItem,
+    continuation: EquipmentSelectionContinuation,
+    evidenceRows: readonly EquipmentIdentityLike[],
+    nextPayload?: WorkoutPayload | null,
+  ) => {
+    const selectedId = Number(nextItem.performed_movement_identity?.id);
+    const draft = activeEquipmentIdentity(nextItem)?.id === selectedId
+      ? equipmentLastSetDraft(evidenceRows, selectedId, Number(workoutId)) : null;
+    const canLog = continuation.kind === 'accessory_set' || continuation.kind === 'group_round'
+      || (continuation.kind === 'none' && equipmentSelectionOperation({
+        sessionStatus: nextPayload?.workout?.status || dataRef.current?.workout?.status,
+        plannedSetCount: nextItem.performed_sets ?? nextItem.sets,
+        loggedSetCount: (nextItem.set_logs || []).length,
+      }) !== 'evidence_correction');
+    if (!draft || !canLog) {
+      resumeAfterEquipmentSelection(nextItem, continuation, nextPayload);
+      return;
+    }
+    const owner = executionScope;
+    const finish = (chosen: EquipmentLastSetDraft | null) => {
+      if (executionScopeRef.current !== owner) return;
+      const currentItem = dataRef.current?.workout?.accessory_groups.flatMap(group => group.items)
+        .find(item => Number(item.id) === Number(nextItem.id));
+      if (currentItem?.performed_movement_identity?.id !== selectedId) return;
+      resumeAfterEquipmentSelection(currentItem, continuation, dataRef.current, chosen);
+    };
+    setTimeout(() => {
+      if (executionScopeRef.current !== owner) return;
+      Alert.alert('Use last Set as a draft?',
+        `${formatPerformedLoad(draft.weightKg, unit, itemLoadSemantics(nextItem), 'recorded')} × ${draft.reps} · RIR ${draft.rir}\nFrom your ${draft.date} Session. Edit every value before saving.`,
+        [{ text: 'Not now', style: 'cancel', onPress: () => finish(null) },
+          { text: 'Use values', onPress: () => finish(draft) }]);
+    }, 350);
   };
 
   const commitPerformedIdentity = async (
     identity: GeneralMovementIdentity,
     equipmentVariant?: MachineEquipmentType,
+    expectedEquipmentId?: number,
   ) => {
     const entry = identityPickerEntryRef.current;
     if (!identityPickerItem || !workoutId || !entry || identityPickerSaveRef.current) return;
     const equipmentOwner = executionScope;
     const pickerItem = identityPickerItem;
     const continuation = identityPickerContinuation;
+    const portableLoading = !equipmentVariant && identity.id === entry.subject.movementDefinitionId
+      && entry.subject.allowsPortableLoading && continuation.kind !== 'evidence_correction';
     const previousIdentityId = activeEquipmentIdentity(pickerItem)?.id ?? null;
     identityPickerSaveRef.current = entry;
     setIdentityPickerLoading(true);
@@ -3923,7 +3977,9 @@ export default function WorkoutViewerScreen() {
         auth: true,
         body: {
           ...(continuation.kind === 'evidence_correction' ? { intent: 'evidence_correction' } : {}),
-          ...equipmentFlowWrite(entry.subject, identity.manufacturer?.key || 'other', equipmentVariant as MachineEquipmentType),
+          ...(portableLoading ? portableLoadingWrite(entry.subject)
+            : equipmentFlowWrite(entry.subject, identity.manufacturer?.key || 'other', equipmentVariant as MachineEquipmentType)),
+          ...(expectedEquipmentId ? { equipment_definition_id: expectedEquipmentId } : {}),
         },
       });
       if (executionScopeRef.current !== equipmentOwner || identityPickerEntryRef.current !== entry) return;
@@ -3941,8 +3997,12 @@ export default function WorkoutViewerScreen() {
         performed_movement_identity:
           response.json?.performed_movement_identity,
       };
-      if (!nextItem.performed_movement_identity?.key?.startsWith('machine_equipment_')) {
+      if (portableLoading ? nextItem.performed_movement_identity?.id !== entry.subject.movementDefinitionId
+        : !nextItem.performed_movement_identity?.key?.startsWith('machine_equipment_')) {
         throw new Error('The server did not return a supported equipment configuration. Refresh the Session.');
+      }
+      if (expectedEquipmentId && nextItem.performed_movement_identity?.id !== expectedEquipmentId) {
+        throw new Error('Recent equipment changed. Reopen Equipment to refresh its history.');
       }
       assertEquipmentFlowSubject(entry.subject, nextItem);
       const nextPayload = latestPayload ? {
@@ -3969,12 +4029,16 @@ export default function WorkoutViewerScreen() {
       if (confirmedItem?.performed_movement_identity?.id !== nextItem.performed_movement_identity.id) {
         throw new Error('The saved equipment could not be confirmed. Refresh the Session before logging.');
       }
+      if (expectedEquipmentId && confirmedItem.performed_movement_identity.id !== expectedEquipmentId) {
+        throw new Error('Recent equipment changed. Reopen Equipment to refresh its history.');
+      }
+      const evidenceRows = identityPickerRows;
       closeIdentityPicker();
       setIdentityPickerLoading(false);
       if (previousIdentityId != null && Number(previousIdentityId) !== Number(identity.id)) {
         showSetMutationNotice('Equipment updated');
       }
-      resumeAfterEquipmentSelection(confirmedItem!, continuation, dataRef.current || undefined);
+      offerEquipmentLastSetDraft(confirmedItem!, continuation, evidenceRows, dataRef.current || undefined);
     } catch (error: any) {
       if (identityPickerEntryRef.current === entry) setIdentityPickerError(error?.message || 'Could not save equipment choice.');
     } finally {
@@ -4075,7 +4139,8 @@ export default function WorkoutViewerScreen() {
     open();
   };
 
-  const openAccessoryWheel = (item: WorkoutItem, skipEquipmentGate = false) => {
+  const openAccessoryWheel = (item: WorkoutItem, skipEquipmentGate = false,
+    equipmentDraft?: EquipmentLastSetDraft | null) => {
     if (!skipEquipmentGate && needsEquipmentSelection(item)) {
       openIdentityPicker(
         item,
@@ -4099,13 +4164,20 @@ export default function WorkoutViewerScreen() {
       ...(acceptedSet ? [acceptedSet] : []),
     ]);
     const restoredDraft = journal?.draft(item.id, journalIdentityForItem(item), Number(item.evidence_revision || 1), currentSetIndex);
-    const rawWeight = (restoredDraft ? displayWeightFromKg(restoredDraft.weightKg, unit) : '') || idealSuggestedWeight
+    const rawWeight = (equipmentDraft ? displayWeightFromKg(equipmentDraft.weightKg, unit) : '')
+      || (restoredDraft ? displayWeightFromKg(restoredDraft.weightKg, unit) : '') || idealSuggestedWeight
       || defaultAccessoryWeight({ item: executionItem, unit, currentSetIndex, acceptedSet });
     const weightOptions = buildAccessoryWeightOptions(unit, rawWeight);
+    if (equipmentDraft && rawWeight && !weightOptions.includes(rawWeight)) {
+      weightOptions.push(rawWeight);
+      weightOptions.sort((a, b) => Number(a) - Number(b));
+    }
     const repsOptions = ['0', ...Array.from({ length: 30 }, (_, idx) => String(idx + 1))];
     const rirOptions = Array.from({ length: 11 }, (_, idx) => formatWheelNumber(idx * 0.5));
-    const repsDefault = restoredDraft?.reps || accInputs[item.id]?.reps || accessoryRepsDefault(executionItem);
-    const rirDefault = restoredDraft?.effort || accInputs[item.id]?.rir || defaultAccessoryRir(executionItem);
+    const repsDefault = equipmentDraft ? String(equipmentDraft.reps)
+      : restoredDraft?.reps || accInputs[item.id]?.reps || accessoryRepsDefault(executionItem);
+    const rirDefault = equipmentDraft ? formatWheelNumber(equipmentDraft.rir)
+      : restoredDraft?.effort || accInputs[item.id]?.rir || defaultAccessoryRir(executionItem);
 
     setAccessoryWheel({
       visible: true,
@@ -4147,6 +4219,7 @@ export default function WorkoutViewerScreen() {
   const openSupersetRoundLogger = (
     group: AccessoryGroup,
     roundIndex: number,
+    equipmentPrefill?: { itemId: number; draft: EquipmentLastSetDraft } | null,
   ) => {
     if (!group.group) return;
     const model = buildSupersetRoundModel(group.items);
@@ -4178,9 +4251,11 @@ export default function WorkoutViewerScreen() {
           ? formatWeight(idealRecommendationWeightKg, unit)
           : '';
         const acceptedSet = acceptedLoadByItemIdRef.current[item.id] || null;
+        const selectedDraft = !log && equipmentPrefill?.itemId === Number(item.id)
+          ? equipmentPrefill.draft : null;
         const weight = log
           ? toWheelWeight(log as SetLog, unit)
-          : suggestedWeight
+          : (selectedDraft ? displayWeightFromKg(selectedDraft.weightKg, unit) : '') || suggestedWeight
             || defaultAccessoryWeight({
               item: executionItem,
               unit,
@@ -4188,6 +4263,10 @@ export default function WorkoutViewerScreen() {
               acceptedSet,
             });
         const weightOptions = buildAccessoryWeightOptions(unit, weight || '0');
+        if (selectedDraft && weight && !weightOptions.includes(weight)) {
+          weightOptions.push(weight);
+          weightOptions.sort((a, b) => Number(a) - Number(b));
+        }
         const repsOptions = ['0', ...Array.from({ length: 30 }, (_, idx) => String(idx + 1))];
         const rirOptions = Array.from(
           { length: 11 },
@@ -4211,9 +4290,10 @@ export default function WorkoutViewerScreen() {
           itemId: item.id,
           title: simplifyMobileMovementName(accessoryExecutionName(item)),
           prescription: accessoryTargetLine(executionItem),
-          weight: restoredRoundDraft ? formatWeight(restoredRoundDraft.weightKg, unit) : nearestWheelValue(weightOptions, weight || '0', '0'),
-          reps: restoredRoundDraft?.reps ?? nearestWheelValue(repsOptions, reps, '10'),
-          rir: restoredRoundDraft?.effort ?? nearestWheelValue(rirOptions, rir, '2'),
+          weight: selectedDraft ? nearestWheelValue(weightOptions, weight || '0', '0')
+            : restoredRoundDraft ? formatWeight(restoredRoundDraft.weightKg, unit) : nearestWheelValue(weightOptions, weight || '0', '0'),
+          reps: selectedDraft ? String(selectedDraft.reps) : restoredRoundDraft?.reps ?? nearestWheelValue(repsOptions, reps, '10'),
+          rir: selectedDraft ? formatWheelNumber(selectedDraft.rir) : restoredRoundDraft?.effort ?? nearestWheelValue(rirOptions, rir, '2'),
           requiresRir: executionItem.rir_target != null,
           alreadyLogged: Boolean(log),
           loggedResult: log ? loggedSetText(log as SetLog, unit, item) : null,
@@ -8194,7 +8274,7 @@ export default function WorkoutViewerScreen() {
       id: item.id,
       title: simplifyMobileMovementName(executionName) || 'Accessory',
       canConfigureEquipment:
-        !isCoachAthletePreview && isMachineAccessoryItem(item),
+        !isCoachAthletePreview && canConfigureMachineEquipment(item),
       equipmentContext: equipmentPresentation?.contextLabel || null,
       equipmentRequired: needsEquipmentSelection(item),
       movementArtwork: canonicalArtworkInputForLoggerItem(item),
@@ -8382,6 +8462,8 @@ export default function WorkoutViewerScreen() {
         : currentEquipment?.material_parameters?.custom_manufacturer_name)
       || null;
     const currentEquipmentName = currentManufacturer || 'Other';
+    const equipmentDomain = String(resolveLoggerMovementIdentity(it).effective?.equipment_type || '').toLowerCase() === 'cable'
+      ? 'cable' : 'machine';
     const currentEquipmentVariantLabel = currentEquipmentPresentation?.equipmentTypeLabel
       || (currentEquipment?.equipment_type
         ? equipmentPresentationLabel(currentEquipment.equipment_type, 'Machine')
@@ -8429,30 +8511,10 @@ export default function WorkoutViewerScreen() {
           expanded={accessoryIsExpanded}
           detailRows={accessoryIsExpanded ? movementPresentation.detailRows : undefined}
           expandedIdentityContext={accessoryIsExpanded && machineAccessory ? (
-            <View style={[
-              styles.currentEquipmentContext,
-              !currentEquipment && styles.currentEquipmentContextRequired,
-            ]}>
-              <ManufacturerBrandMark
-                compact
-                manufacturerName={currentManufacturer}
-              />
-              <View style={styles.currentEquipmentCopy}>
-                <Text style={styles.currentEquipmentEyebrow}>
-                  {currentEquipment ? 'CURRENT EQUIPMENT' : 'EQUIPMENT NEEDED'}
-                </Text>
-                <Text numberOfLines={2} style={styles.currentEquipmentName}>
-                  {currentEquipment ? currentEquipmentName : 'Choose the machine you are using'}
-                </Text>
-                <Text numberOfLines={2} style={styles.currentEquipmentMeta}>
-                  {currentEquipment
-                    ? [currentManufacturer || 'Other', currentEquipmentVariantLabel]
-                        .filter(Boolean)
-                        .join(' · ')
-                    : 'Manufacturer and type keep machine history comparable.'}
-                </Text>
-              </View>
-            </View>
+            <SessionEquipmentContext selected={Boolean(currentEquipment)} manufacturer={currentManufacturer}
+              name={currentEquipmentName} variant={currentEquipmentVariantLabel
+                ? `${currentEquipmentVariantLabel}${equipmentDomain === 'cable' ? ' Cable Station' : ''}` : null}
+              domain={equipmentDomain} />
           ) : null}
           meta={accessoryIsComplete ? accessorySummary.meta : `${loggedCount}/${totalSets || 0} sets logged`}
           top={accessoryIsComplete ? accessorySummary.top : lookbackLine}
@@ -8473,7 +8535,7 @@ export default function WorkoutViewerScreen() {
           sessionLifecycle={screenMode}
           auxAction={isCoachAthletePreview ? null : (
             <>
-              {machineAccessory ? (
+              {canConfigureMachineEquipment(it) ? (
                 <TouchableOpacity
                   style={styles.accessoryInlineAction}
                   onPress={() => openIdentityPicker(it)}
@@ -10097,7 +10159,7 @@ export default function WorkoutViewerScreen() {
             style={[
               styles.movementHistorySheet,
               styles.equipmentPickerSheet,
-              approvedArtRuntimeEnabled() && identityPickerSubject?.domain === 'machine' && identityPickerManufacturer && styles.equipmentTypeArtSheet,
+              approvedArtRuntimeEnabled() && (identityPickerSubject?.domain === 'machine' || identityPickerSubject?.domain === 'cable') && identityPickerManufacturer && styles.equipmentTypeArtSheet,
             ]}
           >
             <StrengthLedgerSheetDragRegion><View style={styles.coreWheelHandle} /></StrengthLedgerSheetDragRegion>
@@ -10120,6 +10182,13 @@ export default function WorkoutViewerScreen() {
                       : 'Upcoming set'}
                   </Text>
                 </View>
+                {identityPickerSubject?.allowsPortableLoading && identityPickerContinuation.kind !== 'evidence_correction' ? (
+                  <TouchableOpacity style={styles.equipmentVariantRow} disabled={identityPickerLoading}
+                    onPress={() => void commitPerformedIdentity(resolveLoggerMovementIdentity(identityPickerItem).effective as GeneralMovementIdentity)}>
+                    <Text style={styles.equipmentVariantLabel}>Bodyweight or added weight</Text>
+                    <Text style={styles.identityPickerStatus}>No machine</Text>
+                  </TouchableOpacity>
+                ) : null}
                 {identityPickerManufacturer ? (
                   <>
                     <View style={styles.equipmentPickerHeader}>
@@ -10135,7 +10204,7 @@ export default function WorkoutViewerScreen() {
                       </TouchableOpacity>
                       <View style={styles.equipmentPickerHeaderCopy}>
                         <Text style={styles.coreWheelTitle}>
-                          {approvedArtRuntimeEnabled() && identityPickerSubject?.domain === 'machine'
+                          {approvedArtRuntimeEnabled() && (identityPickerSubject?.domain === 'machine' || identityPickerSubject?.domain === 'cable')
                             ? 'Equipment type'
                             : identityPickerContinuation.kind === 'evidence_correction'
                             ? 'Which version did you use?'
@@ -10170,9 +10239,9 @@ export default function WorkoutViewerScreen() {
                     ) : null}
                     <View style={[
                       styles.equipmentVariantOptions,
-                      approvedArtRuntimeEnabled() && identityPickerSubject?.domain === 'machine' && styles.equipmentVariantArtOptions,
+                      approvedArtRuntimeEnabled() && (identityPickerSubject?.domain === 'machine' || identityPickerSubject?.domain === 'cable') && styles.equipmentVariantArtOptions,
                     ]}>
-                      {(identityPickerSubject ? equipmentFlowVariants(identityPickerSubject) : []).map((variant) => {
+                      {(identityPickerSubject ? orderEquipmentTypeChoices(equipmentFlowVariants(identityPickerSubject), identityPickerManufacturer) : []).map((variant) => {
                         const activeIdentity = activeEquipmentIdentity(identityPickerItem);
                         const selectedOther = (
                           identityPickerManufacturer.equipment_context?.option_kind === 'other'
@@ -10198,18 +10267,17 @@ export default function WorkoutViewerScreen() {
                           && activeIdentity
                           && activeVariant === variant.key,
                         );
-                        const status = equipmentTypeSelectionStatusLabels(
-                          identityPickerManufacturer,
-                          variant.key,
-                          current,
-                        ).join(' · ');
-                        if (approvedArtRuntimeEnabled() && identityPickerSubject?.domain === 'machine') {
+                        const evidence = presentEquipmentHistory(identityPickerManufacturer, unit, current,
+                          variant.key, itemLoadSemantics(identityPickerItem));
+                        if (approvedArtRuntimeEnabled() && (identityPickerSubject?.domain === 'machine' || identityPickerSubject?.domain === 'cable')) {
                           return (
                             <EquipmentTypeChoice
                               key={variant.key}
                               equipmentType={variant.key}
+                              domain={identityPickerSubject.domain}
                               label={variant.label}
-                              status={status}
+                              status={evidence.status}
+                              evidence={evidence}
                               current={current}
                               disabled={identityPickerLoading || !identityPickerEntryRef.current}
                               singleOption={identityPickerSubject.allowedTypes.length === 1}
@@ -10227,18 +10295,10 @@ export default function WorkoutViewerScreen() {
                             onPress={() => void chooseEquipmentVariant(variant.key)}
                             disabled={identityPickerLoading || !identityPickerEntryRef.current}
                           >
-                            <Text style={styles.equipmentVariantLabel}>
-                              {variant.label}
-                            </Text>
-                            <Text
-                              numberOfLines={1}
-                              style={[
-                                styles.identityPickerStatus,
-                                current && styles.identityPickerCurrent,
-                              ]}
-                            >
-                              {status}
-                            </Text>
+                            <View style={styles.identityPickerCopy}>
+                              <Text style={styles.equipmentVariantLabel}>{variant.label}</Text>
+                              <EquipmentHistoryEvidence evidence={evidence} />
+                            </View>
                             <Ionicons
                               name="chevron-forward"
                               size={18}
@@ -10253,11 +10313,11 @@ export default function WorkoutViewerScreen() {
                   <>
                 <View style={styles.equipmentPickerHeader}>
                   <View style={styles.equipmentPickerHeaderCopy}>
-                    <Text style={styles.coreWheelTitle}>Choose Manufacturer</Text>
+                    <Text style={[styles.coreWheelTitle, styles.equipmentPickerTitle]}>Choose Manufacturer</Text>
                     <Text style={styles.coreWheelSubtitle}>
                       {identityPickerContinuation.kind === 'evidence_correction'
-                        ? 'Which manufacturer’s machine did you use?'
-                        : 'Which manufacturer’s machine are you using?'}
+                        ? `Which manufacturer’s ${identityPickerSubject?.domain === 'cable' ? 'cable station' : 'machine'} did you use?`
+                        : `Which manufacturer’s ${identityPickerSubject?.domain === 'cable' ? 'cable station' : 'machine'} are you using?`}
                     </Text>
                   </View>
                   <TouchableOpacity
@@ -10268,10 +10328,37 @@ export default function WorkoutViewerScreen() {
                     <Ionicons name="close" size={21} color={SLColors.textStrong} />
                   </TouchableOpacity>
                 </View>
+                {recentEquipment ? (() => {
+                  const variant = equipmentFlowVariants(identityPickerSubject!).find(row => row.key === recentEquipment.equipmentType);
+                  const evidence = presentEquipmentHistory(recentEquipment.manufacturer, unit, false,
+                    recentEquipment.equipmentType, itemLoadSemantics(identityPickerItem));
+                  return (
+                    <TouchableOpacity
+                      accessibilityRole="button"
+                      accessibilityLabel={`Select most recent equipment, ${recentEquipment.manufacturer.manufacturer?.display_name}, ${variant?.label}. ${[evidence.performance, evidence.detail].filter(Boolean).join('. ')}`}
+                      disabled={identityPickerLoading || !identityPickerEntryRef.current}
+                      onPress={() => void commitPerformedIdentity(recentEquipment.manufacturer,
+                        recentEquipment.equipmentType, recentEquipment.equipmentDefinitionId)}
+                      style={styles.recentEquipmentChoice}
+                    >
+                      <Text style={styles.recentEquipmentKicker}>MOST RECENT EQUIPMENT</Text>
+                      <View style={styles.recentEquipmentMain}>
+                        <ManufacturerBrandMark compact manufacturerName={recentEquipment.manufacturer.manufacturer?.display_name || 'Other'} />
+                        <View style={styles.identityPickerCopy}>
+                          <Text style={styles.identityPickerManufacturer}>{recentEquipment.manufacturer.manufacturer?.display_name || 'Other'}</Text>
+                          <Text style={styles.recentEquipmentType}>{variant?.label}</Text>
+                          <EquipmentHistoryEvidence evidence={evidence} />
+                        </View>
+                        <Ionicons name="arrow-forward" size={19} color={SLColors.accentViolet} />
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })() : null}
                 <TextInput
                   value={identityPickerQuery}
                   onChangeText={setIdentityPickerQuery}
-                  placeholder="Search manufacturer or machine"
+                  placeholder={identityPickerSubject?.domain === 'cable'
+                    ? 'Search manufacturer or cable station' : 'Search manufacturer or machine'}
                   placeholderTextColor={SLColors.textSubtle}
                   style={styles.identityPickerInput}
                   autoCorrect={false}
@@ -10297,10 +10384,8 @@ export default function WorkoutViewerScreen() {
                         );
                     const manufacturerName = row.manufacturer?.display_name
                       || 'Other';
-                    const status = equipmentSelectionStatusLabels(
-                      row,
-                      current,
-                    ).join(' · ');
+                    const evidence = presentEquipmentHistory(row, unit, Boolean(current), undefined,
+                      itemLoadSemantics(identityPickerItem));
                     return (
                       <TouchableOpacity
                         key={row.id}
@@ -10315,14 +10400,7 @@ export default function WorkoutViewerScreen() {
                           <Text numberOfLines={1} style={styles.identityPickerManufacturer}>
                             {manufacturerName}
                           </Text>
-                          <Text
-                            style={[
-                              styles.identityPickerStatus,
-                              current && styles.identityPickerCurrent,
-                            ]}
-                          >
-                            {status}
-                          </Text>
+                          <EquipmentHistoryEvidence evidence={evidence} />
                         </View>
                         <Ionicons name="chevron-forward" size={18} color={SLColors.textMuted} />
                       </TouchableOpacity>
@@ -12164,6 +12242,7 @@ const styles = StyleSheet.create({
     gap: 4,
     minWidth: 0,
   },
+  equipmentPickerTitle: { fontSize: 24, lineHeight: 30 },
   equipmentPickerHeaderAction: {
     alignItems: 'center',
     backgroundColor: SLColors.surface,
@@ -12450,6 +12529,24 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: SLColors.border,
   },
+  recentEquipmentChoice: {
+    marginHorizontal: 16,
+    marginBottom: 12,
+    padding: 13,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.48)',
+    backgroundColor: 'rgba(75,39,108,0.18)',
+  },
+  recentEquipmentKicker: {
+    color: SLColors.accentViolet,
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1,
+    marginBottom: 9,
+  },
+  recentEquipmentMain: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  recentEquipmentType: { color: SLColors.textSecondary, fontSize: 13, lineHeight: 18 },
   identityPickerRowCurrent: {
     borderRadius: SLRadius.md,
     borderWidth: 1,
@@ -13107,42 +13204,6 @@ const styles = StyleSheet.create({
     color: SLColors.textStrong,
     fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
-  },
-  currentEquipmentContext: {
-    marginTop: 16,
-    marginHorizontal: 26,
-    paddingTop: 14,
-    paddingBottom: 14,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(167,139,250,0.16)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  currentEquipmentContextRequired: {
-    borderColor: 'rgba(251,146,60,0.28)',
-  },
-  currentEquipmentCopy: {
-    flex: 1,
-    gap: 2,
-  },
-  currentEquipmentEyebrow: {
-    color: SLColors.review,
-    fontSize: SLTypography.micro.fontSize,
-    fontWeight: '900',
-    letterSpacing: 0.7,
-  },
-  currentEquipmentName: {
-    color: SLColors.textStrong,
-    fontSize: SLTypography.label.fontSize,
-    lineHeight: 20,
-    fontWeight: '900',
-  },
-  currentEquipmentMeta: {
-    color: SLColors.textMuted,
-    fontSize: SLTypography.caption.fontSize,
-    lineHeight: 17,
   },
   swapOptionButton: {
     alignItems: 'center',

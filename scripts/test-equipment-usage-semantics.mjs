@@ -9,7 +9,7 @@ const ordered = orderEquipmentChoices([
     display_name: 'Matrix',
     identity_specificity: 'exact',
     equipment_context: {
-      remembered_status: 'never_used',
+      remembered_status: 'used_before',
       last_used_at: '2026-08-12T12:00:00Z',
       option_kind: 'catalog',
     },
@@ -29,7 +29,7 @@ const ordered = orderEquipmentChoices([
 
 assert.equal(
   ordered[0].key,
-  'cybex',
-  'Historical usage and recency must not override alphabetical display-name order.',
+  'matrix',
+  'Historically used equipment is ordered by movement-specific recency.',
 );
 console.log('Equipment usage semantics regression passed.');
