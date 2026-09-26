@@ -26,6 +26,16 @@ export function assertApprovedArtworkExport(exported, { root = process.cwd(), ch
     .flatMap(row => Object.values(row.files || {}).map(file => file.sha256)));
   const equipment = read('docs/validation/equipment-type-art-2026-09-13/asset-manifest.json').assets;
   for (const row of equipment) for (const file of Object.values(row.files)) allKnown.add(file.sha256);
+  const cable = read('artwork-review/equipment-types/plate-loaded-cable-station-v1/review.json');
+  assert.equal(cable.review_status, 'owner_approved_testflight', 'cable art needs exact owner approval');
+  assert.equal(cable.release_eligible, true);
+  const cableMaster = path.join(root, 'artwork-review/equipment-types/plate-loaded-cable-station-v1/master.png');
+  const cableApp = path.join(root, 'assets/images/equipment-types/cable-review/plate-loaded-cable-station-candidate-v1.png');
+  for (const [file, expected] of [[cableMaster, cable.master_sha256], [cableApp, cable.app_sha256]]) {
+    assert.equal(crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'), expected,
+      'cable art must match the owner-approved exact bytes');
+    allKnown.add(expected);
+  }
   const allowed = new Set();
   if (testflight) for (const receipt of approved) {
     assert.ok(!runtime.denied_keys.includes(receipt.key));
@@ -38,8 +48,9 @@ export function assertApprovedArtworkExport(exported, { root = process.cwd(), ch
     assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), row.files.app.sha256, 'equipment category bytes must match the validated pair');
     allowed.add(row.files.app.sha256);
   }
+  if (testflight) allowed.add(cable.app_sha256);
   const seen = assertArtworkExportBytes(exported, {knownHashes: allKnown, allowedHashes: allowed});
-  return {channel:testflight?'testflight':'disabled',approved_movements:testflight?approved.length:0,approved_derivatives:testflight?seen.size-equipment.length:0,equipment_category_assets:testflight?equipment.length:0,pending_rejected_master_assets:0};
+  return {channel:testflight?'testflight':'disabled',approved_movements:testflight?approved.length:0,approved_derivatives:testflight?seen.size-equipment.length-1:0,equipment_category_assets:testflight?equipment.length+1:0,pending_rejected_master_assets:0};
 }
 
 export function assertArtworkExportBytes(exported, {knownHashes: allKnown, allowedHashes: allowed}) {
