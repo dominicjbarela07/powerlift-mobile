@@ -82,7 +82,7 @@ assert.match(
 );
 assert.match(route, /EQUIPMENT USED FOR/);
 assert.match(route, /Which version did you use\?/);
-assert.match(route, /Which manufacturer’s machine did you use\?/);
+assert.match(route, /Which manufacturer’s[\s\S]*did you use\?/);
 assert.match(
   route,
   /onCorrectEquipment=\{!executionCapabilities.canCorrect \? undefined : correctCompletedSessionEquipment\}/,

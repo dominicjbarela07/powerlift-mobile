@@ -33,7 +33,7 @@ assert.match(
 );
 assert.match(
   source,
-  /styles\.movementHistorySheet,[\s\S]*styles\.equipmentPickerSheet[\s\S]*Choose Manufacturer[\s\S]*Which manufacturer(?:&apos;|'|’)s machine (?:did you use|are you using)\?/,
+  /styles\.movementHistorySheet,[\s\S]*styles\.equipmentPickerSheet[\s\S]*Choose Manufacturer[\s\S]*Which manufacturer’s[\s\S]*did you use\?/,
   'live and Ideal State must share the dedicated tall equipment picker',
 );
 assert.match(
@@ -68,8 +68,8 @@ assert.match(
 );
 assert.match(
   source,
-  /equipmentSelectionStatusLabels\([\s\S]*row,[\s\S]*current,[\s\S]*\)\.join\(' · '\)/,
-  'movement-scoped server usage must remain distinct from the current-selection badge',
+  /presentEquipmentHistory\(row, unit, Boolean\(current\)[\s\S]*<EquipmentHistoryEvidence evidence=\{evidence\}/,
+  'movement-scoped server evidence must remain distinct from the current-selection badge',
 );
 assert.doesNotMatch(
   source,

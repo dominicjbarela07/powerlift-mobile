@@ -134,12 +134,12 @@ assert.equal(isMachineAccessoryItem(portableItem), false);
 
 assert.match(
   routeSource,
-  /canConfigureEquipment:\s*!isCoachAthletePreview\s*&&\s*isMachineAccessoryItem\(item\)/,
+  /canConfigureEquipment:\s*!isCoachAthletePreview\s*&&\s*canConfigureMachineEquipment\(item\)/,
   'Standalone and superset controls must share the canonical machine-item gate.',
 );
 assert.match(
   routeSource,
-  /\{machineAccessory \? \([\s\S]*?onPress=\{\(\) => openIdentityPicker\(it\)\}[\s\S]*?>Equipment<\/Text>/,
+  /\{canConfigureMachineEquipment\(it\) \? \([\s\S]*?onPress=\{\(\) => openIdentityPicker\(it\)\}[\s\S]*?>Equipment<\/Text>/,
   'A standalone machine accessory must retain its canonical Equipment action.',
 );
 assert.match(
