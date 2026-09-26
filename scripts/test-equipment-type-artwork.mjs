@@ -32,6 +32,9 @@ assert.notEqual(dev.cable.plate_loaded.source,dev.artwork.plate_loaded.source,'g
 const cableReview=JSON.parse(fs.readFileSync('artwork-review/equipment-types/plate-loaded-cable-station-v1/review.json'));
 assert.equal(cableReview.review_status,'owner_approved_testflight');
 assert.equal(cableReview.release_eligible,true);
+const exportGuard=fs.readFileSync('scripts/assert-no-dev-artwork-export.mjs','utf8');
+assert.match(exportGuard,/allKnown\.add\(expected\)/,'approved cable bytes are governed in the OTA export');
+assert.match(exportGuard,/if \(testflight\) allowed\.add\(cable\.app_sha256\)/,'only TestFlight may bundle the exact cable derivative');
 for(const [file,hash] of [
   ['artwork-review/equipment-types/plate-loaded-cable-station-v1/master.png',cableReview.master_sha256],
   ['assets/images/equipment-types/cable-review/plate-loaded-cable-station-candidate-v1.png',cableReview.app_sha256],
