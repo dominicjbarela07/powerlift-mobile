@@ -193,15 +193,15 @@ assert.deepEqual(
 );
 assert.equal(
   ordered[0].manufacturer?.display_name,
-  'Arsenal Strength',
-  'Canonical display-name ordering must not prioritize current or recent equipment.',
+  'Hammer Strength',
+  'Most recently performed equipment for this movement comes first.',
 );
 assert.deepEqual(
-  ordered.slice(0, -1).map((choice) => choice.manufacturer?.display_name),
-  ordered.slice(0, -1).map((choice) => choice.manufacturer?.display_name).sort(
+  ordered.filter(choice => choice.equipment_context?.usage_status !== 'used').slice(0, -1).map((choice) => choice.manufacturer?.display_name),
+  ordered.filter(choice => choice.equipment_context?.usage_status !== 'used').slice(0, -1).map((choice) => choice.manufacturer?.display_name).sort(
     (left, right) => left.localeCompare(right, 'en-US', { sensitivity: 'base' }),
   ),
-  'The complete governed manufacturer collection must be alphabetical.',
+  'Never-used manufacturers retain deterministic alphabetical ordering.',
 );
 assert.equal(
   ordered.at(-1)?.equipment_context?.option_kind,
@@ -510,8 +510,8 @@ assert.match(
 );
 assert.match(
   routeSource,
-  /resumeAfterEquipmentSelection[\s\S]*openAccessoryWheel\(nextItem, true\)[\s\S]*openSupersetRoundLogger\(group, continuation\.roundIndex\)/,
-  'Selection must continue directly into the interrupted logger flow.',
+  /resumeAfterEquipmentSelection[\s\S]*openAccessoryWheel\(nextItem, true, draft\)[\s\S]*openSupersetRoundLogger\(group, continuation\.roundIndex/,
+  'Selection must continue into the interrupted logger flow with optional draft values.',
 );
 assert.match(
   routeSource,
@@ -540,13 +540,13 @@ assert.match(
 );
 assert.match(
   routeSource,
-  /CURRENT EQUIPMENT[\s\S]*ManufacturerBrandMark/,
-  'Expanded machine cards must expose their current equipment context.',
+  /<SessionEquipmentContext selected=\{Boolean\(currentEquipment\)\} manufacturer=\{currentManufacturer\}/,
+  'Machine movements expose their current equipment through the shared context component.',
 );
 assert.match(
   routeSource,
-  /Choose Manufacturer[\s\S]*equipmentSelectionStatusLabels\([\s\S]*\.join\('\s·\s'\)[\s\S]*ManufacturerBrandMark compact manufacturerName=\{manufacturerName\}/,
-  'Equipment choices must keep current state separate from movement-scoped Used/Not Used and retain shared branding.',
+  /Choose Manufacturer[\s\S]*presentEquipmentHistory\(row, unit, Boolean\(current\)[\s\S]*ManufacturerBrandMark compact manufacturerName=\{manufacturerName\}[\s\S]*EquipmentHistoryEvidence/,
+  'Equipment choices keep current state separate from movement-specific performance and retain shared branding.',
 );
 assert.match(
   routeSource,
@@ -575,8 +575,8 @@ assert.match(
 );
 assert.match(
   loggerSource,
-  /activeSecondaryActionRow[\s\S]*canonicalMovementCard \? auxAction[\s\S]*>History</,
-  'Equipment and History must share the canonical logger secondary action row.',
+  /equipment=\{expandedIdentityContext\} actions=\{auxAction\}/,
+  'Equipment context and secondary actions use the canonical Logger slots.',
 );
 assert.doesNotMatch(
   routeSource,

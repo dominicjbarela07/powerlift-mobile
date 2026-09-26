@@ -195,39 +195,11 @@
   ],
   "releaseHoldbacks": {
     "sourceCommit": "fcf8191bc77b848da9877aed4ca848589098309e",
-    "reason": "Preserve current TestFlight catalog and equipment behavior until the separately governed catalog/history and compatible backend release. The Session actions and taxonomy artwork promotion adds no equipment/history behavior.",
+    "reason": "Retain the shipped governed taxonomy and omit its DEV-only shared-context test while the separately governed catalog migration awaits a compatible backend release. Equipment history and selection use the current canonical mobile implementation.",
     "files": [
       {
         "path": "config/governed-movement-art-taxonomy.json",
         "blob": "a253d05bb987ca050e2fe19906b031b716c2aec3"
-      },
-      {
-        "path": "lib/canonical-accessory-discovery.ts",
-        "blob": "86bb1454621f618ea3028fec426855e31b3c8a9d"
-      },
-      {
-        "path": "lib/equipment-flow-subject.ts",
-        "blob": "4bcf537626b2dc846a06d4703bc430777a9f7888"
-      },
-      {
-        "path": "lib/equipment-selection.ts",
-        "blob": "bad5bd453a199af8b4dba7a73097a42a25f07df9"
-      },
-      {
-        "path": "lib/logger-movement-identity.ts",
-        "blob": "1a2232571d82dba3ee9248cd801288f9cb572144"
-      },
-      {
-        "path": "lib/movement-history-launch.ts",
-        "blob": "cfa7de4f6641fd68b8374bedaf5860a8ce579f95"
-      },
-      {
-        "path": "scripts/test-equipment-flow-subject.mjs",
-        "blob": "4f3a765e1e390ae5de061181ad261742325000fb"
-      },
-      {
-        "path": "scripts/test-swap-equipment-type-filter.mjs",
-        "blob": "8da15aff2a20f39abf14cd9d3c548df7c2fff90a"
       },
       {
         "path": "scripts/test-shared-movement-programming-context.mjs",

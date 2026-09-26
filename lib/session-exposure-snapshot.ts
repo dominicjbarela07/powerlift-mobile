@@ -1,9 +1,10 @@
-import type { CanonicalMovementHistory } from './canonical-movement-history';
+import type { CanonicalMovementHistory, CanonicalHistoryExposure } from './canonical-movement-history';
 import type { ExposureSnapshotIdentity } from './session-exposure-cache';
 import { formatPerformedLoad, type PerformedLoadSemantics } from './performed-load-semantics';
 
 type ExposureSet = Readonly<{ id?: number | null; workout_id?: number | null; date?: string | null;
-  weight_kg?: number | null; reps?: number | null; rir?: number | null; rpe?: number | null }>;
+  weight_kg?: number | null; reps?: number | null; rir?: number | null; rpe?: number | null;
+  load_convention?: string | null; measurement_type?: string | null }>;
 export type HydratedExposureHistory = Readonly<{
   identity_scope?: string | null; comparison_allowed?: boolean | null;
   comparison_identity_key?: string | null; comparison_scope?: string | null;
@@ -30,6 +31,22 @@ function usableSet(set?: ExposureSet | null): set is ExposureSet {
     && set.reps != null && Number.isFinite(set.reps) && set.reps > 0);
 }
 
+export type RecordedExposure = Pick<CanonicalHistoryExposure, 'id' | 'workout_id' | 'date' | 'performed_at'
+  | 'equipment' | 'comparison_scope' | 'comparison_identity_key' | 'set_count' | 'best_set'> & {
+    last_set?: CanonicalHistoryExposure['best_set'] | null;
+  };
+
+/** A presentation projection of History's representative set, never a new ranking. */
+export function exposureFromHistoryRecord(row: RecordedExposure, equipmentRequired = false): SessionExposure {
+  if (!usableSet(row.best_set) || !/^\d{4}-\d{2}-\d{2}/.test(row.date)) return null;
+  return { set: row.best_set, date: row.date, workoutId: row.workout_id,
+    comparisonKey: row.comparison_identity_key || null, selection: 'Representative set',
+    recordedSetCount: row.set_count > 0 ? row.set_count : undefined,
+    equipmentLabel: row.equipment?.label || (equipmentRequired
+      || row.comparison_scope === 'exact_implementation' || row.comparison_scope === 'not_comparable'
+      ? 'Equipment not recorded' : undefined) };
+}
+
 /** The Editor's Last Exposure is recorded exact-movement evidence. Equipment
  * remains context, just as in History's All History view; it is not an identity
  * selector or a claim that different implementations are comparable. */
@@ -41,12 +58,7 @@ export function exposureFromAccessoryHistory(history: CanonicalMovementHistory, 
     || history.scope !== 'exact_identity') return null;
   const prior = history.exposures.find(row => isPrior(row, identity) && usableSet(row.best_set));
   if (!prior?.best_set) return null;
-  return { set: prior.best_set, date: prior.date, workoutId: prior.workout_id,
-    comparisonKey: prior.comparison_identity_key || null, selection: 'Representative set',
-    recordedSetCount: prior.set_count > 0 ? prior.set_count : undefined,
-    equipmentLabel: prior.equipment?.label || (history.movement.requires_equipment_configuration
-      || prior.comparison_scope === 'exact_implementation' || prior.comparison_scope === 'not_comparable'
-      ? 'Equipment not recorded' : undefined) };
+  return exposureFromHistoryRecord(prior, Boolean(history.movement.requires_equipment_configuration));
 }
 
 /** Consume the existing bounded summary; never infer a comparable task from labels. */
@@ -105,8 +117,11 @@ export function presentSessionExposure(exposure: SessionExposure, unit: 'kg' | '
   const effortKind = kind === 'accessory' ? set.rir != null ? 'RIR' : 'RPE' : set.rpe != null ? 'RPE' : 'RIR';
   const effort = effortValue != null && Number.isFinite(effortValue) ? `@${effortValue} ${effortKind}` : null;
   const date = new Date(`${exposure.date.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
-  return { performance: `${formatPerformedLoad(set.weight_kg, unit, semantics, 'recorded')} × ${set.reps}`,
-    effort, date, context: [exposure.selection, exposure.recordedSetCount
+  const recordedSemantics = { ...semantics,
+    ...(set.load_convention ? { loadConvention: set.load_convention } : {}),
+    ...(set.measurement_type ? { measurementType: set.measurement_type } : {}) };
+  return { performance: `${formatPerformedLoad(set.weight_kg, unit, recordedSemantics, 'recorded')} × ${set.reps}`,
+    effort, date, equipmentLabel: exposure.equipmentLabel, context: [exposure.selection, exposure.recordedSetCount
       ? `${exposure.recordedSetCount} recorded ${exposure.recordedSetCount === 1 ? 'set' : 'sets'}` : null,
       exposure.equipmentLabel].filter(Boolean).join(' · ') };
 }

@@ -1,0 +1,16 @@
+{
+  "candidate_id": "plate-loaded-cable-station-v1",
+  "category_key": "plate_loaded_cable_station",
+  "review_status": "owner_approved_testflight",
+  "release_eligible": true,
+  "dev_preview_only": false,
+  "approval": "Owner approved the exact displayed image for TestFlight in the Codex task on 2026-09-25; master SHA-256 39b4147cac317f71b61d8e8f1859791e5482617944ace3d7695b4654c1c0cfad.",
+  "master_sha256": "39b4147cac317f71b61d8e8f1859791e5482617944ace3d7695b4654c1c0cfad",
+  "app_sha256": "99bcf2dc780ac0a26939ad87dce11f89de9a93df21c94a050052c9c2f9b8656f",
+  "generated_source": "/Users/dominic/.codex/generated_images/01a0d5ed-7d83-7f32-b235-4e0fa7456db3/exec-27eaf2b7-5a68-4d2e-af19-6044244f2cfa.png",
+  "inspection": {
+    "full_master": "Unbranded plate-loaded cable tower, mounted discs, pulley and grip are visible. The exact internal cable-to-carriage route remains a human review point.",
+    "preview_80_px": "Mounted plates and cable handle remain distinct at picker size; no selectorized stack or pin is visible.",
+    "decision": "Owner approved this exact hash for TestFlight. Production art channel remains unchanged."
+  }
+}

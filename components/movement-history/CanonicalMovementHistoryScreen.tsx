@@ -79,7 +79,7 @@ function setLabel(set: CanonicalHistorySet | null | undefined, unit: MovementHis
   const load = formatPerformedLoad(set.weight_kg, unit, {
     loadConvention: set.load_convention,
     measurementType: set.measurement_type,
-  }) || `${displayWeight(set.weight_kg, unit)} ${unit}`;
+  }, 'recorded') || `${displayWeight(set.weight_kg, unit)} ${unit}`;
   return `${load} × ${set.reps ?? '—'}${effort}`;
 }
 
@@ -88,7 +88,7 @@ function compactSetLoad(set: CanonicalHistorySet | null | undefined, unit: Movem
   const load = formatPerformedLoad(set.weight_kg, unit, {
     loadConvention: set.load_convention,
     measurementType: set.measurement_type,
-  }) || `${displayWeight(set.weight_kg, unit)} ${unit}`;
+  }, 'recorded') || `${displayWeight(set.weight_kg, unit)} ${unit}`;
   return `${load} × ${set.reps ?? '—'}`;
 }
 

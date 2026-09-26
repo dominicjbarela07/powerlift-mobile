@@ -4,13 +4,17 @@ import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors } from '@/constants/theme';
-import { EQUIPMENT_TYPE_ARTWORK } from '@/lib/equipment-type-artwork';
+import { CABLE_EQUIPMENT_TYPE_ARTWORK, EQUIPMENT_TYPE_ARTWORK } from '@/lib/equipment-type-artwork';
 import type { MachineEquipmentType } from '@/lib/machine-equipment';
+import type { EquipmentHistoryPresentation } from '@/lib/equipment-selection';
+import { EquipmentHistoryEvidence } from './equipment-history-evidence';
 
 type Props = Readonly<{
   equipmentType: MachineEquipmentType;
+  domain?: 'machine' | 'cable';
   label: string;
   status: string;
+  evidence?: EquipmentHistoryPresentation;
   current: boolean;
   disabled: boolean;
   singleOption?: boolean;
@@ -18,13 +22,13 @@ type Props = Readonly<{
 }>;
 
 /** Presents the existing governed choice; never creates or rewrites its subject. */
-export function EquipmentTypeChoice({ equipmentType, label, status, current, disabled, singleOption, onPress }: Props) {
-  const artwork = EQUIPMENT_TYPE_ARTWORK?.[equipmentType];
+export function EquipmentTypeChoice({ equipmentType, domain = 'machine', label, status, evidence, current, disabled, singleOption, onPress }: Props) {
+  const artwork = (domain === 'cable' ? CABLE_EQUIPMENT_TYPE_ARTWORK : EQUIPMENT_TYPE_ARTWORK)?.[equipmentType];
   if (!artwork) return null;
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${label}. ${artwork.description}. ${status}`}
+      accessibilityLabel={`${label}. ${artwork.description}. ${evidence ? [evidence.performance, evidence.detail, evidence.status].filter(Boolean).join('. ') : status}`}
       accessibilityState={{ selected: current, disabled }}
       testID={`equipment-type-${equipmentType}`}
       disabled={disabled}
@@ -37,7 +41,7 @@ export function EquipmentTypeChoice({ equipmentType, label, status, current, dis
         <Text style={styles.title}>{label}</Text>
         <Text style={styles.description}>{artwork.description}</Text>
         <View style={styles.footer}>
-          <Text style={[styles.status, current && styles.currentStatus]}>{status}</Text>
+          {evidence ? <EquipmentHistoryEvidence evidence={evidence} /> : <Text style={[styles.status, current && styles.currentStatus]}>{status}</Text>}
           <Ionicons name="chevron-forward" size={16} color={current ? '#D1B0FF' : SLColors.textMuted} />
         </View>
       </View>

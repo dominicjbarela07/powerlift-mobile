@@ -69,7 +69,8 @@ const lifecycle=route.slice(route.indexOf('const revalidateActiveLogger'),route.
 assert.match(lifecycle,/if \(reason === 'body_recovery'\) remountLoggerBody\(\)/,'ordinary focus never remounts the body');
 assert.doesNotMatch(peek,/AppState|useFocusEffect|setInterval|short_label|Polyline/);
 const sharedRead=fs.readFileSync('lib/use-session-exposure.ts','utf8');
-assert.match(sharedRead,/!identity.coreMovementId && !canonicalEditorHistory/,'Logger accessories use hydration with zero history calls');
+assert.match(sharedRead,/!identity.coreMovementId && !canonicalEditorHistory/,'Selected-equipment accessories retain hydration comparison policy');
+assert.match(peek,/canonicalEditorHistory: beforeEquipmentSelection/);
 assert.match(peek,/useSessionExposure/, 'Logger uses the same canonical read as authoring');
 assert.match(route,/history=|history: 'summary'/);
 assert.match(route,/history=\{item.movement_history\}/);

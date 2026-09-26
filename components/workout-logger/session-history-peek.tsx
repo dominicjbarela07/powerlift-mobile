@@ -7,23 +7,27 @@ import type { PerformedLoadSemantics } from '@/lib/performed-load-semantics';
 import { useSessionExposure } from '@/lib/use-session-exposure';
 import { presentSessionExposure, type HydratedExposureHistory } from '@/lib/session-exposure-snapshot';
 
-/** Accessory evidence comes from authorized Session hydration. Core fallback is
- * optional and shared across remounts; neither history nor clocks own execution. */
+/** Before equipment selection, exact History answers what was performed last.
+ * Selected equipment retains the authorized hydration's comparison policy. */
 export function SessionHistoryPeek({ target, workoutId, sessionDate, ownerId, history, semantics, unit, onOpen }: {
   target: MovementHistoryLaunchTarget; workoutId: number; sessionDate: string; ownerId: string;
   history?: HydratedExposureHistory | null; semantics?: PerformedLoadSemantics;
   unit: 'kg' | 'lb'; onOpen: () => void;
 }) {
-  const read = useSessionExposure({ context: { ownerId, athleteId: target.athleteId, workoutId, sessionDate }, target, history });
+  const beforeEquipmentSelection = !target.equipmentContextDefinitionId;
+  const read = useSessionExposure({ context: { ownerId, athleteId: target.athleteId, workoutId, sessionDate }, target, history,
+    canonicalEditorHistory: beforeEquipmentSelection });
   const content = presentSessionExposure(read.exposure, unit, target.coreMovementId ? 'core' : 'accessory', semantics);
-  const emptyCopy = read.status === 'empty' ? 'No comparable exposure' : read.status === 'loading' ? 'Loading prior exposure…' : 'History unavailable';
+  const emptyCopy = read.status === 'empty' ? beforeEquipmentSelection ? 'No previous exposure' : 'No comparable exposure'
+    : read.status === 'loading' ? 'Loading prior exposure…' : 'History unavailable';
   return <Pressable accessibilityRole="button" accessibilityLabel="Open full movement history" onPress={onOpen} style={s.panel}>
-    <View style={s.heading}><Text style={s.label}>LAST COMPARABLE EXPOSURE</Text><Text style={s.date}>{content?.date || ''}</Text></View>
+    <View style={s.heading}><Text style={s.label}>{beforeEquipmentSelection ? 'LAST EXPOSURE' : 'LAST COMPARABLE EXPOSURE'}</Text><Text style={s.date}>{content?.date || ''}</Text></View>
     <View style={s.performanceRow}>
       <Text style={s.value}>{content?.performance || emptyCopy}</Text>
       {content?.effort ? <Text style={s.effort}>{content.effort}</Text> : null}
     </View>
-    <Text style={s.context}>{content?.context || (target.coreMovementId ? 'Exact task · view full record below' : 'Exact movement · equipment-aware record')}</Text>
+    <Text style={s.context}>{content?.equipmentLabel || content?.context || (beforeEquipmentSelection
+      ? 'Exact movement · view full record below' : 'Exact movement · equipment-aware record')}</Text>
     {read.status === 'error' && read.retry ? <Pressable accessibilityRole="button" accessibilityLabel="Retry previous exposure" onPress={event => { event.stopPropagation(); read.retry?.(); }}><Text style={s.link}>Retry history</Text></Pressable> : null}
     <Text style={s.link}>Movement history · all sets & progression ↗︎</Text>
   </Pressable>;
@@ -36,6 +40,6 @@ const s = StyleSheet.create({
   performanceRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: 7, rowGap: 2, marginTop: 8, marginBottom: 4 },
   value: { color: '#f0edf7', fontSize: 21, lineHeight: 27, fontFamily: SLFontFamilies.sansSemiBold, flexShrink: 1 },
   effort: { color: '#d0d8e0', fontSize: 14, lineHeight: 21 },
-  context: { color: '#b6bdca', fontSize: 11, lineHeight: 17 },
+  context: { color: '#b6bdca', fontSize: 12, lineHeight: 18 },
   link: { color: '#a8dfe9', fontSize: 12, lineHeight: 18, marginTop: 9, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#29313b' },
 });
