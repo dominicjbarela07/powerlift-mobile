@@ -4,7 +4,6 @@ import { InlineSessionReorder } from './InlineSessionReorder';
 import { AthleteCoachingScratchpadTrigger } from './AthleteCoachingScratchpad';
 import { clearAuthoringJournal, readAuthoringJournal, writeAuthoringJournal } from '@/lib/session-authoring-journal';
 import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, Animated, BackHandler, Keyboard, LayoutAnimation, Platform, Pressable, RefreshControl, StyleSheet, Switch, useWindowDimensions, View } from 'react-native';
@@ -610,10 +609,11 @@ export function SessionEditingWorkspace(props: Props) {
     setSelectedId(nextId);
     if (nextId != null) {
       const movement = sessionDraft.movements[nextId];
-      setManualOverrideEnabled(Boolean(movement && (isCoreVariantDraft(movement) || draftHasManualOverride(movement))));
-      setBackdownManualOverrideEnabled(Boolean(movement?.backdownTargetLowLb || movement?.backdownTargetHighLb));
+      const isCore = sessionDraft.coreOrder.includes(nextId);
+      setManualOverrideEnabled(Boolean(isCore && movement && (isCoreVariantDraft(movement) || draftHasManualOverride(movement))));
+      setBackdownManualOverrideEnabled(Boolean(isCore && (movement?.backdownTargetLowLb || movement?.backdownTargetHighLb)));
     }
-  }, [selectedId, sessionDraft.movements]);
+  }, [selectedId, sessionDraft.movements, sessionDraft.coreOrder]);
 
   const collapseMovement = useCallback(() => {
     Keyboard.dismiss();
@@ -631,9 +631,8 @@ export function SessionEditingWorkspace(props: Props) {
     setEditingAthlete(false);
   }, []);
 
-  const selectDate = useCallback((event: DateTimePickerEvent, value?: Date) => {
+  const selectDate = useCallback((value: Date) => {
     setEditingDate(false);
-    if (event.type === 'dismissed' || !value) return;
     const nextDate = toIsoDate(value);
     setSessionDraft((current) => ({ ...current, scheduledDate: nextDate }));
   }, []);
@@ -1053,7 +1052,7 @@ function SessionCompactIdentity({
   onBeginAthleteEdit: () => void;
   onDismissDate: () => void;
   onSelectAthlete: (athleteId: number) => void;
-  onSelectDate: (event: DateTimePickerEvent, date?: Date) => void;
+  onSelectDate: (date: Date) => void;
   accessibilityReflow: boolean;
 }) {
   const [useCompactAthleteName, setUseCompactAthleteName] = useState(false);
@@ -1162,26 +1161,31 @@ function SessionCompactIdentity({
 
 function SessionRenameModal({ draft, visible, onChange, onDismiss, onConfirm }: { draft: string; visible: boolean; onChange: (value: string) => void; onDismiss: () => void; onConfirm: () => void }) {
   const sheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
+  const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null);
   const disabled = !draft.trim();
   const close = () => sheetRef.current?.dismiss();
   return (
     <StrengthLedgerBottomSheet
       ref={sheetRef}
       accessibilityLabel="Rename Session"
-      heightFraction={0.48}
+      heightFraction={0.35}
       motionPreset="deliberate"
       onDismiss={onDismiss}
+      onPresent={() => {
+        inputRef.current?.focus();
+        requestAnimationFrame(() => inputRef.current?.setNativeProps({ selection: { start: 0, end: draft.length } }));
+      }}
       onRequestClose={close}
       visible={visible}
     >
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.renameModalLayer}>
+      <View style={styles.renameModalLayer}>
         <View accessibilityViewIsModal style={styles.renameModalCard}>
           <View style={styles.renameModalHeader}>
             <Text style={styles.renameModalTitle}>Rename Session</Text>
           </View>
           <TextInput
             accessibilityLabel="Session title"
-            autoFocus
+            ref={inputRef}
             maxLength={120}
             onChangeText={onChange}
             onSubmitEditing={disabled ? undefined : onConfirm}
@@ -1195,40 +1199,58 @@ function SessionRenameModal({ draft, visible, onChange, onDismiss, onConfirm }: 
             <View style={styles.renameModalAction}><SLButton fullWidth disabled={disabled} label="Rename" onPress={onConfirm} size="sm" variant="primary" /></View>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </StrengthLedgerBottomSheet>
   );
 }
 
-function SessionDatePickerModal({ scheduledDate, visible, onDismiss, onSelect }: { scheduledDate?: string | null; visible: boolean; onDismiss: () => void; onSelect: (event: DateTimePickerEvent, date?: Date) => void }) {
+function SessionDatePickerModal({ scheduledDate, visible, onDismiss, onSelect }: { scheduledDate?: string | null; visible: boolean; onDismiss: () => void; onSelect: (date: Date) => void }) {
   const sheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
+  const { height } = useWindowDimensions();
+  const selected = parseWorkspaceDate(scheduledDate) || new Date();
+  const [month, setMonth] = useState(() => new Date(selected.getFullYear(), selected.getMonth(), 1, 12));
+  useEffect(() => {
+    if (visible) setMonth(new Date(selected.getFullYear(), selected.getMonth(), 1, 12));
+  }, [visible, scheduledDate]);
+  const firstWeekday = month.getDay();
+  const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+  const calendarCells = Array.from({ length: Math.ceil((firstWeekday + daysInMonth) / 7) * 7 }, (_, index) => {
+    const day = index - firstWeekday + 1;
+    return day > 0 && day <= daysInMonth ? day : null;
+  });
+  const preferredHeight = calendarCells.length === 42 ? 535 : 490;
+  const weekdayLabels = Array.from({ length: 7 }, (_, index) => new Date(2024, 0, 7 + index).toLocaleDateString(undefined, { weekday: 'short' }));
   const close = () => sheetRef.current?.dismiss();
   return (
     <StrengthLedgerBottomSheet
       ref={sheetRef}
       accessibilityLabel="Session Date"
-      heightFraction={0.58}
+      heightFraction={Math.min(0.72, preferredHeight / height)}
       motionPreset="deliberate"
       onDismiss={onDismiss}
       onRequestClose={close}
       visible={visible}
     >
-      <View style={styles.datePickerModalLayer}>
+      <ScrollView contentContainerStyle={styles.datePickerModalLayer} showsVerticalScrollIndicator={false}>
         <View accessibilityViewIsModal style={styles.datePickerModalCard}>
           <View style={styles.datePickerModalHeader}>
-            <Text style={styles.datePickerModalTitle}>Session Date</Text>
+            <View><Text style={styles.datePickerModalEyebrow}>PROGRAMMING MANAGER</Text><Text style={styles.datePickerModalTitle}>Change Session Date</Text></View>
           </View>
-          <DateTimePicker
-            accentColor={SLColors.accentViolet}
-            display={Platform.OS === 'ios' ? 'inline' : 'default'}
-            mode="date"
-            style={Platform.OS === 'ios' ? styles.datePickerModalControl : undefined}
-            themeVariant="dark"
-            value={parseWorkspaceDate(scheduledDate) || new Date()}
-            onChange={onSelect}
-          />
+          <View style={styles.datePickerCalendar}>
+            <View style={styles.datePickerMonthHeader}>
+              <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={styles.datePickerMonthTitle}>{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</Text>
+              <View style={styles.datePickerMonthActions}>
+                {([-1, 1] as const).map((direction) => <Pressable key={direction} accessibilityRole="button" accessibilityLabel={direction < 0 ? 'Previous month' : 'Next month'} onPress={() => setMonth((current) => new Date(current.getFullYear(), current.getMonth() + direction, 1, 12))} style={({ pressed }) => [styles.datePickerMonthAction, pressed && styles.pressed]}><Ionicons name={direction < 0 ? 'chevron-back' : 'chevron-forward'} size={18} color={palette.text} /></Pressable>)}
+              </View>
+            </View>
+            <View style={styles.datePickerWeekRow}>{weekdayLabels.map((label, index) => <Text key={index} style={styles.datePickerWeekday}>{label}</Text>)}</View>
+            <View style={styles.datePickerDays}>{calendarCells.map((day, index) => {
+              const isSelected = day != null && selected.getFullYear() === month.getFullYear() && selected.getMonth() === month.getMonth() && selected.getDate() === day;
+              return <View key={index} style={styles.datePickerDaySlot}>{day != null ? <Pressable accessibilityRole="button" accessibilityLabel={new Date(month.getFullYear(), month.getMonth(), day, 12).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} accessibilityState={{ selected: isSelected }} onPress={() => onSelect(new Date(month.getFullYear(), month.getMonth(), day, 12))} style={({ pressed }) => [styles.datePickerDay, isSelected && styles.datePickerDaySelected, pressed && !isSelected && styles.datePickerDayPressed]}><Text style={[styles.datePickerDayText, isSelected && styles.datePickerDayTextSelected]}>{day}</Text></Pressable> : null}</View>;
+            })}</View>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </StrengthLedgerBottomSheet>
   );
 }
@@ -1663,7 +1685,7 @@ export function MovementQuickPrescriptionEditor({ prescriptionOnly = false, draf
         )}
       </View> : null}
 
-      {<View style={styles.quickSection}>
+      {kind === 'core' ? <View style={styles.quickSection}>
         {isCoreVariant ? (
           <ManualOverrideBlock required draftLow={draft.targetLowLb} draftHigh={draft.targetHighLb} storageUnit={storageUnit} displayUnit={displayUnit} manualEnabled editable={editable} onManualEnabledChange={() => {}} onRangeChange={(targetLowLb, targetHighLb) => onChange({ targetLowLb, targetHighLb })} />
         ) : draft.scheme === 'TOP_BACKDOWN' && draft.sourceVariant !== 'BK' && !prescriptionOnly ? (
@@ -1676,7 +1698,7 @@ export function MovementQuickPrescriptionEditor({ prescriptionOnly = false, draf
         ) : (
           <ManualOverrideBlock draftLow={draft.targetLowLb} draftHigh={draft.targetHighLb} storageUnit={storageUnit} displayUnit={displayUnit} initialTarget={calculatedManualTargetValue(calculatedTarget, displayUnit)} manualEnabled={manualOverrideEnabled} editable={editable} onManualEnabledChange={(enabled) => { onManualOverrideEnabledChange(enabled); if (!enabled) onChange({ targetLowLb: '', targetHighLb: '' }); }} onRangeChange={(targetLowLb, targetHighLb) => onChange({ targetLowLb, targetHighLb })} />
         )}
-      </View>}
+      </View> : null}
 
     </View>
   );
@@ -1992,6 +2014,7 @@ function createSessionWorkspaceDraft({ title, athleteId, scheduledDate, storageU
   accessoryItems: SessionMovementItem[];
 }): SessionWorkspaceDraft {
   const allItems = [...coreItems, ...accessoryItems];
+  const accessoryIds = new Set(accessoryItems.map((item) => item.id));
   const items = Object.fromEntries(allItems.map((item) => [item.id, item]));
   const kinds = Object.fromEntries([
     ...coreItems.map((item) => [item.id, 'core'] as const),
@@ -2001,7 +2024,10 @@ function createSessionWorkspaceDraft({ title, athleteId, scheduledDate, storageU
     const linkedBackdown = String(item.variant || '').toUpperCase() === 'TOP'
       ? allItems.find((candidate) => candidate.parent_item_id === item.id) || null
       : null;
-    return [item.id, ensureCoreVariantManualLoad(movementDraftFromItem(item, storageUnit, linkedBackdown), storageUnit)];
+    const movement = ensureCoreVariantManualLoad(movementDraftFromItem(item, storageUnit, linkedBackdown), storageUnit);
+    return [item.id, accessoryIds.has(item.id)
+      ? { ...movement, targetLowLb: '', targetHighLb: '' }
+      : movement];
   }));
   return {
     title,
@@ -2077,6 +2103,8 @@ function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted
       patch.movement_definition_id = item.movement_identity.id;
     }
     if (kind === 'accessory') {
+      delete patch.target_low_lb;
+      delete patch.target_high_lb;
       const persistedSubstitutions = persisted.movements[id]?.approvedSubstitutions || [];
       if (JSON.stringify(movement.approvedSubstitutions) !== JSON.stringify(persistedSubstitutions)) {
         patch.approved_subs = movement.approvedSubstitutions.map((row) => ({
@@ -2121,7 +2149,8 @@ function addSessionDraftMovement(
   // Process-unique negative IDs cannot collide with a recovered draft.
   if (item.id < 0) item = { ...item, id: --draftMovementSequence };
   setDraft((current) => {
-    const movement = ensureCoreVariantManualLoad(movementDraftFromItem(item, storageUnit), storageUnit);
+    const prepared = ensureCoreVariantManualLoad(movementDraftFromItem(item, storageUnit), storageUnit);
+    const movement = kind === 'accessory' ? { ...prepared, targetLowLb: '', targetHighLb: '' } : prepared;
     return {
       ...current,
       items: { ...current.items, [item.id]: item },
@@ -2258,6 +2287,7 @@ function calculatedLoadRequest(item: SessionMovementItem): CalculatedLoadRequest
 }
 
 function collapsedLoadPresentation(item: SessionMovementItem, kind: MovementKind, calculated: CalculatedLoadResult | null, displayUnit: CoachDisplayUnit) {
+  if (kind === 'accessory') return null;
   const manualLow = item.coach_prescribed_low_kg;
   const manualHigh = item.coach_prescribed_high_kg;
   const validManualLow = Number.isFinite(Number(manualLow)) && Number(manualLow) > 0 ? Number(manualLow) : null;
@@ -2275,7 +2305,7 @@ function collapsedLoadPresentation(item: SessionMovementItem, kind: MovementKind
       manual: true,
     };
   }
-  if (kind !== 'accessory' && (calculated?.lowKg != null || calculated?.highKg != null)) {
+  if (calculated?.lowKg != null || calculated?.highKg != null) {
     return {
       label: 'Calculated',
       value: formatLoggerWeightRangeKg(
@@ -2402,12 +2432,25 @@ const styles = StyleSheet.create({
   renameModalInput: { minHeight: 48, color: palette.text, backgroundColor: SLColors.surfaceFlat, borderWidth: StyleSheet.hairlineWidth, borderColor: palette.lineStrong, borderRadius: SLRadius.md, paddingHorizontal: SLSpacing.md, paddingVertical: SLSpacing.sm, fontFamily: SLFontFamilies.display, fontSize: 16 },
   renameModalActions: { flexDirection: 'row', gap: SLSpacing.sm, paddingTop: SLSpacing.md },
   renameModalAction: { flex: 1, minWidth: 0 },
-  datePickerModalLayer: { flex: 1, justifyContent: 'flex-start', paddingHorizontal: SLLayout.screenGutter, paddingTop: SLSpacing.sm },
-  datePickerModalCard: { width: '100%', gap: SLSpacing.sm, paddingBottom: SLSpacing.md },
-  datePickerModalHeader: { minHeight: SLControlSize.minimumTouchTarget + SLSpacing.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SLSpacing.sm },
-  datePickerModalTitle: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 18, lineHeight: 24 },
-  datePickerModalClose: { width: SLControlSize.minimumTouchTarget, height: SLControlSize.minimumTouchTarget, alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md },
-  datePickerModalControl: { width: '100%', backgroundColor: SLColors.surfaceMedia },
+  datePickerModalLayer: { paddingHorizontal: SLLayout.screenGutter, paddingTop: SLSpacing.sm, paddingBottom: SLSpacing.lg },
+  datePickerModalCard: { width: '100%', gap: SLSpacing.md },
+  datePickerModalHeader: { minHeight: 62, justifyContent: 'center' },
+  datePickerModalEyebrow: { color: palette.violet, fontFamily: SLFontFamilies.technical, fontSize: 11, lineHeight: 16, letterSpacing: 1.5 },
+  datePickerModalTitle: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 23, lineHeight: 30 },
+  datePickerCalendar: { paddingHorizontal: SLSpacing.sm, paddingTop: SLSpacing.sm, paddingBottom: SLSpacing.md, borderWidth: StyleSheet.hairlineWidth, borderColor: palette.lineStrong, borderRadius: SLRadius.lg, backgroundColor: SLColors.surfaceMedia },
+  datePickerMonthHeader: { minHeight: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SLSpacing.xs, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: palette.line },
+  datePickerMonthTitle: { flex: 1, color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 19, lineHeight: 24 },
+  datePickerMonthActions: { flexDirection: 'row', gap: SLSpacing.xs },
+  datePickerMonthAction: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, backgroundColor: SLColors.surfaceFlat },
+  datePickerWeekRow: { flexDirection: 'row', paddingTop: SLSpacing.sm, paddingBottom: SLSpacing.xs },
+  datePickerWeekday: { width: '14.2857%', color: palette.muted, textAlign: 'center', fontFamily: SLFontFamilies.technical, fontSize: 11, lineHeight: 20, textTransform: 'uppercase' },
+  datePickerDays: { flexDirection: 'row', flexWrap: 'wrap' },
+  datePickerDaySlot: { width: '14.2857%', height: 44, alignItems: 'center', justifyContent: 'center' },
+  datePickerDay: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 20 },
+  datePickerDaySelected: { backgroundColor: palette.violet, ...SLShadows.level1 },
+  datePickerDayPressed: { backgroundColor: palette.violetSoft },
+  datePickerDayText: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 15, lineHeight: 20 },
+  datePickerDayTextSelected: { color: SLColors.black },
   workspacePromptBody: { flex: 1, justifyContent: 'space-between', gap: SLSpacing.lg, paddingHorizontal: SLLayout.screenGutter, paddingTop: SLSpacing.sm, paddingBottom: SLSpacing.md },
   workspacePromptCopy: { gap: SLSpacing.xs },
   workspacePromptEyebrow: { color: palette.violet, textTransform: 'uppercase', fontFamily: SLFontFamilies.technical, fontSize: 12, lineHeight: 16 },
