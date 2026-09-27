@@ -470,6 +470,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [payload, setPayload] = useState<WorkoutPayload | null>(null);
+  const [acknowledgedAuthoringVersion, setAcknowledgedAuthoringVersion] = useState<string | null>(null);
   const activeSection: WorkspaceSection = requestedSection === 'accessories' ? 'accessories' : 'core';
   const [pendingAction, setPendingAction] = useState<SessionActionKey | null>(null);
   const [calendarAction, setCalendarAction] = useState<CalendarAction | null>(null);
@@ -499,7 +500,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   const loadedCompletedSession = ['completed', 'logged', 'done'].includes(loadedStatus);
   const redirectingToLogger = !props.embedded && authReady && user?.role !== 'coach' && !!payload && !loadedCompletedSession;
 
-  const loadSession = useCallback(async (silent?: boolean) => {
+  const loadSession = useCallback(async (silent?: boolean, acknowledgedMutation?: boolean) => {
     if (!workoutId) {
       setError('Missing session id.');
       setLoading(false);
@@ -507,6 +508,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
     }
     const sessionChanged = loadedWorkoutIdRef.current !== workoutId;
     if (sessionChanged) {
+      setAcknowledgedAuthoringVersion(null);
       loadedWorkoutIdRef.current = workoutId;
       hasLoadedSessionRef.current = false;
       setPayload(null);
@@ -533,7 +535,9 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       }
       if (requestRevision !== loadRequestRevisionRef.current) return;
       assertProgrammingResponseSubject({ athleteId: workspaceOwned ? lockedAthleteId : programmingAthleteId ? Number(programmingAthleteId) : null, ready: subjectReady }, json.athlete?.id);
-      setPayload(mapCoachSessionEditorPayload(json));
+      const mapped = mapCoachSessionEditorPayload(json);
+      setPayload(mapped);
+      if (acknowledgedMutation) setAcknowledgedAuthoringVersion(mapped.authoring_version || null);
       hasLoadedSessionRef.current = true;
       return true;
     } catch (err: any) {
@@ -836,7 +840,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       const json: any = resp.json || {};
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
       setTrainingLiftEditor(null);
-      await loadSession(true);
+      await loadSession(true, true);
     } catch (err: any) {
       Alert.alert(
         trainingLiftEditor.mode === 'add' ? 'Could not add core lift' : 'Could not update training lift',
@@ -877,7 +881,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       const json: any = resp.json || {};
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
       setReorderEditor(null);
-      await loadSession(true);
+      await loadSession(true, true);
     } catch (err: any) {
       Alert.alert('Could not apply order', err?.message || 'Please try again.');
     } finally {
@@ -1029,7 +1033,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       });
       const json: any = resp.json || {};
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
-      await loadSession(true);
+      await loadSession(true, true);
       return true;
     } catch (err: any) {
       Alert.alert(
@@ -1086,7 +1090,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       const result = await request();
       props.onProgrammingChanged?.();
       if (result.message) Alert.alert('Session updated', result.message);
-      await loadSession(true);
+      await loadSession(true, true);
     } catch (err: any) {
       Alert.alert('Action failed', err?.message || 'Please try again.');
     } finally {
@@ -1322,6 +1326,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         programContext={[workout.program_name, workout.block_name, workout.block_week ? `W${workout.block_week}` : null].filter(Boolean).join(' / ')}
         returnWeek={Number(programmingWeek || workout.block_week || 1)}
         authoringVersion={payload?.authoring_version || null}
+        acknowledgedAuthoringVersion={acknowledgedAuthoringVersion}
         journalIdentity={user?.id && payload?.athlete?.id ? `${user.id}:${payload.athlete.id}:${workout.id}` : undefined}
         journalScope={payload?.authoring_subject_key || undefined}
         status={status}
@@ -1399,7 +1404,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       {reuseEmptySession && payload?.athlete?.id && workout.date && payload.authoring_version ? <ProgrammingReuseLibrary
         reuseIntoSession={{ id: workout.id, baseVersion: payload.authoring_version }} athleteId={payload.athlete.id} programId={Number(workout.program_id || 0)} programName={workout.program_name || 'Training Program'}
         weeks={[]} initialWeek={{ blockId: Number(workout.training_block_id), blockName: workout.block_name || 'Training Block', index: Number(workout.block_week || 1), startDate: workout.date, rangeLabel: workout.date }} initialDate={workout.date}
-        onClose={() => setReuseEmptySession(false)} onCopied={async () => { props.onProgrammingChanged?.(); await loadSession(true); setReuseEmptySession(false); }}
+        onClose={() => setReuseEmptySession(false)} onCopied={async () => { props.onProgrammingChanged?.(); await loadSession(true, true); setReuseEmptySession(false); }}
       /> : null}
       <SessionCalendarModal
         visible={!!calendarAction}

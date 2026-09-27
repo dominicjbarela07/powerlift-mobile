@@ -12,7 +12,7 @@ function loadModule(relative) {
 export const source = fs.readFileSync(new URL('components/coach-mobile/SessionEditingWorkspace.tsx', root), 'utf8');
 export const route = fs.readFileSync(new URL('app/(tabs)/workout/session-workspace/[workoutId].tsx', root), 'utf8');
 const file = ts.createSourceFile('editor.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-const names = ['ensureCoreVariantManualLoad', 'createSessionWorkspaceDraft', 'cloneSessionWorkspaceDraft', 'sessionWorkspaceDraftIsDirty', 'buildSessionWorkspaceSavePlan', 'addSessionDraftMovement', 'removeSessionDraftMovement', 'movementItemWithDraft'];
+const names = ['ensureCoreVariantManualLoad', 'createSessionWorkspaceDraft', 'cloneSessionWorkspaceDraft', 'reconcileSessionWorkspaceDraft', 'sessionWorkspaceDraftIsDirty', 'buildSessionWorkspaceSavePlan', 'addSessionDraftMovement', 'removeSessionDraftMovement', 'movementItemWithDraft'];
 const functions = file.statements.filter((node) => ts.isFunctionDeclaration(node) && names.includes(node.name?.text)).map((node) => node.getText(file)).join('\n');
 const code = ts.transpileModule(`let draftMovementSequence = -Date.now() * 1000;\n${functions}\nObject.assign(result, {${names.join(',')}});`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
 export const model = {};
