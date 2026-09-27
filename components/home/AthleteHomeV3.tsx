@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
+  ActivityIndicator,
   Image,
   ImageBackground,
   Pressable,
@@ -66,12 +67,13 @@ type Today = {
 type Props = {
   today: Today;
   isIndividual?: boolean;
+  creatingTodaySession?: boolean;
   preferredUnits?: string | null;
   onAction: (action?: HomeAction | null) => void;
   supplementaryContent?: React.ReactNode;
 };
 
-export function AthleteHomeV3({ today, isIndividual = false, preferredUnits, onAction, supplementaryContent }: Props) {
+export function AthleteHomeV3({ today, isIndividual = false, creatingTodaySession = false, preferredUnits, onAction, supplementaryContent }: Props) {
   const home = today.home_v3 || {};
   const state = resolveHomeState(home, today.date);
   const { unit, setUnit } = useSurfaceWeightUnit(preferredUnits ?? today.athlete?.preferred_units);
@@ -80,7 +82,7 @@ export function AthleteHomeV3({ today, isIndividual = false, preferredUnits, onA
     <View style={styles.page}>
       <Greeting today={today} state={state} />
       <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="athlete-home-unit-toggle" />
-      <StateHero home={home} onAction={onAction} state={state} today={today} unit={unit} />
+      <StateHero creatingTodaySession={creatingTodaySession} home={home} onAction={onAction} state={state} today={today} unit={unit} />
       {supplementaryContent}
       <WeekSection home={home} onAction={onAction} today={today} unit={unit} />
       {home.next_up ? <SessionCard eyebrow="NEXT UP" onAction={onAction} session={home.next_up} today={today} unit={unit} /> : null}
@@ -115,7 +117,8 @@ function Greeting({ today, state }: { today: Today; state: AthleteHomeState }) {
   );
 }
 
-function StateHero({ home, onAction, state, today, unit }: {
+function StateHero({ creatingTodaySession, home, onAction, state, today, unit }: {
+  creatingTodaySession: boolean;
   home: AthleteHomeV3Projection;
   onAction: Props['onAction'];
   state: AthleteHomeState;
@@ -125,7 +128,7 @@ function StateHero({ home, onAction, state, today, unit }: {
   if (state === 'meet') return <MeetHero home={home} onAction={onAction} />;
   if (state === 'achievement') return <AchievementHero achievement={home.hero?.achievement || home.achievement} onAction={onAction} unit={unit} />;
   if (state === 'recovery') return <RecoveryHero onAction={onAction} today={today} unit={unit} />;
-  if (state === 'rest') return <RestHero home={home} onAction={onAction} />;
+  if (state === 'rest') return <RestHero creatingTodaySession={creatingTodaySession} home={home} onAction={onAction} />;
   return <TrainingHero home={home} onAction={onAction} today={today} />;
 }
 
@@ -241,27 +244,30 @@ function MeetHero({ home, onAction }: { home: AthleteHomeV3Projection; onAction:
   );
 }
 
-function RestHero({ home, onAction }: { home: AthleteHomeV3Projection; onAction: Props['onAction'] }) {
+function RestHero({ creatingTodaySession, home, onAction }: { creatingTodaySession: boolean; home: AthleteHomeV3Projection; onAction: Props['onAction'] }) {
   return (
     <HeroFrame accent="#5C8CFF" art={REST_ART}>
       <View style={styles.heroCopy}>
         <Text style={styles.heroEyebrow}>TODAY</Text>
         <Text style={styles.heroTitle}>Rest Day</Text>
         <Text style={styles.heroMeta}>{home.next_up ? `Next: ${home.next_up.title}` : 'No programmed Session'}</Text>
-        <View style={styles.restLinks}>
-          <MiniLink icon="calendar-outline" label="Open Calendar" onPress={() => onAction({ route: 'calendar' })} />
-          <MiniLink icon="book-outline" label="View The Ledger" onPress={() => onAction({ route: 'ledger' })} />
-        </View>
+      </View>
+      {home.can_create_today_session === true ? (
+        <HeroButton disabled={creatingTodaySession} label={creatingTodaySession ? 'Creating Session' : 'Create Session'} onPress={() => onAction({ route: 'create_today_session' })} />
+      ) : null}
+      <View style={styles.restLinks}>
+        <MiniLink icon="calendar-outline" label="Open Calendar" onPress={() => onAction({ route: 'calendar' })} />
+        <MiniLink icon="book-outline" label="View The Ledger" onPress={() => onAction({ route: 'ledger' })} />
       </View>
     </HeroFrame>
   );
 }
 
-function HeroButton({ accent = '#7C37D9', label, onPress }: { accent?: string; label: string; onPress: () => void }) {
+function HeroButton({ accent = '#7C37D9', disabled = false, label, onPress }: { accent?: string; disabled?: boolean; label: string; onPress: () => void }) {
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.heroButton, { backgroundColor: accent }, pressed && styles.pressed]}>
+    <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={({ pressed }) => [styles.heroButton, { backgroundColor: accent, opacity: disabled ? 0.7 : 1 }, pressed && styles.pressed]}>
       <Text style={styles.heroButtonText}>{label}</Text>
-      <Ionicons color="#FFFFFF" name="arrow-forward-circle" size={19} />
+      {disabled ? <ActivityIndicator color="#FFFFFF" size="small" /> : <Ionicons color="#FFFFFF" name="arrow-forward-circle" size={19} />}
     </Pressable>
   );
 }
@@ -572,7 +578,7 @@ const styles = StyleSheet.create({
   meetLine: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   meetLabel: { flex: 1, color: '#D4CED9', fontSize: 10 },
   meetTime: { color: '#8B8491', fontSize: 9 },
-  restLinks: { gap: 5, marginTop: 10 },
+  restLinks: { gap: 5, marginHorizontal: 12, marginBottom: 12 },
   miniLink: { minHeight: 32, flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 9, borderRadius: 8, backgroundColor: 'rgba(8,11,17,0.76)', borderWidth: StyleSheet.hairlineWidth, borderColor: '#203241' },
   miniLinkText: { flex: 1, color: '#D1D4D9', fontSize: 10 },
   weekSection: { gap: 9, padding: 11, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: '#24222A', backgroundColor: '#08090D' },

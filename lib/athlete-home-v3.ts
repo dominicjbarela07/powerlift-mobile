@@ -89,6 +89,7 @@ export type AthleteHomeV3Projection = {
   } | null;
   achievement?: HomeAchievement | null;
   self_coached_actions?: HomeAction[];
+  can_create_today_session?: boolean;
   diagnostics?: Record<string, unknown> | null;
 };
 
