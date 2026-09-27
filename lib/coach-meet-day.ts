@@ -71,7 +71,9 @@ export function coachScheduleItems(
   sessions: CoachHomeUpcomingSession[],
   athletes: CoachRosterAthlete[],
 ): CoachScheduleItem[] {
+  const activeIds = new Set((athletes || []).map((athlete) => athlete.id));
   const sessionItems: CoachScheduleItem[] = (sessions || [])
+    .filter((session) => activeIds.has(session.athlete.id))
     .map((session) => ({
       kind: 'session',
       key: `session:${session.key}`,
