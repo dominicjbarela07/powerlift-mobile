@@ -80,7 +80,8 @@ assert.equal(normalizeCoachMeetContext({ ...todayMeet, meet_plan_id: 0 }), null,
 
 assert.match(contract, /meet_context\?: CoachMeetContext \| null/);
 assert.match(contract, /export type CoachAthleteSummaryResponse[\s\S]*meet_context\?: CoachMeetContext \| null/);
-assert.match(activityHome, /coachScheduleItems\(data\?\.coming_up \|\| \[\], athletes\)/);
+assert.match(activityHome, /coachScheduleItems\(data\?\.coming_up \|\| \[\], activeAthletes\)/);
+assert.equal(coachScheduleItems([session], [athlete(2, tomorrowMeet)]).some((item) => item.kind === 'session'), false, 'the upcoming rail must not surface an athlete excluded from active coaching');
 assert.match(activityHome, /<MeetDayCard/);
 assert.match(activityHome, /openAthlete\(item\.athlete\.id\)/);
 assert.match(hubSheet, /details\?\.meet_context \|\| athlete\.meet_context/);
