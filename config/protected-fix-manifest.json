@@ -195,7 +195,7 @@
   ],
   "releaseHoldbacks": {
     "sourceCommit": "fcf8191bc77b848da9877aed4ca848589098309e",
-    "reason": "Retain the shipped governed taxonomy and omit its DEV-only shared-context test while the separately governed catalog migration awaits a compatible backend release. Equipment history and selection use the current canonical mobile implementation.",
+    "reason": "Retain the shipped governed taxonomy and omit its DEV-only shared-context test while the separately governed catalog migration awaits a compatible backend release. Keep the prior Coach settings screen because the shared backend does not yet serve the new own-Session review preference. Equipment history and selection use the current canonical mobile implementation.",
     "files": [
       {
         "path": "config/governed-movement-art-taxonomy.json",
@@ -204,6 +204,10 @@
       {
         "path": "scripts/test-shared-movement-programming-context.mjs",
         "blob": null
+      },
+      {
+        "path": "app/(tabs)/settings.tsx",
+        "blob": "d73dc8858ae9b619d8afd946ce3fdf1ef4b73895"
       }
     ]
   }
