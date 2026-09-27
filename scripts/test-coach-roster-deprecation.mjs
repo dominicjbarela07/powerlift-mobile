@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { filterCoachRosterV2 } from '../lib/coach-mobile-v2.ts';
+import { filterCoachRosterV2, sortCoachCommandCenterAthletes } from '../lib/coach-mobile-v2.ts';
+import { activeCoachingAthletes } from '../lib/coach-roster-visibility.ts';
 import { normalizeCoachDestination } from '../lib/coach-mobile.ts';
 import { SHIPPING_COACH_TAB_ROUTES } from '../lib/shipping-navigation.ts';
 
@@ -65,5 +66,20 @@ const roster = Array.from({ length: 35 }, (_, index) => ({
 assert.equal(filterCoachRosterV2(roster, 'all').length, 35);
 assert.equal(filterCoachRosterV2(roster, 'all', 'target').length, 1);
 assert.ok(filterCoachRosterV2(roster, 'needs_attention').length > 0);
+
+const onLeave = {
+  id: 100,
+  name: 'Aaron On Leave',
+  coaching_status: 'paused',
+  status: { classification: 'on_track', label: 'On track', tone: 'success' },
+  queue_membership: ['all'],
+  current_training: { status: 'active' },
+};
+const withLeave = [onLeave, roster[0]];
+assert.deepEqual(activeCoachingAthletes(withLeave).map((athlete) => athlete.id), [roster[0].id]);
+assert.deepEqual(sortCoachCommandCenterAthletes(withLeave).map((athlete) => athlete.id), [roster[0].id, onLeave.id]);
+assert.deepEqual(filterCoachRosterV2(withLeave, 'active').map((athlete) => athlete.id), [roster[0].id]);
+assert.equal(filterCoachRosterV2(withLeave, 'all').length, 2, 'On-leave athlete remains discoverable in the roster');
+assert.deepEqual(activeCoachingAthletes([{ id: 1, status: 'paused' }, { id: 2, status: 'up_to_date' }]).map((athlete) => athlete.id), [2], 'Older roster payloads also respect leave');
 
 console.log('Coach roster deprecation, compatibility redirect, and large-roster discovery checks passed.');

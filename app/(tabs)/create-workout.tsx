@@ -11,6 +11,7 @@ import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLMaterialOverlay } from '@/components/ui/sl-workspace';
 import { SLColors, SLFontFamilies, SLRadius, SLShadows, SLSpacing } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
+import { activeCoachingAthletes } from '@/lib/coach-roster-visibility';
 
 type RosterAthlete = {
   id: number;
@@ -103,7 +104,7 @@ export default function AdaptiveSessionBootstrapScreen() {
         const json = response.json || {};
         if (!response.ok || !json.ok) throw new Error(json.error || `HTTP ${response.status}`);
         if (!active) return;
-        const athletes = Array.isArray(json.athletes) ? json.athletes : [];
+        const athletes = activeCoachingAthletes<RosterAthlete>(Array.isArray(json.athletes) ? json.athletes : []);
         setRoster(athletes);
         setAthleteId((current) => {
           if (current) return current;

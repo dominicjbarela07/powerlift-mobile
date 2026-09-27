@@ -24,6 +24,7 @@ import Animated, {
 
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
+import { activeCoachingAthletes } from '@/lib/coach-roster-visibility';
 import { normalizeDisplayWeightUnit } from '@/lib/display-units';
 import {
   CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS,
@@ -577,7 +578,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       .then((response) => {
         const json = response.json || {};
         if (!response.ok || !json.ok) throw new Error(json.error || `HTTP ${response.status}`);
-        if (active) setRoster(Array.isArray(json.athletes) ? json.athletes : []);
+        if (active) setRoster(activeCoachingAthletes(Array.isArray(json.athletes) ? json.athletes : []));
       })
       .catch(() => {
         if (active) setRoster([]);

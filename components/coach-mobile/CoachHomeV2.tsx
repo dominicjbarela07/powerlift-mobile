@@ -23,6 +23,7 @@ import { useAuth } from '@/context/AuthContext';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 import { fetchJson } from '@/lib/api';
+import { activeCoachingAthletes, isOnLeave } from '@/lib/coach-roster-visibility';
 import {
   athleteTrainingLabel,
   coachKpiAthletes,
@@ -276,7 +277,8 @@ export function CoachHomeV2({
   }, [load]);
 
   const athletes = useMemo(() => sortCoachCommandCenterAthletes(data?.athletes?.length ? data.athletes : data?.attention_athletes || []), [data]);
-  const todaysSessions = useMemo(() => coachTodaySessions(athletes, today), [athletes, today]);
+  const activeAthletes = useMemo(() => activeCoachingAthletes(athletes), [athletes]);
+  const todaysSessions = useMemo(() => coachTodaySessions(activeAthletes, today), [activeAthletes, today]);
 
   const openSession = useCallback((session: CoachRecentTrainingSession) => {
     router.push({
@@ -323,9 +325,9 @@ export function CoachHomeV2({
 
             <View style={styles.section}>
               <CoachSectionHeading action="Find athlete" onAction={() => { setRosterInitialFilter('all'); setRosterOpen(true); }} title="Your Athletes at a Glance" />
-              {athletes.length ? (
+              {activeAthletes.length ? (
                 <ScrollView contentContainerStyle={styles.athleteRail} horizontal showsHorizontalScrollIndicator={false}>
-                  {athletes.map((athlete) => <AthleteOverviewCard athlete={athlete} key={athlete.id} onPress={() => setSelectedAthlete(athlete)} viewerUnits={user?.preferred_units} />)}
+                  {activeAthletes.map((athlete) => <AthleteOverviewCard athlete={athlete} key={athlete.id} onPress={() => setSelectedAthlete(athlete)} viewerUnits={user?.preferred_units} />)}
                 </ScrollView>
               ) : <EmptyCard icon="people-outline" text="No active athlete relationships are available." />}
             </View>
@@ -367,7 +369,7 @@ export function CoachHomeV2({
       </ScrollView>
 
       <CoachKpiSheet
-        athletes={athletes}
+        athletes={activeAthletes}
         kind={selectedKpi}
         onClose={() => setSelectedKpi(null)}
         onOpenAthlete={(athlete) => {
@@ -497,7 +499,7 @@ function CoachRosterDiscoverySheet({
               <Pressable accessibilityLabel={`Open ${item.name} Athlete Hub`} accessibilityRole="button" onPress={() => onOpenAthlete(item)} style={({ pressed }) => [styles.rosterRow, pressed && styles.pressed]}>
                 <SLAthleteAvatar imageUrl={item.profilePhotoUrl} imageVersion={item.profilePhotoVersion} name={item.name} size={44} statusColor={item.status.classification === 'needs_attention' ? COACH_V2.magenta : COACH_V2.green} />
                 <View style={styles.rosterRowCopy}>
-                  <View style={styles.rosterRowTitle}><Text numberOfLines={1} style={styles.rosterRowName}>{item.name}</Text><CoachStatusBadge label={item.status.label} tone={toneForAthlete(item)} /></View>
+                  <View style={styles.rosterRowTitle}><Text numberOfLines={1} style={styles.rosterRowName}>{item.name}</Text><CoachStatusBadge label={isOnLeave(item) ? 'On leave' : item.status.label} tone={isOnLeave(item) ? 'violet' : toneForAthlete(item)} /></View>
                   <Text numberOfLines={1} style={styles.rosterRowMeta}>{athleteTrainingLabel(item)}</Text>
                 </View>
                 <CoachCardChevron />
