@@ -6,7 +6,7 @@ import { clearAuthoringJournal, readAuthoringJournal, writeAuthoringJournal } fr
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, Animated, BackHandler, Keyboard, LayoutAnimation, Platform, Pressable, RefreshControl, StyleSheet, Switch, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Alert, AppState, Animated, BackHandler, Keyboard, LayoutAnimation, Platform, Pressable, RefreshControl, StyleSheet, Switch, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SLButton } from '@/components/ui/sl-button';
@@ -243,6 +243,7 @@ type Props = {
   programContext?: string;
   returnWeek?: number;
   authoringVersion?: string | null;
+  acknowledgedAuthoringVersion?: string | null;
   journalIdentity?: string;
   journalScope?: string;
   onReady?: () => void;
@@ -430,13 +431,28 @@ export function SessionEditingWorkspace(props: Props) {
     && athleteOptions.length > 0;
 
   useEffect(() => {
-    if (!journalReady || savingSession || (sessionDirty && !acceptIncomingSessionRef.current)) return;
+    if (!journalReady || savingSession) return;
+    if (sessionDirty && !acceptIncomingSessionRef.current) {
+      if (props.authoringVersion && props.authoringVersion !== baseVersionRef.current
+        && props.acknowledgedAuthoringVersion === props.authoringVersion) {
+        const reconciliation = reconcileSessionWorkspaceDraft(sessionDraft, persistedSession, incomingSession);
+        if (reconciliation.conflicts.length === 0) {
+          setPersistedSession(cloneSessionWorkspaceDraft(incomingSession));
+          setSessionDraft(reconciliation.draft);
+          baseVersionRef.current = props.authoringVersion;
+          setJournalMessage('Your changes are ready on the updated Session.');
+        } else {
+          setJournalMessage('The saved Session also changed. Reconcile your edits before saving.');
+        }
+      }
+      return;
+    }
     const next = cloneSessionWorkspaceDraft(incomingSession);
     setPersistedSession(next);
     setSessionDraft(cloneSessionWorkspaceDraft(next));
     baseVersionRef.current = props.authoringVersion || '';
     acceptIncomingSessionRef.current = false;
-  }, [incomingSession, incomingSessionSignature, sessionDirty, journalReady, props.authoringVersion, savingSession]);
+  }, [incomingSession, incomingSessionSignature, sessionDirty, journalReady, props.authoringVersion, props.acknowledgedAuthoringVersion, savingSession]);
   const recoveryRef = useRef<Recovery | null>(null);
   recoveryRef.current = sessionDirty && journalReady ? { draft: sessionDraft, base: persistedSession, baseVersion: baseVersionRef.current, selectedId, scrollY: scrollYRef.current, storageUnit: draftStorageUnit } : null;
   useEffect(() => {
@@ -558,6 +574,24 @@ export function SessionEditingWorkspace(props: Props) {
     setEditingAthlete(false);
     setEditingDate(false);
   }, [incomingSession, props.authoringVersion, props.journalIdentity]);
+
+  const reconcileWorkspaceChanges = useCallback(() => {
+    if (!props.authoringVersion || props.authoringVersion === baseVersionRef.current) return;
+    const reconciliation = reconcileSessionWorkspaceDraft(sessionDraft, persistedSession, incomingSession);
+    const adopt = () => {
+      setPersistedSession(cloneSessionWorkspaceDraft(incomingSession));
+      setSessionDraft(reconciliation.draft);
+      baseVersionRef.current = props.authoringVersion || '';
+      setJournalMessage('Your local changes are ready to save.');
+      setSaveFailed(false);
+    };
+    if (reconciliation.conflicts.length) {
+      Alert.alert('Review overlapping changes', `${reconciliation.conflicts.length} parts of this Session changed in both places. Your saved draft remains available. Choose whether your local values should take priority for those parts.`, [
+        { text: 'Keep editing', style: 'cancel' },
+        { text: 'Use my values', onPress: adopt },
+      ]);
+    } else adopt();
+  }, [incomingSession, persistedSession, props.authoringVersion, sessionDraft]);
 
   const saveWorkspaceChanges = useCallback(async () => {
     if (!sessionDirty || savingSession) return !sessionDirty;
@@ -753,7 +787,7 @@ export function SessionEditingWorkspace(props: Props) {
         {athleteId && athleteName ? <View style={authorStyles.note}><AthleteCoachingScratchpadTrigger athleteId={athleteId} athleteName={athleteName} variant="inline" /></View> : null}
         {lockedReason ? <Text style={styles.lockedReason}>{lockedReason}</Text> : null}
         {journalMessage ? <Text style={authorStyles.recovery}>{journalMessage}</Text> : null}
-        {sessionDirty && props.authoringVersion && baseVersionRef.current !== props.authoringVersion ? <View style={{ paddingHorizontal: 16, paddingBottom: 12, gap: 5 }}><Text style={authorStyles.recovery}>The saved Session changed. Your local edits are preserved.</Text><Pressable accessibilityRole="button" style={authorStyles.headerAction} onPress={() => { Keyboard.dismiss(); void (async () => { if (recoveryRef.current && props.journalIdentity && props.journalScope) await writeAuthoringJournal(props.journalIdentity, props.journalScope, recoveryRef.current); props.onOpenAthleteView(); })(); }}><Text style={authorStyles.link}>Review saved Session</Text></Pressable><Pressable accessibilityRole="button" style={authorStyles.headerAction} onPress={() => setWorkspacePrompt({ kind: 'dirty', continueAction: () => undefined })}><Text style={authorStyles.link}>Use saved version…</Text></Pressable></View> : null}
+        {sessionDirty && props.authoringVersion && baseVersionRef.current !== props.authoringVersion ? <View style={{ paddingHorizontal: 16, paddingBottom: 12, gap: 5 }}><Text style={authorStyles.recovery}>The saved Session changed. Your local edits are preserved.</Text><Pressable accessibilityRole="button" style={authorStyles.headerAction} onPress={() => { Keyboard.dismiss(); void (async () => { if (recoveryRef.current && props.journalIdentity && props.journalScope) await writeAuthoringJournal(props.journalIdentity, props.journalScope, recoveryRef.current); props.onOpenAthleteView(); })(); }}><Text style={authorStyles.link}>Review saved Session</Text></Pressable><Pressable accessibilityRole="button" style={authorStyles.headerAction} onPress={reconcileWorkspaceChanges}><Text style={authorStyles.link}>Reconcile and retry</Text></Pressable></View> : null}
         <View style={authorStyles.note}>
           {editingNotes ? <><TextInput accessibilityLabel="Session notes" multiline value={sessionDraft.notes} onChangeText={(notes) => setSessionDraft((current) => ({ ...current, notes }))} placeholder="Add Session notes" placeholderTextColor={palette.muted} style={styles.sessionNotesInput} /><SmallButton label="Done" onPress={() => setEditingNotes(false)} primary /></> : <Pressable accessibilityRole="button" disabled={!capabilities.can_edit_session_notes} onPress={() => setEditingNotes(true)} style={authorStyles.noteTrigger}><Ionicons name="document-text-outline" size={19} color={palette.violet} /><Text numberOfLines={2} style={authorStyles.noteText}>{sessionDraft.notes || '+ Session note'}</Text><Ionicons name="chevron-forward" size={16} color={palette.muted} /></Pressable>}
         </View>
@@ -2054,6 +2088,67 @@ function cloneSessionWorkspaceDraft(draft: SessionWorkspaceDraft): SessionWorksp
     coreOrder: [...draft.coreOrder],
     accessoryOrder: [...draft.accessoryOrder],
   };
+}
+
+function reconcileSessionWorkspaceDraft(local: SessionWorkspaceDraft, base: SessionWorkspaceDraft, saved: SessionWorkspaceDraft) {
+  const draft = cloneSessionWorkspaceDraft(saved);
+  const conflicts: string[] = [];
+  const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+  const mergeFields = <T extends object>(label: string, original: T, mine: T, latest: T): T => {
+    const merged = { ...latest };
+    for (const key of Object.keys(mine) as (keyof T)[]) {
+      if (same(mine[key], original[key])) continue;
+      if (!same(latest[key], original[key]) && !same(latest[key], mine[key])) conflicts.push(`${label}.${String(key)}`);
+      merged[key] = mine[key];
+    }
+    return merged;
+  };
+  for (const key of ['title', 'athleteId', 'scheduledDate', 'notes'] as const) {
+    if (same(local[key], base[key])) continue;
+    if (!same(saved[key], base[key]) && !same(saved[key], local[key])) conflicts.push(key);
+    (draft as any)[key] = local[key];
+  }
+  const replacementIds = new Map<number, number>();
+  let nextId = Math.min(-1, ...Object.keys(local.items).map(Number), ...Object.keys(saved.items).map(Number)) - 1;
+  for (const id of new Set([...Object.keys(base.items), ...Object.keys(local.items)].map(Number))) {
+    const before = base.items[id];
+    const mine = local.items[id];
+    const latest = saved.items[id];
+    if (!before && mine) {
+      draft.items[id] = mine;
+      draft.movements[id] = local.movements[id];
+      draft.kinds[id] = local.kinds[id];
+    } else if (before && !mine) {
+      if (latest && (!same(latest, before) || !same(saved.movements[id], base.movements[id]))) conflicts.push(`removed movement ${id}`);
+      delete draft.items[id]; delete draft.movements[id]; delete draft.kinds[id];
+    } else if (before && mine && !latest) {
+      // A movement removed elsewhere can be restored as a new local addition
+      // after the editor explicitly chooses to keep their values.
+      const replacementId = nextId--;
+      replacementIds.set(id, replacementId);
+      draft.items[replacementId] = { ...mine, id: replacementId };
+      draft.movements[replacementId] = local.movements[id];
+      draft.kinds[replacementId] = local.kinds[id];
+      conflicts.push(`removed movement ${id}`);
+    } else if (before && mine && latest) {
+      draft.items[id] = mergeFields(`movement ${id}`, before, mine, latest);
+      draft.movements[id] = mergeFields(`prescription ${id}`, base.movements[id], local.movements[id], saved.movements[id]);
+      if (local.kinds[id] !== base.kinds[id]) draft.kinds[id] = local.kinds[id];
+    }
+  }
+  for (const key of ['coreOrder', 'accessoryOrder'] as const) {
+    const mine = local[key].map((id) => replacementIds.get(id) ?? id);
+    const latest = saved[key].filter((id) => Boolean(draft.items[id]));
+    const localChanged = !same(local[key], base[key]);
+    const baseIds = new Set(base[key]);
+    const common = base[key].filter((id) => local[key].includes(id) && saved[key].includes(id));
+    const commonOrder = (ids: number[]) => ids.filter((id) => baseIds.has(id) && common.includes(id));
+    if (!same(commonOrder(local[key]), common) && !same(commonOrder(saved[key]), common)
+      && !same(commonOrder(local[key]), commonOrder(saved[key]))) conflicts.push(key);
+    const preferred = localChanged ? mine : latest;
+    draft[key] = [...new Set([...preferred, ...latest, ...mine])].filter((id) => Boolean(draft.items[id]) && draft.kinds[id] === (key === 'coreOrder' ? 'core' : 'accessory'));
+  }
+  return { draft, conflicts };
 }
 
 function sessionWorkspaceSignature(draft: SessionWorkspaceDraft) {
