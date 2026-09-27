@@ -2,7 +2,6 @@ import { normalizeCurrentWorkoutItem } from './current-session-movement';
 import { equipmentPresentationLabel } from '@/lib/equipment-presentation';
 import { exposureFromHistoryRecord, presentSessionExposure, type RecordedExposure } from './session-exposure-snapshot';
 import type { PerformedLoadSemantics } from './performed-load-semantics';
-import { KG_PER_LB } from './logger-weight-format';
 
 export type EquipmentSelectionContinuation =
   | { kind: 'none' }
@@ -405,43 +404,6 @@ export type RecentEquipmentChoice<T extends EquipmentIdentityLike> = Readonly<{
   equipmentDefinitionId: number;
   exposure: RecordedExposure;
 }>;
-
-export type EquipmentLastSetDraft = Readonly<{
-  equipmentDefinitionId: number;
-  weightKg: number;
-  reps: number;
-  rir: number;
-  date: string;
-}>;
-
-export function equipmentDraftDisplayWeight(weightKg: number, unit: 'kg' | 'lb'): string {
-  if (!Number.isFinite(weightKg) || weightKg < 0) return '';
-  const displayed = unit === 'kg' ? weightKg : weightKg / KG_PER_LB;
-  return displayed.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
-}
-
-/** A draft may only come from a prior saved Set on the selected exact equipment. */
-export function equipmentLastSetDraft(
-  rows: readonly EquipmentIdentityLike[], equipmentDefinitionId: number,
-  currentWorkoutId: number,
-): EquipmentLastSetDraft | null {
-  if (!Number.isInteger(equipmentDefinitionId) || equipmentDefinitionId <= 0) return null;
-  for (const row of rows) {
-    const record = row.equipment_context?.equipment_latest_exposures?.[String(equipmentDefinitionId)];
-    const set = record?.last_set;
-    if (!record || Number(record.equipment?.id) !== equipmentDefinitionId
-      || Number(record.equipment?.manufacturer?.id) !== Number(row.manufacturer?.id)
-      || Number(record.workout_id) <= 0 || Number(record.workout_id) === currentWorkoutId
-      || !/^\d{4}-\d{2}-\d{2}/.test(record.date)
-      || !set || typeof set.weight_kg !== 'number' || !Number.isFinite(set.weight_kg) || set.weight_kg < 0
-      || typeof set.reps !== 'number' || !Number.isInteger(set.reps) || set.reps < 1 || set.reps > 30
-      || typeof set.rir !== 'number' || !Number.isFinite(set.rir) || set.rir < 0 || set.rir > 5
-      || set.rir * 2 !== Math.round(set.rir * 2)) continue;
-    return { equipmentDefinitionId, weightKg: set.weight_kg, reps: set.reps,
-      rir: set.rir, date: record.date };
-  }
-  return null;
-}
 
 function recordedEquipmentType(record: RecordedExposure): 'plate_loaded' | 'selectorized' | null {
   const equipment = record.equipment;
