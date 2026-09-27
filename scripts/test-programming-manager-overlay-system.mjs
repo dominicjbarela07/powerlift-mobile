@@ -65,6 +65,14 @@ for (const name of ['SessionRenameModal', 'SessionDatePickerModal']) {
   assert.match(source, /StrengthLedgerBottomSheet/);
   assert.doesNotMatch(source, /<Modal\b/);
 }
+const renameSheet = functionSource(workspace, 'SessionRenameModal', 'SessionDatePickerModal');
+assert.match(renameSheet, /onPresent=\{\(\) => \{[\s\S]*inputRef\.current\?\.focus\(\)[\s\S]*selection: \{ start: 0, end: draft\.length \}/, 'Rename focuses after presentation and selects the whole existing title');
+assert.match(renameSheet, /selectTextOnFocus/, 'Rename also selects when focus is restored');
+const dateSheet = functionSource(workspace, 'SessionDatePickerModal', 'IdentityMeta');
+assert.match(dateSheet, /Change Session Date[\s\S]*Previous month[\s\S]*Next month/, 'the date sheet owns styled month navigation');
+assert.match(dateSheet, /accessibilityState=\{\{ selected: isSelected \}\}[\s\S]*onSelect\(new Date\(month\.getFullYear\(\), month\.getMonth\(\), day, 12\)\)/, 'day selection sends the local calendar date to the established save path');
+assert.match(dateSheet, /<ScrollView contentContainerStyle=\{styles\.datePickerModalLayer\}/, 'date interaction stays in a scrollable body, outside drag chrome');
+assert.match(workspace, /const selectDate = useCallback\(\(value: Date\) => \{[\s\S]*toIsoDate\(value\)[\s\S]*scheduledDate: nextDate/, 'calendar selections retain the canonical local-date draft behavior');
 
 const workspacePrompt = functionSource(workspace, 'SessionWorkspacePromptSheet', 'SessionCompactIdentity');
 assert.match(workspacePrompt, /StrengthLedgerBottomSheet/);
