@@ -264,6 +264,8 @@ export default function AthleteDashboard() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [creatingTodaySession, setCreatingTodaySession] = useState(false);
+  const creatingTodaySessionRef = useRef(false);
   const [showPatchNote, setShowPatchNote] = useState(false);
   const [showIndividualWelcome, setShowIndividualWelcome] = useState(false);
   const [dailyReadinessVisible, setDailyReadinessVisible] = useState(false);
@@ -560,9 +562,50 @@ export default function AthleteDashboard() {
     });
   }, [dailyReadinessForm, loadToday, router, todayCacheKey, user?.preferred_units]);
 
+  const createTodaySession = React.useCallback(async () => {
+    if (creatingTodaySessionRef.current) return;
+    if (todayRef.current?.home_v3?.can_create_today_session !== true) {
+      await loadToday({ silent: true, showRefreshIndicator: false });
+      return;
+    }
+    creatingTodaySessionRef.current = true;
+    setCreatingTodaySession(true);
+    setError(null);
+    try {
+      const response = await fetchJson<any>('/workouts/mobile/today/session', { method: 'POST' });
+      const payload = response.json || {};
+      if (response.status === 409 && payload.code === 'today_session_exists') {
+        await loadToday({ silent: true, showRefreshIndicator: false });
+        if (payload.workout_id) {
+          router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(payload.workout_id) } });
+        }
+        return;
+      }
+      if (!response.ok || payload.ok !== true || !payload.workout_id) {
+        await loadToday({ silent: true, showRefreshIndicator: false });
+        setError(payload.error || "Today's Session could not be created.");
+        return;
+      }
+      await loadToday({ silent: true, showRefreshIndicator: false });
+      router.push({
+        pathname: '/workout/session-workspace/[workoutId]' as any,
+        params: { workoutId: String(payload.workout_id) },
+      });
+    } catch (reason: any) {
+      setError(reason?.message || "Today's Session could not be created.");
+    } finally {
+      creatingTodaySessionRef.current = false;
+      setCreatingTodaySession(false);
+    }
+  }, [loadToday, router]);
+
   const openAction = React.useCallback(
     (action?: TodayAction | null) => {
       if (!action) return;
+      if (action.route === 'create_today_session') {
+        void createTodaySession();
+        return;
+      }
       if (action.route === 'daily_readiness') {
         openDailyReadiness();
         return;
@@ -657,7 +700,7 @@ export default function AthleteDashboard() {
       }
       router.push('/(tabs)/workout' as any);
     },
-    [isIndividual, openDailyReadiness, router]
+    [createTodaySession, isIndividual, openDailyReadiness, router]
   );
 
   if (loading && !today) {
@@ -720,6 +763,7 @@ export default function AthleteDashboard() {
           </View>
         ) : null}
         <AthleteHomeV3
+          creatingTodaySession={creatingTodaySession}
           isIndividual={isIndividual}
           onAction={openAction}
           preferredUnits={user?.preferred_units}
