@@ -4,6 +4,7 @@ import type {
   CoachRosterAthlete,
   CoachRosterResponse,
 } from '@/lib/coach-mobile';
+import { isOnLeave } from '@/lib/coach-roster-visibility';
 import {
   formatCompactVolumeValueFromKg,
   formatWeightFromKg,
@@ -146,6 +147,7 @@ export function mergeCoachHomeWithRoster(
 export function sortCoachCommandCenterAthletes(athletes: CoachRosterAthlete[]) {
   const rank = { needs_attention: 0, monitor: 1, on_track: 2 } as const;
   return [...athletes].sort((left, right) => {
+    if (isOnLeave(left) !== isOnLeave(right)) return isOnLeave(left) ? 1 : -1;
     const byStatus = rank[left.status.classification] - rank[right.status.classification];
     if (byStatus) return byStatus;
     return (left.stable_sort_key || left.name).localeCompare(right.stable_sort_key || right.name);
@@ -158,7 +160,7 @@ export function coachTodaySessions(athletes: CoachRosterAthlete[], today = new D
     String(today.getMonth() + 1).padStart(2, '0'),
     String(today.getDate()).padStart(2, '0'),
   ].join('-');
-  return athletes.flatMap((athlete) => (athlete.recent_training || [])
+  return athletes.filter((athlete) => !isOnLeave(athlete)).flatMap((athlete) => (athlete.recent_training || [])
     .filter((session) => String(session.date || '').slice(0, 10) === key)
     .map((session) => ({ athlete, session })))
     .sort((left, right) => left.athlete.name.localeCompare(right.athlete.name));
@@ -167,6 +169,7 @@ export function coachTodaySessions(athletes: CoachRosterAthlete[], today = new D
 export type CoachCommandCenterKpi = 'sessions' | 'reviews' | 'programming' | 'check_ins';
 
 export function coachKpiAthletes(athletes: CoachRosterAthlete[], kind: CoachCommandCenterKpi, today = new Date()) {
+  athletes = athletes.filter((athlete) => !isOnLeave(athlete));
   if (kind === 'sessions') {
     const ids = new Set(coachTodaySessions(athletes, today).map((item) => item.athlete.id));
     return athletes.filter((athlete) => ids.has(athlete.id));
@@ -188,6 +191,7 @@ export function filterCoachRosterV2(
   const normalizedQuery = query.trim().toLocaleLowerCase();
   return athletes.filter((athlete) => {
     if (normalizedQuery && !athlete.name.toLocaleLowerCase().includes(normalizedQuery)) return false;
+    if (filter !== 'all' && isOnLeave(athlete)) return false;
     if (filter === 'needs_attention') return athlete.status.classification === 'needs_attention';
     if (filter === 'programming') return athlete.queue_membership.includes('programming');
     if (filter === 'active') return athlete.current_training.status === 'active';

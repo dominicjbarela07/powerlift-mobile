@@ -59,6 +59,7 @@ import {
   type DisplayWeightUnit,
 } from '@/lib/display-units';
 import { scopeProgrammingPayload } from '@/lib/programming-program-scope';
+import { activeCoachingAthletes } from '@/lib/coach-roster-visibility';
 import { compactProgrammingWeekdayLabel } from '@/lib/programming-weekday-label';
 import { formatSessionContentSnapshot } from '@/lib/session-content-snapshot';
 import { sessionDurationPresentation } from '@/lib/session-duration';
@@ -1005,7 +1006,7 @@ function ProgrammingAthleteChooser() {
     void fetchJson<any>('/coach/mobile/roster', { method: 'GET' }).then((response) => {
       if (!active) return;
       if (!response.ok || !response.json?.ok) throw new Error(response.json?.error || 'Athletes could not be loaded.');
-      setAthletes(response.json.athletes || []);
+      setAthletes(activeCoachingAthletes(response.json.athletes || []));
     }).catch((error) => { if (active) setError(error.message); }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, []);
@@ -2717,7 +2718,7 @@ export function ProgrammingStoryboard({
     let active = true;
     void fetchJson<any>('/coach/mobile/roster', { method: 'GET' }).then((response) => {
       if (!active || !response.ok) return;
-      setRoster(Array.isArray(response.json?.athletes) ? response.json.athletes : []);
+      setRoster(activeCoachingAthletes(Array.isArray(response.json?.athletes) ? response.json.athletes : []));
     });
     return () => { active = false; };
   }, [canSelectAthlete, previewRoster, sheet]);

@@ -146,6 +146,7 @@ export type CoachRosterAthlete = {
   preferred_units?: string | null;
   is_self: boolean;
   relationship_state: string;
+  coaching_status?: 'active' | 'paused';
   stable_sort_key: string;
   status: {
     classification: 'on_track' | 'monitor' | 'needs_attention';
