@@ -6,7 +6,7 @@ import { clearAuthoringJournal, readAuthoringJournal, writeAuthoringJournal } fr
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, AppState, Animated, BackHandler, Keyboard, LayoutAnimation, Platform, Pressable, RefreshControl, StyleSheet, Switch, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, AppState, Animated, BackHandler, Keyboard, LayoutAnimation, Platform, Pressable, RefreshControl, StyleSheet, Switch, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SLButton } from '@/components/ui/sl-button';
@@ -76,6 +76,7 @@ type SessionWorkspacePrompt =
   | { kind: 'message'; title: string; message: string }
   | { kind: 'dirty'; continueAction: () => void }
   | { kind: 'add-movement' }
+  | { kind: 'reconcile'; conflictCount: number; onUseLocal: () => void }
   | { kind: 'remove-movement'; itemId: number; movementName: string };
 
 export type MovementHistorySet = {
@@ -585,12 +586,8 @@ export function SessionEditingWorkspace(props: Props) {
       setJournalMessage('Your local changes are ready to save.');
       setSaveFailed(false);
     };
-    if (reconciliation.conflicts.length) {
-      Alert.alert('Review overlapping changes', `${reconciliation.conflicts.length} parts of this Session changed in both places. Your saved draft remains available. Choose whether your local values should take priority for those parts.`, [
-        { text: 'Keep editing', style: 'cancel' },
-        { text: 'Use my values', onPress: adopt },
-      ]);
-    } else adopt();
+    if (reconciliation.conflicts.length) setWorkspacePrompt({ kind: 'reconcile', conflictCount: reconciliation.conflicts.length, onUseLocal: adopt });
+    else adopt();
   }, [incomingSession, persistedSession, props.authoringVersion, sessionDraft]);
 
   const saveWorkspaceChanges = useCallback(async () => {
@@ -988,6 +985,8 @@ function SessionWorkspacePromptSheet({
   const close = () => sheetRef.current?.dismiss();
   const title = prompt?.kind === 'dirty'
     ? 'Unsaved Session changes'
+    : prompt?.kind === 'reconcile'
+      ? 'Review overlapping changes'
     : prompt?.kind === 'add-movement'
       ? 'Add Movement'
       : prompt?.kind === 'remove-movement'
@@ -995,6 +994,8 @@ function SessionWorkspacePromptSheet({
         : prompt?.title || 'Session Workspace';
   const message = prompt?.kind === 'dirty'
     ? 'Save or discard the current Session changes before continuing.'
+    : prompt?.kind === 'reconcile'
+      ? `${prompt.conflictCount} parts of this Session changed in both places. Your saved draft remains available. Choose whether your local values should take priority for those parts.`
     : prompt?.kind === 'add-movement'
       ? 'Choose the governed movement category to add.'
       : prompt?.kind === 'remove-movement'
@@ -1032,6 +1033,13 @@ function SessionWorkspacePromptSheet({
             <View style={styles.workspacePromptAction}><SLButton fullWidth disabled={saving} label="Cancel" onPress={close} size="sm" variant="secondary" /></View>
             <View style={styles.workspacePromptAction}><SLButton fullWidth disabled={saving} label="Discard" onPress={() => onDiscardAndContinue(prompt.continueAction)} size="sm" variant="danger" /></View>
             <View style={styles.workspacePromptAction}><SLButton fullWidth disabled={saving} loading={saving} label={saveLabel} onPress={() => onSaveAndContinue(prompt.continueAction)} size="sm" variant="primary" /></View>
+          </View>
+        ) : null}
+
+        {prompt?.kind === 'reconcile' ? (
+          <View style={styles.workspacePromptActions}>
+            <View style={styles.workspacePromptAction}><SLButton fullWidth label="Keep editing" onPress={close} size="sm" variant="secondary" /></View>
+            <View style={styles.workspacePromptAction}><SLButton fullWidth label="Use my values" onPress={() => { prompt.onUseLocal(); close(); }} size="sm" variant="primary" /></View>
           </View>
         ) : null}
 
