@@ -8,7 +8,8 @@ const source = fs.readFileSync(path.join(here, '..', 'app', '(tabs)', 'workout',
 
 assert.match(source, /const identityPickerRequestRef = useRef\(0\)/, 'picker requests must have a monotonic sequence');
 assert.match(source, /requestId === identityPickerRequestRef\.current[\s\S]*identityPickerEntryRef\.current === entry[\s\S]*if \(!currentRequest\(\)\) return/, 'stale picker responses must match both request and exact entry ownership');
-assert.match(source, /identityPickerQuery\.trim\(\) \? 220 : 0/, 'typed picker searches must be debounced');
+assert.match(source, /identityPickerVisibleRows = identityPickerRows\.filter/, 'typed picker searches must filter the loaded rows locally');
+assert.doesNotMatch(source, /loadIdentityPicker\(identityPickerItem, identityPickerQuery\)/, 'typing must not repeat the history request');
 assert.match(source, /Sets already logged keep their original equipment identity/, 'mid-session equipment changes must explain immutable prior sets');
 assert.doesNotMatch(source, /`\$\{row\.comparison_policy\.confidence\} confidence`/, 'internal confidence tiers must not appear in athlete picker copy');
 assert.match(

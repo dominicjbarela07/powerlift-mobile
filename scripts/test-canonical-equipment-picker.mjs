@@ -162,7 +162,7 @@ assert.doesNotMatch(
 );
 assert.match(
   routeSource,
-  /setIdentityPickerRows\(orderEquipmentChoices\([\s\S]*response\.json\.items/,
+  /setIdentityPickerRows\(orderEquipmentChoices\(\s*response\.json\.items/,
   'The live server collection must pass through the canonical alphabetical ordering.',
 );
 assert.equal(

@@ -30,6 +30,6 @@ assert.ok(png.readUInt32BE(16) >= 200);
 assert.ok(png.readUInt32BE(20) >= 30);
 assert.ok([4, 6].includes(png[25]), 'Runtime Icarian artwork must preserve alpha');
 assert.match(assetRegistry, /icarian:\s*require\([^)]*runtime\/icarian\.png/);
-assert.match(logger, /identityPickerRows\.map[\s\S]*ManufacturerBrandMark/);
+assert.match(logger, /identityPickerVisibleRows\.map[\s\S]*ManufacturerBrandMark/);
 
 console.log('Icarian manufacturer registry, aliases, picker mark, and public logo asset passed.');

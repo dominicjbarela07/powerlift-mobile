@@ -510,8 +510,8 @@ assert.match(
 );
 assert.match(
   routeSource,
-  /resumeAfterEquipmentSelection[\s\S]*openAccessoryWheel\(nextItem, true, draft\)[\s\S]*openSupersetRoundLogger\(group, continuation\.roundIndex/,
-  'Selection must continue into the interrupted logger flow with optional draft values.',
+  /resumeAfterEquipmentSelection[\s\S]*openAccessoryWheel\(nextItem, true\)[\s\S]*openSupersetRoundLogger\(group, continuation\.roundIndex\)/,
+  'Selection must continue into the interrupted logger flow without historical prefill.',
 );
 assert.match(
   routeSource,
@@ -555,7 +555,7 @@ assert.match(
 );
 assert.match(
   routeSource,
-  /!identityPickerLoading && identityPickerQuery\.trim\(\) && !identityPickerRows\.length[\s\S]*No manufacturers match/,
+  /!identityPickerLoading && identityPickerQuery\.trim\(\) && !identityPickerVisibleRows\.length[\s\S]*No manufacturers match/,
   'The canonical empty state must require a non-empty search query.',
 );
 assert.doesNotMatch(
