@@ -3025,6 +3025,17 @@ export default function WorkoutViewerScreen() {
     : null;
   const identityPickerEntryRef = useRef<{ subject: EquipmentFlowSubject; scope: string } | null>(null);
   const identityPickerSaveRef = useRef<object | null>(null);
+  const unknownEquipmentSaveRef = useRef(false);
+  const [askForEquipmentDetails, setAskForEquipmentDetails] = useState(true);
+  useFocusEffect(useCallback(() => {
+    let current = true;
+    void fetchJson(`${API_BASE}/mobile/settings`, { method: 'GET', auth: true }).then((response) => {
+      if (current && response.ok && response.json?.ok) {
+        setAskForEquipmentDetails(response.json.ask_for_equipment_details !== false);
+      }
+    }).catch(() => {});
+    return () => { current = false; };
+  }, [executionScope]));
   const [swapAccForm, setSwapAccForm] = useState({
     sets: '',
     rir: '',
@@ -3872,6 +3883,72 @@ export default function WorkoutViewerScreen() {
     }
   };
 
+  const saveUnknownEquipment = async (
+    item: WorkoutItem,
+    continuation: EquipmentSelectionContinuation,
+    automatic: boolean,
+  ) => {
+    if (!workoutId || unknownEquipmentSaveRef.current) return;
+    const owner = executionScope;
+    unknownEquipmentSaveRef.current = true;
+    setIdentityPickerLoading(true);
+    setIdentityPickerError(null);
+    try {
+      const response = await fetchJson(`${API_BASE}/workouts/mobile/${workoutId}/items/${item.id}/performed-identity`, {
+        method: 'PUT', auth: true,
+        body: { intent: 'skip_equipment', automatic_skip: automatic },
+      });
+      if (executionScopeRef.current !== owner) return;
+      if (!response.ok || !response.json?.ok) throw new Error(response.json?.error || 'Could not skip equipment details.');
+      const identity = response.json.performed_movement_identity as GeneralMovementIdentity;
+      if (identity?.key !== 'machine_equipment_unknown_unknown' || identity.manufacturer?.key !== 'unknown') {
+        throw new Error('The saved equipment could not be verified. Refresh the Session.');
+      }
+      const payload = dataRef.current;
+      const nextItem = { ...item, performed_movement_identity: identity };
+      if (payload) {
+        const nextPayload = { ...payload, workout: { ...payload.workout,
+          accessory_groups: payload.workout.accessory_groups.map(group => ({ ...group,
+            items: group.items.map(candidate => Number(candidate.id) === Number(item.id) ? nextItem : candidate),
+          })),
+        }} as WorkoutPayload;
+        dataRef.current = nextPayload;
+        setData(nextPayload);
+      }
+      const refreshed = await fetchWorkout({ silent: true });
+      if (executionScopeRef.current !== owner) return;
+      if (!refreshed) throw new Error('Equipment was saved, but the Session could not refresh. Refresh before logging.');
+      const confirmed = dataRef.current?.workout.accessory_groups.flatMap(group => group.items)
+        .find(candidate => Number(candidate.id) === Number(item.id));
+      if (confirmed?.performed_movement_identity?.id !== identity.id) {
+        throw new Error('The saved equipment could not be confirmed. Refresh before logging.');
+      }
+      if (!automatic) closeIdentityPicker();
+      const resume = () => resumeAfterEquipmentSelection(confirmed, continuation, dataRef.current);
+      if (response.json.show_skip_preference_prompt) {
+        Alert.alert('Stop asking for equipment details?',
+          'Machine details can be skipped automatically. You can change this in Settings.', [
+            { text: 'Keep Asking', onPress: resume },
+            { text: "Don't Ask Again", onPress: () => {
+              void fetchJson(`${API_BASE}/mobile/settings`, {
+                method: 'PATCH', auth: true, body: { ask_for_equipment_details: false },
+              }).then((saved) => {
+                if (!saved.ok || !saved.json?.ok) throw new Error(saved.json?.error || 'Could not save preference.');
+                setAskForEquipmentDetails(false);
+              }).catch((error: any) => Alert.alert('Equipment setting not saved', error?.message || 'Please try again.'))
+                .finally(resume);
+            } },
+          ]);
+      } else resume();
+    } catch (error: any) {
+      if (automatic) Alert.alert('Equipment unavailable', error?.message || 'Please try again.');
+      else setIdentityPickerError(error?.message || 'Could not skip equipment details.');
+    } finally {
+      unknownEquipmentSaveRef.current = false;
+      setIdentityPickerLoading(false);
+    }
+  };
+
   const commitPerformedIdentity = async (
     identity: GeneralMovementIdentity,
     equipmentVariant?: MachineEquipmentType,
@@ -4092,6 +4169,10 @@ export default function WorkoutViewerScreen() {
 
   const openAccessoryWheel = (item: WorkoutItem, skipEquipmentGate = false) => {
     if (!skipEquipmentGate && needsEquipmentSelection(item)) {
+      if (!askForEquipmentDetails) {
+        void saveUnknownEquipment(item, { kind: 'accessory_set', itemId: Number(item.id) }, true);
+        return;
+      }
       openIdentityPicker(
         item,
         {
@@ -4174,6 +4255,12 @@ export default function WorkoutViewerScreen() {
         && needsEquipmentSelection(item),
     );
     if (unresolvedIdentity) {
+      if (!askForEquipmentDetails) {
+        void saveUnknownEquipment(unresolvedIdentity.item, {
+          kind: 'group_round', groupLabel: group.group, roundIndex,
+        }, true);
+        return;
+      }
       openIdentityPicker(unresolvedIdentity.item, {
         kind: 'group_round',
         groupLabel: group.group,
@@ -10167,6 +10254,14 @@ export default function WorkoutViewerScreen() {
                           || 'Other'}
                       </Text>
                     </View>
+                    {identityPickerContinuation.kind !== 'evidence_correction' ? <TouchableOpacity
+                      accessibilityRole="button" accessibilityLabel="Skip equipment details"
+                      disabled={identityPickerLoading}
+                      onPress={() => identityPickerItem && void saveUnknownEquipment(identityPickerItem, identityPickerContinuation, false)}
+                      style={styles.identityPickerRow}>
+                      <Text style={styles.equipmentVariantLabel}>Skip</Text>
+                      <Text style={styles.coreWheelSubtitle}>Record Unknown · Unknown</Text>
+                    </TouchableOpacity> : null}
                     {identityPickerError ? (
                       <Text style={styles.movementHistoryEmpty}>
                         {identityPickerError}
@@ -10263,6 +10358,14 @@ export default function WorkoutViewerScreen() {
                     <Ionicons name="close" size={21} color={SLColors.textStrong} />
                   </TouchableOpacity>
                 </View>
+                {identityPickerContinuation.kind !== 'evidence_correction' ? <TouchableOpacity
+                  accessibilityRole="button" accessibilityLabel="Skip equipment details"
+                  disabled={identityPickerLoading}
+                  onPress={() => identityPickerItem && void saveUnknownEquipment(identityPickerItem, identityPickerContinuation, false)}
+                  style={styles.identityPickerRow}>
+                  <Text style={styles.equipmentVariantLabel}>Skip</Text>
+                  <Text style={styles.coreWheelSubtitle}>Record Unknown · Unknown</Text>
+                </TouchableOpacity> : null}
                 {recentEquipment ? (() => {
                   const variant = equipmentFlowVariants(identityPickerSubject!).find(row => row.key === recentEquipment.equipmentType);
                   const evidence = presentEquipmentHistory(recentEquipment.manufacturer, unit, false,

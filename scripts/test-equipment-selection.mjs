@@ -76,6 +76,17 @@ assert.equal(
   true,
   'An unresolved cable identity must require equipment selection before logging.',
 );
+const canonicalUnknown = {
+  id: 9901, key: 'machine_equipment_unknown_unknown', display_name: 'Unknown · Unknown',
+  identity_specificity: 'unknown', equipment_type: 'unknown',
+  loading_implementation: 'unknown_machine', implementation_key: 'unknown:unknown',
+  manufacturer: { id: 99, key: 'unknown', display_name: 'Unknown' },
+};
+const unidentifiedMachine = { ...cable, performed_movement_identity: canonicalUnknown };
+assert.equal(activeEquipmentIdentity(unidentifiedMachine)?.id, canonicalUnknown.id);
+assert.equal(needsEquipmentSelection(unidentifiedMachine), false);
+assert.equal(equipmentSnapshotForSet(canonicalUnknown).performed_movement_definition_id, canonicalUnknown.id);
+assert.equal(equipmentSnapshotForSet(canonicalUnknown).equipment_manufacturer_id, 99);
 
 for (const executionContext of [
   'real-athlete-assigned-session',

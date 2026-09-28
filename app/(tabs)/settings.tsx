@@ -126,7 +126,7 @@ type TrainingProfileContext = {
 };
 
 type ProfileEditor = 'details' | 'units' | 'maxes' | 'context' | null;
-type SettingsPanel = 'coach' | 'review_queue' | 'notifications' | 'privacy' | 'about' | 'logout' | null;
+type SettingsPanel = 'coach' | 'review_queue' | 'equipment' | 'notifications' | 'privacy' | 'about' | 'logout' | null;
 
 type AccountTransitionMode = {
   mode?: string | null;
@@ -323,6 +323,8 @@ export default function SettingsScreen() {
   const [notifyVideoFeedback, setNotifyVideoFeedback] = useState(true);
   const [notifyVideoSubmissions, setNotifyVideoSubmissions] = useState(true);
   const [includeOwnSessionsInReviewQueue, setIncludeOwnSessionsInReviewQueue] = useState(true);
+  const [askForEquipmentDetails, setAskForEquipmentDetails] = useState(true);
+  const [equipmentPreferenceSaving, setEquipmentPreferenceSaving] = useState(false);
   const [reviewQueuePreferenceSaving, setReviewQueuePreferenceSaving] = useState(false);
   const [videoMlTrainingConsent, setVideoMlTrainingConsent] = useState<boolean | null>(null);
   const [trainingProfile, setTrainingProfile] = useState<TrainingProfileSummary | null>(null);
@@ -669,6 +671,7 @@ export default function SettingsScreen() {
       setNotifyVideoFeedback(json.notify_video_feedback !== false);
       setNotifyVideoSubmissions(json.notify_video_submissions !== false);
       setIncludeOwnSessionsInReviewQueue(json.include_own_sessions_in_review_queue !== false);
+      setAskForEquipmentDetails(json.ask_for_equipment_details !== false);
       if (Array.isArray(json.available_mobile_modes) || json.mobile_mode) {
         await applyAccountStatePayload?.({
           user: {
@@ -977,6 +980,24 @@ export default function SettingsScreen() {
       Alert.alert('Review Queue setting not saved', err?.message || 'Please try again.');
     } finally {
       setReviewQueuePreferenceSaving(false);
+    }
+  };
+
+  const saveEquipmentPreference = async (value: boolean) => {
+    const previous = askForEquipmentDetails;
+    setAskForEquipmentDetails(value);
+    try {
+      setEquipmentPreferenceSaving(true);
+      const resp = await fetchJson<any>('/mobile/settings', {
+        method: 'PATCH', body: { ask_for_equipment_details: value } as any,
+      });
+      if (!resp.ok || !resp.json?.ok) throw new Error(resp.json?.error || 'Could not save preference.');
+      setAskForEquipmentDetails(resp.json.ask_for_equipment_details !== false);
+    } catch (error: any) {
+      setAskForEquipmentDetails(previous);
+      Alert.alert('Equipment setting not saved', error?.message || 'Please try again.');
+    } finally {
+      setEquipmentPreferenceSaving(false);
     }
   };
 
@@ -1648,6 +1669,8 @@ export default function SettingsScreen() {
       ? 'Connected Coach'
       : settingsPanel === 'review_queue'
         ? 'Coach Review Queue'
+      : settingsPanel === 'equipment'
+        ? 'Equipment Details'
       : settingsPanel === 'notifications'
         ? 'Notifications'
         : settingsPanel === 'privacy'
@@ -1775,6 +1798,12 @@ export default function SettingsScreen() {
               accent: 'amber',
             })}
             {settingsRow({
+              icon: 'construct-outline',
+              title: 'Ask for equipment details',
+              summary: askForEquipmentDetails ? 'On' : 'Off',
+              onPress: mobileSettingsLoaded ? () => setSettingsPanel('equipment') : undefined,
+            })}
+            {settingsRow({
               icon: 'globe-outline',
               title: 'Timezone',
               summary: timezoneSummary,
@@ -1884,7 +1913,7 @@ export default function SettingsScreen() {
               <Pressable
                 accessibilityLabel="Close settings"
                 accessibilityRole="button"
-                disabled={notificationLoading || privacyLoading || reviewQueuePreferenceSaving || loggingOut}
+                disabled={notificationLoading || privacyLoading || reviewQueuePreferenceSaving || equipmentPreferenceSaving || loggingOut}
                 hitSlop={12}
                 onPress={() => setSettingsPanel(null)}
                 style={({ pressed }) => [styles.modalClose, pressed && styles.settingsRowPressed]}
@@ -1937,6 +1966,14 @@ export default function SettingsScreen() {
                 value: includeOwnSessionsInReviewQueue,
                 disabled: reviewQueuePreferenceSaving,
                 onChange: (nextValue) => void saveReviewQueuePreference(nextValue),
+              }) : null}
+
+              {settingsPanel === 'equipment' ? settingsToggleRow({
+                label: 'Ask for equipment details',
+                description: 'When off, unidentified machines are recorded as Unknown. You can still choose Equipment in the Session Logger.',
+                value: askForEquipmentDetails,
+                disabled: equipmentPreferenceSaving,
+                onChange: (nextValue) => void saveEquipmentPreference(nextValue),
               }) : null}
 
               {settingsPanel === 'notifications' ? (
