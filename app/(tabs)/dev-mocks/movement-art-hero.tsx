@@ -57,7 +57,7 @@ export default function MovementArtHeroLab() {
         <View style={{ flex: 1, gap: 2 }}><Text style={s.equipmentEyebrow}>CURRENT EQUIPMENT</Text>
           <Text style={s.equipmentName}>Life Fitness</Text><Text style={s.equipmentMeta}>Life Fitness · Plate-loaded</Text></View>
       </View> : null}
-      history={<View style={s.history}><Text style={s.link}>Movement history ↗</Text></View>}
+      history={<View style={s.history}><Text style={s.link}>Movement history</Text></View>}
       actions={<Text style={s.link}>Swap</Text>}
       visual={{ liftLabel: entry.title, liftAccentColor: '#ab83e3', movementArtworkInput: movement }}
       focus={{ movementName: entry.title, currentSetLabel: 'Set 1', currentSetPositionLabel: 'SET 1 OF 3', currentSetRepsLabel: '12–15 reps', currentSetEffortLabel: '1 RIR', progressionLabel: '0 / 3', rail: [], canLog: false, canRepeat: false }} />

@@ -506,7 +506,7 @@ export function SmartWarmupSheet({
 
             {!inspectedStep && warmup.status === 'completed' && recommendation ? (
               <View style={styles.completeCard}>
-                <Text style={styles.completeSignal}>{warmup.progression.recommendation?.signal === 'strong' ? 'LOOKING STRONG TODAY ↗' : warmup.progression.recommendation?.signal === 'protective' ? 'PROTECT THE WORKING SET TODAY' : warmup.progression.recommendation?.signal === 'conservative' ? 'BUILD CONSERVATIVELY TODAY' : 'MOVING AS EXPECTED'}</Text>
+                <Text style={styles.completeSignal}>{warmup.progression.recommendation?.signal === 'strong' ? 'LOOKING STRONG TODAY' : warmup.progression.recommendation?.signal === 'protective' ? 'PROTECT THE WORKING SET TODAY' : warmup.progression.recommendation?.signal === 'conservative' ? 'BUILD CONSERVATIVELY TODAY' : 'MOVING AS EXPECTED'}</Text>
                 <Text style={styles.completeLabel}>Suggested starting load</Text>
                 <Text style={styles.recommendation}>{weightLabel(recommendation, displayUnit)}</Text>
                 <Text style={styles.muted}>Inside today&apos;s prescribed range.</Text>
