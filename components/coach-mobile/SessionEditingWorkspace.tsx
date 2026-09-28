@@ -4,13 +4,15 @@ import { InlineSessionReorder } from './InlineSessionReorder';
 import { AthleteCoachingScratchpadTrigger } from './AthleteCoachingScratchpad';
 import { clearAuthoringJournal, readAuthoringJournal, writeAuthoringJournal } from '@/lib/session-authoring-journal';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, Animated, BackHandler, Keyboard, LayoutAnimation, Platform, Pressable, RefreshControl, StyleSheet, Switch, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Swipeable } from 'react-native-gesture-handler';
 
 import { SLButton } from '@/components/ui/sl-button';
-import { StrengthLedgerBottomSheet, type StrengthLedgerBottomSheetHandle } from '@/components/sheets/StrengthLedgerBottomSheet';
+import { StrengthLedgerBottomSheet, StrengthLedgerBottomSheetScrollView, type StrengthLedgerBottomSheetHandle } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { SLProfileAvatar } from '@/components/ui/sl-profile-avatar';
 import { Text, TextInput } from '@/components/ui/sl-text';
@@ -121,6 +123,8 @@ export type SessionMovementItem = {
     } | null;
   }>;
   planned_sets?: Record<string, unknown>[];
+  backdown_sets?: number | null;
+  backdown_reps?: number | null;
   movement_identity?: {
     id?: number | null;
     display_name?: string | null;
@@ -373,6 +377,7 @@ export function SessionEditingWorkspace(props: Props) {
   const [workspacePrompt, setWorkspacePrompt] = useState<SessionWorkspacePrompt>(null);
   const [calculatedRows, setCalculatedRows] = useState<Record<number, CalculatedLoadResult>>({});
   const listScrollRef = useRef<ScrollView>(null);
+  const movementSwipeRefs = useRef<Record<number, Swipeable | null>>({});
   const calculationRevisionRef = useRef(0);
   const acceptIncomingSessionRef = useRef(false);
   const baseVersionRef = useRef(props.authoringVersion || '');
@@ -548,6 +553,7 @@ export function SessionEditingWorkspace(props: Props) {
 
   const updateDraft = useCallback((patch: Partial<CoachMovementDraft>) => {
     if (selectedId == null) return;
+    setSaveFailed(false);
     setSessionDraft((current) => ({
       ...current,
       movements: {
@@ -672,6 +678,16 @@ export function SessionEditingWorkspace(props: Props) {
     if (!selectedItem) return;
     setWorkspacePrompt({ kind: 'remove-movement', itemId: selectedItem.id, movementName: movementName(selectedItem) });
   }, [selectedItem]);
+
+  const requestRemoveMovement = useCallback((item: SessionMovementItem) => {
+    setWorkspacePrompt({ kind: 'remove-movement', itemId: item.id, movementName: movementName(item) });
+  }, []);
+
+  const closeOtherMovementSwipes = useCallback((openingId: number) => {
+    Object.entries(movementSwipeRefs.current).forEach(([id, swipe]) => {
+      if (Number(id) !== openingId) swipe?.close();
+    });
+  }, []);
 
   const changeSelectedAccessory = useCallback(() => {
     if (!selectedItem || selectedKind !== 'accessory') return;
@@ -808,13 +824,14 @@ export function SessionEditingWorkspace(props: Props) {
                         item={item}
                         kind={kind}
                         draft={draft}
-                        dirty={false}
+                        dirty={movementDraftIsDirty(draft, persistedSession.movements[item.id] || draft)}
                         editable={editable && capabilities.can_edit_movement !== false}
                         storageUnit={draftStorageUnit}
                         displayUnit={displayUnit}
                         calculatedTarget={calculatedTarget}
                         backdownCalculatedTarget={backdownCalculatedTarget}
                         calculatingTarget={calculatingTarget}
+                        onCalculateLoad={onCalculateLoad}
                         manualOverrideEnabled={manualOverrideEnabled}
                         backdownManualOverrideEnabled={backdownManualOverrideEnabled}
                         onChange={updateDraft}
@@ -839,6 +856,9 @@ export function SessionEditingWorkspace(props: Props) {
                         kind={kind}
                         pending={pendingMovementId === item.id}
                         onOpen={openMovement}
+                        onRequestRemove={editable && capabilities.can_remove_movement ? requestRemoveMovement : undefined}
+                        onSwipeOpen={closeOtherMovementSwipes}
+                        onSwipeRef={(id, swipe) => { movementSwipeRefs.current[id] = swipe; }}
                         displayUnit={displayUnit}
                         calculatedLoad={calculatedRows[item.id] || null}
                       />
@@ -999,7 +1019,7 @@ function SessionWorkspacePromptSheet({
     : prompt?.kind === 'add-movement'
       ? 'Choose the governed movement category to add.'
       : prompt?.kind === 'remove-movement'
-        ? `Remove ${prompt.movementName} from this Session?`
+        ? `Remove ${prompt.movementName} and its prescribed Sets from this Session? This change takes effect when you save.`
         : prompt?.kind === 'message'
           ? prompt.message
           : '';
@@ -1008,8 +1028,8 @@ function SessionWorkspacePromptSheet({
     <StrengthLedgerBottomSheet
       ref={sheetRef}
       accessibilityLabel={title}
-      heightFraction={prompt?.kind === 'add-movement' ? 0.44 : 0.40}
-      motionPreset="deliberate"
+      heightFraction={prompt?.kind === 'add-movement' ? 0.44 : prompt?.kind === 'remove-movement' ? 0.30 : 0.40}
+      motionPreset={prompt?.kind === 'remove-movement' ? 'standard' : 'deliberate'}
       onDismiss={onDismiss}
       onRequestClose={close}
       visible={!!prompt}
@@ -1419,12 +1439,21 @@ function SessionNotesPreview({ value, draft, editing, saving, editable, onEdit, 
   );
 }
 
-function VisualMovementRow({ item, kind, pending, onOpen, displayUnit, calculatedLoad }: { item: SessionMovementItem; kind: MovementKind; pending: boolean; onOpen: (item: SessionMovementItem) => void; displayUnit: CoachDisplayUnit; calculatedLoad: CalculatedLoadResult | null }) {
+function VisualMovementRow({ item, kind, pending, onOpen, onRequestRemove, onSwipeOpen, onSwipeRef, displayUnit, calculatedLoad }: { item: SessionMovementItem; kind: MovementKind; pending: boolean; onOpen: (item: SessionMovementItem) => void; onRequestRemove?: (item: SessionMovementItem) => void; onSwipeOpen: (itemId: number) => void; onSwipeRef: (itemId: number, swipe: Swipeable | null) => void; displayUnit: CoachDisplayUnit; calculatedLoad: CalculatedLoadResult | null }) {
   const load = collapsedLoadPresentation(item, kind, calculatedLoad, displayUnit);
-  return (
+  const swipeRef = useRef<Swipeable>(null);
+  const requestRemove = () => {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined);
+    onRequestRemove?.(item);
+    swipeRef.current?.close();
+  };
+  const row = (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={[`Edit ${movementName(item)}`, prescriptionSummary(item, kind), load?.label, load?.value].filter(Boolean).join(', ')}
+      accessibilityHint={onRequestRemove ? 'Swipe left to request removal.' : undefined}
+      accessibilityActions={onRequestRemove ? [{ name: 'remove', label: 'Remove movement' }] : undefined}
+      onAccessibilityAction={(event) => { if (event.nativeEvent.actionName === 'remove') requestRemove(); }}
       onPress={() => onOpen(item)}
       style={({ pressed }) => [styles.movementRow, item.superset_group && { borderLeftWidth: 2, borderLeftColor: palette.violet }, pressed && styles.movementRowPressed]}
     >
@@ -1438,9 +1467,29 @@ function VisualMovementRow({ item, kind, pending, onOpen, displayUnit, calculate
       <View style={styles.movementTrailing}>{pending ? <ActivityIndicator size="small" color={palette.violet} /> : <Ionicons name="chevron-forward" size={18} color={palette.muted} />}</View>
     </Pressable>
   );
+  if (!onRequestRemove) return row;
+  return (
+    <Swipeable
+      ref={(swipe) => { swipeRef.current = swipe; onSwipeRef(item.id, swipe); }}
+      friction={1}
+      overshootRight={false}
+      rightThreshold={58}
+      dragOffsetFromRightEdge={8}
+      failOffsetY={[-15, 15]}
+      onSwipeableWillOpen={() => { onSwipeOpen(item.id); requestRemove(); }}
+      renderRightActions={() => (
+        <View style={styles.movementSwipeRemove}>
+          <Ionicons name="trash-outline" size={20} color={palette.text} />
+          <Text style={styles.movementSwipeRemoveText}>Remove</Text>
+        </View>
+      )}
+    >
+      {row}
+    </Swipeable>
+  );
 }
 
-function InlineMovementWorkspace({ exposureContext, item, kind, draft, dirty, editable, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, canDelete, groupedWith, onChange, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange, onChangeMovement, onChooseSubstitution, onOpenHistory, onDelete, onCollapse, onGroupMovements, accessibilityReflow }: { exposureContext?: SessionExposureContext; item: SessionMovementItem; kind: MovementKind; draft: CoachMovementDraft; dirty: boolean; editable: boolean; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; canDelete: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void; onChangeMovement?: () => void; onChooseSubstitution?: () => void; onOpenHistory?: () => void; onDelete: () => void; onCollapse: () => void; onGroupMovements?: () => void; accessibilityReflow: boolean }) {
+function InlineMovementWorkspace({ exposureContext, item, kind, draft, dirty, editable, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, onCalculateLoad, manualOverrideEnabled, backdownManualOverrideEnabled, canDelete, groupedWith, onChange, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange, onChangeMovement, onChooseSubstitution, onOpenHistory, onDelete, onCollapse, onGroupMovements, accessibilityReflow }: { exposureContext?: SessionExposureContext; item: SessionMovementItem; kind: MovementKind; draft: CoachMovementDraft; dirty: boolean; editable: boolean; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; onCalculateLoad: (request: CalculatedLoadRequest) => Promise<CalculatedLoadResult>; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; canDelete: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void; onChangeMovement?: () => void; onChooseSubstitution?: () => void; onOpenHistory?: () => void; onDelete: () => void; onCollapse: () => void; onGroupMovements?: () => void; accessibilityReflow: boolean }) {
   const load = kind === 'core'
     ? expandedLoadPresentation(draft, calculatedTarget, storageUnit, displayUnit, manualOverrideEnabled)
     : null;
@@ -1460,6 +1509,10 @@ function InlineMovementWorkspace({ exposureContext, item, kind, draft, dirty, ed
         {kind === 'accessory' && onChangeMovement ? <MovementIdentityAction movement={movementName(item)} disabled={!editable} onPress={onChangeMovement} /> : null}
         <MovementQuickPrescriptionEditor
           key={`movement-editor-${item.id}`}
+          workspaceFocused
+          movementName={movementName(item)}
+          lift={String(item.lift || '')}
+          onCalculateLoad={onCalculateLoad}
           draft={draft}
           kind={kind}
           editable={editable}
@@ -1494,14 +1547,14 @@ type PrescriptionDropdownOption = {
   value: string;
 };
 
-function CompactDropdownSelector({ label, value, options, open, disabled, onOpenChange, onChange }: { label: string; value: string; options: PrescriptionDropdownOption[]; open: boolean; disabled?: boolean; onOpenChange: (open: boolean) => void; onChange: (value: string) => void }) {
+function CompactDropdownSelector({ label, value, options, open, disabled, hideLabel = false, onOpenChange, onChange }: { label: string; value: string; options: PrescriptionDropdownOption[]; open: boolean; disabled?: boolean; hideLabel?: boolean; onOpenChange: (open: boolean) => void; onChange: (value: string) => void }) {
   const selected = options.find((option) => option.value === value) || options[0];
   return (
     <View
       onTouchStart={(event) => event.stopPropagation()}
       style={[styles.prescriptionChoiceField, styles.dropdownContainer, open && styles.dropdownContainerOpen]}
     >
-      <Text style={styles.fieldLabel}>{label}</Text>
+      {!hideLabel ? <Text style={styles.fieldLabel}>{label}</Text> : null}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${label}: ${selected?.label || value}`}
@@ -1510,7 +1563,7 @@ function CompactDropdownSelector({ label, value, options, open, disabled, onOpen
         onPress={() => onOpenChange(!open)}
         style={({ pressed }) => [styles.dropdownSelector, open && styles.dropdownSelectorOpen, pressed && styles.pressed, disabled && styles.disabled]}
       >
-        <Text numberOfLines={1} style={styles.dropdownSelectorText}>{selected?.label || value}</Text>
+        <Text numberOfLines={1} style={[styles.dropdownSelectorText, label === 'Set Type' && value === 'TOP_BACKDOWN' && { fontSize: 14 }]}>{selected?.label || value}</Text>
         <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={18} color={open ? palette.violet : palette.muted} />
       </Pressable>
       {open ? (
@@ -1544,6 +1597,7 @@ type AccessoryPrescriptionPicker = 'sets' | 'reps' | 'rir' | null;
 function AccessoryPrescriptionEditor({ draft, editable, onChange }: { draft: CoachMovementDraft; editable: boolean; accessibilityReflow: boolean; modeMenuOpen: boolean; onModeMenuOpenChange: (open: boolean) => void; onChange: (patch: Partial<CoachMovementDraft>) => void }) {
   const committedTarget = accessoryRepTargetFromText(draft.repsText);
   const [picker, setPicker] = useState<AccessoryPrescriptionPicker>(null);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
   const [setsDraft, setSetsDraft] = useState(draft.sets || '3');
   const [rirDraft, setRirDraft] = useState(draft.rir || '2');
   const [repDraft, setRepDraft] = useState<AccessoryRepTarget>(committedTarget);
@@ -1556,6 +1610,7 @@ function AccessoryPrescriptionEditor({ draft, editable, onChange }: { draft: Coa
     const nextTarget = accessoryRepTargetFromText(draft.repsText);
     setRepDraft(nextTarget);
     repMemoryRef.current = accessoryRepTargetMemoryFromTarget(nextTarget);
+    setConfirmDiscard(false);
     setPicker(next);
   };
   const changeRepMode = (nextMode: AccessoryRepTargetMode) => {
@@ -1567,7 +1622,15 @@ function AccessoryPrescriptionEditor({ draft, editable, onChange }: { draft: Coa
     if (picker === 'sets') onChange({ sets: setsDraft });
     if (picker === 'reps') onChange({ repsText: accessoryRepTargetText(repDraft) });
     if (picker === 'rir') onChange({ rir: rirDraft });
+    setConfirmDiscard(false);
     setPicker(null);
+  };
+  const cancelPicker = () => {
+    const changed = picker === 'sets' ? setsDraft !== (draft.sets || '3')
+      : picker === 'reps' ? accessoryRepTargetText(repDraft) !== accessoryRepTargetText(accessoryRepTargetFromText(draft.repsText))
+        : picker === 'rir' ? rirDraft !== (draft.rir || '2') : false;
+    if (!changed) { setPicker(null); return; }
+    setConfirmDiscard(true);
   };
   const repTypeLabel = committedTarget.mode === 'FIXED' ? 'Single' : committedTarget.mode === 'RANGE' ? 'Range' : 'AMRAP';
 
@@ -1582,8 +1645,9 @@ function AccessoryPrescriptionEditor({ draft, editable, onChange }: { draft: Coa
 
       <StrengthLedgerBottomSheet
         accessibilityLabel={picker === 'sets' ? 'Sets prescription picker' : picker === 'reps' ? 'Rep Target prescription picker' : 'RIR prescription picker'}
-        heightFraction={picker === 'reps' ? (repDraft.mode === 'AMRAP' ? 0.5 : 0.64) : 0.55}
+        heightFraction={picker === 'reps' ? (repDraft.mode === 'AMRAP' ? 0.5 : confirmDiscard ? 0.70 : 0.64) : confirmDiscard ? 0.61 : 0.55}
         onDismiss={() => setPicker(null)}
+        onRequestClose={cancelPicker}
         visible={picker != null}
       >
         <View style={styles.prescriptionPickerSheet}>
@@ -1611,7 +1675,8 @@ function AccessoryPrescriptionEditor({ draft, editable, onChange }: { draft: Coa
             key: 'sheet-rir', label: '', accessibilityLabel: 'RIR target', value: rirDraft,
             options: decimalWheelOptions(0, 10, 0.5, rirDraft), accessibilityValue: (value) => `${value} RIR`, onChange: setRirDraft,
           }]} /> : null}
-          <View style={styles.prescriptionPickerAction}><SLButton fullWidth label="Apply" onPress={apply} size="lg" variant="primary" /></View>
+          {confirmDiscard ? <View style={workspacePrescriptionStyles.confirmBar}><Text style={workspacePrescriptionStyles.confirmTitle}>Discard these edits?</Text><Text style={workspacePrescriptionStyles.hint}>Changes have not been applied to the Session draft.</Text><View style={workspacePrescriptionStyles.confirmActions}><Pressable accessibilityRole="button" onPress={() => setConfirmDiscard(false)}><Text style={workspacePrescriptionStyles.edit}>Keep Editing</Text></Pressable><Pressable accessibilityRole="button" onPress={() => { setConfirmDiscard(false); setPicker(null); }}><Text style={workspacePrescriptionStyles.remove}>Discard</Text></Pressable></View></View> : null}
+          <View style={[styles.prescriptionPickerAction, workspacePrescriptionStyles.sheetFooter]}><Pressable accessibilityRole="button" onPress={cancelPicker} style={workspacePrescriptionStyles.cancelButton}><Text style={workspacePrescriptionStyles.cancelText}>Cancel</Text></Pressable><View style={{ flex: 2 }}><SLButton fullWidth label="Apply" onPress={apply} size="lg" variant="primary" /></View></View>
         </View>
       </StrengthLedgerBottomSheet>
     </View>
@@ -1627,7 +1692,7 @@ function PrescriptionValueControl({ accent, disabled, label, meta, onPress, valu
   </Pressable>;
 }
 
-export function MovementQuickPrescriptionEditor({ prescriptionOnly = false, draft, kind, editable, accessibilityReflow, onChange, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange }: { prescriptionOnly?: boolean; draft: CoachMovementDraft; kind: MovementKind; editable: boolean; accessibilityReflow: boolean; onChange: (patch: Partial<CoachMovementDraft>) => void; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void }) {
+export function MovementQuickPrescriptionEditor({ prescriptionOnly = false, workspaceFocused = false, movementName: focusedMovementName, lift, onCalculateLoad, draft, kind, editable, accessibilityReflow, onChange, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange }: { prescriptionOnly?: boolean; workspaceFocused?: boolean; movementName?: string; lift?: string; onCalculateLoad?: (request: CalculatedLoadRequest) => Promise<CalculatedLoadResult>; draft: CoachMovementDraft; kind: MovementKind; editable: boolean; accessibilityReflow: boolean; onChange: (patch: Partial<CoachMovementDraft>) => void; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void }) {
   const [openDropdown, setOpenDropdown] = useState<'designation' | 'set-type' | 'intensity-type' | 'rep-target' | null>(null);
   const isCoreVariant = kind === 'core' && isCoreVariantDraft(draft);
   const mainIntensityValue = draft.mode === 'PCT' ? draft.pct : draft.rpe;
@@ -1652,6 +1717,11 @@ export function MovementQuickPrescriptionEditor({ prescriptionOnly = false, draf
   const clearFullCustomOverrides = () => onChange({
     plannedSets: draft.plannedSets.map((row) => ({ ...row, targetLb: '', rangeLb: '' })),
   });
+  if (workspaceFocused && kind === 'core') return <WorkspaceCorePrescription
+    draft={draft} editable={editable} onChange={onChange} storageUnit={storageUnit} displayUnit={displayUnit}
+    movementName={focusedMovementName || draft.movement} lift={lift || draft.sourceLift} onCalculateLoad={onCalculateLoad}
+    calculatedTarget={calculatedTarget} backdownCalculatedTarget={backdownCalculatedTarget} calculatingTarget={calculatingTarget}
+  />;
   return (
     <View onTouchStart={() => setOpenDropdown(null)} style={styles.programmingStack}>
       {kind === 'core' ? <View style={[styles.quickSection, styles.prescriptionChoiceRow]}>
@@ -1745,6 +1815,279 @@ export function MovementQuickPrescriptionEditor({ prescriptionOnly = false, draf
     </View>
   );
 }
+
+type WorkspaceFocus = { kind: 'top' | 'backdown' | 'set' | 'straight' | 'variant'; index?: number; original: CoachMovementDraft; staged: CoachMovementDraft };
+
+function workspaceCalculatedText(calculated: CalculatedLoadResult | null, displayUnit: CoachDisplayUnit) {
+  const low = calculated?.lowKg ?? calculated?.highKg;
+  const high = calculated?.highKg ?? calculated?.lowKg;
+  return low != null && high != null ? formatLoggerWeightRangeKg(low, high, displayUnit) : 'Target unavailable';
+}
+
+function WorkspaceCorePrescription({ draft, editable, onChange, storageUnit, displayUnit, movementName, lift, onCalculateLoad, calculatedTarget, backdownCalculatedTarget, calculatingTarget }: {
+  draft: CoachMovementDraft; editable: boolean; onChange: (patch: Partial<CoachMovementDraft>) => void;
+  storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; movementName: string; lift: string;
+  onCalculateLoad?: (request: CalculatedLoadRequest) => Promise<CalculatedLoadResult>;
+  calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean;
+}) {
+  const [openDropdown, setOpenDropdown] = useState<'designation' | 'set-type' | 'intensity' | null>(null);
+  const [focus, setFocus] = useState<WorkspaceFocus | null>(null);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  const [setTargets, setSetTargets] = useState<Record<number, CalculatedLoadResult | null>>({});
+  const [focusTarget, setFocusTarget] = useState<CalculatedLoadResult | null>(null);
+  const [focusCalculating, setFocusCalculating] = useState(false);
+  const variant = isCoreVariantDraft(draft);
+  const setCalculationKey = draft.scheme === 'FULL_CUSTOM' && !variant
+    ? JSON.stringify(draft.plannedSets.map((row) => [row.reps, draft.mode === 'PCT' ? row.pct : row.rpe])) : '';
+  useEffect(() => {
+    if (!setCalculationKey || !onCalculateLoad) { setSetTargets({}); return; }
+    let active = true;
+    const timer = setTimeout(() => {
+      void Promise.all(draft.plannedSets.map(async (row, index) => {
+        const intensity = draft.mode === 'PCT' ? row.pct : row.rpe;
+        if (!row.reps || !intensity) return [index, null] as const;
+        try { return [index, await onCalculateLoad({ lift, mode: draft.mode, reps: row.reps, intensity })] as const; }
+        catch { return [index, null] as const; }
+      })).then((results) => { if (active) setSetTargets(Object.fromEntries(results)); });
+    }, 180);
+    return () => { active = false; clearTimeout(timer); };
+  }, [setCalculationKey, lift, onCalculateLoad]);
+  const focusKey = focus ? JSON.stringify([focus.kind, focus.index, focus.staged.mode,
+    focus.kind === 'set' ? focus.staged.plannedSets[focus.index || 0] : focus.kind === 'backdown'
+      ? [focus.staged.backdownReps, focus.staged.backdownPct, focus.staged.backdownRpe]
+      : [focus.staged.reps, focus.staged.pct, focus.staged.rpe]]) : '';
+  useEffect(() => {
+    if (!focus || !onCalculateLoad || focus.kind === 'variant') { setFocusTarget(null); setFocusCalculating(false); return; }
+    const staged = focus.staged;
+    const row = focus.kind === 'set' ? staged.plannedSets[focus.index || 0] : null;
+    const reps = row?.reps ?? (focus.kind === 'backdown' ? staged.backdownReps : staged.reps);
+    const intensity = row ? (staged.mode === 'PCT' ? row.pct : row.rpe)
+      : focus.kind === 'backdown' ? (staged.mode === 'PCT' ? staged.backdownPct : staged.backdownRpe)
+        : (staged.mode === 'PCT' ? staged.pct : staged.rpe);
+    if (!reps || !intensity) { setFocusTarget(null); setFocusCalculating(false); return; }
+    let active = true;
+    setFocusCalculating(true);
+    const timer = setTimeout(() => {
+      void onCalculateLoad({ lift, mode: staged.mode, reps, intensity })
+        .then((result) => { if (active) setFocusTarget(result); })
+        .catch(() => { if (active) setFocusTarget(null); })
+        .finally(() => { if (active) setFocusCalculating(false); });
+    }, 180);
+    return () => { active = false; clearTimeout(timer); };
+  }, [focusKey, lift, onCalculateLoad]);
+  const openFocus = (kind: WorkspaceFocus['kind'], index?: number) => {
+    if (!editable) return;
+    setConfirmDiscard(false);
+    setConfirmRemove(false);
+    const original = { ...draft, plannedSets: draft.plannedSets.map((row) => ({ ...row })) };
+    const staged = { ...original, plannedSets: original.plannedSets.map((row) => ({ ...row })) };
+    if (kind === 'variant' && !staged.targetLowLb && !staged.targetHighLb) {
+      const initial = storedRangeFromManualTarget(loadWheelOptions(displayUnit, '')[0] || '0', '0', displayUnit, storageUnit);
+      staged.targetLowLb = initial.low;
+      staged.targetHighLb = initial.high;
+      original.targetLowLb = initial.low;
+      original.targetHighLb = initial.high;
+    }
+    setFocus({ kind, index, original, staged });
+  };
+  const updateFocus = (patch: Partial<CoachMovementDraft>) => setFocus((current) => current ? { ...current, staged: { ...current.staged, ...patch } } : null);
+  const updateFocusSet = (patch: Partial<CoachMovementDraft['plannedSets'][number]>) => setFocus((current) => {
+    if (!current || current.index == null) return current;
+    return { ...current, staged: { ...current.staged, plannedSets: current.staged.plannedSets.map((row, index) => index === current.index ? { ...row, ...patch } : row) } };
+  });
+  const closeFocus = () => {
+    if (!focus) return;
+    setConfirmRemove(false);
+    if (JSON.stringify(focus.staged) === JSON.stringify(focus.original)) { setFocus(null); return; }
+    setConfirmDiscard(true);
+  };
+  const applyFocus = () => {
+    if (!focus) return;
+    setConfirmDiscard(false);
+    setConfirmRemove(false);
+    const s = focus.staged;
+    if (focus.kind === 'set') onChange({ plannedSets: s.plannedSets });
+    else if (focus.kind === 'backdown') onChange({ backdownSets: s.backdownSets, backdownReps: s.backdownReps,
+      backdownRpe: s.backdownRpe, backdownPct: s.backdownPct,
+      backdownTargetLowLb: s.backdownTargetLowLb, backdownTargetHighLb: s.backdownTargetHighLb });
+    else onChange({ sets: s.sets, reps: s.reps, rpe: s.rpe, pct: s.pct,
+      targetLowLb: s.targetLowLb, targetHighLb: s.targetHighLb });
+    setFocus(null);
+  };
+  const manualRange = (value: CoachMovementDraft, kind: WorkspaceFocus['kind']) => kind === 'backdown'
+    ? [value.backdownTargetLowLb, value.backdownTargetHighLb] : [value.targetLowLb, value.targetHighLb];
+  const targetFor = (value: CoachMovementDraft, kind: WorkspaceFocus['kind'], calculated: CalculatedLoadResult | null, index?: number) => {
+    if (kind === 'set') {
+      const row = value.plannedSets[index || 0];
+      if (row?.targetLb) return { text: `Manual · ${convertLoadDisplayValue(row.targetLb, storageUnit, displayUnit)} ${displayUnit}`, manual: true };
+    } else {
+      const [low, high] = manualRange(value, kind);
+      if (low || high) {
+        const manual = manualTargetMarginFromStoredRange(low, high, storageUnit, displayUnit);
+        return { text: `Manual · ${manual.target} ${displayUnit}`, manual: true };
+      }
+    }
+    return { text: workspaceCalculatedText(calculated, displayUnit), manual: false };
+  };
+  const addSet = () => {
+    const previous = draft.plannedSets[draft.plannedSets.length - 1];
+    onChange({ plannedSets: [...draft.plannedSets, previous ? { ...previous, targetLb: '', rangeLb: '' } : { reps: '5', rpe: '7', pct: '70', targetLb: '', rangeLb: '' }] });
+  };
+  const focusLabel = focus?.kind === 'set' ? `Set ${(focus.index || 0) + 1} of ${focus.staged.plannedSets.length}`
+    : focus?.kind === 'top' ? 'Top Work' : focus?.kind === 'backdown' ? 'Backdown Work'
+      : focus?.kind === 'variant' ? 'Manual Load' : 'Load Target';
+  const stagedRow = focus?.kind === 'set' ? focus.staged.plannedSets[focus.index || 0] : null;
+  const stagedManual = focus ? focus.kind === 'variant' ? true : focus.kind === 'set' ? Boolean(stagedRow?.targetLb)
+    : Boolean(manualRange(focus.staged, focus.kind)[0] || manualRange(focus.staged, focus.kind)[1]) : false;
+  const changeManual = (enabled: boolean) => {
+    if (!focus) return;
+    if (!enabled) {
+      if (focus.kind === 'set') updateFocusSet({ targetLb: '', rangeLb: '' });
+      else if (focus.kind === 'backdown') updateFocus({ backdownTargetLowLb: '', backdownTargetHighLb: '' });
+      else updateFocus({ targetLowLb: '', targetHighLb: '' });
+      return;
+    }
+    const fallback = calculatedManualTargetValue(focusTarget, displayUnit) || loadWheelOptions(displayUnit, '')[0] || '0';
+    if (focus.kind === 'set') updateFocusSet({ targetLb: convertLoadDisplayValue(fallback, displayUnit, storageUnit), rangeLb: '0' });
+    else {
+      const range = storedRangeFromManualTarget(fallback, '0', displayUnit, storageUnit);
+      if (focus.kind === 'backdown') updateFocus({ backdownTargetLowLb: range.low, backdownTargetHighLb: range.high });
+      else updateFocus({ targetLowLb: range.low, targetHighLb: range.high });
+    }
+  };
+  const focusManualValues = focus?.kind === 'set' && stagedRow
+    ? { target: convertLoadDisplayValue(stagedRow.targetLb, storageUnit, displayUnit), margin: convertLoadDisplayValue(stagedRow.rangeLb, storageUnit, displayUnit) }
+    : focus ? (() => { const [low, high] = manualRange(focus.staged, focus.kind); return manualTargetMarginFromStoredRange(low, high, storageUnit, displayUnit); })()
+      : { target: '', margin: '' };
+  const changeManualValue = (target: string, margin: string) => {
+    if (!focus) return;
+    if (focus.kind === 'set') updateFocusSet({ targetLb: convertLoadDisplayValue(target, displayUnit, storageUnit), rangeLb: convertLoadDisplayValue(margin, displayUnit, storageUnit) });
+    else {
+      const range = storedRangeFromManualTarget(target, margin, displayUnit, storageUnit);
+      if (focus.kind === 'backdown') updateFocus({ backdownTargetLowLb: range.low, backdownTargetHighLb: range.high });
+      else updateFocus({ targetLowLb: range.low, targetHighLb: range.high });
+    }
+  };
+  return <View style={workspacePrescriptionStyles.stack}>
+    <View style={workspacePrescriptionStyles.designationRow}><Text style={workspacePrescriptionStyles.eyebrow}>DESIGNATION</Text><View style={workspacePrescriptionStyles.designationPicker}><CompactDropdownSelector hideLabel label="Designation" value={draft.designation} options={[
+      { label: 'None', value: '' }, { label: 'Primary', value: 'PRIMARY' }, { label: 'Secondary', value: 'SECONDARY' },
+      { label: 'Tertiary', value: 'TERTIARY' }, { label: 'Quaternary', value: 'QUATERNARY' },
+    ]} open={openDropdown === 'designation'} disabled={!editable} onOpenChange={(open) => setOpenDropdown(open ? 'designation' : null)} onChange={(designation) => onChange({ designation })} /></View></View>
+    {!variant ? <View style={workspacePrescriptionStyles.selectorRow}>
+      <CompactDropdownSelector label="Set Type" value={draft.scheme} options={[
+        { label: 'Straight', value: 'STRAIGHT' }, { label: 'Top + Backdowns', value: 'TOP_BACKDOWN' }, { label: 'Full Custom', value: 'FULL_CUSTOM' },
+      ]} open={openDropdown === 'set-type'} disabled={!editable} onOpenChange={(open) => setOpenDropdown(open ? 'set-type' : null)} onChange={(scheme) => onChange({ scheme: scheme as CoachMovementDraft['scheme'] })} />
+      <CompactDropdownSelector label="Intensity" value={draft.mode} options={[
+        { label: 'RPE', value: 'RPE' }, { label: 'Percentage', value: 'PCT' },
+      ]} open={openDropdown === 'intensity'} disabled={!editable} onOpenChange={(open) => setOpenDropdown(open ? 'intensity' : null)} onChange={(mode) => onChange({ mode: mode as CoachMovementDraft['mode'] })} />
+    </View> : null}
+    {variant ? <>
+      <Text style={styles.prescriptionSectionLabel}>PRESCRIPTION</Text>
+      <LoggerWheelPicker density="compact" columns={[
+        { key: 'sets', label: 'Sets', value: draft.sets, options: integerWheelOptions(1, 20, draft.sets), onChange: (sets) => onChange({ sets }), disabled: !editable },
+        { key: 'reps', label: 'Reps', value: draft.reps, options: integerWheelOptions(1, 50, draft.reps), onChange: (reps) => onChange({ reps }), disabled: !editable },
+      ]} />
+      <Pressable accessibilityRole="button" accessibilityLabel="Edit required manual load" disabled={!editable} onPress={() => openFocus('variant')} style={workspacePrescriptionStyles.targetLine}><Text style={workspacePrescriptionStyles.targetValueManual}>{draft.targetLowLb || draft.targetHighLb ? targetFor(draft, 'variant', null).text : 'Manual Load required'}</Text><Text style={workspacePrescriptionStyles.edit}>Edit ›</Text></Pressable>
+    </> : draft.scheme === 'STRAIGHT' || draft.sourceVariant === 'BK' ? <>
+      <Text style={styles.prescriptionSectionLabel}>PRESCRIPTION</Text>
+      <LoggerWheelPicker density="compact" columns={[
+        { key: 'sets', label: 'Sets', value: draft.sets, options: integerWheelOptions(1, 20, draft.sets), onChange: (sets) => onChange({ sets }), disabled: !editable },
+        { key: 'reps', label: 'Reps', value: draft.reps, options: integerWheelOptions(1, 50, draft.reps), onChange: (reps) => onChange({ reps }), disabled: !editable },
+        { key: 'intensity', label: draft.mode === 'PCT' ? 'Percent' : 'RPE', value: draft.mode === 'PCT' ? draft.pct : draft.rpe,
+          options: draft.mode === 'PCT' ? decimalWheelOptions(20, 100, 2.5, draft.pct) : decimalWheelOptions(5, 10, 0.5, draft.rpe),
+          onChange: (value) => onChange(draft.mode === 'PCT' ? { pct: value } : { rpe: value }), disabled: !editable },
+      ]} />
+      <Pressable accessibilityRole="button" accessibilityLabel="Edit load target" disabled={!editable} onPress={() => openFocus('straight')} style={workspacePrescriptionStyles.targetLine}>
+        <View><Text style={workspacePrescriptionStyles.eyebrow}>{targetFor(draft, 'straight', calculatedTarget).manual ? 'MANUAL TARGET' : 'CALCULATED TARGET'}</Text><Text style={targetFor(draft, 'straight', calculatedTarget).manual ? workspacePrescriptionStyles.targetValueManual : workspacePrescriptionStyles.targetValue}>{calculatingTarget ? 'Calculating…' : targetFor(draft, 'straight', calculatedTarget).text}</Text></View>
+        <Text style={workspacePrescriptionStyles.edit}>Override ›</Text>
+      </Pressable>
+    </> : draft.scheme === 'TOP_BACKDOWN' ? <View style={workspacePrescriptionStyles.blocks}>
+      {(['top', 'backdown'] as const).map((kind) => {
+        const value = kind === 'top' ? { sets: draft.sets, reps: draft.reps, intensity: draft.mode === 'PCT' ? draft.pct : draft.rpe, calculated: calculatedTarget } : { sets: draft.backdownSets, reps: draft.backdownReps, intensity: draft.mode === 'PCT' ? draft.backdownPct : draft.backdownRpe, calculated: backdownCalculatedTarget };
+        const target = targetFor(draft, kind, value.calculated);
+        return <Pressable key={kind} accessibilityRole="button" accessibilityLabel={`Edit ${kind === 'top' ? 'Top Work' : 'Backdown Work'}, ${value.sets} sets, ${value.reps} reps`} disabled={!editable} onPress={() => openFocus(kind)} style={({ pressed }) => [workspacePrescriptionStyles.block, pressed && styles.pressed]}>
+          <View style={workspacePrescriptionStyles.blockHeader}><Text style={workspacePrescriptionStyles.eyebrow}>{kind === 'top' ? 'TOP WORK' : 'BACKDOWN WORK'}</Text><Text style={workspacePrescriptionStyles.edit}>Edit ›</Text></View>
+          <View style={workspacePrescriptionStyles.blockHeader}><Text style={workspacePrescriptionStyles.workValue}>{value.sets} × {value.reps} @ {value.intensity}{draft.mode === 'PCT' ? '%' : ''}</Text><Text numberOfLines={1} style={target.manual ? workspacePrescriptionStyles.targetValueManual : workspacePrescriptionStyles.targetValue}>{calculatingTarget && !target.manual ? 'Calculating…' : target.text}</Text></View>
+        </Pressable>;
+      })}
+    </View> : <View style={workspacePrescriptionStyles.setStack}>
+      <View style={workspacePrescriptionStyles.blockHeader}><Text style={workspacePrescriptionStyles.eyebrow}>FULL CUSTOM · {draft.plannedSets.length} {draft.plannedSets.length === 1 ? 'SET' : 'SETS'}</Text><Text style={workspacePrescriptionStyles.hint}>{draft.plannedSets.length ? 'Tap a set' : 'Add a Set to start'}</Text></View>
+      {draft.plannedSets.map((row, index) => {
+        const target = targetFor(draft, 'set', setTargets[index] || null, index);
+        return <Pressable key={`workspace-set-${index}`} accessibilityRole="button" accessibilityLabel={`Edit Set ${index + 1}, ${row.reps} reps`} disabled={!editable} onPress={() => openFocus('set', index)} style={({ pressed }) => [workspacePrescriptionStyles.setRow, pressed && styles.pressed]}>
+          <Text style={workspacePrescriptionStyles.setIndex}>{index + 1}</Text><Text style={workspacePrescriptionStyles.workValue}>{row.reps} @ {draft.mode === 'PCT' ? row.pct : row.rpe}{draft.mode === 'PCT' ? '%' : ''}</Text>
+          <Text numberOfLines={1} style={target.manual ? workspacePrescriptionStyles.targetValueManual : workspacePrescriptionStyles.targetValue}>{target.text}</Text><Ionicons name="chevron-forward" size={16} color={palette.muted} />
+        </Pressable>;
+      })}
+      <Pressable accessibilityRole="button" accessibilityLabel="Add Full Custom set" disabled={!editable} onPress={addSet} style={workspacePrescriptionStyles.addSet}><Ionicons name="add" size={17} color={palette.violet} /><Text style={workspacePrescriptionStyles.edit}>Add Set</Text></Pressable>
+    </View>}
+    <StrengthLedgerBottomSheet accessibilityLabel={`${focusLabel || 'Prescription'} editor`} visible={focus != null} heightFraction={focus?.kind === 'set' ? (stagedManual ? 0.82 : 0.62) : focus?.kind === 'top' || focus?.kind === 'backdown' ? (stagedManual ? 0.79 : 0.62) : focus?.kind === 'variant' ? 0.48 : stagedManual ? 0.58 : 0.50} onRequestClose={closeFocus} onDismiss={() => setFocus(null)}>
+      {focus ? <View style={workspacePrescriptionStyles.sheet}>
+        <View style={workspacePrescriptionStyles.sheetHeader}><Text style={workspacePrescriptionStyles.eyebrow}>{movementName.toUpperCase()}</Text><Text style={workspacePrescriptionStyles.sheetTitle}>{focusLabel}</Text><Text style={workspacePrescriptionStyles.hint}>{focus.kind === 'set' ? 'One Set at a time. Set order is preserved.' : 'Adjust only the selected prescription.'}</Text></View>
+        <StrengthLedgerBottomSheetScrollView contentContainerStyle={workspacePrescriptionStyles.sheetContent} keyboardShouldPersistTaps="handled">
+          {focus.kind !== 'straight' && focus.kind !== 'variant' ? <LoggerWheelPicker density="compact" columns={[
+            ...(focus.kind === 'set' ? [] : [{ key: 'sets', label: 'Sets', value: focus.kind === 'backdown' ? focus.staged.backdownSets : focus.staged.sets,
+              options: integerWheelOptions(1, 20, focus.kind === 'backdown' ? focus.staged.backdownSets : focus.staged.sets),
+              onChange: (sets: string) => updateFocus(focus.kind === 'backdown' ? { backdownSets: sets } : { sets }) }]),
+            { key: 'reps', label: 'Reps', value: stagedRow?.reps || (focus.kind === 'backdown' ? focus.staged.backdownReps : focus.staged.reps),
+              options: integerWheelOptions(1, 50, stagedRow?.reps || (focus.kind === 'backdown' ? focus.staged.backdownReps : focus.staged.reps)),
+              onChange: (reps: string) => focus.kind === 'set' ? updateFocusSet({ reps }) : updateFocus(focus.kind === 'backdown' ? { backdownReps: reps } : { reps }) },
+            { key: 'intensity', label: focus.staged.mode === 'PCT' ? 'Percent' : 'RPE',
+              value: stagedRow ? (focus.staged.mode === 'PCT' ? stagedRow.pct : stagedRow.rpe) : focus.kind === 'backdown' ? (focus.staged.mode === 'PCT' ? focus.staged.backdownPct : focus.staged.backdownRpe) : (focus.staged.mode === 'PCT' ? focus.staged.pct : focus.staged.rpe),
+              options: focus.staged.mode === 'PCT' ? decimalWheelOptions(20, 100, 2.5, stagedRow?.pct || (focus.kind === 'backdown' ? focus.staged.backdownPct : focus.staged.pct)) : decimalWheelOptions(5, 10, 0.5, stagedRow?.rpe || (focus.kind === 'backdown' ? focus.staged.backdownRpe : focus.staged.rpe)),
+              onChange: (value: string) => focus.kind === 'set' ? updateFocusSet(focus.staged.mode === 'PCT' ? { pct: value } : { rpe: value }) : updateFocus(focus.kind === 'backdown' ? (focus.staged.mode === 'PCT' ? { backdownPct: value } : { backdownRpe: value }) : (focus.staged.mode === 'PCT' ? { pct: value } : { rpe: value })) },
+          ]} /> : null}
+          {focus.kind !== 'variant' ? <View style={workspacePrescriptionStyles.calculatedBox}><Text style={workspacePrescriptionStyles.eyebrow}>CALCULATED TARGET · {focusLabel?.toUpperCase()}</Text><Text style={workspacePrescriptionStyles.targetValue}>{focusCalculating ? 'Calculating…' : workspaceCalculatedText(focusTarget, displayUnit)}</Text></View> : null}
+          <View style={workspacePrescriptionStyles.manualRow}><Text style={workspacePrescriptionStyles.manualLabel}>{focus.kind === 'variant' ? 'Manual target required' : focus.kind === 'set' ? `Manual target for Set ${(focus.index || 0) + 1}` : 'Manual target override'}</Text>{focus.kind === 'variant' ? <Text style={workspacePrescriptionStyles.targetValueManual}>REQUIRED</Text> : <Switch value={stagedManual} onValueChange={changeManual} trackColor={{ false: SLColors.surfaceDisabled, true: SLColors.warningSoft }} thumbColor={stagedManual ? SLColors.warning : SLColors.textMuted} />}</View>
+          {stagedManual || focus.kind === 'variant' ? <LoggerWheelPicker density="compact" columns={[
+            { key: 'manual-target', label: `Target (${displayUnit})`, value: focusManualValues.target, options: loadWheelOptions(displayUnit, focusManualValues.target), onChange: (target) => changeManualValue(target, focusManualValues.margin) },
+            { key: 'manual-margin', label: `Margin ± (${displayUnit})`, value: focusManualValues.margin, options: marginWheelOptions(displayUnit, focusManualValues.margin), onChange: (margin) => changeManualValue(focusManualValues.target, margin) },
+          ]} /> : null}
+          {focus.kind === 'set' ? <View style={workspacePrescriptionStyles.setActions}>
+            <Pressable accessibilityRole="button" disabled={focus.staged.plannedSets.length <= 1} onPress={() => setConfirmRemove(true)}><Text style={workspacePrescriptionStyles.remove}>Remove Set</Text></Pressable>
+            <View style={workspacePrescriptionStyles.moveActions}><Pressable accessibilityRole="button" accessibilityLabel="Move Set up" disabled={(focus.index || 0) === 0} onPress={() => setFocus((current) => { if (!current || current.index == null || current.index === 0) return current; const rows = [...current.staged.plannedSets]; [rows[current.index - 1], rows[current.index]] = [rows[current.index], rows[current.index - 1]]; return { ...current, index: current.index - 1, staged: { ...current.staged, plannedSets: rows } }; })}><Text style={workspacePrescriptionStyles.edit}>↑ Move</Text></Pressable><Pressable accessibilityRole="button" accessibilityLabel="Move Set down" disabled={(focus.index || 0) >= focus.staged.plannedSets.length - 1} onPress={() => setFocus((current) => { if (!current || current.index == null || current.index >= current.staged.plannedSets.length - 1) return current; const rows = [...current.staged.plannedSets]; [rows[current.index + 1], rows[current.index]] = [rows[current.index], rows[current.index + 1]]; return { ...current, index: current.index + 1, staged: { ...current.staged, plannedSets: rows } }; })}><Text style={workspacePrescriptionStyles.edit}>Move ↓</Text></Pressable></View>
+          </View> : null}
+          {focus.kind === 'set' && focus.staged.plannedSets.length > 1 ? <View style={workspacePrescriptionStyles.setNavigation}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Previous Set" disabled={(focus.index || 0) === 0} onPress={() => setFocus((current) => current && current.index != null && current.index > 0 ? { ...current, index: current.index - 1 } : current)}><Text style={workspacePrescriptionStyles.edit}>‹ Set {(focus.index || 0)}</Text></Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="Next Set" disabled={(focus.index || 0) >= focus.staged.plannedSets.length - 1} onPress={() => setFocus((current) => current && current.index != null && current.index < current.staged.plannedSets.length - 1 ? { ...current, index: current.index + 1 } : current)}><Text style={workspacePrescriptionStyles.edit}>Set {(focus.index || 0) + 2} ›</Text></Pressable>
+          </View> : null}
+        </StrengthLedgerBottomSheetScrollView>
+        {confirmRemove ? <View style={workspacePrescriptionStyles.confirmBar}><Text style={workspacePrescriptionStyles.confirmTitle}>Remove this Set?</Text><Text style={workspacePrescriptionStyles.hint}>The local Session draft changes when you apply.</Text><View style={workspacePrescriptionStyles.confirmActions}><Pressable accessibilityRole="button" onPress={() => setConfirmRemove(false)}><Text style={workspacePrescriptionStyles.edit}>Keep Set</Text></Pressable><Pressable accessibilityRole="button" onPress={() => { setFocus((current) => current ? { ...current, staged: { ...current.staged, plannedSets: current.staged.plannedSets.filter((_, index) => index !== current.index) }, index: Math.max(0, Math.min((current.index || 0), current.staged.plannedSets.length - 2)) } : null); setConfirmRemove(false); }}><Text style={workspacePrescriptionStyles.remove}>Remove Set</Text></Pressable></View></View> : null}
+        {confirmDiscard ? <View style={workspacePrescriptionStyles.confirmBar}><Text style={workspacePrescriptionStyles.confirmTitle}>Discard these edits?</Text><Text style={workspacePrescriptionStyles.hint}>Changes have not been applied to the Session draft.</Text><View style={workspacePrescriptionStyles.confirmActions}><Pressable accessibilityRole="button" onPress={() => setConfirmDiscard(false)}><Text style={workspacePrescriptionStyles.edit}>Keep Editing</Text></Pressable><Pressable accessibilityRole="button" onPress={() => { setConfirmDiscard(false); setFocus(null); }}><Text style={workspacePrescriptionStyles.remove}>Discard</Text></Pressable></View></View> : null}
+        <View style={workspacePrescriptionStyles.sheetFooter}><Pressable accessibilityRole="button" onPress={closeFocus} style={workspacePrescriptionStyles.cancelButton}><Text style={workspacePrescriptionStyles.cancelText}>Cancel</Text></Pressable><Pressable accessibilityRole="button" onPress={applyFocus} style={workspacePrescriptionStyles.applyButton}><Text style={workspacePrescriptionStyles.applyText}>Apply{focus.kind === 'top' ? ' to Top Work' : focus.kind === 'backdown' ? ' to Backdown Work' : focus.kind === 'set' ? ' Set Changes' : ''}</Text></Pressable></View>
+      </View> : null}
+    </StrengthLedgerBottomSheet>
+  </View>;
+}
+
+const workspacePrescriptionStyles = StyleSheet.create({
+  stack: { gap: 12 }, designationRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 }, designationPicker: { width: 180, maxWidth: '62%' }, selectorRow: { flexDirection: 'row', gap: 8 }, blocks: { gap: 9 },
+  block: { borderWidth: 1, borderColor: '#392C43', borderRadius: 11, backgroundColor: '#0A0910', padding: 12, gap: 9 },
+  blockHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  eyebrow: { color: '#ACA0B8', fontSize: 10, fontWeight: '800', letterSpacing: 1.1 },
+  edit: { color: SLColors.accentViolet, fontSize: 12, fontWeight: '700' },
+  workValue: { color: SLColors.textPrimary, fontSize: 16, fontWeight: '700' },
+  targetValue: { color: SLColors.accentCyanMuted, fontSize: 12, fontWeight: '700', flexShrink: 1, marginLeft: 'auto', textAlign: 'right' },
+  targetValueManual: { color: SLColors.warning, fontSize: 12, fontWeight: '700', flexShrink: 1, marginLeft: 'auto', textAlign: 'right' },
+  hint: { color: palette.muted, fontSize: 11 }, targetLine: { borderTopWidth: 1, borderColor: '#302738', paddingTop: 11, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
+  setStack: { gap: 2 }, setRow: { minHeight: 50, borderBottomWidth: 1, borderColor: '#302537', flexDirection: 'row', alignItems: 'center', gap: 8 },
+  setIndex: { width: 24, color: '#BDA9D1', fontSize: 13, fontWeight: '700' },
+  addSet: { marginTop: 9, borderWidth: 1, borderStyle: 'dashed', borderColor: '#704F8F', borderRadius: 10, padding: 10, flexDirection: 'row', gap: 5, justifyContent: 'center', alignItems: 'center' },
+  sheet: { flex: 1, minHeight: 0 }, sheetHeader: { paddingHorizontal: 20, paddingBottom: 12, gap: 4 },
+  sheetTitle: { color: SLColors.textPrimary, fontSize: 24, fontWeight: '800' }, sheetContent: { paddingHorizontal: 16, paddingBottom: 24, gap: 16 },
+  calculatedBox: { borderWidth: 1, borderColor: '#29424A', borderRadius: 12, backgroundColor: '#0A1115', padding: 13, gap: 7 },
+  manualRow: { borderWidth: 1, borderColor: '#392C43', borderRadius: 11, paddingHorizontal: 13, paddingVertical: 9, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  manualLabel: { color: SLColors.textPrimary, fontSize: 14, fontWeight: '600' },
+  setActions: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, moveActions: { flexDirection: 'row', gap: 18 }, setNavigation: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 }, remove: { color: SLColors.warning, fontSize: 12, fontWeight: '700' },
+  sheetFooter: { borderTopWidth: 1, borderColor: '#382443', flexDirection: 'row', gap: 9, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 14 },
+  confirmBar: { marginHorizontal: 16, borderWidth: 1, borderColor: SLColors.warningSoft, backgroundColor: '#21180F', borderRadius: 11, padding: 12, gap: 6 },
+  confirmTitle: { color: SLColors.textPrimary, fontSize: 14, fontWeight: '700' }, confirmActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 24, paddingTop: 5 },
+  cancelButton: { flex: 1, minHeight: 45, borderWidth: 1, borderColor: '#493459', borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  cancelText: { color: SLColors.textPrimary, fontSize: 13, fontWeight: '700' },
+  applyButton: { flex: 2, minHeight: 45, backgroundColor: '#7441B3', borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  applyText: { color: SLColors.textPrimary, fontSize: 13, fontWeight: '800' },
+});
 
 function PrescriptionWorkBlock({ label, sets, reps, intensity, intensityLabel, mode, editable, onSets, onReps, onIntensity }: { label: string; sets: string; reps: string; intensity: string; intensityLabel: string; mode: CoachMovementDraft['mode']; editable: boolean; onSets: (value: string) => void; onReps: (value: string) => void; onIntensity: (value: string) => void }) {
   return (
@@ -2300,7 +2643,7 @@ function movementItemWithDraft(item: SessionMovementItem, draft: CoachMovementDr
     ...item,
     movement: draft.movement,
     designation: draft.designation,
-    variant: draft.scheme === 'FULL_CUSTOM' ? 'FULL_CUSTOM' : draft.sourceVariant,
+    variant: draft.scheme === 'FULL_CUSTOM' ? 'FULL_CUSTOM' : draft.scheme === 'TOP_BACKDOWN' && draft.sourceVariant !== 'BK' ? 'TOP' : draft.sourceVariant,
     mode: draft.mode,
     sets: Number(draft.sets) || null,
     reps: Number(draft.reps) || null,
@@ -2313,6 +2656,11 @@ function movementItemWithDraft(item: SessionMovementItem, draft: CoachMovementDr
     coach_prescribed_low_kg: toKg(draft.targetLowLb),
     coach_prescribed_high_kg: toKg(draft.targetHighLb),
     notes: draft.notes,
+    backdown_sets: Number(draft.backdownSets) || null,
+    backdown_reps: Number(draft.backdownReps) || null,
+    planned_sets: draft.plannedSets.map((row, index) => ({ set_index: index + 1, reps: Number(row.reps) || null,
+      rpe_target: Number(row.rpe) || null, pct: Number(row.pct) || null,
+      manual_target_kg: toKg(row.targetLb), manual_pm_kg: toKg(row.rangeLb) })),
   };
 }
 
@@ -2336,6 +2684,15 @@ function movementMeta(item: SessionMovementItem, kind: MovementKind) {
 function prescriptionSummary(item: SessionMovementItem, kind: MovementKind) {
   const sets = numberText(item.sets);
   const reps = kind === 'accessory' ? accessoryRepDisplayText(String(item.reps_text || numberText(item.reps))) : numberText(item.reps);
+  if (kind === 'core' && String(item.variant || '').toUpperCase() === 'FULL_CUSTOM') {
+    const count = item.planned_sets?.length || 0;
+    return `${count} custom ${count === 1 ? 'Set' : 'Sets'}`;
+  }
+  if (kind === 'core' && String(item.variant || '').toUpperCase() === 'TOP') {
+    const backdownSets = numberText(item.backdown_sets);
+    const backdownReps = numberText(item.backdown_reps);
+    return `${sets || '—'} × ${reps || '—'} top · ${backdownSets || '—'} × ${backdownReps || '—'} backdown`;
+  }
   const effort = kind === 'accessory'
     ? item.rir_target != null ? `@ ${numberText(item.rir_target)} RIR` : ''
     : isCoreVariantItem(item) ? ''
@@ -2605,6 +2962,8 @@ const styles = StyleSheet.create({
   movementList: { gap: 7 },
   movementRow: { position: 'relative', minHeight: 84, flexDirection: 'row', alignItems: 'center', gap: 12, overflow: 'hidden', paddingVertical: 12, paddingHorizontal: 12, borderRadius: SLRadius.md, backgroundColor: '#101016', borderWidth: StyleSheet.hairlineWidth, borderColor: palette.line },
   movementRowPressed: { backgroundColor: palette.objectRaised },
+  movementSwipeRemove: { width: 116, minHeight: 84, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8, borderRadius: SLRadius.md, backgroundColor: 'rgba(173, 47, 72, 0.28)', borderWidth: StyleSheet.hairlineWidth, borderColor: palette.red },
+  movementSwipeRemoveText: { color: palette.text, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 12, lineHeight: 16 },
   movementArtwork: { width: __DEV__ ? 64 : 48, height: __DEV__ ? 64 : 48, zIndex: 2, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   movementTrailing: { width: 24, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   movementArtworkImage: { shadowOpacity: 0.36, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } },

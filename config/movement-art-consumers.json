@@ -4,7 +4,7 @@
   "consumers": [
     {
       "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
-      "rendererCount": 9
+      "rendererCount": 10
     },
     {
       "file": "components/coach-mobile/CompletedSessionRecap.tsx",

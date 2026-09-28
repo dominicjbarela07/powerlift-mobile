@@ -126,7 +126,7 @@ type TrainingProfileContext = {
 };
 
 type ProfileEditor = 'details' | 'units' | 'maxes' | 'context' | null;
-type SettingsPanel = 'coach' | 'notifications' | 'privacy' | 'about' | 'logout' | null;
+type SettingsPanel = 'coach' | 'review_queue' | 'notifications' | 'privacy' | 'about' | 'logout' | null;
 
 type AccountTransitionMode = {
   mode?: string | null;
@@ -322,6 +322,8 @@ export default function SettingsScreen() {
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [notifyVideoFeedback, setNotifyVideoFeedback] = useState(true);
   const [notifyVideoSubmissions, setNotifyVideoSubmissions] = useState(true);
+  const [includeOwnSessionsInReviewQueue, setIncludeOwnSessionsInReviewQueue] = useState(true);
+  const [reviewQueuePreferenceSaving, setReviewQueuePreferenceSaving] = useState(false);
   const [videoMlTrainingConsent, setVideoMlTrainingConsent] = useState<boolean | null>(null);
   const [trainingProfile, setTrainingProfile] = useState<TrainingProfileSummary | null>(null);
   const [profileEditor, setProfileEditor] = useState<ProfileEditor>(null);
@@ -666,6 +668,7 @@ export default function SettingsScreen() {
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
       setNotifyVideoFeedback(json.notify_video_feedback !== false);
       setNotifyVideoSubmissions(json.notify_video_submissions !== false);
+      setIncludeOwnSessionsInReviewQueue(json.include_own_sessions_in_review_queue !== false);
       if (Array.isArray(json.available_mobile_modes) || json.mobile_mode) {
         await applyAccountStatePayload?.({
           user: {
@@ -954,6 +957,26 @@ export default function SettingsScreen() {
       Alert.alert('Notification setting not saved', err?.message || 'Please try again.');
     } finally {
       setNotificationLoading(false);
+    }
+  };
+
+  const saveReviewQueuePreference = async (value: boolean) => {
+    const previous = includeOwnSessionsInReviewQueue;
+    setIncludeOwnSessionsInReviewQueue(value);
+    try {
+      setReviewQueuePreferenceSaving(true);
+      const resp = await fetchJson<any>('/mobile/settings', {
+        method: 'PATCH',
+        body: { include_own_sessions_in_review_queue: value } as any,
+      });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+      setIncludeOwnSessionsInReviewQueue(json.include_own_sessions_in_review_queue !== false);
+    } catch (err: any) {
+      setIncludeOwnSessionsInReviewQueue(previous);
+      Alert.alert('Review Queue setting not saved', err?.message || 'Please try again.');
+    } finally {
+      setReviewQueuePreferenceSaving(false);
     }
   };
 
@@ -1623,6 +1646,8 @@ export default function SettingsScreen() {
   const settingsPanelTitle =
     settingsPanel === 'coach'
       ? 'Connected Coach'
+      : settingsPanel === 'review_queue'
+        ? 'Coach Review Queue'
       : settingsPanel === 'notifications'
         ? 'Notifications'
         : settingsPanel === 'privacy'
@@ -1673,6 +1698,16 @@ export default function SettingsScreen() {
           </View>
           <Ionicons name="chevron-forward" size={23} color={SLColors.textSubtle} />
         </Pressable>
+
+        {isCoach && activeMobileMode === 'coach' && !isIndividual ? settingsGroup(
+          settingsRow({
+            icon: 'clipboard-outline',
+            title: 'Coach Review Queue',
+            summary: includeOwnSessionsInReviewQueue ? 'My Sessions included' : 'My Sessions excluded',
+            onPress: mobileSettingsLoaded ? () => setSettingsPanel('review_queue') : undefined,
+          }),
+          'Coaching'
+        ) : null}
 
         {settingsGroup(
           <>
@@ -1849,7 +1884,7 @@ export default function SettingsScreen() {
               <Pressable
                 accessibilityLabel="Close settings"
                 accessibilityRole="button"
-                disabled={notificationLoading || privacyLoading || loggingOut}
+                disabled={notificationLoading || privacyLoading || reviewQueuePreferenceSaving || loggingOut}
                 hitSlop={12}
                 onPress={() => setSettingsPanel(null)}
                 style={({ pressed }) => [styles.modalClose, pressed && styles.settingsRowPressed]}
@@ -1895,6 +1930,14 @@ export default function SettingsScreen() {
                   )}
                 </>
               ) : null}
+
+              {settingsPanel === 'review_queue' ? settingsToggleRow({
+                label: 'Include my Sessions in Review Queue',
+                description: 'Turn off to remove your own Sessions from Coach review counts and reminders. Your Session history stays available.',
+                value: includeOwnSessionsInReviewQueue,
+                disabled: reviewQueuePreferenceSaving,
+                onChange: (nextValue) => void saveReviewQueuePreference(nextValue),
+              }) : null}
 
               {settingsPanel === 'notifications' ? (
                 <>
