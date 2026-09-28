@@ -512,7 +512,8 @@ assert.match(
   'Machine accessories must expose the Equipment action.',
 );
 assert.match(routeSource, /expandedIdentityContext=\{accessoryIsExpanded && machineAccessory && !hideEquipmentDetails/);
-assert.match(routeSource, /historyPeek=\{accessoryIsExpanded && !hideEquipmentDetails/);
+assert.match(routeSource, /historyPeek=\{accessoryIsExpanded \? historyPeekFor\(it\) : null\}/);
+assert.match(routeSource, /includeEquipmentContext: askForEquipmentDetails[\s\S]*!isUnspecifiedEquipmentIdentity\(activeEquipmentIdentity\(item\)\)/);
 assert.match(routeSource, /priorPerformanceCue=\{accessoryIsComplete \|\| hideEquipmentDetails \? null : lastBestCue/);
 assert.match(
   routeSource,

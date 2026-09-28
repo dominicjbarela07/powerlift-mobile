@@ -3055,11 +3055,16 @@ export default function WorkoutViewerScreen() {
     swapAccItem?.id,
   ]);
 
-  const openCanonicalMovementHistory = (item: WorkoutItem) => {
-    const resolution = resolveMovementHistoryLaunchForItem({
-      athleteId: Number(data?.workout?.athlete_id || 0),
+  const sessionMovementHistoryResolution = (item: WorkoutItem, athleteId: number) =>
+    resolveMovementHistoryLaunchForItem({
+      athleteId,
       item,
+      includeEquipmentContext: askForEquipmentDetails
+        && !isUnspecifiedEquipmentIdentity(activeEquipmentIdentity(item)),
     });
+
+  const openCanonicalMovementHistory = (item: WorkoutItem) => {
+    const resolution = sessionMovementHistoryResolution(item, Number(data?.workout?.athlete_id || 0));
     if (!resolution.ok) {
       if (__DEV__) console.warn('[MovementHistory] launch rejected', resolution.reason, item.id);
       Alert.alert('History unavailable', resolution.message);
@@ -8417,7 +8422,7 @@ export default function WorkoutViewerScreen() {
   ) : null;
 
   const historyPeekFor = (item: WorkoutItem) => {
-    const resolution = resolveMovementHistoryLaunchForItem({ athleteId: athlete.id, item });
+    const resolution = sessionMovementHistoryResolution(item, athlete.id);
     return resolution.ok ? <SessionHistoryPeek target={resolution.target} workoutId={workout.id} sessionDate={workout.date} ownerId={executionOwner} history={item.movement_history} semantics={itemLoadSemantics(item)} unit={unit} onOpen={() => openCanonicalMovementHistory(item)} /> : null;
   };
   let focusedSetAction: (() => void) | undefined;
@@ -8546,7 +8551,7 @@ export default function WorkoutViewerScreen() {
           top={accessoryIsComplete ? accessorySummary.top : lookbackLine}
           movementNote={it.notes}
           priorPerformanceCue={accessoryIsComplete || hideEquipmentDetails ? null : lastBestCue}
-          historyPeek={accessoryIsExpanded && !hideEquipmentDetails ? historyPeekFor(it) : null}
+          historyPeek={accessoryIsExpanded ? historyPeekFor(it) : null}
           visualContext={movementVisualContextFor(it)}
           submissionStatus={feedbackState.submission.status}
           submissionItemId={feedbackState.submission.activeItemId}

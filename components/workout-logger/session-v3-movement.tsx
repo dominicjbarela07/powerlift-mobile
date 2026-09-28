@@ -88,8 +88,8 @@ export function SessionV3MovementLayout({ title, index, expanded, complete, pres
     {history || (progress ? <Pressable accessibilityRole="button" accessibilityLabel={`View ${title} movement history`} onPress={focus?.onViewHistory} style={s.evidence}>
       <View style={s.evidenceHeader}><Text style={s.evidenceLabel}>{prior?.kind === 'last_best' ? 'LAST COMPARABLE' : progress.eyebrow}</Text><Text style={s.detail}>{progress.supporting}</Text></View>
       <Text style={s.evidenceValue}>{progress.primary}</Text>
-      <Text style={s.historyLink}>Movement history</Text>
-    </Pressable> : focus?.onViewHistory ? <Pressable onPress={focus.onViewHistory} accessibilityRole="button" style={s.emptyHistory}><Text style={s.historyLink}>Movement history</Text></Pressable> : null)}
+      <View style={s.historyAction}><Text style={s.historyLink}>Movement history</Text><Ionicons name="arrow-forward" size={15} color="#aadce5" /></View>
+    </Pressable> : focus?.onViewHistory ? <Pressable onPress={focus.onViewHistory} accessibilityRole="button" style={s.emptyHistory}><View style={s.historyAction}><Text style={s.historyLink}>Movement history</Text><Ionicons name="arrow-forward" size={15} color="#aadce5" /></View></Pressable> : null)}
     </View>
     <View style={s.tools}>{actions}</View>
     {timeline}
@@ -122,5 +122,6 @@ const s = StyleSheet.create({
   evidence: { marginTop: 12, backgroundColor: '#0c141a', borderWidth: 1, borderColor: '#2b3b42', padding: 13, borderRadius: 14 },
   evidenceHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, evidenceLabel: { fontSize: 10, color: '#b4dbe0' },
   evidenceValue: { color: '#f0edf7', fontFamily: SLFontFamilies.sansSemiBold, fontSize: 20, marginVertical: 8 },
+  historyAction: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   historyLink: { color: '#aadce5', fontSize: 13 }, emptyHistory: { paddingVertical: 14 }, tools: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginVertical: 4 },
 });

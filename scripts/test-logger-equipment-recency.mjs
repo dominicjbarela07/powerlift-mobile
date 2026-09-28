@@ -32,7 +32,7 @@ const api=load('lib/canonical-movement-history.ts',{'@/lib/api':{fetchJson:async
   '@/lib/movement-strength-metric':metric,'@/lib/performed-load-semantics':semantics,'@/lib/canonical-movement-history-contract':contract});
 const hooks=load('lib/use-session-exposure.ts',{react,'./canonical-movement-history':api,'./session-exposure-cache':cacheModule,'./session-exposure-snapshot':snapshots});
 const component=load('components/workout-logger/session-history-peek.tsx',{react,'react-native':{Pressable:'Pressable',View:'View',StyleSheet:{create:s=>s}},
-  '@/components/ui/sl-text':{Text:'Text'},'@/constants/theme':{SLFontFamilies:{sansSemiBold:'test'}},'@/lib/use-session-exposure':hooks,'@/lib/session-exposure-snapshot':snapshots});
+  '@/components/ui/sl-text':{Text:'Text'},'@expo/vector-icons':{Ionicons:'Ionicons'},'@/constants/theme':{SLFontFamilies:{sansSemiBold:'test'}},'@/lib/use-session-exposure':hooks,'@/lib/session-exposure-snapshot':snapshots});
 const item={id:7,variant:'ACC',lift:'AX',movement_identity_contract:1,movement_definition_id:314,movement_identity:{id:314},
   original_movement:'Unrelated label',performed_canonical_movement_identity:{id:315},is_substituted:true};
 const resolution=launch.resolveMovementHistoryLaunchForItem({athleteId:4,item}); assert.equal(resolution.ok,true);
