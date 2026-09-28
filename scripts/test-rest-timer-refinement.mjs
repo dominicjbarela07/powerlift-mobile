@@ -3,8 +3,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  cueForRestTimerSecond,
-  DEFAULT_REST_TIMER_CUE_CONFIG,
   REST_TIMER_ANTICIPATION_START_SECONDS,
   REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS,
   shouldPromoteRestTimer,
@@ -21,7 +19,6 @@ const restTimerRuntime = read('lib/rest-timer-completion.ts');
 
 assert.equal(REST_TIMER_ANTICIPATION_START_SECONDS, 10);
 assert.equal(REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS, 3);
-assert.equal(DEFAULT_REST_TIMER_CUE_CONFIG.promoteAtSeconds, 10);
 assert.equal(shouldPromoteRestTimer(true, 11), false);
 for (let second = 10; second >= 1; second -= 1) {
   assert.equal(
@@ -35,31 +32,11 @@ assert.equal(shouldPromoteRestTimer(true, 1), true);
 assert.equal(shouldPromoteRestTimer(true, 0), false);
 assert.equal(shouldPromoteRestTimer(false, 3), false);
 
-assert.deepEqual(cueForRestTimerSecond(3), { tone: 'short', haptic: 'light' });
-assert.deepEqual(cueForRestTimerSecond(2), { tone: 'short', haptic: 'light' });
-assert.deepEqual(cueForRestTimerSecond(1), { tone: 'short', haptic: 'light' });
-assert.deepEqual(cueForRestTimerSecond(0), { tone: 'finish', haptic: 'success' });
-assert.deepEqual(cueForRestTimerSecond(10), { tone: null, haptic: null });
-assert.deepEqual(cueForRestTimerSecond(4), { tone: null, haptic: null });
-assert.deepEqual(
-  cueForRestTimerSecond(2, {
-    ...DEFAULT_REST_TIMER_CUE_CONFIG,
-    audioEnabled: false,
-    hapticsEnabled: false,
-  }),
-  { tone: null, haptic: null },
-);
-
 assert.doesNotMatch(workoutRoute, /useAudioPlayer/);
-assert.match(workoutRoute, /createAudioPlayer\([\s\S]*rest-countdown-sequence\.wav/);
-assert.match(workoutRoute, /keepAudioSessionActive: false/);
-assert.match(workoutRoute, /new RestTimerCountdownAudioWindow/);
-assert.doesNotMatch(workoutRoute, /setAudioModeAsync|setIsAudioActiveAsync/);
+assert.doesNotMatch(workoutRoute, /createAudioPlayer|RestTimerCountdownAudioWindow|rest-countdown-sequence/);
 assert.match(workoutRoute, /onRestSecond=\{deliverRestTimerCue\}/);
 assert.match(workoutRoute, /remaining > REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS/);
 assert.match(workoutRoute, /Haptics\.ImpactFeedbackStyle\.Light/);
-assert.match(workoutRoute, /Haptics\.ImpactFeedbackStyle\.Medium/);
-assert.match(workoutRoute, /Haptics\.NotificationFeedbackType\.Success/);
 assert.match(workoutRoute, /rest=\{activeRestTimer\}/);
 assert.match(workoutRoute, /<SessionV3Footer[\s\S]*rest=\{/);
 assert.doesNotMatch(workoutRoute, /restTimerZeroVisible|restTimerReadyVisible/);
@@ -68,7 +45,7 @@ assert.match(workoutRoute, /useSyncExternalStore\(subscribeRestTimerCompletion, 
 assert.match(workoutRoute, /AppState\.addEventListener\('change'[\s\S]*reconcileGlobalRestTimerCompletion\(\)/);
 assert.match(workoutRoute, /onAddRest=\{addRestTime\}/);
 assert.match(workoutRoute, /extendGlobalRestTimer\(timer.timerId, 30\)/);
-assert.match(restTimerPresenter, /isRestTimerNotification\(notification\.request\.content\.data\)[\s\S]*shouldShowAlert: !suppressRestEnd/);
+assert.match(restTimerPresenter, /isRestTimerNotification\(data\)[\s\S]*shouldShowAlert: !suppressRestEnd/);
 assert.match(workoutRoute, /beginGlobalRestTimer\([\s\S]*workoutId,[\s\S]*endAtMs: endAt/);
 assert.doesNotMatch(restTimerRuntime, /persistRestTimerExpiry/);
 assert.doesNotMatch(workoutRoute, /loadRestTimerExpiry/);
@@ -198,13 +175,7 @@ assert.match(
 assert.match(workoutRoute, /const loggedSets = loggedSetCountForWorkout\(workout\)/);
 assert.match(workoutRoute, /const plannedSets = plannedSetCountForWorkout\(workout\)/);
 
-const sequence = fs.readFileSync(path.join(root, 'assets/audio/rest-countdown-sequence.wav'));
-assert.equal(sequence.subarray(0, 4).toString(), 'RIFF', 'countdown sequence is not a WAV file.');
-assert.equal(sequence.subarray(8, 12).toString(), 'WAVE', 'countdown sequence is not a WAV file.');
-assert.equal(sequence.readUInt32LE(24), 44_100, 'countdown sequence must remain 44.1 kHz.');
-assert.equal(sequence.readUInt16LE(22), 1, 'countdown sequence must remain mono.');
-assert.equal(sequence.readUInt16LE(34), 16, 'countdown sequence must remain 16-bit PCM.');
-assert.ok(sequence.length > 320_000, 'countdown sequence must contain the complete 3-2-1-0 cue.');
+assert.match(restTimerPresenter, /Rest complete\. Begin your next set\./);
 
 const startTimerBody = workoutRoute.slice(
   workoutRoute.indexOf('const startRestTimer'),
