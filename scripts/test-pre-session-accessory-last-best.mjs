@@ -131,7 +131,7 @@ assert.equal(legacyAuthoritativeResolution.comparisonIdentityKey, 'movement:167:
 
 assert.doesNotMatch(helperSource, /\bfetch\s*\(|\baxios\b|apiClient|openIdentityPicker/);
 assert.match(helperSource, /exactAccessoryLastExposure\(history\)/);
-assert.match(routeSource, /priorPerformanceCue=\{accessoryIsComplete \? null : lastBestCue\}/);
+assert.match(routeSource, /priorPerformanceCue=\{accessoryIsComplete \|\| hideEquipmentDetails \? null : lastBestCue\}/);
 assert.match(routeSource, /historyLine:\s*accessoryLookbackLine\(item\)/);
 assert.match(routeSource, /performed_canonical_movement_identity[\s\S]+performed_movement_identity[\s\S]+effective_movement_identity/);
 const v3Source = fs.readFileSync(path.join(root, 'components/workout-logger/session-v3-movement.tsx'), 'utf8');
