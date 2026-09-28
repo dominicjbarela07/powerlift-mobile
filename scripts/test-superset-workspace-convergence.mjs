@@ -46,5 +46,5 @@ assert.match(route,/phase=\{isPreSession \? 'pre' : isFinishedSession \? 'comple
 assert.match(view,/showEvidence \? <CompactSetTimeline/,'saved evidence is available only on demand for the selected member');
 assert.match(view,/only this round · rest after the set/, 'unequal final round copy never tells the athlete to alternate with a finished member');
 assert.match(view,/<CanonicalMovementArtwork[^>]*requireHumanApproval movement=\{item.movementArtwork\}/);
-assert.match(route,/equipmentRequired: needsEquipmentSelection\(item\)/);
+assert.match(route,/equipmentRequired: askForEquipmentDetails && needsEquipmentSelection\(item\)/);
 console.log('Superset storyboard: independent save focus, round rest, unequal and 3+ groups, resume, exact member actions and shared read-only preview PASS');
