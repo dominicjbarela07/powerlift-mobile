@@ -21,10 +21,12 @@ for (const context of [
   { loggerVisibleSinceMs: null }, { loggerVisibleSinceMs: endAtMs + 1 },
   { route: { segments: ['(tabs)', 'ledger', 'home'], workoutId: '41' } },
   { route: { segments: ['(tabs)', 'workout', '[workoutId]'], workoutId: '42' } },
-  { currentUserId: '10' }, { nowMs: endAtMs + 1_000 },
+  { currentUserId: '10' }, { nowMs: endAtMs - 1 },
 ]) {
   assert.equal(restTimerSignalForExpiry({ ...base, ...context }), 'notification', JSON.stringify(context));
 }
+assert.equal(restTimerSignalForExpiry({ ...base, nowMs: endAtMs + 4_000 }), 'voice',
+  'a delayed JS callback still speaks when the app and Logger stayed visible through expiry');
 const gate = new RestTimerSignalGate();
 assert.equal(gate.claim(base.timerId, 'voice'), 'voice');
 assert.equal(gate.claim(base.timerId, 'notification'), 'voice', 'native notification cannot follow speech');

@@ -35,7 +35,6 @@ export function restTimerSignalForExpiry(context: RestTimerSignalContext): RestT
     && context.loggerVisibleSinceMs !== null
     && context.loggerVisibleSinceMs <= context.endAtMs
     && context.nowMs >= context.endAtMs
-    && context.nowMs - context.endAtMs < 1_000
       ? 'voice'
       : 'notification';
 }
