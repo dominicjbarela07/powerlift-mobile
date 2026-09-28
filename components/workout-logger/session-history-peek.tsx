@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
+import { Ionicons } from '@expo/vector-icons';
 import { SLFontFamilies } from '@/constants/theme';
 import type { MovementHistoryLaunchTarget } from '@/lib/movement-history-launch';
 import type { PerformedLoadSemantics } from '@/lib/performed-load-semantics';
@@ -29,7 +30,7 @@ export function SessionHistoryPeek({ target, workoutId, sessionDate, ownerId, hi
     <Text style={s.context}>{content?.equipmentLabel || content?.context || (beforeEquipmentSelection
       ? 'Exact movement · view full record below' : 'Exact movement · equipment-aware record')}</Text>
     {read.status === 'error' && read.retry ? <Pressable accessibilityRole="button" accessibilityLabel="Retry previous exposure" onPress={event => { event.stopPropagation(); read.retry?.(); }}><Text style={s.link}>Retry history</Text></Pressable> : null}
-    <Text style={s.link}>Movement history · all sets & progression</Text>
+    <View style={s.linkRow}><Text style={s.linkText}>Movement history · all sets & progression</Text><Ionicons name="arrow-forward" size={15} color="#a8dfe9" /></View>
   </Pressable>;
 }
 const s = StyleSheet.create({
@@ -42,4 +43,6 @@ const s = StyleSheet.create({
   effort: { color: '#d0d8e0', fontSize: 14, lineHeight: 21 },
   context: { color: '#b6bdca', fontSize: 12, lineHeight: 18 },
   link: { color: '#a8dfe9', fontSize: 12, lineHeight: 18, marginTop: 9, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#29313b' },
+  linkRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 9, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#29313b' },
+  linkText: { color: '#a8dfe9', fontSize: 12, lineHeight: 18, flexShrink: 1 },
 });

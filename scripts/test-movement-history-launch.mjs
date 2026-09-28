@@ -57,6 +57,15 @@ assert.deepEqual(movementHistorySheetRoute(resolved.target), {
     equipmentContextDefinitionId: '25',
   },
 });
+const skippedEquipmentHistory = resolveMovementHistoryLaunchForItem({
+  athleteId: 4,
+  item: screenshotItem,
+  includeEquipmentContext: false,
+});
+assert.deepEqual(skippedEquipmentHistory.ok ? skippedEquipmentHistory.target : null, {
+  athleteId: 4,
+  movementDefinitionId: 167,
+}, 'Skipped equipment retains the governed movement history without an equipment filter.');
 
 const noEquipment = resolveMovementHistoryLaunchForItem({
   athleteId: 4,

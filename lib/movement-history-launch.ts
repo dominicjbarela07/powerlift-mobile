@@ -48,9 +48,11 @@ function positiveId(value: unknown): number | null {
 export function resolveMovementHistoryLaunchForItem({
   athleteId,
   item,
+  includeEquipmentContext = true,
 }: {
   athleteId: number | null | undefined;
   item: MovementHistoryLaunchItem;
+  includeEquipmentContext?: boolean;
 }): MovementHistoryLaunchResolution {
   const resolvedAthleteId = positiveId(athleteId);
   if (!resolvedAthleteId) {
@@ -97,7 +99,7 @@ export function resolveMovementHistoryLaunchForItem({
     target: {
       athleteId: resolvedAthleteId,
       movementDefinitionId,
-      ...(equipmentContextDefinitionId ? { equipmentContextDefinitionId } : {}),
+      ...(includeEquipmentContext && equipmentContextDefinitionId ? { equipmentContextDefinitionId } : {}),
     },
   };
 }
