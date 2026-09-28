@@ -56,7 +56,9 @@ const selected={...props,target:{...props.target,equipmentContextDefinitionId:73
   previous_exposure:{workout_id:80,date:older.date,comparison_identity_key:'314:73',representative_set:{...older.best_set,workout_id:80}}}};
 assert.match(text(render(selected)),/LAST COMPARABLE EXPOSURE.*Sep 10.*110.23 lb × 10/);
 assert.doesNotMatch(text(render(selected)),/250 lb/);assert.equal(selected.target.movementDefinitionId,314);
-assert.match(text(render({...selected,history:{...selected.history,previous_exposure:null}})),/No comparable exposure/);
+const emptySelectedHistory=text(render({...selected,history:{...selected.history,previous_exposure:null}}));
+assert.match(emptySelectedHistory,/No comparable exposure/);
+assert.doesNotMatch(emptySelectedHistory,/Exact movement/,'Empty history should not add a filler context line.');
 assert.match(text(render({...selected,history:{...selected.history,movement_definition_id:315}})),/History unavailable/);
 const option=(id,name,record=null,current=false)=>({id,key:name,display_name:name,manufacturer:{id,key:name,display_name:name},equipment_context:{option_kind:'catalog',is_current:current,
   usage_status:record?'used':'not_used',last_exposure:record,last_used_at:record?.performed_at,equipment_type_last_exposure:record?{plate_loaded:record}:{},

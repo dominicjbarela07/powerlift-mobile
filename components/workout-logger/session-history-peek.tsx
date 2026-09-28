@@ -19,6 +19,7 @@ export function SessionHistoryPeek({ target, workoutId, sessionDate, ownerId, hi
   const read = useSessionExposure({ context: { ownerId, athleteId: target.athleteId, workoutId, sessionDate }, target, history,
     canonicalEditorHistory: beforeEquipmentSelection });
   const content = presentSessionExposure(read.exposure, unit, target.coreMovementId ? 'core' : 'accessory', semantics);
+  const contextLine = content?.equipmentLabel || content?.context;
   const emptyCopy = read.status === 'empty' ? beforeEquipmentSelection ? 'No previous exposure' : 'No comparable exposure'
     : read.status === 'loading' ? 'Loading prior exposure…' : 'History unavailable';
   return <Pressable accessibilityRole="button" accessibilityLabel="Open full movement history" onPress={onOpen} style={s.panel}>
@@ -27,8 +28,7 @@ export function SessionHistoryPeek({ target, workoutId, sessionDate, ownerId, hi
       <Text style={s.value}>{content?.performance || emptyCopy}</Text>
       {content?.effort ? <Text style={s.effort}>{content.effort}</Text> : null}
     </View>
-    <Text style={s.context}>{content?.equipmentLabel || content?.context || (beforeEquipmentSelection
-      ? 'Exact movement · view full record below' : 'Exact movement · equipment-aware record')}</Text>
+    {contextLine ? <Text style={s.context}>{contextLine}</Text> : null}
     {read.status === 'error' && read.retry ? <Pressable accessibilityRole="button" accessibilityLabel="Retry previous exposure" onPress={event => { event.stopPropagation(); read.retry?.(); }}><Text style={s.link}>Retry history</Text></Pressable> : null}
     <View style={s.linkRow}><Text style={s.linkText}>Movement history · all sets & progression</Text><Ionicons name="arrow-forward" size={15} color="#a8dfe9" /></View>
   </Pressable>;
