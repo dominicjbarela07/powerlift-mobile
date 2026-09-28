@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import {
   activeEquipmentIdentity,
+  activeEquipmentPresentation,
   equipmentSnapshotForSet,
   isMachineAccessoryItem,
   needsEquipmentSelection,
@@ -84,6 +85,7 @@ const canonicalUnknown = {
 };
 const unidentifiedMachine = { ...cable, performed_movement_identity: canonicalUnknown };
 assert.equal(activeEquipmentIdentity(unidentifiedMachine)?.id, canonicalUnknown.id);
+assert.equal(activeEquipmentPresentation(unidentifiedMachine), null);
 assert.equal(needsEquipmentSelection(unidentifiedMachine), false);
 assert.equal(equipmentSnapshotForSet(canonicalUnknown).performed_movement_definition_id, canonicalUnknown.id);
 assert.equal(equipmentSnapshotForSet(canonicalUnknown).equipment_manufacturer_id, 99);
@@ -506,9 +508,12 @@ assert.notEqual(
 
 assert.match(
   routeSource,
-  /machineAccessory \? \([\s\S]*?>Equipment<\/Text>/,
+  /canConfigureMachineEquipment\(it\) \? \([\s\S]*?>Equipment<\/Text>/,
   'Machine accessories must expose the Equipment action.',
 );
+assert.match(routeSource, /expandedIdentityContext=\{accessoryIsExpanded && machineAccessory && !hideEquipmentDetails/);
+assert.match(routeSource, /historyPeek=\{accessoryIsExpanded && !hideEquipmentDetails/);
+assert.match(routeSource, /priorPerformanceCue=\{accessoryIsComplete \|\| hideEquipmentDetails \? null : lastBestCue/);
 assert.match(
   routeSource,
   /needsEquipmentSelection\(item\)[\s\S]*kind: 'accessory_set'/,

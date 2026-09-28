@@ -312,6 +312,7 @@ import {
 import {
   activeEquipmentIdentity,
   activeEquipmentPresentation,
+  isUnspecifiedEquipmentIdentity,
   equipmentSelectionOperation,
   equipmentSnapshotForSet,
   isMachineAccessoryItem,
@@ -8297,8 +8298,8 @@ export default function WorkoutViewerScreen() {
       title: simplifyMobileMovementName(executionName) || 'Accessory',
       canConfigureEquipment:
         !isCoachAthletePreview && canConfigureMachineEquipment(item),
-      equipmentContext: equipmentPresentation?.contextLabel || null,
-      equipmentRequired: needsEquipmentSelection(item),
+      equipmentContext: askForEquipmentDetails ? equipmentPresentation?.contextLabel || null : null,
+      equipmentRequired: askForEquipmentDetails && needsEquipmentSelection(item),
       movementArtwork: canonicalArtworkInputForLoggerItem(item),
       prescription: accessoryTargetLine(executionItem),
       historyLine: accessoryLookbackLine(item),
@@ -8478,6 +8479,7 @@ export default function WorkoutViewerScreen() {
                 : 'portable');
     const currentEquipment = activeEquipmentIdentity(it) as GeneralMovementIdentity | null;
     const currentEquipmentPresentation = activeEquipmentPresentation(it);
+    const hideEquipmentDetails = !askForEquipmentDetails || isUnspecifiedEquipmentIdentity(currentEquipment);
     const currentManufacturer = currentEquipmentPresentation?.manufacturerName
       || (currentEquipment?.equipment_context?.option_kind === 'other'
         ? 'Other'
@@ -8491,9 +8493,11 @@ export default function WorkoutViewerScreen() {
         ? equipmentPresentationLabel(currentEquipment.equipment_type, 'Machine')
         : null);
     const accessoryVariantLabel = accessoryKind === 'machine'
-      ? currentEquipment
-        ? `${currentManufacturer || 'Custom equipment'} · current equipment`
-        : 'Equipment required before logging'
+      ? hideEquipmentDetails
+        ? 'Machine'
+        : currentEquipment
+          ? `${currentManufacturer || 'Custom equipment'} · current equipment`
+          : 'Equipment required before logging'
       : accessoryKind === 'portable'
         ? 'Portable identity · no equipment step'
         : accessoryKind === 'cable'
@@ -8532,7 +8536,7 @@ export default function WorkoutViewerScreen() {
           }
           expanded={accessoryIsExpanded}
           detailRows={accessoryIsExpanded ? movementPresentation.detailRows : undefined}
-          expandedIdentityContext={accessoryIsExpanded && machineAccessory ? (
+          expandedIdentityContext={accessoryIsExpanded && machineAccessory && !hideEquipmentDetails ? (
             <SessionEquipmentContext selected={Boolean(currentEquipment)} manufacturer={currentManufacturer}
               name={currentEquipmentName} variant={currentEquipmentVariantLabel
                 ? `${currentEquipmentVariantLabel}${equipmentDomain === 'cable' ? ' Cable Station' : ''}` : null}
@@ -8541,8 +8545,8 @@ export default function WorkoutViewerScreen() {
           meta={accessoryIsComplete ? accessorySummary.meta : `${loggedCount}/${totalSets || 0} sets logged`}
           top={accessoryIsComplete ? accessorySummary.top : lookbackLine}
           movementNote={it.notes}
-          priorPerformanceCue={accessoryIsComplete ? null : lastBestCue}
-          historyPeek={accessoryIsExpanded ? historyPeekFor(it) : null}
+          priorPerformanceCue={accessoryIsComplete || hideEquipmentDetails ? null : lastBestCue}
+          historyPeek={accessoryIsExpanded && !hideEquipmentDetails ? historyPeekFor(it) : null}
           visualContext={movementVisualContextFor(it)}
           submissionStatus={feedbackState.submission.status}
           submissionItemId={feedbackState.submission.activeItemId}
@@ -10260,7 +10264,7 @@ export default function WorkoutViewerScreen() {
                       onPress={() => identityPickerItem && void saveUnknownEquipment(identityPickerItem, identityPickerContinuation, false)}
                       style={styles.identityPickerRow}>
                       <Text style={styles.equipmentVariantLabel}>Skip</Text>
-                      <Text style={styles.coreWheelSubtitle}>Record Unknown · Unknown</Text>
+                      <Text style={styles.coreWheelSubtitle}>Continue without equipment details</Text>
                     </TouchableOpacity> : null}
                     {identityPickerError ? (
                       <Text style={styles.movementHistoryEmpty}>
@@ -10364,7 +10368,7 @@ export default function WorkoutViewerScreen() {
                   onPress={() => identityPickerItem && void saveUnknownEquipment(identityPickerItem, identityPickerContinuation, false)}
                   style={styles.identityPickerRow}>
                   <Text style={styles.equipmentVariantLabel}>Skip</Text>
-                  <Text style={styles.coreWheelSubtitle}>Record Unknown · Unknown</Text>
+                  <Text style={styles.coreWheelSubtitle}>Continue without equipment details</Text>
                 </TouchableOpacity> : null}
                 {recentEquipment ? (() => {
                   const variant = equipmentFlowVariants(identityPickerSubject!).find(row => row.key === recentEquipment.equipmentType);

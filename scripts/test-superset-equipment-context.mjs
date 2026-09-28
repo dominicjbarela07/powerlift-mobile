@@ -209,8 +209,8 @@ const workspaceSource = fs.readFileSync(
 
 assert.match(
   routeSource,
-  /const equipmentPresentation = activeEquipmentPresentation\(executionItem\);[\s\S]*equipmentContext: equipmentPresentation\?\.contextLabel \|\| null/,
-  'The canonical superset mapping must resolve equipment from the effective execution item.',
+  /const equipmentPresentation = activeEquipmentPresentation\(executionItem\);[\s\S]*equipmentContext: askForEquipmentDetails \? equipmentPresentation\?\.contextLabel \|\| null : null/,
+  'The canonical superset mapping must resolve equipment from the effective execution item when details are enabled.',
 );
 assert.match(
   workspaceSource,

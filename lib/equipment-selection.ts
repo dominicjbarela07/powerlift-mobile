@@ -298,6 +298,14 @@ export function activeEquipmentIdentity(
   return null;
 }
 
+export function isUnspecifiedEquipmentIdentity(
+  identity: EquipmentIdentityLike | null | undefined,
+): boolean {
+  return identity?.key === 'machine_equipment_unknown_unknown'
+    && identity.manufacturer?.key === 'unknown'
+    && identity.equipment_type === 'unknown';
+}
+
 export type ActiveEquipmentPresentation = Readonly<{
   identity: EquipmentIdentityLike;
   manufacturerName: string;
@@ -314,7 +322,7 @@ export function activeEquipmentPresentation(
   item: EquipmentAwareWorkoutItem | null | undefined,
 ): ActiveEquipmentPresentation | null {
   const identity = activeEquipmentIdentity(item);
-  if (!identity) return null;
+  if (!identity || isUnspecifiedEquipmentIdentity(identity)) return null;
 
   const manufacturerName = String(
     identity.manufacturer?.display_name

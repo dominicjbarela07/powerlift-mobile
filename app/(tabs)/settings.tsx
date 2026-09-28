@@ -1970,7 +1970,7 @@ export default function SettingsScreen() {
 
               {settingsPanel === 'equipment' ? settingsToggleRow({
                 label: 'Ask for equipment details',
-                description: 'When off, unidentified machines are recorded as Unknown. You can still choose Equipment in the Session Logger.',
+                description: 'When off, machine details stay out of the Session Logger. You can still choose Equipment manually.',
                 value: askForEquipmentDetails,
                 disabled: equipmentPreferenceSaving,
                 onChange: (nextValue) => void saveEquipmentPreference(nextValue),
