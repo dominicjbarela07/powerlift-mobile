@@ -29,7 +29,7 @@ export function SessionHistoryPeek({ target, workoutId, sessionDate, ownerId, hi
     <Text style={s.context}>{content?.equipmentLabel || content?.context || (beforeEquipmentSelection
       ? 'Exact movement · view full record below' : 'Exact movement · equipment-aware record')}</Text>
     {read.status === 'error' && read.retry ? <Pressable accessibilityRole="button" accessibilityLabel="Retry previous exposure" onPress={event => { event.stopPropagation(); read.retry?.(); }}><Text style={s.link}>Retry history</Text></Pressable> : null}
-    <Text style={s.link}>Movement history · all sets & progression ↗︎</Text>
+    <Text style={s.link}>Movement history · all sets & progression</Text>
   </Pressable>;
 }
 const s = StyleSheet.create({

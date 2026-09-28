@@ -88,8 +88,8 @@ export function SessionV3MovementLayout({ title, index, expanded, complete, pres
     {history || (progress ? <Pressable accessibilityRole="button" accessibilityLabel={`View ${title} movement history`} onPress={focus?.onViewHistory} style={s.evidence}>
       <View style={s.evidenceHeader}><Text style={s.evidenceLabel}>{prior?.kind === 'last_best' ? 'LAST COMPARABLE' : progress.eyebrow}</Text><Text style={s.detail}>{progress.supporting}</Text></View>
       <Text style={s.evidenceValue}>{progress.primary}</Text>
-      <Text style={s.historyLink}>Movement history ↗</Text>
-    </Pressable> : focus?.onViewHistory ? <Pressable onPress={focus.onViewHistory} accessibilityRole="button" style={s.emptyHistory}><Text style={s.historyLink}>Movement history ↗</Text></Pressable> : null)}
+      <Text style={s.historyLink}>Movement history</Text>
+    </Pressable> : focus?.onViewHistory ? <Pressable onPress={focus.onViewHistory} accessibilityRole="button" style={s.emptyHistory}><Text style={s.historyLink}>Movement history</Text></Pressable> : null)}
     </View>
     <View style={s.tools}>{actions}</View>
     {timeline}
