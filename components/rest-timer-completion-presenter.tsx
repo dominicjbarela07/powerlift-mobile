@@ -6,6 +6,7 @@ import React,
   { useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState } from 'react';
 import { AppState,
   Platform,
@@ -16,12 +17,17 @@ import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
+import * as Speech from 'expo-speech';
 import {
   canPresentRestTimerCompletion,
+  isCanonicalSessionLoggerRoute,
   isRestTimerCompletionOwnedByCurrentLogger,
   isRestTimerNotification,
+  type ActiveRestTimer,
   type RestTimerCompletionState,
+  type RestTimerPresentationRoute,
 } from '@/lib/rest-timer-completion-core';
+import { RestTimerSignalGate, restTimerSignalForExpiry } from '@/lib/rest-timer-signal';
 import {
   acknowledgeGlobalRestTimerCompletion,
   getRestTimerCompletionState,
@@ -31,6 +37,7 @@ import {
 } from '@/lib/rest-timer-completion';
 
 type Props = Readonly<{ userId: string | number | null | undefined }>;
+const REST_COMPLETE_SPOKEN_CUE = 'Rest complete. Begin your next set.';
 
 async function cancelCompletionNotification(notificationId: string | null): Promise<void> {
   if (!notificationId || Platform.OS === 'web') return;
@@ -52,6 +59,56 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
     getRestTimerCompletionState(),
   );
   const [applicationState, setApplicationState] = useState(AppState.currentState);
+  const signalGate = useRef(new RestTimerSignalGate()).current;
+  const foregroundSinceRef = useRef<number | null>(
+    AppState.currentState === 'active' ? Date.now() : null,
+  );
+  const loggerVisibleSinceRef = useRef<number | null>(null);
+  const visibleLoggerKeyRef = useRef<string | null>(null);
+  const route: RestTimerPresentationRoute = { segments, workoutId: routeWorkoutId };
+  const loggerKey = isCanonicalSessionLoggerRoute(route)
+    ? String(Array.isArray(routeWorkoutId) ? routeWorkoutId[0] : routeWorkoutId ?? '')
+    : null;
+  if (loggerKey !== visibleLoggerKeyRef.current) {
+    visibleLoggerKeyRef.current = loggerKey;
+    loggerVisibleSinceRef.current = loggerKey ? Date.now() : null;
+  }
+  const contextRef = useRef({ route, userId: String(userId ?? '') });
+  contextRef.current = { route, userId: String(userId ?? '') };
+  const signalAtExpiryRef = useRef<(timer: ActiveRestTimer) => 'voice' | 'notification'>(() => 'notification');
+  signalAtExpiryRef.current = (timer) => {
+    const existing = signalGate.get(timer.timerId);
+    if (existing) return existing;
+    const current = getRestTimerCompletionState();
+    if (current.active?.timerId !== timer.timerId
+      && current.pending?.timerId !== timer.timerId) return 'notification';
+    if (current.active && current.active.endAtMs !== timer.endAtMs) return 'notification';
+    const signal = restTimerSignalForExpiry({
+      timerId: timer.timerId,
+      workoutId: timer.workoutId,
+      ownerUserId: timer.ownerUserId,
+      endAtMs: timer.endAtMs,
+      nowMs: Date.now(),
+      appState: AppState.currentState,
+      foregroundSinceMs: foregroundSinceRef.current,
+      loggerVisibleSinceMs: loggerVisibleSinceRef.current,
+      currentUserId: contextRef.current.userId,
+      route: contextRef.current.route,
+    });
+    signalGate.claim(timer.timerId, signal);
+    if (signal === 'voice') {
+      try {
+        // AVSpeechSynthesizer manages its own brief session, including mixing and ducking.
+        Speech.speak(REST_COMPLETE_SPOKEN_CUE, { useApplicationAudioSession: false });
+        void cancelCompletionNotification(timer.notificationId);
+      } catch (error) {
+        signalGate.replace(timer.timerId, 'notification');
+        console.warn('rest completion speech failed', error);
+        return 'notification';
+      }
+    }
+    return signal;
+  };
 
   useEffect(() => subscribeRestTimerCompletion(setSnapshot), []);
 
@@ -61,6 +118,7 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
+      foregroundSinceRef.current = nextState === 'active' ? Date.now() : null;
       setApplicationState(nextState);
       if (nextState === 'active') void reconcileGlobalRestTimerCompletion();
     });
@@ -72,6 +130,7 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
     if (!active) return undefined;
     const delay = Math.max(0, active.endAtMs - Date.now());
     const timer = setTimeout(() => {
+      signalAtExpiryRef.current(active);
       void reconcileGlobalRestTimerCompletion();
     }, Math.min(delay, 2_147_000_000));
     return () => clearTimeout(timer);
@@ -84,8 +143,20 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
       if (cancelled) return;
       Notifications.setNotificationHandler({
         handleNotification: async (notification) => {
-          const suppressRestEnd = AppState.currentState === 'active'
-            && isRestTimerNotification(notification.request.content.data);
+          const data = notification.request.content.data;
+          let suppressRestEnd = false;
+          if (isRestTimerNotification(data)) {
+            const timerId = String(data?.timer_id ?? '');
+            const existing = signalGate.get(timerId);
+            const state = getRestTimerCompletionState();
+            const active = state.active?.timerId === timerId ? state.active : null;
+            if (existing === 'voice') suppressRestEnd = true;
+            else if (active) suppressRestEnd = signalAtExpiryRef.current(active) === 'voice';
+            else if (state.active && timerId && state.active.timerId !== timerId) {
+              // A cancelled deadline from an extended/replaced timer is stale.
+              suppressRestEnd = true;
+            }
+          }
           return {
             shouldShowAlert: !suppressRestEnd,
             shouldShowBanner: !suppressRestEnd,
@@ -99,7 +170,7 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [signalGate]);
 
   const presentationRoute = {
     segments,
