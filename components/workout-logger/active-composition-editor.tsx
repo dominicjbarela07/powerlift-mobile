@@ -10,6 +10,7 @@ import { type CoachMovementDraft } from '@/lib/coach-session-editor';
 import { additionDraft, additionRequest, type AdditionSelection, type SessionComposition } from '@/lib/active-session-composition';
 import { fetchJson } from '@/lib/api';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
+import { governedCoreChoices, type GovernedCoreChoice } from '@/lib/governed-movement-classes';
 
 export function ActiveCompositionEditor({ mode, workoutId, athlete, composition, unit, onClose, onSaved }: {
   mode: 'add' | 'remove'; workoutId: number; athlete: { id: number; sex?: string | null; anatomy_display_preference?: string | null };
@@ -20,7 +21,7 @@ export function ActiveCompositionEditor({ mode, workoutId, athlete, composition,
   const [beforeId, setBeforeId] = useState<number | null>(null);
   const [pendingRemovalId, setPendingRemovalId] = useState<number | null>(null);
   const pendingRemoval = composition.items.find(item => item.id === pendingRemovalId);
-  const [coreChoices, setCoreChoices] = useState<{ id: number; display_name: string; lift: string }[]>([]);
+  const [coreChoices, setCoreChoices] = useState<GovernedCoreChoice[]>([]);
   const [coreLoading, setCoreLoading] = useState(mode === 'add');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -33,10 +34,7 @@ export function ActiveCompositionEditor({ mode, workoutId, athlete, composition,
       .then(response => {
         if (!alive.current) return;
         if (!response.ok) throw new Error('Core lifts could not be loaded. Reopen Add Movement to try again.');
-        setCoreChoices((response.json?.training_lifts?.categories || []).flatMap((group: any) =>
-          (group.movements || []).filter((row: any) => Number.isInteger(row.movement_definition_id)).map((row: any) => ({
-            id: row.movement_definition_id, display_name: row.display_name || row.name, lift: row.lift,
-          }))));
+        setCoreChoices(governedCoreChoices(response.json?.training_lifts?.categories || []));
       }).catch(reason => { if (alive.current) setError(reason.message); })
       .finally(() => { if (alive.current) setCoreLoading(false); });
     return () => { alive.current = false; };
@@ -63,7 +61,10 @@ export function ActiveCompositionEditor({ mode, workoutId, athlete, composition,
   };
   if (mode === 'add' && !selection && !error) return <GovernedAccessorySubstitutionPickerModal
     context="in-session-addition" visible title="Add Movement" athleteId={athlete.id} athleteAnatomy={athlete}
-    coreLoading={coreLoading} coreChoices={coreChoices} onSelectCore={value => select({ ...value, kind: 'core' })}
+    coreLoading={coreLoading} coreChoices={coreChoices} onSelectCore={value => {
+      if (!value.movement_definition_id) return;
+      select({ id: value.movement_definition_id, display_name: value.display_name, lift: value.lift, kind: 'core' });
+    }}
     canCreateCustom onCancel={onClose} onSelect={value => select({ id: value.id, display_name: value.display_name, kind: 'accessory' })} />;
   return <StrengthLedgerBottomSheet visible accessibilityLabel={mode === 'add' ? 'Add Movement' : 'Remove Movement'}
     heightFraction={0.88} dismissalBlocked={busy || pendingRemoval != null} onDismiss={onClose}>

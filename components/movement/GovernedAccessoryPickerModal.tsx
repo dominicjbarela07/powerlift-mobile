@@ -9,6 +9,7 @@ import { CanonicalMuscleGroupArtwork } from '@/components/movement/CanonicalMusc
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
+import { MOVEMENT_CLASS_OPTIONS, coreFamilyLabel, governedCoreClass, type GovernedCoreChoice, type MovementClass } from '@/lib/governed-movement-classes';
 import {
   ACCESSORY_PICKER_REGIONS,
   accessoryTaxonomyLabel,
@@ -28,6 +29,8 @@ export type GovernedAccessoryIdentity = {
   id: number;
   key?: string | null;
   display_name: string;
+  kind?: string | null;
+  programming_contexts?: string[] | null;
   family?: string | null;
   family_display_name?: string | null;
   ownership_scope?: string | null;
@@ -50,8 +53,8 @@ type CustomStep = 'name' | 'primary' | 'secondary' | 'execution' | 'review';
 type Props = {
   context: 'in-session-substitution' | 'in-session-addition';
   coreLoading?: boolean;
-  coreChoices?: { id: number; display_name: string; lift: string }[];
-  onSelectCore?: (identity: { id: number; display_name: string; lift: string }) => void;
+  coreChoices?: GovernedCoreChoice[];
+  onSelectCore?: (identity: GovernedCoreChoice) => void;
   visible: boolean;
   athleteId: number | null;
   athleteAnatomy?: { anatomy_display_preference?: string | null; sex?: string | null } | null;
@@ -95,6 +98,7 @@ export function GovernedAccessorySubstitutionPickerModal({
 }: Props) {
   const insets = useSafeAreaInsets();
   const [step, setStep] = useState<DiscoveryStep>('home');
+  const [movementClass, setMovementClass] = useState<MovementClass>('core');
   const [mode, setMode] = useState<PickerMode>('search');
   const [selectedRegion, setSelectedRegion] = useState<AccessoryPickerRegion | null>(null);
   const [selectedMuscle, setSelectedMuscle] = useState('');
@@ -134,7 +138,8 @@ export function GovernedAccessorySubstitutionPickerModal({
 
   useEffect(() => {
     if (!visible) return;
-    setStep('home');
+    setStep(context === 'in-session-addition' ? 'core' : 'home');
+    setMovementClass('core');
     setMode('search');
     setSelectedRegion(null);
     setSelectedMuscle('');
@@ -145,7 +150,7 @@ export function GovernedAccessorySubstitutionPickerModal({
     setCustomStep(null);
     setSimilarityMatches([]);
     setError('');
-  }, [visible]);
+  }, [context, visible]);
 
   useEffect(() => {
     if (!visible || !athleteId || !similaritySubject?.id || !similaritySubject.primary_muscle_group) {
@@ -178,7 +183,11 @@ export function GovernedAccessorySubstitutionPickerModal({
   ]);
 
   useEffect(() => {
-    if (!visible || customStep || step !== 'results' || !athleteId) return;
+    if (!visible || customStep || step !== 'results' || !athleteId || (context === 'in-session-addition' && movementClass !== 'accessory')) {
+      requestRef.current += 1;
+      setLoading(false);
+      return;
+    }
     if (mode === 'search' && !query.trim()) {
       setRows([]);
       setLoading(false);
@@ -228,7 +237,7 @@ export function GovernedAccessorySubstitutionPickerModal({
         .finally(() => requestId === requestRef.current && setLoading(false));
     }, query.trim() ? CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS : 0);
     return () => clearTimeout(timer);
-  }, [athleteId, currentIdentity?.id, customStep, mode, query, selectedExecutionFamily, selectedMuscle, step, visible]);
+  }, [athleteId, context, currentIdentity?.id, customStep, mode, movementClass, query, selectedExecutionFamily, selectedMuscle, step, visible]);
 
   const equipmentTypeFilters = useMemo(
     () => availableSwapEquipmentTypeFilters(executionFamilyFacets, rows),
@@ -250,6 +259,7 @@ export function GovernedAccessorySubstitutionPickerModal({
   };
   const openSearch = (nextQuery: string) => {
     setQuery(nextQuery);
+    if (context === 'in-session-addition' && movementClass !== 'accessory') { setStep('core'); return; }
     if (step === 'results' && mode === 'muscle') return;
     setMode('search');
     if (nextQuery.trim()) setStep('results');
@@ -287,13 +297,14 @@ export function GovernedAccessorySubstitutionPickerModal({
       <CanonicalMovementArtwork movement={{ kind: 'accessory', movement_identity: identity }} size={62} style={styles.artwork} testID="governed-picker-canonical-movement-artwork" />
       <View style={styles.rowCopy}>
         <Text numberOfLines={2} style={styles.rowTitle}>{identity.display_name}</Text>
-        <Text numberOfLines={2} style={styles.rowMeta}>{reason || [accessoryTaxonomyLabel(identity.primary_muscle_group), accessoryTaxonomyLabel(identity.execution_family)].filter(Boolean).join(' · ') || 'Governed accessory'}</Text>
+        <Text numberOfLines={2} style={styles.rowMeta}>{identity.kind === 'core' && identity.programming_contexts?.includes('accessory') ? 'Core variant · accessory use' : reason || [accessoryTaxonomyLabel(identity.primary_muscle_group), accessoryTaxonomyLabel(identity.execution_family)].filter(Boolean).join(' · ') || 'Governed accessory'}</Text>
       </View>
       <Ionicons color={SLColors.textMuted} name="chevron-forward" size={20} />
     </Pressable>
   );
 
-  const matchingCore = coreChoices.filter(row => row.display_name.toLowerCase().includes(query.trim().toLowerCase()));
+  const matchingCore = coreChoices.filter(row => governedCoreClass(row) === movementClass
+    && row.display_name.toLowerCase().includes(query.trim().toLowerCase()));
   const muscles = authoring.muscle_groups || [];
   const executions = authoring.execution_families || [];
   const nextCustomStep = () => {
@@ -325,33 +336,25 @@ export function GovernedAccessorySubstitutionPickerModal({
     <Modal animationType="slide" onRequestClose={onCancel} presentationStyle="fullScreen" statusBarTranslucent visible={visible}>
       <View style={[styles.shell, { paddingTop: Math.max(insets.top, SLSpacing.sm), paddingBottom: Math.max(insets.bottom, SLSpacing.sm) }]}>
         <View style={styles.header}>
-          <Pressable accessibilityLabel={step === 'home' && !customStep ? (context === 'in-session-addition' ? 'Close Add Movement' : 'Close Swap') : 'Back'} onPress={step === 'home' && !customStep ? onCancel : navigateBack} style={styles.headerButton}>
-            <Ionicons color={SLColors.textStrong} name={step === 'home' && !customStep ? 'close' : 'arrow-back'} size={23} />
+          <Pressable accessibilityLabel={(step === 'home' || context === 'in-session-addition' && step === 'core') && !customStep ? (context === 'in-session-addition' ? 'Close Add Movement' : 'Close Swap') : 'Back'} onPress={(step === 'home' || context === 'in-session-addition' && step === 'core') && !customStep ? onCancel : navigateBack} style={styles.headerButton}>
+            <Ionicons color={SLColors.textStrong} name={(step === 'home' || context === 'in-session-addition' && step === 'core') && !customStep ? 'close' : 'arrow-back'} size={23} />
           </Pressable>
           <View style={styles.headerCopy}><Text numberOfLines={1} style={styles.title}>{customStep ? 'Create Governed Movement' : title}</Text><Text numberOfLines={1} style={styles.subtitle}>Self-coached Session programming</Text></View>
         </View>
 
         {!customStep ? <>
-          <View style={styles.searchOuter}><View style={styles.searchWrap}><Ionicons color={SLColors.textMuted} name="search" size={18} /><TextInput onChangeText={openSearch} placeholder="Search names, aliases, or taxonomy" placeholderTextColor={SLColors.textSubtle} style={styles.search} value={query} /></View></View>
+          <View style={styles.searchOuter}><View style={styles.searchWrap}><Ionicons color={SLColors.textMuted} name="search" size={18} /><TextInput onChangeText={openSearch} placeholder={context === 'in-session-addition' ? `Search ${movementClass === 'core' ? 'Core lifts' : movementClass === 'variant' ? 'variants' : 'Accessories'}` : 'Search names, aliases, or taxonomy'} placeholderTextColor={SLColors.textSubtle} style={styles.search} value={query} /></View></View>
+          {context === 'in-session-addition' ? <View style={styles.movementClassRow} accessibilityRole="tablist">{MOVEMENT_CLASS_OPTIONS.map((option) => <Pressable accessibilityRole="tab" accessibilityState={{ selected: movementClass === option.key }} key={option.key} onPress={() => { setMovementClass(option.key); setMode('search'); setStep(option.key === 'accessory' ? query.trim() ? 'results' : 'home' : 'core'); }} style={[styles.movementClassTab, movementClass === option.key && styles.movementClassTabActive]}><Text style={[styles.movementClassText, movementClass === option.key && styles.movementClassTextActive]}>{option.label}</Text></Pressable>)}</View> : null}
           <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" style={styles.scroll}>
-            {context === 'in-session-addition' && (step === 'core' || step === 'results' && mode === 'search') && matchingCore.length ? <>
-              <Text style={styles.sectionLabel}>CORE LIFTS & VARIANTS</Text>
-              {matchingCore.map(row => <Pressable key={row.id} accessibilityRole="button" accessibilityLabel={`Select ${row.display_name}`}
-                onPress={() => onSelectCore?.(row)} style={styles.row}>
-                <View style={styles.rowCopy}><Text style={styles.rowTitle}>{row.display_name}</Text>
-                  <Text style={styles.rowMeta}>{row.lift === 'VR' ? 'Core variant · manual load' : 'Core lift'}</Text></View>
-                <Ionicons color={SLColors.textMuted} name="chevron-forward" size={20} />
-              </Pressable>)}
+            {context === 'in-session-addition' && step === 'core' ? <>
+              {movementClass === 'variant' ? ['squat', 'bench', 'deadlift'].map(family => {
+                const familyRows = matchingCore.filter(row => row.core_movement_family === family);
+                return familyRows.length ? <View key={family}><Text style={styles.sectionLabel}>{coreFamilyLabel(family).toUpperCase()}</Text>{familyRows.map(row => <Pressable key={row.id} accessibilityRole="button" accessibilityLabel={row.movement_definition_id ? `Select ${row.display_name}` : `${row.display_name}, plan before the Session`} accessibilityState={{ disabled: !row.movement_definition_id }} disabled={!row.movement_definition_id} onPress={() => onSelectCore?.(row)} style={[styles.row, !row.movement_definition_id && styles.unavailableCoreRow]}><View style={styles.rowCopy}><Text style={styles.rowTitle}>{row.display_name}</Text><Text style={styles.rowMeta}>{row.movement_definition_id ? `${coreFamilyLabel(family)} variant` : 'Plan this variant before the Session'}</Text></View>{row.movement_definition_id ? <Ionicons color={SLColors.textMuted} name="chevron-forward" size={20} /> : null}</Pressable>)}</View> : null;
+              }) : matchingCore.map(row => <Pressable key={row.id} accessibilityRole="button" accessibilityLabel={row.movement_definition_id ? `Select ${row.display_name}` : `${row.display_name}, plan before the Session`} accessibilityState={{ disabled: !row.movement_definition_id }} disabled={!row.movement_definition_id} onPress={() => onSelectCore?.(row)} style={[styles.row, !row.movement_definition_id && styles.unavailableCoreRow]}><View style={styles.rowCopy}><Text style={styles.rowTitle}>{row.display_name}</Text><Text style={styles.rowMeta}>{row.movement_definition_id ? 'Competition lift' : 'Plan this lift before the Session'}</Text></View>{row.movement_definition_id ? <Ionicons color={SLColors.textMuted} name="chevron-forward" size={20} /> : null}</Pressable>)}
             </> : null}
             {step === 'core' && coreLoading ? <ActivityIndicator color={SLColors.accentViolet} /> : null}
-            {step === 'core' && !coreLoading && !matchingCore.length ? <Text style={styles.empty}>No Core lifts are available.</Text> : null}
+            {step === 'core' && !coreLoading && !matchingCore.length ? <Text style={styles.empty}>{query.trim() ? 'No matching movements in this class.' : 'No governed movements are available.'}</Text> : null}
             {step === 'home' ? <>
-              {context === 'in-session-addition' ? <Pressable accessibilityRole="button" accessibilityLabel="Browse Core lifts and variants"
-                onPress={() => setStep('core')} style={styles.browseButton}>
-                <Ionicons color="#FFFFFF" name="barbell-outline" size={24} /><View style={styles.browseCopy}>
-                  <Text style={styles.browseTitle}>Core Lifts & Variants</Text><Text style={styles.browseMeta}>Choose a lift, then its prescription</Text>
-                </View><Ionicons color="#FFFFFF" name="chevron-forward" size={20} />
-              </Pressable> : null}
               {currentIdentity ? <View style={styles.contextCard}>
                 <CanonicalMovementArtwork surface="GovernedAccessoryPickerModal" movement={{ kind: 'accessory', movement_identity: currentIdentity }} size={70} style={styles.contextArtwork} />
                 <View style={styles.contextCopy}><Text style={styles.sectionLabel}>SWAPPING</Text><Text numberOfLines={2} style={styles.contextName}>{currentIdentity.display_name}</Text><Text numberOfLines={1} style={styles.contextMeta}>{[accessoryTaxonomyLabel(currentIdentity.primary_muscle_group), currentIdentity.family_display_name || accessoryTaxonomyLabel(currentIdentity.family)].filter(Boolean).join(' · ')}</Text><Text style={styles.prescriptionLabel}>Current prescription</Text><Text style={styles.prescription}>{currentPrescription || 'No prescription'}</Text></View>
@@ -394,10 +397,16 @@ const styles = StyleSheet.create({
   headerButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 22, backgroundColor: '#15111d' },
   headerCopy: { flex: 1, minWidth: 0, paddingHorizontal: 12 }, title: { color: SLColors.textStrong, fontSize: 19, fontWeight: '700' }, subtitle: { color: SLColors.textMuted, fontSize: 12, marginTop: 2 },
   searchOuter: { paddingHorizontal: SLSpacing.md, paddingTop: 12 }, searchWrap: { minHeight: 48, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#30293d', borderRadius: SLRadius.md, backgroundColor: '#0e0c13' }, search: { flex: 1, color: SLColors.textStrong, paddingHorizontal: 10, fontSize: 16 },
+  movementClassRow: { flexDirection: 'row', marginHorizontal: SLSpacing.md, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#30293d' },
+  movementClassTab: { flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  movementClassTabActive: { borderBottomColor: SLColors.accentViolet },
+  movementClassText: { color: SLColors.textMuted, fontSize: 11, fontWeight: '700', letterSpacing: .8 },
+  movementClassTextActive: { color: SLColors.textStrong },
   scroll: { flex: 1, minHeight: 0 }, scrollContent: { paddingHorizontal: SLSpacing.md, paddingTop: 14, paddingBottom: 40, gap: 9 },
   contextCard: { minHeight: 112, flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: '#332943', backgroundColor: '#09070d' }, contextArtwork: { flexShrink: 0, borderRadius: 12, backgroundColor: '#15111d' }, contextCopy: { flex: 1, minWidth: 0 }, contextName: { color: SLColors.textStrong, fontSize: 16, lineHeight: 21, fontWeight: '700', marginTop: 2 }, contextMeta: { color: SLColors.textMuted, fontSize: 12, marginTop: 3 }, prescriptionLabel: { color: SLColors.textSubtle, fontSize: 10, letterSpacing: .7, textTransform: 'uppercase', marginTop: 8 }, prescription: { color: SLColors.textPrimary, fontSize: 13, fontWeight: '600', marginTop: 2 },
   sectionLabel: { color: SLColors.textSubtle, fontSize: 11, letterSpacing: 1, marginTop: 9 }, helper: { color: SLColors.textMuted, fontSize: 13, lineHeight: 19, paddingVertical: 10 },
   row: { minHeight: 76, padding: 10, flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: SLRadius.md, borderWidth: 1, borderColor: '#292432', backgroundColor: '#0c0b10' }, pressed: { opacity: .76, transform: [{ scale: .992 }] }, artwork: { width: 58, height: 58, borderRadius: 10, backgroundColor: '#15111d' }, rowCopy: { flex: 1, minWidth: 0 }, rowTitle: { color: SLColors.textStrong, fontSize: 15, lineHeight: 20, fontWeight: '600' }, rowMeta: { color: SLColors.textMuted, fontSize: 12, lineHeight: 17, marginTop: 4 },
+  unavailableCoreRow: { opacity: .55 },
   browseButton: { minHeight: 76, flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 7, paddingHorizontal: 16, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: '#9A5BE8', backgroundColor: '#4b1f78' }, browseCopy: { flex: 1, minWidth: 0 }, browseTitle: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' }, browseMeta: { color: '#D8C6ED', fontSize: 12, marginTop: 3 },
   accelerators: { flexDirection: 'row', gap: 8 }, accelerator: { flex: 1, minHeight: 68, alignItems: 'center', justifyContent: 'center', gap: 7, paddingHorizontal: 5, borderRadius: SLRadius.md, borderWidth: 1, borderColor: '#30293d', backgroundColor: '#0d0b12' }, acceleratorText: { color: SLColors.textStrong, fontSize: 12, textAlign: 'center', fontWeight: '600' },
   pageTitle: { color: SLColors.textStrong, fontSize: 22, lineHeight: 28, fontWeight: '700', marginTop: 4 }, pageMeta: { color: SLColors.textMuted, fontSize: 13, lineHeight: 19, marginBottom: 5 }, regionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 }, regionCard: { width: '48%', flexGrow: 1, minHeight: 138, alignItems: 'center', justifyContent: 'center', padding: 10, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: '#30293d', backgroundColor: '#0d0b12' }, regionArtwork: { width: 86, height: 86 }, regionLabel: { color: SLColors.textStrong, fontSize: 14, fontWeight: '700', marginTop: 4 }, regionHero: { minHeight: 100, flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: SLRadius.lg, backgroundColor: '#0d0b12' }, regionHeroArtwork: { width: 82, height: 82 }, muscleArtwork: { width: 58, height: 58, alignItems: 'center', justifyContent: 'center', borderRadius: 10, overflow: 'hidden', backgroundColor: '#15111d' },

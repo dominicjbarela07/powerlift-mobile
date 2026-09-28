@@ -26,6 +26,7 @@ import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
 import { activeCoachingAthletes } from '@/lib/coach-roster-visibility';
 import { normalizeDisplayWeightUnit } from '@/lib/display-units';
+import { MOVEMENT_CLASS_OPTIONS, coreFamilyLabel, governedCoreChoices, governedCoreClass, type MovementClass } from '@/lib/governed-movement-classes';
 import {
   CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS,
   canonicalMovementSearchEmptyCopy,
@@ -239,6 +240,10 @@ type MovementPreset = {
   category?: string | null;
   category_key?: string | null;
   family?: string | null;
+  core_movement_kind?: 'competition' | 'variant' | null;
+  core_movement_family?: string | null;
+  kind?: string | null;
+  programming_contexts?: string[] | null;
   family_display_name?: string | null;
   type?: string | null;
   loading_behavior?: string | null;
@@ -708,6 +713,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   };
 
   const openChangeAccessoryEditor = (item: SessionMovementItem, onChange: (item: SessionMovementItem) => void) => {
+    addMovementCompletionRef.current = null;
     addAccessoryCompletionRef.current = null;
     changeAccessoryCompletionRef.current = onChange;
     const identity = item.movement_identity || null;
@@ -750,10 +756,11 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
     if (accessoryEditor && JSON.stringify(accessoryEditor.setup) !== JSON.stringify(accessoryEditor.initialSetup)) {
       Alert.alert('Discard movement changes?', 'Your unsaved accessory setup changes will be lost.', [
         { text: 'Keep Editing', style: 'cancel' },
-        { text: 'Discard Changes', style: 'destructive', onPress: () => { addAccessoryCompletionRef.current = null; changeAccessoryCompletionRef.current = null; setAccessoryEditor(null); } },
+        { text: 'Discard Changes', style: 'destructive', onPress: () => { addMovementCompletionRef.current = null; addAccessoryCompletionRef.current = null; changeAccessoryCompletionRef.current = null; setAccessoryEditor(null); } },
       ]);
       return;
     }
+    addMovementCompletionRef.current = null;
     addAccessoryCompletionRef.current = null;
     changeAccessoryCompletionRef.current = null;
     setAccessoryEditor(null);
@@ -1047,6 +1054,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   };
 
   const closeAccessoryEditorAfterSuccess = () => {
+    addMovementCompletionRef.current = null;
     addAccessoryCompletionRef.current = null;
     changeAccessoryCompletionRef.current = null;
     setAccessoryEditor(null);
@@ -1366,7 +1374,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
           openAddAccessoryEditor((item) => onAdd(item, 'accessory'));
         }}
         onAddCore={openAddCoreLiftEditor}
-        onAddAccessory={openAddAccessoryEditor}
+        onAddAccessory={(onAdd) => { addMovementCompletionRef.current = null; openAddAccessoryEditor(onAdd); }}
         onChangeAccessory={openChangeAccessoryEditor}
         onOpenMovementHistory={(item) => {
           const resolution = resolveMovementHistoryLaunchForItem({
@@ -1428,13 +1436,15 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       <AccessoryEditorModal
         state={accessoryEditor}
         groups={accessoryGroups}
+        coreEnabled={!!addMovementCompletionRef.current}
+        coreLoading={movementGroupsLoading}
         coreGroups={accessoryEditor?.mode === 'add' && addMovementCompletionRef.current ? movementGroups : []}
         onSelectCore={(movement, group) => {
           const preset = movementPresetFromValue(movement, group);
-          if (preset.lift === 'VR' && !preset.coreMovementId) return;
+          if (!preset.coreMovementId || !preset.coreKind) return;
           addMovementCompletionRef.current?.({
             id: nextDraftMovementIdRef.current--, movement: preset.name,
-            core_movement: preset.coreMovementId ? { id: preset.coreMovementId, display_name: preset.name, kind: preset.lift === 'VR' ? 'variant' : 'competition' } : null,
+            core_movement: preset.coreMovementId ? { id: preset.coreMovementId, display_name: preset.name, kind: preset.coreKind } : null,
             lift: preset.lift, designation: 'PRIMARY', variant: 'STRAIGHT', mode: 'RPE', sets: 3, reps: 5,
             rpe_target: preset.lift === 'VR' ? null : 7, planned_sets: [],
           }, 'core');
@@ -1775,6 +1785,8 @@ function AnatomyTargetArt({
 function AccessoryEditorModal({
   state,
   groups,
+  coreEnabled = false,
+  coreLoading = false,
   coreGroups = [],
   onSelectCore,
   athleteId,
@@ -1789,6 +1801,8 @@ function AccessoryEditorModal({
 }: {
   state: AccessoryEditorState | null;
   groups: MovementPresetGroup[];
+  coreEnabled?: boolean;
+  coreLoading?: boolean;
   coreGroups?: MovementPresetGroup[];
   onSelectCore?: (movement: MovementPreset | string, group: MovementPresetGroup) => void;
   athleteId: number | null;
@@ -1806,6 +1820,7 @@ function AccessoryEditorModal({
   const [detailReturnStep, setDetailReturnStep] = useState<AccessoryPickerStep>('results');
   const [customReturnStep, setCustomReturnStep] = useState<AccessoryPickerStep>('results');
   const [discoveryMode, setDiscoveryMode] = useState<'muscle' | 'movement'>('movement');
+  const [movementClass, setMovementClass] = useState<MovementClass>('core');
   const [selectedRegionKey, setSelectedRegionKey] = useState('');
   const [selectedMovement, setSelectedMovement] = useState<MovementPreset | null>(null);
   const [movementQuery, setMovementQuery] = useState('');
@@ -1847,15 +1862,22 @@ function AccessoryEditorModal({
   const customIdentityComplete = !!setup?.customMovement.trim()
     && !!setup.primaryMuscleGroup
     && !!setup.executionFamily;
+  const hasCoreCatalog = state?.mode === 'add' && coreEnabled;
+  const activeClass = hasCoreCatalog ? movementClass : 'accessory';
+  const coreCatalog = useMemo(() => governedCoreChoices(coreGroups), [coreGroups]);
+  const matchingCore = useMemo(() => coreCatalog.filter((row) =>
+    governedCoreClass(row) === activeClass && row.display_name.toLowerCase().includes(movementQuery.trim().toLowerCase())),
+  [activeClass, coreCatalog, movementQuery]);
   const showsResults = pickerStep === 'targets'
     || pickerStep === 'results'
-    || (pickerStep === 'discovery' && discoveryMode === 'movement');
+    || (pickerStep === 'discovery' && discoveryMode === 'movement' && activeClass === 'accessory');
 
   useEffect(() => {
     setPickerStep('discovery');
     setDetailReturnStep('results');
     setCustomReturnStep('results');
     setDiscoveryMode('movement');
+    setMovementClass('core');
     setSelectedRegionKey('');
     setSelectedMovement(null);
     setMovementQuery('');
@@ -2309,6 +2331,7 @@ function AccessoryEditorModal({
             </Text>
           )}
           {movement.ownership_scope === 'coach' ? <Text style={styles.accessoryPickerMovementSource}>My Movement</Text> : null}
+          {movement.kind === 'core' && movement.programming_contexts?.includes('accessory') ? <Text style={styles.accessoryPickerMovementSource}>Core variant · accessory use</Text> : null}
         </View>
       </Pressable>
       <Pressable
@@ -2499,7 +2522,19 @@ function AccessoryEditorModal({
             >
               {pickerStep === 'discovery' ? (
                 <>
-                  <Pressable accessibilityRole="button" onPress={() => setDiscoveryMode((mode) => mode === 'movement' ? 'muscle' : 'movement')} style={{ minHeight: 44, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 8 }}><Ionicons name={discoveryMode === 'movement' ? 'body-outline' : 'search-outline'} size={18} color={colors.violet} /><Text style={{ color: colors.violet }}>{discoveryMode === 'movement' ? 'Browse by muscle' : 'Search movements'}</Text></Pressable>
+                  <Pressable accessibilityRole="button" onPress={() => {
+                    if (discoveryMode === 'movement') setMovementClass('accessory');
+                    setDiscoveryMode((mode) => mode === 'movement' ? 'muscle' : 'movement');
+                  }} style={{ minHeight: 44, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 8 }}><Ionicons name={discoveryMode === 'movement' ? 'body-outline' : 'search-outline'} size={18} color={colors.violet} /><Text style={{ color: colors.violet }}>{discoveryMode === 'movement' ? 'Browse by muscle' : 'Search movements'}</Text></Pressable>
+                  <View style={styles.accessoryPickerSectionInset}>
+                    <View style={styles.accessoryPickerSearchField}>
+                      <Ionicons name="search-outline" size={20} color={colors.muted} />
+                      <TextInput accessibilityLabel="Search movements" value={movementQuery} onChangeText={(value) => { setMovementQuery(value); if (discoveryMode === 'muscle') setDiscoveryMode('movement'); }} placeholder={`Search ${activeClass === 'core' ? 'Core lifts' : activeClass === 'variant' ? 'variants' : 'Accessories'}...`} placeholderTextColor={colors.subtle} returnKeyType="search" style={styles.accessoryPickerSearchInput} />
+                    </View>
+                    {hasCoreCatalog ? <View style={styles.movementClassRow} accessibilityRole="tablist">
+                      {MOVEMENT_CLASS_OPTIONS.map((option) => <Pressable key={option.key} accessibilityRole="tab" accessibilityState={{ selected: activeClass === option.key }} onPress={() => { setMovementClass(option.key); setDiscoveryMode('movement'); setResultMode('all'); }} style={[styles.movementClassTab, activeClass === option.key && styles.movementClassTabActive]}><Text style={[styles.movementClassText, activeClass === option.key && styles.movementClassTextActive]}>{option.label}</Text></Pressable>)}
+                    </View> : null}
+                  </View>
                   {discoveryMode === 'muscle' ? (
                     <View style={styles.accessoryPickerRegionGrid}>
                       {pickerRegions.map((region) => (
@@ -2524,22 +2559,21 @@ function AccessoryEditorModal({
                     </View>
                   ) : (
                     <View style={styles.accessoryPickerSectionInset}>
-                      <View style={styles.accessoryPickerSearchField}>
-                        <Ionicons name="search-outline" size={20} color={colors.muted} />
-                        <TextInput accessibilityLabel="Search accessory movements" value={movementQuery} onChangeText={setMovementQuery} autoFocus placeholder="Search all movements..." placeholderTextColor={colors.subtle} returnKeyType="search" style={styles.accessoryPickerSearchInput} />
-                      </View>
-                      {coreGroups.length ? <View style={{ gap: 0 }}><Text style={{ color: colors.muted, fontSize: 12, paddingVertical: 12 }}>CORE LIFTS & VARIANTS</Text>{coreGroups.flatMap((group) => (group.movements || []).filter((movement) => movementPresetFromValue(movement, group).name.toLowerCase().includes(movementQuery.toLowerCase())).map((movement) => {
-                        const preset = movementPresetFromValue(movement, group);
-                        return <Pressable key={`${group.key}-${preset.coreMovementId || preset.name}`} accessibilityRole="button" accessibilityLabel={`Select ${preset.name}`} onPress={() => onSelectCore?.(movement, group)} style={{ minHeight: 64, flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line }}><CanonicalMovementArtwork surface="session-workspace-core-search" movement={{ core_movement: { id: preset.coreMovementId, family: preset.coreFamily, kind: preset.lift === 'VR' ? 'variant' : 'competition' }, lift: preset.lift, kind: 'core' }} size={44} /><View style={{ flex: 1 }}><Text style={{ color: colors.textStrong, fontSize: 16 }}>{preset.name}</Text><Text style={{ color: colors.muted, fontSize: 12 }}>{preset.lift === 'VR' ? 'Variant · manual load' : 'Competition lift'}</Text></View><Ionicons name="add" size={21} color={colors.violet} /></Pressable>;
-                      })).slice(0, movementQuery ? 24 : 3)}</View> : null}
-                      {resultList}
+                      {activeClass !== 'accessory' ? <View>
+                        {activeClass === 'variant' ? ['squat', 'bench', 'deadlift'].map((family) => {
+                          const rows = matchingCore.filter((row) => row.core_movement_family === family);
+                          return rows.length ? <View key={family}><Text style={styles.accessoryPickerSectionLabel}>{coreFamilyLabel(family)}</Text>{rows.map((row) => <Pressable key={row.id} accessibilityRole="button" accessibilityLabel={`Select ${row.display_name}`} onPress={() => onSelectCore?.(row, { key: 'core_variants', name: 'Core Variants' })} style={styles.movementClassResult}><CanonicalMovementArtwork surface="session-workspace-core-search" movement={{ core_movement: { id: row.id, family: row.core_movement_family, kind: row.core_movement_kind }, lift: row.lift, kind: 'core' }} size={44} /><View style={{ flex: 1 }}><Text style={styles.movementClassResultName}>{row.display_name}</Text><Text style={styles.movementClassResultMeta}>{coreFamilyLabel(family)} variant</Text></View><Ionicons name="add" size={21} color={colors.violet} /></Pressable>)}</View> : null;
+                        }) : matchingCore.map((row) => <Pressable key={row.id} accessibilityRole="button" accessibilityLabel={`Select ${row.display_name}`} onPress={() => onSelectCore?.(row, { key: 'competition_lifts', name: 'Competition Lifts' })} style={styles.movementClassResult}><CanonicalMovementArtwork surface="session-workspace-core-search" movement={{ core_movement: { id: row.id, family: row.core_movement_family, kind: row.core_movement_kind }, lift: row.lift, kind: 'core' }} size={44} /><View style={{ flex: 1 }}><Text style={styles.movementClassResultName}>{row.display_name}</Text><Text style={styles.movementClassResultMeta}>Competition lift</Text></View><Ionicons name="add" size={21} color={colors.violet} /></Pressable>)}
+                        {coreLoading ? <View style={styles.trainingLiftLoadingRow}><ActivityIndicator color={colors.violet} /><Text style={styles.trainingLiftMuted}>Loading governed movements...</Text></View> : null}
+                        {!coreLoading && !matchingCore.length ? <Text style={styles.trainingLiftMuted}>{movementQuery.trim() ? 'No matching movements in this class.' : 'No governed movements are available.'}</Text> : null}
+                      </View> : resultList}
                     </View>
                   )}
-                  <View style={styles.accessoryPickerQuickRow}>
+                  {activeClass === 'accessory' ? <View style={styles.accessoryPickerQuickRow}>
                     <Pressable onPress={() => selectLibraryMode('favorites')} style={styles.accessoryPickerQuickButton}><Ionicons name="star-outline" size={17} color={SLColors.warning} /><Text style={styles.accessoryPickerQuickText}>Favorites</Text></Pressable>
                     <Pressable onPress={() => selectLibraryMode('recent')} style={styles.accessoryPickerQuickButton}><Ionicons name="time-outline" size={17} color={colors.violet} /><Text style={styles.accessoryPickerQuickText}>Recent</Text></Pressable>
                     <Pressable onPress={() => selectLibraryMode('custom')} style={styles.accessoryPickerQuickButton}><Ionicons name="person-outline" size={17} color={colors.violet} /><Text style={styles.accessoryPickerQuickText}>My Movements</Text></Pressable>
-                  </View>
+                  </View> : null}
                 </>
               ) : null}
 
@@ -3566,7 +3600,8 @@ function movementPresetFromValue(value: MovementPreset | string | null | undefin
   return {
     name,
     coreMovementId: Number(preset?.core_movement_id || preset?.id) || null,
-    coreFamily: preset?.family || null,
+    coreFamily: preset?.core_movement_family || preset?.family || null,
+    coreKind: preset?.core_movement_kind || null,
     lift: String(preset?.lift || (group?.key === 'competition_lifts'
       ? name === 'Competition Bench' ? 'BN' : name === 'Competition Deadlift' ? 'DL' : 'SQ'
       : 'VR')).toUpperCase(),
@@ -5155,6 +5190,25 @@ const styles = StyleSheet.create({
     gap: 12,
     marginHorizontal: 14,
   },
+  movementClassRow: {
+    flexDirection: 'row',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.line,
+  },
+  movementClassTab: {
+    flex: 1,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  movementClassTabActive: { borderBottomColor: colors.violet },
+  movementClassText: { color: colors.muted, fontSize: 11, fontFamily: SLFontFamilies.sansBold, letterSpacing: 0.9 },
+  movementClassTextActive: { color: colors.textStrong },
+  movementClassResult: { minHeight: 64, flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
+  movementClassResultName: { color: colors.textStrong, fontSize: 16, fontFamily: SLFontFamilies.sansBold },
+  movementClassResultMeta: { color: colors.muted, fontSize: 12, marginTop: 3 },
   accessoryPickerSearchField: {
     minHeight: 48,
     flexDirection: 'row',

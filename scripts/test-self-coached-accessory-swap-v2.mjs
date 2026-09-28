@@ -53,7 +53,8 @@ assert.match(picker, /Browse by Muscle Group[\s\S]*ACCESSORY_PICKER_REGIONS[\s\S
 assert.match(workspace, /from '@\/lib\/canonical-accessory-discovery'/, 'Session Workspace consumes the same extracted taxonomy module');
 assert.match(shared, /ACCESSORY_MUSCLE_GROUPS[\s\S]*ACCESSORY_PICKER_REGIONS/, 'shared module owns canonical muscle taxonomy and region grouping');
 assert.match(picker, /favorites_only[\s\S]*recent_only[\s\S]*custom_only/, 'Favorites, Recent, and My Movements use governed backend filters');
-assert.match(picker, /placeholder="Search names, aliases, or taxonomy"/, 'direct lookup clearly exposes governed search');
+assert.match(picker, /: 'Search names, aliases, or taxonomy'/, 'Swap direct lookup still exposes governed search');
+assert.match(picker, /Search \$\{movementClass === 'core' \? 'Core lifts' : movementClass === 'variant' \? 'variants' : 'Accessories'\}/, 'Add Movement search names the selected governed class');
 assert.match(picker, /params\.set\('q', query\.trim\(\)\)/, 'direct lookup sends the query to canonical server search');
 assert.match(picker, /uniqueIdentities\(items, currentIdentity\?\.id\)/, 'all result paths exclude the current exact identity');
 assert.match(logger, /onSelect=\{\(identity\) => \{[\s\S]*setSwapAccVisible\(true\)/, 'selection opens configuration without invoking the mutation');

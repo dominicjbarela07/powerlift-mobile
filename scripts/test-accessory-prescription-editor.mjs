@@ -88,7 +88,8 @@ assert.equal(movementProgrammingPatch({ ...persisted, repsText: 'AMRAP' }, 'acce
 assert.match(workspace, /PrescriptionValueControl accent="sets"[\s\S]*accent="reps"[\s\S]*accent="rir"/, 'the inline editor exposes compact Sets, Reps, and RIR controls instead of permanent wheels');
 assert.match(workspace, /type AccessoryPrescriptionPicker = 'sets' \| 'reps' \| 'rir' \| null/, 'one contextual picker state owns the prescription input machinery');
 assert.match(workspace, /<StrengthLedgerBottomSheet[\s\S]*heightFraction=[\s\S]*visible=\{picker != null\}/, 'all prescription inputs reuse the shared Strength Ledger bottom sheet');
-assert.match(workspace, /heightFraction=\{picker === 'reps' \? \(repDraft\.mode === 'AMRAP' \? 0\.5 : 0\.64\) : 0\.55\}/, 'sheet height follows the actual input content instead of preserving a large dead void');
+assert.match(workspace, /heightFraction=\{picker === 'reps' \? \(repDraft\.mode === 'AMRAP' \? 0\.5 : confirmDiscard \? 0\.70 : 0\.64\) : confirmDiscard \? 0\.61 : 0\.55\}/, 'sheet height follows the input and leaves room for discard confirmation');
+assert.match(workspace, /onRequestClose=\{cancelPicker\}/, 'Accessory sheet dismissal guards unapplied edits');
 assert.match(workspace, /const \[setsDraft[\s\S]*const \[rirDraft[\s\S]*const \[repDraft[\s\S]*const apply = \(\) => \{[\s\S]*onChange\(\{ sets: setsDraft \}\)[\s\S]*onChange\(\{ repsText: accessoryRepTargetText\(repDraft\) \}\)[\s\S]*onChange\(\{ rir: rirDraft \}\)/, 'picker state remains local until Apply commits the selected field');
 assert.match(workspace, /onDismiss=\{\(\) => setPicker\(null\)\}/, 'dismissal cancels a picker without mutating the Session draft');
 assert.match(workspace, /\[\['FIXED', 'Single'\], \['RANGE', 'Range'\], \['AMRAP', 'AMRAP'\]\]/, 'Rep Target exposes canonical Single, Range, and AMRAP modes');

@@ -31,6 +31,7 @@ function harness() {
     '@/components/movement/GovernedAccessoryPickerModal': {},
     '@/components/coach-mobile/SessionEditingWorkspace': {},
     '@/lib/active-session-composition': {},
+    '@/lib/governed-movement-classes': { governedCoreChoices: () => [] },
     '@/constants/theme': { SLColors: {}, SLFontFamilies: {} },
     '@/lib/api': { fetchJson: (url, options) => { requests.push({ url, ...options }); return new Promise(resolve => { resolveRequest = resolve; }); } },
   };

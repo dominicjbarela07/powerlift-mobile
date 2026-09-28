@@ -265,6 +265,11 @@ const recap: CompletedSessionRecapPayload = {
   },
 };
 
+const layoutRecap: CompletedSessionRecapPayload = {
+  ...recap,
+  performed_movements: movements.map((entry) => entry.item_id === 5 ? { ...entry, equipment: [] } : entry),
+};
+
 const sparseMovement: CompletedRecapMovement = {
   ...movements[0],
   sets: movements[0].sets.slice(0, 1),
@@ -512,6 +517,8 @@ export default function SessionRecapCertificationScreen() {
   const initialScrollOffsetY = Math.max(0, Number(params.offset) || 0);
   const activeRecap = params.scenario === 'visual'
     ? visualRecap
+    : params.scenario === 'layout'
+    ? layoutRecap
     : params.scenario === 'sparse'
     ? sparseRecap
     : params.scenario === 'related' ? relatedHistoryRecap
