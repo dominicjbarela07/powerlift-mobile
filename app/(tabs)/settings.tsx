@@ -1757,7 +1757,7 @@ export default function SettingsScreen() {
             settingsRow({
               icon: 'construct-outline',
               title: 'Ask for equipment details',
-              description: 'When off, unidentified machines are recorded as Unknown. You can still choose Equipment in the Session Logger.',
+              description: 'When off, machine details stay out of the Session Logger. You can still choose Equipment manually.',
               summary: askForEquipmentDetails ? 'On' : 'Off',
               onPress: () => void saveEquipmentPreference(!askForEquipmentDetails),
               disabled: equipmentPreferenceSaving,

@@ -5930,7 +5930,7 @@ export default function WorkoutViewerScreen() {
                       disabled={equipmentPickerLoading}
                       onPress={() => equipmentPickerItem && void saveUnknownEquipment(equipmentPickerItem, equipmentPickerContinuation, false)}>
                       <Text style={styles.equipmentPickerOptionTitle}>Skip</Text>
-                      <Text style={styles.equipmentPickerOptionMeta}>Record Unknown · Unknown</Text>
+                      <Text style={styles.equipmentPickerOptionMeta}>Continue without equipment details</Text>
                     </TouchableOpacity>
                     {(['plate_loaded', 'selectorized'] as const).map((equipmentType) => (
                       <TouchableOpacity
@@ -5977,7 +5977,7 @@ export default function WorkoutViewerScreen() {
                       disabled={equipmentPickerLoading}
                       onPress={() => equipmentPickerItem && void saveUnknownEquipment(equipmentPickerItem, equipmentPickerContinuation, false)}>
                       <Text style={styles.equipmentPickerOptionTitle}>Skip</Text>
-                      <Text style={styles.equipmentPickerOptionMeta}>Record Unknown · Unknown</Text>
+                      <Text style={styles.equipmentPickerOptionMeta}>Continue without equipment details</Text>
                     </TouchableOpacity>
                     {equipmentPickerLoading ? (
                       <ActivityIndicator color="#8B5CF6" style={styles.equipmentPickerLoading} />
