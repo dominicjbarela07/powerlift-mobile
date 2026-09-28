@@ -38,6 +38,9 @@ assert.match(policy, /performed_movement_identity/, 'Performed identity must tak
 assert.match(policy, /movement_identity/, 'Programmed canonical identity must provide the fallback classification.');
 assert.doesNotMatch(policy, /LEGACY_MACHINE_MOVEMENT_TERMS/, 'The Production gate must not guess machine identity from movement labels.');
 assert.match(policy, /PORTABLE_TERMS/, 'Portable and bodyweight identities must bypass the machine picker.');
-assert.match(policy, /identity_specificity === 'exact'/, 'Only exact configured machine identity may satisfy the gate.');
+assert.match(policy, /identity_specificity === 'exact'/, 'Known exact machine identity must satisfy the gate.');
+assert.match(policy, /machine_equipment_unknown_unknown/, 'Canonical Unknown equipment must also satisfy the gate.');
+assert.match(logger, /intent: 'skip_equipment'/, 'Skip must persist canonical Unknown equipment.');
+assert.match(logger, /ask_for_equipment_details: false/, 'First skip must offer the account-backed preference.');
 
 console.log('production equipment picker hotfix contract: PASS');

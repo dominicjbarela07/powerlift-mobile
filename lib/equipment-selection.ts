@@ -87,6 +87,9 @@ export function isMachineAccessoryItem(
 function isConfiguredMachineIdentity(
   identity?: EquipmentIdentityLike | null,
 ): identity is EquipmentIdentityLike {
+  if (identity?.key === 'machine_equipment_unknown_unknown'
+      && identity.manufacturer?.key === 'unknown'
+      && identity.equipment_type === 'unknown') return true;
   return Boolean(
     identity
       && identity.identity_specificity === 'exact'

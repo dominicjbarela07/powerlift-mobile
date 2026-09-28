@@ -26,7 +26,7 @@ let Notifications: any = null;
 if (Platform.OS !== 'web') {
   Notifications = require('expo-notifications');
 }
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 let VideoThumbnails: any = null;
@@ -1349,6 +1349,17 @@ export default function WorkoutViewerScreen() {
   const [unit, setUnit] = useState<'kg' | 'lb'>('kg');
   const unitSeededWorkoutIdRef = useRef<string | null>(null);
   const [data, setData] = useState<WorkoutPayload | null>(null);
+  const [askForEquipmentDetails, setAskForEquipmentDetails] = useState(true);
+  const unknownEquipmentSaveRef = useRef(false);
+  useFocusEffect(useCallback(() => {
+    let current = true;
+    void fetchJson(`${API_BASE}/mobile/settings`, { method: 'GET', auth: true }).then((response) => {
+      if (current && response.ok && response.json?.ok) {
+        setAskForEquipmentDetails(response.json.ask_for_equipment_details !== false);
+      }
+    }).catch(() => {});
+    return () => { current = false; };
+  }, [user?.id]));
 
   useEffect(() => {
     const isLogging = String(data?.workout?.status || '').toLowerCase() === 'in_progress';
@@ -2587,8 +2598,71 @@ export default function WorkoutViewerScreen() {
     }
   };
 
+  const saveUnknownEquipment = async (
+    item: WorkoutItem,
+    continuation: EquipmentPickerContinuation,
+    automatic: boolean,
+  ) => {
+    if (!workoutId || unknownEquipmentSaveRef.current) return;
+    unknownEquipmentSaveRef.current = true;
+    setEquipmentPickerLoading(true);
+    setEquipmentPickerError(null);
+    try {
+      const response = await fetchJson(
+        `${API_BASE}/workouts/mobile/${workoutId}/items/${item.id}/performed-identity`,
+        { method: 'PUT', auth: true, body: { intent: 'skip_equipment', automatic_skip: automatic } },
+      );
+      if (!response.ok || !response.json?.ok) throw new Error(response.json?.error || 'Could not skip equipment details.');
+      const identity = response.json.performed_movement_identity as EquipmentIdentityLike;
+      if (identity?.key !== 'machine_equipment_unknown_unknown' || identity.manufacturer?.key !== 'unknown') {
+        throw new Error('The saved equipment could not be verified. Refresh the Session.');
+      }
+      const nextItem: WorkoutItem = { ...item, performed_movement_identity: identity };
+      setData(current => current ? { ...current, workout: { ...current.workout,
+        accessory_groups: current.workout.accessory_groups.map(group => ({ ...group,
+          items: group.items.map(candidate => Number(candidate.id) === Number(item.id) ? nextItem : candidate),
+        })),
+      }} : current);
+      const refreshed = await fetchWorkout({ silent: true });
+      const confirmed = refreshed?.workout?.accessory_groups.flatMap(group => group.items)
+        .find(candidate => Number(candidate.id) === Number(item.id));
+      if (confirmed?.performed_movement_identity?.id !== identity.id) {
+        throw new Error('The saved equipment could not be confirmed. Refresh before logging.');
+      }
+      closeEquipmentPicker();
+      const resume = () => {
+        if (continuation.kind === 'accessory_set') requestAnimationFrame(() => openAccessoryWheel(confirmed, true));
+      };
+      if (response.json.show_skip_preference_prompt) {
+        Alert.alert('Stop asking for equipment details?',
+          'Machine details can be skipped automatically. You can change this in Settings.', [
+            { text: 'Keep Asking', onPress: resume },
+            { text: "Don't Ask Again", onPress: () => {
+              void fetchJson(`${API_BASE}/mobile/settings`, {
+                method: 'PATCH', auth: true, body: { ask_for_equipment_details: false },
+              }).then((saved) => {
+                if (!saved.ok || !saved.json?.ok) throw new Error(saved.json?.error || 'Could not save preference.');
+                setAskForEquipmentDetails(false);
+              }).catch((error: any) => Alert.alert('Equipment setting not saved', error?.message || 'Please try again.'))
+                .finally(resume);
+            } },
+          ]);
+      } else resume();
+    } catch (error: any) {
+      if (automatic) Alert.alert('Equipment unavailable', error?.message || 'Please try again.');
+      else setEquipmentPickerError(error?.message || 'Could not skip equipment details.');
+    } finally {
+      unknownEquipmentSaveRef.current = false;
+      setEquipmentPickerLoading(false);
+    }
+  };
+
   const openAccessoryWheel = (item: WorkoutItem, skipEquipmentGate = false) => {
     if (!skipEquipmentGate && needsEquipmentSelection(item)) {
+      if (!askForEquipmentDetails) {
+        void saveUnknownEquipment(item, { kind: 'accessory_set', itemId: Number(item.id) }, true);
+        return;
+      }
       openEquipmentPicker(item, { kind: 'accessory_set', itemId: Number(item.id) });
       return;
     }
@@ -5852,6 +5926,12 @@ export default function WorkoutViewerScreen() {
                         {equipmentPickerManufacturer.manufacturer?.display_name || 'Other'}
                       </Text>
                     </View>
+                    <TouchableOpacity style={styles.equipmentPickerOption}
+                      disabled={equipmentPickerLoading}
+                      onPress={() => equipmentPickerItem && void saveUnknownEquipment(equipmentPickerItem, equipmentPickerContinuation, false)}>
+                      <Text style={styles.equipmentPickerOptionTitle}>Skip</Text>
+                      <Text style={styles.equipmentPickerOptionMeta}>Record Unknown · Unknown</Text>
+                    </TouchableOpacity>
                     {(['plate_loaded', 'selectorized'] as const).map((equipmentType) => (
                       <TouchableOpacity
                         key={equipmentType}
@@ -5893,6 +5973,12 @@ export default function WorkoutViewerScreen() {
                       style={styles.equipmentPickerSearch}
                       autoCorrect={false}
                     />
+                    <TouchableOpacity style={styles.equipmentPickerOption}
+                      disabled={equipmentPickerLoading}
+                      onPress={() => equipmentPickerItem && void saveUnknownEquipment(equipmentPickerItem, equipmentPickerContinuation, false)}>
+                      <Text style={styles.equipmentPickerOptionTitle}>Skip</Text>
+                      <Text style={styles.equipmentPickerOptionMeta}>Record Unknown · Unknown</Text>
+                    </TouchableOpacity>
                     {equipmentPickerLoading ? (
                       <ActivityIndicator color="#8B5CF6" style={styles.equipmentPickerLoading} />
                     ) : null}
