@@ -35,7 +35,7 @@ assert.equal(gate.claim('timer-2', 'beep'), 'notification', 'returning to Logger
 assert.equal(gate.claim('timer-3', 'beep'), 'beep', 'next timer has independent delivery');
 
 assert.doesNotMatch(presenter, /expo-speech|Speech\.speak|REST_COMPLETE_SPOKEN_CUE/);
-assert.match(presenter, /useAudioPlayer\(REST_COMPLETION_BEEP, \{ keepAudioSessionActive: false \}\)/);
+assert.match(presenter, /useAudioPlayer\(REST_COMPLETION_BEEP, \{[\s\S]*downloadFirst: true,[\s\S]*keepAudioSessionActive: false/);
 assert.match(presenter, /!beepPlayer\.isLoaded \|\| !beepResetReadyRef\.current/);
 assert.match(presenter, /beepPlayer\.play\(\)/);
 assert.match(presenter, /beepPlayer\.seekTo\(0\)/);
