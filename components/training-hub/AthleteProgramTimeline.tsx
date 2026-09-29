@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { useFocusEffect } from 'expo-router';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Animated,
   FlatList,
   ImageBackground,
   LayoutAnimation,
@@ -15,11 +15,10 @@ import {
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { SLContextualHeader } from '@/components/ui';
 import { SLMotionEntrance, SLMotionPressable } from '@/components/ui/sl-motion';
 import { Text } from '@/components/ui/sl-text';
-import { SLColors, SLRadius, SLMotion, SLTypography } from '@/constants/theme';
+import { SLColors, SLMotion, SLTypography } from '@/constants/theme';
 import { useSLReducedMotion } from '@/lib/motion';
 import type {
   ProgramTimelineBlock,
@@ -30,19 +29,12 @@ import type {
 } from '@/lib/program-timeline';
 
 const PROGRAM_ART = require('@/assets/images/ledger-index-v2/ledger-hero-plate-v1.png');
-const BLOCK_GENERAL_ART = require('@/assets/images/gym_vibe.jpg');
-const BLOCK_STRENGTH_ART = require('@/assets/images/ledger-index-v2/ledger-chapter-variants-v1.png');
-const BLOCK_HYPERTROPHY_ART = require('@/assets/images/ledger-index-v2/ledger-chapter-accessories-v1.png');
-const BLOCK_FOUNDATION_ART = require('@/assets/images/ledger-index-v2/ledger-chapter-journey-v1.png');
-
-const MAP_COLUMNS = 3;
-const MAP_ROW_HEIGHT = 112;
 
 const lifecycleTone: Record<ProgramTimelineLifecycle, string> = {
-  completed: '#43D786',
+  completed: SLColors.success,
   in_progress: SLColors.accentViolet,
-  today: SLColors.warning,
-  upcoming: SLColors.warning,
+  today: SLColors.accentViolet,
+  upcoming: SLColors.textMuted,
   missed: SLColors.accentRed,
   no_session: SLColors.textSubtle,
 };
@@ -57,35 +49,25 @@ function lifecycleLabel(value: ProgramTimelineLifecycle) {
   if (value === 'today') return 'Current';
   if (value === 'upcoming') return 'Upcoming';
   if (value === 'missed') return 'Missed';
-  return 'Unbuilt';
+  return 'No Sessions';
 }
 
 function blockTone(status: ProgramTimelineBlock['status']) {
   if (status === 'completed') return lifecycleTone.completed;
-  if (status === 'current') return SLColors.warning;
-  return SLColors.accentViolet;
-}
-
-function blockArtwork(block: ProgramTimelineBlock) {
-  const identity = block.name.toLowerCase();
-  if (/(hypertrophy|bodybuild|offseason|volume|accessor)/.test(identity)) return BLOCK_HYPERTROPHY_ART;
-  if (/(strength|power|peak|competition|intens)/.test(identity)) return BLOCK_STRENGTH_ART;
-  if (/(base|foundation|recovery|return|reverse|rebuild|diet)/.test(identity)) return BLOCK_FOUNDATION_ART;
-  return BLOCK_GENERAL_ART;
+  if (status === 'current') return SLColors.accentViolet;
+  return SLColors.textMuted;
 }
 
 function sessionEvidence(session: ProgramTimelineSession) {
-  return [
-    session.movementCount != null ? `${session.movementCount} movement${session.movementCount === 1 ? '' : 's'}` : null,
-    session.setCount != null ? `${session.setCount} sets` : null,
-    session.sessionRpe != null ? `RPE ${session.sessionRpe}` : null,
-    session.estimatedDurationMinutes != null ? `~${Math.round(session.estimatedDurationMinutes)} min` : null,
-  ].filter(Boolean).slice(0, 3).join(' · ') || lifecycleLabel(session.lifecycle);
+  const count = session.lifecycle === 'completed' ? session.setCount : session.plannedSetCount;
+  return count == null ? null : `${count} ${session.lifecycle === 'completed' ? 'saved' : 'prescribed'} set${count === 1 ? '' : 's'}`;
 }
 
 function weekFingerprint(week: ProgramTimelineWeek) {
-  if (week.programmingState === 'unbuilt') return 'UNBUILT';
-  if (week.lifecycle === 'upcoming') return `${week.sessionCount} PLANNED`;
+  if (week.programmingState === 'unbuilt') return 'NO SESSIONS';
+  if (week.lifecycle === 'missed') return 'MISSED';
+  if (week.lifecycle === 'completed') return 'COMPLETE';
+  if (week.lifecycle === 'upcoming') return 'PLANNED';
   return `${week.completedCount}/${week.sessionCount} COMPLETE`;
 }
 
@@ -99,57 +81,6 @@ function configureMapLayout(reduceMotion: boolean) {
   });
 }
 
-function CurrentLandmarkPulse({ active }: { active: boolean }) {
-  const reduceMotion = useSLReducedMotion();
-  const pulse = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    pulse.stopAnimation();
-    if (!active || reduceMotion) {
-      pulse.setValue(0);
-      return undefined;
-    }
-    const animation = Animated.loop(Animated.sequence([
-      Animated.timing(pulse, { toValue: 1, duration: 1100, useNativeDriver: true }),
-      Animated.timing(pulse, { toValue: 0, duration: 1100, useNativeDriver: true }),
-    ]));
-    animation.start();
-    return () => animation.stop();
-  }, [active, pulse, reduceMotion]);
-
-  if (!active) return null;
-  return (
-    <Animated.View
-      pointerEvents="none"
-      style={[
-        styles.currentPulse,
-        {
-          opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [0.28, 0.04] }),
-          transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
-        },
-      ]}
-    />
-  );
-}
-
-function DensityMarks({ week }: { week: ProgramTimelineWeek }) {
-  const sessions = week.days.flatMap((day) => day.sessions).slice(0, 7);
-  if (!sessions.length) {
-    return (
-      <View accessibilityLabel="No Sessions programmed" style={styles.densityMarks}>
-        {Array.from({ length: 5 }, (_, index) => <View key={index} style={styles.densityEmpty} />)}
-      </View>
-    );
-  }
-  return (
-    <View accessibilityLabel={`${sessions.length} Sessions programmed`} style={styles.densityMarks}>
-      {sessions.map((session) => (
-        <View key={session.id} style={[styles.densityMark, { backgroundColor: lifecycleTone[session.lifecycle] }]} />
-      ))}
-    </View>
-  );
-}
-
 const WeekNode = memo(function WeekNode({
   week,
   selected,
@@ -161,7 +92,7 @@ const WeekNode = memo(function WeekNode({
   expanded: boolean;
   onPress: (week: ProgramTimelineWeek) => void;
 }) {
-  const tone = week.current ? SLColors.warning : lifecycleTone[week.lifecycle];
+  const tone = week.current ? SLColors.accentViolet : lifecycleTone[week.lifecycle];
   const unbuilt = week.programmingState === 'unbuilt';
   return (
     <SLMotionPressable
@@ -170,7 +101,7 @@ const WeekNode = memo(function WeekNode({
       accessibilityRole="button"
       accessibilityState={{ expanded, selected }}
       onPress={() => onPress(week)}
-      pressScale={0.965}
+      pressScale={0.99}
       style={[
         styles.weekNode,
         unbuilt && styles.weekNodeUnbuilt,
@@ -178,16 +109,13 @@ const WeekNode = memo(function WeekNode({
         week.current && styles.weekNodeCurrent,
       ]}
     >
-      <CurrentLandmarkPulse active={week.current} />
       <View style={[styles.weekNodeStatus, { backgroundColor: unbuilt ? SLColors.textSubtle : tone }]} />
-      <View style={styles.weekNodeTopline}>
-        <Text style={[styles.weekNodeNumber, { color: selected || week.current ? tone : SLColors.textStrong }]}>W{week.number}</Text>
-        {week.current ? <View style={styles.currentPill}><Text style={styles.currentPillText}>HERE</Text></View> : null}
-        {week.lifecycle === 'completed' ? <Ionicons color={tone} name="checkmark-circle" size={16} /> : null}
+      <Text style={[styles.weekNodeNumber, { color: week.current ? tone : SLColors.textStrong }]}>W{String(week.number).padStart(2, '0')}</Text>
+      <View style={styles.weekNodeCopy}>
+        <Text style={styles.weekNodeDate}>{week.dateRangeLabel}</Text>
+        <Text style={styles.weekNodeSets}>{week.sessionCount ? `${week.sessionCount} Session${week.sessionCount === 1 ? '' : 's'}${week.plannedSetCount ? ` · ${week.plannedSetCount} sets` : ''}` : 'No Sessions planned'}</Text>
       </View>
-      <Text numberOfLines={1} style={[styles.weekNodeFingerprint, unbuilt && styles.weekNodeFingerprintUnbuilt]}>{weekFingerprint(week)}</Text>
-      <DensityMarks week={week} />
-      <Text numberOfLines={1} style={styles.weekNodeSets}>{week.plannedSetCount ? `${week.plannedSetCount} sets` : week.dateRangeLabel}</Text>
+      <View style={styles.weekNodeState}>{!unbuilt || week.current ? <Text style={{ ...styles.weekNodeFingerprint, color: week.current ? tone : SLColors.textMuted }}>{week.current ? 'CURRENT' : weekFingerprint(week)}</Text> : null}<Ionicons color={SLColors.textMuted} name={expanded ? 'chevron-up' : 'chevron-down'} size={15} /></View>
     </SLMotionPressable>
   );
 });
@@ -204,39 +132,31 @@ const SessionNode = memo(function SessionNode({
   onPress: (session: ProgramTimelineSession) => void;
 }) {
   const tone = lifecycleTone[session.lifecycle];
+  const names = session.movementNames || [];
+  const movementSummary = names.length ? `${names.slice(0, 3).join(' · ')}${names.length > 3 ? ` +${names.length - 3}` : ''}` : session.movementCount != null ? `${session.movementCount} movement${session.movementCount === 1 ? '' : 's'}` : null;
+  const evidence = sessionEvidence(session);
   return (
     <SLMotionEntrance delay={Math.min(index, 5) * 35} distance={8} motionKey={`${session.id}-${session.lifecycle}`} style={styles.sessionEntrance}>
       <SLMotionPressable
-        accessibilityLabel={`${session.title}, ${dayLabel}, ${lifecycleLabel(session.lifecycle)}`}
+        accessibilityLabel={[session.title, dayLabel, lifecycleLabel(session.lifecycle), movementSummary, evidence].filter(Boolean).join(', ')}
         accessibilityRole="button"
         onPress={() => {
           void Haptics.selectionAsync().catch(() => undefined);
           onPress(session);
         }}
         pressScale={0.975}
-        style={styles.sessionNode}
+        style={[styles.sessionNode, { borderLeftColor: tone }]}
       >
-        <View style={styles.sessionNodeTopline}>
-          <Text style={styles.sessionDay}>{dayLabel}</Text>
-          <View style={[styles.sessionLifecycleDot, { backgroundColor: tone }]} />
-        </View>
-        <View style={styles.sessionNodeBody}>
-          <View style={styles.sessionArt}>
-            {session.primaryMuscles.length ? (
-              <ProgrammingMuscleRegionArt framingPreset="thumbnail" level="session" primary={session.primaryMuscles} secondary={session.secondaryMuscles} />
-            ) : (
-              <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={25} />
-            )}
-          </View>
-          <View style={styles.sessionCopy}>
-            <Text numberOfLines={2} style={styles.sessionTitle}>{session.title}</Text>
-            <Text numberOfLines={2} style={styles.sessionMeta}>{sessionEvidence(session)}</Text>
+        <Text style={styles.sessionDay}>{dayLabel}</Text>
+        <View style={styles.sessionCopy}>
+          <Text numberOfLines={2} style={styles.sessionTitle}>{session.title}</Text>
+          {movementSummary ? <Text numberOfLines={1} style={styles.sessionMeta}>{movementSummary}</Text> : null}
+          <View style={styles.sessionFooter}>
+            {evidence ? <Text style={styles.sessionEvidence}>{evidence}</Text> : null}
+            <Text style={[styles.sessionStateText, { color: tone }]}>{lifecycleLabel(session.lifecycle)}</Text>
           </View>
         </View>
-        <View style={styles.sessionNodeFooter}>
-          <Text style={[styles.sessionStateText, { color: tone }]}>{lifecycleLabel(session.lifecycle)}</Text>
-          <Ionicons color={SLColors.textMuted} name="chevron-forward" size={16} />
-        </View>
+        <Ionicons color={SLColors.textMuted} name="chevron-forward" size={18} />
       </SLMotionPressable>
     </SLMotionEntrance>
   );
@@ -270,23 +190,11 @@ function WeekExpansion({
   return (
     <GestureDetector gesture={gesture}>
       <View style={styles.weekExpansion}>
-        <View style={styles.expansionStem} />
         <View style={styles.expansionHeader}>
-          <SLMotionPressable accessibilityLabel="Previous Week" accessibilityRole="button" disabled={!canGoPrevious} onPress={onPrevious} style={[styles.traverseButton, !canGoPrevious && styles.disabled]}>
-            <Ionicons color={SLColors.textStrong} name="chevron-back" size={19} />
-          </SLMotionPressable>
           <View style={styles.expansionIdentity}>
-            <Text style={styles.expansionKicker}>WEEK {week.number} · {lifecycleLabel(week.lifecycle).toUpperCase()}</Text>
-            <Text style={styles.expansionTitle}>{week.dateRangeLabel}</Text>
-            <Text style={styles.expansionSummary}>
-              {week.programmingState === 'unbuilt'
-                ? 'Programming has not been built yet'
-                : `${week.completedCount} of ${week.sessionCount} Sessions complete${week.plannedSetCount ? ` · ${week.plannedSetCount} planned sets` : ''}`}
-            </Text>
+            <Text style={styles.expansionKicker}>SESSION SEQUENCE</Text>
+            <Text style={styles.expansionSummary}>{week.sessionCount} Session{week.sessionCount === 1 ? '' : 's'}</Text>
           </View>
-          <SLMotionPressable accessibilityLabel="Next Week" accessibilityRole="button" disabled={!canGoNext} onPress={onNext} style={[styles.traverseButton, !canGoNext && styles.disabled]}>
-            <Ionicons color={SLColors.textStrong} name="chevron-forward" size={19} />
-          </SLMotionPressable>
         </View>
         {sessions.length ? (
           <View style={styles.sessionGrid}>
@@ -294,25 +202,18 @@ function WeekExpansion({
               <SessionNode dayLabel={dayLabel} index={index} key={session.id} onPress={onOpenSession} session={session} />
             ))}
           </View>
-        ) : (
-          <View style={styles.unbuiltWeek}>
-            <View style={styles.unbuiltWeekIcon}><Ionicons color={SLColors.textMuted} name="construct-outline" size={25} /></View>
-            <View style={styles.unbuiltWeekCopy}>
-              <Text style={styles.unbuiltWeekTitle}>Unbuilt Week</Text>
-              <Text style={styles.unbuiltWeekBody}>No Sessions are programmed in this Week.</Text>
-            </View>
-          </View>
-        )}
-        <Text style={styles.swipeHint}>Swipe sideways or use the arrows to inspect adjacent Weeks</Text>
+        ) : null}
+        <View style={styles.traverseRow}>
+          <SLMotionPressable accessibilityLabel="Previous Week" accessibilityRole="button" disabled={!canGoPrevious} onPress={onPrevious} style={[styles.traverseButton, !canGoPrevious && styles.disabled]}>
+            <Ionicons color={SLColors.accentViolet} name="chevron-back" size={16} /><Text style={styles.traverseText}>Previous</Text>
+          </SLMotionPressable>
+          <SLMotionPressable accessibilityLabel="Next Week" accessibilityRole="button" disabled={!canGoNext} onPress={onNext} style={[styles.traverseButton, !canGoNext && styles.disabled]}>
+            <Text style={styles.traverseText}>Next</Text><Ionicons color={SLColors.accentViolet} name="chevron-forward" size={16} />
+          </SLMotionPressable>
+        </View>
       </View>
     </GestureDetector>
   );
-}
-
-function chunkWeeks(weeks: ProgramTimelineWeek[]) {
-  const rows: ProgramTimelineWeek[][] = [];
-  for (let index = 0; index < weeks.length; index += MAP_COLUMNS) rows.push(weeks.slice(index, index + MAP_COLUMNS));
-  return rows;
 }
 
 const BlockTerritory = memo(function BlockTerritory({
@@ -328,118 +229,73 @@ const BlockTerritory = memo(function BlockTerritory({
   selectedWeekKey: string | null;
   expandedWeekKey: string | null;
   orderedWeeks: ProgramTimelineWeek[];
-  onInspect: (week: ProgramTimelineWeek, source: 'tap' | 'scrub') => void;
+  onInspect: (week: ProgramTimelineWeek) => void;
   onOpenSession: (session: ProgramTimelineSession) => void;
   onTraverse: (direction: -1 | 1) => void;
 }) {
-  const rows = useMemo(() => chunkWeeks(block.weeks), [block.weeks]);
-  const [mapWidth, setMapWidth] = useState(0);
-  const lastScrubKey = useRef<string | null>(null);
-  const expandedWeek = block.weeks.find((week) => week.key === expandedWeekKey) || null;
-  const expandedIndex = expandedWeek ? orderedWeeks.findIndex((week) => week.key === expandedWeek.key) : -1;
-
-  const scrubAtPoint = useCallback((x: number, y: number) => {
-    if (!mapWidth) return;
-    const row = Math.max(0, Math.min(rows.length - 1, Math.floor(y / MAP_ROW_HEIGHT)));
-    const visualColumn = Math.max(0, Math.min(MAP_COLUMNS - 1, Math.floor((x / mapWidth) * MAP_COLUMNS)));
-    const chronologicalColumn = row % 2 === 1 ? MAP_COLUMNS - 1 - visualColumn : visualColumn;
-    const week = block.weeks[row * MAP_COLUMNS + chronologicalColumn];
-    if (!week || lastScrubKey.current === week.key) return;
-    lastScrubKey.current = week.key;
-    onInspect(week, 'scrub');
-  }, [block.weeks, mapWidth, onInspect, rows.length]);
-
-  const scrubGesture = useMemo(() => Gesture.Pan()
-    .activeOffsetX([-10, 10])
-    .failOffsetY([-16, 16])
-    .runOnJS(true)
-    .onStart((event) => scrubAtPoint(event.x, event.y))
-    .onUpdate((event) => scrubAtPoint(event.x, event.y))
-    .onFinalize(() => { lastScrubKey.current = null; }), [scrubAtPoint]);
+  const currentWeek = block.weeks.find((week) => week.current);
+  const statusLabel = block.status === 'current' ? 'CURRENT BLOCK' : block.status === 'completed' ? 'COMPLETED BLOCK' : 'UPCOMING BLOCK';
 
   return (
     <View style={styles.blockTerritory}>
-      <ImageBackground imageStyle={styles.blockArtwork} resizeMode="cover" source={blockArtwork(block)} style={styles.blockHeading}>
-        <View style={styles.blockArtworkScrim} />
-        <View style={[styles.blockTerritoryRail, { backgroundColor: blockTone(block.status) }]} />
-        <View style={styles.blockHeadingCopy}>
-          <Text style={[styles.blockTitle, { color: blockTone(block.status) }]}>{block.name.toUpperCase()}</Text>
-          <Text style={styles.blockMeta}>{block.dateRangeLabel} · {block.totalWeeks} Weeks</Text>
+      <View style={styles.blockHeading}>
+        <Text style={[styles.blockState, { color: blockTone(block.status) }]}>{statusLabel}</Text>
+        <Text style={styles.blockTitle}>{block.name}</Text>
+        <Text style={styles.blockMeta}>{block.dateRangeLabel} · {block.totalWeeks} Week{block.totalWeeks === 1 ? '' : 's'}</Text>
+        <View style={styles.blockProgress}>
+          {block.weeks.map((week) => <View key={week.key} style={[styles.blockSegment, (block.status === 'completed' || (currentWeek && week.number < currentWeek.number)) && styles.blockSegmentPast, week.current && styles.blockSegmentCurrent]} />)}
         </View>
-        <Text style={[styles.blockState, { color: blockTone(block.status) }]}>{block.status.toUpperCase()}</Text>
-      </ImageBackground>
-
-      <GestureDetector gesture={scrubGesture}>
-        <View onLayout={(event) => setMapWidth(event.nativeEvent.layout.width)} style={styles.weekMap}>
-          {rows.map((row, rowIndex) => (
-            <View key={`${block.id}-row-${rowIndex}`} style={styles.mapRowWrap}>
-              <View style={styles.mapHorizontalPath} />
-              {rowIndex < rows.length - 1 ? <View style={[styles.mapTurn, rowIndex % 2 === 0 ? styles.mapTurnRight : styles.mapTurnLeft]} /> : null}
-              <View style={[styles.mapRow, rowIndex % 2 === 1 && styles.mapRowReverse]}>
-                {row.map((week) => (
-                  <WeekNode
-                    expanded={expandedWeekKey === week.key}
-                    key={week.key}
-                    onPress={(value) => onInspect(value, 'tap')}
-                    selected={selectedWeekKey === week.key}
-                    week={week}
-                  />
-                ))}
-              </View>
-            </View>
-          ))}
-        </View>
-      </GestureDetector>
-
-      {expandedWeek ? (
-        <WeekExpansion
-          canGoNext={expandedIndex >= 0 && expandedIndex < orderedWeeks.length - 1}
-          canGoPrevious={expandedIndex > 0}
-          onNext={() => onTraverse(1)}
-          onOpenSession={onOpenSession}
-          onPrevious={() => onTraverse(-1)}
-          week={expandedWeek}
-        />
-      ) : null}
+      </View>
+      <View style={styles.weekMap}>
+        {block.weeks.map((week) => {
+          const expanded = expandedWeekKey === week.key;
+          const index = orderedWeeks.findIndex((candidate) => candidate.key === week.key);
+          return <View key={week.key} style={styles.weekWrap}>
+            <WeekNode expanded={expanded} onPress={onInspect} selected={selectedWeekKey === week.key} week={week} />
+            {expanded ? <WeekExpansion
+              canGoNext={index < orderedWeeks.length - 1}
+              canGoPrevious={index > 0}
+              onNext={() => onTraverse(1)}
+              onOpenSession={onOpenSession}
+              onPrevious={() => onTraverse(-1)}
+              week={week}
+            /> : null}
+          </View>;
+        })}
+      </View>
     </View>
   );
 });
 
 function ProgramContext({ payload }: { payload: ProgramTimelinePayload }) {
+  const currentIndex = payload.blocks.flatMap((block) => block.weeks).findIndex((week) => week.key === payload.program.currentWeekKey);
+  const progress = Math.max(0, Math.min(1, payload.program.positionPercent));
   return (
-    <View style={styles.contextCard}>
-      <ImageBackground imageStyle={styles.programImage} resizeMode="cover" source={PROGRAM_ART} style={styles.programHero}>
+    <ImageBackground imageStyle={styles.programImage} resizeMode="cover" source={PROGRAM_ART} style={styles.contextCard}>
         <View style={styles.programScrim} />
         <View style={styles.programCopy}>
-          <Text style={styles.contextKicker}>TRAINING PROGRAM</Text>
+          <Text style={styles.contextKicker}>CURRENT PROGRAM</Text>
           <Text numberOfLines={2} style={styles.programName}>{payload.program.name}</Text>
-          <Text style={styles.programMeta}>{payload.program.dateRangeLabel} · {payload.program.blockCount} Blocks · {payload.program.totalWeeks} Weeks · {payload.program.totalSessions} Sessions</Text>
-        </View>
-      </ImageBackground>
-      <View style={styles.blockRailLabels}>
-        {payload.blocks.map((block) => (
-          <View key={block.id} style={[styles.blockRailLabelWrap, { flex: block.totalWeeks }]}>
-            <Text numberOfLines={1} style={[styles.blockRailLabel, { color: blockTone(block.status) }]}>{block.name}</Text>
+          <Text style={styles.programMeta}>{payload.program.dateRangeLabel}</Text>
+          <Text style={styles.programPosition}>{currentIndex >= 0 ? `Week ${currentIndex + 1} of ${payload.program.totalWeeks}` : `${payload.program.totalWeeks} Weeks`} · {payload.program.totalSessions} Session{payload.program.totalSessions === 1 ? '' : 's'}</Text>
+          <View accessibilityLabel={`${Math.round(progress * 100)} percent through Program`} style={styles.blockRail}>
+            <View style={[styles.blockRailSegment, { width: `${progress * 100}%` }]} />
           </View>
-        ))}
-      </View>
-      <View style={styles.blockRail}>
-        {payload.blocks.map((block) => <View key={block.id} style={[styles.blockRailSegment, { flex: block.totalWeeks, backgroundColor: blockTone(block.status) }]} />)}
-        <View style={[styles.positionMarker, { left: `${payload.program.positionPercent * 100}%` }]}><View style={styles.positionMarkerCore} /></View>
-      </View>
-      <View style={[styles.youAreHere, { left: `${Math.max(6, Math.min(76, payload.program.positionPercent * 100 - 10))}%` }]}><Text style={styles.youAreHereText}>YOU ARE HERE</Text></View>
-    </View>
+        </View>
+    </ImageBackground>
   );
 }
 
 export function AthleteProgramTimeline({
   payload,
+  initialWeekKey,
   onBack,
   onOpenSession,
   refreshing,
   onRefresh,
 }: {
   payload: ProgramTimelinePayload;
+  initialWeekKey?: string;
   onBack: () => void;
   onOpenSession: (session: ProgramTimelineSession) => void;
   refreshing: boolean;
@@ -449,31 +305,25 @@ export function AthleteProgramTimeline({
   const reduceMotion = useSLReducedMotion();
   const listRef = useRef<FlatList<ProgramTimelineBlock>>(null);
   const orderedWeeks = useMemo(() => payload.blocks.flatMap((block) => block.weeks), [payload.blocks]);
-  const [selectedWeekKey, setSelectedWeekKey] = useState<string | null>(payload.program.currentWeekKey);
-  const [expandedWeekKey, setExpandedWeekKey] = useState<string | null>(null);
+  const startingWeekKey = orderedWeeks.some((week) => week.key === initialWeekKey) ? initialWeekKey || null : payload.program.currentWeekKey;
+  const [selectedWeekKey, setSelectedWeekKey] = useState<string | null>(startingWeekKey);
+  const [expandedWeekKey, setExpandedWeekKey] = useState<string | null>(startingWeekKey);
+
+  useFocusEffect(useCallback(() => {
+    if (!initialWeekKey) requestAnimationFrame(() => listRef.current?.scrollToOffset({ offset: 0, animated: false }));
+  }, [initialWeekKey]));
 
   useEffect(() => {
-    setSelectedWeekKey((current) => orderedWeeks.some((week) => week.key === current) ? current : payload.program.currentWeekKey);
-    setExpandedWeekKey((current) => orderedWeeks.some((week) => week.key === current) ? current : null);
-  }, [orderedWeeks, payload.program.currentWeekKey]);
+    setSelectedWeekKey((current) => orderedWeeks.some((week) => week.key === current) ? current : startingWeekKey);
+    setExpandedWeekKey((current) => orderedWeeks.some((week) => week.key === current) ? current : startingWeekKey);
+  }, [orderedWeeks, startingWeekKey]);
 
   const scrollToWeek = useCallback((week: ProgramTimelineWeek) => {
     const blockIndex = payload.blocks.findIndex((block) => block.weeks.some((candidate) => candidate.key === week.key));
     if (blockIndex >= 0) listRef.current?.scrollToIndex({ animated: !reduceMotion, index: blockIndex, viewPosition: 0.06 });
   }, [payload.blocks, reduceMotion]);
 
-  const inspectWeek = useCallback((week: ProgramTimelineWeek, source: 'tap' | 'scrub') => {
-    const changed = selectedWeekKey !== week.key;
-    if (source === 'scrub') {
-      if (!changed) return;
-      setSelectedWeekKey(week.key);
-      if (expandedWeekKey) {
-        configureMapLayout(reduceMotion);
-        setExpandedWeekKey(week.key);
-      }
-      void Haptics.selectionAsync().catch(() => undefined);
-      return;
-    }
+  const inspectWeek = useCallback((week: ProgramTimelineWeek) => {
     configureMapLayout(reduceMotion);
     setSelectedWeekKey(week.key);
     const opening = expandedWeekKey !== week.key;
@@ -513,8 +363,7 @@ export function AthleteProgramTimeline({
         breadcrumb="Training"
         onBack={onBack}
         style={{ paddingTop: insets.top + 6 }}
-        subtitle={payload.program.name}
-        title="Program Timeline"
+        title="Program map"
       />
       <FlatList
         contentContainerStyle={{ paddingBottom: Math.max(28, insets.bottom + 18) }}
@@ -548,82 +397,57 @@ export function AthleteProgramTimeline({
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#000000' },
   list: { flex: 1, backgroundColor: '#000000' },
-  contextCard: { marginHorizontal: 12, marginTop: 12, marginBottom: 18, borderRadius: SLRadius.radiusCard, borderColor: SLColors.borderStandard, borderWidth: 1, backgroundColor: SLColors.surfaceInset, overflow: 'hidden', paddingBottom: 27 },
-  programHero: { minHeight: 118, justifyContent: 'flex-end' },
-  programImage: { opacity: 0.68 },
-  programScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.48)' },
-  programCopy: { padding: 16, gap: 3 },
-  contextKicker: { ...SLTypography.utilityLabel, color: SLColors.warning, letterSpacing: 1 },
-  programName: { ...SLTypography.screenTitle, color: SLColors.textStrong, fontSize: 24 },
-  programMeta: { ...SLTypography.note, color: SLColors.textSecondary, lineHeight: 20 },
-  blockRailLabels: { flexDirection: 'row', paddingHorizontal: 16, gap: 3, marginTop: 11 },
-  blockRailLabelWrap: { minWidth: 0, alignItems: 'center' },
-  blockRailLabel: { ...SLTypography.utilityLabel, fontSize: 10 },
-  blockRail: { height: 5, flexDirection: 'row', marginHorizontal: 18, marginTop: 8, borderRadius: 3, overflow: 'visible', gap: 2 },
-  blockRailSegment: { height: 5, borderRadius: 3 },
-  positionMarker: { position: 'absolute', top: -7, width: 19, height: 19, borderRadius: 10, borderWidth: 2, borderColor: SLColors.warning, backgroundColor: '#000', alignItems: 'center', justifyContent: 'center', marginLeft: -9 },
-  positionMarkerCore: { width: 6, height: 6, borderRadius: 3, backgroundColor: SLColors.warning },
-  youAreHere: { position: 'absolute', bottom: 6 },
-  youAreHereText: { ...SLTypography.utilityLabel, color: SLColors.warning, fontSize: 9 },
-  blockTerritory: { marginBottom: 22 },
-  blockHeading: { minHeight: 72, marginHorizontal: 12, borderRadius: 16, overflow: 'hidden', justifyContent: 'center', flexDirection: 'row', alignItems: 'center' },
-  blockArtwork: { opacity: 0.28 },
-  blockArtworkScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.66)' },
-  blockTerritoryRail: { width: 4, alignSelf: 'stretch' },
-  blockHeadingCopy: { flex: 1, paddingHorizontal: 14 },
-  blockTitle: { ...SLTypography.sectionTitle, letterSpacing: 1.1 },
-  blockMeta: { ...SLTypography.note, color: SLColors.textMuted, marginTop: 2 },
-  blockState: { ...SLTypography.utilityLabel, marginRight: 14 },
-  weekMap: { marginHorizontal: 14, paddingTop: 14 },
-  mapRowWrap: { height: MAP_ROW_HEIGHT, justifyContent: 'center' },
-  mapHorizontalPath: { position: 'absolute', left: '15%', right: '15%', top: 52, height: 2, backgroundColor: 'rgba(167,139,250,0.24)' },
-  mapTurn: { position: 'absolute', top: 52, bottom: -60, width: 2, backgroundColor: 'rgba(167,139,250,0.24)' },
-  mapTurnRight: { right: '15%' },
-  mapTurnLeft: { left: '15%' },
-  mapRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  mapRowReverse: { flexDirection: 'row-reverse' },
-  weekNode: { width: '30.5%', minHeight: 96, borderRadius: 18, borderColor: SLColors.borderStandard, borderWidth: 1, backgroundColor: 'rgba(8,7,12,0.97)', padding: 10, justifyContent: 'space-between', overflow: 'visible' },
-  weekNodeUnbuilt: { borderStyle: 'dashed', backgroundColor: 'rgba(5,5,9,0.94)' },
-  weekNodeSelected: { borderColor: SLColors.accentViolet, backgroundColor: 'rgba(35,18,45,0.96)', transform: [{ scale: 1.025 }] },
-  weekNodeCurrent: { borderColor: SLColors.warning, backgroundColor: 'rgba(40,30,17,0.96)' },
-  currentPulse: { position: 'absolute', inset: -7, borderRadius: 24, borderColor: SLColors.warning, borderWidth: 2 },
-  weekNodeStatus: { position: 'absolute', top: 0, bottom: 0, left: 0, width: 3, borderTopLeftRadius: 18, borderBottomLeftRadius: 18 },
-  weekNodeTopline: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 3 },
-  weekNodeNumber: { ...SLTypography.cardTitle, fontSize: 19 },
-  currentPill: { borderRadius: 6, backgroundColor: SLColors.warning, paddingHorizontal: 5, paddingVertical: 2 },
-  currentPillText: { ...SLTypography.utilityLabel, color: '#090704', fontSize: 7 },
-  weekNodeFingerprint: { ...SLTypography.utilityLabel, color: SLColors.textSecondary, fontSize: 9 },
+  contextCard: { minHeight: 162, justifyContent: 'center', overflow: 'hidden', borderBottomWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
+  programImage: { opacity: 0.62 },
+  programScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(4,3,7,0.72)' },
+  programCopy: { paddingHorizontal: 16, paddingTop: 18, paddingBottom: 18, gap: 4 },
+  contextKicker: { ...SLTypography.micro, color: SLColors.accentViolet, letterSpacing: 0.7 },
+  programName: { ...SLTypography.title, color: SLColors.textStrong, fontSize: 23, lineHeight: 28, maxWidth: '85%' },
+  programMeta: { ...SLTypography.caption, color: SLColors.text },
+  programPosition: { ...SLTypography.caption, color: SLColors.textMuted },
+  blockRail: { height: 4, maxWidth: 290, marginTop: 8, borderRadius: 2, overflow: 'hidden', backgroundColor: '#2B2132' },
+  blockRailSegment: { height: 4, borderRadius: 2, backgroundColor: SLColors.accentViolet },
+  blockTerritory: { paddingTop: 17, paddingBottom: 14 },
+  blockHeading: { paddingHorizontal: 16, paddingBottom: 14, gap: 3 },
+  blockTitle: { ...SLTypography.sectionTitle, color: SLColors.textStrong, fontSize: 21, lineHeight: 25 },
+  blockMeta: { ...SLTypography.caption, color: SLColors.textMuted },
+  blockState: { ...SLTypography.micro, letterSpacing: 0.7 },
+  blockProgress: { flexDirection: 'row', gap: 4, marginTop: 10 },
+  blockSegment: { flex: 1, height: 5, borderRadius: 3, backgroundColor: '#302739' },
+  blockSegmentPast: { backgroundColor: '#654784' },
+  blockSegmentCurrent: { backgroundColor: SLColors.accentViolet },
+  weekMap: { borderTopWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
+  weekWrap: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderSubtle },
+  weekNode: { minHeight: 75, flexDirection: 'row', alignItems: 'center', gap: 11, paddingRight: 16, backgroundColor: '#050608' },
+  weekNodeUnbuilt: { backgroundColor: '#050608' },
+  weekNodeSelected: { backgroundColor: '#171020' },
+  weekNodeCurrent: { backgroundColor: '#100C17' },
+  weekNodeStatus: { alignSelf: 'stretch', width: 3 },
+  weekNodeNumber: { ...SLTypography.sectionTitle, width: 48, fontSize: 20, lineHeight: 24 },
+  weekNodeCopy: { flex: 1, minWidth: 0, gap: 3 },
+  weekNodeDate: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
+  weekNodeFingerprint: { ...SLTypography.micro, color: SLColors.textMuted, textAlign: 'right', fontWeight: '800' },
   weekNodeFingerprintUnbuilt: { color: SLColors.textSubtle },
-  densityMarks: { flexDirection: 'row', gap: 4, minHeight: 8, alignItems: 'center' },
-  densityMark: { width: 7, height: 7, borderRadius: 4 },
-  densityEmpty: { width: 7, height: 7, borderRadius: 4, borderColor: SLColors.textSubtle, borderWidth: 1 },
-  weekNodeSets: { ...SLTypography.note, color: SLColors.textMuted, fontSize: 10 },
-  weekExpansion: { marginHorizontal: 12, marginTop: 10, borderRadius: 20, borderColor: SLColors.borderFocus, borderWidth: 1, backgroundColor: 'rgba(14,8,18,0.98)', padding: 12, overflow: 'visible' },
-  expansionStem: { position: 'absolute', width: 2, height: 16, top: -17, left: '50%', backgroundColor: SLColors.accentViolet },
-  expansionHeader: { minHeight: 72, flexDirection: 'row', alignItems: 'center', gap: 9, borderBottomColor: SLColors.borderHairline, borderBottomWidth: StyleSheet.hairlineWidth, paddingBottom: 10 },
-  traverseButton: { width: 44, height: 44, borderRadius: 14, borderColor: SLColors.borderStandard, borderWidth: 1, backgroundColor: SLColors.surfaceInset, alignItems: 'center', justifyContent: 'center' },
-  disabled: { opacity: 0.3 },
-  expansionIdentity: { flex: 1, minWidth: 0, alignItems: 'center' },
-  expansionKicker: { ...SLTypography.utilityLabel, color: SLColors.accentViolet, textAlign: 'center' },
-  expansionTitle: { ...SLTypography.cardTitle, color: SLColors.textStrong, fontSize: 18, textAlign: 'center' },
-  expansionSummary: { ...SLTypography.note, color: SLColors.textMuted, textAlign: 'center', marginTop: 2 },
-  sessionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9, paddingTop: 12 },
-  sessionEntrance: { width: '48.5%' },
-  sessionNode: { minHeight: 144, borderRadius: 16, borderColor: SLColors.borderStandard, borderWidth: 1, backgroundColor: SLColors.surfaceInset, padding: 10, justifyContent: 'space-between' },
-  sessionNodeTopline: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  sessionDay: { ...SLTypography.utilityLabel, color: SLColors.textMuted, fontSize: 9 },
-  sessionLifecycleDot: { width: 8, height: 8, borderRadius: 4 },
-  sessionNodeBody: { flexDirection: 'row', alignItems: 'center', gap: 8, marginVertical: 7 },
-  sessionArt: { width: 50, height: 50, flexShrink: 0, borderRadius: 12, overflow: 'hidden', backgroundColor: SLColors.surfaceFlat, borderColor: SLColors.borderSubtle, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  weekNodeSets: { ...SLTypography.caption, color: SLColors.textMuted },
+  weekNodeState: { alignItems: 'flex-end', gap: 4 },
+  weekExpansion: { backgroundColor: '#09080D', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderSubtle, paddingBottom: 5 },
+  expansionHeader: { minHeight: 43, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16 },
+  expansionIdentity: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  expansionKicker: { ...SLTypography.micro, color: SLColors.accentViolet, letterSpacing: 0.7 },
+  expansionSummary: { ...SLTypography.caption, color: SLColors.textMuted },
+  sessionGrid: { borderTopWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
+  sessionEntrance: { width: '100%' },
+  sessionNode: { minHeight: 88, paddingHorizontal: 16, paddingVertical: 10, flexDirection: 'row', alignItems: 'center', gap: 11, borderLeftWidth: 3, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderSubtle, backgroundColor: '#0B0D11' },
+  sessionDay: { ...SLTypography.micro, color: SLColors.textMuted, width: 38 },
   sessionCopy: { flex: 1, minWidth: 0, gap: 3 },
-  sessionTitle: { ...SLTypography.cardTitle, color: SLColors.textStrong, fontSize: 14, lineHeight: 17 },
-  sessionMeta: { ...SLTypography.note, color: SLColors.textMuted, fontSize: 10, lineHeight: 13 },
-  sessionNodeFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopColor: SLColors.borderHairline, borderTopWidth: StyleSheet.hairlineWidth, paddingTop: 7 },
-  sessionStateText: { ...SLTypography.utilityLabel, fontSize: 9 },
-  unbuiltWeek: { minHeight: 90, flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12, borderRadius: 15, borderColor: SLColors.borderSubtle, borderWidth: 1, borderStyle: 'dashed', padding: 13 },
-  unbuiltWeekIcon: { width: 48, height: 48, borderRadius: 15, backgroundColor: SLColors.surfaceInset, alignItems: 'center', justifyContent: 'center' },
-  unbuiltWeekCopy: { flex: 1, gap: 3 },
-  unbuiltWeekTitle: { ...SLTypography.cardTitle, color: SLColors.textStrong },
-  unbuiltWeekBody: { ...SLTypography.note, color: SLColors.textMuted },
-  swipeHint: { ...SLTypography.note, color: SLColors.textSubtle, textAlign: 'center', fontSize: 10, marginTop: 10 },
+  sessionTitle: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
+  sessionMeta: { ...SLTypography.caption, color: SLColors.text },
+  sessionFooter: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: 12, rowGap: 2 },
+  sessionEvidence: { ...SLTypography.caption, color: SLColors.textMuted },
+  sessionStateText: { ...SLTypography.micro, fontWeight: '800', textTransform: 'uppercase' },
+  unbuiltWeekBody: { ...SLTypography.caption, color: SLColors.textMuted, paddingHorizontal: 16, paddingVertical: 14 },
+  traverseRow: { minHeight: 45, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 },
+  traverseButton: { minWidth: 88, minHeight: 42, flexDirection: 'row', alignItems: 'center', gap: 3 },
+  traverseText: { ...SLTypography.caption, color: SLColors.accentViolet },
+  disabled: { opacity: 0.25 },
 });

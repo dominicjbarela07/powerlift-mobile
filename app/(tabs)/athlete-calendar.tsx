@@ -492,7 +492,7 @@ export default function AthleteCalendarScreen() {
       });
       if (response.status === 409 && response.json?.workout_id) {
         setDailyReadinessVisible(false);
-        router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(response.json.workout_id) } });
+        router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(response.json.workout_id), returnTo: 'calendar' } });
         return;
       }
       if (!response.ok || response.json?.ok !== true) {
@@ -510,7 +510,7 @@ export default function AthleteCalendarScreen() {
   };
 
   const handleAction = (action: AthleteCalendarAction) => {
-    if (action.type === 'session') { router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(action.id) } }); return; }
+    if (action.type === 'session') { router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(action.id), returnTo: 'calendar' } }); return; }
     if (action.type === 'create-session') {
       const athleteId = user?.self_athlete_id || user?.athlete_id;
       router.push({
@@ -543,7 +543,7 @@ export default function AthleteCalendarScreen() {
     if (action.type === 'add-event') { setFieldErrors(null); setEventMutationError(null); setEditor({ visible: true, date: action.date }); return; }
     if (action.type === 'edit-event') { setFieldErrors(null); setEventMutationError(null); setEditor({ visible: true, date: action.event.startsAt.slice(0, 10), event: action.event }); return; }
     if (action.type === 'review-conflict') { showConflict(action.conflict, router, () => setEditor({ visible: true, date: action.conflict.date, event: findEvent(data.days, action.conflict.eventId) })); return; }
-    if (action.type === 'important-date' && action.item.kind === 'session' && action.item.targetId) router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(action.item.targetId) } });
+    if (action.type === 'important-date' && action.item.kind === 'session' && action.item.targetId) router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(action.item.targetId), returnTo: 'calendar' } });
   };
   const goToday = () => {
     const target = resolveCalendarToday(new Date(), visiblePayload?.range?.timezone, getDeviceTimezone());
@@ -716,7 +716,7 @@ export default function AthleteCalendarScreen() {
           if (!scheduleEditor) return;
           const workoutId = scheduleEditor.id;
           setScheduleEditor(null);
-          router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(workoutId) } });
+          router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(workoutId), returnTo: 'calendar' } });
         }}
         onMoveDate={(date) => { if (scheduleEditor) void moveSession(scheduleEditor, date); }}
         onSave={saveTrainingSchedule}
@@ -855,7 +855,7 @@ function mapConflict(item: ApiConflict): AthleteCalendarConflict { return { id: 
 function mapWeekSummary(item: ApiWeekSummary): AthleteCalendarWeekSummary { return { startDate: item.start_date, endDate: item.end_date, sessionCount: item.session_count, completedCount: item.completed_count, missedCount: item.missed_count, heavyCount: item.heavy_count, personalEventCount: item.personal_event_count, isCurrent: item.is_current, loadLabel: item.load_label }; }
 function mapMonthSummary(item: ApiMonthSummary) { return { month: item.month, metricKind: item.metric_kind || null, sessionCount: item.session_count || 0, completedCount: item.completed_count || 0, upcomingCount: item.upcoming_count || 0, plannedCount: item.planned_count || 0, dueCount: item.due_count ?? null, dueCompletedCount: item.due_completed_count ?? null, missedCount: item.missed_count ?? null, completionPercent: item.completion_percent ?? null, totalVolumeKg: item.total_volume_kg || 0, prCount: item.pr_count || 0, reportedBodyweight: item.reported_bodyweight ? { startKg: item.reported_bodyweight.start_kg, latestKg: item.reported_bodyweight.latest_kg, observationCount: item.reported_bodyweight.observation_count } : null, blockNames: item.block_names || [] }; }
 function findEvent(days: AthleteCalendarDay[], id: number) { for (const day of days) { const event = day.personalEvents?.find((item) => item.id === id); if (event) return event; } return null; }
-function showConflict(conflict: AthleteCalendarConflict, router: ReturnType<typeof useRouter>, editEvent: () => void) { Alert.alert(conflict.certainty === 'confirmed' ? 'Schedule conflict' : 'Potential conflict', `${conflict.eventTitle} conflicts with ${conflict.workoutTitle}.\n\n${conflict.reason}`, [{ text: 'Edit Event', onPress: editEvent }, { text: 'Open Training', onPress: () => router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(conflict.workoutId) } }) }, { text: 'Close', style: 'cancel' }]); }
+function showConflict(conflict: AthleteCalendarConflict, router: ReturnType<typeof useRouter>, editEvent: () => void) { Alert.alert(conflict.certainty === 'confirmed' ? 'Schedule conflict' : 'Potential conflict', `${conflict.eventTitle} conflicts with ${conflict.workoutTitle}.\n\n${conflict.reason}`, [{ text: 'Edit Event', onPress: editEvent }, { text: 'Open Training', onPress: () => router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(conflict.workoutId), returnTo: 'calendar' } }) }, { text: 'Close', style: 'cancel' }]); }
 function importantDates(payload: CalendarPayload | null): AthleteCalendarImportantDate[] { const seen = new Set<string>(); const items: AthleteCalendarImportantDate[] = []; for (const item of payload?.upcoming || []) { if (!item.date || !['meet', 'block_marker', 'session'].includes(item.kind || '')) continue; if (item.kind === 'session' && !/test|heavy|peak|max/i.test(item.title || '')) continue; const kind = item.kind === 'meet' ? 'meet' : item.kind === 'block_marker' ? 'block' : 'session'; const targetId = item.meet_plan_id || item.block_id || item.workout_id; const id = `${kind}:${targetId || item.date}:${item.date}`; if (!seen.has(id)) { seen.add(id); items.push({ id, date: item.date, label: item.title || 'Important date', kind, targetId }); } } return items.slice(0, 3); }
 function mergeCalendarPayload(current: CalendarPayload | null, next: CalendarPayload | null): CalendarPayload | null {
   if (!current) return next;

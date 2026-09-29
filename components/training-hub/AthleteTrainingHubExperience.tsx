@@ -1,31 +1,18 @@
-import { KeyboardModal as Modal, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useMemo, useState } from 'react';
-import { ImageBackground, type ImageSourcePropType, Pressable, StyleSheet, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ImageBackground, Pressable, StyleSheet, View } from 'react-native';
 
 import { Text } from '@/components/ui/sl-text';
-import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { TrainingHubSessionPreviewBottomSheet } from '@/components/training-hub/TrainingHubSessionPreviewSheet';
 import { TrainingHubMaterialSurface } from '@/components/training-hub/training-hub-material-surface';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
-import {
-  convertDisplayWeightValue,
-  formatCalculatedWeightValue,
-  formatSessionVolumeSummary,
-  formatTotalVolumeFromKg,
-  kilogramsToDisplayValue,
-} from '@/lib/display-units';
-import { movementCardStateAccent } from '@/lib/movement-card-material';
+import { formatSessionVolumeSummary, formatTotalVolumeFromKg } from '@/lib/display-units';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
 const PROGRAM_ART = require('@/assets/images/ledger-index-v2/ledger-hero-plate-v1.png');
 const BLOCK_ART = require('@/assets/images/gym_vibe.jpg');
-const BLOCK_STRENGTH_ART = require('@/assets/images/ledger-index-v2/ledger-chapter-variants-v1.png');
-const BLOCK_HYPERTROPHY_ART = require('@/assets/images/ledger-index-v2/ledger-chapter-accessories-v1.png');
-const BLOCK_FOUNDATION_ART = require('@/assets/images/ledger-index-v2/ledger-chapter-journey-v1.png');
 export type AthleteTrainingMovement = {
   label: string;
   kind: 'core' | 'accessory';
@@ -186,24 +173,27 @@ export function AthleteTrainingHubExperience({
   initialSessionId?: number | null;
 }) {
   const { unit, setUnit } = useSurfaceWeightUnit(data.preferredUnits);
-  const currentBlock = data.activeProgram?.blocks.find((block) => block.status === 'current')
-    || data.activeProgram?.blocks[0]
+  const program = data.activeProgram;
+  const currentBlock = program?.blocks.find((block) => block.status === 'current') || program?.blocks[0] || null;
+  const initialBlock = program?.blocks.find((block) => block.weeks.some((week) => week.key === initialExpandedWeekKey)) || currentBlock;
+  const [selectedBlockId, setSelectedBlockId] = useState<number | null>(initialBlock?.id ?? null);
+  const selectedBlock = program?.blocks.find((block) => block.id === selectedBlockId) || currentBlock;
+  const currentWeekKey = selectedBlock?.weeks.find((week) => week.current)?.key || selectedBlock?.weeks[0]?.key || null;
+  const [selectedWeekKey, setSelectedWeekKey] = useState<string | null>(initialExpandedWeekKey || currentWeekKey);
+  const selectedWeek = selectedBlock?.weeks.find((week) => week.key === selectedWeekKey)
+    || selectedBlock?.weeks.find((week) => week.current)
+    || selectedBlock?.weeks[0]
     || null;
-  const [selectedBlockId, setSelectedBlockId] = useState<number | null>(currentBlock?.id ?? null);
-  const selectedBlock = data.activeProgram?.blocks.find((block) => block.id === selectedBlockId) || currentBlock;
-  const currentWeekKey = selectedBlock?.weeks.find((week) => week.current)?.key || null;
-  const [expandedWeekKey, setExpandedWeekKey] = useState<string | null>(
-    initialExpandedWeekKey === undefined ? currentWeekKey : initialExpandedWeekKey,
-  );
+  const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
   const allSessions = useMemo(
-    () => data.activeProgram?.blocks.flatMap((block) => block.weeks.flatMap((week) => week.days.flatMap((day) => day.sessions))) || [],
-    [data.activeProgram],
+    () => program?.blocks.flatMap((block) => block.weeks.flatMap((week) => week.days.flatMap((day) => day.sessions))) || [],
+    [program],
   );
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(initialSessionId ?? null);
   const selectedSession = allSessions.find((session) => session.id === selectedSessionId) || null;
   const selectedSessionContext = useMemo(() => {
     if (!selectedSessionId) return null;
-    for (const block of data.activeProgram?.blocks || []) {
+    for (const block of program?.blocks || []) {
       for (const week of block.weeks) {
         if (week.days.some((day) => day.sessions.some((session) => session.id === selectedSessionId))) {
           return { blockName: block.name, weekNumber: week.number };
@@ -211,51 +201,60 @@ export function AthleteTrainingHubExperience({
       }
     }
     return null;
-  }, [data.activeProgram, selectedSessionId]);
+  }, [program, selectedSessionId]);
 
-  useEffect(() => setSelectedBlockId(currentBlock?.id ?? null), [currentBlock?.id]);
   useEffect(() => {
-    if (initialExpandedWeekKey === undefined) setExpandedWeekKey(currentWeekKey);
-  }, [currentWeekKey, initialExpandedWeekKey, selectedBlock?.id]);
+    setSelectedBlockId((id) => program?.blocks.some((block) => block.id === id) ? id : currentBlock?.id ?? null);
+  }, [currentBlock?.id, program?.id]);
+  useEffect(() => {
+    setSelectedWeekKey((key) => selectedBlock?.weeks.some((week) => week.key === key) ? key : currentWeekKey);
+  }, [selectedBlock?.id, currentWeekKey]);
+  useEffect(() => {
+    setSelectedDayKey((key) => selectedWeek?.days.some((day) => day.key === key)
+      ? key
+      : selectedWeek?.days.find((day) => day.status === 'today')?.key || selectedWeek?.days[0]?.key || null);
+  }, [selectedWeek?.key]);
 
-  if (!data.activeProgram) return <NoActiveProgram data={data} onAction={onAction} />;
+  if (!program) return <NoActiveProgram data={data} onAction={onAction} />;
 
-  const program = data.activeProgram;
-  const progress = clamp01(program.progress);
+  const selectWeek = (index: number) => {
+    const week = selectedBlock?.weeks[index];
+    if (!week) return;
+    setSelectedWeekKey(week.key);
+    setSelectedDayKey(week.days.find((day) => day.status === 'today')?.key || week.days[0]?.key || null);
+  };
+  const selectedWeekIndex = selectedBlock?.weeks.findIndex((week) => week.key === selectedWeek?.key) ?? -1;
+  const selectedDay = selectedWeek?.days.find((day) => day.key === selectedDayKey) || null;
   return (
     <View style={styles.root}>
       <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="training-hub-unit-toggle" />
-      <ProgramHero data={data} program={program} progress={progress} />
-
-      <ProgramTimeline blocks={program.blocks} selectedBlockId={selectedBlock?.id} onSelect={setSelectedBlockId} />
-
+      <ProgramHero data={data} program={program} progress={clamp01(program.progress)} />
       {selectedBlock ? (
-        <BlockFocus block={selectedBlock} onOpen={() => onAction({ type: 'block', id: selectedBlock.id })} />
+        <TrainingPosition
+          block={selectedBlock}
+          onOpenBlock={() => onAction({ type: 'block', id: selectedBlock.id })}
+          onOpenMap={() => onAction({ type: 'program-timeline', id: program.id })}
+        />
       ) : null}
-
-      <Pressable
-        accessibilityHint="Opens the active Program from start to finish"
-        accessibilityLabel="Program Timeline"
-        accessibilityRole="button"
-        hitSlop={8}
-        onPress={() => onAction({ type: 'program-timeline', id: program.id })}
-        style={({ pressed }) => [styles.historyAction, pressed && styles.pressed]}
-        testID="training-hub-program-timeline"
-      >
-        <View style={styles.historyIdentity}>
-          <View style={styles.historyIcon}><Ionicons color={SLColors.text} name="map-outline" size={18} /></View>
-          <View>
-            <Text style={styles.historyTitle}>Program Timeline</Text>
-            <Text style={styles.historyMeta}>See the entire Program from start to finish</Text>
-          </View>
-        </View>
-        <Ionicons color={SLColors.textMuted} name="chevron-forward" size={18} />
-      </Pressable>
-
-      {data.previousWeekRecap ? (
-        <LastWeekEvidence recap={data.previousWeekRecap} unit={data.preferredUnits || 'kg'} />
-      ) : null}
-
+      {selectedWeek ? (
+        <>
+          <TrainingWeekNavigation
+            canNext={selectedWeekIndex < (selectedBlock?.weeks.length || 0) - 1}
+            canPrevious={selectedWeekIndex > 0}
+            onNext={() => selectWeek(selectedWeekIndex + 1)}
+            onPrevious={() => selectWeek(selectedWeekIndex - 1)}
+            onSelectDay={setSelectedDayKey}
+            selectedDayKey={selectedDayKey}
+            week={selectedWeek}
+          />
+          <TrainingSessionSequence
+            onOpenSession={setSelectedSessionId}
+            selectedDay={selectedDay}
+            unit={unit}
+            week={selectedWeek}
+          />
+        </>
+      ) : <View style={styles.noWeek}><Text style={styles.noWeekText}>No Weeks are available in this Block.</Text></View>}
       {data.coachUpdates?.length ? (
         <View style={styles.coachUpdates}>
           <Text style={styles.sectionKicker}>COACH UPDATES</Text>
@@ -268,23 +267,7 @@ export function AthleteTrainingHubExperience({
           ))}
         </View>
       ) : null}
-
-      {selectedBlock ? (
-        <View style={styles.weekStack}>
-          {selectedBlock.weeks.map((week) => (
-            <WeekSection
-              athlete={{ sex: data.athleteSex, anatomy_display_preference: data.anatomyDisplayPreference }}
-              expanded={expandedWeekKey === week.key}
-              key={week.key}
-              onOpenSession={setSelectedSessionId}
-              onToggle={() => setExpandedWeekKey((current) => current === week.key ? null : week.key)}
-              unit={data.preferredUnits || 'kg'}
-              week={week}
-            />
-          ))}
-        </View>
-      ) : null}
-
+      {data.previousWeekRecap ? <LastWeekEvidence recap={data.previousWeekRecap} unit={unit} /> : null}
       <TrainingHubSessionPreviewBottomSheet
         athlete={{ sex: data.athleteSex, anatomy_display_preference: data.anatomyDisplayPreference }}
         context={selectedSessionContext}
@@ -297,85 +280,108 @@ export function AthleteTrainingHubExperience({
         }}
         program={program}
         session={selectedSession}
-        unit={data.preferredUnits || 'kg'}
+        unit={unit}
       />
     </View>
   );
 }
 
-function ProgramHero({ data, program, progress }: { data: AthleteTrainingHubData; program: AthleteTrainingProgram; progress: number }) {
+function TrainingPosition({ block, onOpenBlock, onOpenMap }: { block: AthleteTrainingBlock; onOpenBlock: () => void; onOpenMap: () => void }) {
+  const totalWeeks = Math.max(1, block.totalWeeks || block.weeks.length);
+  const currentWeek = block.status === 'current' && block.currentWeek
+    ? Math.max(1, Math.min(totalWeeks, block.currentWeek))
+    : null;
+  const eyebrow = block.status === 'completed' ? 'COMPLETED BLOCK' : block.status === 'upcoming' ? 'UPCOMING BLOCK' : 'CURRENT BLOCK';
   return (
-    <ImageBackground imageStyle={styles.programHeroImage} source={PROGRAM_ART} style={styles.programHero}>
-      <LinearGradient colors={['rgba(2,2,4,0.22)', 'rgba(2,2,4,0.82)', '#030305']} style={StyleSheet.absoluteFillObject} />
-      <View style={styles.programHeroCopy}>
-        <Text style={styles.sectionKicker}>CURRENT PROGRAM</Text>
-        <Text numberOfLines={2} style={styles.programName}>{program.name}</Text>
-        {program.coachName || data.connectedCoachName ? (
-          <Text style={styles.coachLine}>Coached by {program.coachName || data.connectedCoachName}</Text>
-        ) : null}
-        <View style={styles.programMetaRow}>
-          <Ionicons color={SLColors.textMuted} name="time-outline" size={14} />
-          <Text style={styles.programMeta}>{programMeta(program)}</Text>
-        </View>
+    <View style={styles.position}>
+      <View style={styles.positionTop}>
+        <Pressable accessibilityRole="button" accessibilityLabel={`Open ${block.name} details`} onPress={onOpenBlock} style={styles.positionIdentity}>
+          <Text style={styles.positionEyebrow}>{eyebrow}</Text>
+          <Text numberOfLines={2} style={styles.positionTitle}>{block.name}</Text>
+          <Text style={styles.positionMeta}>{currentWeek ? `Week ${currentWeek} of ${totalWeeks}` : `${totalWeeks}-Week Block`}{block.phase ? ` · ${block.phase}` : ''}</Text>
+        </Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="Open Program map" onPress={onOpenMap} style={styles.programMapAction} testID="training-hub-program-timeline">
+          <Text style={styles.programMapText}>Program map</Text><Ionicons name="arrow-forward" size={15} color={SLColors.accentViolet} />
+        </Pressable>
       </View>
-      {program.totalWeeks && program.currentWeek ? (
-        <View style={styles.programProgressArea}>
-          <View style={styles.progressCopy}>
-            <Text style={styles.progressWeek}>Week {program.currentWeek} of {program.totalWeeks}</Text>
-            <Text style={styles.progressPercent}>{Math.round(progress * 100)}%</Text>
-          </View>
-          <View style={styles.progressTrack}><View style={[styles.progressFill, { width: `${progress * 100}%` }]} /></View>
-        </View>
-      ) : null}
-    </ImageBackground>
-  );
-}
-
-function ProgramTimeline({ blocks, selectedBlockId, onSelect }: { blocks: AthleteTrainingBlock[]; selectedBlockId?: number; onSelect: (id: number) => void }) {
-  if (!blocks.length) return null;
-  return (
-    <View style={styles.timeline}>
-      {blocks.map((block, index) => {
-        const selected = block.id === selectedBlockId;
-        const complete = block.status === 'completed';
-        const accent = complete ? SLColors.success : selected ? SLColors.warning : SLColors.textMuted;
-        return (
-          <React.Fragment key={block.id}>
-            <Pressable onPress={() => onSelect(block.id)} style={({ pressed }) => [styles.timelineStep, pressed && styles.pressed]}>
-              <Text numberOfLines={1} style={[styles.timelineName, selected && styles.timelineNameSelected]}>{shortBlockName(block.name)}</Text>
-              <View style={[styles.timelineNode, { borderColor: accent }, complete && styles.timelineNodeComplete]}>
-                {complete ? <Ionicons color="#06110A" name="checkmark" size={11} /> : selected ? <View style={styles.timelineNodeCurrent} /> : null}
-              </View>
-              <Text style={[styles.timelineState, { color: accent }]}>{complete ? 'COMPLETED' : selected ? 'YOU ARE HERE' : 'UPCOMING'}</Text>
-            </Pressable>
-            {index < blocks.length - 1 ? <View style={[styles.timelineConnector, complete && styles.timelineConnectorComplete]} /> : null}
-          </React.Fragment>
-        );
-      })}
+      <View accessibilityLabel={currentWeek ? `Week ${currentWeek} of ${totalWeeks}` : `${eyebrow}, ${totalWeeks} Weeks`} style={styles.positionRail}>
+        {Array.from({ length: totalWeeks }, (_, index) => <View key={index} style={[styles.positionSegment, (block.status === 'completed' || (currentWeek != null && index < currentWeek - 1)) && styles.positionSegmentPast, currentWeek != null && index === currentWeek - 1 && styles.positionSegmentCurrent]} />)}
+      </View>
     </View>
   );
 }
 
-function BlockFocus({ block, onOpen }: { block: AthleteTrainingBlock; onOpen: () => void }) {
-  const progress = clamp01(block.progress ?? (block.currentWeek && block.totalWeeks ? block.currentWeek / block.totalWeeks : 0));
+function TrainingWeekNavigation({ week, selectedDayKey, onSelectDay, canPrevious, canNext, onPrevious, onNext }: { week: AthleteTrainingWeek; selectedDayKey: string | null; onSelectDay: (key: string) => void; canPrevious: boolean; canNext: boolean; onPrevious: () => void; onNext: () => void }) {
+  return <View style={styles.weekNavigation}>
+    <View style={styles.weekNavigationTop}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Previous Week" accessibilityState={{ disabled: !canPrevious }} disabled={!canPrevious} onPress={onPrevious} style={styles.weekArrow}><Ionicons name="chevron-back" size={19} color={canPrevious ? SLColors.textStrong : SLColors.textSubtle} /></Pressable>
+      <View style={styles.weekNavigationTitle}><Text style={styles.weekNavigationName}>Week {week.number}</Text><Text style={styles.weekNavigationRange}>{formatWeekRangeLabel(week.rangeLabel)}</Text></View>
+      <Pressable accessibilityRole="button" accessibilityLabel="Next Week" accessibilityState={{ disabled: !canNext }} disabled={!canNext} onPress={onNext} style={styles.weekArrow}><Ionicons name="chevron-forward" size={19} color={canNext ? SLColors.textStrong : SLColors.textSubtle} /></Pressable>
+    </View>
+    <View style={styles.weekDays}>{week.days.slice(0, 7).map((day) => {
+      const selected = day.key === selectedDayKey;
+      const completed = day.sessions.length > 0 && day.sessions.every((session) => session.status === 'completed');
+      return <Pressable key={day.key} accessibilityRole="button" accessibilityLabel={`${day.weekday} ${day.dayNumber || ''}, ${day.sessions.length} Sessions`} accessibilityState={{ selected }} onPress={() => onSelectDay(day.key)} style={[styles.weekDay, selected && styles.weekDaySelected]}>
+        <Text style={[styles.weekDayLabel, selected && styles.weekDayLabelSelected]}>{day.weekday}</Text>
+        <Text style={[styles.weekDayNumber, selected && styles.weekDayNumberSelected]}>{day.dayNumber || '—'}</Text>
+        <View style={[styles.weekDayDot, completed && styles.weekDayDotComplete, day.sessions.length > 0 && !completed && styles.weekDayDotPlanned, selected && styles.weekDayDotSelected]} />
+      </Pressable>;
+    })}</View>
+  </View>;
+}
+
+function TrainingSessionSequence({ week, selectedDay, onOpenSession, unit }: { week: AthleteTrainingWeek; selectedDay: AthleteTrainingDay | null; onOpenSession: (id: number) => void; unit: 'kg' | 'lb' }) {
+  const sessions = week.days.flatMap((day) => day.sessions);
+  return <View style={styles.sequence}>
+    <View style={styles.sequenceHeading}><Text style={styles.sequenceTitle}>SESSION SEQUENCE</Text><Text style={styles.sequenceCount}>{sessions.length} Session{sessions.length === 1 ? '' : 's'}</Text></View>
+    {sessions.length > 0 && selectedDay && !selectedDay.sessions.length ? <Text style={styles.selectedDayEmpty}>No Session planned for {formatSelectedDay(selectedDay)}.</Text> : null}
+    {sessions.length ? <View style={styles.sequenceRows}>{week.days.flatMap((day) => day.sessions.map((session) => <TrainingSessionRow key={session.id} session={session} day={day} selected={day.key === selectedDay?.key} onPress={() => onOpenSession(session.id)} unit={unit} />))}</View> : <View style={styles.emptySequence}><Text style={styles.emptySequenceTitle}>No Sessions planned this Week.</Text><Text style={styles.emptySequenceMeta}>Your Program map still shows where this Week sits in the Block.</Text></View>}
+    {week.objective ? <View style={styles.weekFocus}><Text style={styles.weekFocusLabel}>COACH FOCUS</Text><Text style={styles.weekFocusText}>{week.objective.text}</Text></View> : null}
+  </View>;
+}
+
+function TrainingSessionRow({ session, day, selected, onPress, unit }: { session: AthleteTrainingSession; day: AthleteTrainingDay; selected: boolean; onPress: () => void; unit: 'kg' | 'lb' }) {
+  const completed = session.status === 'completed';
+  const active = session.status === 'in_progress' || session.status === 'today';
+  const names = (session.movements || []).map((movement) => movement.label).filter(Boolean);
+  const movementSummary = names.length ? `${names.slice(0, 3).join(' · ')}${names.length > 3 ? ` +${names.length - 3}` : ''}` : session.contentSummary || null;
+  const plannedSets = (session.movements || []).reduce((sum, movement) => sum + Math.max(0, Number(movement.sets || 0)), 0);
+  const evidence = completed && session.recap
+    ? formatSessionVolumeSummary({ loggedSetCount: session.recap.loggedSetCount, totalVolumeKg: session.recap.totalVolumeKg, unit })
+    : plannedSets > 0 ? `${plannedSets} prescribed sets` : null;
+  return <Pressable accessibilityRole="button" accessibilityLabel={[session.title, session.stateLabel, movementSummary, evidence].filter(Boolean).join(', ')} onPress={onPress} style={({ pressed }) => [styles.sequenceRow, completed && styles.sequenceRowComplete, active && styles.sequenceRowActive, selected && styles.sequenceRowSelected, pressed && styles.pressed]}>
+    <View style={styles.sequenceDate}><Text style={styles.sequenceDay}>{day.weekday}</Text><Text style={styles.sequenceNumber}>{day.dayNumber || '—'}</Text></View>
+    <View style={styles.sequenceCopy}>
+      <Text numberOfLines={2} style={styles.sequenceSessionTitle}>{session.title}</Text>
+      {movementSummary ? <Text numberOfLines={1} style={styles.sequenceMovement}>{movementSummary}</Text> : null}
+      {evidence ? <Text numberOfLines={1} style={styles.sequenceEvidence}>{evidence}</Text> : null}
+      <View style={styles.sequenceStateLine}><Text style={[styles.sequenceState, completed && styles.sequenceStateComplete, active && styles.sequenceStateActive]}>{session.stateLabel || (completed ? 'Completed' : active ? 'In Progress' : 'Upcoming')}</Text>{completed && session.recap?.prCount ? <Text style={styles.sequencePr}>{session.recap.prCount} PR{session.recap.prCount === 1 ? '' : 's'}</Text> : null}</View>
+    </View>
+    <Ionicons name="chevron-forward" size={18} color={SLColors.textMuted} />
+  </Pressable>;
+}
+
+function ProgramHero({ data, program, progress }: { data: AthleteTrainingHubData; program: AthleteTrainingProgram; progress: number }) {
   return (
-    <Pressable onPress={onOpen} style={({ pressed }) => [styles.blockFocus, pressed && styles.pressed]}>
-      <ImageBackground imageStyle={styles.blockImage} source={blockArtwork(block)} style={styles.blockImageArea}>
-        <LinearGradient colors={['rgba(2,2,3,0.1)', 'rgba(2,2,3,0.86)']} style={StyleSheet.absoluteFillObject} />
-      </ImageBackground>
-      <View style={styles.blockCopy}>
-        <Text style={styles.blockName}>{block.name}</Text>
-        {block.phase || block.purpose ? <Text numberOfLines={1} style={styles.blockPhase}>{block.phase || block.purpose}</Text> : null}
-        {block.currentWeek && block.totalWeeks ? <Text style={styles.blockWeek}>Week {block.currentWeek} of {block.totalWeeks}</Text> : null}
-        {block.dateRangeLabel ? <Text style={styles.blockDates}>{block.dateRangeLabel}</Text> : null}
-        <View style={styles.blockProgressRow}>
-          <View style={styles.blockProgressTrack}><View style={[styles.blockProgressFill, { width: `${progress * 100}%` }]} /></View>
-          <Text style={styles.blockProgressPercent}>{Math.round(progress * 100)}%</Text>
-        </View>
+    <ImageBackground imageStyle={styles.programHeroImage} source={PROGRAM_ART} style={styles.programHero}>
+      <LinearGradient colors={['#050507', 'rgba(5,5,7,0.89)', 'rgba(5,5,7,0.24)']} locations={[0, 0.58, 1]} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={StyleSheet.absoluteFillObject} />
+      <View style={styles.programHeroCopy}>
+        <Text style={styles.sectionKicker}>CURRENT PROGRAM</Text>
+        <Text numberOfLines={2} style={styles.programName}>{program.name}</Text>
+        {program.coachName || data.connectedCoachName ? <Text numberOfLines={1} style={styles.coachLine}>Coached by {program.coachName || data.connectedCoachName}</Text> : null}
+        {program.progress != null ? <Text style={styles.programContext}>{Math.round(progress * 100)}% through Program</Text> : null}
+        {program.totalWeeks && program.currentWeek ? <View style={styles.compactProgress}><View style={[styles.progressFill, { width: `${progress * 100}%` }]} /></View> : null}
       </View>
-      <Ionicons color={SLColors.textMuted} name="chevron-forward" size={18} style={styles.blockChevron} />
-    </Pressable>
+    </ImageBackground>
   );
+}
+
+function formatSelectedDay(day: AthleteTrainingDay) {
+  if (!day.date) return day.weekday;
+  const parsed = new Date(`${day.date}T12:00:00`);
+  return Number.isFinite(parsed.getTime())
+    ? parsed.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })
+    : `${day.weekday} ${day.dayNumber || ''}`.trim();
 }
 
 function LastWeekEvidence({ recap, unit }: { recap: AthletePreviousWeekRecap; unit: 'kg' | 'lb' }) {
@@ -404,181 +410,6 @@ function EvidenceMetric({ label, value }: { label: string; value: string }) {
   return <View style={styles.evidenceMetric}><Text style={styles.evidenceValue}>{value}</Text><Text style={styles.evidenceLabel}>{label}</Text></View>;
 }
 
-function WeekSection({ athlete, week, expanded, onToggle, onOpenSession, unit }: { athlete: { sex?: string | null; anatomy_display_preference?: string | null }; week: AthleteTrainingWeek; expanded: boolean; onToggle: () => void; onOpenSession: (id: number) => void; unit: 'kg' | 'lb' }) {
-  const sessions = week.days.flatMap((day) => day.sessions);
-  const completed = sessions.filter((session) => session.status === 'completed').length;
-  const state = week.current ? 'in_progress' : sessions.length > 0 && completed === sessions.length ? 'complete' : 'not_started';
-  const accent = state === 'not_started' ? SLColors.textMuted : movementCardStateAccent(state);
-  return (
-    <TrainingHubMaterialSurface accentColor={accent} expanded={expanded} state={state} style={expanded ? styles.weekExpanded : styles.weekCollapsed}>
-      <Pressable onPress={onToggle} style={({ pressed }) => [styles.weekHeader, pressed && styles.pressed]}>
-        <View style={styles.weekHeaderCopy}>
-          <Text style={[styles.weekTitle, week.current && { color: accent }]}>WEEK {week.number}</Text>
-          <Text style={styles.weekRange}>{formatWeekRangeLabel(week.rangeLabel)}</Text>
-        </View>
-        <View style={styles.weekHeaderStatus}>
-          <Text style={styles.weekCount}>{sessions.length ? `${sessions.length} Session${sessions.length === 1 ? '' : 's'}` : 'No Sessions planned'}</Text>
-          {state === 'complete' ? <View style={styles.completeCheck}><Ionicons color="#07120B" name="checkmark" size={15} /></View> : <Ionicons color={SLColors.textMuted} name={expanded ? 'chevron-up' : 'chevron-forward'} size={17} />}
-        </View>
-      </Pressable>
-      {expanded ? (
-        <View style={styles.weekBody}>
-          {week.objective ? <View style={styles.weekObjective}><Text style={styles.weekObjectiveKicker}>COACH FOCUS</Text><Text style={styles.weekObjectiveText}>{week.objective.text}</Text></View> : null}
-          <View style={styles.dayStrip}>
-            {week.days.slice(0, 7).map((day) => <DayChip day={day} key={day.key} />)}
-          </View>
-          <View style={styles.sessionStack}>
-            {sessions.map((session) => <SessionCard athlete={athlete} key={session.id} onPress={() => onOpenSession(session.id)} session={session} unit={unit} />)}
-            {!sessions.length ? <Text style={styles.emptyWeekText}>Recovery and mobility. No training Session is planned.</Text> : null}
-          </View>
-        </View>
-      ) : null}
-    </TrainingHubMaterialSurface>
-  );
-}
-
-function DayChip({ day }: { day: AthleteTrainingDay }) {
-  const status = day.sessions[0]?.status || day.status;
-  const completed = status === 'completed';
-  const today = status === 'today' || day.status === 'today';
-  return (
-    <View style={[styles.dayChip, completed && styles.dayChipComplete, today && styles.dayChipToday]}>
-      <Text style={[styles.dayChipWeekday, today && styles.dayChipTextToday]}>{day.weekday}</Text>
-      <Text style={[styles.dayChipNumber, today && styles.dayChipTextToday]}>{day.dayNumber || '—'}</Text>
-      <View style={[styles.dayChipDot, completed && styles.dayChipDotComplete, status === 'upcoming' && styles.dayChipDotUpcoming, status === 'missed' && styles.dayChipDotMissed]} />
-    </View>
-  );
-}
-
-function SessionCard({ athlete, session, onPress, unit }: { athlete: { sex?: string | null; anatomy_display_preference?: string | null }; session: AthleteTrainingSession; onPress: () => void; unit: 'kg' | 'lb' }) {
-  const completed = session.status === 'completed';
-  const active = session.status === 'in_progress' || session.status === 'today';
-  const accent = completed ? SLColors.success : active ? SLColors.warning : SLColors.accentViolet;
-  const recap = session.recap;
-  const metric = completed && recap
-    ? formatSessionVolumeSummary({ loggedSetCount: recap.loggedSetCount, totalVolumeKg: recap.totalVolumeKg, unit })
-    : session.contentSummary;
-  return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.sessionCard, { borderLeftColor: accent }, pressed && styles.pressed]}>
-      <View style={styles.sessionArtwork}><ProgrammingMuscleRegionArt athlete={athlete} framingPreset="thumbnail" level="session" primary={session.muscleFocus?.primary || session.focusMuscles || []} secondary={session.muscleFocus?.secondary || []} /></View>
-      <View style={styles.sessionCopy}>
-        <View style={styles.sessionTitleRow}>
-          <Text numberOfLines={1} style={styles.sessionTitle}>{session.title}</Text>
-          {completed ? <Ionicons color={SLColors.success} name="checkmark-circle-outline" size={18} /> : null}
-        </View>
-        {session.focusMuscles?.length ? <Text numberOfLines={1} style={styles.sessionFocus}>{session.focusMuscles.slice(0, 3).map(humanizeMuscle).join(' · ')}</Text> : null}
-        {metric ? <Text numberOfLines={1} style={styles.sessionMetric}>{metric}</Text> : null}
-        <View style={styles.sessionStateRow}>
-          <Text style={styles.sessionDay}>{session.dayLabel}</Text>
-          <Text style={[styles.sessionState, { color: accent }]}>{session.stateLabel}</Text>
-          {completed && recap?.prCount ? <View style={styles.prBadge}><Text style={styles.prBadgeText}>{recap.prCount} PR{recap.prCount === 1 ? '' : 's'}</Text></View> : null}
-        </View>
-      </View>
-      <View style={[styles.sessionAction, { borderColor: colorWithAlpha(accent, 0.55) }]}>
-        <Text style={[styles.sessionActionText, { color: accent }]}>{completed ? 'View' : active ? 'Resume' : 'Open'}</Text>
-      </View>
-    </Pressable>
-  );
-}
-
-function SessionPreviewSheet({ session, program, athlete, onClose, onOpen, unit }: { session: AthleteTrainingSession | null; program: AthleteTrainingProgram; athlete: { sex?: string | null; anatomy_display_preference?: string | null }; onClose: () => void; onOpen: () => void; unit: 'kg' | 'lb' }) {
-  const insets = useSafeAreaInsets();
-  if (!session) return null;
-  const completed = session.status === 'completed';
-  const accent = completed ? SLColors.success : session.status === 'in_progress' ? SLColors.warning : SLColors.accentViolet;
-  const primaryMuscles = session.muscleFocus?.primary?.length ? session.muscleFocus.primary : (session.focusMuscles || []).slice(0, 3);
-  const secondaryMuscles = session.muscleFocus?.secondary || [];
-  return (
-    <Modal animationType="slide" onRequestClose={onClose} presentationStyle="fullScreen" visible>
-      <SafeAreaView edges={['top', 'left', 'right']} style={styles.modalSafe}>
-        <ScrollView contentContainerStyle={[styles.modalContent, { paddingBottom: Math.max(24, insets.bottom + 12) }]}>
-          <View style={styles.modalHeader}>
-            <Pressable accessibilityLabel="Close Session preview" onPress={onClose} style={styles.modalClose}><Ionicons color={SLColors.text} name="chevron-back" size={24} /></Pressable>
-            <View style={styles.modalHeaderCopy}><Text style={styles.modalBrand}>STRENGTH</Text><Text style={styles.modalBrandSub}>— LEDGER —</Text></View>
-            <Pressable accessibilityLabel="Close" onPress={onClose} style={styles.modalClose}><Ionicons color={SLColors.text} name="close" size={23} /></Pressable>
-          </View>
-          <View style={styles.previewHero}>
-            <ProgrammingMuscleRegionArt athlete={athlete} framingPreset="hero" level="session" primary={primaryMuscles} secondary={secondaryMuscles} />
-            <LinearGradient colors={['rgba(2,2,4,0.02)', 'rgba(3,3,5,0.35)']} pointerEvents="none" style={StyleSheet.absoluteFillObject} />
-            <View style={styles.previewStatus}><Text style={[styles.previewStatusText, { color: accent }]}>{session.stateLabel || (completed ? 'COMPLETED' : 'UPCOMING')}</Text></View>
-          </View>
-          <Text style={[styles.previewDate, { color: accent }]}>{formatLongDate(session.date)}</Text>
-          <Text style={styles.previewTitle}>{session.title}</Text>
-          <Text style={styles.previewMeta}>{session.movementCount || session.movements?.length || 0} movements · {program.name}</Text>
-
-          {completed ? <CompletedEvidence session={session} unit={unit} /> : <PlannedPreview session={session} />}
-
-          {primaryMuscles.length ? (
-            <View style={styles.focusSection}>
-              <Text style={styles.sectionKicker}>FOCUS MUSCLES</Text>
-              <View style={styles.focusSummaryCard}>
-                <ProgrammingMuscleRegionArt athlete={athlete} framingPreset="card" level="session" primary={primaryMuscles} secondary={secondaryMuscles} />
-                <View style={styles.focusSummaryCopy}><Text style={styles.focusPrimaryLabel}>PRIMARY</Text><Text style={styles.focusSummaryText}>{primaryMuscles.map(humanizeMuscle).join(' · ')}</Text>{secondaryMuscles.length ? <><Text style={styles.focusSecondaryLabel}>SECONDARY</Text><Text style={styles.focusSummaryText}>{secondaryMuscles.map(humanizeMuscle).join(' · ')}</Text></> : null}<Text style={styles.focusEvidence}>{session.muscleFocus?.source === 'performed' ? 'Performed set evidence' : 'Programmed set exposure'}</Text></View>
-              </View>
-            </View>
-          ) : null}
-
-          <Pressable onPress={onOpen} style={({ pressed }) => [styles.primaryAction, completed && styles.completedAction, pressed && styles.pressed]}>
-            <Text style={styles.primaryActionText}>{completed ? 'View Session Recap' : session.status === 'in_progress' ? 'Resume Session' : 'Open Session'}</Text>
-            <Ionicons color="#FFFFFF" name="arrow-forward" size={19} />
-          </Pressable>
-        </ScrollView>
-      </SafeAreaView>
-    </Modal>
-  );
-}
-
-function PlannedPreview({ session }: { session: AthleteTrainingSession }) {
-  const rows = session.movements || [];
-  return (
-    <View style={styles.previewSection}>
-      <Text style={styles.sectionKicker}>SESSION PREVIEW</Text>
-      <View style={styles.previewMovementList}>
-        {rows.slice(0, 5).map((movement, index) => (
-          <View key={`${movement.label}-${index}`} style={styles.previewMovementRow}>
-            <Text style={styles.previewMovementNumber}>{index + 1}</Text>
-            <View style={styles.previewMovementCopy}>
-              <Text style={styles.previewMovementName}>{movement.label}</Text>
-              <Text style={styles.previewMovementPrescription}>{movement.prescription || (movement.sets ? `${movement.sets} sets` : 'Programmed movement')}</Text>
-            </View>
-          </View>
-        ))}
-        {rows.length > 5 ? <Text style={styles.moreMovements}>＋ {rows.length - 5} more movements</Text> : null}
-      </View>
-    </View>
-  );
-}
-
-function CompletedEvidence({ session, unit }: { session: AthleteTrainingSession; unit: 'kg' | 'lb' }) {
-  const recap = session.recap;
-  if (!recap) return null;
-  return (
-    <View style={styles.previewSection}>
-      <Text style={styles.sectionKicker}>SESSION HIGHLIGHTS</Text>
-      <View style={styles.completedMetrics}>
-        <EvidenceMetric label="PRs" value={String(recap.prCount || 0)} />
-        <EvidenceMetric label="SESSION RPE" value={recap.sessionRpe != null ? String(recap.sessionRpe) : '—'} />
-        <EvidenceMetric label="PLANNED SETS" value={recap.completionPercent != null ? `${recap.completionPercent}%` : '—'} />
-      </View>
-      {recap.totalVolumeKg ? <Text style={styles.completedVolume}>{formatTotalVolumeFromKg(recap.totalVolumeKg, unit)}</Text> : null}
-      {recap.topLifts?.length ? (
-        <View style={styles.topLiftList}>
-          <Text style={styles.sectionKicker}>TOP LIFTS</Text>
-          {recap.topLifts.slice(0, 4).map((lift) => (
-            <View key={`${lift.workoutItemId}-${lift.movement}`} style={styles.topLiftRow}>
-              <View style={styles.topLiftCopy}>
-                <View style={styles.topLiftTitleRow}><Text style={styles.topLiftName}>{lift.movement}</Text>{lift.hasPr ? <View style={styles.prBadge}><Text style={styles.prBadgeText}>PR</Text></View> : null}</View>
-                <Text style={styles.topLiftResult}>{formatSet(lift, unit)}</Text>
-                {formatPrDelta(lift, unit) ? <Text style={styles.topLiftDelta}>{formatPrDelta(lift, unit)}</Text> : null}
-              </View>
-            </View>
-          ))}
-        </View>
-      ) : null}
-    </View>
-  );
-}
-
 function NoActiveProgram({ data, onAction }: { data: AthleteTrainingHubData; onAction: (action: AthleteTrainingHubAction) => void }) {
   return (
     <View style={styles.root}>
@@ -594,71 +425,84 @@ function NoActiveProgram({ data, onAction }: { data: AthleteTrainingHubData; onA
   );
 }
 
-function blockArtwork(block: AthleteTrainingBlock): ImageSourcePropType {
-  const identity = `${block.name} ${block.phase || ''} ${block.purpose || ''}`.toLowerCase();
-  if (/(hypertrophy|bodybuild|offseason|accessor|volume)/.test(identity)) return BLOCK_HYPERTROPHY_ART;
-  if (/(strength|power|peak|competition|intens)/.test(identity)) return BLOCK_STRENGTH_ART;
-  if (/(base|foundation|recovery|return|reverse|rebuild)/.test(identity)) return BLOCK_FOUNDATION_ART;
-  return BLOCK_ART;
-}
-function normalizeMuscleKey(value: string) { return String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_'); }
-function humanizeMuscle(value: string) { return normalizeMuscleKey(value).split('_').map((part) => part ? part[0].toUpperCase() + part.slice(1) : '').join(' '); }
-function shortBlockName(value: string) { return String(value || 'Block').replace(/\s+Block$/i, ''); }
 function clamp01(value?: number | null) { return Math.max(0, Math.min(1, Number(value || 0))); }
-function programMeta(program: AthleteTrainingProgram) { return [program.blockCount ? `${program.blockCount} Blocks` : null, program.totalWeeks ? `${program.totalWeeks} Weeks` : null].filter(Boolean).join(' · ') || 'Program schedule'; }
 function formatWeekRangeLabel(value: string) { return String(value || '').replace(/\s+-\s+/g, ' – '); }
-function formatLongDate(value?: string | null) { if (!value) return 'SESSION'; const date = new Date(`${value}T12:00:00`); return Number.isFinite(date.getTime()) ? date.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' }).toUpperCase() : value.toUpperCase(); }
 function formatUpdateAge(value: string) { const elapsed = Date.now() - new Date(value).getTime(); if (!Number.isFinite(elapsed)) return ''; const days = Math.max(0, Math.floor(elapsed / 86400000)); return days === 0 ? 'Today' : days === 1 ? 'Yesterday' : `${days}d`; }
-function formatSet(lift: AthleteTrainingTopLift, unit: 'kg' | 'lb') { const load = lift.weightKg != null ? `${Math.round(kilogramsToDisplayValue(lift.weightKg, unit))} ${unit}` : 'Load not recorded'; const reps = lift.reps != null ? ` × ${lift.reps}` : ''; const rpe = lift.rpe != null ? ` @ ${lift.rpe}` : ''; return `${load}${reps}${rpe}`; }
-function formatPrDelta(lift: AthleteTrainingTopLift, unit: 'kg' | 'lb') { if (!lift.hasPr || lift.prDelta == null || Number(lift.prDelta) <= 0) return null; const sourceUnit = String(lift.prUnit || '').toLowerCase(); const sourceValue = Number(lift.prDelta); const normalizedSource = sourceUnit === 'kg' ? 'kg' : sourceUnit.startsWith('lb') ? 'lb' : unit; const displayValue = convertDisplayWeightValue(sourceValue, normalizedSource, unit); const isEstimated = /e1rm/i.test(String(lift.prEventType || '')); const formatted = isEstimated ? formatCalculatedWeightValue(displayValue, unit) : Math.round(displayValue).toLocaleString('en-US'); return `+${formatted} ${unit}${isEstimated ? ' e1RM' : ''}`; }
-function colorWithAlpha(color: string, alpha: number) { const match = color.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); return match ? `rgba(${parseInt(match[1], 16)},${parseInt(match[2], 16)},${parseInt(match[3], 16)},${alpha})` : color; }
-
 const styles = StyleSheet.create({
-  root: { width: '100%', gap: 12, backgroundColor: '#000000' },
+  root: { width: '100%', backgroundColor: '#000000' },
   pressed: { opacity: 0.76 },
   sectionKicker: { ...SLTypography.micro, color: SLColors.accentViolet, letterSpacing: 0.65 },
-  programHero: { minHeight: 228, justifyContent: 'flex-end', overflow: 'hidden', borderBottomWidth: 1, borderColor: SLColors.borderSubtle },
-  programHeroImage: { resizeMode: 'cover', opacity: 0.76 },
-  programHeroCopy: { paddingHorizontal: 16, paddingTop: 72, gap: 4 },
-  programName: { ...SLTypography.title, color: '#FFFFFF', fontSize: 27, lineHeight: 30 },
-  coachLine: { ...SLTypography.body, color: '#C8B5E9' },
-  programMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
-  programMeta: { ...SLTypography.caption, color: SLColors.textMuted },
-  programProgressArea: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 15, gap: 8 },
-  progressCopy: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  progressWeek: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
-  progressPercent: { ...SLTypography.bodyStrong, color: SLColors.accentViolet },
-  progressTrack: { height: 5, borderRadius: 3, backgroundColor: '#18151D', overflow: 'hidden' },
+  programHero: { minHeight: 143, justifyContent: 'center', overflow: 'hidden', borderBottomWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
+  programHeroImage: { resizeMode: 'cover', opacity: 0.62 },
+  programHeroCopy: { paddingHorizontal: 16, paddingTop: 18, paddingBottom: 16, gap: 4 },
+  programName: { ...SLTypography.title, color: '#FFFFFF', fontSize: 23, lineHeight: 27, maxWidth: '82%' },
+  coachLine: { ...SLTypography.caption, color: '#C8B5E9' },
+  programContext: { ...SLTypography.caption, color: SLColors.textMuted },
+  compactProgress: { height: 4, maxWidth: 290, marginTop: 6, borderRadius: 2, overflow: 'hidden', backgroundColor: '#2B2132' },
+  position: { paddingHorizontal: 16, paddingTop: 15, paddingBottom: 13, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
+  positionTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
+  positionIdentity: { flex: 1, minWidth: 0, gap: 2 },
+  positionEyebrow: { ...SLTypography.micro, color: SLColors.accentViolet, letterSpacing: 0.7 },
+  positionTitle: { ...SLTypography.sectionTitle, color: SLColors.textStrong, fontSize: 21, lineHeight: 25 },
+  positionMeta: { ...SLTypography.caption, color: SLColors.textMuted },
+  programMapAction: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 4 },
+  programMapText: { ...SLTypography.caption, color: SLColors.accentViolet, fontWeight: '700' },
+  positionRail: { flexDirection: 'row', gap: 4, marginTop: 13 },
+  positionSegment: { flex: 1, height: 5, borderRadius: 3, backgroundColor: '#302739' },
+  positionSegmentPast: { backgroundColor: '#654784' },
+  positionSegmentCurrent: { backgroundColor: SLColors.accentViolet },
+  weekNavigation: { backgroundColor: '#07080B', borderBottomWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
+  weekNavigationTop: { minHeight: 49, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  weekArrow: { width: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  weekNavigationTitle: { flex: 1, alignItems: 'center' },
+  weekNavigationName: { ...SLTypography.bodyStrong, color: SLColors.textStrong, fontSize: 17 },
+  weekNavigationRange: { ...SLTypography.micro, color: SLColors.textMuted },
+  weekDays: { flexDirection: 'row', paddingHorizontal: 8 },
+  weekDay: { flex: 1, minWidth: 0, minHeight: 55, paddingVertical: 5, alignItems: 'center', justifyContent: 'center', gap: 2, borderBottomWidth: 2, borderColor: 'transparent' },
+  weekDaySelected: { backgroundColor: '#1A1024', borderColor: SLColors.accentViolet },
+  weekDayLabel: { ...SLTypography.micro, color: SLColors.textMuted },
+  weekDayLabelSelected: { color: SLColors.accentViolet },
+  weekDayNumber: { ...SLTypography.bodyStrong, color: SLColors.textStrong, fontSize: 16 },
+  weekDayNumberSelected: { color: SLColors.accentViolet },
+  weekDayDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#4C4752' },
+  weekDayDotComplete: { backgroundColor: SLColors.success },
+  weekDayDotPlanned: { backgroundColor: SLColors.accentViolet },
+  weekDayDotSelected: { backgroundColor: SLColors.accentViolet },
+  sequence: { paddingBottom: 10 },
+  sequenceHeading: { minHeight: 44, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  sequenceTitle: { ...SLTypography.micro, color: SLColors.textStrong, letterSpacing: 0.7 },
+  sequenceCount: { ...SLTypography.caption, color: SLColors.textMuted },
+  selectedDayEmpty: { ...SLTypography.caption, color: SLColors.textMuted, paddingHorizontal: 16, paddingBottom: 10 },
+  sequenceRows: { borderTopWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
+  sequenceRow: { minHeight: 96, paddingHorizontal: 16, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', gap: 11, borderLeftWidth: 3, borderLeftColor: '#594364', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderSubtle, backgroundColor: '#090A0E' },
+  sequenceRowComplete: { borderLeftColor: SLColors.success },
+  sequenceRowActive: { borderLeftColor: SLColors.accentViolet, backgroundColor: '#100C17' },
+  sequenceRowSelected: { backgroundColor: '#181020' },
+  sequenceDate: { width: 38, alignItems: 'flex-start', gap: 1 },
+  sequenceDay: { ...SLTypography.micro, color: SLColors.textMuted, textTransform: 'uppercase' },
+  sequenceNumber: { ...SLTypography.bodyStrong, color: SLColors.textStrong, fontSize: 18 },
+  sequenceCopy: { flex: 1, minWidth: 0, gap: 3 },
+  sequenceSessionTitle: { ...SLTypography.bodyStrong, color: SLColors.textStrong, fontSize: 17, lineHeight: 22 },
+  sequenceMovement: { ...SLTypography.caption, color: SLColors.text, fontSize: 12 },
+  sequenceEvidence: { ...SLTypography.caption, color: SLColors.textMuted },
+  sequenceStateLine: { flexDirection: 'row', alignItems: 'center', gap: 9, marginTop: 2 },
+  sequenceState: { ...SLTypography.micro, color: SLColors.textMuted, fontWeight: '700', textTransform: 'uppercase' },
+  sequenceStateActive: { color: SLColors.accentViolet },
+  sequenceStateComplete: { color: SLColors.success },
+  sequencePr: { ...SLTypography.micro, color: SLColors.accentMagenta, fontWeight: '800' },
+  emptySequence: { minHeight: 100, justifyContent: 'center', paddingHorizontal: 16, gap: 4, borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
+  emptySequenceTitle: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
+  emptySequenceMeta: { ...SLTypography.caption, color: SLColors.textMuted },
+  weekFocus: { marginHorizontal: 16, marginTop: 15, paddingLeft: 10, gap: 3, borderLeftWidth: 2, borderColor: SLColors.accentViolet },
+  weekFocusLabel: { ...SLTypography.micro, color: SLColors.accentViolet },
+  weekFocusText: { ...SLTypography.caption, color: SLColors.text },
+  noWeek: { padding: 20 },
+  noWeekText: { ...SLTypography.body, color: SLColors.textMuted },
   progressFill: { height: '100%', borderRadius: 3, backgroundColor: SLColors.accentViolet },
-  timeline: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, borderBottomWidth: 1, borderColor: SLColors.borderSubtle },
-  timelineStep: { flex: 1, alignItems: 'center', gap: 4, zIndex: 1 },
-  timelineName: { ...SLTypography.micro, color: SLColors.textMuted, textTransform: 'uppercase' },
-  timelineNameSelected: { color: SLColors.textStrong },
-  timelineNode: { width: 17, height: 17, borderRadius: 9, borderWidth: 1.5, backgroundColor: '#050506', alignItems: 'center', justifyContent: 'center' },
-  timelineNodeComplete: { backgroundColor: SLColors.success },
-  timelineNodeCurrent: { width: 7, height: 7, borderRadius: 4, backgroundColor: SLColors.warning },
-  timelineState: { fontSize: 8, lineHeight: 10, fontWeight: '700', letterSpacing: 0.35 },
-  timelineConnector: { height: 1, flex: 0.28, marginHorizontal: -13, marginBottom: 11, backgroundColor: '#343039' },
-  timelineConnectorComplete: { backgroundColor: colorWithAlpha(SLColors.success, 0.7) },
-  blockFocus: { marginHorizontal: 8, minHeight: 148, borderRadius: SLRadius.lg, overflow: 'hidden', borderWidth: 1, borderColor: '#4C4028', backgroundColor: '#080808', flexDirection: 'row', alignItems: 'stretch' },
-  blockImageArea: { width: '42%' },
-  blockImage: { resizeMode: 'cover', opacity: 0.88 },
-  blockCopy: { flex: 1, padding: 14, justifyContent: 'center', gap: 3 },
-  blockName: { ...SLTypography.sectionTitle, fontSize: 21, lineHeight: 24, color: '#FFFFFF', textTransform: 'uppercase' },
-  blockPhase: { ...SLTypography.micro, color: SLColors.warning, textTransform: 'uppercase' },
-  blockWeek: { ...SLTypography.bodyStrong, color: SLColors.textStrong, marginTop: 5 },
-  blockDates: { ...SLTypography.caption, color: SLColors.textMuted },
-  blockProgressRow: { marginTop: 7, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  blockProgressTrack: { flex: 1, height: 4, borderRadius: 2, backgroundColor: '#1E1A12', overflow: 'hidden' },
-  blockProgressFill: { height: '100%', backgroundColor: SLColors.warning },
-  blockProgressPercent: { ...SLTypography.micro, color: SLColors.textMuted },
-  blockChevron: { alignSelf: 'center', marginRight: 9 },
   historyAction: { marginHorizontal: 8, minHeight: 58, borderWidth: 1, borderColor: SLColors.borderSubtle, borderRadius: SLRadius.md, backgroundColor: '#08090C', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 13, gap: 12 },
-  historyIdentity: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  historyIcon: { width: 34, height: 34, borderRadius: 8, backgroundColor: '#121019', alignItems: 'center', justifyContent: 'center' },
   historyTitle: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
   historyMeta: { ...SLTypography.micro, color: SLColors.textMuted, marginTop: 2 },
-  evidenceCard: { marginHorizontal: 8, padding: 13, gap: 11 },
+  evidenceCard: { marginHorizontal: 8, marginTop: 14, padding: 13, gap: 11 },
   evidenceStrip: { flexDirection: 'row', alignItems: 'stretch' },
   evidenceMetric: { flex: 1, minWidth: 0, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3, borderRightWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
   evidenceValue: { fontSize: 20, lineHeight: 23, fontWeight: '700', color: '#FFFFFF' },
@@ -668,89 +512,11 @@ const styles = StyleSheet.create({
   evidenceFooter: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 },
   evidenceStatement: { ...SLTypography.caption, color: SLColors.textMuted, flex: 1, minWidth: 0 },
   evidenceVolume: { ...SLTypography.caption, color: SLColors.success, flexShrink: 1, maxWidth: '46%', textAlign: 'right' },
-  coachUpdates: { marginHorizontal: 12, gap: 7, paddingVertical: 4 },
+  coachUpdates: { marginHorizontal: 16, marginTop: 16, gap: 7, paddingVertical: 4 },
   coachUpdateRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   coachUpdateDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: SLColors.accentViolet },
   coachUpdateBody: { ...SLTypography.caption, color: SLColors.text, flex: 1 },
   coachUpdateAge: { ...SLTypography.micro, color: SLColors.textMuted },
-  weekStack: { gap: 9, paddingHorizontal: 8, paddingBottom: 8 },
-  weekCollapsed: { paddingHorizontal: 13, paddingVertical: 12 },
-  weekExpanded: { padding: 0, overflow: 'hidden' },
-  weekHeader: { minHeight: 48, paddingHorizontal: 13, paddingVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
-  weekHeaderCopy: { flex: 1, gap: 2 },
-  weekTitle: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
-  weekRange: { ...SLTypography.micro, color: SLColors.textMuted },
-  weekHeaderStatus: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  weekCount: { ...SLTypography.caption, color: SLColors.textMuted },
-  completeCheck: { width: 22, height: 22, borderRadius: 11, backgroundColor: SLColors.success, alignItems: 'center', justifyContent: 'center' },
-  weekBody: { borderTopWidth: 1, borderColor: SLColors.borderSubtle, padding: 10, gap: 10 },
-  weekObjective: { borderLeftWidth: 2, borderColor: SLColors.accentViolet, paddingLeft: 9, gap: 2 },
-  weekObjectiveKicker: { ...SLTypography.micro, color: SLColors.accentViolet },
-  weekObjectiveText: { ...SLTypography.caption, color: SLColors.text },
-  dayStrip: { flexDirection: 'row', gap: 5 },
-  dayChip: { flex: 1, minWidth: 0, height: 53, borderRadius: 8, borderWidth: 1, borderColor: SLColors.borderSubtle, backgroundColor: '#07080A', alignItems: 'center', justifyContent: 'center', gap: 1 },
-  dayChipComplete: { backgroundColor: '#07120C', borderColor: '#1B5131' },
-  dayChipToday: { borderColor: SLColors.warning, backgroundColor: '#181307' },
-  dayChipWeekday: { fontSize: 9, lineHeight: 11, color: SLColors.textMuted },
-  dayChipNumber: { fontSize: 14, lineHeight: 17, fontWeight: '700', color: SLColors.text },
-  dayChipTextToday: { color: SLColors.warning },
-  dayChipDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#484550' },
-  dayChipDotComplete: { backgroundColor: SLColors.success },
-  dayChipDotUpcoming: { backgroundColor: SLColors.accentViolet },
-  dayChipDotMissed: { backgroundColor: SLColors.danger },
-  sessionStack: { gap: 7 },
-  sessionCard: { minHeight: 82, borderRadius: 10, borderWidth: 1, borderLeftWidth: 3, borderColor: SLColors.borderSubtle, backgroundColor: '#090A0D', padding: 7, flexDirection: 'row', alignItems: 'center', gap: 9 },
-  sessionArtwork: { width: 66, height: 66, borderRadius: 8, backgroundColor: '#0A0A0D' },
-  sessionCopy: { flex: 1, minWidth: 0, gap: 2 },
-  sessionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  sessionTitle: { ...SLTypography.bodyStrong, color: '#FFFFFF', flex: 1 },
-  sessionFocus: { ...SLTypography.micro, color: '#C3B2DD' },
-  sessionMetric: { ...SLTypography.caption, color: SLColors.textMuted },
-  sessionStateRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
-  sessionDay: { ...SLTypography.micro, color: SLColors.textMuted },
-  sessionState: { ...SLTypography.micro, fontWeight: '700' },
-  sessionAction: { minWidth: 50, height: 30, borderRadius: 6, borderWidth: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  sessionActionText: { ...SLTypography.micro, fontWeight: '700' },
-  prBadge: { minHeight: 19, paddingHorizontal: 6, borderRadius: 6, backgroundColor: '#3A133D', borderWidth: 1, borderColor: '#9D4AA4', alignItems: 'center', justifyContent: 'center' },
-  prBadgeText: { fontSize: 9, lineHeight: 11, fontWeight: '800', color: '#F0A9F5' },
-  emptyWeekText: { ...SLTypography.caption, color: SLColors.textMuted, paddingVertical: 10, textAlign: 'center' },
-  modalSafe: { flex: 1, backgroundColor: '#000000' },
-  modalContent: { backgroundColor: '#000000' },
-  modalHeader: { height: 58, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, borderBottomWidth: 1, borderColor: SLColors.borderSubtle },
-  modalClose: { width: 40, height: 40, borderRadius: 11, borderWidth: 1, borderColor: SLColors.borderSubtle, backgroundColor: '#08090C', alignItems: 'center', justifyContent: 'center' },
-  modalHeaderCopy: { alignItems: 'center' },
-  modalBrand: { fontSize: 13, lineHeight: 15, fontWeight: '800', letterSpacing: 2.1, color: '#FFFFFF' },
-  modalBrandSub: { fontSize: 8, lineHeight: 10, letterSpacing: 2.2, color: SLColors.accentViolet },
-  previewHero: { height: 210, justifyContent: 'center', alignItems: 'center', overflow: 'hidden', padding: 12, backgroundColor: '#050609' },
-  previewStatus: { paddingHorizontal: 9, paddingVertical: 5, borderRadius: 6, backgroundColor: 'rgba(10,8,13,0.88)', borderWidth: 1, borderColor: SLColors.borderSubtle },
-  previewStatusText: { ...SLTypography.micro, fontWeight: '800' },
-  previewDate: { ...SLTypography.micro, marginHorizontal: 16, marginTop: 2, letterSpacing: 0.6 },
-  previewTitle: { ...SLTypography.title, color: '#FFFFFF', marginHorizontal: 16, marginTop: 4 },
-  previewMeta: { ...SLTypography.body, color: SLColors.textMuted, marginHorizontal: 16, marginTop: 4 },
-  previewSection: { margin: 14, padding: 12, borderWidth: 1, borderColor: SLColors.borderSubtle, borderRadius: SLRadius.md, backgroundColor: '#07080B', gap: 10 },
-  previewMovementList: { gap: 1 },
-  previewMovementRow: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
-  previewMovementNumber: { width: 22, fontSize: 16, fontWeight: '800', color: SLColors.textMuted, textAlign: 'center' },
-  previewMovementCopy: { flex: 1, gap: 2 },
-  previewMovementName: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
-  previewMovementPrescription: { ...SLTypography.caption, color: SLColors.textMuted },
-  moreMovements: { ...SLTypography.caption, color: SLColors.textMuted, paddingTop: 10 },
-  focusSection: { marginHorizontal: 14, gap: 9 },
-  focusSummaryCard: { alignItems: 'center', flexDirection: 'row', gap: 12, borderRadius: 12, borderWidth: 1, borderColor: SLColors.borderSubtle, backgroundColor: '#08090C', padding: 10 },
-  focusSummaryCopy: { flex: 1, gap: 3 },
-  focusPrimaryLabel: { ...SLTypography.micro, color: '#B575F0' },
-  focusSecondaryLabel: { ...SLTypography.micro, color: '#E447B7', marginTop: 4 },
-  focusSummaryText: { color: SLColors.text, fontSize: 11, lineHeight: 16 },
-  focusEvidence: { color: SLColors.textMuted, fontSize: 9, marginTop: 5 },
-  completedMetrics: { flexDirection: 'row', minHeight: 60 },
-  completedVolume: { ...SLTypography.bodyStrong, color: SLColors.success },
-  topLiftList: { gap: 2, marginTop: 4 },
-  topLiftRow: { minHeight: 54, borderTopWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle, justifyContent: 'center' },
-  topLiftCopy: { gap: 2 },
-  topLiftTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  topLiftName: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
-  topLiftResult: { ...SLTypography.caption, color: SLColors.textMuted },
-  topLiftDelta: { ...SLTypography.caption, color: SLColors.success, marginTop: 1 },
   primaryAction: { marginHorizontal: 14, marginTop: 16, minHeight: 52, borderRadius: 10, backgroundColor: '#56239A', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9 },
   completedAction: { backgroundColor: '#185B32' },
   primaryActionText: { ...SLTypography.bodyStrong, color: '#FFFFFF' },

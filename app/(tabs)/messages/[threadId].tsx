@@ -644,10 +644,10 @@ export function ThreadScreen({
           returnToWorkspace: '1',
           workspaceReturn: 'messages',
           workspaceSubjectKey,
-        } : {}),
+        } : { returnTo: 'messages', returnThreadId: String(threadId) }),
       },
     } as any);
-  }, [router, workspaceAthleteId, workspaceSubjectKey]);
+  }, [router, threadId, workspaceAthleteId, workspaceSubjectKey]);
 
   if (loading) {
     return (

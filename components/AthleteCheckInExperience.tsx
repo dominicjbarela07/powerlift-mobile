@@ -171,6 +171,8 @@ export function TodayCheckInSurface() {
   const router = useRouter();
   const checkIns = useAthleteCheckIns();
   const openItems = checkIns.due;
+  const [showAll, setShowAll] = useState(false);
+  const visibleItems = showAll ? openItems : openItems.slice(0, 2);
 
   if (checkIns.loading) {
     return (
@@ -192,9 +194,20 @@ export function TodayCheckInSurface() {
       <View style={styles.todaySurfaceBody}>
         <Text style={styles.zoneKicker}>Coach Check-In</Text>
         {checkIns.error ? <ErrorLine text={checkIns.error} /> : null}
-        {openItems.map((item) => (
+        {visibleItems.map((item) => (
           <DueCheckInCard key={item.id} item={item} onPress={() => openCheckIn(router, item, 'today')} />
         ))}
+        {openItems.length > 2 ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={showAll ? 'Show fewer coach check-ins' : `Show all ${openItems.length} coach check-ins`}
+            onPress={() => setShowAll((current) => !current)}
+            style={({ pressed }) => [styles.todayMore, pressed && styles.pressed]}
+          >
+            <Text style={styles.todayMoreText}>{showAll ? 'Show fewer' : `Show all ${openItems.length} check-ins`}</Text>
+            <Ionicons color={colors.violet} name={showAll ? 'chevron-up' : 'chevron-down'} size={17} />
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
@@ -737,7 +750,6 @@ function statusLabel(item: { status?: string | null; submitted_at?: string | nul
 }
 
 function dueTimingLabel(item: MobileCheckInSummary) {
-  if (String(item.status || '').toLowerCase() === 'late') return 'Overdue';
   return `Due ${formatDateTime(item.due_at)}`;
 }
 
@@ -786,6 +798,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     gap: 12,
+  },
+  todayMore: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    minHeight: 44,
+  },
+  todayMoreText: {
+    ...SLTypography.label,
+    color: colors.violet,
   },
   zoneKicker: {
     ...SLTypography.utilityLabel,

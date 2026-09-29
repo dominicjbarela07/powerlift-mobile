@@ -1673,6 +1673,9 @@ export default function WorkoutViewerScreen() {
     loggerScenario,
     loggerLifecycle,
     returnTo,
+    returnThreadId,
+    programId,
+    returnWeekKey,
     athleteView,
     returnSection,
     coachAthleteId,
@@ -1686,6 +1689,9 @@ export default function WorkoutViewerScreen() {
     loggerScenario?: string;
     loggerLifecycle?: string;
     returnTo?: string;
+    returnThreadId?: string;
+    programId?: string;
+    returnWeekKey?: string;
     athleteView?: string;
     returnSection?: string;
     coachAthleteId?: string;
@@ -7581,11 +7587,27 @@ export default function WorkoutViewerScreen() {
       handleReturnToCoachEditor();
       return;
     }
-    if ((returnTo === 'training-hub' || returnTo === 'program-timeline') && router.canGoBack()) {
-      router.back();
+    if (returnTo === 'today') {
+      router.navigate('/(tabs)/athlete-dashboard' as any);
       return;
     }
-    router.replace('/(tabs)/workout' as any);
+    if (returnTo === 'calendar') {
+      router.navigate('/(tabs)/athlete-calendar' as any);
+      return;
+    }
+    if (returnTo === 'messages-index') {
+      router.navigate('/(tabs)/messages' as any);
+      return;
+    }
+    if (returnTo === 'messages' && returnThreadId && Number(returnThreadId) > 0) {
+      router.navigate({ pathname: '/(tabs)/messages/[threadId]', params: { threadId: returnThreadId } } as any);
+      return;
+    }
+    if (returnTo === 'program-timeline' && programId && Number(programId) > 0) {
+      router.navigate({ pathname: '/(tabs)/workout/program-timeline', params: { programId, ...(returnWeekKey ? { weekKey: returnWeekKey } : {}) } } as any);
+      return;
+    }
+    router.navigate('/(tabs)/workout' as any);
   };
 
   const handleCloseCompletedRecap = () => {
@@ -7595,6 +7617,14 @@ export default function WorkoutViewerScreen() {
     }
     if (freshCompletionSummaryIdRef.current) {
       router.replace('/(tabs)/workout' as any);
+      return;
+    }
+    if (returnTo === 'training-hub' || returnTo === 'program-timeline') {
+      handleBackToTrainingHub();
+      return;
+    }
+    if (returnTo === 'messages-index' || (returnTo === 'messages' && returnThreadId && Number(returnThreadId) > 0)) {
+      handleBackToTrainingHub();
       return;
     }
     if (router.canGoBack()) {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-import { mergeAthleteHomeV3, resolveHomeState } from '../lib/athlete-home-v3.ts';
+import { distinctNextUpSession, mergeAthleteHomeV3, resolveHomeState } from '../lib/athlete-home-v3.ts';
 import {
   convertDisplayWeightValue,
   formatCompactVolumeValueFromKg,
@@ -44,6 +44,18 @@ const training = mergeAthleteHomeV3({
 }, {});
 assert.equal(training.home_v3.state.kind, 'training');
 assert.equal(training.home_v3.hero.session.movement_count, 6);
+assert.equal(distinctNextUpSession({
+  hero: { session: { id: 9, title: 'Strength Day' } },
+  next_up: { id: 9, title: 'Strength Day' },
+}), null, 'the active hero Session must not reappear as Next Up');
+assert.equal(distinctNextUpSession({
+  hero: { session: { action: { workout_id: 9 } } },
+  next_up: { action: { workout_id: 9 } },
+}), null, 'fallback canonical action IDs also identify the same Session');
+assert.equal(distinctNextUpSession({
+  hero: { session: { id: 9, title: 'Strength Day' } },
+  next_up: { id: 10, title: 'Strength Day' },
+})?.id, 10, 'separate Sessions remain visible even when their labels match');
 
 const recovery = mergeAthleteHomeV3({
   ...baseToday,

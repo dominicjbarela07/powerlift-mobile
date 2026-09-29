@@ -803,7 +803,7 @@ function AthleteMessagesScreen() {
     }
     router.push({
       pathname: '/workout/[workoutId]',
-      params: { workoutId: String(workoutId), from: 'messages' },
+      params: { workoutId: String(workoutId), from: 'messages', returnTo: 'messages-index' },
     } as any);
   }, [router]);
 

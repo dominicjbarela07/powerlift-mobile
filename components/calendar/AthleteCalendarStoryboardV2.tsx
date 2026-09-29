@@ -768,13 +768,15 @@ function DayLens({ canRescheduleSessions, detail, error, loading, onAction, onCl
   const title = primary?.title || (state === 'personal' ? 'Personal Day' : 'Recovery Day');
   const status = primary ? resolveCalendarSessionStatus(primary.status) : null;
   const blockContext = detail.blockContext;
-  const openSessionAfterClosingLens = (id: number) => {
+  const dispatchAfterClosingLens = (action: AthleteCalendarAction) => {
     onClose();
-    requestAnimationFrame(() => onAction({ type: 'session', id }));
+    requestAnimationFrame(() => onAction(action));
+  };
+  const openSessionAfterClosingLens = (id: number) => {
+    dispatchAfterClosingLens({ type: 'session', id });
   };
   const openScheduleAfterClosingLens = (session: AthleteCalendarSession) => {
-    onClose();
-    requestAnimationFrame(() => onAction({ type: 'schedule-session', session }));
+    dispatchAfterClosingLens({ type: 'schedule-session', session });
   };
   return (
     <StrengthLedgerSheetModalAdapter animationType="slide" onRequestClose={onClose} transparent visible={visible}>
@@ -800,8 +802,8 @@ function DayLens({ canRescheduleSessions, detail, error, loading, onAction, onCl
             {error ? <Pressable onPress={onRetry} style={styles.errorPanel}><Text style={styles.errorText}>{error}</Text><Text style={styles.errorAction}>Retry</Text></Pressable> : null}
             {!loading && !error ? (
               <>
-                {isRecovery ? <RecoveryLens detail={detail} onAction={onAction} preferredUnits={preferredUnits} /> : null}
-                {primary && status?.lifecycle !== 'completed' ? <TrainingLens onAction={onAction} session={primary} /> : null}
+                {isRecovery ? <RecoveryLens detail={detail} onAction={dispatchAfterClosingLens} preferredUnits={preferredUnits} /> : null}
+                {primary && status?.lifecycle !== 'completed' ? <TrainingLens onAction={dispatchAfterClosingLens} session={primary} /> : null}
                 {primary && canRescheduleSessions && isAthleteCalendarSessionMovable(primary) ? (
                   <Pressable accessibilityRole="button" onPress={() => openScheduleAfterClosingLens(primary)} style={styles.secondaryAction}>
                     <Ionicons color={SLColors.iconMuted} name="calendar-outline" size={18} />
@@ -809,11 +811,11 @@ function DayLens({ canRescheduleSessions, detail, error, loading, onAction, onCl
                   </Pressable>
                 ) : null}
                 {primary && status?.lifecycle === 'completed' ? <CompletedLens onOpenSession={openSessionAfterClosingLens} preferredUnits={preferredUnits} session={primary} /> : null}
-                {detail.sessions.slice(1).map((session) => <AdditionalSession canReschedule={canRescheduleSessions} key={session.id} onAction={onAction} onSchedule={openScheduleAfterClosingLens} session={session} />)}
-                {detail.personalEvents.length ? <PersonalItems events={detail.personalEvents} onAction={onAction} /> : null}
+                {detail.sessions.slice(1).map((session) => <AdditionalSession canReschedule={canRescheduleSessions} key={session.id} onAction={dispatchAfterClosingLens} onSchedule={openScheduleAfterClosingLens} session={session} />)}
+                {detail.personalEvents.length ? <PersonalItems events={detail.personalEvents} onAction={dispatchAfterClosingLens} /> : null}
                 {!detail.sessions.length && !isRecovery && !detail.personalEvents.length ? <EmptyDay /> : null}
                 {detail.capabilities.canAddPersonalItem ? (
-                  <Pressable onPress={() => onAction({ type: 'add-event', date: detail.date })} style={styles.secondaryAction}>
+                  <Pressable onPress={() => dispatchAfterClosingLens({ type: 'add-event', date: detail.date })} style={styles.secondaryAction}>
                     <Ionicons color={SLColors.iconMuted} name="add" size={18} />
                     <Text style={styles.secondaryActionText}>Add personal item</Text>
                   </Pressable>
@@ -1092,13 +1094,18 @@ function monthsForDays(days: AthleteCalendarDay[], anchorMonth: Date) {
 }
 
 function contextForDate(ranges: AthleteCalendarRange[], date: Date, today: string) {
-  const key = toYmd(new Date(date.getFullYear(), date.getMonth(), Math.min(15, new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate())));
-  const range = ranges.find((item) => item.start <= key && item.end >= key) || ranges.find((item) => item.start.startsWith(monthKey(date)));
+  const midpointKey = toYmd(new Date(date.getFullYear(), date.getMonth(), 15));
+  const focusDate = monthKey(parseYmd(today) || date) === monthKey(date) ? parseYmd(today) || date : date;
+  const focusKey = toYmd(focusDate);
+  const range = ranges.find((item) => item.start <= focusKey && item.end >= focusKey)
+    || ranges.find((item) => item.start <= midpointKey && item.end >= midpointKey)
+    || ranges.find((item) => item.start.startsWith(monthKey(date)));
   if (!range) return 'Training timeline';
   const start = parseYmd(range.start);
   const end = parseYmd(range.end);
-  const focusDate = monthKey(parseYmd(today) || date) === monthKey(date) ? parseYmd(today) || date : date;
-  const week = start ? Math.max(1, Math.floor((focusDate.getTime() - start.getTime()) / 604800000) + 1) : null;
+  const week = start && range.start <= focusKey && range.end >= focusKey
+    ? Math.max(1, Math.floor((focusDate.getTime() - start.getTime()) / 604800000) + 1)
+    : null;
   const total = start && end ? Math.max(1, Math.floor((end.getTime() - start.getTime()) / 604800000) + 1) : null;
   return `${range.label}${week ? ` · Week ${week}${total ? ` of ${total}` : ''}` : ''}`;
 }

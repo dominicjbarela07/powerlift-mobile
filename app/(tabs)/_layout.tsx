@@ -137,6 +137,7 @@ function FilteredTabBar({
     || normalizedPathname.startsWith('/athlete-meet-plan/');
   const isCalendarPreviewPath = __DEV__ && normalizedPathname.startsWith('/dev-mocks/calendar-');
   const usesCalendarPreviewSelection = isCalendarPreviewPath;
+  const usesTrainingMapSelection = normalizedPathname === '/workout/program-timeline';
   const usesCoachHomeSelection = normalizedPathname.startsWith('/coach-roster')
     || normalizedPathname.startsWith('/coach-athlete/')
     || normalizedPathname.startsWith('/coach-attention/');
@@ -144,6 +145,8 @@ function FilteredTabBar({
     ? visibleRoutes.find((route) => route.name === 'coach-dashboard')
     : usesCalendarPreviewSelection
     ? visibleRoutes.find((route) => route.name === 'athlete-calendar')
+    : usesTrainingMapSelection
+    ? trainingRoute
     : null) ?? visibleRoutes.find((route) => {
     const routeIndex = state.routes.findIndex((candidate) => candidate.key === route.key);
     return routeIndex === state.index;

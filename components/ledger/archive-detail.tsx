@@ -34,7 +34,23 @@ const TYPE_META: Record<ArchiveItemType, { label: string; icon: keyof typeof Ion
 };
 
 function readable(key: string): string {
-  return key.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+  const labels: Record<string, string> = {
+    duration_seconds: 'Duration',
+    movement_count: 'Movements',
+    set_count: 'Sets',
+    total_volume_kg: 'Total volume',
+    video_count: 'Videos',
+    block_name: 'Block',
+    program_name: 'Program',
+  };
+  return labels[key] || key.replace(/_(kg|seconds)$/, '').replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function visibleFields(value?: Record<string, unknown> | null) {
+  return Object.entries(value || {}).filter(([key, entry]) => (
+    entry !== null && entry !== undefined && typeof entry !== 'object'
+    && key !== 'id' && !key.endsWith('_id')
+  ));
 }
 
 function displayValue(key: string, value: unknown, unit: DisplayWeightUnit): string {
@@ -56,6 +72,19 @@ function dateLabel(value?: string): string {
   if (!value) return 'Date unavailable';
   const parsed = new Date(`${value}T12:00:00`);
   return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function recordStatusLabel(status?: string | null): string {
+  const labels: Record<string, string> = {
+    assigned: 'Planned',
+    canceled: 'Canceled',
+    completed: 'Completed',
+    in_progress: 'In progress',
+    missed: 'Missed',
+    reviewed: 'Reviewed',
+    submitted: 'Submitted',
+  };
+  return labels[String(status || '').toLowerCase()] || 'Recorded';
 }
 
 export function ArchiveDetailExperience() {
@@ -91,27 +120,27 @@ export function ArchiveDetailExperience() {
   return <ArchiveDetailUnitContext.Provider value={displayUnit}><View style={styles.page} testID="ledger-archive-detail">
     <FloatingDisplayUnitRegistration unit={displayUnit} onChange={setDisplayUnit} testID="ledger-archive-detail-unit-toggle" />
     <Pressable accessibilityLabel="Back to Archive results" onPress={back} style={styles.back}><Ionicons name="chevron-back" size={20} color={SLColors.iconPrimary} /><Text typographyRole="shortButtonLabel" style={styles.backText}>Archive</Text></Pressable>
-    {state === 'loading' ? <DetailState loading icon="layers-outline" title="Opening source evidence" body="Retrieving the current authorized record…" /> : null}
-    {state === 'unauthorized' ? <DetailState icon="lock-closed-outline" title="Archive access unavailable" body="Your session or access to this athlete's Archive could not be verified." /> : null}
-    {state === 'unavailable' ? <DetailState icon="unlink-outline" title="Evidence unavailable" body="This source was deleted, invalidated, moved, or is no longer available." /> : null}
-    {state === 'error' ? <DetailState icon="alert-circle-outline" title="Evidence could not be loaded" body="The source service did not return usable evidence." action="Try again" onAction={() => { setState('loading'); setReloadToken((value) => value + 1); }} /> : null}
+    {state === 'loading' ? <DetailState loading icon="layers-outline" title="Opening record" body="Loading your saved training history…" /> : null}
+    {state === 'unauthorized' ? <DetailState icon="lock-closed-outline" title="Archive unavailable" body="You do not have access to this record right now." /> : null}
+    {state === 'unavailable' ? <DetailState icon="unlink-outline" title="Record unavailable" body="This record is no longer available." /> : null}
+    {state === 'error' ? <DetailState icon="alert-circle-outline" title="Could not open this record" body="Please try again." action="Try again" onAction={() => { setState('loading'); setReloadToken((value) => value + 1); }} /> : null}
     {state === 'ready' && item ? <View style={styles.detail}>
       <View style={styles.masthead}>
         <View style={[styles.typeSeal, { borderColor: `${meta.tone}70` }]}><SLCanonicalIcon name={meta.icon} size={26} color={meta.tone} trophyTier="bronze" /></View>
         <Text typographyRole="shortTechnicalLabel" style={[styles.kicker, { color: meta.tone }]}>{item.provenance_label || meta.label}</Text>
         <Text typographyRole="pageTitle" style={styles.title}>{item.title || String(item.movement?.name || meta.label)}</Text>
         {item.subtitle ? <Text typographyRole="body" style={styles.body}>{item.subtitle}</Text> : null}
-        <View style={styles.metaRow}><MetaPill icon="calendar-outline" label={dateLabel(item.occurred_on)} /><MetaPill icon="shield-checkmark-outline" label={item.status || item.correction_state || 'Current truth'} /></View>
+        <View style={styles.metaRow}><MetaPill icon="calendar-outline" label={dateLabel(item.occurred_on)} /><MetaPill icon="shield-checkmark-outline" label={recordStatusLabel(item.status)} /></View>
       </View>
 
-      <View style={styles.integrity}><Ionicons name="finger-print-outline" size={21} color={SLColors.accentMuted} /><View style={styles.integrityCopy}><Text typographyRole="bodyStrong" style={styles.integrityTitle}>Preserved source truth</Text><Text typographyRole="caption" style={styles.integrityBody}>{item.invalidation_state === 'valid' || !item.invalidation_state ? 'Current authorized evidence with provenance intact.' : `Evidence state: ${item.invalidation_state}`}</Text></View></View>
+      {item.invalidation_state && item.invalidation_state !== 'valid' ? <View style={styles.integrity}><Ionicons name="information-circle-outline" size={21} color={SLColors.accentMuted} /><View style={styles.integrityCopy}><Text typographyRole="bodyStrong" style={styles.integrityTitle}>No longer current</Text><Text typographyRole="caption" style={styles.integrityBody}>This entry is kept for history.</Text></View></View> : null}
 
       <DetailSection icon="speedometer-outline" title="Performance" value={item.performance} />
       {item.reported_bodyweight ? <DetailSection icon="scale-outline" title="Reported bodyweight" value={{ reported_bodyweight_kg: item.reported_bodyweight.reported_bodyweight_kg, training_date: item.reported_bodyweight.training_date, source: 'Pre-Session readiness' }} /> : null}
-      <DetailSection icon="git-branch-outline" title="Movement identity" value={item.movement} />
-      <DetailSection icon="albums-outline" title="Program context" value={item.program_context} />
+      <DetailSection icon="git-branch-outline" title="Movement" value={item.movement} />
+      <DetailSection icon="albums-outline" title="Program" value={item.program_context} />
       <MeetSection value={item.meet_context} />
-      <DetailSection icon="videocam-outline" title="Media evidence" value={item.media} />
+      <DetailSection icon="videocam-outline" title="Film" value={item.media} />
       {item.sets?.length ? <SetEvidence items={item.sets} /> : null}
       <DetailSection icon="create-outline" title="Athlete reflection" value={item.athlete_reflection} />
       {item.athlete_visible_coach_feedback ? <View style={styles.feedback}><View style={styles.feedbackIcon}><Ionicons name="chatbubble-ellipses-outline" size={21} color="#5ED7CA" /></View><View style={styles.feedbackCopy}><Text typographyRole="shortTechnicalLabel" style={styles.feedbackLabel}>ATHLETE-VISIBLE COACH FEEDBACK</Text><Text typographyRole="body" style={styles.feedbackBody}>{item.athlete_visible_coach_feedback}</Text></View></View> : null}
@@ -129,7 +158,7 @@ function DetailState({ icon, title, body, loading = false, action, onAction }: {
 
 function DetailSection({ icon, title, value }: { icon: keyof typeof Ionicons.glyphMap; title: string; value?: Record<string, unknown> | null }) {
   const unit = React.useContext(ArchiveDetailUnitContext);
-  const entries = Object.entries(value || {}).filter(([, entry]) => entry !== null && entry !== undefined && typeof entry !== 'object');
+  const entries = visibleFields(value);
   if (!entries.length) return null;
   return <View style={styles.block}><View style={styles.blockHeading}><View style={styles.blockIcon}><Ionicons name={icon} size={18} color={SLColors.accentMuted} /></View><Text typographyRole="sectionTitle" style={styles.blockTitle}>{title}</Text></View><View style={styles.fields}>{entries.map(([key, entry]) => <View key={key} style={styles.field}><Text typographyRole="caption" style={styles.fieldName}>{readable(key)}</Text><Text typographyRole="bodyStrong" style={styles.fieldValue}>{displayValue(key, entry, unit)}</Text></View>)}</View></View>;
 }
@@ -145,7 +174,7 @@ function MeetSection({ value }: { value?: Record<string, unknown> | null }) {
 
 function DetailFields({ value, compact = false }: { value: Record<string, unknown>; compact?: boolean }) {
   const unit = React.useContext(ArchiveDetailUnitContext);
-  return <View style={[styles.fields, compact && styles.fieldsCompact]}>{Object.entries(value).filter(([, entry]) => entry !== null && entry !== undefined && typeof entry !== 'object' && entry !== false).map(([key, entry]) => <View key={key} style={styles.field}><Text typographyRole="caption" style={styles.fieldName}>{readable(key)}</Text><Text typographyRole="bodyStrong" style={styles.fieldValue}>{displayValue(key, entry, unit)}</Text></View>)}</View>;
+  return <View style={[styles.fields, compact && styles.fieldsCompact]}>{visibleFields(value).filter(([, entry]) => entry !== false).map(([key, entry]) => <View key={key} style={styles.field}><Text typographyRole="caption" style={styles.fieldName}>{readable(key)}</Text><Text typographyRole="bodyStrong" style={styles.fieldValue}>{displayValue(key, entry, unit)}</Text></View>)}</View>;
 }
 
 function SetEvidence({ items }: { items: ArchiveItem[] }) {

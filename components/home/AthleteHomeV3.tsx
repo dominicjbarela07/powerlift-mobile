@@ -22,6 +22,7 @@ import {
   type HomeAction,
   type HomeAchievement,
   type HomeSessionEvidence,
+  distinctNextUpSession,
   resolveHomeState,
 } from '@/lib/athlete-home-v3';
 import {
@@ -76,6 +77,7 @@ type Props = {
 export function AthleteHomeV3({ today, isIndividual = false, creatingTodaySession = false, preferredUnits, onAction, supplementaryContent }: Props) {
   const home = today.home_v3 || {};
   const state = resolveHomeState(home, today.date);
+  const nextUp = distinctNextUpSession(home);
   const { unit, setUnit } = useSurfaceWeightUnit(preferredUnits ?? today.athlete?.preferred_units);
 
   return (
@@ -85,7 +87,7 @@ export function AthleteHomeV3({ today, isIndividual = false, creatingTodaySessio
       <StateHero creatingTodaySession={creatingTodaySession} home={home} onAction={onAction} state={state} today={today} unit={unit} />
       {supplementaryContent}
       <WeekSection home={home} onAction={onAction} today={today} unit={unit} />
-      {home.next_up ? <SessionCard eyebrow="NEXT UP" onAction={onAction} session={home.next_up} today={today} unit={unit} /> : null}
+      {nextUp ? <SessionCard eyebrow="NEXT UP" onAction={onAction} session={nextUp} today={today} unit={unit} /> : null}
       {home.last_session ? <LastSessionCard home={home} onAction={onAction} today={today} unit={unit} /> : null}
       <TrendsSection home={home} onAction={onAction} unit={unit} />
       {home.strength ? (

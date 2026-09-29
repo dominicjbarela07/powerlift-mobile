@@ -93,6 +93,16 @@ export type AthleteHomeV3Projection = {
   diagnostics?: Record<string, unknown> | null;
 };
 
+/** A Session already occupying Today's hero must not appear again as Next Up. */
+export function distinctNextUpSession(projection?: AthleteHomeV3Projection | null): HomeSessionEvidence | null {
+  const next = projection?.next_up;
+  if (!next) return null;
+  const hero = projection?.hero?.session;
+  const nextId = Number(next.id ?? next.action?.workout_id);
+  const heroId = Number(hero?.id ?? hero?.action?.workout_id);
+  return Number.isInteger(nextId) && nextId > 0 && nextId === heroId ? null : next;
+}
+
 export type HomeTrend = {
   metric?: string | null;
   unit?: string | null;

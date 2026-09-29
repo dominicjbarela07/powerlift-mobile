@@ -529,7 +529,7 @@ export default function AthleteDashboard() {
           await loadToday({ silent: true, showRefreshIndicator: false });
           router.push({
             pathname: '/workout/[workoutId]',
-            params: { workoutId: String(response.json.workout_id) },
+            params: { workoutId: String(response.json.workout_id), returnTo: 'today' },
           });
           return;
         }
@@ -577,7 +577,7 @@ export default function AthleteDashboard() {
       if (response.status === 409 && payload.code === 'today_session_exists') {
         await loadToday({ silent: true, showRefreshIndicator: false });
         if (payload.workout_id) {
-          router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(payload.workout_id) } });
+          router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(payload.workout_id), returnTo: 'today' } });
         }
         return;
       }
@@ -617,7 +617,7 @@ export default function AthleteDashboard() {
       if (action.route === 'workout' && action.workout_id) {
         router.push({
           pathname: '/workout/[workoutId]',
-          params: { workoutId: String(action.workout_id) },
+          params: { workoutId: String(action.workout_id), returnTo: 'today' },
         });
         return;
       }
@@ -644,7 +644,7 @@ export default function AthleteDashboard() {
         if (action.workout_id) {
           router.push({
             pathname: '/workout/[workoutId]',
-            params: { workoutId: String(action.workout_id) },
+            params: { workoutId: String(action.workout_id), returnTo: 'today' },
           });
           return;
         }
