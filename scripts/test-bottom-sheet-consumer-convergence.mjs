@@ -28,5 +28,7 @@ for(const file of files){const source=fs.readFileSync(file,'utf8'),ast=ts.create
 }
 assert.equal(modalCount,inventory.modalConsumers.length,'no missing classified consumers');assert.equal(inlineCount,3);
 const shared=fs.readFileSync('components/sheets/StrengthLedgerBottomSheet.tsx','utf8');assert.doesNotMatch(shared,/Gesture\.Simultaneous|Gesture\.Native|bodyDismissGesture|contentSwipeEnabled|scrollOffsetY|onTouchesUp/,'no competing body/cancel gesture authority');
-const preview=fs.readFileSync('components/training-hub/TrainingHubSessionPreviewSheet.tsx','utf8');assert.match(preview,/style=\{styles.dragArea\} \{\.\.\.dragResponder.panHandlers\}/);assert.equal((preview.match(/\.panHandlers/g)||[]).length,1);assert.match(preview,/shouldCaptureBottomSheetDismissGesture\(\{ dx: gesture.dx, dy: gesture.dy, origin: 'chrome' \}\)/);assert.match(preview,/shouldDismissBottomSheet\(\{ dy: gesture.dy, vy: gesture.vy \}\)/);
+const preview=fs.readFileSync('components/training-hub/TrainingHubSessionPreviewSheet.tsx','utf8');
+assert.match(preview,/<StrengthLedgerBottomSheet\b[\s\S]*<StrengthLedgerBottomSheetScrollView\b/, 'Training Hub preview must use the canonical sheet and scroll body');
+assert.doesNotMatch(preview,/PanResponder|\.panHandlers|shouldCaptureBottomSheetDismissGesture/, 'Training Hub preview must not add a competing drag gesture');
 console.log(`Bottom-sheet inventory: ${modalCount} classified modal presentations, ${sharedCount} canonical sheet consumers, ${inlineCount} embedded bottom panels; top regions exclude scroll/input/wheel content PASS`);
