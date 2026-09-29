@@ -175,7 +175,8 @@ assert.match(
 assert.match(workoutRoute, /const loggedSets = loggedSetCountForWorkout\(workout\)/);
 assert.match(workoutRoute, /const plannedSets = plannedSetCountForWorkout\(workout\)/);
 
-assert.match(restTimerPresenter, /Rest complete\. Begin your next set\./);
+assert.match(restTimerPresenter, /rest-completion-beep\.wav/);
+assert.doesNotMatch(restTimerPresenter, /Speech\.speak|expo-speech/);
 
 const startTimerBody = workoutRoute.slice(
   workoutRoute.indexOf('const startRestTimer'),

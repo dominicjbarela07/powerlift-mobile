@@ -3,7 +3,7 @@ import {
   type RestTimerPresentationRoute,
 } from './rest-timer-completion-core';
 
-export type RestTimerSignal = 'voice' | 'notification';
+export type RestTimerSignal = 'beep' | 'notification';
 
 export type RestTimerSignalContext = Readonly<{
   timerId: string;
@@ -18,7 +18,7 @@ export type RestTimerSignalContext = Readonly<{
   route: RestTimerPresentationRoute;
 }>;
 
-/** A resumed app or newly opened Logger cannot turn an expired notification into speech. */
+/** A resumed app or newly opened Logger cannot turn an expired notification into a beep. */
 export function restTimerSignalForExpiry(context: RestTimerSignalContext): RestTimerSignal {
   const ownsLogger = isRestTimerCompletionOwnedByCurrentLogger({
     timerId: context.timerId,
@@ -35,7 +35,7 @@ export function restTimerSignalForExpiry(context: RestTimerSignalContext): RestT
     && context.loggerVisibleSinceMs !== null
     && context.loggerVisibleSinceMs <= context.endAtMs
     && context.nowMs >= context.endAtMs
-      ? 'voice'
+      ? 'beep'
       : 'notification';
 }
 

@@ -167,7 +167,7 @@ assert.match(presenter, /title: \{[\s\S]*fontSize: 26[\s\S]*lineHeight: 32/);
 assert.match(presenter, /body: \{[\s\S]*fontSize: 18[\s\S]*lineHeight: 25/);
 assert.match(presenter, /actions: \{[\s\S]*flexDirection: 'row'[\s\S]*gap: 10/);
 assert.match(presenter, /action: \{[\s\S]*minHeight: 54/);
-assert.doesNotMatch(presenter, /expo-audio|createAudioPlayer|RestTimerProvider|RestTimerContext/);
+assert.doesNotMatch(presenter, /createAudioPlayer|RestTimerProvider|RestTimerContext|expo-speech/);
 
 assert.match(route, /beginGlobalRestTimer\([\s\S]*workoutId,[\s\S]*ownerUserId:/);
 assert.match(route, /type: 'rest_timer_complete'[\s\S]*workout_id: deadline.workoutId[\s\S]*timer_id: deadline.timerId/);

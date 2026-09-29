@@ -17,7 +17,7 @@ import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
-import * as Speech from 'expo-speech';
+import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import {
   canPresentRestTimerCompletion,
   isCanonicalSessionLoggerRoute,
@@ -37,7 +37,7 @@ import {
 } from '@/lib/rest-timer-completion';
 
 type Props = Readonly<{ userId: string | number | null | undefined }>;
-const REST_COMPLETE_SPOKEN_CUE = 'Rest complete. Begin your next set.';
+const REST_COMPLETION_BEEP = require('../assets/audio/rest-completion-beep.wav');
 
 async function cancelCompletionNotification(notificationId: string | null): Promise<void> {
   if (!notificationId || Platform.OS === 'web') return;
@@ -60,6 +60,9 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
   );
   const [applicationState, setApplicationState] = useState(AppState.currentState);
   const signalGate = useRef(new RestTimerSignalGate()).current;
+  const beepPlayer = useAudioPlayer(REST_COMPLETION_BEEP, { keepAudioSessionActive: false });
+  const audioModeReadyRef = useRef(false);
+  const beepResetReadyRef = useRef(true);
   const foregroundSinceRef = useRef<number | null>(
     AppState.currentState === 'active' ? Date.now() : null,
   );
@@ -75,7 +78,7 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
   }
   const contextRef = useRef({ route, userId: String(userId ?? '') });
   contextRef.current = { route, userId: String(userId ?? '') };
-  const signalAtExpiryRef = useRef<(timer: ActiveRestTimer) => 'voice' | 'notification'>(() => 'notification');
+  const signalAtExpiryRef = useRef<(timer: ActiveRestTimer) => 'beep' | 'notification'>(() => 'notification');
   signalAtExpiryRef.current = (timer) => {
     const existing = signalGate.get(timer.timerId);
     if (existing) return existing;
@@ -95,20 +98,50 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
       currentUserId: contextRef.current.userId,
       route: contextRef.current.route,
     });
-    signalGate.claim(timer.timerId, signal);
-    if (signal === 'voice') {
+    if (signal === 'beep') {
+      // The native player is prepared while the timer runs. If it is unavailable,
+      // retain the scheduled notification instead of silently losing the alert.
+      if (!audioModeReadyRef.current || !beepPlayer.isLoaded || !beepResetReadyRef.current) {
+        return signalGate.claim(timer.timerId, 'notification');
+      }
+      signalGate.claim(timer.timerId, 'beep');
       try {
-        // AVSpeechSynthesizer manages its own brief session, including mixing and ducking.
-        Speech.speak(REST_COMPLETE_SPOKEN_CUE, { useApplicationAudioSession: false });
+        beepPlayer.play();
         void cancelCompletionNotification(timer.notificationId);
       } catch (error) {
         signalGate.replace(timer.timerId, 'notification');
-        console.warn('rest completion speech failed', error);
+        console.warn('rest completion beep failed', error);
         return 'notification';
       }
+      return 'beep';
     }
-    return signal;
+    return signalGate.claim(timer.timerId, 'notification');
   };
+
+  useEffect(() => {
+    // Playback category allows the cue through silent mode. Ducking lasts only
+    // for this one-shot player; expo-audio deactivates it after playback ends.
+    void setAudioModeAsync({
+      playsInSilentMode: true,
+      interruptionMode: 'duckOthers',
+      shouldPlayInBackground: false,
+    }).then(() => {
+      audioModeReadyRef.current = true;
+    }).catch((error) => {
+      audioModeReadyRef.current = false;
+      console.warn('rest completion audio mode unavailable', error);
+    });
+    const subscription = beepPlayer.addListener('playbackStatusUpdate', (status) => {
+      if (!status.didJustFinish) return;
+      beepResetReadyRef.current = false;
+      void beepPlayer.seekTo(0).then(() => {
+        beepResetReadyRef.current = true;
+      }).catch((error) => {
+        console.warn('rest completion beep reset failed', error);
+      });
+    });
+    return () => subscription.remove();
+  }, [beepPlayer]);
 
   useEffect(() => subscribeRestTimerCompletion(setSnapshot), []);
 
@@ -150,8 +183,8 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
             const existing = signalGate.get(timerId);
             const state = getRestTimerCompletionState();
             const active = state.active?.timerId === timerId ? state.active : null;
-            if (existing === 'voice') suppressRestEnd = true;
-            else if (active) suppressRestEnd = signalAtExpiryRef.current(active) === 'voice';
+            if (existing === 'beep') suppressRestEnd = true;
+            else if (active) suppressRestEnd = signalAtExpiryRef.current(active) === 'beep';
             else if (state.active && timerId && state.active.timerId !== timerId) {
               // A cancelled deadline from an extended/replaced timer is stale.
               suppressRestEnd = true;
