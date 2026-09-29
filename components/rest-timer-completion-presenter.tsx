@@ -60,7 +60,10 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
   );
   const [applicationState, setApplicationState] = useState(AppState.currentState);
   const signalGate = useRef(new RestTimerSignalGate()).current;
-  const beepPlayer = useAudioPlayer(REST_COMPLETION_BEEP, { keepAudioSessionActive: false });
+  const beepPlayer = useAudioPlayer(REST_COMPLETION_BEEP, {
+    downloadFirst: true,
+    keepAudioSessionActive: false,
+  });
   const audioModeReadyRef = useRef(false);
   const beepResetReadyRef = useRef(true);
   const foregroundSinceRef = useRef<number | null>(
