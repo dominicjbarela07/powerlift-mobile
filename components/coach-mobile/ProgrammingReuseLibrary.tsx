@@ -15,7 +15,9 @@ const daysFor = (start: string) => Array.from({ length: 7 }, (_, index) => { con
 function previewNames(preview: any): string[] {
   if (!preview || typeof preview !== 'object') return [];
   if (Array.isArray(preview)) return preview.flatMap(previewNames);
-  const name = preview.movement || preview.name;
+  // Session previews show the performed/current governed movement after a
+  // live Swap, matching the final composition the server will copy.
+  const name = preview.effective_movement_identity?.display_name || preview.movement || preview.name;
   if (name && (preview.prescription || preview.sets != null)) {
     const reps = preview.reps_text || preview.reps;
     const effort = preview.rir_target != null ? `${preview.rir_target} RIR` : preview.pct != null ? `${Math.round(Number(preview.pct) * (Number(preview.pct) <= 1 ? 100 : 1))}%` : preview.rpe_target != null ? `${preview.rpe_target} RPE` : '';
@@ -23,7 +25,7 @@ function previewNames(preview: any): string[] {
     const equipment = preview.movement_identity?.equipment_family || preview.movement_identity?.implementation_family;
     return [`${name}\n${[prescription, equipment].filter(Boolean).join(' · ')}`];
   }
-  return ['items', 'core_items', 'accessory_items', 'core_lifts', 'accessories', 'sessions', 'workout'].flatMap((key) => previewNames(preview[key]));
+  return ['items', 'core_items', 'accessory_groups', 'accessory_items', 'core_lifts', 'accessories', 'sessions', 'workout'].flatMap((key) => previewNames(preview[key]));
 }
 
 export function ProgrammingReuseLibrary({ reuseIntoSession, athleteId, programId, programName, weeks, initialWeek, initialDate, onClose, onCopied }: Props) {
