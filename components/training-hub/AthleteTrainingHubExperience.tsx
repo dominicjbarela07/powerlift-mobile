@@ -5,6 +5,7 @@ import { ImageBackground, Pressable, StyleSheet, View } from 'react-native';
 
 import { Text } from '@/components/ui/sl-text';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
+import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { TrainingHubSessionPreviewBottomSheet } from '@/components/training-hub/TrainingHubSessionPreviewSheet';
 import { TrainingHubMaterialSurface } from '@/components/training-hub/training-hub-material-surface';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
@@ -248,6 +249,7 @@ export function AthleteTrainingHubExperience({
             week={selectedWeek}
           />
           <TrainingSessionSequence
+            athlete={{ sex: data.athleteSex, anatomy_display_preference: data.anatomyDisplayPreference }}
             onOpenSession={setSelectedSessionId}
             selectedDay={selectedDay}
             unit={unit}
@@ -330,17 +332,17 @@ function TrainingWeekNavigation({ week, selectedDayKey, onSelectDay, canPrevious
   </View>;
 }
 
-function TrainingSessionSequence({ week, selectedDay, onOpenSession, unit }: { week: AthleteTrainingWeek; selectedDay: AthleteTrainingDay | null; onOpenSession: (id: number) => void; unit: 'kg' | 'lb' }) {
+function TrainingSessionSequence({ athlete, week, selectedDay, onOpenSession, unit }: { athlete: { sex?: string | null; anatomy_display_preference?: string | null }; week: AthleteTrainingWeek; selectedDay: AthleteTrainingDay | null; onOpenSession: (id: number) => void; unit: 'kg' | 'lb' }) {
   const sessions = week.days.flatMap((day) => day.sessions);
   return <View style={styles.sequence}>
     <View style={styles.sequenceHeading}><Text style={styles.sequenceTitle}>SESSION SEQUENCE</Text><Text style={styles.sequenceCount}>{sessions.length} Session{sessions.length === 1 ? '' : 's'}</Text></View>
     {sessions.length > 0 && selectedDay && !selectedDay.sessions.length ? <Text style={styles.selectedDayEmpty}>No Session planned for {formatSelectedDay(selectedDay)}.</Text> : null}
-    {sessions.length ? <View style={styles.sequenceRows}>{week.days.flatMap((day) => day.sessions.map((session) => <TrainingSessionRow key={session.id} session={session} day={day} selected={day.key === selectedDay?.key} onPress={() => onOpenSession(session.id)} unit={unit} />))}</View> : <View style={styles.emptySequence}><Text style={styles.emptySequenceTitle}>No Sessions planned this Week.</Text><Text style={styles.emptySequenceMeta}>Your Program map still shows where this Week sits in the Block.</Text></View>}
+    {sessions.length ? <View style={styles.sequenceRows}>{week.days.flatMap((day) => day.sessions.map((session) => <TrainingSessionRow athlete={athlete} key={session.id} session={session} day={day} selected={day.key === selectedDay?.key} onPress={() => onOpenSession(session.id)} unit={unit} />))}</View> : <View style={styles.emptySequence}><Text style={styles.emptySequenceTitle}>No Sessions planned this Week.</Text><Text style={styles.emptySequenceMeta}>Your Program map still shows where this Week sits in the Block.</Text></View>}
     {week.objective ? <View style={styles.weekFocus}><Text style={styles.weekFocusLabel}>COACH FOCUS</Text><Text style={styles.weekFocusText}>{week.objective.text}</Text></View> : null}
   </View>;
 }
 
-function TrainingSessionRow({ session, day, selected, onPress, unit }: { session: AthleteTrainingSession; day: AthleteTrainingDay; selected: boolean; onPress: () => void; unit: 'kg' | 'lb' }) {
+function TrainingSessionRow({ athlete, session, day, selected, onPress, unit }: { athlete: { sex?: string | null; anatomy_display_preference?: string | null }; session: AthleteTrainingSession; day: AthleteTrainingDay; selected: boolean; onPress: () => void; unit: 'kg' | 'lb' }) {
   const completed = session.status === 'completed';
   const active = session.status === 'in_progress' || session.status === 'today';
   const names = (session.movements || []).map((movement) => movement.label).filter(Boolean);
@@ -351,6 +353,7 @@ function TrainingSessionRow({ session, day, selected, onPress, unit }: { session
     : plannedSets > 0 ? `${plannedSets} prescribed sets` : null;
   return <Pressable accessibilityRole="button" accessibilityLabel={[session.title, session.stateLabel, movementSummary, evidence].filter(Boolean).join(', ')} onPress={onPress} style={({ pressed }) => [styles.sequenceRow, completed && styles.sequenceRowComplete, active && styles.sequenceRowActive, selected && styles.sequenceRowSelected, pressed && styles.pressed]}>
     <View style={styles.sequenceDate}><Text style={styles.sequenceDay}>{day.weekday}</Text><Text style={styles.sequenceNumber}>{day.dayNumber || '—'}</Text></View>
+    <View style={styles.sequenceAnatomy}><ProgrammingMuscleRegionArt athlete={athlete} framingPreset="thumbnail" level="session" primary={session.muscleFocus?.primary || session.focusMuscles || []} secondary={session.muscleFocus?.secondary || []} /></View>
     <View style={styles.sequenceCopy}>
       <Text numberOfLines={2} style={styles.sequenceSessionTitle}>{session.title}</Text>
       {movementSummary ? <Text numberOfLines={1} style={styles.sequenceMovement}>{movementSummary}</Text> : null}
@@ -479,6 +482,7 @@ const styles = StyleSheet.create({
   sequenceRowActive: { borderLeftColor: SLColors.accentViolet, backgroundColor: '#100C17' },
   sequenceRowSelected: { backgroundColor: '#181020' },
   sequenceDate: { width: 38, alignItems: 'flex-start', gap: 1 },
+  sequenceAnatomy: { width: 46, height: 62, overflow: 'hidden', borderRadius: 7 },
   sequenceDay: { ...SLTypography.micro, color: SLColors.textMuted, textTransform: 'uppercase' },
   sequenceNumber: { ...SLTypography.bodyStrong, color: SLColors.textStrong, fontSize: 18 },
   sequenceCopy: { flex: 1, minWidth: 0, gap: 3 },

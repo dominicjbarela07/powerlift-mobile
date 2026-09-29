@@ -123,7 +123,7 @@ function formatTopLift(lift: NonNullable<NonNullable<AthleteTrainingSession['rec
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, minHeight: 0, backgroundColor: SLColors.canvasRaised },
+  root: { flex: 1, width: '100%', minHeight: 0, backgroundColor: SLColors.canvasRaised },
   header: { minHeight: 39, justifyContent: 'center', paddingHorizontal: 18, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
   eyebrow: { ...SLTypography.micro, color: SLColors.accentViolet, letterSpacing: 0.7 },
   content: { paddingBottom: 28 },

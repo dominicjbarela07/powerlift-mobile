@@ -25,7 +25,8 @@ assert.doesNotMatch(recap, /<SafeAreaView edges=\{\['top'\]\}/, 'recap must not 
 assert.doesNotMatch(recap, /styles\.topBar, \{ paddingTop: Math\.max\(insets\.top/, 'recap top bar must not apply a second top inset');
 assert.match(recap, /accessibilityLabel="Done reviewing completed session recap"[\s\S]*onPress=\{onDone \|\| onClose\}/, 'Done must be a real accessible action');
 
-assert.match(calendar, /onClose\(\);\s*requestAnimationFrame\(\(\) => onAction\(\{ type: 'session', id \}\)\)/, 'Calendar must dismiss its native lens before routing to recap');
+assert.match(calendar, /const dispatchAfterClosingLens = \(action: AthleteCalendarAction\) => \{\s*onClose\(\);\s*requestAnimationFrame\(\(\) => onAction\(action\)\)/, 'Calendar must dismiss its native lens before routing');
+assert.match(calendar, /const openSessionAfterClosingLens = \(id: number\) => \{\s*dispatchAfterClosingLens\(\{ type: 'session', id \}\)/, 'Calendar recap must use the dismissed-lens route');
 assert.match(calendar, /accessibilityLabel=\{label\}[\s\S]*pointerEvents="none"/, 'the full Calendar CTA must be a first-tap press target');
 assert.match(calendar, /pressed && styles\.primaryActionPressed/, 'the Calendar CTA must provide pressed feedback');
 

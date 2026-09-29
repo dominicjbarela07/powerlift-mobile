@@ -100,7 +100,7 @@ const canonicalRootContracts = new Map(Object.entries({
 const fullWidthSheetContracts = new Map(Object.entries({
   'components/sheets/StrengthLedgerBottomSheet.tsx': ['sheet'],
   'components/calendar/CalendarEventSheet.tsx': ['sheet'],
-  'components/training-hub/TrainingHubSessionPreviewSheet.tsx': ['sheet'],
+  'components/training-hub/TrainingHubSessionPreviewSheet.tsx': ['root'],
   'components/workout-logger/readiness-modal.tsx': ['sheet'],
   'components/workout-logger/substitution-confirmation-sheet.tsx': ['sheet'],
   'app/(tabs)/coach-calendar.tsx': ['sheet'],

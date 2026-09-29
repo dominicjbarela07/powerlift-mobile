@@ -16,6 +16,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SLContextualHeader } from '@/components/ui';
+import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { SLMotionEntrance, SLMotionPressable } from '@/components/ui/sl-motion';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLMotion, SLTypography } from '@/constants/theme';
@@ -148,6 +149,9 @@ const SessionNode = memo(function SessionNode({
         style={[styles.sessionNode, { borderLeftColor: tone }]}
       >
         <Text style={styles.sessionDay}>{dayLabel}</Text>
+        <View style={styles.sessionArt}>
+          {session.primaryMuscles.length ? <ProgrammingMuscleRegionArt framingPreset="thumbnail" level="session" primary={session.primaryMuscles} secondary={session.secondaryMuscles} /> : <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={22} />}
+        </View>
         <View style={styles.sessionCopy}>
           <Text numberOfLines={2} style={styles.sessionTitle}>{session.title}</Text>
           {movementSummary ? <Text numberOfLines={1} style={styles.sessionMeta}>{movementSummary}</Text> : null}
@@ -438,6 +442,7 @@ const styles = StyleSheet.create({
   sessionGrid: { borderTopWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
   sessionEntrance: { width: '100%' },
   sessionNode: { minHeight: 88, paddingHorizontal: 16, paddingVertical: 10, flexDirection: 'row', alignItems: 'center', gap: 11, borderLeftWidth: 3, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderSubtle, backgroundColor: '#0B0D11' },
+  sessionArt: { width: 46, height: 62, overflow: 'hidden', borderRadius: 7, alignItems: 'center', justifyContent: 'center' },
   sessionDay: { ...SLTypography.micro, color: SLColors.textMuted, width: 38 },
   sessionCopy: { flex: 1, minWidth: 0, gap: 3 },
   sessionTitle: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
