@@ -23,20 +23,15 @@ assert.match(route, /normalizeProfilePhotoPayload\(hub\?\.connected_coach\)/, 'C
 assert.match(component, /data\.coachUpdates\?\.length \? \(/, 'Coach Updates must hide when empty.');
 assert.match(component, /data\.coachUpdates\.slice\(0, 2\)/, 'Visible Coach Updates must remain bounded.');
 assert.match(component, /week\.objective \? <View/, 'Week objective must hide when absent.');
-assert.match(component, /data\.previousWeekRecap \? \(/, 'Previous-week evidence must hide when absent.');
+assert.match(component, /data\.previousWeekRecap \? <LastWeekEvidence/, 'Previous-week evidence must hide when absent.');
 assert.match(component, /recap\.sessionsCompleted >= recap\.sessionsAssigned/, 'Previous-week copy must be derived from the real completion counts.');
 assert.match(component, /Every planned session finished\./, 'A fully completed prior week may state the deterministic outcome.');
 assert.match(component, /COACH FOCUS/, 'Week Objective must retain the coach-focus label.');
 assert.match(component, /COACH UPDATES/, 'Coach Updates must use its canonical athlete-facing label.');
 assert.doesNotMatch(component, /WHAT'S NEW/, 'The retired What’s New label must not remain.');
-assert.ok(
-  component.indexOf('<LastWeekEvidence') < component.indexOf('data.coachUpdates?.length'),
-  'The storyboard evidence strip must precede optional coach updates.',
-);
-assert.ok(
-  component.indexOf('COACH FOCUS') < component.indexOf('dayStrip'),
-  'The coach objective must be the first content shown in an expanded week.',
-);
+assert.ok(component.indexOf('<TrainingSessionSequence') < component.indexOf('data.coachUpdates?.length'), 'The Session sequence precedes optional coach context.');
+assert.ok(component.indexOf('data.coachUpdates?.length') < component.indexOf('data.previousWeekRecap ? <LastWeekEvidence'), 'Optional context follows the current Week.');
+assert.match(component, /week\.objective \? <View style=\{styles\.weekFocus\}>/, 'Coach focus remains conditional and secondary.');
 assert.doesNotMatch(route, /fixtures\/.*training.*hub/i, 'The live route must not import Training Hub fixtures.');
 assert.doesNotMatch(component, /No objective|No coach updates|No previous week recap/i, 'Optional sections must not add empty placeholders.');
 

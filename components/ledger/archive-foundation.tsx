@@ -591,7 +591,7 @@ function ArchiveTools({ summaries, onCollection, onSearch }: { summaries: Record
     <SectionLabel icon="options-outline" action="Secondary tools">Find something specific</SectionLabel>
     <Pressable accessibilityRole="button" onPress={onSearch} style={({ pressed }) => [styles.searchTool, pressed && styles.pressed]}>
       <Ionicons name="search" size={20} color={SLColors.iconPrimary} />
-      <View style={styles.searchToolCopy}><Text typographyRole="bodyStrong" style={styles.searchToolTitle}>Search your Archive</Text><Text typographyRole="caption" style={styles.searchToolBody}>Movement, date, meet, load, or preserved evidence</Text></View>
+      <View style={styles.searchToolCopy}><Text typographyRole="bodyStrong" style={styles.searchToolTitle}>Search your Archive</Text><Text typographyRole="caption" style={styles.searchToolBody}>Movement, date, meet, or load</Text></View>
       <Ionicons name="chevron-down" size={17} color={SLColors.iconMuted} />
     </Pressable>
     <CollectionIndex summaries={summaries} onPress={onCollection} />
@@ -632,7 +632,7 @@ function NaturalAlbumShelf({ albums, onPress }: { albums: NaturalAlbum[]; onPres
 
 function CollectionIndex({ summaries, onPress }: { summaries: Record<ArchiveCollection, number>; onPress: (collection: ArchiveCollection) => void }) {
   return <View style={styles.collectionIndex}>
-    <View style={styles.collectionIndexCopy}><Text typographyRole="sectionTitle" style={styles.collectionIndexTitle}>Collections</Text><Text typographyRole="caption" style={styles.collectionIndexBody}>Browse the source record by type.</Text></View>
+    <View style={styles.collectionIndexCopy}><Text typographyRole="sectionTitle" style={styles.collectionIndexTitle}>Collections</Text><Text typographyRole="caption" style={styles.collectionIndexBody}>Browse your history by type.</Text></View>
     <View style={styles.collectionLanes}>{COLLECTIONS.map((collection) => { const meta = COLLECTION_META[collection]; return <Pressable key={collection} onPress={() => onPress(collection)} style={({ pressed }) => [styles.collectionLane, pressed && styles.pressed]}><View style={[styles.collectionLaneIcon, { borderColor: `${meta.tone}66` }]}><SLCanonicalIcon name={meta.icon} size={17} color={meta.tone} trophyTier="bronze" /></View><View style={styles.collectionLaneCopy}><Text typographyRole="bodyStrong" style={styles.collectionLaneTitle}>{meta.label}</Text><Text typographyRole="caption" style={styles.collectionLaneDescription}>{meta.description}</Text></View><Text typographyRole="numeric" style={[styles.collectionLaneCount, { color: meta.tone }]}>{compactNumber(summaries[collection])}</Text><Ionicons name="chevron-forward" size={16} color={SLColors.iconMuted} /></Pressable>; })}</View>
   </View>;
 }

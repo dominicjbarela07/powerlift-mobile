@@ -42,25 +42,23 @@ assert.doesNotMatch(component, /<SessionPreviewSheet\s/, 'the normal Hub flow no
 assert.match(component, /setSelectedSessionId\(null\)[\s\S]*requestAnimationFrame\(\(\) => onAction/, 'the sheet resolves before canonical navigation');
 assert.match(component, /selectedSessionContext[\s\S]*blockName: block\.name[\s\S]*weekNumber: week\.number/, 'the sheet preserves Program → Block → Week context');
 
-assert.match(sheet, /presentationStyle="overFullScreen"[\s\S]*transparent/, 'the preview uses an in-place transparent overlay');
-assert.doesNotMatch(sheet, /presentationStyle="fullScreen"/, 'the new preview is not a full-screen page');
-assert.match(sheet, /PanResponder\.create/, 'the drag affordance supports swipe-down dismissal');
-assert.match(sheet, /Pressable[\s\S]*Dismiss Session preview[\s\S]*StyleSheet\.absoluteFillObject/, 'the canonical backdrop dismisses the sheet');
-assert.match(sheet, /<ScrollView/, 'long preview content scrolls independently');
-assert.match(sheet, /MOVEMENT_PREVIEW_LIMIT = 5/, 'the preview uses the governed compact row limit');
-assert.match(sheet, /slice\(0, MOVEMENT_PREVIEW_LIMIT\)/, 'movement preview remains compact and bounded');
-assert.match(sheet, /remainingMovements[\s\S]*more movement/, 'the sheet reports the canonical remaining movement count');
-assert.match(sheet, /paddingBottom: Math\.max\(insets\.bottom, SLSpacing\.md\)/, 'the sticky CTA footer respects the physical safe area');
+assert.match(sheet, /<StrengthLedgerBottomSheet\b/, 'the preview uses the governed bottom sheet and dismissal behavior');
+assert.match(sheet, /<StrengthLedgerBottomSheetScrollView\b/, 'long preview content scrolls independently');
+assert.doesNotMatch(sheet, /PanResponder\.create|presentationStyle="fullScreen"/, 'the preview has no custom drag gesture or full-screen page');
+assert.match(sheet, /movements\.map\(\(movement, index\)/, 'the full ordered movement list is available');
+assert.match(sheet, /movement\.kind === 'accessory' \? 'ACCESSORY' : 'CORE'/, 'Core and Accessory identity is visible');
+assert.match(sheet, /trainingHubMovementPrescription\(movement\)/, 'prescriptions come from the existing canonical preview formatter');
+assert.match(sheet, /movement\.equipmentType/, 'available equipment context is retained');
+assert.match(sheet, /movementCount > movements\.length/, 'incomplete preview payloads disclose the remaining count');
 assert.match(sheet, /accessibilityState=\{\{ busy: opening, disabled: opening \}\}/, 'repeated CTA taps are gated');
-assert.match(sheet, /useSLReducedMotion/, 'sheet motion obeys the app accessibility preference');
 
 assert.match(route, /returnTo: 'training-hub'/, 'Training Hub marks the canonical Session destination with its return context');
 assert.match(route, /lifecycleStatus: session\.status \|\| session\.kind \|\| null/, 'the preview consumes authoritative Session lifecycle state');
 assert.match(
   logger,
-  /\(returnTo === 'training-hub' \|\| returnTo === 'program-timeline'\) && router\.canGoBack\(\)[\s\S]*router\.back\(\)/,
-  'Logger returns to the mounted Hub or Program Timeline instead of pushing a duplicate',
+  /returnTo === 'program-timeline' && programId[\s\S]*router\.navigate\(\{ pathname: '\/\(tabs\)\/workout\/program-timeline'/,
+  'Logger returns explicitly to the Program map',
 );
-assert.match(logger, /router\.replace\('\/\(tabs\)\/workout'/, 'Logger has a safe Hub fallback when no back stack exists');
+assert.match(logger, /router\.navigate\('\/\(tabs\)\/workout'/, 'Logger returns explicitly to Training Hub');
 
 console.log('training hub Session preview bottom sheet contract: ok');

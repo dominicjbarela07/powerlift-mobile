@@ -37,7 +37,7 @@ const raw = {
   pending_map: {
     2: [
       { id: 21, date: '2026-08-18', label: 'Missed Push', status: 'missed', preview: { movement_count: 5, set_count: 15, muscle_focus: { primary: [{ muscle_id: 'chest' }] } } },
-      { id: 22, date: '2026-08-20', label: 'Back Today', status: 'assigned', preview: { movement_count: 6, set_count: 18, muscle_focus: { primary: [{ muscle_id: 'upper_back' }] } }, estimated_duration_minutes: 70 },
+      { id: 22, date: '2026-08-20', label: 'Back Today', status: 'assigned', preview: { movement_count: 6, set_count: 18, movements: [{ movement: 'Competition Squat' }, { movement: 'Competition Bench' }], muscle_focus: { primary: [{ muscle_id: 'upper_back' }] } }, estimated_duration_minutes: 70 },
       { id: 23, date: '2026-08-22', label: 'Upcoming Arms', status: 'assigned', preview: { movement_count: 4, set_count: 12, muscle_focus: { primary: [{ muscle_id: 'biceps' }] } } },
     ],
     3: [
@@ -74,11 +74,13 @@ assert.equal(currentWeek.days.find((day) => day.date === '2026-08-18')?.sessions
 assert.equal(currentWeek.days.find((day) => day.date === '2026-08-20')?.sessions[0]?.lifecycle, 'today');
 assert.equal(currentWeek.days.find((day) => day.date === '2026-08-22')?.sessions[0]?.lifecycle, 'upcoming');
 assert.deepEqual(currentWeek.days.find((day) => day.date === '2026-08-20')?.sessions[0]?.primaryMuscles, ['upper_back']);
+assert.deepEqual(currentWeek.days.find((day) => day.date === '2026-08-20')?.sessions[0]?.movementNames, ['Squat', 'Bench'], 'display names come from the saved preview without changing movement identity');
 
 const component = fs.readFileSync(path.join(root, 'components/training-hub/AthleteProgramTimeline.tsx'), 'utf8');
 const route = fs.readFileSync(path.join(root, 'app/(tabs)/workout/program-timeline.tsx'), 'utf8');
 const hub = fs.readFileSync(path.join(root, 'components/training-hub/AthleteTrainingHubExperience.tsx'), 'utf8');
 const index = fs.readFileSync(path.join(root, 'app/(tabs)/workout/index.tsx'), 'utf8');
+const tabLayout = fs.readFileSync(path.join(root, 'app/(tabs)/_layout.tsx'), 'utf8');
 const detail = fs.readFileSync(path.join(root, 'app/(tabs)/workout/[workoutId].tsx'), 'utf8');
 
 assert.deepEqual(buildProgramTimelineRoute({ programId: 44 }), {
@@ -92,35 +94,37 @@ assert.deepEqual(buildProgramTimelineRoute({ programId: 44, athleteId: 3 }), {
 assert.equal(buildProgramTimelineRoute({ programId: null }), null, 'no active Program must fail closed');
 assert.equal(buildProgramTimelineRoute({ programId: 0 }), null, 'an invalid Program identity must fail closed');
 
-assert.match(component, /FlatList<ProgramTimelineBlock>/, 'long Programs must virtualize compact Block territories');
-assert.doesNotMatch(component, /SectionList|blockNavigator/, 'the rejected giant Week chronology and horizontal Block tabs must not return');
-assert.match(component, /BlockTerritory/, 'Blocks must render as continuous map territories');
-assert.match(component, /WeekNode/, 'Weeks must render as landmark nodes');
-assert.match(component, /DensityMarks/, 'Week nodes must expose real Session lifecycle density');
-assert.match(component, /WeekExpansion/, 'the selected Week must expand contextually inside the map');
-assert.match(component, /programmingState === 'unbuilt'/, 'programmed future and unbuilt future must not look identical');
-assert.match(component, /ProgrammingMuscleRegionArt[^>]*framingPreset="thumbnail"[^>]*level="session"/, 'Sessions must use non-destructive focused muscle-region framing');
-assert.doesNotMatch(component, /MuscleMap|level="week"/, 'Program, Block, and Week headers must not render full anatomy');
-assert.match(component, /Gesture\.Pan\(\)/, 'Week map must support tactile scrubbing and traversal gestures');
-assert.match(component, /Haptics\.selectionAsync/, 'landmark transitions must use restrained selection haptics');
-assert.match(component, /useSLReducedMotion/, 'map motion must honor Reduced Motion');
+assert.match(component, /FlatList<ProgramTimelineBlock>/, 'long Programs keep Block virtualization');
+assert.match(component, /block\.weeks\.map\(\(week\) =>/, 'Weeks render in canonical chronological order');
+assert.doesNotMatch(component, /mapRowReverse|MAP_COLUMNS|scrubAtPoint/, 'the serpentine visual order and map scrub may not return');
+assert.match(component, /BlockTerritory/, 'Blocks remain distinct in one Program map');
+assert.match(component, /WeekNode/, 'every Week remains selectable');
+assert.match(component, /WeekExpansion/, 'a selected Week reveals its Sessions in place');
+assert.match(component, /programmingState === 'unbuilt'/, 'empty future Weeks stay distinct from planned Weeks');
+assert.match(component, /session\.movementNames/, 'Session rows present canonical preview movement order');
+assert.match(component, /Gesture\.Pan\(\)/, 'expanded Week retains horizontal traversal');
+assert.match(component, /Haptics\.selectionAsync/, 'Week selection retains tactile feedback');
+assert.match(component, /useSLReducedMotion/, 'Week transitions honor Reduced Motion');
+assert.match(component, /useState<string \| null>\(startingWeekKey\)/, 'the current or returning Week is visible on arrival');
 assert.match(component, /setExpandedWeekKey\(opening \? week\.key : null\)/, 'only one Week may be expanded');
-assert.match(component, /Return to current Week/, 'browsing away must expose one integrated current-Week return');
-assert.doesNotMatch(component, /contentMaxWidth|alignSelf:\s*'center'/, 'standard iPhone layout must not be squeezed into a centered web column');
+assert.match(component, /Return to current Week/, 'browsing away exposes the current-Week return');
+assert.doesNotMatch(component, /contentMaxWidth|alignSelf:\s*'center'/, 'iPhone content stays full width');
 assert.match(route, /\/workouts\/my_list\/mobile/, 'timeline must reuse the authoritative active Program payload');
 assert.match(route, /returnTo: 'program-timeline'/, 'Session drill-down must preserve timeline return context');
+assert.match(route, /returnWeekKey/, 'Session drill-down must retain its Week context');
 assert.match(detail, /returnTo === 'program-timeline'/, 'Session detail must return to Program Timeline');
 assert.match(hub, /type: 'program-timeline'; id: number/, 'active Program must have a dedicated action');
-assert.match(hub, />Program Timeline</, 'active Program CTA must be named truthfully');
+assert.match(hub, />Program map</, 'active Program CTA names this destination consistently');
 assert.match(hub, /testID="training-hub-program-timeline"/, 'the Program Timeline control must remain addressable by behavioral navigation tests');
-assert.match(hub, /accessibilityRole="button"[\s\S]*?hitSlop=\{8\}[\s\S]*?onPress=\{\(\) => onAction\(\{ type: 'program-timeline', id: program\.id \}\)\}/, 'the visible Timeline control must keep a real iPhone-sized Pressable hit target');
+assert.match(hub, /accessibilityLabel="Open Program map"[\s\S]*?onPress=\{onOpenMap\}/, 'the visible map control retains a usable Pressable target');
 assert.match(hub, /PROGRAM HISTORY/, 'completed-program history remains a separate destination');
-const noActiveProgramSource = hub.slice(hub.indexOf('function NoActiveProgram'), hub.indexOf('function ProgramHero'));
+const noActiveProgramSource = hub.slice(hub.indexOf('function NoActiveProgram'), hub.indexOf('function clamp01'));
 assert.doesNotMatch(noActiveProgramSource, /type: 'program-timeline'/, 'no-active-Program state must not expose a dead Timeline action');
 assert.match(index, /buildProgramTimelineRoute\(\{ programId, athleteId: rosterAthleteId \}\)/, 'all Training Hub Timeline launches must use the canonical route contract');
 assert.match(index, /if \(programTimelineOpeningRef\.current\) return;[\s\S]*?programTimelineOpeningRef\.current = true;[\s\S]*?router\.push\(route as any\)/, 'repeated taps must not stack duplicate Timeline routes');
 assert.match(index, /useFocusEffect\([\s\S]*?programTimelineOpeningRef\.current = false;/, 'returning from Timeline must re-arm the Training Hub control');
 assert.match(index, /openProgramTimeline\(action\.id\)/, 'Training Hub must route the active Program action');
-assert.match(route, /if \(router\.canGoBack\(\)\) router\.back\(\)/, 'Timeline back must unwind to Training Hub when launched from it');
+assert.match(route, /router\.navigate\('\/\(tabs\)\/workout'/, 'Timeline back explicitly returns to Training Hub');
+assert.match(tabLayout, /usesTrainingMapSelection[\s\S]*?\? trainingRoute/, 'the Program map keeps Training selected in the floating navigation');
 
 console.log('Program Timeline V3 contracts passed.');

@@ -13,7 +13,7 @@ import { buildProgramTimelinePayload, type ProgramTimelinePayload, type ProgramT
 export default function ProgramTimelineScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ programId?: string; athleteId?: string }>();
+  const params = useLocalSearchParams<{ programId?: string; athleteId?: string; weekKey?: string }>();
   const programId = Number(params.programId || 0);
   const athleteId = params.athleteId ? String(params.athleteId) : null;
   const [payload, setPayload] = useState<ProgramTimelinePayload | null>(null);
@@ -49,25 +49,27 @@ export default function ProgramTimelineScreen() {
   }, [load]));
 
   const goBack = useCallback(() => {
-    if (router.canGoBack()) router.back();
-    else router.replace('/(tabs)/workout' as any);
+    router.navigate('/(tabs)/workout' as any);
   }, [router]);
 
   const openSession = useCallback((session: ProgramTimelineSession) => {
+    const returnWeekKey = payload?.blocks.flatMap((block) => block.weeks).find((week) => week.days.some((day) => day.sessions.some((row) => row.id === session.id)))?.key;
     router.push({
       pathname: '/workout/[workoutId]',
       params: {
         workoutId: String(session.id),
         returnTo: 'program-timeline',
         programId: String(programId || payload?.program.id || ''),
+        ...(returnWeekKey ? { returnWeekKey } : {}),
         ...(athleteId ? { athleteView: 'coach-preview', coachAthleteId: athleteId } : {}),
       },
     });
-  }, [athleteId, payload?.program.id, programId, router]);
+  }, [athleteId, payload?.blocks, payload?.program.id, programId, router]);
 
   if (payload) {
     return (
       <AthleteProgramTimeline
+        initialWeekKey={params.weekKey}
         onBack={goBack}
         onOpenSession={openSession}
         onRefresh={() => void load(true)}

@@ -1,3 +1,5 @@
+import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+
 export type ProgramTimelineLifecycle =
   | 'completed'
   | 'in_progress'
@@ -11,6 +13,7 @@ export type ProgramTimelineSession = {
   title: string;
   date: string;
   lifecycle: Exclude<ProgramTimelineLifecycle, 'no_session'>;
+  movementNames: string[];
   movementCount: number | null;
   setCount: number | null;
   plannedSetCount: number | null;
@@ -168,11 +171,13 @@ function plannedSetCount(session: RawSession) {
 function mapSession(session: RawSession, date: string, today: string): ProgramTimelineSession | null {
   const id = asNumber(session.id);
   if (!id) return null;
+  const previewMovements = Array.isArray(session.preview?.movements) ? session.preview.movements : [];
   return {
     id,
     title: sessionTitle(session),
     date,
     lifecycle: sessionLifecycle(session, date, today),
+    movementNames: previewMovements.map((row: any) => simplifyMobileMovementName(String(row?.movement || row?.name || row?.label || '').trim())).filter(Boolean),
     movementCount: asNumber(session.preview?.movement_count ?? session.recap?.movement_count),
     setCount: asNumber(session.recap?.logged_set_count ?? session.recap?.planned_set_count ?? session.preview?.set_count),
     plannedSetCount: plannedSetCount(session),
