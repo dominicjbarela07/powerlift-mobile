@@ -17,6 +17,7 @@ import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
+import { Asset } from 'expo-asset';
 import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import {
   canPresentRestTimerCompletion,
@@ -58,10 +59,10 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
   const [snapshot, setSnapshot] = useState<RestTimerCompletionState>(
     getRestTimerCompletionState(),
   );
+  const activeTimerId = snapshot.active?.timerId;
   const [applicationState, setApplicationState] = useState(AppState.currentState);
   const signalGate = useRef(new RestTimerSignalGate()).current;
   const beepPlayer = useAudioPlayer(REST_COMPLETION_BEEP, {
-    downloadFirst: true,
     keepAudioSessionActive: false,
   });
   const audioModeReadyRef = useRef(false);
@@ -105,6 +106,11 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
       // The native player is prepared while the timer runs. If it is unavailable,
       // retain the scheduled notification instead of silently losing the alert.
       if (!audioModeReadyRef.current || !beepPlayer.isLoaded || !beepResetReadyRef.current) {
+        console.warn('rest completion using notification: app audio unavailable', {
+          audioModeReady: audioModeReadyRef.current,
+          playerLoaded: beepPlayer.isLoaded,
+          playerReset: beepResetReadyRef.current,
+        });
         return signalGate.claim(timer.timerId, 'notification');
       }
       signalGate.claim(timer.timerId, 'beep');
@@ -121,18 +127,35 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
     return signalGate.claim(timer.timerId, 'notification');
   };
 
-  useEffect(() => {
-    // Playback category allows the cue through silent mode. Ducking lasts only
-    // for this one-shot player; expo-audio deactivates it after playback ends.
-    void setAudioModeAsync({
-      playsInSilentMode: true,
-      interruptionMode: 'duckOthers',
-      shouldPlayInBackground: false,
-    }).then(() => {
+  const configureCompletionAudio = useCallback(async () => {
+    // expo-audio maps this to AVAudioSession.Category.playback with duckOthers.
+    // The category permits app audio in Silent Mode; the one-shot player
+    // deactivates the session afterward and notifies other audio apps.
+    audioModeReadyRef.current = false;
+    try {
+      await setAudioModeAsync({
+        playsInSilentMode: true,
+        interruptionMode: 'duckOthers',
+        shouldPlayInBackground: false,
+      });
       audioModeReadyRef.current = true;
-    }).catch((error) => {
-      audioModeReadyRef.current = false;
+    } catch (error) {
       console.warn('rest completion audio mode unavailable', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    void configureCompletionAudio();
+    // Give AVPlayer a source immediately, then replace it with the local asset
+    // once Expo has materialized the bundled WAV (including OTA assets).
+    let cancelled = false;
+    const asset = Asset.fromModule(REST_COMPLETION_BEEP);
+    void asset.downloadAsync().then(() => {
+      if (!cancelled && asset.localUri && !beepPlayer.playing) {
+        beepPlayer.replace({ uri: asset.localUri });
+      }
+    }).catch((error) => {
+      console.warn('rest completion local beep preload failed', error);
     });
     const subscription = beepPlayer.addListener('playbackStatusUpdate', (status) => {
       if (!status.didJustFinish) return;
@@ -143,8 +166,18 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
         console.warn('rest completion beep reset failed', error);
       });
     });
-    return () => subscription.remove();
-  }, [beepPlayer]);
+    return () => {
+      cancelled = true;
+      subscription.remove();
+    };
+  }, [beepPlayer, configureCompletionAudio]);
+
+  useEffect(() => {
+    if (!activeTimerId) return;
+    // Other media surfaces can change the shared iOS session after app launch.
+    // Reassert playback category before each timer's deadline.
+    void configureCompletionAudio();
+  }, [activeTimerId, configureCompletionAudio]);
 
   useEffect(() => subscribeRestTimerCompletion(setSnapshot), []);
 
