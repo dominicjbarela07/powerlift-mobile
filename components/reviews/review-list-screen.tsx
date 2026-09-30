@@ -123,23 +123,30 @@ export function ReviewListScreen({ mode }: { mode: 'queue' | 'history' }) {
       scrollEventThrottle={120}
     >
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton} accessibilityLabel="Back to Review Hub">
+        <Pressable
+          onPress={() => router.back()}
+          style={styles.backButton}
+          accessibilityLabel="Back to Review Hub"
+        >
           <Ionicons name="chevron-back" size={22} color={SLColors.textStrong} />
         </Pressable>
         <View style={styles.headerCopy}>
+          <Text style={styles.eyebrow}>REVIEW HUB</Text>
           <Text style={styles.title}>{mode === 'queue' ? 'Review Queue' : 'Past Review Work'}</Text>
           <Text style={styles.subtitle}>
-            {mode === 'queue' ? 'Session and video reviews that need attention.' : 'Completed review history across your team.'}
+            {mode === 'queue' ? 'Sessions and videos waiting for feedback.' : 'Completed reviews across your team.'}
           </Text>
         </View>
       </View>
 
+      <Text style={styles.filterLabel}>ATHLETE</Text>
       <ReviewFilterRow
         options={athleteOptions}
         selected={athleteId}
         onSelect={setAthleteId}
         accessibilityLabel="Filter by athlete"
       />
+      <Text style={styles.filterLabel}>TYPE</Text>
       <ReviewFilterRow
         options={[
           { value: 'all', label: 'All Reviews' },
@@ -163,15 +170,19 @@ export function ReviewListScreen({ mode }: { mode: 'queue' | 'history' }) {
 
       {!loading && !error && items.length === 0 ? (
         <View style={styles.empty}>
-          <Ionicons
-            name={mode === 'queue' ? 'checkmark-circle-outline' : 'time-outline'}
-            size={36}
-            color={mode === 'queue' ? SLColors.success : SLColors.textMuted}
-          />
-          <Text style={styles.emptyTitle}>{mode === 'queue' ? 'All caught up' : 'No review history yet'}</Text>
-          <Text style={styles.emptyText}>
-            {mode === 'queue' ? 'No pending reviews match these filters.' : 'Completed reviews will appear here.'}
-          </Text>
+          <View style={styles.emptyIcon}>
+            <Ionicons
+              name={mode === 'queue' ? 'checkmark' : 'time-outline'}
+              size={22}
+              color={mode === 'queue' ? SLColors.success : SLColors.accentMuted}
+            />
+          </View>
+          <View style={styles.emptyCopy}>
+            <Text style={styles.emptyTitle}>{mode === 'queue' ? 'All caught up' : 'No review history yet'}</Text>
+            <Text style={styles.emptyText}>
+              {mode === 'queue' ? 'No pending reviews match these filters.' : 'Completed reviews will appear here.'}
+            </Text>
+          </View>
         </View>
       ) : null}
 
@@ -205,18 +216,20 @@ export function ReviewListScreen({ mode }: { mode: 'queue' | 'history' }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { gap: SLSpacing.md, paddingBottom: 120 },
+  screen: { gap: 13, paddingBottom: 120, paddingHorizontal: 20 },
   header: {
-    alignItems: 'flex-start', flexDirection: 'row', gap: SLSpacing.sm,
-    paddingHorizontal: SLSpacing.lg, paddingTop: SLSpacing.sm,
+    alignItems: 'center', flexDirection: 'row', gap: 13, marginBottom: 10,
+    paddingTop: 18,
   },
   backButton: {
-    alignItems: 'center', backgroundColor: SLColors.object, borderColor: SLColors.borderStandard,
-    borderRadius: SLRadius.md, borderWidth: 1, height: 42, justifyContent: 'center', width: 42,
+    alignItems: 'center', backgroundColor: '#13101A', borderColor: SLColors.borderStandard,
+    borderRadius: 13, borderWidth: 1, height: 43, justifyContent: 'center', width: 43,
   },
   headerCopy: { flex: 1 },
-  title: { color: SLColors.textStrong, fontSize: 29, fontWeight: '800' },
-  subtitle: { color: SLColors.textMuted, fontSize: 15, lineHeight: 21, marginTop: 3 },
+  eyebrow: { color: SLColors.accentViolet, fontSize: 10, fontWeight: '900', letterSpacing: 1.6 },
+  title: { color: SLColors.textStrong, fontSize: 29, fontWeight: '800', letterSpacing: -0.8, marginTop: 4 },
+  subtitle: { color: SLColors.textMuted, fontSize: 13, lineHeight: 19, marginTop: 2 },
+  filterLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '800', letterSpacing: 1.3, marginTop: 5 },
   center: { alignItems: 'center', minHeight: 180, justifyContent: 'center' },
   error: {
     alignItems: 'center', backgroundColor: SLColors.dangerSoft, borderColor: SLColors.danger,
@@ -224,12 +237,17 @@ const styles = StyleSheet.create({
   },
   errorText: { color: SLColors.danger, flex: 1, fontSize: 14 },
   empty: {
-    alignItems: 'center', backgroundColor: SLColors.object, borderColor: SLColors.borderStandard,
-    borderRadius: SLRadius.lg, borderWidth: 1, gap: 7, padding: SLSpacing.xl,
+    alignItems: 'center', backgroundColor: '#0D0C13', borderColor: SLColors.borderSubtle,
+    borderRadius: 16, borderWidth: 1, flexDirection: 'row', gap: 13, marginTop: 11, padding: 17,
   },
-  emptyTitle: { color: SLColors.textStrong, fontSize: 19, fontWeight: '700' },
-  emptyText: { color: SLColors.textMuted, fontSize: 14, textAlign: 'center' },
-  list: { gap: SLSpacing.sm },
+  emptyIcon: {
+    alignItems: 'center', backgroundColor: SLColors.successSoft, borderRadius: 12,
+    height: 42, justifyContent: 'center', width: 42,
+  },
+  emptyCopy: { flex: 1, gap: 3 },
+  emptyTitle: { color: SLColors.textStrong, fontSize: 16, fontWeight: '700' },
+  emptyText: { color: SLColors.textMuted, fontSize: 12, lineHeight: 17 },
+  list: { gap: 9, marginTop: 8 },
   loadMore: {
     alignItems: 'center', backgroundColor: SLColors.object, borderColor: SLColors.borderFocus,
     borderRadius: SLRadius.md, borderWidth: 1, minHeight: 50, justifyContent: 'center',

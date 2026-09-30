@@ -3,7 +3,7 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Text } from '@/components/ui/sl-text';
-import { SLColors, SLRadius, SLSpacing, SLTypography } from '@/constants/theme';
+import { SLColors } from '@/constants/theme';
 import { API_BASE, type CoachReviewItem } from '@/lib/api';
 
 function absoluteAssetUrl(value?: string | null) {
@@ -51,77 +51,66 @@ export function ReviewItemCard({
       style={({ pressed }) => [styles.card, compact && styles.cardCompact, pressed && styles.cardPressed]}
     >
       {thumbnail ? (
-        <Image source={{ uri: thumbnail }} style={[styles.thumbnail, compact && styles.thumbnailCompact]} />
+        <Image source={{ uri: thumbnail }} style={styles.thumbnail} />
       ) : (
-        <View style={[styles.iconTile, compact && styles.thumbnailCompact]}>
+        <View style={styles.iconTile}>
           <Ionicons
             name={item.review_type === 'video' ? 'videocam-outline' : 'clipboard-outline'}
-            size={compact ? 22 : 26}
-            color={SLColors.accentViolet}
+            size={24}
+            color={SLColors.accentMuted}
           />
         </View>
       )}
       <View style={styles.content}>
-        <Text numberOfLines={2} style={styles.title}>{item.title}</Text>
-        <Text numberOfLines={2} style={styles.meta}>
-          {item.athlete_name} · {formatDate(item.reviewed_at || item.submitted_at || item.date)}
-        </Text>
-        {item.summary ? <Text numberOfLines={2} style={styles.detail}>{item.summary}</Text> : null}
-        {item.actual ? <Text numberOfLines={2} style={styles.actual}>{item.actual}</Text> : null}
-        <View style={[styles.status, reviewed && styles.statusReviewed]}>
-          <Text style={[styles.statusText, reviewed && styles.statusTextReviewed]}>{statusLabel(item)}</Text>
+        <View style={styles.topLine}>
+          <Text style={styles.kind}>{item.review_type === 'video' ? 'VIDEO REVIEW' : 'SESSION REVIEW'}</Text>
+          <Text style={[styles.statusText, reviewed && styles.statusTextReviewed]}>{statusLabel(item).toUpperCase()}</Text>
         </View>
+        <Text numberOfLines={2} style={styles.title}>{item.title}</Text>
+        <Text numberOfLines={1} style={styles.meta}>{item.athlete_name} · {formatDate(item.reviewed_at || item.submitted_at || item.date)}</Text>
+        {item.summary ? <Text numberOfLines={compact ? 1 : 2} style={styles.detail}>{item.summary}</Text> : null}
+        {item.actual ? <Text numberOfLines={compact ? 1 : 2} style={styles.actual}>{item.actual}</Text> : null}
         {reviewed && item.reviewer_name ? (
           <Text numberOfLines={1} style={styles.reviewer}>Reviewed by {item.reviewer_name}</Text>
         ) : null}
       </View>
-      <Ionicons name="chevron-forward" size={20} color={SLColors.accentViolet} />
+      <Ionicons name="chevron-forward" size={18} color={SLColors.textMuted} style={styles.chevron} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    alignItems: 'center',
-    backgroundColor: SLColors.object,
-    borderColor: SLColors.borderStandard,
-    borderRadius: SLRadius.lg,
+    alignItems: 'flex-start',
+    backgroundColor: '#0D0C13',
+    borderColor: SLColors.borderSubtle,
+    borderRadius: 16,
     borderWidth: 1,
     flexDirection: 'row',
-    gap: SLSpacing.md,
-    minHeight: 112,
-    padding: SLSpacing.md,
+    gap: 12,
+    minHeight: 106,
+    padding: 13,
   },
-  cardCompact: { minHeight: 98 },
+  cardCompact: { minHeight: 102 },
   cardPressed: { backgroundColor: SLColors.surfacePressed },
-  thumbnail: { borderRadius: SLRadius.md, height: 74, width: 94 },
-  thumbnailCompact: { height: 62, width: 62 },
+  thumbnail: { backgroundColor: SLColors.surfaceMedia, borderRadius: 10, height: 72, width: 72 },
   iconTile: {
     alignItems: 'center',
-    backgroundColor: SLColors.accentSoft,
-    borderColor: SLColors.borderFocus,
-    borderRadius: SLRadius.md,
-    borderWidth: 1,
-    height: 74,
+    backgroundColor: '#181222',
+    borderRadius: 10,
+    height: 72,
     justifyContent: 'center',
-    width: 74,
+    width: 72,
   },
   content: { flex: 1, gap: 4, minWidth: 0 },
-  title: { color: SLColors.textStrong, flex: 1, fontSize: 17, fontWeight: '700' },
-  meta: { color: SLColors.textMuted, fontSize: 14 },
-  detail: { color: SLColors.textSecondary, fontSize: 14 },
-  actual: { color: SLColors.accentMuted, fontSize: 14, fontWeight: '600' },
+  topLine: { alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'space-between' },
+  kind: { color: SLColors.accentMuted, flexShrink: 1, fontSize: 9, fontWeight: '900', letterSpacing: 0.8 },
+  title: { color: SLColors.textStrong, fontSize: 16, fontWeight: '700' },
+  meta: { color: SLColors.textMuted, fontSize: 12 },
+  detail: { color: SLColors.textSecondary, fontSize: 12 },
+  actual: { color: SLColors.accentMuted, fontSize: 12, fontWeight: '700' },
   reviewer: { color: SLColors.success, fontSize: 12 },
-  status: {
-    backgroundColor: SLColors.accentSoft,
-    borderColor: SLColors.borderFocus,
-    borderRadius: 99,
-    borderWidth: 1,
-    alignSelf: 'flex-start',
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-  },
-  statusReviewed: { backgroundColor: SLColors.successSoft, borderColor: SLColors.success },
-  statusText: { color: SLColors.accentMuted, fontSize: 11, fontWeight: '700' },
+  statusText: { color: SLColors.accentMuted, fontSize: 9, fontWeight: '800', letterSpacing: 0.35 },
   statusTextReviewed: { color: SLColors.success },
+  chevron: { alignSelf: 'center', marginLeft: -6 },
 });
