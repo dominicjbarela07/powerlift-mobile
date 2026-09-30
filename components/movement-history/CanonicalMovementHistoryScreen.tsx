@@ -36,6 +36,7 @@ import {
   kilogramsToDisplayValue,
 } from '@/lib/display-units';
 import { fetchLedgerExplorationIndex } from '@/lib/ledger-exploration';
+import { fetchRecentSessionSetHistory, type RecentSessionSetHistory } from '@/lib/recent-session-set-history';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import type { AnalyticalXDomainMode } from '@/lib/chart-fidelity';
 import { formatPerformedLoad } from '@/lib/performed-load-semantics';
@@ -183,6 +184,7 @@ export function CanonicalMovementHistoryScreen({
   coreMovementId,
   athleteId,
   initialEquipmentContextDefinitionId,
+  activeSessionId,
   initialDisplayUnit,
   presentation = 'screen',
   readOnly = false,
@@ -192,6 +194,7 @@ export function CanonicalMovementHistoryScreen({
   coreMovementId?: number | null;
   athleteId?: number | null;
   initialEquipmentContextDefinitionId?: number | null;
+  activeSessionId?: number | null;
   initialDisplayUnit?: MovementHistoryUnit | null;
   presentation?: 'screen' | 'sheet';
   readOnly?: boolean;
@@ -213,6 +216,7 @@ export function CanonicalMovementHistoryScreen({
   const [range, setRange] = useState<MovementHistoryDateRange>('all');
   const [historyAxisMode, setHistoryAxisMode] = useState<AnalyticalXDomainMode>('chronological');
   const [equipmentDefinitionId, setEquipmentDefinitionId] = useState<number | null>(null);
+  const [recentEquipmentDefinitionId, setRecentEquipmentDefinitionId] = useState<number | null>(initialEquipmentContextDefinitionId || null);
   const [filterPreset, setFilterPreset] = useState<FilterPreset>('all');
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [rangeSheetOpen, setRangeSheetOpen] = useState(false);
@@ -223,11 +227,16 @@ export function CanonicalMovementHistoryScreen({
   const [detailError, setDetailError] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const [favoriteSaving, setFavoriteSaving] = useState(false);
+  const [recentSession, setRecentSession] = useState<RecentSessionSetHistory | null>(null);
+  const [recentSessionLoading, setRecentSessionLoading] = useState(false);
+  const [recentSessionError, setRecentSessionError] = useState(false);
+  const [recentSessionRetry, setRecentSessionRetry] = useState(0);
   const requestGeneration = useRef(0);
 
   useEffect(() => {
     setResolvedAthleteId(athleteId || null);
     setEquipmentDefinitionId(null);
+    setRecentEquipmentDefinitionId(initialEquipmentContextDefinitionId || null);
     setRange('all');
     setFilterPreset('all');
     setHistory(null);
@@ -259,7 +268,10 @@ export function CanonicalMovementHistoryScreen({
   const load = useCallback(async (refresh = false) => {
     if (!query) return;
     const generation = ++requestGeneration.current;
-    if (refresh) setRefreshing(true);
+    if (refresh) {
+      setRefreshing(true);
+      setRecentSessionRetry((value) => value + 1);
+    }
     else setLoading(true);
     setError(null);
     try {
@@ -278,6 +290,30 @@ export function CanonicalMovementHistoryScreen({
   }, [query]);
 
   useEffect(() => { void load(false); }, [load]);
+
+  useEffect(() => {
+    if (!activeSessionId || !resolvedAthleteId || (!movementDefinitionId && !coreMovementId)) return;
+    let active = true;
+    setRecentSession(null);
+    setRecentSessionLoading(true);
+    setRecentSessionError(false);
+    void fetchRecentSessionSetHistory({
+      athleteId: resolvedAthleteId,
+      movementDefinitionId,
+      coreMovementId,
+      currentSessionId: activeSessionId,
+      equipmentDefinitionId: recentEquipmentDefinitionId,
+      fetchHistory: fetchCanonicalMovementHistory,
+      fetchExposure: fetchCanonicalMovementExposure,
+    }).then((result) => {
+      if (active) setRecentSession(result);
+    }).catch(() => {
+      if (active) setRecentSessionError(true);
+    }).finally(() => {
+      if (active) setRecentSessionLoading(false);
+    });
+    return () => { active = false; };
+  }, [activeSessionId, coreMovementId, movementDefinitionId, recentEquipmentDefinitionId, recentSessionRetry, resolvedAthleteId]);
 
   const loadMore = useCallback(async () => {
     if (!query || !history?.has_more || !history.next_cursor || loadingMore) return;
@@ -377,6 +413,16 @@ export function CanonicalMovementHistoryScreen({
               </Pressable> : __DEV__ ? null : <View style={styles.favoriteButton} />}
             </View>
 
+            {activeSessionId ? <RecentSessionSets
+              history={recentSession}
+              loading={recentSessionLoading}
+              error={recentSessionError}
+              unit={unit}
+              isCore={isCoreHistory}
+              equipmentScoped={recentEquipmentDefinitionId !== null}
+              onRetry={() => setRecentSessionRetry((value) => value + 1)}
+            /> : null}
+
             <View style={styles.summaryStrip}>
               <SummaryFact value={String(history.summary.exposure_count)} label="Exposures" />
               <SummaryFact value={String(history.summary.set_count)} label="Sets" />
@@ -392,13 +438,13 @@ export function CanonicalMovementHistoryScreen({
             {history.equipment_breakdown.length ? (
               <Section title="EQUIPMENT BREAKDOWN" info>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.equipmentRail}>
-                  <AllHistoryCard selected={history.filters.selected_scope === 'all_history'} count={history.summary.exposure_count} onPress={() => setEquipmentDefinitionId(null)} />
+                  <AllHistoryCard selected={history.filters.selected_scope === 'all_history'} count={history.summary.exposure_count} onPress={() => { setEquipmentDefinitionId(null); setRecentEquipmentDefinitionId(null); }} />
                   {history.equipment_breakdown.map((equipment) => (
                     <EquipmentCard
                       key={equipment.id}
                       equipment={equipment}
                       unit={unit}
-                      onPress={() => setEquipmentDefinitionId(equipment.id)}
+                      onPress={() => { setEquipmentDefinitionId(equipment.id); setRecentEquipmentDefinitionId(equipment.id); }}
                     />
                   ))}
                 </ScrollView>
@@ -454,7 +500,9 @@ export function CanonicalMovementHistoryScreen({
           ...(history?.equipment_breakdown || []).map((row) => ({ key: `equipment:${row.id}`, label: row.label })),
         ]}
         onSelect={(value) => {
-          setEquipmentDefinitionId(value === 'all_history' ? null : Number(value.split(':')[1]));
+          const selected = value === 'all_history' ? null : Number(value.split(':')[1]);
+          setEquipmentDefinitionId(selected);
+          setRecentEquipmentDefinitionId(selected);
           setScopeSheetOpen(false);
         }}
         onClose={() => setScopeSheetOpen(false)}
@@ -477,6 +525,44 @@ export function CanonicalMovementHistoryScreen({
   );
   if (presentation === 'sheet') return <View style={styles.screen}><FloatingControlCoordinator context="sheet"><FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} slot={1} testID="movement-history-unit-toggle" />{screenContent}</FloatingControlCoordinator></View>;
   return <SLScreen edges="top" padded={false} style={styles.screen}><FloatingControlCoordinator context="screen"><FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="movement-history-unit-toggle" />{screenContent}</FloatingControlCoordinator></SLScreen>;
+}
+
+function RecentSessionSets({ history, loading, error, unit, isCore, equipmentScoped, onRetry }: {
+  history: RecentSessionSetHistory | null;
+  loading: boolean;
+  error: boolean;
+  unit: MovementHistoryUnit;
+  isCore: boolean;
+  equipmentScoped: boolean;
+  onRetry: () => void;
+}) {
+  const count = history?.exposures.reduce((sum, exposure) => sum + exposure.sets.length, 0) || 0;
+  return <View style={styles.recentSessionCard} testID="movement-history-last-session-sets">
+    <View style={styles.recentSessionHeader}>
+      <View style={styles.recentSessionHeading}>
+        <Text style={styles.recentSessionKicker}>LAST SESSION</Text>
+        <Text style={styles.recentSessionDate}>{history ? dateLabel(history.date) : 'Previous performance'}</Text>
+      </View>
+      {history ? <Text style={styles.recentSessionCount}>{count} Set{count === 1 ? '' : 's'}</Text> : null}
+    </View>
+    {loading ? <Text style={styles.recentSessionMessage}>Loading recorded Sets…</Text>
+      : error ? <Pressable accessibilityRole="button" onPress={onRetry} style={styles.recentSessionRetry}><Text style={styles.recentSessionMessage}>Couldn’t load the last Session. Tap to retry.</Text></Pressable>
+      : !history ? <Text style={styles.recentSessionMessage}>{equipmentScoped ? 'No earlier Session recorded for this movement and equipment.' : 'No earlier Session recorded for this movement.'}</Text>
+      : <View style={styles.recentSessionGroups}>{history.exposures.map((exposure) => {
+        const equipment = exposure.equipment;
+        const equipmentLabel = equipment
+          ? [equipment.manufacturer?.display_name || equipment.label, equipment.equipment_type ? titleCase(equipment.equipment_type) : null].filter(Boolean).join(' · ')
+          : !isCore ? 'Equipment not recorded' : null;
+        return <View key={exposure.id} style={styles.recentSessionGroup}>
+          {equipmentLabel ? <Text style={styles.recentSessionEquipment}>{equipmentLabel}</Text> : null}
+          {exposure.sets.map((set) => <View key={set.id} style={styles.recentSessionSetRow}>
+            <Text style={styles.recentSessionSetNumber}>Set {set.set_index}</Text>
+            <Text style={styles.recentSessionSetLoad}>{compactSetLoad(set, unit)}</Text>
+            {set.rir != null || set.rpe != null ? <Text style={styles.recentSessionSetEffort}>{compactSetEffort(set)}</Text> : null}
+          </View>)}
+        </View>;
+      })}</View>}
+  </View>;
 }
 
 function State({ icon, title, action, onAction }: { icon: keyof typeof Ionicons.glyphMap; title: string; action?: string; onAction?: () => void }) {
@@ -628,6 +714,21 @@ const styles = StyleSheet.create({
   muscleArtworkFrame: __DEV__ ? { width: 112, height: 112, flexShrink: 0, alignItems: 'center', justifyContent: 'center' } : { width: 96, height: 86, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   coreArtwork: { width: 88, height: 82 },
   movementIdentity: { flex: 1, minWidth: 0, gap: 4 },
+  recentSessionCard: { marginBottom: 12, overflow: 'hidden', borderRadius: 12, borderWidth: 1, borderColor: '#50336B', backgroundColor: '#100B17' },
+  recentSessionHeader: { minHeight: 58, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#392743' },
+  recentSessionHeading: { gap: 3 },
+  recentSessionKicker: { color: '#C38BF2', fontSize: 11, lineHeight: 14, fontWeight: '700', letterSpacing: 0.7 },
+  recentSessionDate: { color: '#F2EDF6', fontSize: 16, lineHeight: 21, fontWeight: '600' },
+  recentSessionCount: { color: '#AEA5B7', fontSize: 12, lineHeight: 16, fontWeight: '600' },
+  recentSessionGroups: { paddingHorizontal: 14, paddingBottom: 5 },
+  recentSessionGroup: { paddingTop: 5, paddingBottom: 7 },
+  recentSessionEquipment: { color: '#AFA1BF', fontSize: 11, lineHeight: 16, fontWeight: '600', paddingTop: 6, paddingBottom: 3 },
+  recentSessionSetRow: { minHeight: 39, flexDirection: 'row', alignItems: 'center', gap: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#33283B' },
+  recentSessionSetNumber: { width: 48, color: '#AFA5B9', fontSize: 12, lineHeight: 16 },
+  recentSessionSetLoad: { flex: 1, color: '#F1EAF6', fontSize: 14, lineHeight: 18, fontWeight: '600' },
+  recentSessionSetEffort: { color: '#C692EF', fontSize: 12, lineHeight: 16 },
+  recentSessionMessage: { color: '#AFA7B7', fontSize: 13, lineHeight: 18, paddingHorizontal: 14, paddingVertical: 14 },
+  recentSessionRetry: { minHeight: 46 },
   movementName: { color: '#FAF8FC', fontSize: 25, lineHeight: 31, fontWeight: '600' },
   movementMuscles: { color: '#AAA5B1', fontSize: 15, lineHeight: 20 },
   favoriteButton: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
