@@ -187,12 +187,32 @@ export function coachCalendarDateAtPoint(
   return match;
 }
 
-function coachCalendarCountKey(status?: string) {
+export function coachCalendarCountKey(status?: string | null) {
   const normalized = String(status || 'assigned').toLowerCase();
   if (['completed', 'logged', 'done'].includes(normalized)) return 'completed';
   return ['assigned', 'in_progress', 'draft', 'missed', 'missed_excused', 'incomplete'].includes(normalized)
     ? normalized
     : 'assigned';
+}
+
+/** The summary follows the named month and the same visible Session rows. */
+export function summarizeCoachCalendarMonth<TSession extends { workout_id: number; status?: string | null }>(
+  anchor: Date,
+  days: { date: string; sessions: TSession[] }[],
+) {
+  const prefix = coachCalendarMonthKey(anchor);
+  const sessions = new Map<number, TSession>();
+  days.forEach((day) => {
+    if (!day.date.startsWith(prefix)) return;
+    day.sessions.forEach((session) => sessions.set(session.workout_id, session));
+  });
+  const statuses = [...sessions.values()].map((session) => coachCalendarCountKey(session.status));
+  return {
+    sessions: sessions.size,
+    completed: statuses.filter((status) => status === 'completed').length,
+    upcoming: statuses.filter((status) => status === 'assigned' || status === 'in_progress').length,
+    draft: statuses.filter((status) => status === 'draft').length,
+  };
 }
 
 export function withCoachCalendarSessionDate<

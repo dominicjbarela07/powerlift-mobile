@@ -49,6 +49,7 @@ export default function MovementHistorySheetRoute() {
           readOnly={origin?.mode === 'preview'}
           initialDisplayUnit={origin?.displayUnit}
           initialEquipmentContextDefinitionId={equipmentContextDefinitionId}
+          activeSessionId={origin?.mode === 'execute' ? origin.workoutId : null}
           movementDefinitionId={movementDefinitionId}
           coreMovementId={coreMovementId}
           onRequestClose={requestClose}

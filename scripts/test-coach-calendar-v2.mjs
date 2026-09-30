@@ -19,6 +19,7 @@ import {
   sameAthleteDateMove,
   selectedAthleteLabel,
   startOfCalendarWeek,
+  summarizeCoachCalendarMonth,
   toLocalYMD,
   withCoachCalendarSessionDate,
 } from '../lib/coach-calendar.ts';
@@ -91,6 +92,32 @@ assert.equal(optimisticDays[1].sessions[0].date, '2026-08-12');
 const rolledBackDays = withCoachCalendarSessionDate(optimisticDays, sessionToMove, '2026-08-11');
 assert.deepEqual(rolledBackDays.map((day) => day.sessions.length), [2, 0]);
 assert.equal(rolledBackDays.flatMap((day) => day.sessions).filter((session) => session.workout_id === 7).length, 1);
+
+const summaryDays = [
+  { date: '2026-09-25', sessions: [{ workout_id: 31, status: 'completed' }] },
+  { date: '2026-09-28', sessions: [{ workout_id: 32, status: 'assigned' }] },
+  { date: '2026-09-30', sessions: [{ workout_id: 33, status: 'draft' }] },
+  { date: '2026-10-01', sessions: [{ workout_id: 34, status: 'draft' }] },
+];
+assert.deepEqual(summarizeCoachCalendarMonth(fromLocalYMD('2026-09-30'), summaryDays), {
+  sessions: 3, completed: 1, upcoming: 1, draft: 1,
+});
+assert.deepEqual(summarizeCoachCalendarMonth(fromLocalYMD('2026-10-01'), summaryDays), {
+  sessions: 1, completed: 0, upcoming: 0, draft: 1,
+});
+const withSecondDraft = summaryDays.map((day) => day.date === '2026-09-28'
+  ? { ...day, sessions: [...day.sessions, { workout_id: 35, status: 'draft' }] }
+  : day);
+assert.equal(summarizeCoachCalendarMonth(fromLocalYMD('2026-09-30'), withSecondDraft).draft, 2);
+assert.equal(summarizeCoachCalendarMonth(fromLocalYMD('2026-09-30'), [
+  ...withSecondDraft,
+  { date: '2026-09-29', sessions: [{ workout_id: 33, status: 'draft' }] },
+]).draft, 2, 'a canonical Session ID is counted once');
+const movedOutsideMonth = withSecondDraft.map((day) => ({
+  ...day,
+  sessions: day.sessions.filter((session) => session.workout_id !== 33),
+}));
+assert.equal(summarizeCoachCalendarMonth(fromLocalYMD('2026-09-30'), movedOutsideMonth).draft, 1);
 
 assert.equal(calendarSessionMatchesStatus({ status: 'draft' }, 'needs'), true);
 assert.equal(calendarSessionMatchesStatus({ status: 'assigned', needs_session_review: true }, 'needs'), true);
