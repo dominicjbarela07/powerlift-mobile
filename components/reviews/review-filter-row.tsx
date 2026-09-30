@@ -1,9 +1,9 @@
 import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Pressable } from 'react-native';
 
 import { Text } from '@/components/ui/sl-text';
-import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
+import { SLColors, SLSpacing } from '@/constants/theme';
 
 export type ReviewFilterOption = { value: string; label: string };
 
@@ -18,10 +18,19 @@ export function ReviewFilterRow({
   onSelect: (value: string) => void;
   accessibilityLabel: string;
 }) {
+  const scrollRef = useRef<ScrollView>(null);
+  const positions = useRef<Record<string, number>>({});
+
+  useEffect(() => {
+    const x = positions.current[selected];
+    if (x !== undefined) scrollRef.current?.scrollTo({ x: Math.max(0, x - 12), animated: false });
+  }, [selected, options]);
+
   return (
     <ScrollView
       accessibilityLabel={accessibilityLabel}
       horizontal
+      ref={scrollRef}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.row}
     >
@@ -32,6 +41,11 @@ export function ReviewFilterRow({
             key={option.value}
             accessibilityRole="button"
             accessibilityState={{ selected: active }}
+            onLayout={(event) => {
+              const x = event.nativeEvent.layout.x;
+              positions.current[option.value] = x;
+              if (active) scrollRef.current?.scrollTo({ x: Math.max(0, x - 12), animated: false });
+            }}
             onPress={() => onSelect(option.value)}
             style={({ pressed }) => [styles.chip, active && styles.chipActive, pressed && styles.pressed]}
           >

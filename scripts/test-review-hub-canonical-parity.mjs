@@ -15,6 +15,7 @@ function assertIncludes(source, values, label) {
 const layout = read('app/(tabs)/_layout.tsx');
 const home = read('app/(tabs)/coach-videos.tsx');
 const list = read('components/reviews/review-list-screen.tsx');
+const reviewCard = read('components/reviews/review-item-card.tsx');
 const session = read('app/(tabs)/coach-session-review.tsx');
 const video = read('app/(tabs)/coach-video-review.tsx');
 const repository = read('app/(tabs)/coach-video-archive.tsx');
@@ -33,10 +34,12 @@ assertIncludes(home, [
   'Team Reviews',
   'Video Repository',
   'Past Work',
-  'Needs Review',
+  'NEEDS REVIEW',
   'Recent Review History',
   'Filter reviews by athlete',
   'createLatestRequestManager',
+  '(payload?.latest_queue || []).map',
+  'There are no pending reviews in this scope.',
 ], 'Review Hub home');
 
 assertIncludes(list, [
@@ -46,7 +49,15 @@ assertIncludes(list, [
   'Filter by athlete',
   'Filter by review type',
   'createLatestRequestManager',
+  'router.back()',
 ], 'Review queue and history');
+
+assertIncludes(reviewCard, [
+  'item.summary',
+  'item.actual',
+  'item.reviewer_name',
+  'onPress={onPress}',
+], 'Review row evidence and action');
 
 assertIncludes(session, [
   'getCoachSessionReview',
@@ -78,7 +89,7 @@ assertIncludes(completedRecap, [
   'CoachTools',
   'CanonicalMovementArtwork',
   'FloatingDisplayUnitRegistration',
-  'Open exact governed history',
+  'Open exact Movement History',
 ], 'Canonical role-aware post-Session surface');
 assertIncludes(completedRecap, [
   'accessibilityRole="button"',

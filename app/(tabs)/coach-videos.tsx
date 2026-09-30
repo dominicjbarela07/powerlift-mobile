@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 
 import RefreshScreen from '@/components/refresh-screen';
 import { ReviewFilterRow } from '@/components/reviews/review-filter-row';
 import { ReviewItemCard } from '@/components/reviews/review-item-card';
 import { AthleteCoachingScratchpadTrigger } from '@/components/coach-mobile/AthleteCoachingScratchpad';
+import { SLMotionPressable } from '@/components/ui/sl-motion';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import {
@@ -53,33 +55,6 @@ function openReview(
   } else {
     router.push({ pathname: '/(tabs)/coach-session-review', params: { workoutId: String(item.source_id) } } as any);
   }
-}
-
-function SummaryCard({
-  icon,
-  title,
-  value,
-  detail,
-  onPress,
-}: {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
-  title: string;
-  value: string;
-  detail: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.summaryCard, pressed && styles.pressed]}>
-      <View style={styles.summaryIcon}>
-        <Ionicons name={icon} color={SLColors.accentViolet} size={23} />
-      </View>
-      <View style={styles.summaryCopy}>
-        <Text style={styles.summaryTitle}>{title}</Text>
-        <Text style={styles.summaryValue}>{value}</Text>
-        <Text numberOfLines={2} style={styles.summaryDetail}>{detail}</Text>
-      </View>
-    </Pressable>
-  );
 }
 
 export default function CoachReviewHubScreen() {
@@ -137,6 +112,8 @@ export default function CoachReviewHubScreen() {
     ? payload?.athletes.find((athlete) => String(athlete.id) === selectedAthlete) || null
     : null;
   const summary = payload?.summary;
+  const queueRoute = { pathname: '/(tabs)/coach-review-queue', params: routeParams } as any;
+  const historyRoute = { pathname: '/(tabs)/coach-review-history', params: routeParams } as any;
 
   return (
     <RefreshScreen
@@ -148,9 +125,10 @@ export default function CoachReviewHubScreen() {
       scrollEventThrottle={120}
     >
       <View style={styles.headerRow}>
-        <View>
+        <View style={styles.headerCopy}>
+          <Text style={styles.eyebrow}>COACH / REVIEWS</Text>
           <Text style={styles.heading}>Review Hub</Text>
-          <Text style={styles.subtitle}>All reviews in one place.</Text>
+          <Text style={styles.subtitle}>Sessions and videos to review.</Text>
         </View>
         <Pressable
           accessibilityRole="button"
@@ -158,18 +136,20 @@ export default function CoachReviewHubScreen() {
           onPress={() => router.push('/(tabs)/coach-video-archive' as any)}
           style={({ pressed }) => [styles.headerAction, pressed && styles.pressed]}
         >
-          <Ionicons name="archive-outline" size={20} color={SLColors.accentMuted} />
-          <Text style={styles.headerActionText}>Repository</Text>
+          <Ionicons name="archive-outline" size={21} color={SLColors.textStrong} />
         </Pressable>
       </View>
 
       {athleteOptions.length > 1 ? (
-        <ReviewFilterRow
-          options={athleteOptions}
-          selected={selectedAthlete}
-          onSelect={setSelectedAthlete}
-          accessibilityLabel="Filter reviews by athlete"
-        />
+        <View style={styles.filterSection}>
+          <Text style={styles.filterLabel}>{selectedAthlete ? 'ATHLETE REVIEWS' : 'TEAM REVIEWS'}</Text>
+          <ReviewFilterRow
+            options={athleteOptions}
+            selected={selectedAthlete}
+            onSelect={setSelectedAthlete}
+            accessibilityLabel="Filter reviews by athlete"
+          />
+        </View>
       ) : null}
 
       {scratchpadAthlete ? (
@@ -192,88 +172,102 @@ export default function CoachReviewHubScreen() {
 
       {summary ? (
         <>
-          <View style={styles.summaryGrid}>
-            <SummaryCard
-              icon="file-tray-full-outline"
-              title="Review Queue"
-              value={String(summary.pending_total)}
-              detail={`${summary.pending_sessions} Session · ${summary.pending_videos} video`}
-              onPress={() => router.push({ pathname: '/(tabs)/coach-review-queue', params: routeParams } as any)}
+          <View style={styles.overview}>
+            <LinearGradient
+              colors={['#20122D', '#100D19', '#090A10']}
+              end={{ x: 1, y: 1 }}
+              start={{ x: 0, y: 0 }}
+              style={StyleSheet.absoluteFillObject}
             />
-            <SummaryCard
-              icon="people-outline"
-              title="Team Reviews"
-              value={summary.team_caught_up ? 'Caught up' : `${summary.team_pending} pending`}
-              detail={summary.team_follow_up ? `${summary.team_follow_up} follow-up` : 'No follow-up waiting'}
-              onPress={() => { setSelectedAthlete(''); }}
-            />
-            <SummaryCard
-              icon="videocam-outline"
-              title="Video Repository"
-              value="Browse"
-              detail="Search, filter, revisit"
-              onPress={() => router.push('/(tabs)/coach-video-archive' as any)}
-            />
-            <SummaryCard
-              icon="time-outline"
-              title="Past Work"
-              value="History"
-              detail="Completed reviews"
-              onPress={() => router.push({ pathname: '/(tabs)/coach-review-history', params: routeParams } as any)}
-            />
-          </View>
-
-          <Pressable
-            onPress={() => router.push({ pathname: '/(tabs)/coach-review-queue', params: routeParams } as any)}
-            style={({ pressed }) => [styles.primaryCta, pressed && styles.pressed]}
-          >
-            <View style={styles.primaryIcon}>
-              <Ionicons name="notifications-outline" size={26} color={SLColors.accentViolet} />
-            </View>
-            <View style={styles.primaryCopy}>
-              <Text style={styles.primaryEyebrow}>Needs Review</Text>
-              <Text style={styles.primaryTitle}>{summary.pending_total} pending</Text>
-              <Text style={styles.primaryDetail}>{summary.follow_up} follow-up · {summary.team_pending} team-wide</Text>
-            </View>
-            <View style={styles.primaryButton}>
-              <Text style={styles.primaryButtonText}>Open Queue</Text>
-              <Ionicons name="chevron-forward" size={18} color={SLColors.white} />
-            </View>
-          </Pressable>
-
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Review Queue</Text>
-            <Pressable onPress={() => router.push({ pathname: '/(tabs)/coach-review-queue', params: routeParams } as any)}>
-              <Text style={styles.sectionLink}>View all</Text>
-            </Pressable>
-          </View>
-          <View style={styles.list}>
-            {(payload?.latest_queue || []).map((item, index) => (
-              <ReviewItemCard
-                key={item.key}
-                item={item}
-                compact
-                onPress={() => openReview(router, item, {
-                  kind: 'hub',
-                  athleteId: selectedAthlete ? Number(selectedAthlete) : undefined,
-                  section: 'queue',
-                  scrollY: scrollYRef.current,
-                  queuePosition: index,
-                })}
-              />
-            ))}
-            {!payload?.latest_queue?.length ? (
-              <View style={styles.emptyState}>
-                <Ionicons name="checkmark-circle-outline" size={30} color={SLColors.success} />
-                <Text style={styles.emptyTitle}>All caught up</Text>
-                <Text style={styles.emptyText}>There are no pending reviews in this scope.</Text>
+            <View style={styles.overviewTop}>
+              <View style={styles.overviewCopy}>
+                <Text style={styles.overviewEyebrow}>NEEDS REVIEW</Text>
+                <Text style={styles.overviewTitle}>
+                  {summary.pending_total ? `${summary.pending_total} waiting` : 'All caught up'}
+                </Text>
+                <Text style={styles.overviewDetail}>
+                  {summary.pending_total
+                    ? 'Sessions and videos ready for feedback.'
+                    : 'Nothing needs a review right now.'}
+                </Text>
               </View>
+              <View style={[styles.overviewSymbol, !summary.pending_total && styles.overviewSymbolDone]}>
+                <Ionicons
+                  name={summary.pending_total ? 'file-tray-full-outline' : 'checkmark'}
+                  size={29}
+                  color={summary.pending_total ? SLColors.accentMuted : SLColors.success}
+                />
+              </View>
+            </View>
+            <View style={styles.overviewMetrics}>
+                <View style={styles.overviewMetric}>
+                  <Text style={styles.metricNumber}>{summary.pending_sessions}</Text>
+                  <Text style={styles.metricLabel}>SESSIONS</Text>
+                </View>
+                <View style={styles.metricDivider} />
+                <View style={styles.overviewMetric}>
+                  <Text style={styles.metricNumber}>{summary.pending_videos}</Text>
+                  <Text style={styles.metricLabel}>VIDEOS</Text>
+                </View>
+                <View style={styles.metricDivider} />
+                <View style={styles.overviewMetric}>
+                  <Text style={styles.metricNumber}>{summary.follow_up}</Text>
+                  <Text style={styles.metricLabel}>FOLLOW-UP</Text>
+                </View>
+            </View>
+            {selectedAthlete ? (
+              <Text style={styles.teamContext}>
+                Team Reviews · {summary.team_pending} pending · {summary.team_follow_up} follow-up
+              </Text>
             ) : null}
+            <SLMotionPressable
+              accessibilityLabel="Open Review Queue"
+              accessibilityRole="button"
+              onPress={() => router.push(queueRoute)}
+              style={[styles.overviewAction, !summary.pending_total && styles.overviewActionQuiet]}
+            >
+              <Text style={[styles.overviewActionText, !summary.pending_total && styles.overviewActionTextQuiet]}>
+                Open Review Queue
+              </Text>
+              <Ionicons name="arrow-forward" size={19} color={summary.pending_total ? SLColors.textStrong : SLColors.accentMuted} />
+            </SLMotionPressable>
           </View>
+
+          <>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Review Queue</Text>
+                <Pressable accessibilityRole="button" onPress={() => router.push(queueRoute)}>
+                  <Text style={styles.sectionLink}>View all</Text>
+                </Pressable>
+              </View>
+              <View style={styles.list}>
+                {(payload?.latest_queue || []).map((item, index) => (
+                  <ReviewItemCard
+                    key={item.key}
+                    item={item}
+                    compact
+                    onPress={() => openReview(router, item, {
+                      kind: 'hub',
+                      athleteId: selectedAthlete ? Number(selectedAthlete) : undefined,
+                      section: 'queue',
+                      scrollY: scrollYRef.current,
+                      queuePosition: index,
+                    })}
+                  />
+                ))}
+                {!payload?.latest_queue?.length ? (
+                  <View style={styles.emptyState}>
+                    <Ionicons name="checkmark-circle-outline" size={30} color={SLColors.success} />
+                    <Text style={styles.emptyTitle}>All caught up</Text>
+                    <Text style={styles.emptyText}>There are no pending reviews in this scope.</Text>
+                  </View>
+                ) : null}
+              </View>
+            </>
 
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Recent Review History</Text>
-            <Pressable onPress={() => router.push({ pathname: '/(tabs)/coach-review-history', params: routeParams } as any)}>
+            <Pressable accessibilityRole="button" onPress={() => router.push(historyRoute)}>
               <Text style={styles.sectionLink}>View all</Text>
             </Pressable>
           </View>
@@ -297,21 +291,32 @@ export default function CoachReviewHubScreen() {
             ) : null}
           </View>
 
-          <View style={styles.teamCard}>
-            <View style={styles.summaryIcon}>
-              <Ionicons name="people-outline" size={23} color={SLColors.accentViolet} />
-            </View>
-            <View style={styles.summaryCopy}>
-              <Text style={styles.summaryTitle}>Team Reviews</Text>
-              <Text style={[styles.summaryValue, summary.team_caught_up && styles.successText]}>
-                {summary.team_caught_up ? 'All caught up' : `${summary.team_pending} pending`}
-              </Text>
-            </View>
-            <Ionicons
-              name={summary.team_caught_up ? 'checkmark-circle' : 'alert-circle-outline'}
-              size={30}
-              color={summary.team_caught_up ? SLColors.success : SLColors.warning}
-            />
+          <View style={styles.destinations}>
+            <Text style={styles.destinationsLabel}>MORE REVIEW WORK</Text>
+            <SLMotionPressable
+              accessibilityRole="button"
+              onPress={() => router.push('/(tabs)/coach-video-archive' as any)}
+              style={styles.destinationRow}
+            >
+              <Ionicons name="videocam-outline" size={21} color={SLColors.accentMuted} />
+              <View style={styles.destinationCopy}>
+                <Text style={styles.destinationTitle}>Video Repository</Text>
+                <Text style={styles.destinationDetail}>Search and revisit submitted videos</Text>
+              </View>
+              <Ionicons name="arrow-forward" size={19} color={SLColors.textMuted} />
+            </SLMotionPressable>
+            <SLMotionPressable
+              accessibilityRole="button"
+              onPress={() => router.push(historyRoute)}
+              style={styles.destinationRow}
+            >
+              <Ionicons name="time-outline" size={21} color={SLColors.accentMuted} />
+              <View style={styles.destinationCopy}>
+                <Text style={styles.destinationTitle}>Past Work</Text>
+                <Text style={styles.destinationDetail}>All completed reviews</Text>
+              </View>
+              <Ionicons name="arrow-forward" size={19} color={SLColors.textMuted} />
+            </SLMotionPressable>
           </View>
         </>
       ) : null}
@@ -320,61 +325,73 @@ export default function CoachReviewHubScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { gap: SLSpacing.lg, paddingBottom: 120 },
+  screen: { gap: 22, paddingHorizontal: 20, paddingBottom: 132 },
   headerRow: {
     alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between',
-    paddingHorizontal: SLSpacing.lg, paddingTop: SLSpacing.sm,
+    paddingTop: 18,
   },
-  heading: { color: SLColors.textStrong, fontSize: 34, fontWeight: '800' },
-  subtitle: { color: SLColors.textMuted, fontSize: 16, marginTop: 3 },
+  headerCopy: { flex: 1, minWidth: 0 },
+  eyebrow: { color: SLColors.accentViolet, fontSize: 10, fontWeight: '900', letterSpacing: 2 },
+  heading: { color: SLColors.textStrong, fontSize: 37, fontWeight: '800', letterSpacing: -1.5, marginTop: 7 },
+  subtitle: { color: SLColors.textMuted, fontSize: 14, marginTop: 1 },
   headerAction: {
-    alignItems: 'center', borderColor: SLColors.borderFocus, borderRadius: SLRadius.md,
-    borderWidth: 1, flexDirection: 'row', gap: 7, paddingHorizontal: 13, paddingVertical: 11,
+    alignItems: 'center', backgroundColor: '#13101A', borderColor: SLColors.borderStandard,
+    borderRadius: 14, borderWidth: 1, height: 44, justifyContent: 'center', width: 44,
   },
-  headerActionText: { color: SLColors.accentMuted, fontSize: 14, fontWeight: '700' },
-  summaryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SLSpacing.sm },
-  summaryCard: {
-    alignItems: 'center', backgroundColor: SLColors.object, borderColor: SLColors.borderStandard,
-    borderRadius: SLRadius.lg, borderWidth: 1, flexDirection: 'row', gap: 8,
-    minHeight: 112, paddingHorizontal: 12, paddingVertical: SLSpacing.md, width: '48.5%',
+  filterSection: { gap: 9 },
+  filterLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '800', letterSpacing: 1.4 },
+  overview: {
+    backgroundColor: '#100D19', borderColor: '#4B365E', borderRadius: 20,
+    borderWidth: 1, overflow: 'hidden', padding: 20,
   },
-  summaryIcon: {
-    alignItems: 'center', backgroundColor: SLColors.accentSoft, borderColor: SLColors.borderFocus,
-    borderRadius: SLRadius.md, borderWidth: 1, height: 42, justifyContent: 'center', width: 42,
+  overviewTop: { flexDirection: 'row', gap: 12, justifyContent: 'space-between' },
+  overviewCopy: { flex: 1, minWidth: 0 },
+  overviewEyebrow: { color: SLColors.accentMuted, fontSize: 10, fontWeight: '900', letterSpacing: 1.7 },
+  overviewTitle: { color: SLColors.textStrong, fontSize: 31, fontWeight: '800', letterSpacing: -0.8, marginTop: 7 },
+  overviewDetail: { color: SLColors.textSecondary, fontSize: 13, lineHeight: 19, marginTop: 3 },
+  overviewSymbol: {
+    alignItems: 'center', backgroundColor: 'rgba(170, 98, 255, 0.10)',
+    borderColor: 'rgba(170, 98, 255, 0.34)', borderRadius: 17, borderWidth: 1,
+    height: 52, justifyContent: 'center', width: 52,
   },
-  summaryCopy: { flex: 1, gap: 2, minWidth: 0 },
-  summaryTitle: { color: SLColors.textStrong, fontSize: 14, fontWeight: '700' },
-  summaryValue: { color: SLColors.accentMuted, fontSize: 15, fontWeight: '700' },
-  summaryDetail: { color: SLColors.textMuted, fontSize: 11 },
-  primaryCta: {
-    alignItems: 'center', backgroundColor: SLColors.focus, borderColor: SLColors.borderFocus,
-    borderRadius: SLRadius.lg, borderWidth: 1, flexDirection: 'row', gap: SLSpacing.md, padding: SLSpacing.lg,
+  overviewSymbolDone: { backgroundColor: 'rgba(143, 178, 154, 0.08)', borderColor: 'rgba(143, 178, 154, 0.28)' },
+  overviewMetrics: {
+    alignItems: 'center', borderBottomColor: SLColors.borderSubtle, borderBottomWidth: 1,
+    borderTopColor: SLColors.borderSubtle, borderTopWidth: 1, flexDirection: 'row',
+    marginTop: 21, paddingVertical: 15,
   },
-  primaryIcon: {
-    alignItems: 'center', backgroundColor: SLColors.accentSoft, borderRadius: SLRadius.md,
-    height: 58, justifyContent: 'center', width: 58,
+  overviewMetric: { flex: 1, gap: 4 },
+  metricNumber: { color: SLColors.textStrong, fontSize: 21, fontWeight: '800' },
+  metricLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '800', letterSpacing: 0.8 },
+  metricDivider: { backgroundColor: SLColors.borderSubtle, height: 29, marginRight: 16, width: 1 },
+  teamContext: { color: SLColors.textMuted, fontSize: 12, marginTop: 10 },
+  overviewAction: {
+    alignItems: 'center', backgroundColor: '#7030CC', borderRadius: 12,
+    flexDirection: 'row', justifyContent: 'space-between', marginTop: 16,
+    minHeight: 48, paddingHorizontal: 16,
   },
-  primaryCopy: { flex: 1, gap: 2 },
-  primaryEyebrow: { color: SLColors.accentViolet, fontSize: 12, fontWeight: '800', textTransform: 'uppercase' },
-  primaryTitle: { color: SLColors.textStrong, fontSize: 23, fontWeight: '800' },
-  primaryDetail: { color: SLColors.textMuted, fontSize: 13 },
-  primaryButton: {
-    alignItems: 'center', backgroundColor: '#6928D0', borderRadius: SLRadius.md,
-    flexDirection: 'row', gap: 3, paddingHorizontal: 13, paddingVertical: 12,
+  overviewActionQuiet: {
+    backgroundColor: 'rgba(170, 98, 255, 0.08)',
+    borderColor: 'rgba(170, 98, 255, 0.22)', borderWidth: 1,
   },
-  primaryButtonText: { color: SLColors.white, fontSize: 14, fontWeight: '800' },
-  sectionHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
-  sectionTitle: { color: SLColors.textStrong, fontSize: 20, fontWeight: '800' },
-  sectionLink: { color: SLColors.accentViolet, fontSize: 15, fontWeight: '700' },
-  list: { gap: SLSpacing.sm },
-  emptyState: { alignItems: 'center', gap: 5, paddingVertical: 28 },
-  emptyTitle: { color: SLColors.textStrong, fontSize: 18, fontWeight: '700' },
-  emptyText: { color: SLColors.textMuted, fontSize: 14, textAlign: 'center' },
-  teamCard: {
-    alignItems: 'center', backgroundColor: SLColors.object, borderColor: SLColors.borderStandard,
-    borderRadius: SLRadius.lg, borderWidth: 1, flexDirection: 'row', gap: SLSpacing.md, padding: SLSpacing.lg,
+  overviewActionText: { color: SLColors.textStrong, fontSize: 15, fontWeight: '800' },
+  overviewActionTextQuiet: { color: SLColors.accentMuted },
+  sectionHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 },
+  sectionTitle: { color: SLColors.textStrong, fontSize: 20, fontWeight: '800', letterSpacing: -0.3 },
+  sectionLink: { color: SLColors.accentMuted, fontSize: 13, fontWeight: '700' },
+  list: { gap: 9, marginTop: -10 },
+  emptyState: { alignItems: 'center', gap: 5, paddingVertical: 20 },
+  emptyTitle: { color: SLColors.textStrong, fontSize: 16, fontWeight: '700' },
+  emptyText: { color: SLColors.textMuted, fontSize: 13 },
+  destinations: { borderTopColor: SLColors.borderSubtle, borderTopWidth: 1, marginTop: 8 },
+  destinationsLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '900', letterSpacing: 1.5, marginTop: 20, marginBottom: 5 },
+  destinationRow: {
+    alignItems: 'center', borderBottomColor: SLColors.borderSubtle, borderBottomWidth: 1,
+    flexDirection: 'row', gap: 14, minHeight: 73,
   },
-  successText: { color: SLColors.success },
+  destinationCopy: { flex: 1, gap: 3 },
+  destinationTitle: { color: SLColors.textStrong, fontSize: 15, fontWeight: '700' },
+  destinationDetail: { color: SLColors.textMuted, fontSize: 12 },
   centerState: { alignItems: 'center', paddingVertical: 50 },
   errorState: {
     alignItems: 'center', backgroundColor: SLColors.dangerSoft, borderColor: SLColors.danger,
