@@ -325,10 +325,10 @@ export default function CoachReviewHubScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { gap: 22, paddingHorizontal: 20, paddingBottom: 132 },
+  screen: { gap: 22, paddingBottom: 132 },
   headerRow: {
     alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between',
-    paddingTop: 18,
+    paddingHorizontal: 20, paddingTop: 18,
   },
   headerCopy: { flex: 1, minWidth: 0 },
   eyebrow: { color: SLColors.accentViolet, fontSize: 10, fontWeight: '900', letterSpacing: 2 },
@@ -338,11 +338,11 @@ const styles = StyleSheet.create({
     alignItems: 'center', backgroundColor: '#13101A', borderColor: SLColors.borderStandard,
     borderRadius: 14, borderWidth: 1, height: 44, justifyContent: 'center', width: 44,
   },
-  filterSection: { gap: 9 },
+  filterSection: { gap: 9, paddingHorizontal: 20 },
   filterLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '800', letterSpacing: 1.4 },
   overview: {
     backgroundColor: '#100D19', borderColor: '#4B365E', borderRadius: 20,
-    borderWidth: 1, overflow: 'hidden', padding: 20,
+    borderWidth: 1, marginHorizontal: 20, overflow: 'hidden', padding: 20,
   },
   overviewTop: { flexDirection: 'row', gap: 12, justifyContent: 'space-between' },
   overviewCopy: { flex: 1, minWidth: 0 },
@@ -376,14 +376,14 @@ const styles = StyleSheet.create({
   },
   overviewActionText: { color: SLColors.textStrong, fontSize: 15, fontWeight: '800' },
   overviewActionTextQuiet: { color: SLColors.accentMuted },
-  sectionHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 },
+  sectionHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginTop: 5, paddingHorizontal: 20 },
   sectionTitle: { color: SLColors.textStrong, fontSize: 20, fontWeight: '800', letterSpacing: -0.3 },
   sectionLink: { color: SLColors.accentMuted, fontSize: 13, fontWeight: '700' },
-  list: { gap: 9, marginTop: -10 },
+  list: { gap: 9, marginTop: -10, paddingHorizontal: 20 },
   emptyState: { alignItems: 'center', gap: 5, paddingVertical: 20 },
   emptyTitle: { color: SLColors.textStrong, fontSize: 16, fontWeight: '700' },
   emptyText: { color: SLColors.textMuted, fontSize: 13 },
-  destinations: { borderTopColor: SLColors.borderSubtle, borderTopWidth: 1, marginTop: 8 },
+  destinations: { borderTopColor: SLColors.borderSubtle, borderTopWidth: 1, marginHorizontal: 20, marginTop: 8 },
   destinationsLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '900', letterSpacing: 1.5, marginTop: 20, marginBottom: 5 },
   destinationRow: {
     alignItems: 'center', borderBottomColor: SLColors.borderSubtle, borderBottomWidth: 1,

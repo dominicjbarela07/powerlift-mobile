@@ -140,23 +140,27 @@ export function ReviewListScreen({ mode }: { mode: 'queue' | 'history' }) {
       </View>
 
       <Text style={styles.filterLabel}>ATHLETE</Text>
-      <ReviewFilterRow
-        options={athleteOptions}
-        selected={athleteId}
-        onSelect={setAthleteId}
-        accessibilityLabel="Filter by athlete"
-      />
+      <View style={styles.filterRowFrame}>
+        <ReviewFilterRow
+          options={athleteOptions}
+          selected={athleteId}
+          onSelect={setAthleteId}
+          accessibilityLabel="Filter by athlete"
+        />
+      </View>
       <Text style={styles.filterLabel}>TYPE</Text>
-      <ReviewFilterRow
-        options={[
-          { value: 'all', label: 'All Reviews' },
-          { value: 'session', label: 'Sessions' },
-          { value: 'video', label: 'Videos' },
-        ]}
-        selected={reviewType}
-        onSelect={(value) => setReviewType(value as CoachReviewType)}
-        accessibilityLabel="Filter by review type"
-      />
+      <View style={styles.filterRowFrame}>
+        <ReviewFilterRow
+          options={[
+            { value: 'all', label: 'All Reviews' },
+            { value: 'session', label: 'Sessions' },
+            { value: 'video', label: 'Videos' },
+          ]}
+          selected={reviewType}
+          onSelect={(value) => setReviewType(value as CoachReviewType)}
+          accessibilityLabel="Filter by review type"
+        />
+      </View>
 
       {loading && !payload ? (
         <View style={styles.center}><ActivityIndicator color={SLColors.accentViolet} /></View>
@@ -216,10 +220,10 @@ export function ReviewListScreen({ mode }: { mode: 'queue' | 'history' }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { gap: 13, paddingBottom: 120, paddingHorizontal: 20 },
+  screen: { gap: 13, paddingBottom: 120 },
   header: {
     alignItems: 'center', flexDirection: 'row', gap: 13, marginBottom: 10,
-    paddingTop: 18,
+    paddingHorizontal: 20, paddingTop: 18,
   },
   backButton: {
     alignItems: 'center', backgroundColor: '#13101A', borderColor: SLColors.borderStandard,
@@ -229,16 +233,17 @@ const styles = StyleSheet.create({
   eyebrow: { color: SLColors.accentViolet, fontSize: 10, fontWeight: '900', letterSpacing: 1.6 },
   title: { color: SLColors.textStrong, fontSize: 29, fontWeight: '800', letterSpacing: -0.8, marginTop: 4 },
   subtitle: { color: SLColors.textMuted, fontSize: 13, lineHeight: 19, marginTop: 2 },
-  filterLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '800', letterSpacing: 1.3, marginTop: 5 },
+  filterLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '800', letterSpacing: 1.3, marginTop: 5, paddingHorizontal: 20 },
+  filterRowFrame: { paddingHorizontal: 20 },
   center: { alignItems: 'center', minHeight: 180, justifyContent: 'center' },
   error: {
     alignItems: 'center', backgroundColor: SLColors.dangerSoft, borderColor: SLColors.danger,
-    borderRadius: SLRadius.md, borderWidth: 1, flexDirection: 'row', gap: 8, padding: SLSpacing.md,
+    borderRadius: SLRadius.md, borderWidth: 1, flexDirection: 'row', gap: 8, marginHorizontal: 20, padding: SLSpacing.md,
   },
   errorText: { color: SLColors.danger, flex: 1, fontSize: 14 },
   empty: {
     alignItems: 'center', backgroundColor: '#0D0C13', borderColor: SLColors.borderSubtle,
-    borderRadius: 16, borderWidth: 1, flexDirection: 'row', gap: 13, marginTop: 11, padding: 17,
+    borderRadius: 16, borderWidth: 1, flexDirection: 'row', gap: 13, marginHorizontal: 20, marginTop: 11, padding: 17,
   },
   emptyIcon: {
     alignItems: 'center', backgroundColor: SLColors.successSoft, borderRadius: 12,
@@ -247,10 +252,10 @@ const styles = StyleSheet.create({
   emptyCopy: { flex: 1, gap: 3 },
   emptyTitle: { color: SLColors.textStrong, fontSize: 16, fontWeight: '700' },
   emptyText: { color: SLColors.textMuted, fontSize: 12, lineHeight: 17 },
-  list: { gap: 9, marginTop: 8 },
+  list: { gap: 9, marginTop: 8, paddingHorizontal: 20 },
   loadMore: {
     alignItems: 'center', backgroundColor: SLColors.object, borderColor: SLColors.borderFocus,
-    borderRadius: SLRadius.md, borderWidth: 1, minHeight: 50, justifyContent: 'center',
+    borderRadius: SLRadius.md, borderWidth: 1, marginHorizontal: 20, minHeight: 50, justifyContent: 'center',
   },
   loadMoreText: { color: SLColors.accentMuted, fontSize: 16, fontWeight: '700' },
   pressed: { opacity: 0.78 },
