@@ -7,7 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Alert, FlatList, Platform, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
+import { AccessibilityInfo, Alert, AppState, FlatList, Platform, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -42,6 +42,7 @@ import {
   monthGridRows,
   selectedAthleteLabel,
   startOfCalendarWeek,
+  summarizeCoachCalendarMonth,
   toLocalYMD,
   withCoachCalendarSessionDate,
   type CoachCalendarStatusFilter,
@@ -276,6 +277,8 @@ export default function CoachCalendarScreen() {
     [anchor, view],
   );
   const loadSequence = useRef(0);
+  const initialOpenAt = useRef(Date.now());
+  const firstUsableLogged = useRef(false);
   const monthPageCacheRef = useRef<Record<string, CalendarDay[]>>({});
   const athleteFilterHydrated = useRef(false);
   const appliedAthleteParamRef = useRef<string | null>(null);
@@ -321,6 +324,8 @@ export default function CoachCalendarScreen() {
 
   const loadCalendar = useCallback(async (silent = false) => {
     const sequence = ++loadSequence.current;
+    const requestAt = Date.now();
+    if (__DEV__) console.log('[CoachCalendarTrace]', { phase: 'request', sequence, since_mount_ms: requestAt - initialOpenAt.current, view, month: coachCalendarMonthKey(anchor) });
     if (silent) setRefreshing(true);
     else setLoading(true);
     setError(null);
@@ -332,9 +337,10 @@ export default function CoachCalendarScreen() {
         include_completed: '1',
       });
       const response = await fetchJson<CalendarResponse>(`/coach/mobile/calendar?${query}`, { method: 'GET' });
+      if (__DEV__) console.log('[CoachCalendarTrace]', { phase: 'response', sequence, request_ms: Date.now() - requestAt, days: response.json?.days?.length ?? 0, ok: response.ok && response.json?.ok });
       if (sequence !== loadSequence.current) return;
       if (!response.ok || !response.json?.ok) {
-        setError(response.json?.error || `Could not load Calendar. (${response.status})`);
+        setError('Please try again.');
         return;
       }
       setData(response.json);
@@ -343,7 +349,7 @@ export default function CoachCalendarScreen() {
         replaceMonthPageCache({ ...monthPageCacheRef.current, [key]: response.json.days || [] });
       }
     } catch {
-      if (sequence === loadSequence.current) setError('Network error. Pull to refresh or try again.');
+      if (sequence === loadSequence.current) setError('Check your connection and try again.');
     } finally {
       if (sequence === loadSequence.current) {
         setLoading(false);
@@ -352,7 +358,19 @@ export default function CoachCalendarScreen() {
     }
   }, [anchor, lockedAthleteId, replaceMonthPageCache, requestRange.end, requestRange.start, view]);
 
-  useFocusEffect(useCallback(() => { void loadCalendar(false); }, [loadCalendar]));
+  useFocusEffect(useCallback(() => {
+    if (__DEV__) console.log('[CoachCalendarTrace]', { phase: 'focus', since_mount_ms: Date.now() - initialOpenAt.current });
+    void loadCalendar(false);
+    return () => { if (__DEV__) console.log('[CoachCalendarTrace]', { phase: 'blur', since_mount_ms: Date.now() - initialOpenAt.current }); };
+  }, [loadCalendar]));
+
+  useEffect(() => {
+    if (!__DEV__) return undefined;
+    const subscription = AppState.addEventListener('change', (state) => {
+      console.log('[CoachCalendarTrace]', { phase: 'app_state', state, since_mount_ms: Date.now() - initialOpenAt.current });
+    });
+    return () => subscription.remove();
+  }, []);
 
   useEffect(() => {
     if (view !== 'month' || !data) return undefined;
@@ -435,21 +453,20 @@ export default function CoachCalendarScreen() {
     { value: 'all', label: 'All Athletes' },
     ...athletes.map((athlete) => ({ value: String(athlete.id), label: athlete.name })),
   ], [athletes]);
-  const monthPrefix = coachCalendarMonthKey(anchor);
   const monthPages = useMemo(() => coachCalendarMonthWindow(anchor).map((month) => ({
     anchor: month,
     days: filterCalendarDays(monthPageCache[coachCalendarMonthKey(month)] || []),
   })), [anchor, filterCalendarDays, monthPageCache]);
   const currentMonthPage = monthPages[1]?.days.length ? monthPages[1].days : rangeDays;
-  const activeMonthDays = useMemo(
-    () => currentMonthPage.filter((day) => day.date.startsWith(monthPrefix)),
-    [currentMonthPage, monthPrefix],
-  );
-  const monthSessions = useMemo(() => activeMonthDays.flatMap((day) => day.sessions), [activeMonthDays]);
-  const visibleSessionCount = monthSessions.length;
-  const visibleCompletedCount = monthSessions.filter((session) => ['completed', 'logged', 'done'].includes(String(session.status || '').toLowerCase())).length;
-  const visibleDraftCount = monthSessions.filter((session) => String(session.status || '').toLowerCase() === 'draft').length;
-  const visibleUpcomingCount = monthSessions.filter((session) => ['assigned', 'in_progress'].includes(String(session.status || '').toLowerCase())).length;
+  const selectMonthDate = useCallback((date: string) => {
+    setSelectedDate(date);
+    if (date.slice(0, 7) !== coachCalendarMonthKey(anchor)) setAnchor(fromLocalYMD(date));
+  }, [anchor]);
+  const markFirstUsable = useCallback(() => {
+    if (firstUsableLogged.current) return;
+    firstUsableLogged.current = true;
+    if (__DEV__) console.log('[CoachCalendarTrace]', { phase: 'first_usable', since_mount_ms: Date.now() - initialOpenAt.current });
+  }, []);
 
   const shiftAnchor = useCallback((direction: number) => {
     if (view === 'month') {
@@ -658,7 +675,12 @@ export default function CoachCalendarScreen() {
   }, [router]);
 
   if (loading && !data) {
-    return <SLScreen edges="none"><View style={styles.center}><SLLoadingState title="Loading Calendar" message="Building the coaching week…" /></View></SLScreen>;
+    return <SLScreen disableEntranceMotion edges="none" padded={false}>
+      <View style={styles.screen}>
+        <View style={styles.compactHeader}><Text typographyRole="pageTitle" style={styles.title}>Calendar</Text></View>
+        <View style={styles.center}><SLLoadingState title="Loading Calendar" message="Preparing your coaching Calendar…" /></View>
+      </View>
+    </SLScreen>;
   }
 
   const rangeLabel = view === 'month'
@@ -670,7 +692,7 @@ export default function CoachCalendarScreen() {
     : STATUS_FILTERS.find((filter) => filter.value === statusFilter)?.label || 'All Statuses';
 
   return (
-    <SLScreen edges="none" padded={false}>
+    <SLScreen disableEntranceMotion edges="none" padded={false}>
       <View style={styles.screen}>
         <View style={styles.compactHeader}>
           <View style={styles.headerIdentityRow}>
@@ -740,19 +762,14 @@ export default function CoachCalendarScreen() {
 
         {error ? <SLErrorState title="Could not load Calendar" message={error} actionLabel="Try Again" onActionPress={() => loadCalendar(false)} /> : null}
 
-        {!error && view === 'month' ? (
+        {data && view === 'month' ? (
           <MonthBoard
             anchor={anchor}
             athleteById={athleteById}
             days={currentMonthPage}
             key={toLocalYMD(range.start)}
             monthPages={monthPages}
-            monthSummary={{
-              completed: visibleCompletedCount,
-              draft: visibleDraftCount,
-              sessions: visibleSessionCount,
-              upcoming: visibleUpcomingCount,
-            }}
+            onFirstUsable={markFirstUsable}
             moving={moving}
             onAdd={(day) => { setItemDraft(emptyDraft(day.date)); setCreateOpen(true); }}
             onCustomPress={setSelectedCustomItem}
@@ -760,7 +777,7 @@ export default function CoachCalendarScreen() {
             onMonthPage={shiftAnchor}
             onMove={moveSession}
             onRefresh={() => loadCalendar(true)}
-            onSelectDate={setSelectedDate}
+            onSelectDate={selectMonthDate}
             onSessionPress={setSelectedSession}
             reduceMotion={reduceMotion}
             refreshing={refreshing}
@@ -769,7 +786,7 @@ export default function CoachCalendarScreen() {
             today={data?.today || toLocalYMD(new Date())}
           />
         ) : null}
-        {!error && view === 'agenda' ? (
+        {data && view === 'agenda' ? (
           <AgendaBoard athleteById={athleteById} days={rangeDays} onCustomPress={setSelectedCustomItem} onDayAdd={(day) => { setItemDraft(emptyDraft(day.date)); setCreateOpen(true); }} onMeetPress={openMeetDay} onRefresh={() => loadCalendar(true)} onSelectDate={setSelectedDate} onSessionPress={setSelectedSession} refreshing={refreshing} selectedDate={selectedDate} today={data?.today || toLocalYMD(new Date())} />
         ) : null}
 
@@ -1262,18 +1279,18 @@ function MeetChip({ meet }: { meet: CalendarMeet }) {
 
 type MonthDragState = { session: CalendarSession; targetDate: string | null } | null;
 
-function MonthBoard({ anchor, athleteById, days, monthPages, monthSummary, refreshing, moving, reduceMotion, selectedDate, singleAthleteMode, today, onRefresh, onSelectDate, onSessionPress, onCustomPress, onMeetPress, onAdd, onMonthPage, onMove }: {
+function MonthBoard({ anchor, athleteById, days, monthPages, refreshing, moving, reduceMotion, selectedDate, singleAthleteMode, today, onFirstUsable, onRefresh, onSelectDate, onSessionPress, onCustomPress, onMeetPress, onAdd, onMonthPage, onMove }: {
   anchor: Date;
   athleteById: ReadonlyMap<number, CalendarAthlete>;
   days: CalendarDay[];
   monthPages: Array<{ anchor: Date; days: CalendarDay[] }>;
-  monthSummary: { sessions: number; completed: number; upcoming: number; draft: number };
   refreshing: boolean;
   moving: boolean;
   reduceMotion: boolean;
   selectedDate: string;
   singleAthleteMode: boolean;
   today: string;
+  onFirstUsable: () => void;
   onRefresh: () => void;
   onSelectDate: (date: string) => void;
   onSessionPress: (session: CalendarSession) => void;
@@ -1295,6 +1312,7 @@ function MonthBoard({ anchor, athleteById, days, monthPages, monthSummary, refre
   const pagerX = useSharedValue(0);
   const [dragState, setDragState] = useState<MonthDragState>(null);
   const [pageWidth, setPageWidth] = useState(0);
+  const currentMonthSummary = useMemo(() => summarizeCoachCalendarMonth(anchor, days), [anchor, days]);
   const selectedDay = days.find((day) => day.date === selectedDate)
     || days.find((day) => fromLocalYMD(day.date).getMonth() === anchor.getMonth() && allDayItems(day).length)
     || days.find((day) => fromLocalYMD(day.date).getMonth() === anchor.getMonth())
@@ -1384,9 +1402,19 @@ function MonthBoard({ anchor, athleteById, days, monthPages, monthSummary, refre
   }));
   const pagerStyle = useAnimatedStyle(() => ({ transform: [{ translateX: pagerX.value }] }));
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (pageWidth > 0) pagerX.value = -pageWidth;
   }, [anchor, pageWidth, pagerX]);
+
+  const onPagerLayout = useCallback(({ nativeEvent }: { nativeEvent: { layout: { width: number } } }) => {
+    const width = nativeEvent.layout.width;
+    if (width <= 0) return;
+    // The first frame contains the current month. Position the three-page
+    // track before making it visible so an empty neighbor cannot flash.
+    pagerX.value = -width;
+    setPageWidth((previous) => previous === width ? previous : width);
+    onFirstUsable();
+  }, [onFirstUsable, pagerX]);
 
   const monthPagingGesture = useMemo(() => Gesture.Pan()
     .enabled(!dragState && pageWidth > 0)
@@ -1415,13 +1443,26 @@ function MonthBoard({ anchor, athleteById, days, monthPages, monthSummary, refre
     <ScrollView refreshControl={<RefreshControl enabled={!dragState} refreshing={refreshing} onRefresh={onRefresh} tintColor={SLColors.accentViolet} />} scrollEnabled={!dragState} style={styles.viewScroll} contentContainerStyle={styles.monthContent}>
       <GestureDetector gesture={monthPagingGesture}>
         <View
-          onLayout={({ nativeEvent }) => setPageWidth(nativeEvent.layout.width)}
+          onLayout={onPagerLayout}
           style={styles.monthPagerViewport}
           testID="coach-calendar-month-pager"
         >
-          <Animated.View style={[styles.monthPagerTrack, pageWidth ? { width: pageWidth * 3 } : null, pagerStyle]}>
+          {pageWidth <= 0 ? (
+            <MonthGridPage
+              anchor={anchor}
+              cellRefs={cellRefs}
+              days={days}
+              dragState={dragState}
+              monthSummary={currentMonthSummary}
+              onSelectDate={onSelectDate}
+              selectedDate={selectedDate}
+              singleAthleteMode={singleAthleteMode}
+              today={today}
+            />
+          ) : <Animated.View style={[styles.monthPagerTrack, { width: pageWidth * 3 }, pagerStyle]}>
             {monthPages.map((page, pageIndex) => {
               const isCurrent = pageIndex === 1;
+              const pageDays = isCurrent ? days : page.days;
               return (
                 <View
                   key={coachCalendarMonthKey(page.anchor)}
@@ -1431,9 +1472,9 @@ function MonthBoard({ anchor, athleteById, days, monthPages, monthSummary, refre
                   <MonthGridPage
                     anchor={page.anchor}
                     cellRefs={isCurrent ? cellRefs : undefined}
-                    days={page.days}
+                    days={pageDays}
                     dragState={isCurrent ? dragState : null}
-                    monthSummary={isCurrent ? monthSummary : summarizeMonth(page.anchor, page.days)}
+                    monthSummary={isCurrent ? currentMonthSummary : summarizeCoachCalendarMonth(page.anchor, pageDays)}
                     onSelectDate={onSelectDate}
                     selectedDate={selectedDate}
                     singleAthleteMode={singleAthleteMode}
@@ -1442,7 +1483,7 @@ function MonthBoard({ anchor, athleteById, days, monthPages, monthSummary, refre
                 </View>
               );
             })}
-          </Animated.View>
+          </Animated.View>}
         </View>
       </GestureDetector>
       {selectedDay ? <View style={styles.monthAgenda}>
@@ -1498,17 +1539,6 @@ function completeMonthPageDays(anchor: Date, days: CalendarDay[]) {
       custom_items: [],
     };
   });
-}
-
-function summarizeMonth(anchor: Date, days: CalendarDay[]) {
-  const prefix = coachCalendarMonthKey(anchor);
-  const sessions = days.filter((day) => day.date.startsWith(prefix)).flatMap((day) => day.sessions);
-  return {
-    sessions: sessions.length,
-    completed: sessions.filter((session) => ['completed', 'logged', 'done'].includes(String(session.status || '').toLowerCase())).length,
-    upcoming: sessions.filter((session) => ['assigned', 'in_progress'].includes(String(session.status || '').toLowerCase())).length,
-    draft: sessions.filter((session) => String(session.status || '').toLowerCase() === 'draft').length,
-  };
 }
 
 function MonthGridPage({ anchor, cellRefs, days, dragState, monthSummary, onSelectDate, selectedDate, singleAthleteMode, today }: {
