@@ -90,6 +90,7 @@ import {
 } from '@/components/ui/floating-control-coordinator';
 import { LoggerWheelPicker } from '@/components/workout-logger/logger-wheel-picker';
 import { SubstitutionConfirmationSheet } from '@/components/workout-logger/substitution-confirmation-sheet';
+import { createHotSwapSubmissionGate, executeActiveSessionHotSwap } from '@/lib/active-session-hot-swap';
 import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { SmartWarmupSheet } from '@/components/workout-logger/smart-warmup-sheet';
 import {
@@ -2980,6 +2981,8 @@ export default function WorkoutViewerScreen() {
   const [swapPickerVisible, setSwapPickerVisible] = useState(false);
   const [swapAccItem, setSwapAccItem] = useState<WorkoutItem | null>(null);
   const [swapAccIdentity, setSwapAccIdentity] = useState<GeneralMovementIdentity | null>(null);
+  const [swapError, setSwapError] = useState<string | null>(null);
+  const hotSwapGateRef = useRef(createHotSwapSubmissionGate());
   const [movementHistoryItem, setMovementHistoryItem] = useState<WorkoutItem | null>(null);
   const [identityPickerItem, setIdentityPickerItem] = useState<WorkoutItem | null>(null);
   const [identityPickerQuery, setIdentityPickerQuery] = useState('');
@@ -3076,6 +3079,7 @@ export default function WorkoutViewerScreen() {
       acceptedPersistedSetLogForItem: acceptedSetEvidenceItemIds.has(Number(it.id)),
     });
     if (!swapAction) return;
+    setSwapError(null);
     setSwapAccItem(it);
     // The programmed/effective identity is context, never a selectable
     // replacement. A deliberate new governed identity is required.
@@ -3107,7 +3111,7 @@ export default function WorkoutViewerScreen() {
     : '';
 
   const saveSwapAcc = async () => {
-    if (!workoutId || !swapAccItem) return;
+    if (!workoutId || !swapAccItem || hotSwapGateRef.current.isWorking()) return;
     if (
       itemHasPersistedSetLogs(swapAccItem)
       || acceptedSetEvidenceItemIds.has(Number(swapAccItem.id))
@@ -3116,6 +3120,7 @@ export default function WorkoutViewerScreen() {
       setSwapAccVisible(false);
       setSwapAccItem(null);
       setSwapAccIdentity(null);
+      setError('This movement has saved Sets and can no longer be swapped.');
       return;
     }
 
@@ -3124,7 +3129,7 @@ export default function WorkoutViewerScreen() {
     const rirStr = String(swapAccForm.rir || '').trim();
 
     if (!swapAccIdentity?.id) {
-      setError('Select a governed movement');
+      setSwapError('Select a movement.');
       return;
     }
 
@@ -3132,7 +3137,7 @@ export default function WorkoutViewerScreen() {
     if (setsStr !== '') {
       const n = parseInt(setsStr.replace(/[^0-9]/g, ''), 10);
       if (!Number.isFinite(n) || n < 0) {
-        setError('Invalid sets');
+        setSwapError('Enter a valid number of Sets.');
         return;
       }
       sets = n;
@@ -3143,13 +3148,13 @@ export default function WorkoutViewerScreen() {
       const cleaned = rirStr.replace(/[^0-9.\-]/g, '').replace(/(?!^)-/g, '');
       const n = parseFloat(cleaned);
       if (!Number.isFinite(n)) {
-        setError('Invalid RIR');
+        setSwapError('Enter a valid RIR.');
         return;
       }
       rir = n;
     }
 
-    const sameMovement = Number(resolveLoggerMovementIdentity(swapAccItem).effective?.id) === Number(swapAccIdentity.id);
+    const sameMovement = Number(swapAccItem.movement_definition_id) === Number(swapAccIdentity.id);
     const unchangedPrescription = substitutionAuthority !== 'self_governed' || (
       sets === (swapAccItem.performed_sets ?? swapAccItem.sets ?? null)
       && rir === (swapAccItem.performed_rir_target ?? swapAccItem.rir_target ?? null)
@@ -3168,34 +3173,31 @@ export default function WorkoutViewerScreen() {
     }
 
     const swapOwner = executionScope;
+    if (!hotSwapGateRef.current.begin()) return;
     try {
       setSavingItemId(swapAccItem.id);
-      setError(null);
-
-      const { ok, status, json } = await fetchJson(
-        `${API_BASE}/workouts/mobile/${workoutId}/items/${swapAccItem.id}/swap_acc`,
-        {
-          method: 'POST',
-          body: {
-            movement: swapAccIdentity.display_name,
-            movement_definition_id: swapAccIdentity.id,
-            expected_movement_definition_id: resolveLoggerMovementIdentity(swapAccItem).effective?.id,
-            ...(substitutionAuthority === 'self_governed' ? {
-              sets: sets ?? undefined, reps_text: repsText, rir: rir ?? undefined,
-            } : {}),
-          },
-          auth: true,
-        }
-      );
-
-      if (!ok || !json?.ok) {
-        throw new Error(json?.error || `Failed to swap accessory (HTTP ${status})`);
-      }
+      setSwapError(null);
+      // An older background read must not replace the authoritative mutation.
+      workoutRequestManagerRef.current.cancel();
+      const result = await executeActiveSessionHotSwap({
+        sessionId: Number(workoutId),
+        itemId: Number(swapAccItem.id),
+        openedMovementId: Number(swapAccItem.movement_definition_id),
+        replacementId: Number(swapAccIdentity.id),
+        replacementName: swapAccIdentity.display_name || '',
+        prescription: substitutionAuthority === 'self_governed'
+          ? { sets, repsText, rir } : null,
+        request: async (path, options) => fetchJson(`${API_BASE}${path}`, {
+          ...options, auth: true,
+        }),
+        trace: __DEV__ ? (event) => console.info('[Session Hot Swap]', event) : undefined,
+      });
 
       if (executionScopeRef.current !== swapOwner) return;
-      let savedItem = json.item as WorkoutItem | undefined;
+      let savedItem = result.item as WorkoutItem;
+      const authoritativeSession = result.session as WorkoutPayload;
       const priorEquipment = swapAccItem.performed_movement_identity;
-      if (sameMovement && priorEquipment?.key?.startsWith('machine_equipment_')
+      if (!result.alreadyApplied && sameMovement && priorEquipment?.key?.startsWith('machine_equipment_')
         && Number(savedItem?.performed_movement_identity?.id) !== Number(priorEquipment.id)) {
         // Older APIs reset equipment when only the prescription changed.
         // Retain the athlete's explicit selection through their existing
@@ -3205,6 +3207,7 @@ export default function WorkoutViewerScreen() {
         });
         if (!retained.ok || !retained.json?.ok
           || Number(retained.json.performed_movement_identity?.id) !== Number(priorEquipment.id)) {
+          hotSwapGateRef.current.end();
           void fetchWorkout({ silent: true, reason: 'manual' });
           throw new Error('Prescription saved, but equipment could not be retained. Choose your equipment again before logging.');
         }
@@ -3224,8 +3227,10 @@ export default function WorkoutViewerScreen() {
             })),
           },
         } : payload;
-        dataRef.current = projectSavedItem(dataRef.current);
-        setData((current) => projectSavedItem(current));
+        // Start from the precondition GET, so all other Session rows are as
+        // current as the server read used for this mutation.
+        dataRef.current = projectSavedItem(authoritativeSession);
+        setData(dataRef.current);
       }
       setSwapAccVisible(false);
       setSwapAccItem(null);
@@ -3233,11 +3238,12 @@ export default function WorkoutViewerScreen() {
       // The accepted response is projected synchronously. Reconciliation is
       // silent and must never launch equipment selection; that gate belongs
       // immediately before the first performed SetLog.
+      hotSwapGateRef.current.end();
       void fetchWorkout({ silent: true, reason: 'manual' });
     } catch (err: any) {
-      console.log('saveSwapAcc error', err);
-      setError(err?.message || 'Error swapping accessory');
+      setSwapError(err?.message || 'Could not swap this movement. Try again.');
     } finally {
+      hotSwapGateRef.current.end();
       setSavingItemId(null);
     }
   };
@@ -6598,6 +6604,7 @@ export default function WorkoutViewerScreen() {
     silent?: boolean;
     reason?: 'initial' | 'foreground' | 'focus' | 'body_recovery' | 'manual' | 'post_set';
   }) => {
+    if (hotSwapGateRef.current.isWorking()) return false;
     if (!workoutId) {
       setError('Missing Session id');
       setLoading(false);
@@ -11058,6 +11065,7 @@ export default function WorkoutViewerScreen() {
         onCancel={() => { setSwapPickerVisible(false); setSwapAccItem(null); }}
         onSelect={(identity) => {
           setSwapAccIdentity(identity as GeneralMovementIdentity);
+          setSwapError(null);
           setSwapPickerVisible(false);
           setSwapAccVisible(true);
         }}
@@ -11090,6 +11098,7 @@ export default function WorkoutViewerScreen() {
       />
 
       <SubstitutionConfirmationSheet
+        error={swapError}
         editablePrescription={substitutionAuthority === 'self_governed'}
         equipmentUnresolved={swapAccIdentity?.requires_equipment_configuration === true}
         onBack={() => {

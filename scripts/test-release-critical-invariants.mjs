@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['live Session Edit, Add, Remove, and Swap persistence', ['scripts/test-active-session-hot-swap.mjs', 'scripts/test-active-session-mutation-backend.mjs']],
   ['Session actions safety hierarchy and composition', ['scripts/test-session-actions-sheet.mjs', 'scripts/test-active-session-composition.mjs']],
   ['dedicated muscle-group navigation artwork', ['scripts/test-muscle-group-navigation-artwork.mjs', 'scripts/test-swap-muscle-thumbnail-framing.mjs']],
   ['complete approved artwork and retired library selection', ['scripts/test-retired-movement-discovery.mjs', 'scripts/test-complete-movement-library-art.mjs']],

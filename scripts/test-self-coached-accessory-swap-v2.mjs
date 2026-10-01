@@ -62,13 +62,13 @@ assert.match(logger, /setSwapAccForm\([\s\S]*performed_sets \?\? it\.sets[\s\S]*
 assert.match(sheet, /label: 'SETS'[\s\S]*label: 'RIR'/, 'canonical wheels retain editable sets and effort');
 assert.match(sheet, /Single[\s\S]*Range[\s\S]*AMRAP/, 'canonical prescription controls retain fixed, range, and AMRAP targets');
 assert.match(sheet, /onPress=\{onResetPrescription\}[\s\S]*Reset to Previous Prescription/, 'reset-to-previous is reachable');
-assert.match(logger, /movement_definition_id: swapAccIdentity\.id[\s\S]*sets: sets[\s\S]*reps_text: repsText[\s\S]*rir: rir/, 'confirmation persists stable movement identity and modified prescription');
+assert.match(logger, /executeActiveSessionHotSwap\(\{[\s\S]*replacementId: Number\(swapAccIdentity\.id\)[\s\S]*prescription: substitutionAuthority === 'self_governed'/, 'confirmation submits the governed identity and prescription through the canonical mutation command');
 assert.doesNotMatch(logger, /savedItem\?\.performed_canonical_movement_identity[\s\S]*openIdentityPicker\(savedItem\)/, 'confirming Swap cannot auto-open equipment');
 assert.doesNotMatch(picker, /openIdentityPicker|onSelect\(identity\)[\s\S]{0,160}equipment/i, 'movement selection cannot auto-open exact equipment configuration');
 assert.match(sheet, /equipmentUnresolved[\s\S]*Choose when ready/, 'equipment may remain unresolved during planning');
 assert.match(logger, /openAccessoryWheel[\s\S]*needsEquipmentSelection\(item\)[\s\S]*openIdentityPicker/, 'single accessory logging enforces equipment before first evidence');
 assert.match(logger, /openSupersetRoundLogger[\s\S]*needsEquipmentSelection\(item\)[\s\S]*openIdentityPicker/, 'superset logging enforces the same first-evidence equipment boundary');
-assert.match(logger, /dataRef\.current = projectSavedItem[\s\S]*setData\(\(current\) => projectSavedItem\(current\)\)[\s\S]*fetchWorkout\(\{ silent: true/, 'accepted swap projects immediately before silent reconciliation');
+assert.match(logger, /dataRef\.current = projectSavedItem\(authoritativeSession\)[\s\S]*setData\(dataRef\.current\)[\s\S]*fetchWorkout\(\{ silent: true/, 'accepted swap projects immediately before silent reconciliation');
 assert.match(sheet, /FROM[\s\S]*previousPrescription[\s\S]*TO[\s\S]*replacementPrescription[\s\S]*Confirm Swap/, 'final review shows both movements and prescriptions before mutation');
 assert.match(logger, /resolveLoggerMovementIdentity\(swapAccItem\)\.effective/, 'history/artwork/logger rendering stays on canonical effective identity');
 
