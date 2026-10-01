@@ -15,7 +15,7 @@ const equipment={id:60002,key:'machine_equipment_prime_selectorized'};
 function harness({changed=false,realSwap=false,legacy=false,restoreFails=false}={}){
  const calls=[],errors=[];
  const item={id:10,movement_identity_contract:1,movement_definition_id:current.id,movement_identity:current,performed_movement_identity:equipment,sets:3,reps_text:'10',rir_target:2,set_logs:[]};
- const ctx={console,workoutId:'8',API_BASE:'http://qa.invalid',swapAccItem:item,swapAccIdentity:realSwap?{...current,id:60003,key:'private_other'}:current,
+ const ctx={console,__DEV__:false,workoutId:'8',API_BASE:'http://qa.invalid',swapAccItem:item,swapAccIdentity:realSwap?{...current,id:60003,key:'private_other'}:current,
   swapAccForm:{sets:changed?'4':'3',rir:'2'},swapRepTarget:accessoryRepTargetFromText('10'),substitutionAuthority:'self_governed',
   itemHasPersistedSetLogs:()=>false,acceptedSetEvidenceItemIds:new Set(),resolveLoggerMovementIdentity,accessoryRepTargetText,accessoryRepTargetFromText,
   executionScope:'user:1:session:8',executionScopeRef:{current:'user:1:session:8'},dataRef:{current:{workout:{accessory_groups:[{items:[item]}]}}},
