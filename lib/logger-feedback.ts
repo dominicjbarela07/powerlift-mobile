@@ -118,6 +118,7 @@ const COMPLETION_EVENT_TYPES = new Set([
 const TRANSIENT_RECOGNITION_EVENT_TYPES = new Set([
   'CORE_WEIGHT_PR',
   'CORE_REP_MAX_PR',
+  'ACCESSORY_REP_MAX_PR',
   'CORE_RPE_PR',
   'CORE_BLOCK_WEIGHT_BEST',
   'CORE_BLOCK_REP_MAX_BEST',
@@ -174,7 +175,7 @@ function canonicalSourceKey(event: LoggerRecognitionEvent): string {
 function isEligibleCoreAccomplishment(event: LoggerRecognitionEvent): boolean {
   return TRANSIENT_RECOGNITION_EVENT_TYPES.has(event.event_type)
     && !COMPLETION_EVENT_TYPES.has(event.event_type)
-    && (event.prior_value != null || event.event_type === 'CORE_REP_MAX_PR' || MAJOR_VOLUME_MILESTONE_EVENT_TYPES.has(event.event_type))
+    && (event.prior_value != null || ['CORE_REP_MAX_PR', 'ACCESSORY_REP_MAX_PR'].includes(event.event_type) || MAJOR_VOLUME_MILESTONE_EVENT_TYPES.has(event.event_type))
     && event.invalidated !== true
     && !event.invalidated_at
     && event.valid !== false;
@@ -183,7 +184,7 @@ function isEligibleCoreAccomplishment(event: LoggerRecognitionEvent): boolean {
 function isEligibleSessionHighlight(event: LoggerRecognitionEvent): boolean {
   return SESSION_HIGHLIGHT_EVENT_TYPES.has(event.event_type)
     && !COMPLETION_EVENT_TYPES.has(event.event_type)
-    && (event.prior_value != null || event.event_type === 'CORE_REP_MAX_PR')
+    && (event.prior_value != null || ['CORE_REP_MAX_PR', 'ACCESSORY_REP_MAX_PR'].includes(event.event_type))
     && event.invalidated !== true
     && !event.invalidated_at
     && event.valid !== false;
@@ -225,7 +226,15 @@ export function loggerFeedbackReducer(state: LoggerFeedbackState, action: Logger
       if (action.replayed || !action.created) return { ...state, submission: { ...state.submission, status: 'idempotent_replay', lastSetLogId: action.setLogId, accomplishmentCount: 0 }, completionBoundary };
       const excluded = new Set([...state.recognition.consumedDeliveryIds, ...state.recognition.displayedDeliveryIds, ...state.recognition.queuedEvents.map(recognitionDeliveryId), state.recognition.currentEvent ? recognitionDeliveryId(state.recognition.currentEvent) : '']);
       const events = selectCelebrationEvents(action.events).filter((event) => !excluded.has(recognitionDeliveryId(event)));
-      const queuedEvents = [...state.recognition.queuedEvents, ...events];
+      const incomingAccessoryKeys = new Set(events
+        .filter((event) => event.event_type === 'ACCESSORY_REP_MAX_PR')
+        .map((event) => `${event.workout_id}:${event.core_movement_key}:${event.comparison_bucket}:${event.evidence?.equipment_configuration_identity_id ?? 'portable'}`));
+      const queuedEvents = [
+        ...state.recognition.queuedEvents.filter((event) =>
+          event.event_type !== 'ACCESSORY_REP_MAX_PR'
+          || !incomingAccessoryKeys.has(`${event.workout_id}:${event.core_movement_key}:${event.comparison_bucket}:${event.evidence?.equipment_configuration_identity_id ?? 'portable'}`)),
+        ...events,
+      ];
       return { ...state, submission: { ...state.submission, status: 'persisted_new_set', lastSetLogId: action.setLogId, accomplishmentCount: events.length }, recognition: { ...state.recognition, status: recognitionStatus(state.recognition.currentEvent, queuedEvents), saveConfirmationVisible: true, queuedEvents }, completionBoundary };
     }
     case 'CANONICAL_COMPLETION_CONFIRMED': return { ...state, completionBoundary: canonicalBoundary(action.completionBoundary) };
@@ -336,10 +345,16 @@ export function recognitionPresentation(event: LoggerRecognitionEvent, displayUn
   const spokenUnit = displayUnit === 'kg' ? 'kilograms' : 'pounds';
   const repCount = Number(event.evidence?.rep_count ?? event.evidence?.actual_reps ?? String(event.comparison_bucket || '').replace(/^reps:/, ''));
   const repMaxTitle = Number.isInteger(repCount) && repCount > 0 ? `${repCount} REP MAX` : 'REP MAX';
+  const accessoryRepMaxTitle = Number.isInteger(repCount) && repCount > 0 ? `${repCount}RM` : 'REP MAX';
   const map: Record<string, { eyebrow: string; accessibilityEyebrow?: string; severity: RecognitionPresentation['severity']; metric: RecognitionMetric }> = {
     CORE_WEIGHT_PR: { eyebrow: 'New weight PR', severity: 'career', metric: 'weight' },
     CORE_REP_MAX_PR: {
       eyebrow: event.prior_value == null ? `${repMaxTitle} ESTABLISHED` : `NEW ${repMaxTitle}`,
+      severity: 'career',
+      metric: 'rep_max',
+    },
+    ACCESSORY_REP_MAX_PR: {
+      eyebrow: event.prior_value == null ? `${accessoryRepMaxTitle} ESTABLISHED` : `NEW ${accessoryRepMaxTitle}`,
       severity: 'career',
       metric: 'rep_max',
     },
@@ -362,12 +377,12 @@ export function recognitionPresentation(event: LoggerRecognitionEvent, displayUn
   };
   const eyebrow = event.event_type === 'CORE_RPE_PR' && mode === 'historical'
     ? 'Movement Efficiency'
-    : event.event_type === 'CORE_REP_MAX_PR' && mode === 'historical'
-    ? (event.prior_value == null ? `${repMaxTitle} ESTABLISHED` : `${repMaxTitle} IMPROVED`)
+    : ['CORE_REP_MAX_PR', 'ACCESSORY_REP_MAX_PR'].includes(event.event_type) && mode === 'historical'
+    ? (event.prior_value == null ? `${event.event_type === 'ACCESSORY_REP_MAX_PR' ? accessoryRepMaxTitle : repMaxTitle} ESTABLISHED` : `${event.event_type === 'ACCESSORY_REP_MAX_PR' ? accessoryRepMaxTitle : repMaxTitle} IMPROVED`)
     : mode === 'historical' ? historicalRecognitionLabel(config.eyebrow) : config.eyebrow;
   const accessibilityEyebrow = event.event_type === 'CORE_RPE_PR' && mode === 'historical'
     ? eyebrow
-    : event.event_type === 'CORE_REP_MAX_PR' && mode === 'historical'
+    : ['CORE_REP_MAX_PR', 'ACCESSORY_REP_MAX_PR'].includes(event.event_type) && mode === 'historical'
     ? eyebrow
     : mode === 'historical'
     ? historicalRecognitionLabel(config.accessibilityEyebrow || config.eyebrow)
@@ -413,7 +428,7 @@ export function recognitionPresentation(event: LoggerRecognitionEvent, displayUn
 }
 
 export function feedbackAnalytics(eventName: string, fields: Record<string, string | number | boolean | null | undefined> = {}) { console.info('[LOGGER_FEEDBACK]', { event_name: eventName, ...fields }); }
-const CAREER_EVENT_TYPES = new Set(['CORE_WEIGHT_PR', 'CORE_REP_MAX_PR']);
+const CAREER_EVENT_TYPES = new Set(['CORE_WEIGHT_PR', 'CORE_REP_MAX_PR', 'ACCESSORY_REP_MAX_PR']);
 const BLOCK_EVENT_TYPES = new Set(['CORE_BLOCK_WEIGHT_BEST', 'CORE_BLOCK_REP_MAX_BEST']);
 export function acceptedSetHapticKind(events: LoggerRecognitionEvent[]): 'career' | 'block' | 'completion' | 'ordinary' { const primary = selectCelebrationEvents(events)[0]; if (primary?.event_type === 'CORE_RPE_PR') return 'block'; if (primary && CAREER_EVENT_TYPES.has(primary.event_type)) return 'career'; if (primary && BLOCK_EVENT_TYPES.has(primary.event_type)) return 'block'; return 'ordinary'; }
 export async function safelyRunHaptic(effect: () => Promise<unknown>): Promise<boolean> { try { await effect(); return true; } catch { return false; } }

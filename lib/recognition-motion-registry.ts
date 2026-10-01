@@ -26,6 +26,7 @@ export type RecognitionMotionConfig = {
 export const CANONICAL_RECOGNITION_MOTION_REGISTRY = {
   CORE_WEIGHT_PR: { primitive: 'record-takeover', workshopEntryId: 'weight-pr', haptics: ['medium-impact', 'success-settle'], reducedMotion: 'final-evidence-only' },
   CORE_REP_MAX_PR: { primitive: 'record-takeover', workshopEntryId: 'rep-max-pr', haptics: ['medium-impact', 'success-settle'], reducedMotion: 'final-evidence-only' },
+  ACCESSORY_REP_MAX_PR: { primitive: 'record-takeover', workshopEntryId: 'rep-max-pr', haptics: ['medium-impact', 'success-settle'], reducedMotion: 'final-evidence-only' },
   CORE_RPE_PR: { primitive: 'movement-efficiency', workshopEntryId: 'rpe-pr', haptics: ['medium-impact', 'success-settle'], reducedMotion: 'final-evidence-only' },
   CORE_SAME_WEIGHT_REP_PR: { primitive: 'record-takeover', workshopEntryId: 'rep-max-pr', haptics: ['medium-impact', 'success-settle'], reducedMotion: 'final-evidence-only' },
   CORE_E1RM_PR: { primitive: 'record-takeover', workshopEntryId: 'weight-pr', haptics: ['medium-impact', 'success-settle'], reducedMotion: 'final-evidence-only' },

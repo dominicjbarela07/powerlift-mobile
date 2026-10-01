@@ -3,6 +3,7 @@ import { isAssistanceLoad } from './performed-load-semantics';
 import { compareMovementPerformance } from './movement-performance-semantics';
 
 export const CANONICAL_PR_EVENT_TYPES = new Set([
+  'ACCESSORY_REP_MAX_PR',
   'CORE_E1RM_PR', 'CORE_WEIGHT_PR', 'CORE_REP_MAX_PR', 'CORE_RPE_PR',
   'CORE_SAME_WEIGHT_REP_PR', 'CORE_BLOCK_E1RM_BEST', 'CORE_BLOCK_WEIGHT_BEST',
   'CORE_BLOCK_REP_MAX_BEST', 'CORE_BLOCK_SAME_WEIGHT_REP_BEST',
@@ -173,6 +174,14 @@ function normalizeRecord(event: Record<string, any>, movement: Record<string, an
 }
 
 function semanticRecordKey(evidence: PersonalBestEvidence) {
+  if (evidence.event.event_type === 'ACCESSORY_REP_MAX_PR') {
+    return [
+      'accessory',
+      evidence.event.evidence?.movement_definition_id,
+      evidence.event.evidence?.equipment_configuration_identity_id ?? 'portable',
+      evidence.record.target_reps ?? '',
+    ].join(':');
+  }
   return [
     evidence.record.source_set?.set_log_id ?? accomplishmentSetLogId(evidence.event) ?? evidence.event.id,
     evidence.record.metric,
@@ -205,6 +214,15 @@ export function buildPersonalBestEvidence<TMovement extends Record<string, any>>
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, evidence);
+      continue;
+    }
+    if (event.event_type === 'ACCESSORY_REP_MAX_PR') {
+      if ((evidence.record.current_value ?? -Infinity) > (existing.record.current_value ?? -Infinity)) {
+        existing.event = event;
+        existing.record = evidence.record;
+        existing.movement = movement;
+      }
+      existing.events.push(event);
       continue;
     }
     existing.events.push(event);
