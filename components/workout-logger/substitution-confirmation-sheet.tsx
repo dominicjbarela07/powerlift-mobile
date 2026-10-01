@@ -46,6 +46,7 @@ type Props = Readonly<{
   rir: string;
   repTarget: AccessoryRepTarget;
   saving?: boolean;
+  error?: string | null;
   onSetsChange: (value: string) => void;
   onRirChange: (value: string) => void;
   onRepTargetChange: (value: AccessoryRepTarget) => void;
@@ -72,6 +73,7 @@ export function SubstitutionConfirmationSheet({
   rir,
   repTarget,
   saving = false,
+  error = null,
   onSetsChange,
   onRirChange,
   onRepTargetChange,
@@ -293,6 +295,7 @@ export function SubstitutionConfirmationSheet({
           </ScrollView>
 
           <View style={styles.footer}>
+            {error ? <Text accessibilityRole="alert" style={styles.errorText}>{error}</Text> : null}
             <TouchableOpacity accessibilityRole="button" disabled={saving} onPress={onCancel} style={styles.cancelButton}>
               <Text maxFontSizeMultiplier={1.25} style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
@@ -381,7 +384,8 @@ const styles = StyleSheet.create({
   equipmentLabel: { color: SLColors.textSubtle, fontSize: 10, lineHeight: 14, letterSpacing: 1, fontFamily: SLFontFamilies.sansBold },
   equipmentValue: { color: SLColors.textStrong, fontSize: 15, lineHeight: 20, fontFamily: SLFontFamilies.sansSemiBold },
   equipmentHint: { marginTop: 2, color: SLColors.textMuted, fontSize: 12, lineHeight: 17, fontFamily: SLFontFamilies.sansMedium },
-  footer: { flexDirection: 'row', alignItems: 'center', gap: SLSpacing.sm, paddingHorizontal: SLSpacing.lg, paddingTop: SLSpacing.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderHairline, backgroundColor: '#030408' },
+  footer: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: SLSpacing.sm, paddingHorizontal: SLSpacing.lg, paddingTop: SLSpacing.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderHairline, backgroundColor: '#030408' },
+  errorText: { width: '100%', color: SLColors.danger, fontSize: 13, lineHeight: 18, fontFamily: SLFontFamilies.sansMedium },
   cancelButton: { minWidth: 82, minHeight: 56, alignItems: 'center', justifyContent: 'center', paddingHorizontal: SLSpacing.md, borderRadius: SLRadius.lg },
   cancelText: { color: SLColors.textSecondary, fontSize: SLTypography.label.fontSize, fontFamily: SLFontFamilies.sansSemiBold },
   confirmButton: { flex: 1, minWidth: 0, minHeight: 58, overflow: 'hidden', borderRadius: SLRadius.lg, ...SLShadows.raised },
