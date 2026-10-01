@@ -2635,7 +2635,8 @@ export default function WorkoutViewerScreen() {
         content: {
           title: 'Rest over', body: 'Time for the next set.',
           data: { kind: 'rest_end', type: 'rest_timer_complete', workout_id: deadline.workoutId,
-            timer_id: deadline.timerId, owner_user_id: deadline.ownerUserId },
+            timer_id: deadline.timerId, owner_user_id: deadline.ownerUserId,
+            scheduled_end_at_ms: deadline.endAtMs },
         },
         trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(deadline.endAtMs) },
       }),

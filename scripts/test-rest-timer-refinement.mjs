@@ -45,7 +45,7 @@ assert.match(workoutRoute, /useSyncExternalStore\(subscribeRestTimerCompletion, 
 assert.match(workoutRoute, /AppState\.addEventListener\('change'[\s\S]*reconcileGlobalRestTimerCompletion\(\)/);
 assert.match(workoutRoute, /onAddRest=\{addRestTime\}/);
 assert.match(workoutRoute, /extendGlobalRestTimer\(timer.timerId, 30\)/);
-assert.match(restTimerPresenter, /isRestTimerNotification\(data\)[\s\S]*shouldShowAlert: !suppressRestEnd/);
+assert.match(restTimerPresenter, /isRestTimerNotification\(data\)[\s\S]*expiryRouter\.routeNotification\([\s\S]*shouldShowBanner: present/);
 assert.match(workoutRoute, /beginGlobalRestTimer\([\s\S]*workoutId,[\s\S]*endAtMs: endAt/);
 assert.doesNotMatch(restTimerRuntime, /persistRestTimerExpiry/);
 assert.doesNotMatch(workoutRoute, /loadRestTimerExpiry/);
