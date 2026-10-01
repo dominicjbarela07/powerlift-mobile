@@ -440,8 +440,8 @@ export function LoggerFeedbackSurface({
   const presentation = useMemo(() => event ? recognitionPresentation(event, displayUnit) : null, [displayUnit, event]);
   const motionConfig = recognitionMotionConfig(event?.event_type);
   const repCount = Number(event?.evidence?.rep_count ?? event?.evidence?.actual_reps ?? String(event?.comparison_bucket || '').replace(/^reps:/, ''));
-  const recordCategory = event?.event_type === 'CORE_REP_MAX_PR' && Number.isInteger(repCount) && repCount > 0
-    ? `${repCount} REP MAX`
+  const recordCategory = ['CORE_REP_MAX_PR', 'ACCESSORY_REP_MAX_PR'].includes(event?.event_type || '') && Number.isInteger(repCount) && repCount > 0
+    ? event?.event_type === 'ACCESSORY_REP_MAX_PR' ? `${repCount}RM` : `${repCount} REP MAX`
     : null;
   const isStrengthPrReplacement = motionConfig?.primitive === 'record-takeover' && presentation != null;
   const isRpeEfficiency = motionConfig?.primitive === 'movement-efficiency' && presentation != null;
@@ -672,10 +672,10 @@ export function LoggerFeedbackSurface({
               <RecordReplacementHero
                 animationKey={recognitionDeliveryId(event)}
                 eyebrow={presentation.eyebrow}
-                movementLabel={event.movement_label || 'Core movement'}
-                previousValue={presentation.detail?.replace(/^Previous\s+/, '') ?? null}
-                nextValue={presentation.value}
-                progression={presentation.progression}
+                movementLabel={event.movement_label || 'Movement'}
+                previousValue={event.event_type === 'ACCESSORY_REP_MAX_PR' && presentation.detail ? `${presentation.detail.replace(/^Previous\s+/, '')} × ${repCount}` : presentation.detail?.replace(/^Previous\s+/, '') ?? null}
+                nextValue={event.event_type === 'ACCESSORY_REP_MAX_PR' ? `${presentation.value} × ${repCount}` : presentation.value}
+                progression={event.event_type === 'ACCESSORY_REP_MAX_PR' ? String(event.evidence?.equipment_label || presentation.progression || '') : presentation.progression}
                 delta={presentation.delta}
                 recordCategory={recordCategory}
                 reduceMotion={reduceMotion}
