@@ -56,6 +56,7 @@ function LoggerWheelColumn({ column, density, grouped, onSettle, reserveSheetLab
   const wheelRef = useRef<ScrollView | null>(null);
   const dragSettleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInteracting = useRef(false);
+  const programmaticTargetIndex = useRef<number | null>(null);
   const { framePadding, rowHeight, visibleRows } = wheelGeometry(density);
   const centerPadding = rowHeight * Math.floor(visibleRows / 2);
   const firstValidValue = column.options.find((option) => option !== '') || column.options[0] || '';
@@ -104,6 +105,7 @@ function LoggerWheelColumn({ column, density, grouped, onSettle, reserveSheetLab
     if (column.disabled) return;
     const nextIndex = Math.max(0, Math.min(column.options.length - 1, selectedIndex + direction));
     if (nextIndex === selectedIndex) return;
+    programmaticTargetIndex.current = nextIndex;
     updateValue(nextIndex);
     wheelRef.current?.scrollTo({ y: nextIndex * rowHeight, animated: true });
     onSettle();
@@ -155,6 +157,7 @@ function LoggerWheelColumn({ column, density, grouped, onSettle, reserveSheetLab
           snapToAlignment="start"
           decelerationRate="normal"
           onScrollBeginDrag={() => {
+            programmaticTargetIndex.current = null;
             isInteracting.current = true;
             if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
           }}
@@ -164,10 +167,17 @@ function LoggerWheelColumn({ column, density, grouped, onSettle, reserveSheetLab
           }}
           onMomentumScrollEnd={(event) => {
             isInteracting.current = false;
-            settleToOffset(event.nativeEvent.contentOffset.y);
+            const targetIndex = programmaticTargetIndex.current;
+            programmaticTargetIndex.current = null;
+            if (targetIndex != null) {
+              wheelRef.current?.scrollTo({ y: targetIndex * rowHeight, animated: false });
+              updateValue(targetIndex);
+              onSettle();
+            } else settleToOffset(event.nativeEvent.contentOffset.y);
           }}
           onScrollEndDrag={(event) => settleAfterQuietDrag(event.nativeEvent.contentOffset.y)}
           onScroll={(event) => {
+            if (!isInteracting.current || programmaticTargetIndex.current != null) return;
             const index = Math.max(0, Math.min(column.options.length - 1, Math.round(event.nativeEvent.contentOffset.y / rowHeight)));
             updateValue(index);
           }}
@@ -184,6 +194,7 @@ function LoggerWheelColumn({ column, density, grouped, onSettle, reserveSheetLab
                 key={`${column.key}-${option || index}`}
                 style={[styles.option, { height: rowHeight }]}
                 onPress={() => {
+                  programmaticTargetIndex.current = index;
                   if (option !== column.value) column.onChange(option);
                   wheelRef.current?.scrollTo({ y: index * rowHeight, animated: true });
                   onSettle();
