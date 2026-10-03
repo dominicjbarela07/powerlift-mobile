@@ -156950,9 +156950,13 @@
   "runtimeSourceProjection": [
     {
       "path": "config/governed-movement-art-taxonomy.json",
-      "testedHash": "925f2b2a72a2fdbea143673ee6e9f46ce25f5be94563dfc8e68a0b013b8f4eaa",
+      "testedHash": "4cecf895c2035b1a65b1ec2d36b8b4ff1c37b39ea1110c92def256b4a51a3aaf",
       "candidateHash": "96829b44057e3fbb88f3be921ca11999742b4a42c7565938c9feef3e6f08cae9",
-      "ownerIntent": "Sep 28 explicit instruction: preserve current TestFlight catalog; do not replace it with older DEV catalog; destination-specific data transfer remains separately governed."
+      "ownerIntent": "Sep 28 explicit instruction: preserve current TestFlight catalog; do not replace it with older DEV catalog; destination-specific data transfer remains separately governed.",
+      "ownerInstruction": "Everything else deterministic:\nFIX IT.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-03-release-constitution.txt",
+      "ownerEvidenceSha256": "085ca631e72e184bb1a2dd19e1ec87157a6998cba6cd821a7b68218f458f46a1",
+      "reason": "DEV retains active enrichment plus exact 69 shipped retired compatibility records; release preserves exact original 567 until its separately authorized catalog promotion."
     }
   ],
   "releaseConstitutionSha256": "4c611ccbb73fef0a37b16bbf0726299eb63e48c19c61a9ab472c32d5a2fbcf2c",
