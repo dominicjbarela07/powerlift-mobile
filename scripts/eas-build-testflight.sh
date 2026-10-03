@@ -34,6 +34,7 @@ if [[ "${head_commit}" != "${upstream_commit}" ]]; then
 fi
 
 export EXPO_PUBLIC_API_BASE="${EXPECTED_API_BASE}"
+export EXPO_PUBLIC_APPROVED_ART_CHANNEL="testflight"
 
 git fetch origin dev/canonical-mobile --quiet
 node scripts/test-release-source-lineage.mjs
@@ -61,6 +62,12 @@ NODE
 
 node scripts/test-testflight-source-parity.mjs --release-projection .
 npm run test:release-critical-invariants
+release_export_dir="$(mktemp -d "${TMPDIR:-/tmp}/strength-ledger-testflight-native.XXXXXX")"
+npx expo export --platform ios --output-dir "${release_export_dir}" --clear
+node scripts/assert-no-dev-artwork-export.mjs "${release_export_dir}"
+node scripts/assert-ota-route-bundle.mjs "${release_export_dir}"
+node scripts/testflight-cumulative-integrity.mjs --export-dir "${release_export_dir}" --require-runtime \
+  --runtime-receipt "${STRENGTH_LEDGER_RUNTIME_RECEIPT:?Actual runtime journey receipt is required}"
 
 echo "TestFlight native release candidate"
 echo "  path: ${actual_root}"

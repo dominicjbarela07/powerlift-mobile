@@ -35,6 +35,7 @@ if [[ -z "${release_message}" ]]; then
 fi
 
 export EXPO_PUBLIC_API_BASE="${EXPECTED_API_BASE}"
+export EXPO_PUBLIC_APPROVED_ART_CHANNEL="testflight"
 export STRENGTH_LEDGER_BACKEND_ROOT="${EXPECTED_BACKEND_ROOT}"
 
 git fetch origin dev/canonical-mobile --quiet
