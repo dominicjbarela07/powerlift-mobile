@@ -75,6 +75,7 @@ export function runDevSupersetGate({root=process.cwd(),devRoot=process.env.STREN
   assert.equal(sha256(fs.readFileSync(path.join(devRoot,'config/protected-testflight-catalog.json'))),baseline.protectedCatalogSnapshotSha256,'Exact shipped catalog metadata disappeared or changed in DEV');
   const dev=gitState(devRoot),candidate=gitState(root),backend=gitState(backendRoot);
   assert.equal(dev.branch,'dev/canonical-mobile','DEV must use its canonical branch');
+  assert.equal(backend.branch,'dev/canonical-backend','Release validation must use canonical DEV backend; Production or a temporary backend is not its source of truth');
   if(requireCleanCandidate) assert.equal(candidate.dirty,false,'Release candidate has dirty/untracked state; create a clean cumulative integration');
   const devFiles=productFiles(devRoot), candidateFiles=productFiles(root);
   const result=compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog:read(devRoot,'config/governed-movement-art-taxonomy.json'),candidateCatalog:read(root,'config/governed-movement-art-taxonomy.json'),snapshot,removals:removals.items});

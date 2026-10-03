@@ -53,7 +53,7 @@ const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'strength-ledger-ios-ota
 const frozenCatalogRef=JSON.parse(fs.readFileSync(path.join(root,'config/testflight-release-integrity.json'),'utf8')).previousTestFlight.gitCommitHash;
 const run = (command, commandArgs, options = {}) => execFileSync(command, commandArgs, {
   cwd: root,
-  env: { ...process.env, STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:branch==='testflight'?frozenCatalogRef:undefined, EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: branch === 'testflight' ? 'testflight' : 'disabled' },
+  env: { ...process.env, STRENGTH_LEDGER_BACKEND_ROOT: process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev', STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:branch==='testflight'?frozenCatalogRef:undefined, EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: branch === 'testflight' ? 'testflight' : 'disabled' },
   encoding: 'utf8',
   maxBuffer: 64 * 1024 * 1024,
   stdio: options.capture ? ['ignore', 'pipe', 'inherit'] : 'inherit',
