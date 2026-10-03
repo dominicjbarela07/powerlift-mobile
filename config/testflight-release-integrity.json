@@ -3222,7 +3222,9 @@
     "assets/images/warmup-configuration/bars/bar-custom-competition.png": "688346cbe893a496dd34bcd32ec5a00de2170840c64bd85d20b05908d6811082",
     "assets/images/warmup-configuration/bars/bar-custom-custom-collars.png": "56797752d71259dfb01a0e676be6f856485a914687bb819d608ef81acd8de04f",
     "assets/images/warmup-configuration/bars/bar-custom-none.png": "ea953c97c9ea2da7d0aa462b28f5ac9810dbdacfa4e58f971a064e1dae2dee86",
-    "artwork-review/runtime-policy.json": "d1e5cd931e47517f7e183a4c00f29683f8374789a261d5d0311910b5b8c82eef"
+    "artwork-review/runtime-policy.json": "d1e5cd931e47517f7e183a4c00f29683f8374789a261d5d0311910b5b8c82eef",
+    "context/AuthContext.tsx": "8757cfa9927e409ec1a1bebd07c6d4e2ddf6eebffbf0770a9c279e9aab4127db",
+    "theme.ts": "464bd011e82bd22096607e4dbe4507a68fd68a0e063e58c41d68bb9294e9805c"
   },
   "historicalProtectedPaths": [
     "app/(tabs)/_layout.tsx",
@@ -5738,6 +5740,7 @@
     "config/protected-fix-manifest.json",
     "constants/movement-card-material.ts",
     "constants/theme.ts",
+    "context/AuthContext.tsx",
     "hooks/use-color-scheme.ts",
     "hooks/use-color-scheme.web.ts",
     "hooks/use-theme-color.ts",
@@ -5967,7 +5970,8 @@
     "lib/videoUploadQueue.ts",
     "lib/volume-achievement-assets.ts",
     "lib/volume-achievements.ts",
-    "lib/workout-item-movement-references.ts"
+    "lib/workout-item-movement-references.ts",
+    "theme.ts"
   ],
   "protectedAssetHashes": [
     "-AWFyJLx8b9NbZTqXRrc_5Aw-S0PakI5L_2uS8opV30",
@@ -156753,8 +156757,8 @@
   "releaseGateFiles": {
     "AGENTS.md": "043c6785b207fe28c8f2b112e0d4ae9e2ff331747af6b7abaf4ac8b2ab860509",
     "app.config.js": "9c677a722146f9d76bc43d4dcd3bc3dbcd1c27d82f1154d12af15229421d24bf",
-    "scripts/testflight-cumulative-integrity.mjs": "8a81aaa34c29da4cc598fdb77f9fa74f247a610c11f1358e0254b9c67d02629f",
-    "scripts/test-testflight-cumulative-integrity.mjs": "a6d7c02956a3baaec49083e4afabe179021bb93526280a6930a197863b73cec1",
+    "scripts/testflight-cumulative-integrity.mjs": "7927ec52ef1700b609aebdb683d467a57dc4f146fc7a25402c6408166cc66002",
+    "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
     "scripts/publish-validated-ios-ota.mjs": "7dc1df06d7cfc64c010f87563dec020729ff10082468165934ba2aa364f0c1d3",
     "scripts/eas-build-testflight.sh": "4f15d2f1a64ff8652c78d5cffc2bbc07c8c51d2d1148e1886f5b4d96b9bec2b1",
     "scripts/eas-update-testflight.sh": "ae87a0f9b72dec47836622218dfd67b0ba95e7a751c6cfd00067588edb19dea4",

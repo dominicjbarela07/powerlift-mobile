@@ -3,9 +3,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { compareProtectedFiles, assertProtectedArtifactAssets, assertRuntimeEvidence, assertOwnerEvidence, sha256 } from './testflight-cumulative-integrity.mjs';
+import { compareProtectedFiles, assertProtectedArtifactAssets, assertRuntimeEvidence, assertOwnerEvidence, productFiles, sha256 } from './testflight-cumulative-integrity.mjs';
 
 const hash='a'.repeat(64);
+assert.ok(productFiles(process.cwd())['context/AuthContext.tsx'], 'account and role state must be protected cumulative product source');
+assert.ok(productFiles(process.cwd())['theme.ts'], 'shared root presentation source must be protected');
 assert.equal(compareProtectedFiles({'settings':hash},{},[]).violations.length,1);
 assert.throws(() => assertOwnerEvidence('.', [{ownerInstruction:'obsolete',ownerEvidenceSha256:hash}]), /retained evidence/);
 assert.throws(() => assertOwnerEvidence('.', [{ownerInstruction:'Owner approves removal',ownerEvidencePath:'missing-owner-evidence.txt',ownerEvidenceSha256:hash}]), /missing/);
