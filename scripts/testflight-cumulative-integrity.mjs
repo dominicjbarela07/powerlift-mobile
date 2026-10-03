@@ -144,8 +144,8 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
     assert.ok(fs.existsSync(path.join(root,file)), `release enforcement disappeared: ${file}`);
     assert.equal(sha256(fs.readFileSync(path.join(root,file))), expected, `release enforcement changed without a reviewed baseline update: ${file}`);
   }
-  if(requireRuntime) assert.deepEqual(protectedState.unresolvedHistoricalAssetChanges || [], [],
-    'RELEASE BLOCKED: historical asset changes still lack owner authorization evidence');
+  if(requireRuntime) assert.equal((protectedState.unresolvedHistoricalAssetChanges || []).length,0,
+    `RELEASE BLOCKED: ${(protectedState.unresolvedHistoricalAssetChanges || []).length} historical asset changes still lack owner authorization evidence; exact identities remain in the protected manifest and Gate A report`);
   assert.ok(protectedState.releaseHistory.length >= 5, 'multi-release historical evidence is required');
   assert.ok(protectedState.currentTestFlight && protectedState.previousTestFlight, 'both live and previous baseline identities are required');
   const files=productFiles(root), fingerprint=fingerprintFiles(files);

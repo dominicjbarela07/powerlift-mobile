@@ -142,6 +142,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1]
         const result=spawnSync(process.execPath,[path.join('scripts',script)],{cwd:root,env,stdio:'inherit'});
         assert.equal(result.status,0,`Mandatory functional release contract failed: ${script}`);
       }
+      const types=spawnSync('npx',['tsc','--noEmit'],{cwd:root,env:process.env,stdio:'inherit'});
+      assert.equal(types.status,0,'Mandatory mobile type check failed');
       report.publicationAuthorized=!preparation;
     }
     console.log(`[release-verify] ${preparation?'PARTIAL PREPARATION ONLY; publication remains blocked':'PRE-RELEASE GATES A + B PASS; exact post-publication Gate C still required'}`);

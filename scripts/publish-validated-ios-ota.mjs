@@ -76,6 +76,7 @@ if (branch === 'testflight') {
 }
 run('npm', ['run', 'test:accepted-behavior-contracts']);
 run('npm', ['run', 'test:release-critical-invariants']);
+run('npx', ['tsc','--noEmit']);
 run(process.execPath, ['scripts/test-testflight-source-parity.mjs', '--release-projection', '.']);
 
 run('npx', [
