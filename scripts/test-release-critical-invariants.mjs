@@ -87,7 +87,7 @@ for (const [area, scripts] of areas) {
   for (const script of scripts) {
     const result = spawnSync(process.execPath, ['--import', 'tsx', script], {
       cwd: process.cwd(),
-      env: process.env,
+      env: { ...process.env, STRENGTH_LEDGER_BACKEND_ROOT: process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev' },
       encoding: 'utf8',
       stdio: 'pipe',
     });
