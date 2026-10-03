@@ -1,8 +1,8 @@
 import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { SLButton } from '@/components/ui/sl-button';
@@ -79,6 +79,21 @@ export default function AdaptiveSessionBootstrapScreen() {
   const [error, setError] = useState('');
   const redirectedRef = useRef(false);
   const submissionRef = useRef(false);
+  const completedCreationRef = useRef(false);
+
+  useFocusEffect(useCallback(() => {
+    // A navigation destination can retain this screen instance. A successful
+    // creation starts a fresh form on return; failed template retries retain
+    // their existing draft ID so they cannot create duplicate Sessions.
+    if (!completedCreationRef.current) return;
+    completedCreationRef.current = false;
+    submissionRef.current = false;
+    setSaving(false);
+    setCreatedDraftId('');
+    setTitle('');
+    setError('');
+    setSessionDate(validDate(requestedDate) ? requestedDate : today());
+  }, [requestedDate]));
 
   useEffect(() => {
     if (!editSessionId || redirectedRef.current) return;
@@ -172,6 +187,7 @@ export default function AdaptiveSessionBootstrapScreen() {
         if (!templateResponse.ok || !templateJson.ok) throw new Error(templateJson.error || 'The Session draft was created, but its template could not be loaded.');
       }
 
+      completedCreationRef.current = true;
       router.replace({
         pathname: '/workout/session-workspace/[workoutId]' as any,
         params: {

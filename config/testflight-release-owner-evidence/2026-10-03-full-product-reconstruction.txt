@@ -1,0 +1,904 @@
+# P0 TESTFLIGHT FORENSIC RECONSTRUCTION — FIND EVERYTHING SILENTLY LOST ACROSS RECENT RELEASES
+
+### Working Directory / Scope
+/Users/dominic/powerlifting_app_dev
+/Users/dominic/powerlifting_app_dev/powerlift_mobile
+
+STOP ALL UNRELATED WORK.
+
+The missing movement artwork is NOT the scope of this incident.
+
+It is evidence that the TestFlight release process has repeatedly and silently SUBTRACTED previously established product state.
+
+I have now found substantially more missing assets, and I no longer trust that the things I have personally noticed represent the complete blast radius.
+
+DO NOT WAIT FOR ME TO FIND EVERY REGRESSION FOR YOU.
+
+Your job in this run is to FORENSICALLY RECONSTRUCT THE LAST SEVERAL TESTFLIGHT RELEASES, determine EVERYTHING that was unintentionally lost, regressed, reverted, disconnected, omitted, or replaced, restore it, prove the resulting candidate is cumulative, and install permanent release protection so this cannot keep happening.
+
+This is not an asset audit.
+
+This is a FULL PRODUCT-STATE FORENSIC AUDIT.
+
+---
+
+# ABSOLUTE RELEASE LAW
+
+TestFlight is cumulative.
+
+A new TestFlight release is:
+
+PREVIOUS TESTFLIGHT
++ explicitly authorized additions
++ explicitly authorized modifications
+- explicitly authorized removals ONLY
+
+Nothing else may disappear.
+
+If I did not explicitly authorize a subtraction:
+
+IT WAS NOT AUTHORIZED.
+
+Codex does NOT have authority to infer:
+
+- this feature is obsolete
+- this asset is unnecessary
+- this catalog record can disappear
+- this behavior can revert
+- this control can be removed
+- this setting can vanish
+- this mapping can be replaced
+- this route can be dropped
+- this UX can fall back
+- this data can be regenerated differently
+
+If there is uncertainty:
+
+STOP AND ASK ME.
+
+Default answer is NO.
+
+---
+
+# 1. RECONSTRUCT THE RECENT TESTFLIGHT TIMELINE
+
+Do not compare only:
+
+current DEV
+vs
+current TestFlight.
+
+That is insufficient and is part of how silent regressions can remain invisible.
+
+Inspect the LAST SEVERAL ACTUAL TESTFLIGHT RELEASES.
+
+At minimum reconstruct enough history to cover the recent synchronization/release period where product state may have been lost.
+
+For every relevant release identify:
+
+- native build
+- runtime
+- OTA/update ID
+- appRevision
+- source SHA
+- publication timestamp
+- release source/worktree if recoverable
+- backend dependency/deployment associated with it where relevant
+- explicit feature intent
+- actual product delta from the previous TestFlight release
+
+Build a chronological release ledger:
+
+TF[n-4]
+→ TF[n-3]
+→ TF[n-2]
+→ TF[n-1]
+→ CURRENT TESTFLIGHT
+
+For EACH transition determine:
+
+WHAT WAS ADDED?
+WHAT WAS CHANGED?
+WHAT WAS REMOVED?
+WHAT WAS REVERTED?
+WHAT DISAPPEARED WITHOUT AUTHORIZATION?
+
+Do not infer authorization from Git history.
+
+Find actual explicit product/release intent where available.
+
+---
+
+# 2. FIND REGRESSIONS I HAVE NOT FOUND YET
+
+This is mandatory.
+
+Do not build the audit around the bugs/assets I already reported.
+
+Actively hunt for silent negative deltas.
+
+Ask of every recent TestFlight transition:
+
+> What existed before this release that no longer exists or no longer behaves equivalently afterward?
+
+This includes things that still technically render because a fallback concealed the regression.
+
+Do not wait for screenshots from me.
+
+---
+
+# 3. AUDIT THE ENTIRE MOBILE PRODUCT STATE
+
+Compare recent TestFlight states across ALL major systems.
+
+## TODAY
+
+Audit:
+- Self-Coach Today
+- Athlete Today
+- Coach Today
+- hero Session
+- Next Up
+- Rest Day behavior
+- obligations
+- check-ins
+- quick-create
+- return routing
+- counts
+- actions
+
+Find anything that disappeared/reverted.
+
+## TRAINING HUB
+
+Audit:
+- Program identity
+- Block
+- Week
+- Session cards
+- previews
+- movement summaries
+- completed/current/upcoming state
+- Program Timeline
+- navigation
+- design convergence work
+
+## PROGRAMMING MANAGER / SESSION WORKSPACE
+
+Audit:
+- Session creation
+- rename
+- date selection
+- copy-from
+- copy-forward
+- movement selection
+- Core/Core Variant/Accessory hierarchy
+- prescriptions
+- Straight
+- Top + Backdown
+- Full Custom
+- Add/Remove
+- reorder
+- dirty guards
+- Session composition
+- self-coach capabilities
+
+## ACTIVE SESSION LOGGER
+
+Audit:
+- Pre → Active → Post
+- readiness
+- movement navigation
+- Set logging
+- Set editing
+- zero-load/bodyweight Sets
+- Hot Swap
+- Add Movement
+- Remove Movement
+- Edit Prescription
+- supersets
+- Rest Timer
+- minimize/return
+- equipment
+- history
+- Last Exposure
+- Last Comparable Exposure
+- full Last Session Sets
+- completion
+- Post-Session
+
+## MOVEMENT IDENTITY / HISTORY
+
+Audit:
+- canonical movement IDs
+- consolidated movements
+- merged history
+- absorbed IDs
+- aliases
+- Session identity
+- Swap identity
+- history resolver
+- Copy From source
+- PR evidence
+
+No previously fixed identity bug may have silently returned.
+
+## MOVEMENT TAXONOMY
+
+Audit:
+- Core
+- Core Variants
+- Accessories
+- Bench/Squat/Deadlift variant families
+- Barbell Overhead Press placement
+- removed Pressing category
+- muscle taxonomy
+- duplicate movements
+- canonical catalog counts
+
+## MOVEMENT ART
+
+Audit ALL:
+- approved exact art
+- reused art
+- Core art
+- Core Variant art
+- Accessory art
+- crops
+- placement
+- runtime eligibility
+- canonical ID mappings
+- anatomy fallback
+
+But DO NOT stop here.
+
+## MUSCLE / ANATOMY ART
+
+Audit:
+- dedicated muscle-group artwork
+- taxonomy navigation art
+- Dynamic Anatomy usage
+- masculine/feminine models
+- front/rear/dual
+- primary/secondary/inactive states
+
+Ensure one art system did not silently replace another.
+
+## EQUIPMENT
+
+Audit:
+- manufacturers
+- types
+- equipment identities
+- machine catalogs
+- official catalog imagery
+- equipment-type artwork
+- quick select
+- recency
+- historical context
+- Unknown / Unknown
+- Skip
+- equipment preference
+- comparability
+- manufacturer/type persistence
+
+## PR / RECOGNITION
+
+Audit:
+- Core recognition
+- Accessory exact rep-max recognition
+- known-machine gating
+- free-weight behavior
+- animations
+- recognition aggregation
+- Post-Session recognition
+- achievements integration
+
+Do not merely verify evaluator code. Verify actual UI behavior.
+
+## CALENDAR
+
+Audit:
+- Athlete Calendar
+- Coach Calendar
+- Day Lens
+- Session states
+- Draft counts
+- initial load
+- month/block/week context
+- Today return behavior
+- draft/scheduled/completed representation
+
+## LEDGER
+
+Audit:
+- Journey
+- Strength
+- Achievements
+- Accessories
+- Variants
+- Muscle Groups
+- Archive
+- history
+- evidence
+- progression
+- movement art
+- copy cleanup
+
+## ACHIEVEMENTS
+
+Audit:
+- Training Volume destination
+- complete volume
+- competition total volume
+- individual lift volume
+- extended thresholds
+- trophies
+- medallions
+- clubs
+- artwork
+- earned state
+
+## COACH
+
+Audit:
+- Coach Today
+- Athlete Workspace
+- Brief
+- Training
+- Programming
+- Reviews
+- Review Queue
+- Review Hub
+- Performance
+- Messages
+- pause/inactive athlete behavior
+- own-Session review preference
+- obligation counts
+- athlete switching
+- review scroll/reset
+
+## MESSAGES
+
+Audit:
+- thread navigation
+- linked Sessions
+- linked recaps
+- return routing
+- Coach/Athlete context
+
+## SETTINGS / PREFERENCES
+
+Audit every established preference and toggle.
+
+Verify nothing silently disappeared or reverted.
+
+## COPY / UI HYGIENE
+
+Audit whether internal:
+- diagnostics
+- raw keys
+- backend terminology
+- tutorialistic helper copy
+
+returned after being removed.
+
+## INTERACTION LAWS
+
+Audit established:
+- keyboard behavior
+- bottom-sheet dismissal
+- swipe thresholds
+- floating controls
+- destructive confirmation
+- safe Session actions
+- navigation return context
+
+## AUDIO / NOTIFICATIONS
+
+Audit:
+- Rest Timer completion
+- Silent Mode behavior
+- foreground beep
+- background notification
+- notification suppression in active Logger
+- no duplicate signal
+- bundled audio assets
+
+---
+
+# 4. AUDIT NON-ASSET PRODUCT STATE TOO
+
+Explicitly compare:
+
+- routes
+- buttons/actions
+- settings
+- feature flags
+- permissions
+- role behavior
+- navigation destinations
+- data fields
+- catalog records
+- artwork
+- audio
+- copy
+- animations
+- API behavior
+- backend contracts
+- canonical mappings
+- release configuration
+
+A feature can silently regress even when no file was deleted.
+
+Example:
+
+button still exists
+→ handler no longer works
+
+That is a negative product delta.
+
+Hot Swap is the obvious recent example.
+
+The forensic audit must detect FUNCTIONAL subtraction as well as file subtraction.
+
+---
+
+# 5. USE TESTFLIGHT RELEASES AS THE PRIMARY HISTORICAL RECORD
+
+Do not trust the current DEV tree to tell you what should exist.
+
+Recent TestFlight releases contain product state that may have been lost from DEV.
+
+For each governed product element, determine:
+
+last known good release
+current state
+intended state
+
+When current DEV is missing something that was valid on prior TestFlight:
+
+DO NOT DELETE THE PRIOR TESTFLIGHT BEHAVIOR.
+
+Recover/integrate it unless I explicitly authorized its removal.
+
+---
+
+# 6. BUILD A PRODUCT-STATE DELTA LEDGER
+
+Create a machine-readable forensic ledger.
+
+For every meaningful product element:
+
+ID / system
+→ present in release A?
+→ present in release B?
+→ behavior equivalent?
+→ authorized change?
+→ current TestFlight state
+→ current DEV state
+→ required action
+
+Classify findings:
+
+AUTHORIZED ADDITION
+
+AUTHORIZED CHANGE
+
+AUTHORIZED REMOVAL
+
+UNAUTHORIZED REMOVAL
+
+UNAUTHORIZED REVERSION
+
+UNAUTHORIZED BEHAVIOR REGRESSION
+
+ORPHANED PRODUCT STATE
+
+CURRENT DEV BEHIND TESTFLIGHT
+
+CURRENT TESTFLIGHT BEHIND APPROVED DEV
+
+AMBIGUOUS — OWNER DECISION REQUIRED
+
+Do not collapse these into a generic "diff."
+
+---
+
+# 7. RESTORE THE CUMULATIVE PRODUCT
+
+For every deterministic unauthorized regression:
+
+RESTORE IT.
+
+This includes:
+- missing assets
+- missing mappings
+- reverted UI
+- removed controls
+- broken actions
+- lost settings
+- lost catalog records
+- lost animations
+- lost behavior
+- reverted copy
+- broken navigation
+- missing audio
+- missing history behavior
+
+Use the LAST APPROVED/VALIDATED implementation as evidence.
+
+Do not recreate from memory if exact prior implementation can be recovered.
+
+If there are two conflicting historical states and owner intent cannot be determined:
+
+STOP ON THAT ITEM.
+
+Ask me.
+
+Do not choose.
+
+---
+
+# 8. DO NOT OVERWRITE NEWER VALID WORK WHILE RESTORING OLD WORK
+
+Restoration is not rollback.
+
+Do not simply revert the app to an older TestFlight release.
+
+The target is:
+
+LATEST VALID TESTFLIGHT BASELINE
++ all subsequently authorized additions/fixes
++ restored silently lost product state
+- only explicitly authorized removals
+
+Preserve newer approved improvements.
+
+Merge product state intentionally.
+
+---
+
+# 9. CURRENT DEV MUST ALSO BE RECONCILED
+
+A major source of this problem is divergence.
+
+After restoration:
+
+DEV
+must contain the same cumulative governed product state that TestFlight will ship, plus intentionally DEV-only work.
+
+Do not create another TestFlight-only restoration that future DEV promotion will erase again.
+
+Any TestFlight hotfix/restoration must be back-propagated into DEV in the same run.
+
+No production/release-only fix may remain stranded.
+
+---
+
+# 10. PERMANENT CUMULATIVE RELEASE GATE
+
+Before every future TestFlight release:
+
+CURRENT TESTFLIGHT BASELINE
+vs
+CANDIDATE
+
+Generate:
+
+ADDITIONS
+MODIFICATIONS
+SUBTRACTIONS
+BEHAVIORAL INVARIANT CHANGES
+
+Then require:
+
+SUBTRACTION
+→ explicit owner authorization
+
+No authorization:
+→ RELEASE FAILS
+
+Behavioral invariant changed unexpectedly:
+→ RELEASE FAILS
+
+Critical governed product state missing:
+→ RELEASE FAILS
+
+This is not advisory.
+
+It blocks publication.
+
+---
+
+# 11. FUNCTIONAL REGRESSION GATES
+
+Static file/asset comparison is insufficient.
+
+Create high-value release contracts for established critical behaviors.
+
+At minimum:
+
+SELF-COACH
+- create Session
+- copy Session
+- edit prescription
+- Add Movement
+- Remove Movement
+- Hot Swap
+- canonical persistence
+
+LOGGER
+- Set logging
+- edit Set
+- zero-load valid where governed
+- Rest Timer
+- equipment
+- history
+- completion
+
+HISTORY
+- movement identity
+- Last Exposure
+- comparable exposure
+- Last Session Sets
+
+PR
+- Core
+- Accessory exact rep-max
+- actual visible recognition
+
+COACH
+- Athlete Workspace
+- Review Queue
+- Programming
+- review navigation
+
+CALENDAR
+- initial load
+- Draft count
+- Session navigation
+
+ASSETS
+- approved exact movement art
+- muscle art
+- equipment art
+
+These should validate USER-OBSERVABLE behavior, not merely implementation internals.
+
+---
+
+# 12. RELEASE HISTORY DIFF MUST BECOME PART OF RELEASE PREP
+
+For every candidate TestFlight publication:
+
+compare against at least:
+- current TestFlight
+- immediately previous TestFlight
+- relevant protected governed-state manifest
+
+This prevents a regression from becoming the new baseline and disappearing from future comparison.
+
+Maintain history so we can detect:
+
+Feature existed r47
+→ disappeared r50
+→ still absent r53
+
+rather than treating r53 vs r52 as "no difference."
+
+---
+
+# 13. CREATE A FULL FORENSIC REPORT
+
+Create:
+
+`Mobile_3.0_TestFlight_Release_Integrity_Forensic_Audit_2026-10-03.md`
+
+Include:
+
+## Executive Summary
+
+## TestFlight Release Timeline
+
+## Release-by-Release Negative Deltas
+
+## Unauthorized Asset Loss
+
+## Unauthorized Functional Regressions
+
+## Unauthorized Catalog/Data Regressions
+
+## Unauthorized UI/Navigation Regressions
+
+## Current DEV Behind TestFlight
+
+## Current TestFlight Behind Approved DEV
+
+## Restorations Performed
+
+## Ambiguous Items Requiring Owner Decision
+
+## Permanent Release Gates Added
+
+## Validation
+
+## Final Cumulative Product Reconciliation
+
+Also produce machine-readable supporting manifests for release tooling.
+
+---
+
+# 14. ZERO ASSUMPTION POLICY
+
+Codex may identify and restore deterministic regressions.
+
+Codex may NOT make product decisions.
+
+If restoration requires deciding:
+
+- which of two designs I prefer
+- whether an old feature should be retired
+- whether an asset should be replaced
+- whether taxonomy should change
+- whether behavior should be simplified
+- whether a setting is still needed
+
+STOP.
+
+ASK ME.
+
+Unless I explicitly authorize a product change:
+
+NO.
+
+---
+
+# 15. VALIDATE THE RESTORED PRODUCT AS ACTUAL USERS
+
+After reconciliation, perform representative journeys as:
+
+SELF-COACH
+TEAM COACH
+ATHLETE
+
+Use real DEV runtime behavior.
+
+Do not merely inspect code.
+
+Specifically revisit areas that changed across recent releases.
+
+Capture proof for restored visual systems and critical functional flows.
+
+---
+
+# 16. TESTFLIGHT RELEASE
+
+After:
+
+- forensic audit complete
+- deterministic regressions restored
+- ambiguous decisions isolated
+- cumulative release gate passes
+- functional regression gates pass
+- asset/catalog gates pass
+- runtime journeys pass
+
+publish the restoration to TestFlight.
+
+Then compare the EXACT PUBLISHED SOURCE/ARTIFACT against:
+
+protected cumulative baseline
++ authorized additions
++ restored regressions
+
+Unauthorized subtraction must equal:
+
+ZERO.
+
+Back-propagate the exact restored state into DEV.
+
+---
+
+# Locked / Do Not
+
+- DO NOT limit this to assets.
+- DO NOT limit this to bugs I already reported.
+- DO NOT compare only current DEV vs current TestFlight.
+- DO NOT assume the latest release is a valid baseline.
+- DO NOT assume DEV absence means authorization.
+- DO NOT blindly revert to an older release.
+- DO NOT overwrite newer valid work.
+- DO NOT generate replacement assets.
+- DO NOT make product decisions.
+- DO NOT silently drop ambiguous findings.
+- DO NOT publish with unresolved deterministic regressions.
+- DO NOT leave TestFlight fixes out of DEV.
+- DO NOT touch Production Mobile 2.0.2.
+- NEVER use `workout` in user-facing copy.
+
+---
+
+# Expected Output
+
+## RELEASE FORENSICS
+
+- releases audited
+- source/build/update IDs
+- last known good states
+- release-by-release negative deltas
+- exact regression introduction points
+
+## COMPLETE BLAST RADIUS
+
+Counts for:
+- unauthorized asset removals
+- unauthorized feature removals
+- unauthorized behavior regressions
+- unauthorized UI/navigation regressions
+- unauthorized catalog/data regressions
+- DEV-behind-TestFlight findings
+- TestFlight-behind-approved-DEV findings
+
+## RESTORATION
+
+For every restored item:
+- what disappeared/regressed
+- last good state
+- introducing release
+- restoration source
+- validation result
+
+## OWNER DECISIONS
+
+List EVERY ambiguous item separately.
+
+Do not decide them.
+
+## PERMANENT PROTECTION
+
+- cumulative protected baseline
+- multi-release historical comparison
+- unauthorized-subtraction blocker
+- asset gate
+- catalog/data gate
+- functional invariant gates
+- user-visible flow gates
+- explicit-removal authorization mechanism
+
+## DOCUMENTS
+
+- forensic report path
+- machine-readable delta manifest paths
+- protected baseline manifest path
+
+## RELEASE
+
+- validation results
+- TestFlight publication identifier
+- exact published-source reconciliation
+- DEV back-propagation status
+- explicit confirmation Production Mobile 2.0.2 was untouched
+
+### FINAL REQUIRED STATEMENTS
+
+`Unauthorized deterministic regressions remaining: 0`
+
+`Unauthorized TestFlight subtractions in published candidate: 0`
+
+`TestFlight restorations back-propagated into DEV: YES`
+
+If the first number is not zero:
+
+DO NOT PUBLISH.
+
+If an unresolved item requires my product judgment:
+
+DO NOT GUESS.
+ASK ME.
+
+I should not have to personally discover what TestFlight silently lost.
+
+Find it.
+Restore it.
+Protect it.
