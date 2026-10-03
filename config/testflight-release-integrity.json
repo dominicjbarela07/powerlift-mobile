@@ -156792,7 +156792,7 @@
     "package.json": "08012f2f04f4fe88450ae0a383f026df2e999db745cb1b039fa50860738dcedb",
     "package-lock.json": "1343e90757f22b5d2f2b6c9f21ca383a587770f3a68d83f0d60f8d1709ecccac",
     "scripts/test-create-session-return-lifecycle.mjs": "e6bd4631062c55708a1cbd73982c1e63b5ec9337e2aa2c8f30bee7103004fc1a",
-    "scripts/verify-testflight-release-integrity.mjs": "04f5d4b542189437d5789fe67ebaf33cbe9ac893c2d06034637315ebd0c72180",
+    "scripts/verify-testflight-release-integrity.mjs": "2ebb11ca43d11a053351bbfda0e61624db3d2b085027636d9b0d796d0008eddc",
     "docs/RELEASE_INVARIANTS.md": "446fddc0f1aaee2a2c9c151df3d8c653d1b86f4baf97e8fa50273747d1f0524f",
     "README.md": "97175c37b7f526cc8e3112f284f94edfa70653f097413a97368a2f9fb42ee90a",
     "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",

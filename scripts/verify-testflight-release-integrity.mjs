@@ -44,7 +44,8 @@ export function compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog,
     const dev=devById.get(id), tf=tfById.get(id), retained=retainedById.get(id);
     const active=devCatalog.movements.some(row=>row.id===id);
     const valid=dev?.key===key&&retained?.key===key&&(active||JSON.stringify(dev)===JSON.stringify(retained));
-    add(`movement:${id}:${key}`,'governed catalog',dev||null,tf||null,valid?'EQUIVALENT':'TESTFLIGHT_ONLY',retained||{id,key},valid?'NONE':'TESTFLIGHT → DEV');
+    const identical=valid&&JSON.stringify(dev)===JSON.stringify(tf);
+    add(`movement:${id}:${key}`,'governed catalog',dev||null,tf||null,valid?(identical?'EQUIVALENT':'AUTHORIZED_DIFFERENCE'):'TESTFLIGHT_ONLY',retained||{id,key},valid?'Preserve DEV enrichment and exact shipped compatibility metadata':'TESTFLIGHT → DEV',valid&&!identical&&baseline.catalogCompatibilityAuthorization?[baseline.catalogCompatibilityAuthorization]:[]);
   }
   for(const row of devCatalog.movements) if(!protectedById.has(row.id)) add(`movement:${row.id}:${row.key}`,'governed catalog',row,null,'DEV_ONLY',null,'AUTHORIZED DEV → TESTFLIGHT INTEGRATION');
   add(taxonomy,'taxonomy',sha256(JSON.stringify(devCatalog)),sha256(JSON.stringify(candidateCatalog)),missing.some(e=>e.productArea==='governed catalog')?'UNAUTHORIZED_SUBTRACTION':'AUTHORIZED_DIFFERENCE',baseline.protectedFiles[taxonomy], 'Retain active DEV enrichment and exact shipped compatibility metadata',baseline.catalogCompatibilityAuthorization?[baseline.catalogCompatibilityAuthorization]:[]);
