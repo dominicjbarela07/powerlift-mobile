@@ -156779,27 +156779,30 @@
     "app.config.js": "9c677a722146f9d76bc43d4dcd3bc3dbcd1c27d82f1154d12af15229421d24bf",
     "scripts/testflight-cumulative-integrity.mjs": "eb3c779dd26093e9e7fe1c0bc4f49f688e37b507e8831e43dfd636125df34d07",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
-    "scripts/publish-validated-ios-ota.mjs": "05dd68ad9134cecb97cc6baf4d99adf0ee585dfbaf65ccb9da0cde87c4165ed6",
+    "scripts/publish-validated-ios-ota.mjs": "283d3f05259297c9165a95158e526a13776febe36615ca9fa6c3534ddafe6e9c",
     "scripts/eas-build-testflight.sh": "946b0857b8b84925906b84547dbb62f1fa05e12ab3771674dd64e359d920e115",
     "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
     "scripts/test-accepted-behavior-contracts.mjs": "aea994729080fe6f26a7163a83ee3087854039e08a2126bc51a599e22fae5834",
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
     "config/protected-fix-manifest.json": "667e45f70e74ffccec3b20ae65e5ac61a04bfffe1ee56b214797f793aca91a3e",
     "scripts/assert-no-dev-artwork-export.mjs": "403fad1b126d9b77f076d1442009f99a9277f7b6ce4cce8dc82089bd56b58d2c",
-    "scripts/test-release-critical-invariants.mjs": "8005fe5b573d4876039c88f21053752c36a663868d2f514e9cba0085db929131",
+    "scripts/test-release-critical-invariants.mjs": "086eb37f126ae8a78c8e33d5f30a0ed9a9d870bc85a22b3ca4d71a7c597a5f8c",
     "scripts/test-release-source-lineage.mjs": "abae1f05b4456bf51ee32179036769603de6140c83d7cba35cd56cc38216468a",
     "scripts/release-holdback-policy.mjs": "c4da1351f09b5f5d5b8b68dbc8191d2717b6001acc42169c47cdf336261ea86c",
-    "package.json": "08012f2f04f4fe88450ae0a383f026df2e999db745cb1b039fa50860738dcedb",
+    "package.json": "c2257cbf0b5864fc5ab69475aa2b7e8d87ca5b0f111d640becac610d76d73fe4",
     "package-lock.json": "1343e90757f22b5d2f2b6c9f21ca383a587770f3a68d83f0d60f8d1709ecccac",
     "scripts/test-create-session-return-lifecycle.mjs": "e6bd4631062c55708a1cbd73982c1e63b5ec9337e2aa2c8f30bee7103004fc1a",
-    "scripts/verify-testflight-release-integrity.mjs": "38821d7cb7f5dc6c99a2ea7cc80dc43fc811cc95ae15d74eb3a4f0052fdfd3ae",
-    "docs/RELEASE_INVARIANTS.md": "446fddc0f1aaee2a2c9c151df3d8c653d1b86f4baf97e8fa50273747d1f0524f",
-    "README.md": "97175c37b7f526cc8e3112f284f94edfa70653f097413a97368a2f9fb42ee90a",
+    "scripts/verify-testflight-release-integrity.mjs": "17d94c334ecf1b3702e0d7937f0519ac4c7aa45b25dd21683fdb080f7f8da860",
+    "docs/RELEASE_INVARIANTS.md": "1009340614573a368fecf053a477ffad99502211bdf60881ef1758d9ace00a07",
+    "README.md": "8c1e55b964384a9cbc4fd535bf88bd67bec95995b404f9de5f5177f2607ede12",
     "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
     "config/release-removal-authorizations.json": "79b7e83d8edc0ee3b52954fdf66cf31d152059d1fa056a60b7018f9b8ef215bb",
-    "scripts/test-dev-testflight-release-gates.mjs": "ec6ab1b9cd5eee15ab24904dce8d517064509d89c048e4989c9b4935f2bb0576",
+    "scripts/test-dev-testflight-release-gates.mjs": "26fe9b2c6eb23b1ff9d7c9136d50d786fb351a7ac1c2f29ef881e7ed73345ff3",
     "scripts/test-protected-testflight-catalog-compatibility.mjs": "94cddbdd75dcc78f35a74d6bd8a6345c21331f42546a88870a5938072fd08c7c",
-    "scripts/test-retired-movement-discovery.mjs": "c5d8c2b21df0e6a0d62062ea6516aec801f4e61670230b9fea22fdaa040d87c4"
+    "scripts/test-retired-movement-discovery.mjs": "c5d8c2b21df0e6a0d62062ea6516aec801f4e61670230b9fea22fdaa040d87c4",
+    "scripts/worktree-release-closeout.mjs": "9233953503b926d26d403488b65360a3cbe36cf7e5a237a45739cb7f49e9b7ce",
+    "scripts/worktree-lifecycle.mjs": "f8e9f5cb04a8fc62cd478018685347dab4b893cc94e1b61e6cf557e877e9e3b3",
+    "scripts/test-worktree-lifecycle.mjs": "33eb5b43bdcdb439c49113cbc3ba91e4cf5ffe7ec0cd37fcf80adac9f0b8884a"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -156959,12 +156962,20 @@
       "reason": "DEV retains active enrichment plus exact 69 shipped retired compatibility records; release preserves exact original 567 until its separately authorized catalog promotion."
     }
   ],
-  "releaseConstitutionSha256": "4c611ccbb73fef0a37b16bbf0726299eb63e48c19c61a9ab472c32d5a2fbcf2c",
+  "releaseConstitutionSha256": "eb473b7fa3c7f7cffe02007f01fa3e858883a8c1f269ac7ffe84a780944b8040",
   "protectedCatalogSnapshotSha256": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
   "catalogCompatibilityAuthorization": {
     "ownerInstruction": "Everything else deterministic:\nFIX IT.",
     "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-03-release-constitution.txt",
     "ownerEvidenceSha256": "085ca631e72e184bb1a2dd19e1ec87157a6998cba6cd821a7b68218f458f46a1",
     "reason": "Retain every exact shipped catalog identity/metadata in DEV while preserving prior owner-approved active retirement and newer DEV enrichment."
+  },
+  "worktreeLifecycleToolSha256": "9b524efcc9e8d56a7ba3cb50da05a4ce286ac5fe39e35eca79bce106cddc0664",
+  "worktreeLifecycleContractsSha256": "0c2b5603feb9f3aa7b4bdccc214998eb1d2128c4b0fbf15d6189d434393a8bed",
+  "worktreeLifecycleAuthorization": {
+    "ownerInstruction": "# STRENGTH LEDGER \u2014 PERMANENT WORKTREE LIFECYCLE + DEV RECONCILIATION LAW",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-03-worktree-lifecycle.txt",
+    "ownerEvidenceSha256": "01e4306374720935de0453703debc2f3c0908ff142dcf1e2bf64a36ddc394919",
+    "scope": "Add temporary-worktree lifecycle law and fail-closed release closeout; preserve all previous cumulative protections and unresolved owner decisions"
   }
 }

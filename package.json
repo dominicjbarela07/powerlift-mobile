@@ -212,7 +212,13 @@
     "test:coach-performance-v2": "node --import tsx scripts/test-coach-performance-v2.mjs",
     "test:session-authoring": "node scripts/test-session-workspace-draft-state.mjs && node scripts/test-session-workspace-dirty-reorder.mjs && node scripts/test-session-authoring-recovery.mjs && node scripts/test-evidence-read-cache.mjs",
     "test:volume-medallion-progression": "node --import tsx scripts/test-volume-medallion-progression.mjs",
-    "release:verify-testflight": "node scripts/verify-testflight-release-integrity.mjs"
+    "release:verify-testflight": "node scripts/verify-testflight-release-integrity.mjs",
+    "worktree:inventory": "node scripts/worktree-lifecycle.mjs inventory",
+    "worktree:check": "node scripts/worktree-lifecycle.mjs check",
+    "worktree:close": "node scripts/worktree-lifecycle.mjs close",
+    "worktree:register": "node scripts/worktree-lifecycle.mjs register",
+    "worktree:create": "node scripts/worktree-lifecycle.mjs create",
+    "test:worktree-lifecycle": "node scripts/test-worktree-lifecycle.mjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

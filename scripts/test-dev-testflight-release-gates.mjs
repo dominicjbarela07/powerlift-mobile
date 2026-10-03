@@ -25,7 +25,7 @@ assert.throws(()=>runPostReleaseGate({root,published:{gitCommitHash:'b'.repeat(4
 // modifying fixture bytes so the owner's files are never changed.
 const devRoot=process.env.STRENGTH_LEDGER_DEV_MOBILE_ROOT||'/Users/dominic/powerlifting_app_dev/powerlift_mobile';
 const fixture=fs.mkdtempSync(path.join(os.tmpdir(),'sl-superset-failure-'));
-const candidateRoot=JSON.parse(fs.readFileSync(path.join(root,'app.json'),'utf8')).expo.extra?.releaseTrack==='testflight'?root:path.join(root,'.worktrees/testflight-cumulative-integrity-20261003');
+const candidateRoot=JSON.parse(fs.readFileSync(path.join(root,'app.json'),'utf8')).expo.extra?.releaseTrack==='testflight'?root:process.env.STRENGTH_LEDGER_TESTFLIGHT_ROOT||'/Users/dominic/powerlifting_app/powerlift_mobile_testflight';
 const failures=[];
 try {
   for(const file of Object.keys(productFiles(devRoot))) {

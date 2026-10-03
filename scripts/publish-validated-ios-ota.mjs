@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { assertProtectedArtifactAssets, sha256 } from './testflight-cumulative-integrity.mjs';
 import { runDevSupersetGate, runPostReleaseGate, bindExportSource } from './verify-testflight-release-integrity.mjs';
+import {assertRegisteredPublicationWorktree,runReleaseWorktreeCloseout} from './worktree-release-closeout.mjs';
 // Mandatory authority: backend docs/RELEASE_INVARIANTS.md; Gates A/B/C cannot be bypassed here.
 
 const root = process.cwd();
@@ -18,6 +19,7 @@ const valueFor = (flag) => {
 const branch = valueFor('--branch') ?? 'testflight';
 const message = valueFor('--message');
 const prepareOnly = args.includes('--prepare-only');
+const activeAssessments = valueFor('--active-assessments') || process.env.STRENGTH_LEDGER_ACTIVE_WORKTREE_ASSESSMENTS;
 const runtimeReceipt = valueFor('--runtime-receipt') || process.env.STRENGTH_LEDGER_RUNTIME_RECEIPT;
 const nodeModules = path.join(root, 'node_modules');
 
@@ -59,6 +61,7 @@ const run = (command, commandArgs, options = {}) => execFileSync(command, comman
 
 let devSuperset;
 if (branch === 'testflight') {
+  if (!prepareOnly) assertRegisteredPublicationWorktree({root});
   if (JSON.parse(fs.readFileSync(path.join(root,'app.json'),'utf8')).expo.extra?.releaseTrack!=='testflight') throw new Error('TestFlight must use its explicit release projection');
   devSuperset = runDevSupersetGate({root,requireCleanCandidate:!prepareOnly});
   if (!devSuperset.pass) throw new Error(`Gate A blocked: restore TestFlight → DEV: ${devSuperset.missing.map(item=>item.identity).join(', ')}`);
@@ -204,6 +207,8 @@ if (branch === 'testflight') {
   const post = runPostReleaseGate({root,published,manifest,candidateSha:devSuperset.candidate.sha,devProductFingerprint:devSuperset.devProductFingerprint,validatedBundleSha256:bundleSha256,servedBundleSha256:sha256(remoteBundle),validatedAssetHashes:exportSource.assetHashes});
   fs.writeFileSync(path.join(outputDir,'release-gate-c.json'),JSON.stringify(post,null,2));
   console.log(`Gate C PASS: exact published artifact/source remains contained in DEV; receipt ${outputDir}/release-gate-c.json`);
+  const closeout=runReleaseWorktreeCloseout({root,gateC:post,activeAssessments,exportDir:outputDir});
+  console.log(`Release worktree closeout PASS: ${closeout.receiptPath}`);
 }
 
 console.log(
