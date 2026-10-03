@@ -50,3 +50,10 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+Worktree lifecycle: read the Worktree Lifecycle Law in the authoritative
+`docs/RELEASE_INVARIANTS.md`. Dirty canonical DEV is expected. Register justified
+isolation, reconcile all valid state, assess active worktrees, and close completed
+temporary worktrees in the same release workflow. Inspect with
+`python3 /Users/dominic/powerlifting_app_dev/scripts/worktree_lifecycle.py inventory`
+and check an exact worktree with `npm run worktree:check -- --worktree <path>`.

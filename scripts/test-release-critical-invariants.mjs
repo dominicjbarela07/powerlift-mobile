@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['temporary-worktree lifecycle, stranded shipped fixes, safe cleanup and dirty DEV preservation', ['scripts/test-worktree-lifecycle.mjs']],
   ['DEV superset, explicit removals, and exact published-state failure gates', ['scripts/test-dev-testflight-release-gates.mjs']],
   ['all shipped governed IDs survive thin-payload compatibility', ['scripts/test-protected-testflight-catalog-compatibility.mjs']],
   ['live Session Edit, Add, Remove, and Swap persistence', ['scripts/test-active-session-hot-swap.mjs', 'scripts/test-active-session-mutation-backend.mjs']],

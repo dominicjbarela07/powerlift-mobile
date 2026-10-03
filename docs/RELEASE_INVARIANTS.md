@@ -12,3 +12,10 @@ The governing relationships are `DEV ⊇ TESTFLIGHT`, cumulative TestFlight,
 explicit owner removals only, and same-workflow back-propagation. Run
 `npm run release:verify-testflight` and use the guarded publisher/native wrapper.
 Missing valid TestFlight state in DEV blocks release and must flow TestFlight → DEV.
+
+Worktree lifecycle: read the Worktree Lifecycle Law in the authoritative
+`docs/RELEASE_INVARIANTS.md`. Dirty canonical DEV is expected. Register justified
+isolation, reconcile all valid state, assess active worktrees, and close completed
+temporary worktrees in the same release workflow. Inspect with
+`python3 /Users/dominic/powerlifting_app_dev/scripts/worktree_lifecycle.py inventory`
+and check an exact worktree with `npm run worktree:check -- --worktree <path>`.

@@ -59,8 +59,11 @@ export function runDevSupersetGate({root=process.cwd(),devRoot=process.env.STREN
   const constitutionFile=path.join(backendRoot,'docs/RELEASE_INVARIANTS.md');
   const constitution=fs.readFileSync(constitutionFile);
   assert.equal(sha256(constitution),baseline.releaseConstitutionSha256,'Authoritative release constitution changed; review its protection explicitly');
+  if(baseline.worktreeLifecycleToolSha256) assert.equal(sha256(fs.readFileSync(path.join(backendRoot,'scripts/worktree_lifecycle.py'))),baseline.worktreeLifecycleToolSha256,'Worktree lifecycle enforcement changed without reviewed protection');
   assert.ok(constitution.toString().includes('DEV ⊇ TESTFLIGHT'),'Read and enforce the authoritative release constitution');
   for(const file of ['AGENTS.md','README.md','docs/RELEASE_INVARIANTS.md']) assert.ok(fs.readFileSync(path.join(root,file),'utf8').includes('RELEASE_INVARIANTS.md'),`Mandatory release constitution pointer missing: ${file}`);
+  if(baseline.worktreeLifecycleContractsSha256) assert.equal(sha256(fs.readFileSync(path.join(backendRoot,'tests/test_worktree_lifecycle.py'))),baseline.worktreeLifecycleContractsSha256,'Worktree lifecycle failure contracts changed without reviewed protection');
+  if(baseline.worktreeLifecycleAuthorization) assertOwnerEvidence(root,[baseline.worktreeLifecycleAuthorization]);
   const removals=read(root,'config/release-removal-authorizations.json');
   assert.equal(removals.schemaVersion,1);assert.ok(Array.isArray(removals.items));
   for(const removal of removals.items) {
@@ -120,7 +123,7 @@ export function runPostReleaseGate({root,devRoot,backendRoot,published,manifest,
   const result=runDevSupersetGate({root,devRoot,backendRoot,requireCleanCandidate:true});
   assert.equal(result.devProductFingerprint,devProductFingerprint,'DEV product source changed during publication; reconcile exact final state');
   assert.ok(result.pass,`Published TestFlight has state missing from DEV: ${result.missing.map(e=>e.identity).join(', ')}`);
-  return {...result,gate:'C',published:{id:published.id,group:published.group,gitCommitHash:published.gitCommitHash,manifestId:manifest.id,servedBundleSha256},workflowComplete:true};
+  return {...result,gate:'C',published:{id:published.id,group:published.group,gitCommitHash:published.gitCommitHash,manifestId:manifest.id,servedBundleSha256},artifactVerificationComplete:true,worktreeCloseoutRequired:true,workflowComplete:false};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href) {

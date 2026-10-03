@@ -1,0 +1,405 @@
+```shell
+# STRENGTH LEDGER — PERMANENT WORKTREE LIFECYCLE + DEV RECONCILIATION LAW
+
+### Working Directory / Scope
+/Users/dominic/powerlifting_app_dev
+/Users/dominic/powerlifting_app_dev/powerlift_mobile
+
+This supplements the permanent DEV/TestFlight release invariants.
+
+Codify this rule in the same authoritative repository governance used by `docs/RELEASE_INVARIANTS.md` and enforce it in Codex/release workflows.
+
+The problem is NOT that worktrees may never be used.
+
+The problem is that temporary worktrees are being created, work is being shipped, and those worktrees are then left around indefinitely. We accumulate old branches/worktrees containing different pieces of product state, lose track of which one owns what, and eventually established work gets omitted or overwritten.
+
+THAT STOPS NOW.
+
+## Fundamental Law
+
+A temporary worktree has a lifecycle:
+
+CREATE IF ACTUALLY NEEDED
+→ DO THE WORK
+→ VALIDATE
+→ RECONCILE WITH CANONICAL DEV
+→ if authorized, SHIP
+→ RECONCILE FINAL SHIPPED STATE BACK INTO CANONICAL DEV
+→ VERIFY NOTHING UNIQUE REMAINS STRANDED
+→ CLOSE/REMOVE THE TEMPORARY WORKTREE
+
+A worktree is NOT a permanent storage location for shipped product work.
+
+### 1. CANONICAL DEV REMAINS THE DURABLE DEVELOPMENT STATE
+
+The normal DEV workspace is intentionally allowed to be dirty.
+
+Do NOT create a new worktree merely because:
+
+- DEV has uncommitted changes
+- DEV is messy
+- isolation feels cleaner
+- Codex prefers a pristine checkout
+- release tooling would be easier from another directory
+
+Dirty DEV is expected.
+
+A temporary worktree may be created when there is a concrete technical reason for isolation, but Codex must state that reason.
+
+### 2. WORKTREES ARE TEMPORARY
+
+When Codex creates a worktree, record:
+
+- worktree path
+- branch
+- starting SHA
+- purpose
+- source DEV state
+- what changes are being made there
+
+That worktree now has an explicit obligation to be reconciled and closed.
+
+Do not leave it indefinitely because the immediate task finished.
+
+### 3. SHIPPING ENDS THE WORKTREE'S OWNERSHIP
+
+If I authorize:
+
+`send it to TestFlight`
+`push it`
+`deploy it`
+`release it`
+
+and work from a temporary worktree is included in that release, then after successful publication:
+
+THE TEMPORARY WORKTREE MAY NOT REMAIN THE ONLY PLACE THAT WORK EXISTS.
+
+Required sequence:
+
+temporary worktree changes
+→ TestFlight candidate
+→ validation
+→ publication
+→ exact published state identified
+→ reconcile/back-propagate into canonical DEV
+→ synchronize any other still-legitimate active development worktrees as necessary
+→ prove no unique shipped state remains stranded
+→ remove/close the completed temporary worktree
+
+Do this IN THE SAME RUN.
+
+### 4. TESTFLIGHT → DEV RECONCILIATION HAPPENS BEFORE CLEANUP
+
+Never remove a worktree until its valid state has been accounted for.
+
+Before cleanup, compute:
+
+TEMPORARY WORKTREE
+vs
+CANONICAL DEV
+vs
+PUBLISHED TESTFLIGHT
+
+Determine whether the temporary worktree contains anything unique.
+
+If unique VALID product work exists:
+
+→ integrate it into canonical DEV first.
+
+If something is ambiguous:
+
+→ DO NOT delete it.
+→ report it to me.
+
+If it is clearly obsolete temporary/release scaffolding:
+
+→ it may be removed with the worktree.
+
+The goal is not blindly deleting worktrees.
+
+The goal is ensuring they stop becoming hidden competing sources of truth.
+
+### 5. DEV SUPERSET LAW STILL CONTROLS EVERYTHING
+
+Permanent invariant:
+
+DEV ⊇ TESTFLIGHT
+
+Therefore after shipping from any worktree:
+
+PUBLISHED TESTFLIGHT - CANONICAL DEV = ∅
+
+If that is not true:
+
+THE RELEASE WORKFLOW IS NOT FINISHED.
+
+Back-propagate the valid published state into DEV before declaring completion.
+
+Never nerf TestFlight to make this equation true.
+
+Bring DEV forward.
+
+### 6. SYNC OTHER ACTIVE WORKTREES WHEN NECESSARY
+
+If there are other ACTIVE worktrees containing legitimate ongoing work, do not leave them based on stale product foundations after a release.
+
+Determine whether the shipped/reconciled state needs to be incorporated into them.
+
+If yes:
+
+canonical DEV / published cumulative state
+→ sync into active worktree
+→ preserve that worktree's legitimate unshipped changes
+
+Do not overwrite its ongoing work.
+
+Do not blindly merge everything everywhere.
+
+The purpose is to prevent active worktrees from later reintroducing stale product state.
+
+### 7. CLOSE COMPLETED WORKTREES
+
+After a worktree's task has:
+
+- been completed,
+- reconciled,
+- shipped if authorized,
+- back-propagated to DEV,
+- and had all unique valid work accounted for,
+
+REMOVE THE WORKTREE.
+
+Also clean up its temporary branch/ref when safe and when it has no remaining purpose.
+
+Do not leave:
+
+`full-sync-20260929`
+`rest-timer-fix`
+`education-review-old`
+`release-whatever`
+`hotfix-whatever`
+
+sitting around months after their work was integrated.
+
+Completed worktrees are not archives.
+
+Git history/release records are the archive.
+
+### 8. AUDIT THE CURRENT WORKTREE MESS
+
+Do this now.
+
+List every current repository worktree and classify each as:
+
+ACTIVE — legitimate ongoing unshipped work
+
+COMPLETED — work already integrated/shipped
+
+STALE — superseded by newer canonical state
+
+UNIQUE / NEEDS RECONCILIATION — contains valid work not represented in canonical DEV
+
+AMBIGUOUS — requires my decision
+
+For every worktree record:
+
+- path
+- branch
+- HEAD
+- dirty state
+- purpose if recoverable
+- unique commits
+- unique tracked changes
+- unique untracked product files
+- relationship to canonical DEV
+- relationship to current TestFlight
+- recommended action
+
+Do NOT delete anything until this inventory is complete.
+
+### 9. RECONCILE BEFORE REMOVAL
+
+For every COMPLETED or STALE worktree:
+
+compare its product state against canonical DEV and current TestFlight.
+
+If it contains something valid that is missing from DEV:
+
+RESTORE/SYNC IT INTO DEV.
+
+This is especially important given the current forensic investigation into silently lost TestFlight state.
+
+Do not delete evidence of missing product work before reconciliation.
+
+For every worktree containing unique assets, features, fixes, mappings, catalogs, tests, or governed state:
+
+account for them explicitly.
+
+### 10. CLEAN UP THE WORKTREE INVENTORY
+
+Once reconciliation is proven:
+
+- remove completed worktrees
+- remove stale worktrees
+- retain only genuinely active worktrees
+- retain ambiguous worktrees until I decide
+- clean safe obsolete branches/refs associated solely with removed worktrees
+
+Do not touch canonical DEV's dirty working state merely to make the repo look clean.
+
+### 11. PUT THIS IN PERMANENT GOVERNANCE
+
+Update `docs/RELEASE_INVARIANTS.md` with:
+
+## Worktree Lifecycle Law
+
+Include:
+
+- dirty canonical DEV is allowed
+- worktrees require a concrete reason
+- worktrees are temporary
+- shipped work must be reconciled into DEV
+- active worktrees must not remain stale behind shipped product state
+- completed worktrees must be closed after reconciliation
+- no unique valid work may be deleted during cleanup
+- DEV remains the durable superset
+- TestFlight is never nerfed to resolve divergence
+
+Also update whatever Codex automatically reads so this law is enforced on future tasks.
+
+### 12. ADD A WORKTREE RECONCILIATION CHECK
+
+Add repository tooling that can report:
+
+- active worktrees
+- worktree branch/HEAD
+- whether worktree contains unique commits
+- whether it contains unique tracked product changes
+- whether it contains untracked product files
+- whether completed release work is missing from canonical DEV
+
+A release workflow should flag when the worktree used for publication still contains unique shipped state afterward.
+
+It should not silently allow:
+
+TestFlight shipped
+→ worktree contains fix
+→ DEV doesn't
+→ task declared complete
+
+### 13. RELEASE CLOSEOUT REQUIREMENT
+
+From now on, any Codex task that uses a temporary worktree and publishes to TestFlight must end with a closeout section proving:
+
+WORKTREE USED:
+<path>
+
+PUBLISHED:
+<release>
+
+BACK-PROPAGATED TO CANONICAL DEV:
+YES
+
+PUBLISHED TESTFLIGHT - DEV:
+∅
+
+OTHER ACTIVE WORKTREES REQUIRING SYNC:
+<list or none>
+
+UNIQUE VALID WORK REMAINING IN TEMP WORKTREE:
+0
+
+TEMP WORKTREE REMOVED:
+YES
+
+If `UNIQUE VALID WORK REMAINING` is not zero:
+
+DO NOT REMOVE IT.
+
+If `PUBLISHED TESTFLIGHT - DEV` is not empty:
+
+THE RELEASE IS NOT CLOSED OUT.
+
+### Locked / Do Not
+
+- Do NOT ban worktrees completely.
+- Do NOT create worktrees just because DEV is dirty.
+- Do NOT clean/reset/stash canonical DEV merely for convenience.
+- Do NOT leave completed worktrees indefinitely.
+- Do NOT delete a worktree containing unreconciled valid work.
+- Do NOT delete evidence needed by the ongoing TestFlight forensic reconstruction.
+- Do NOT nerf TestFlight to match DEV.
+- Do NOT assume worktree absence from DEV means the work was intentionally abandoned.
+- Do NOT overwrite legitimate ongoing work in active worktrees.
+- Do NOT make product decisions while reconciling.
+- If ownership/intent is ambiguous, ASK ME.
+- Never use `workout` in user-facing copy.
+
+### Validation
+
+At completion prove:
+
+1. every existing worktree was inventoried
+2. every completed/stale worktree was compared against DEV and TestFlight
+3. valid unique product state was reconciled into DEV before cleanup
+4. no approved asset/feature/fix was deleted during cleanup
+5. current TestFlight valid state remains preserved
+6. canonical DEV contains all valid current TestFlight state
+7. only genuinely active or owner-blocked worktrees remain
+8. worktree release-closeout tooling detects a deliberately simulated stranded-fix condition and fails
+
+### Expected Output
+
+## PERMANENT RULE
+
+- governance files updated
+- Worktree Lifecycle Law added
+- Codex guidance updated
+
+## CURRENT INVENTORY
+
+Provide:
+
+| Worktree | Branch | State | Unique Product Work | TestFlight Relationship | Action |
+|---|---|---|---|---|---|
+
+## RECONCILIATION
+
+For every removed worktree:
+- what it contained
+- what was already represented in DEV
+- what had to be back-propagated
+- confirmation no valid unique state was lost
+
+## CLEANUP
+
+- worktrees before
+- worktrees after
+- removed worktrees
+- retained active worktrees
+- retained ambiguous worktrees
+
+## AUTOMATION
+
+- reconciliation/check command
+- release-closeout gate
+- simulated failure result proving stranded shipped state blocks closeout
+
+## FINAL REQUIRED STATEMENTS
+
+`DEV contains all valid current TestFlight product state: YES`
+
+`Valid shipped state stranded only in temporary worktrees: 0`
+
+`Completed/stale worktrees remaining without justification: 0`
+
+`Valid product state lost during worktree cleanup: 0`
+
+`Dirty canonical DEV preserved: YES`
+
+If any worktree still contains unique valid product state:
+
+DO NOT DELETE IT.
+
+Reconcile first, then close it.
+```
