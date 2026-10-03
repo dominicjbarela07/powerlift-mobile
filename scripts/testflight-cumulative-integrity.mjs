@@ -77,7 +77,8 @@ export function productFiles(root) {
       else if (entry.isFile()) result[path.relative(root,file)] = sha256(fs.readFileSync(file));
     }
   };
-  for (const dir of ['app','components','lib','hooks','contexts','constants','config','assets']) visit(path.join(root,dir));
+  for (const dir of ['app','components','lib','hooks','context','contexts','constants','config','assets']) visit(path.join(root,dir));
+  for (const file of ['theme.ts']) if (fs.existsSync(path.join(root,file))) result[file] = sha256(fs.readFileSync(path.join(root,file)));
   const runtimePolicy = 'artwork-review/runtime-policy.json';
   result[runtimePolicy] = sha256(fs.readFileSync(path.join(root,runtimePolicy)));
   // Release evidence and its approval documents do not participate in their own fingerprint.
