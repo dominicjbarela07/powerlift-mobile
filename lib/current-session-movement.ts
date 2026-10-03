@@ -1,9 +1,11 @@
 import catalog from '@/config/governed-movement-art-taxonomy.json';
 
 type Row = Record<string, any>;
-const byId = new Map(catalog.movements.map(row => [row.id, row]));
-const byKey = new Map(catalog.movements.map(row => [row.key, row]));
-const byCoreId = new Map(catalog.movements.filter(row => row.kind === 'core').map(row => [row.core_movement_definition_id, row]));
+const protectedCompatibility = (catalog as typeof catalog & {compatibility_movements?: typeof catalog.movements}).compatibility_movements || [];
+const definitions = [...protectedCompatibility, ...catalog.movements];
+const byId = new Map(definitions.map(row => [row.id, row]));
+const byKey = new Map(definitions.map(row => [row.key, row]));
+const byCoreId = new Map(definitions.filter(row => row.kind === 'core').map(row => [row.core_movement_definition_id, row]));
 const id = (value: unknown): number | null => (typeof value === 'number' || typeof value === 'string')
   && Number.isInteger(Number(value)) && Number(value) > 0 ? Number(value) : null;
 const equipmentOnly = (ref?: Row | null) => String(ref?.key || '').startsWith('machine_equipment_')

@@ -1,6 +1,8 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['DEV superset, explicit removals, and exact published-state failure gates', ['scripts/test-dev-testflight-release-gates.mjs']],
+  ['all shipped governed IDs survive thin-payload compatibility', ['scripts/test-protected-testflight-catalog-compatibility.mjs']],
   ['live Session Edit, Add, Remove, and Swap persistence', ['scripts/test-active-session-hot-swap.mjs', 'scripts/test-active-session-mutation-backend.mjs']],
   ['Session actions safety hierarchy and composition', ['scripts/test-session-actions-sheet.mjs', 'scripts/test-active-session-composition.mjs']],
   ['dedicated muscle-group navigation artwork', ['scripts/test-muscle-group-navigation-artwork.mjs', 'scripts/test-swap-muscle-thumbnail-framing.mjs']],

@@ -1,3 +1,5 @@
+Before any TestFlight/release operation, read and enforce `docs/RELEASE_INVARIANTS.md`.
+
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).

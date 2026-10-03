@@ -130,6 +130,14 @@ export function assertOwnerEvidence(root, authorizations) {
 
 export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,requireRuntime=false}={}) {
   const protectedState=read(root,'config/testflight-release-integrity.json');
+  const removalManifest=read(root,'config/release-removal-authorizations.json');
+  assert.equal(removalManifest.schemaVersion,1);
+  assertOwnerEvidence(root,removalManifest.items);
+  for(const receipt of removalManifest.items) {
+    assert.ok(receipt.identity && receipt.action === 'REMOVE' && receipt.before && receipt.after === null,'Explicit removals require exact identity/before/after and owner evidence');
+  }
+  const sourceRemovals=removalManifest.items.filter(a=>a.kind==='source').map(a=>({...a,path:a.identity}));
+  const assetRemovals=removalManifest.items.filter(a=>a.kind==='asset').map(a=>({...a,hash:a.identity}));
   assert.equal(protectedState.schemaVersion,1);
   assertOwnerEvidence(root, [...(protectedState.sourceAuthorizations || []), ...(protectedState.assetRemovalAuthorizations || []), ...(protectedState.historicalRemovalAuthorizations || [])]);
   for (const [file, expected] of Object.entries(protectedState.releaseGateFiles || {})) {
@@ -141,7 +149,7 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
   assert.ok(protectedState.releaseHistory.length >= 5, 'multi-release historical evidence is required');
   assert.ok(protectedState.currentTestFlight && protectedState.previousTestFlight, 'both live and previous baseline identities are required');
   const files=productFiles(root), fingerprint=fingerprintFiles(files);
-  const delta=compareProtectedFiles(protectedState.protectedFiles,files,protectedState.sourceAuthorizations);
+  const delta=compareProtectedFiles(protectedState.protectedFiles,files,[...(protectedState.sourceAuthorizations || []),...sourceRemovals]);
   assert.deepEqual(delta.violations, [], `UNAUTHORIZED PRODUCT DELTA: ${delta.violations.length} protected path(s) changed or disappeared`);
   for(const historical of protectedState.historicalProtectedPaths) {
     assert.ok(files[historical] || (protectedState.historicalRemovalAuthorizations || []).some(receipt => receipt.path === historical && receipt.action === 'REMOVE'), `historical product state disappeared without owner authorization: ${historical}`);
@@ -162,7 +170,7 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
     assert.equal(eas.build.testflight.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL,'testflight','native TestFlight builds must retain approved artwork');
   }
   let artifact;
-  if(exportDir) artifact=assertProtectedArtifactAssets(protectedState.protectedAssetHashes,exportedHashes(exportDir),protectedState.assetRemovalAuthorizations);
+  if(exportDir) artifact=assertProtectedArtifactAssets(protectedState.protectedAssetHashes,exportedHashes(exportDir),[...(protectedState.assetRemovalAuthorizations || []),...assetRemovals]);
   if(requireRuntime) {
     assert.ok(runtimeReceipt,'RELEASE BLOCKED: --runtime-receipt is required before publication');
     const receipt=JSON.parse(fs.readFileSync(runtimeReceipt,'utf8'));
