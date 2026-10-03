@@ -39,6 +39,8 @@ export EXPO_PUBLIC_APPROVED_ART_CHANNEL="testflight"
 export STRENGTH_LEDGER_BACKEND_ROOT="${EXPECTED_BACKEND_ROOT}"
 
 git fetch origin dev/canonical-mobile --quiet
+# Mandatory: read and enforce backend docs/RELEASE_INVARIANTS.md.
+node scripts/verify-testflight-release-integrity.mjs --gate-a-only
 node scripts/test-release-source-lineage.mjs
 
 node <<'NODE'

@@ -5,8 +5,10 @@ import artworkReuse from '@/config/governed-movement-art-reuse.json';
 export type GovernedArtworkTaxonomy = typeof projection.movements[number];
 // Explicit retired definitions enrich old saved references without selecting a
 // different movement or changing the active catalog. Current definitions win.
+const protectedCompatibility = (projection as typeof projection & {compatibility_movements?: typeof projection.movements}).compatibility_movements || [];
 const accessories = [
   ...artworkReuse.legacy_artwork_identities.map(row => row.taxonomy),
+  ...protectedCompatibility.filter(row => row.kind === 'accessory'),
   ...projection.movements.filter(row => row.kind === 'accessory'),
 ];
 const byId = new Map(accessories.map(row => [row.id, row]));

@@ -3224,7 +3224,9 @@
     "assets/images/warmup-configuration/bars/bar-custom-none.png": "ea953c97c9ea2da7d0aa462b28f5ac9810dbdacfa4e58f971a064e1dae2dee86",
     "artwork-review/runtime-policy.json": "d1e5cd931e47517f7e183a4c00f29683f8374789a261d5d0311910b5b8c82eef",
     "context/AuthContext.tsx": "8757cfa9927e409ec1a1bebd07c6d4e2ddf6eebffbf0770a9c279e9aab4127db",
-    "theme.ts": "464bd011e82bd22096607e4dbe4507a68fd68a0e063e58c41d68bb9294e9805c"
+    "theme.ts": "464bd011e82bd22096607e4dbe4507a68fd68a0e063e58c41d68bb9294e9805c",
+    "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
+    "config/release-removal-authorizations.json": "79b7e83d8edc0ee3b52954fdf66cf31d152059d1fa056a60b7018f9b8ef215bb"
   },
   "historicalProtectedPaths": [
     "app/(tabs)/_layout.tsx",
@@ -18778,6 +18780,24 @@
       "ownerEvidenceSha256": "aa801c48a753f149626c78778b8bc6d4daf5f4a91f1b32be00b94aabd401a36c",
       "restorationId": "self-coach.create-session.return-lifecycle",
       "reason": "Actual second-entry creation is permanently disabled after success; reset successful state on next focus while retaining failed-template retries."
+    },
+    {
+      "path": "lib/current-session-movement.ts",
+      "before": "aab85514acc582fc9c575c821e9e47171ce741c567431c0be33408a59c039f4e",
+      "after": "1e35381d7defc2f0abac8f6501ad46a88d7622b4a791030200baa9305ea15dc0",
+      "ownerInstruction": "Everything else deterministic:\nFIX IT.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-03-release-constitution.txt",
+      "ownerEvidenceSha256": "085ca631e72e184bb1a2dd19e1ec87157a6998cba6cd821a7b68218f458f46a1",
+      "reason": "Back-propagate all shipped identities into DEV thin Session/anatomy readers; current active metadata wins; no evidence writes or reactivation."
+    },
+    {
+      "path": "lib/governed-movement-art-taxonomy.ts",
+      "before": "a20c3943ad6f93d51741419175d57edbf20f2a9c57ff5f31d929d6fcf3351771",
+      "after": "df2624db93177fef1f1a39cd1ead38779fde300dc8e475787db233187ae33776",
+      "ownerInstruction": "Everything else deterministic:\nFIX IT.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-03-release-constitution.txt",
+      "ownerEvidenceSha256": "085ca631e72e184bb1a2dd19e1ec87157a6998cba6cd821a7b68218f458f46a1",
+      "reason": "Back-propagate all shipped identities into DEV thin Session/anatomy readers; current active metadata wins; no evidence writes or reactivation."
     }
   ],
   "assetRemovalAuthorizations": [
@@ -156755,23 +156775,31 @@
     }
   ],
   "releaseGateFiles": {
-    "AGENTS.md": "043c6785b207fe28c8f2b112e0d4ae9e2ff331747af6b7abaf4ac8b2ab860509",
+    "AGENTS.md": "7bc776b240657ab96e70c0b26c938c80be4fadbd731a90ddb43f1ff7c8210434",
     "app.config.js": "9c677a722146f9d76bc43d4dcd3bc3dbcd1c27d82f1154d12af15229421d24bf",
-    "scripts/testflight-cumulative-integrity.mjs": "7927ec52ef1700b609aebdb683d467a57dc4f146fc7a25402c6408166cc66002",
+    "scripts/testflight-cumulative-integrity.mjs": "122d3071c85767ae864cb804162694e8d7bedd8155b9381f87c635197c407dba",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
-    "scripts/publish-validated-ios-ota.mjs": "7dc1df06d7cfc64c010f87563dec020729ff10082468165934ba2aa364f0c1d3",
-    "scripts/eas-build-testflight.sh": "4f15d2f1a64ff8652c78d5cffc2bbc07c8c51d2d1148e1886f5b4d96b9bec2b1",
-    "scripts/eas-update-testflight.sh": "ae87a0f9b72dec47836622218dfd67b0ba95e7a751c6cfd00067588edb19dea4",
+    "scripts/publish-validated-ios-ota.mjs": "fe030e8f6302ed180e5c288393e032136160511a4487843ee99bd94ff69184d9",
+    "scripts/eas-build-testflight.sh": "946b0857b8b84925906b84547dbb62f1fa05e12ab3771674dd64e359d920e115",
+    "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
     "scripts/test-accepted-behavior-contracts.mjs": "aea994729080fe6f26a7163a83ee3087854039e08a2126bc51a599e22fae5834",
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
     "config/protected-fix-manifest.json": "667e45f70e74ffccec3b20ae65e5ac61a04bfffe1ee56b214797f793aca91a3e",
     "scripts/assert-no-dev-artwork-export.mjs": "403fad1b126d9b77f076d1442009f99a9277f7b6ce4cce8dc82089bd56b58d2c",
-    "scripts/test-release-critical-invariants.mjs": "86af3feafb3224416a8eef5f7e95c3b3f83b523e7eec73bcead26c3780692934",
+    "scripts/test-release-critical-invariants.mjs": "8005fe5b573d4876039c88f21053752c36a663868d2f514e9cba0085db929131",
     "scripts/test-release-source-lineage.mjs": "abae1f05b4456bf51ee32179036769603de6140c83d7cba35cd56cc38216468a",
     "scripts/release-holdback-policy.mjs": "c4da1351f09b5f5d5b8b68dbc8191d2717b6001acc42169c47cdf336261ea86c",
-    "package.json": "9711fde76d3841633f132c23ea497d638903aa1faac74bd6cd7400e44d42377b",
+    "package.json": "08012f2f04f4fe88450ae0a383f026df2e999db745cb1b039fa50860738dcedb",
     "package-lock.json": "1343e90757f22b5d2f2b6c9f21ca383a587770f3a68d83f0d60f8d1709ecccac",
-    "scripts/test-create-session-return-lifecycle.mjs": "e6bd4631062c55708a1cbd73982c1e63b5ec9337e2aa2c8f30bee7103004fc1a"
+    "scripts/test-create-session-return-lifecycle.mjs": "e6bd4631062c55708a1cbd73982c1e63b5ec9337e2aa2c8f30bee7103004fc1a",
+    "scripts/verify-testflight-release-integrity.mjs": "04f5d4b542189437d5789fe67ebaf33cbe9ac893c2d06034637315ebd0c72180",
+    "docs/RELEASE_INVARIANTS.md": "446fddc0f1aaee2a2c9c151df3d8c653d1b86f4baf97e8fa50273747d1f0524f",
+    "README.md": "97175c37b7f526cc8e3112f284f94edfa70653f097413a97368a2f9fb42ee90a",
+    "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
+    "config/release-removal-authorizations.json": "79b7e83d8edc0ee3b52954fdf66cf31d152059d1fa056a60b7018f9b8ef215bb",
+    "scripts/test-dev-testflight-release-gates.mjs": "ec6ab1b9cd5eee15ab24904dce8d517064509d89c048e4989c9b4935f2bb0576",
+    "scripts/test-protected-testflight-catalog-compatibility.mjs": "94cddbdd75dcc78f35a74d6bd8a6345c21331f42546a88870a5938072fd08c7c",
+    "scripts/test-retired-movement-discovery.mjs": "c5d8c2b21df0e6a0d62062ea6516aec801f4e61670230b9fea22fdaa040d87c4"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -156922,9 +156950,21 @@
   "runtimeSourceProjection": [
     {
       "path": "config/governed-movement-art-taxonomy.json",
-      "testedHash": "925f2b2a72a2fdbea143673ee6e9f46ce25f5be94563dfc8e68a0b013b8f4eaa",
+      "testedHash": "4cecf895c2035b1a65b1ec2d36b8b4ff1c37b39ea1110c92def256b4a51a3aaf",
       "candidateHash": "96829b44057e3fbb88f3be921ca11999742b4a42c7565938c9feef3e6f08cae9",
-      "ownerIntent": "Sep 28 explicit instruction: preserve current TestFlight catalog; do not replace it with older DEV catalog; destination-specific data transfer remains separately governed."
+      "ownerIntent": "Sep 28 explicit instruction: preserve current TestFlight catalog; do not replace it with older DEV catalog; destination-specific data transfer remains separately governed.",
+      "ownerInstruction": "Everything else deterministic:\nFIX IT.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-03-release-constitution.txt",
+      "ownerEvidenceSha256": "085ca631e72e184bb1a2dd19e1ec87157a6998cba6cd821a7b68218f458f46a1",
+      "reason": "DEV retains active enrichment plus exact 69 shipped retired compatibility records; release preserves exact original 567 until its separately authorized catalog promotion."
     }
-  ]
+  ],
+  "releaseConstitutionSha256": "4c611ccbb73fef0a37b16bbf0726299eb63e48c19c61a9ab472c32d5a2fbcf2c",
+  "protectedCatalogSnapshotSha256": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
+  "catalogCompatibilityAuthorization": {
+    "ownerInstruction": "Everything else deterministic:\nFIX IT.",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-03-release-constitution.txt",
+    "ownerEvidenceSha256": "085ca631e72e184bb1a2dd19e1ec87157a6998cba6cd821a7b68218f458f46a1",
+    "reason": "Retain every exact shipped catalog identity/metadata in DEV while preserving prior owner-approved active retirement and newer DEV enrichment."
+  }
 }

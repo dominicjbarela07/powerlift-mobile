@@ -4,7 +4,9 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { assertProtectedArtifactAssets } from './testflight-cumulative-integrity.mjs';
+import { assertProtectedArtifactAssets, sha256 } from './testflight-cumulative-integrity.mjs';
+import { runDevSupersetGate, runPostReleaseGate, bindExportSource } from './verify-testflight-release-integrity.mjs';
+// Mandatory authority: backend docs/RELEASE_INVARIANTS.md; Gates A/B/C cannot be bypassed here.
 
 const root = process.cwd();
 const args = process.argv.slice(2);
@@ -46,15 +48,21 @@ if (!apiBase) {
 }
 
 const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'strength-ledger-ios-ota-'));
+const frozenCatalogRef=JSON.parse(fs.readFileSync(path.join(root,'config/testflight-release-integrity.json'),'utf8')).previousTestFlight.gitCommitHash;
 const run = (command, commandArgs, options = {}) => execFileSync(command, commandArgs, {
   cwd: root,
-  env: { ...process.env, EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: branch === 'testflight' ? 'testflight' : 'disabled' },
+  env: { ...process.env, STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:branch==='testflight'?frozenCatalogRef:undefined, EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: branch === 'testflight' ? 'testflight' : 'disabled' },
   encoding: 'utf8',
   maxBuffer: 64 * 1024 * 1024,
   stdio: options.capture ? ['ignore', 'pipe', 'inherit'] : 'inherit',
 });
 
+let devSuperset;
 if (branch === 'testflight') {
+  if (JSON.parse(fs.readFileSync(path.join(root,'app.json'),'utf8')).expo.extra?.releaseTrack!=='testflight') throw new Error('TestFlight must use its explicit release projection');
+  devSuperset = runDevSupersetGate({root,requireCleanCandidate:!prepareOnly});
+  if (!devSuperset.pass) throw new Error(`Gate A blocked: restore TestFlight → DEV: ${devSuperset.missing.map(item=>item.identity).join(', ')}`);
+  fs.writeFileSync(path.join(outputDir,'release-gate-a.json'),JSON.stringify(devSuperset,null,2));
   run(process.execPath, ['scripts/test-release-source-lineage.mjs']);
   run(process.execPath, ['scripts/testflight-cumulative-integrity.mjs']);
   if (!prepareOnly) {
@@ -79,6 +87,7 @@ run('npx', [
   outputDir,
   '--clear',
 ]);
+const exportSource=branch==='testflight'?bindExportSource(root,outputDir):null;
 run(process.execPath, ['scripts/assert-ota-route-bundle.mjs', outputDir]);
 run(process.execPath, ['scripts/assert-no-dev-artwork-export.mjs', outputDir]);
 run(process.execPath, ['scripts/assert-ota-native-compatibility.mjs']);
@@ -102,6 +111,14 @@ if (prepareOnly) {
   process.exit(0);
 }
 
+if (branch === 'testflight') {
+  const finalPreflight=runDevSupersetGate({root,requireCleanCandidate:true});
+  if (!finalPreflight.pass || finalPreflight.candidate.sha!==exportSource.candidateSha || finalPreflight.candidateProductFingerprint!==exportSource.productFingerprint || finalPreflight.devProductFingerprint!==devSuperset.devProductFingerprint) throw new Error('Source changed during validation; release blocked until exact source is reconciled and exported again');
+  const baseline=JSON.parse(fs.readFileSync(path.join(root,'config/testflight-release-integrity.json'),'utf8'));
+  const latest=JSON.parse(run('npx',['eas-cli','update:list','--branch','testflight','--limit','10','--json','--non-interactive'],{capture:true})).currentPage.filter(update=>update.platforms.includes('ios')).slice(0,2);
+  if (latest[0]?.group!==baseline.currentTestFlight.group || latest[1]?.group!==baseline.previousTestFlight.group) throw new Error('TestFlight changed while validating; reconcile the exact new protected baseline before publication');
+}
+
 const publishOutput = run('npx', [
   'eas-cli',
   'update',
@@ -118,6 +135,12 @@ const publishOutput = run('npx', [
   '--json',
 ], { capture: true });
 const [published] = JSON.parse(publishOutput);
+if (branch === 'testflight' && !published.gitCommitHash) {
+  const details = JSON.parse(run('npx',['eas-cli','update:view',published.group,'--json'],{capture:true}));
+  const update = (Array.isArray(details) ? details : details.updates || [details]).find(item=>item.id===published.id);
+  if (!update?.gitCommitHash) throw new Error('Published source identity unavailable; release workflow incomplete');
+  published.gitCommitHash = update.gitCommitHash;
+}
 
 const manifestResponse = await fetch(published.manifestPermalink, {
   headers: {
@@ -176,6 +199,11 @@ if (!localBundle.equals(remoteBundle)) {
 }
 
 const bundleSha256 = crypto.createHash('sha256').update(localBundle).digest('hex');
+if (branch === 'testflight') {
+  const post = runPostReleaseGate({root,published,manifest,candidateSha:devSuperset.candidate.sha,devProductFingerprint:devSuperset.devProductFingerprint,validatedBundleSha256:bundleSha256,servedBundleSha256:sha256(remoteBundle),validatedAssetHashes:exportSource.assetHashes});
+  fs.writeFileSync(path.join(outputDir,'release-gate-c.json'),JSON.stringify(post,null,2));
+  console.log(`Gate C PASS: exact published artifact/source remains contained in DEV; receipt ${outputDir}/release-gate-c.json`);
+}
 
 console.log(
   `OTA publish verified — group ${published.group}, update ${published.id}, ` +

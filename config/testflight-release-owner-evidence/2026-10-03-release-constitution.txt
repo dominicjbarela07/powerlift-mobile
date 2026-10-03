@@ -1,0 +1,723 @@
+# STRENGTH LEDGER RELEASE CONSTITUTION — DEV IS THE SUPERSET / TESTFLIGHT MAY NEVER BE AHEAD
+
+### Working Directory / Scope
+/Users/dominic/powerlifting_app_dev
+/Users/dominic/powerlifting_app_dev/powerlift_mobile
+
+THIS IS A PERMANENT PROJECT GOVERNANCE CHANGE.
+
+Do not treat this as another temporary prompt instruction.
+
+Codify these release laws IN THE REPOSITORY, wire them into release validation, reconcile the current DEV/TestFlight divergence according to these laws, and make future violations mechanically difficult or impossible.
+
+I am sick of repeatedly discovering that TestFlight contains product state missing from DEV, then later losing that product state because a DEV → TestFlight synchronization treats DEV as permission to overwrite the release.
+
+THAT ENDS NOW.
+
+---
+
+# THE FUNDAMENTAL LAW
+
+DEV IS THE SUPERSET.
+
+The allowed relationship is:
+
+DEV ⊇ TESTFLIGHT
+
+Therefore:
+
+TESTFLIGHT == DEV
+or
+TESTFLIGHT < DEV
+
+The following state is NEVER acceptable:
+
+TESTFLIGHT > DEV
+
+If something valid exists in TestFlight but is absent from DEV:
+
+DO NOT REMOVE IT FROM TESTFLIGHT.
+
+PROMOTE/BACK-PROPAGATE IT INTO DEV.
+
+TestFlight being ahead means DEV IS WRONG/INCOMPLETE.
+
+The repair direction is:
+
+TESTFLIGHT
+→ DEV
+
+NOT:
+
+DEV
+→ subtract TestFlight until they match
+
+This is non-negotiable.
+
+---
+
+# SECOND FUNDAMENTAL LAW — TESTFLIGHT IS CUMULATIVE
+
+A new TestFlight candidate is:
+
+CURRENT TESTFLIGHT
++ explicitly authorized additions
++ explicitly authorized modifications
+- explicitly authorized removals ONLY
+
+Absence from DEV is NOT removal authorization.
+
+A stale branch is NOT removal authorization.
+
+A merge is NOT removal authorization.
+
+A regenerated catalog is NOT removal authorization.
+
+A missing asset is NOT removal authorization.
+
+A fallback rendering successfully is NOT removal authorization.
+
+Codex deciding something is obsolete is NOT removal authorization.
+
+ONLY explicit owner authorization permits subtraction.
+
+---
+
+# THIRD FUNDAMENTAL LAW — NO RELEASE-ONLY FIXES
+
+Any valid fix/change made directly in the TestFlight release path MUST be back-propagated into DEV IN THE SAME WORKFLOW.
+
+Never:
+
+TestFlight hotfix
+→ publish
+→ forget DEV
+
+Required:
+
+TestFlight hotfix
+→ publish
+→ equivalent fix integrated into DEV
+→ DEV remains superset
+
+A release workflow is NOT complete until DEV contains the resulting valid TestFlight product state.
+
+---
+
+# FOURTH FUNDAMENTAL LAW — DEV SYNC IS NOT A REPLACEMENT OPERATION
+
+"Push DEV to TestFlight" means:
+
+take the authorized DEV delta
+→ integrate it onto the protected current TestFlight baseline
+→ preserve every established TestFlight element not explicitly removed
+→ publish
+→ reconcile final published state back into DEV
+
+It NEVER means:
+
+replace TestFlight with whatever happens to exist in the current DEV checkout.
+
+The current DEV filesystem is not an implicit deletion manifest.
+
+---
+
+# PUT THIS IN WRITING — PERMANENTLY
+
+Create a canonical repository document:
+
+`docs/RELEASE_INVARIANTS.md`
+
+If the repo already has a better canonical engineering-governance location, use it, but there must be ONE obvious authoritative document.
+
+Title:
+
+# Strength Ledger Release Invariants
+
+Include, prominently and unambiguously:
+
+## 1. DEV Superset Law
+
+`DEV ⊇ TESTFLIGHT`
+
+TestFlight may equal DEV or trail DEV.
+
+TestFlight may NEVER contain valid product state absent from DEV.
+
+If TestFlight is ahead:
+→ back-propagate TestFlight state into DEV.
+
+Never nerf TestFlight to make it match DEV.
+
+## 2. Cumulative TestFlight Law
+
+Current TestFlight is a protected baseline.
+
+Nothing disappears without explicit owner authorization.
+
+## 3. Explicit Removal Law
+
+Subtractions require an explicit owner-approved removal manifest.
+
+No inferred removals.
+
+## 4. Hotfix Back-Propagation Law
+
+Every TestFlight hotfix/fix must reach DEV in the same workflow.
+
+## 5. Fallbacks Do Not Excuse Regression
+
+Fallback rendering does not make subtraction acceptable.
+
+## 6. Release Source Law
+
+Never publish wholesale from a stale/dirty/divergent checkout.
+
+## 7. Canonical/Governed State Protection
+
+Protect:
+- movements
+- movement IDs
+- movement artwork
+- taxonomy
+- equipment/manufacturers
+- machine catalogs
+- Session behavior
+- history
+- SetLogs
+- PR behavior
+- Coach/Athlete permissions
+- settings
+- routes/actions
+- approved UX behavior
+- bundled product assets
+
+## 8. Owner Authority
+
+Codex may identify problems and propose changes.
+
+Codex may NOT decide to remove, retire, replace, reinterpret, simplify, or materially change established product behavior without explicit owner authorization.
+
+If uncertain:
+→ STOP AND ASK.
+
+Default answer:
+→ NO.
+
+---
+
+# MAKE THE DOCUMENT HARD TO IGNORE
+
+Reference `docs/RELEASE_INVARIANTS.md` from the repository's existing agent/developer guidance used by Codex.
+
+Inspect what Codex actually reads automatically in this repo, such as applicable:
+- AGENTS.md
+- README/development instructions
+- release scripts/docs
+- contributor guidance
+
+Add a concise mandatory pointer:
+
+`Before any TestFlight/release operation, read and enforce docs/RELEASE_INVARIANTS.md.`
+
+Do not duplicate a giant manifesto into every file.
+
+Create ONE authoritative document and ensure release tooling/agent instructions point to it.
+
+---
+
+# NOW RECONCILE CURRENT DEV AND TESTFLIGHT
+
+Do not merely write documentation and stop.
+
+We already know divergence exists.
+
+Perform an actual reconciliation.
+
+Establish:
+
+CURRENT VALID TESTFLIGHT PRODUCT STATE
+
+and:
+
+CURRENT INTENDED DEV PRODUCT STATE
+
+Then compute BOTH directions:
+
+DEV_ONLY
+and
+TESTFLIGHT_ONLY
+
+The existence of TESTFLIGHT_ONLY valid product state is a RELEASE-INVARIANT FAILURE.
+
+For every TESTFLIGHT_ONLY item:
+
+1. determine whether it is valid established product state
+2. determine its last-known-good implementation
+3. back-propagate it into DEV
+4. validate DEV now contains it
+5. DO NOT remove it from TestFlight
+
+If owner intent is ambiguous:
+→ ask me
+→ do not remove it from TestFlight while waiting
+
+---
+
+# RECONCILE MORE THAN SOURCE FILES
+
+Compare actual PRODUCT STATE.
+
+Audit:
+
+- features
+- behavior
+- routes
+- controls/actions
+- settings
+- assets
+- artwork
+- audio
+- animations
+- catalogs
+- taxonomy
+- movement IDs
+- equipment
+- history behavior
+- Session behavior
+- PR recognition
+- navigation
+- permissions
+- copy
+- API contracts
+- backend behavior required by mobile
+
+A feature can exist in both source trees and still have different behavior.
+
+That is a delta.
+
+---
+
+# RECENT RELEASE HISTORY MUST INFORM RECONCILIATION
+
+Inspect the last several TestFlight releases.
+
+Do not assume current TestFlight is the only relevant baseline.
+
+If:
+
+r47 had valid feature A
+r50 accidentally removed A
+r51 also lacks A
+
+then comparing only r50 → r51 would miss the regression.
+
+Use recent release history to recover silently lost established product state.
+
+This reconciliation should integrate with the broader forensic audit already requested.
+
+---
+
+# BUILD A BIDIRECTIONAL DELTA MANIFEST
+
+Create machine-readable release tooling output with at least:
+
+DEV_ONLY
+TESTFLIGHT_ONLY
+EQUIVALENT
+AUTHORIZED_DIFFERENCE
+UNAUTHORIZED_SUBTRACTION
+AMBIGUOUS_OWNER_DECISION
+
+For every item include:
+- identity
+- product area
+- DEV state
+- TestFlight state
+- recent historical state
+- authorization evidence
+- required reconciliation direction
+
+The required direction for valid TESTFLIGHT_ONLY state is ALWAYS:
+
+TESTFLIGHT → DEV
+
+Never the reverse.
+
+---
+
+# HARD PRE-RELEASE GATE — DEV MUST BE SUPERSET
+
+Before ANY TestFlight publication, automatically assert:
+
+DEV contains all protected current TestFlight product state.
+
+Conceptually:
+
+protected_testflight_state - dev_state
+
+must equal:
+
+EMPTY SET
+
+If not:
+
+RELEASE BLOCKED.
+
+Output exactly what DEV is missing.
+
+The operator must reconcile those items into DEV before publication.
+
+---
+
+# HARD PRE-RELEASE GATE — NO UNAUTHORIZED TESTFLIGHT SUBTRACTION
+
+Then compare:
+
+CURRENT TESTFLIGHT
+vs
+CANDIDATE TESTFLIGHT
+
+Any candidate subtraction requires explicit owner authorization.
+
+Conceptually:
+
+current_testflight - candidate
+
+must equal:
+
+AUTHORIZED_REMOVALS ONLY
+
+Anything else:
+
+RELEASE BLOCKED.
+
+These are TWO separate gates:
+
+GATE A:
+DEV must contain TestFlight.
+
+GATE B:
+Candidate may not subtract from TestFlight.
+
+Both must pass.
+
+---
+
+# POST-RELEASE GATE — DEV MUST STILL BE SUPERSET
+
+After TestFlight publication:
+
+compare the EXACT published TestFlight artifact/source against DEV again.
+
+Assert:
+
+published_testflight - dev
+
+= EMPTY SET
+
+If a release-path fix or transformation created a valid difference:
+
+BACK-PROPAGATE IT IMMEDIATELY.
+
+The release workflow is not complete until the invariant is restored.
+
+---
+
+# EXPLICIT REMOVAL MANIFEST
+
+Implement an explicit removal-authorization mechanism in release tooling.
+
+Default:
+
+AUTHORIZED_REMOVALS = []
+
+No removal authorization means ZERO removals.
+
+An item can enter this manifest only when there is explicit owner authorization.
+
+Do not infer it from:
+- Git deletion
+- DEV absence
+- migration
+- stale catalog
+- comments
+- "cleanup"
+- deprecation
+- Codex judgment
+
+Record enough context to audit who/what authorized the removal.
+
+---
+
+# PROTECT AGAINST THE EXACT FAILURES WE HAVE ALREADY SEEN
+
+The invariant tooling must detect cases such as:
+
+approved movement art exists in TestFlight
+→ missing in DEV
+→ BLOCK RELEASE
+→ restore art into DEV
+
+567 governed movements in TestFlight
+→ DEV catalog has 498
+→ BLOCK RELEASE
+→ reconcile missing valid records into DEV
+→ DO NOT publish 498 and delete 69
+
+TestFlight Hot Swap fix exists
+→ DEV lacks equivalent fix
+→ BLOCK future release until back-propagated
+
+TestFlight audio fix exists
+→ DEV older implementation
+→ back-propagate audio fix
+
+TestFlight PR recognition behavior exists
+→ DEV diverges
+→ reconcile valid state
+
+These are not theoretical anymore.
+
+---
+
+# RELEASE WORKTREE SAFETY
+
+Before any release, record:
+
+- DEV branch
+- DEV SHA
+- DEV worktree
+- DEV dirty/untracked state
+- current TestFlight source SHA
+- candidate source SHA
+- governed catalog hash/manifest
+- protected product-state manifest
+
+If the intended release source is stale, dirty in an unsafe way, or behind the protected TestFlight state:
+
+DO NOT PUBLISH.
+
+Create a clean release integration from the proper cumulative baseline.
+
+---
+
+# PERMANENT RELEASE COMMAND / CHECK
+
+Create a single obvious release-integrity command/script if the repo architecture permits it.
+
+Example conceptually:
+
+`npm run release:verify-testflight`
+
+or equivalent.
+
+It should run:
+
+1. read release invariants
+2. identify current TestFlight baseline
+3. validate DEV ⊇ TestFlight
+4. compute bidirectional product delta
+5. validate explicit removals
+6. validate candidate has no unauthorized subtraction
+7. run governed asset/catalog invariants
+8. run critical functional release contracts
+9. emit human-readable + machine-readable reports
+
+A TestFlight publication should not proceed unless this passes.
+
+Do not make this a ceremonial script that always exits 0.
+
+Violations must exit nonzero.
+
+---
+
+# CRITICAL FUNCTIONAL INVARIANTS
+
+Continue enforcing user-visible release contracts around established critical behavior, including:
+
+- Hot Swap actually mutates and persists
+- Add/Remove Movement
+- Edit Prescription
+- Copy From uses final canonical Session
+- zero-load Sets where governed
+- Rest Timer foreground/background routing
+- movement history
+- accessory rep-max PR recognition and visible celebration
+- Coach Calendar
+- Review flows
+- approved movement art
+- muscle-group art
+- equipment assets
+- catalog identity
+
+These tests complement the state-delta gates.
+
+They do not replace them.
+
+---
+
+# CREATE A RECONCILIATION REPORT
+
+Create:
+
+`docs/release/DEV_TESTFLIGHT_RECONCILIATION_2026-10-03.md`
+
+Include:
+
+## Current DEV Baseline
+
+## Current TestFlight Baseline
+
+## Recent TestFlight History Reviewed
+
+## DEV-Only State
+
+## TestFlight-Only State
+
+## Unauthorized Divergence Found
+
+## TestFlight → DEV Back-Propagation Performed
+
+## Ambiguous Owner Decisions
+
+## Release Invariants Installed
+
+## Automated Gates Installed
+
+## Final Reconciliation
+
+The report must explicitly answer:
+
+`Does DEV contain every valid product element currently present in TestFlight?`
+
+Expected final answer:
+
+YES.
+
+If NO:
+
+do not pretend reconciliation is complete.
+
+---
+
+# Locked / Do Not
+
+- DO NOT nerf TestFlight to match DEV.
+- DO NOT delete TestFlight-only state merely because DEV lacks it.
+- DO NOT treat DEV as replacement truth when it is behind.
+- DO NOT infer removals.
+- DO NOT silently resolve ambiguity.
+- DO NOT publish from stale/dirty source.
+- DO NOT leave TestFlight hotfixes out of DEV.
+- DO NOT make product decisions.
+- DO NOT stop after writing documentation.
+- DO NOT stop after creating tests.
+- ACTUALLY RECONCILE THE CURRENT STATE.
+- DO NOT touch Production Mobile 2.0.2.
+- NEVER use `workout` in user-facing copy.
+
+If reconciliation requires a product decision:
+
+STOP ON THAT ITEM AND ASK ME.
+
+Everything else deterministic:
+FIX IT.
+
+---
+
+# Validation
+
+Before declaring completion prove:
+
+## INVARIANT A
+
+`CURRENT VALID TESTFLIGHT - DEV = ∅`
+
+Every valid TestFlight feature/asset/behavior is represented in DEV.
+
+## INVARIANT B
+
+For a proposed candidate:
+
+`CURRENT TESTFLIGHT - CANDIDATE = AUTHORIZED_REMOVALS`
+
+No unauthorized subtraction.
+
+## INVARIANT C
+
+After release:
+
+`PUBLISHED TESTFLIGHT - DEV = ∅`
+
+DEV remains the superset.
+
+## INVARIANT D
+
+TestFlight hotfixes are present in DEV.
+
+## INVARIANT E
+
+Release verification exits NONZERO when intentionally tested against:
+- missing approved artwork
+- missing governed movement IDs
+- missing valid TestFlight feature/state
+- unauthorized removal
+
+Prove the gates actually block bad releases.
+
+---
+
+# Expected Output
+
+## WRITTEN GOVERNANCE
+
+- path to `docs/RELEASE_INVARIANTS.md`
+- locations that now point Codex/release workflows to it
+- exact permanent laws installed
+
+## CURRENT RECONCILIATION
+
+- DEV baseline
+- TestFlight baseline
+- recent releases reviewed
+- number of DEV-only items
+- number of TestFlight-only items found
+- every valid TestFlight-only item back-propagated into DEV
+- ambiguous items requiring my decision
+
+## AUTOMATION
+
+- release verification command
+- DEV-superset gate
+- unauthorized-subtraction gate
+- explicit removal manifest
+- post-release reconciliation gate
+- failure-mode tests proving each gate blocks publication
+
+## REPORT
+
+- path to `docs/release/DEV_TESTFLIGHT_RECONCILIATION_2026-10-03.md`
+- machine-readable delta manifest paths
+
+## FINAL REQUIRED STATEMENTS
+
+Codex must explicitly report:
+
+`DEV contains all valid current TestFlight product state: YES`
+
+`Valid TestFlight-only product state remaining: 0`
+
+`Unauthorized TestFlight subtraction allowed by release tooling: 0`
+
+`TestFlight hotfixes missing from DEV: 0`
+
+If ANY of those statements cannot truthfully be made:
+
+DO NOT CLAIM SUCCESS.
+
+Do not bring TestFlight backward.
+
+Bring DEV forward.
+
+And put the rule somewhere permanent so I never have to fucking establish this again.

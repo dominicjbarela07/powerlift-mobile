@@ -42,5 +42,8 @@ for (const route of ['/workouts/mobile/1507', '/workouts/mobile/movement-definit
 }
 assert.match(fs.readFileSync('lib/api.ts', 'utf8'), /if \(res.ok && method === 'GET'\) json = filterRetiredMovementLibraryResponse\(path, json\)/);
 const remaining = catalog.filter(selectable);
-assert.equal(remaining.length, 498, 'DEV and release must expose the same 498 active built-in definitions');
+const shipped = read('config/protected-testflight-catalog.json').movements.filter(selectable);
+assert.equal(shipped.length,498,'Preserve the owner-approved active subset of the original 567 definitions');
+for(const row of shipped) assert.ok(remaining.some(current=>current.id===row.id&&current.key===row.key), `Active shipped identity disappeared: ${row.key}`);
+assert.ok(remaining.every(selectable),'Retired compatibility identities cannot become selectable');
 console.log(JSON.stringify({ retired_keys_blocked: retired.length, selectable_catalog: remaining.length, removed_from_catalog_projection: catalog.length - remaining.length, history_and_custom_preserved: true }));
