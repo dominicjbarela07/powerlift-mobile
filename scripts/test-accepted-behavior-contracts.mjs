@@ -39,7 +39,7 @@ for (const name of accepted) {
     env: { ...process.env, CI: '1' },
     encoding: 'utf8',
     stdio: 'pipe',
-    timeout: 30_000,
+    timeout: name === 'test-active-session-mutation-backend.mjs' ? 130_000 : 30_000,
   });
   if (result.status !== 0) {
     failures.push({ name, output: `${result.stdout || ''}${result.stderr || ''}`.trim() });

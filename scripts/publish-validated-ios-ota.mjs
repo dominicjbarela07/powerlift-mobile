@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { assertProtectedArtifactAssets } from './testflight-cumulative-integrity.mjs';
 
 const root = process.cwd();
 const args = process.argv.slice(2);
@@ -15,6 +16,7 @@ const valueFor = (flag) => {
 const branch = valueFor('--branch') ?? 'testflight';
 const message = valueFor('--message');
 const prepareOnly = args.includes('--prepare-only');
+const runtimeReceipt = valueFor('--runtime-receipt') || process.env.STRENGTH_LEDGER_RUNTIME_RECEIPT;
 const nodeModules = path.join(root, 'node_modules');
 
 if (branch.toLowerCase().includes('production')) {
@@ -54,6 +56,15 @@ const run = (command, commandArgs, options = {}) => execFileSync(command, comman
 
 if (branch === 'testflight') {
   run(process.execPath, ['scripts/test-release-source-lineage.mjs']);
+  run(process.execPath, ['scripts/testflight-cumulative-integrity.mjs']);
+  if (!prepareOnly) {
+    const baseline = JSON.parse(fs.readFileSync(path.join(root,'config/testflight-release-integrity.json'),'utf8'));
+    const remote = JSON.parse(run('npx',['eas-cli','update:list','--branch','testflight','--limit','10','--json','--non-interactive'],{capture:true}));
+    const latest = remote.currentPage.filter(update => update.platforms.includes('ios')).slice(0,2);
+    if (latest[0]?.group !== baseline.currentTestFlight.group || latest[1]?.group !== baseline.previousTestFlight.group) {
+      throw new Error('TestFlight changed since the protected baseline was reconciled. Audit the exact current and previous releases before publishing.');
+    }
+  }
 }
 run('npm', ['run', 'test:accepted-behavior-contracts']);
 run('npm', ['run', 'test:release-critical-invariants']);
@@ -71,6 +82,14 @@ run('npx', [
 run(process.execPath, ['scripts/assert-ota-route-bundle.mjs', outputDir]);
 run(process.execPath, ['scripts/assert-no-dev-artwork-export.mjs', outputDir]);
 run(process.execPath, ['scripts/assert-ota-native-compatibility.mjs']);
+if (branch === 'testflight') {
+  const integrityArgs = ['scripts/testflight-cumulative-integrity.mjs', '--export-dir', outputDir];
+  if (!prepareOnly) {
+    if (!runtimeReceipt) throw new Error('TestFlight publication blocked: actual runtime journey receipt is required.');
+    integrityArgs.push('--require-runtime', '--runtime-receipt', runtimeReceipt);
+  }
+  run(process.execPath, integrityArgs);
+}
 
 const bundleRoot = path.join(outputDir, '_expo', 'static', 'js', 'ios');
 const bundlePath = fs.readdirSync(bundleRoot)
@@ -133,6 +152,11 @@ const manifest = jsonParts.find((part) => part.launchAsset);
 const extensions = jsonParts.find((part) => part.assetRequestHeaders);
 if (!manifest || !extensions) {
   throw new Error('OTA published but its manifest or asset authorization was unreadable.');
+}
+
+if (branch === 'testflight') {
+  const baseline = JSON.parse(fs.readFileSync(path.join(root, 'config/testflight-release-integrity.json'), 'utf8'));
+  assertProtectedArtifactAssets(baseline.protectedAssetHashes, manifest.assets.map(asset => asset.hash), baseline.assetRemovalAuthorizations);
 }
 
 const launchAsset = manifest.launchAsset;
