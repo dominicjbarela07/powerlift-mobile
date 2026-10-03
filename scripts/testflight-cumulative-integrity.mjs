@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 export const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 export const expoHash = bytes => crypto.createHash('sha256').update(bytes).digest('base64url');
@@ -70,7 +71,7 @@ export function productFiles(root) {
   const visit = (dir) => {
     if (!fs.existsSync(dir)) return;
     for (const entry of fs.readdirSync(dir, {withFileTypes:true})) {
-      if (entry.name === 'dev-mocks' || entry.name === 'fixtures') continue;
+      if (entry.name === 'dev-mocks' || entry.name === 'fixtures' || entry.name === '.DS_Store') continue;
       const file = path.join(dir, entry.name);
       if (entry.isDirectory()) visit(file);
       else if (entry.isFile()) result[path.relative(root,file)] = sha256(fs.readFileSync(file));
@@ -82,6 +83,21 @@ export function productFiles(root) {
   // Release evidence and its approval documents do not participate in their own fingerprint.
   for (const p of Object.keys(result)) if (p.startsWith('config/testflight-release-') || p.startsWith('config/testflight-runtime-')) delete result[p];
   return result;
+}
+export function fingerprintBackend(root) {
+  const files = {};
+  function visit(dir) {
+    if(!fs.existsSync(dir)) return;
+    for(const entry of fs.readdirSync(dir,{withFileTypes:true})) {
+      if(entry.name === '__pycache__') continue;
+      const file = path.join(dir,entry.name);
+      if(entry.isDirectory()) visit(file);
+      else if(/\.(py|json|html|js|ts)$/.test(file)) files[path.relative(root,file)] = sha256(fs.readFileSync(file));
+    }
+  }
+  for(const dir of ['app','migrations']) visit(path.join(root,dir));
+  for(const name of ['wsgi.py','requirements.txt']) if(fs.existsSync(path.join(root,name))) files[name] = sha256(fs.readFileSync(path.join(root,name)));
+  return fingerprintFiles(files);
 }
 export const fingerprintFiles = files => sha256(JSON.stringify(Object.entries(files).sort(([a],[b]) => a.localeCompare(b))));
 
@@ -150,6 +166,17 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
     assert.ok(runtimeReceipt,'RELEASE BLOCKED: --runtime-receipt is required before publication');
     const receipt=JSON.parse(fs.readFileSync(runtimeReceipt,'utf8'));
     assertRuntimeEvidence(receipt,fingerprint,protectedState.requiredRuntimeFlows,path.dirname(runtimeReceipt));
+    const backendRoot = process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev';
+    assert.equal(fingerprintBackend(backendRoot),receipt.backendProductFingerprint,'backend content changed since runtime observation');
+    assert.equal(execFileSync('git',['rev-parse','HEAD'],{cwd:backendRoot,encoding:'utf8'}).trim(),receipt.backendSourceSha,'backend revision changed since runtime observation');
+    const testedFiles = productFiles(receipt.runtimeSourceRoot || root);
+    assert.equal(fingerprintFiles(testedFiles), receipt.testedProductFingerprint, 'runtime source has changed since observation');
+    for (const [file, actual] of Object.entries(testedFiles)) {
+      if (files[file] === actual) continue;
+      const projection = protectedState.runtimeSourceProjection?.find(item => item.path === file && item.testedHash === actual && item.candidateHash === files[file]);
+      assert.ok(projection, `untested release product difference: ${file}`);
+    }
+    for (const file of Object.keys(files)) assert.ok(testedFiles[file], `candidate product path was absent during runtime verification: ${file}`);
   }
   return {productFingerprint:fingerprint,baselines:protectedState.releaseHistory.length,sourceDelta:delta,artifact,runtimeVerified:requireRuntime};
 }
