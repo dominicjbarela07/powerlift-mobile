@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { assertOwnerNonRecurrenceGovernance } from './owner-nonrecurrence-governance.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -56,6 +57,7 @@ export function compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog,
 
 export function runDevSupersetGate({root=process.cwd(),devRoot=process.env.STRENGTH_LEDGER_DEV_MOBILE_ROOT || '/Users/dominic/powerlifting_app_dev/powerlift_mobile',backendRoot=process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev',requireCleanCandidate=false}={}) {
   const baseline=read(root,'config/testflight-release-integrity.json');
+  assertOwnerNonRecurrenceGovernance({root,backendRoot});
   const constitutionFile=path.join(backendRoot,'docs/RELEASE_INVARIANTS.md');
   const constitution=fs.readFileSync(constitutionFile);
   assert.equal(sha256(constitution),baseline.releaseConstitutionSha256,'Authoritative release constitution changed; review its protection explicitly');

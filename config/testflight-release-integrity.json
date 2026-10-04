@@ -156775,7 +156775,7 @@
     }
   ],
   "releaseGateFiles": {
-    "AGENTS.md": "7bc776b240657ab96e70c0b26c938c80be4fadbd731a90ddb43f1ff7c8210434",
+    "AGENTS.md": "e99449e23ff59a6ec0d00ab5f5ca6c7aabdfd1c3398202e6e90193f9da75192e",
     "app.config.js": "9c677a722146f9d76bc43d4dcd3bc3dbcd1c27d82f1154d12af15229421d24bf",
     "scripts/testflight-cumulative-integrity.mjs": "eb3c779dd26093e9e7fe1c0bc4f49f688e37b507e8831e43dfd636125df34d07",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
@@ -156786,14 +156786,14 @@
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
     "config/protected-fix-manifest.json": "667e45f70e74ffccec3b20ae65e5ac61a04bfffe1ee56b214797f793aca91a3e",
     "scripts/assert-no-dev-artwork-export.mjs": "403fad1b126d9b77f076d1442009f99a9277f7b6ce4cce8dc82089bd56b58d2c",
-    "scripts/test-release-critical-invariants.mjs": "557485c2900e795960ad2169607d5f1588b7236e7a2d29ae1fd2c75a689fc830",
+    "scripts/test-release-critical-invariants.mjs": "c03cb8eb9a7e08ca3145b69ffa704c662c3a00986e1c40fe24ac6e6ab70038ed",
     "scripts/test-release-source-lineage.mjs": "abae1f05b4456bf51ee32179036769603de6140c83d7cba35cd56cc38216468a",
     "scripts/release-holdback-policy.mjs": "c4da1351f09b5f5d5b8b68dbc8191d2717b6001acc42169c47cdf336261ea86c",
     "package.json": "c2257cbf0b5864fc5ab69475aa2b7e8d87ca5b0f111d640becac610d76d73fe4",
     "package-lock.json": "1343e90757f22b5d2f2b6c9f21ca383a587770f3a68d83f0d60f8d1709ecccac",
     "scripts/test-create-session-return-lifecycle.mjs": "e6bd4631062c55708a1cbd73982c1e63b5ec9337e2aa2c8f30bee7103004fc1a",
-    "scripts/verify-testflight-release-integrity.mjs": "6ef66dcb1d3e0fdf47a1bab4425119206863f4f75c0bbf1c97b253164f527cfa",
-    "docs/RELEASE_INVARIANTS.md": "1009340614573a368fecf053a477ffad99502211bdf60881ef1758d9ace00a07",
+    "scripts/verify-testflight-release-integrity.mjs": "af5466ccdd402c8609528e491df1a57f2d72b3d13f7c66a631d773475774d2cb",
+    "docs/RELEASE_INVARIANTS.md": "5fbfc595013d0734450638843d0e9af02e7a7f62c0933cac7dc424eac9f208e0",
     "README.md": "8c1e55b964384a9cbc4fd535bf88bd67bec95995b404f9de5f5177f2607ede12",
     "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
     "config/release-removal-authorizations.json": "79b7e83d8edc0ee3b52954fdf66cf31d152059d1fa056a60b7018f9b8ef215bb",
@@ -156802,7 +156802,9 @@
     "scripts/test-retired-movement-discovery.mjs": "c5d8c2b21df0e6a0d62062ea6516aec801f4e61670230b9fea22fdaa040d87c4",
     "scripts/worktree-release-closeout.mjs": "9233953503b926d26d403488b65360a3cbe36cf7e5a237a45739cb7f49e9b7ce",
     "scripts/worktree-lifecycle.mjs": "f8e9f5cb04a8fc62cd478018685347dab4b893cc94e1b61e6cf557e877e9e3b3",
-    "scripts/test-worktree-lifecycle.mjs": "33eb5b43bdcdb439c49113cbc3ba91e4cf5ffe7ec0cd37fcf80adac9f0b8884a"
+    "scripts/test-worktree-lifecycle.mjs": "33eb5b43bdcdb439c49113cbc3ba91e4cf5ffe7ec0cd37fcf80adac9f0b8884a",
+    "scripts/owner-nonrecurrence-governance.mjs": "2dff59853028ab3c3a48d235aeb0aaa4bc22d20408b253ba0f4e1ff5bbecfc5f",
+    "scripts/test-owner-nonrecurrence-governance.mjs": "7f0cd46e05f69c286dc276a8e95c472456f3a9723261f9030e3d89bd6d00ff13"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -156962,7 +156964,7 @@
       "reason": "DEV retains active enrichment plus exact 69 shipped retired compatibility records; release preserves exact original 567 until its separately authorized catalog promotion."
     }
   ],
-  "releaseConstitutionSha256": "eb473b7fa3c7f7cffe02007f01fa3e858883a8c1f269ac7ffe84a780944b8040",
+  "releaseConstitutionSha256": "8fc39315a44a755afcfc19f182549cea8c06c64b8166bfebf92e7158320c9e09",
   "protectedCatalogSnapshotSha256": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
   "catalogCompatibilityAuthorization": {
     "ownerInstruction": "Everything else deterministic:\nFIX IT.",
@@ -156977,5 +156979,25 @@
     "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-03-worktree-lifecycle.txt",
     "ownerEvidenceSha256": "01e4306374720935de0453703debc2f3c0908ff142dcf1e2bf64a36ddc394919",
     "scope": "Add temporary-worktree lifecycle law and fail-closed release closeout; preserve all previous cumulative protections and unresolved owner decisions"
+  },
+  "ownerNonRecurrenceGovernance": {
+    "ownerInstruction": "# STRENGTH LEDGER GOVERNANCE \u2014 \u201cUNACCEPTABLE\u201d MEANS PERMANENT NON-RECURRENCE",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-03-unacceptable-non-recurrence.txt",
+    "ownerEvidenceSha256": "da44b6edde16f15d00ed95981370577f13390a18ca2adb5a6bc9c530e1fd5698",
+    "scope": "Retain permanent owner non-recurrence meaning, six established classes, honest proof gaps and failure-tested governance; no changes to asset/catalog/removal protections",
+    "canonicalFiles": [
+      {
+        "path": "AGENTS.md",
+        "sha256": "2a8d4fe3291a17e005718d73270ddc1e2aa293a04cc4d82adfd205c740f4465d"
+      },
+      {
+        "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
+        "sha256": "275ac4899a9383368980dde6c09770d41ba52de421b5d11a93a06307b76353d6"
+      },
+      {
+        "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
+        "sha256": "dc5a7832462c32e2647db676f0f5d7cc373309fe7196d07ffda576aafdcc84a1"
+      }
+    ]
   }
 }
