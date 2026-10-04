@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['owner non-recurrence governance, missing protections and false incident closure', ['scripts/test-owner-nonrecurrence-governance.mjs']],
   ['temporary-worktree lifecycle, stranded shipped fixes, safe cleanup and dirty DEV preservation', ['scripts/test-worktree-lifecycle.mjs']],
   ['DEV superset, explicit removals, and exact published-state failure gates', ['scripts/test-dev-testflight-release-gates.mjs']],
   ['all shipped governed IDs survive thin-payload compatibility', ['scripts/test-protected-testflight-catalog-compatibility.mjs']],

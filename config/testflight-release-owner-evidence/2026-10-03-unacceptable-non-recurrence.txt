@@ -1,0 +1,170 @@
+# STRENGTH LEDGER GOVERNANCE — “UNACCEPTABLE” MEANS PERMANENT NON-RECURRENCE
+
+### Scope
+
+Add this rule to the canonical Strength Ledger project governance that Codex is required to read, including `docs/RELEASE_INVARIANTS.md` and the concise agent/Codex guidance that points to it.
+
+This is a PERMANENT owner directive.
+
+### Product Law
+
+When I explicitly describe a bug, regression, behavior, release failure, UX failure, data-integrity problem, or engineering outcome as:
+
+`UNACCEPTABLE`
+
+that word has a specific meaning in Strength Ledger:
+
+> I should never encounter that CLASS OF FAILURE again.
+
+It does NOT mean:
+
+- fix this one screenshot
+- patch this one movement
+- repair this one Session
+- make this one TestFlight build work
+- suppress the visible symptom
+- tell me it was fixed
+- add a narrow regression test and move on
+
+It means:
+
+1. fix the immediate failure
+2. identify the underlying failure class
+3. determine how it was allowed to occur
+4. audit the reasonable blast radius for equivalent failures
+5. add the appropriate permanent invariant/regression protection
+6. validate that protection actually fails when the unacceptable condition is deliberately reproduced
+7. carry that protection forward into future DEV/TestFlight/release workflows
+
+### Example
+
+If I say:
+
+`Approved movement art silently disappearing is unacceptable.`
+
+The requirement is NOT:
+
+restore Movement X.
+
+The requirement is:
+
+restore the affected art
+→ audit approved art globally
+→ identify the subtraction mechanism
+→ protect approved assets
+→ block unauthorized negative release deltas
+→ prove the release gate catches a deliberately missing approved asset
+
+If I say:
+
+`Hot Swap being dead on TestFlight is unacceptable.`
+
+The requirement is NOT:
+
+make Confirm Swap work once.
+
+It means:
+
+fix Hot Swap
+→ identify why validation missed it
+→ add an actual end-to-end mutation/persistence gate
+→ prove future release validation fails when Confirm Swap cannot complete the canonical mutation
+
+### Classification
+
+Treat explicit owner use of `unacceptable` as:
+
+`OWNER NON-RECURRENCE DIRECTIVE`
+
+Record the incident/failure class in the appropriate permanent regression/invariant documentation.
+
+Do not rely on conversation memory alone.
+
+The repository must retain the resulting engineering protection.
+
+### Scope Control
+
+This does NOT authorize Codex to invent product decisions.
+
+Codex may generalize the TECHNICAL FAILURE CLASS sufficiently to prevent recurrence.
+
+Codex may NOT use `unacceptable` as permission to:
+
+- redesign unrelated UX
+- remove features
+- change product semantics
+- alter taxonomy
+- replace assets
+- reinterpret owner intent
+- broaden product scope
+
+If preventing recurrence requires a product decision:
+
+STOP AND ASK ME.
+
+Default answer remains NO until I explicitly approve it.
+
+### Recurrence Rule
+
+If a previously owner-designated UNACCEPTABLE failure class is discovered again:
+
+Treat it as a RELEASE/PROCESS FAILURE in addition to the immediate bug.
+
+Codex must determine:
+
+- which permanent protection was supposed to prevent it
+- why that protection failed or was bypassed
+- which release/workflow introduced the recurrence
+- how the protection itself must be repaired
+
+Do not merely patch the recurring symptom again.
+
+### Required Incident Closeout
+
+For any future issue I explicitly call `unacceptable`, Codex's closeout must include:
+
+`Immediate failure fixed: YES/NO`
+
+`Failure class identified: <class>`
+
+`Blast radius audited: YES/NO`
+
+`Permanent regression/invariant protection added: YES/NO`
+
+`Protection failure-tested: YES/NO`
+
+`Equivalent known failures remaining: <count>`
+
+`Owner decision required: YES/NO`
+
+If equivalent deterministic failures remain:
+
+THE INCIDENT IS NOT CLOSED.
+
+### Existing Unacceptable Incidents
+
+Audit recent owner-designated unacceptable incidents and ensure their non-recurrence protections are represented in the current governance/release framework, particularly where already established for:
+
+- unauthorized TestFlight subtraction
+- DEV/TestFlight divergence
+- approved product state silently disappearing
+- canonical Session identity/composition regressions
+- critical Active Session mutations reaching TestFlight broken
+- Production Runtime 2.0.2 being broken by shared backend changes
+
+Do not reinterpret or invent additional owner declarations. Use actual established directives.
+
+### Expected Output
+
+Return:
+
+- governance files updated
+- exact `UNACCEPTABLE` non-recurrence rule added
+- Codex/agent guidance location updated
+- existing owner-designated incidents mapped to their permanent protections
+- any designated incident currently lacking a real protection
+- confirmation that `unacceptable` is now treated as a permanent non-recurrence directive rather than conversational emphasis
+
+From this point forward:
+
+**If I call something unacceptable, fixing the instance is not enough. Preventing me from seeing that class of failure again is part of the task.**
