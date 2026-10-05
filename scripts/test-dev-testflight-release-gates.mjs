@@ -28,10 +28,13 @@ const fixture=fs.mkdtempSync(path.join(os.tmpdir(),'sl-superset-failure-'));
 const candidateRoot=JSON.parse(fs.readFileSync(path.join(root,'app.json'),'utf8')).expo.extra?.releaseTrack==='testflight'?root:process.env.STRENGTH_LEDGER_TESTFLIGHT_ROOT||'/Users/dominic/powerlifting_app/powerlift_mobile_testflight';
 const failures=[];
 try {
+  // Exact source-bound projections require real DEV provenance, including the
+  // pre-fix source. A private shared-object clone retains that history without
+  // writing to canonical DEV or creating owner work.
+  execFileSync('git',['clone','--quiet','--no-checkout','--shared','--local','--branch','dev/canonical-mobile',devRoot,fixture]);
   for(const file of Object.keys(productFiles(devRoot))) {
     const target=path.join(fixture,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.linkSync(path.join(devRoot,file),target);
   }
-  execFileSync('git',['init','-q','-b','dev/canonical-mobile',fixture]);
   fs.writeFileSync(path.join(fixture,'fixture.txt'),'Isolated failure-mode fixture');
   execFileSync('git',['add','fixture.txt'],{cwd:fixture});
   execFileSync('git',['-c','user.name=Release gate test','-c','user.email=release-gate-test@localhost','commit','-qm','Isolated test fixture'],{cwd:fixture});
