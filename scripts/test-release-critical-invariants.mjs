@@ -30,7 +30,7 @@ const areas = [
   ['approved artwork completion and saved Logger crops', ['scripts/sync-approved-artwork-registry.mjs', 'scripts/test-approved-artwork-completion.mjs', 'scripts/test-logger-crop-review.mjs', 'scripts/test-consolidated-crop-approvals.mjs']],
   ['approved Core images, shared variant references and honest missing coverage', ['scripts/test-core-artwork-coverage.mjs']],
   ['human approval of canonical movement artwork', ['scripts/test-human-movement-art-approval.mjs', 'scripts/test-movement-artwork-hero.mjs', 'scripts/test-approved-art-consumption.mjs', 'scripts/test-approved-art-export.mjs']],
-  ['exact movement subject through Equipment', ['scripts/test-equipment-flow-subject.mjs', 'scripts/test-equipment-type-artwork.mjs']],
+  ['exact movement subject through Equipment', ['scripts/test-equipment-flow-subject.mjs', 'scripts/test-equipment-type-artwork.mjs', 'scripts/test-cable-brand-equipment-api.mjs']],
   ['pre-Session readiness before execution', ['scripts/test-session-begin-movement-focus.mjs', 'scripts/test-session-readiness-start.mjs', 'scripts/test-readiness-modal.mjs']],
   ['Swap and Session Workspace muscle drill-down anatomy', ['scripts/test-swap-muscle-thumbnail-framing.mjs']],
   ['Swap muscle-result equipment-type narrowing', ['scripts/test-swap-equipment-type-filter.mjs']],

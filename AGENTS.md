@@ -27,3 +27,9 @@ machine baseline must not celebrate. Machines require improvement over an exact
 movement/equipment/reps baseline. Read the canonical release constitution and
 run both the save-API and mobile recognition regressions. Do not claim live PR
 readiness from local tests or client publication alone.
+
+Cable equipment owner law: brand selection finishes setup. Read canonical
+`../docs/CABLE_BRAND_EQUIPMENT.md`; run the cable API and actual-handler regressions.
+Preserve old typed cable evidence and compare it by canonical movement + brand.
+Do not apply this simplification to non-cable machines or claim shipment without
+the matching deployed backend and actual published update.
