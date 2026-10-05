@@ -157247,7 +157247,7 @@
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
-        "sha256": "052c2c78040093582934297c92cccd7192e4ff0355bf083be126c3ade795bdff"
+        "sha256": "a09dcd3db4353e5242bad28578c9dd8a7c674d1c8458ae74ae9b5d84f7c3de67"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
@@ -157302,9 +157302,15 @@
     "machine": "Established exact movement/reps baseline must improve across all accepted sets, brands and Other; first machine baseline is saved without a celebration.",
     "freeWeight": "Establishing a portable exact-movement baseline may celebrate.",
     "backendDelivery": "2.1.0+ only; frozen 2.0.2 and missing/malformed app-version headers do not receive new Accessory events.",
-    "deployment": "PENDING_LIVE_BACKEND_VERIFICATION",
-    "currentPublishedClientContainsThisCorrection": false,
-    "historyScopeOwnerInstruction": "All sets for that movement, across brands and Other"
+    "deployment": "LIVE_BACKEND_VERIFIED",
+    "currentPublishedClientContainsThisCorrection": true,
+    "historyScopeOwnerInstruction": "All sets for that movement, across brands and Other",
+    "backendSourceSha": "b8109dadc15cd5ab3397b57668827f4744b02811",
+    "backendSchemaFingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+    "backendMigrationRevisions": [
+      "f47a92b1c8d0"
+    ],
+    "physicalPhonePlaybackObserved": false
   },
   "cableBrandOnly": {
     "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt",
