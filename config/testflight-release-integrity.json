@@ -157085,7 +157085,7 @@
     "reason": "Retain every exact shipped catalog identity/metadata in DEV while preserving prior owner-approved active retirement and newer DEV enrichment."
   },
   "worktreeLifecycleToolSha256": "9b524efcc9e8d56a7ba3cb50da05a4ce286ac5fe39e35eca79bce106cddc0664",
-  "worktreeLifecycleContractsSha256": "0c2b5603feb9f3aa7b4bdccc214998eb1d2128c4b0fbf15d6189d434393a8bed",
+  "worktreeLifecycleContractsSha256": "0873993dc944cfcd47c111d99866757bb865dc394dd7e910a79aec01da8fcf96",
   "worktreeLifecycleAuthorization": {
     "ownerInstruction": "# STRENGTH LEDGER \u2014 PERMANENT WORKTREE LIFECYCLE + DEV RECONCILIATION LAW",
     "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-03-worktree-lifecycle.txt",
