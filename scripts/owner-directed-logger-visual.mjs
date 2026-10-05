@@ -20,7 +20,7 @@ export function assertLoggerVisualScope(scope, fingerprint, delta, text, receipt
   assert.equal(scope.productFingerprint, fingerprint, 'visual proof cannot cover changed product source');
   assert.equal(scope.validation, 'ACTUAL_SIMULATOR_VISUAL_CONVERGENCE');
   assert.ok(text.includes(scope.ownerInstruction));
-  assert.ok(text.includes('Perform real simulator visual validation against the supplied Option E reference.'));
+  assert.ok(text.includes('Perform real simulator visual validation against the supplied Option E reference.'), 'exact owner simulator validation instruction is required');
   assert.ok(text.includes('Do NOT change Rest Timer timing behavior.'));
   assert.deepEqual(delta.subtractions, [], 'visual refinement cannot subtract product state');
   assert.deepEqual([...delta.modifications.map(row => row.path), ...delta.additions].sort(), [...OPTION_E_PATHS].sort(), 'visual refinement cannot include unrelated product changes');
