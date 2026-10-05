@@ -33,12 +33,12 @@ export function assertProtectedArtifactAssets(requiredHashes, actualHashes, auth
   return {missing, unauthorized};
 }
 
-export function assertRuntimeEvidence(receipt, fingerprint, requiredFlows, evidenceRoot) {
+export function assertRuntimeEvidence(receipt, fingerprint, requiredFlows, evidenceRoot, requiredRoles = ['self-coach','team-coach','athlete']) {
   assert.ok(receipt, 'RELEASE BLOCKED: actual user-visible runtime proof is missing');
   assert.equal(receipt.productFingerprint, fingerprint, 'RELEASE BLOCKED: runtime proof belongs to different product source');
   assert.match(receipt.backendSourceSha || '', /^[a-f0-9]{40}$/, 'runtime proof requires the exact backend source');
   assert.match(receipt.backendProductFingerprint || '', /^[a-f0-9]{64}$/, 'runtime proof requires the backend content fingerprint, including uncommitted changes');
-  for (const role of ['self-coach','team-coach','athlete']) {
+  for (const role of requiredRoles) {
     assert.ok(receipt.roles?.some(item => item.role === role && item.result === 'PASS' && item.evidence?.length), `RELEASE BLOCKED: actual ${role} journey is missing`);
   }
   assert.equal(receipt.simulator, 'iPhone Air', 'use the one canonical simulator');
@@ -128,7 +128,34 @@ export function assertOwnerEvidence(root, authorizations) {
   }
 }
 
-export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,requireRuntime=false}={}) {
+// The owner selected the last valid pre-Oct 2 delivery, not the union of every
+// obsolete derivative ever delivered. Preserve the historical evidence AND all
+// source files. Only proven non-baseline review thumbnails are outside this
+// delivery inventory; no removal authorization is manufactured for them.
+export function protectedDeliveryHashes(root, state) {
+  const selection = state.movementImageryRestoration;
+  if (!selection) return state.protectedAssetHashes;
+  assertOwnerEvidence(root, [selection]);
+  const bytes = fs.readFileSync(path.join(root, selection.baselineManifestPath));
+  assert.equal(sha256(bytes), selection.baselineManifestSha256, 'last-good manifest changed');
+  const manifest = JSON.parse(bytes);
+  assert.equal(manifest.id, selection.updateId);
+  assert.ok(state.releaseHistory.some(release => release.id === selection.updateId && release.gitCommitHash === selection.sourceSha), 'restoration baseline must be an exact retained release');
+  const baselineHashes = new Set(manifest.assets.map(asset => asset.hash));
+  const preserved = new Set();
+  for (const historical of state.unresolvedHistoricalAssetChanges || []) {
+    assert.ok(!baselineHashes.has(historical.hash), 'baseline artwork cannot be classified as a pre-baseline thumbnail');
+    const record = historical.sourceRecords.find(row => row.sourceSha === selection.sourceSha);
+    assert.ok(record && /(?:-thumb|-thumbnail)\.png$/.test(record.path), 'only verified historical review thumbnails qualify');
+    assert.equal(expoHash(fs.readFileSync(path.join(root,record.path))), historical.hash, 'preserved historical thumbnail disappeared or changed');
+    preserved.add(historical.hash);
+  }
+  const required = state.protectedAssetHashes.filter(hash => !preserved.has(hash));
+  assertProtectedArtifactAssets([...baselineHashes], required);
+  return required;
+}
+
+export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,requireRuntime=false,restorationRuntime=false}={}) {
   const protectedState=read(root,'config/testflight-release-integrity.json');
   const removalManifest=read(root,'config/release-removal-authorizations.json');
   assert.equal(removalManifest.schemaVersion,1);
@@ -144,7 +171,8 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
     assert.ok(fs.existsSync(path.join(root,file)), `release enforcement disappeared: ${file}`);
     assert.equal(sha256(fs.readFileSync(path.join(root,file))), expected, `release enforcement changed without a reviewed baseline update: ${file}`);
   }
-  if(requireRuntime) assert.equal((protectedState.unresolvedHistoricalAssetChanges || []).length,0,
+  const requiredAssets = protectedDeliveryHashes(root, protectedState);
+  if(requireRuntime && !protectedState.movementImageryRestoration) assert.equal((protectedState.unresolvedHistoricalAssetChanges || []).length,0,
     `RELEASE BLOCKED: ${(protectedState.unresolvedHistoricalAssetChanges || []).length} historical asset changes still lack owner authorization evidence; exact identities remain in the protected manifest and Gate A report`);
   assert.ok(protectedState.releaseHistory.length >= 5, 'multi-release historical evidence is required');
   assert.ok(protectedState.currentTestFlight && protectedState.previousTestFlight, 'both live and previous baseline identities are required');
@@ -170,11 +198,28 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
     assert.equal(eas.build.testflight.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL,'testflight','native TestFlight builds must retain approved artwork');
   }
   let artifact;
-  if(exportDir) artifact=assertProtectedArtifactAssets(protectedState.protectedAssetHashes,exportedHashes(exportDir),[...(protectedState.assetRemovalAuthorizations || []),...assetRemovals]);
-  if(requireRuntime) {
+  if(exportDir) artifact=assertProtectedArtifactAssets(requiredAssets,exportedHashes(exportDir),[...(protectedState.assetRemovalAuthorizations || []),...assetRemovals]);
+  const restorationScope = restorationRuntime ? protectedState.movementImageryRestoration : null;
+  if (restorationRuntime) {
+    assert.ok(restorationScope && exportDir, 'owner-directed restoration requires the retained scope and actual exported artifact');
+    assert.equal(restorationScope.productFingerprint, fingerprint, 'owner-directed restoration cannot be reused for different product changes');
+    assertOwnerEvidence(root, [restorationScope]);
+  }
+  const simulatorProhibited = restorationScope?.simulatorValidation === 'OWNER_PROHIBITED';
+  if (simulatorProhibited) {
+    const ownerText = fs.readFileSync(path.join(root,restorationScope.ownerEvidencePath),'utf8');
+    assert.ok(ownerText.includes('You will not do simulator runs. Stop talking about it'), 'simulator exclusion requires the exact current owner instruction');
+  }
+  if(requireRuntime && !simulatorProhibited) {
     assert.ok(runtimeReceipt,'RELEASE BLOCKED: --runtime-receipt is required before publication');
     const receipt=JSON.parse(fs.readFileSync(runtimeReceipt,'utf8'));
-    assertRuntimeEvidence(receipt,fingerprint,protectedState.requiredRuntimeFlows,path.dirname(runtimeReceipt));
+    const scope = restorationScope;
+    if (restorationRuntime) {
+      assert.ok(scope && exportDir, 'restoration requires the retained owner scope and actual exported artifact');
+      assert.equal(scope.productFingerprint, fingerprint, 'the restoration runtime route cannot be reused for different product changes');
+      assert.equal(receipt.scope,scope.scope,'runtime proof must belong to the exact owner restoration');
+    }
+    assertRuntimeEvidence(receipt,fingerprint,scope?.requiredRuntimeFlows || protectedState.requiredRuntimeFlows,path.dirname(runtimeReceipt),scope?.requiredRuntimeRoles);
     const backendRoot = process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev';
     assert.equal(fingerprintBackend(backendRoot),receipt.backendProductFingerprint,'backend content changed since runtime observation');
     assert.equal(execFileSync('git',['rev-parse','HEAD'],{cwd:backendRoot,encoding:'utf8'}).trim(),receipt.backendSourceSha,'backend revision changed since runtime observation');
@@ -187,12 +232,12 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
     }
     for (const file of Object.keys(files)) assert.ok(testedFiles[file], `candidate product path was absent during runtime verification: ${file}`);
   }
-  return {productFingerprint:fingerprint,baselines:protectedState.releaseHistory.length,sourceDelta:delta,artifact,runtimeVerified:requireRuntime};
+  return {productFingerprint:fingerprint,baselines:protectedState.releaseHistory.length,sourceDelta:delta,artifact,runtimeVerified:requireRuntime && !simulatorProhibited,simulatorValidation:simulatorProhibited?'OWNER_PROHIBITED':'STANDARD_RUNTIME_POLICY'};
 }
 
 if(process.argv[1] && import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href) {
   const value=flag=>{const i=process.argv.indexOf(flag);return i>=0?process.argv[i+1]:undefined;};
-  const result=runIntegrityGate({exportDir:value('--export-dir'),runtimeReceipt:value('--runtime-receipt'),requireRuntime:process.argv.includes('--require-runtime')});
+  const result=runIntegrityGate({exportDir:value('--export-dir'),runtimeReceipt:value('--runtime-receipt'),requireRuntime:process.argv.includes('--require-runtime'),restorationRuntime:process.argv.includes('--restoration-runtime')});
   const out=value('--output');if(out)fs.writeFileSync(out,JSON.stringify(result,null,2)+'\n');
   console.log(`[cumulative-testflight] PASS: ${result.baselines} historical releases; unauthorized source subtractions 0; artifact ${result.artifact?'verified':'not yet checked'}; runtime ${result.runtimeVerified?'verified':'not yet checked'}`);
 }

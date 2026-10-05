@@ -1,0 +1,30 @@
+# Explicit owner restoration directive, October 4 2026
+Use THAT release's movement-image state as the restoration baseline.
+For MOVEMENT IMAGERY, that pre-10/2 state is the authoritative restoration target.
+Permanent owner law:
+REMOVAL requires my authorization. PRESERVATION does not.
+I am explicitly authorizing restoration of the complete valid pre-10/2 movement-image state right now.
+Do NOT restore unrelated obsolete garbage merely because it exists somewhere in Git.
+The governing test is:
+Was this movement imagery part of the valid product state immediately before the 10/2 regression, and was its removal subsequently explicitly authorized by the owner?
+THE 195 THUMBNAIL EXCLUSIONS ARE NOT A BLOCKER
+Validate:
+- movement picker
+- Programming / Session Workspace
+- Training Hub / Session preview
+- Pre-Session
+- Active Logger
+- Post-Session where applicable
+- Movement History / Ledger where applicable
+Use the real runtime resolver and real restored assets.
+No storyboard.
+No mocks.
+Capture screenshots/proof.
+PUBLISH THE RESTORATION TO TESTFLIGHT IN THIS SAME RUN.
+This is already authorized.
+DO NOT touch Production Mobile 2.0.2.
+# Owner correction to the description of the original bug
+Idk what wheel picker you are talking about… I’m fucking talking about the fucking accessory PR celebration not fucking showing bug!!!
+
+# Latest owner instruction supersedes simulator validation requested above
+You will not do simulator runs. Stop talking about it

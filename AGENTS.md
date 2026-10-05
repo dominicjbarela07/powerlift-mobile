@@ -14,3 +14,10 @@ class, audit equivalents, retain and deliberately failure-test permanent guards,
 record all seven closeout fields, and carry guards through releases. Known
 equivalent failures or unknown counts prohibit closure. Recurrence is also a
 release/process failure. Product decisions require owner approval; default NO.
+
+For the October 4 imagery restoration, read
+`docs/release/MOVEMENT_IMAGERY_RESTORATION_2026-10-04.md`. The owner selected the
+valid immediately-pre-October-2 imagery baseline and prohibited simulator runs.
+Keep every baseline image and the Accessory PR celebration fix. Preservation
+requires no new approval; retain historical thumbnails on disk and do not invent
+removal receipts. The guarded publisher verifies actual exported/served bytes.
