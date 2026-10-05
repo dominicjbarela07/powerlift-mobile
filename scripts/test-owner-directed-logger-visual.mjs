@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import { OPTION_E_PATHS, OPTION_E_FLOWS, assertLoggerVisualScope } from './owner-directed-logger-visual.mjs';
+const text = 'Option E owner task.\nPerform real simulator visual validation against the supplied Option E reference.\nDo NOT change Rest Timer timing behavior.';
+const scope = { scope: 'canonical-logger-option-e-20261005', productFingerprint: 'exact-source', validation: 'ACTUAL_SIMULATOR_VISUAL_CONVERGENCE', ownerInstruction: 'Option E owner task.', referenceSha256: 'reference',
+  changedProductFiles: Object.fromEntries(OPTION_E_PATHS.map(p => [p, 'hash'])), requiredRuntimeFlows: OPTION_E_FLOWS, requiredRuntimeRoles: ['self-coach'] };
+const screenshots = ['bodyweight','cable','free-weight','machine'].map(kind => ({ kind, path: `${kind}.png`, sha256: 'a'.repeat(64) }));
+const receipt = { scope: scope.scope, referenceSha256: 'reference', visualConvergence: { firstPass: screenshots, secondPass: screenshots, weakestAreas: ['hierarchy','spacing','duplicate copy'], corrected: true } };
+const delta = { modifications: OPTION_E_PATHS.slice(0,4).map(path => ({ path, after: 'hash' })), additions: [OPTION_E_PATHS[4]], subtractions: [] };
+const check = (s=scope,d=delta,r=receipt,t=text) => assertLoggerVisualScope(s, 'exact-source', d, t, r);
+check();
+assert.throws(() => check({...scope, productFingerprint: 'stale'}), /changed product source/);
+assert.throws(() => check(scope,{...delta, additions: [...delta.additions,'assets/replacement.png']}), /unrelated/);
+assert.throws(() => check(scope,{...delta,subtractions:['assets/approved.png']}), /subtract/);
+assert.throws(() => check(scope,delta,{...receipt,referenceSha256:'wrong'}), /exact owner reference/);
+assert.throws(() => check(scope,delta,{...receipt,visualConvergence:{...receipt.visualConvergence,secondPass:[]}}), /second screenshot pass/);
+assert.throws(() => check(scope,delta,{...receipt,visualConvergence:{...receipt.visualConvergence,firstPass:[...screenshots.slice(0,3),screenshots[0]]}}));
+assert.throws(() => check(scope,delta,{...receipt,visualConvergence:{...receipt.visualConvergence,corrected:false}}), /three visual weaknesses/);
+assert.throws(() => check({...scope,requiredRuntimeFlows:[]}), /deep-equal/);
+assert.throws(() => check(scope,delta,receipt,'Option E owner task.'), /simulator/);
+console.log('Option E scope PASS: stale source, unrelated changes, asset loss, wrong reference, missing/duplicate class proofs, skipped second pass and incomplete runtime requirements deliberately rejected.');

@@ -146,7 +146,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1]
     console.log(`[release-verify] Gate A PASS; valid TestFlight-only source/catalog/artwork state: 0`);
     if(!process.argv.includes('--gate-a-only')) {
       if(!preparation) {assert.ok(value('--export-dir'),'GATE B BLOCKED: fresh source-bound exported artifact required');assertBoundExport(root,value('--export-dir'));}
-      report.gates.B=runIntegrityGate({root,exportDir:value('--export-dir'),runtimeReceipt:value('--runtime-receipt'),requireRuntime:!preparation,restorationRuntime:process.argv.includes('--restoration-runtime')});
+      report.gates.B=runIntegrityGate({root,exportDir:value('--export-dir'),runtimeReceipt:value('--runtime-receipt'),requireRuntime:!preparation,restorationRuntime:process.argv.includes('--restoration-runtime'),loggerVisualRuntime:process.argv.includes('--owner-directed-logger-visual')});
       if(!preparation) assert.ok(value('--export-dir'),'GATE B BLOCKED: fresh actual exported artifact required');
       for(const script of ['test-release-source-lineage.mjs','test-accepted-behavior-contracts.mjs','test-release-critical-invariants.mjs']) {
         const env={...process.env,STRENGTH_LEDGER_BACKEND_ROOT:value('--backend-root')||process.env.STRENGTH_LEDGER_BACKEND_ROOT||'/Users/dominic/powerlifting_app_dev',STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:baselineCatalogRef(root)};

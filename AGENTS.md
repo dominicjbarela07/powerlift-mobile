@@ -38,3 +38,9 @@ Canonical Logger zero-load law: zero is valid performed load when editing a
 bodyweight set. Read `../docs/CANONICAL_LOGGER_ZERO_LOAD.md`; run both actual
 editor-handler and edit-API regressions. Preserve the same set and its immutable
 identity, reload/reopen zero correctly, and invalidate stale recognition.
+
+Canonical Logger Option E owner direction: read `docs/LOGGER_OPTION_E.md`.
+Use near-black material, a real cyan remaining-time ring, compact History and
+precise green/violet state signals. Preserve art and all canonical mutations.
+The October 5 Option E task explicitly requires actual simulator convergence
+and a second screenshot pass; its publication scope cannot cover other changes.

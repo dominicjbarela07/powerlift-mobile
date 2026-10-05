@@ -41,6 +41,8 @@ const areas = [
   ['movement-scoped SetLog edit/delete order and zero-load persistence', ['scripts/test-setlog-delete-order.mjs','scripts/test-zero-load-edit-set.mjs','scripts/test-zero-load-edit-api.mjs']],
   ['movement-scoped Logger physical loading', ['scripts/test-logger-movement-physical-loading.mjs']],
   ['canonical rest-timer lifecycle', [
+    'scripts/test-logger-option-e.mjs',
+    'scripts/test-owner-directed-logger-visual.mjs',
     'scripts/test-rest-timer-flow.mjs',
     'scripts/test-rest-timer-zero-deadlock.mjs',
     'scripts/test-rest-timer-picker-material.mjs',
