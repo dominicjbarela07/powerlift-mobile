@@ -43,3 +43,19 @@ Use the guarded publisher with `--owner-directed-restoration` only for this
 owner-directed incident. Canonical DEV must contain the full release first.
 No new imagery, replacements, crop changes, production-channel publication,
 backend deployment, or Production Mobile 2.0.2 changes are authorized.
+
+## Published closeout
+
+Published iOS OTA `01a10978-f68b-72d9-8068-f825c5b05e49`, group
+`1b0a5f60-0d9d-41d4-9749-4c67e66b9817`, exact shipped source
+`847d5834f41486bfbf63a5e45e690a514eed0d8a`. The served manifest has
+997 entries / 991 unique assets; every one of the 991 actual remote asset bytes
+passed content-hash verification. Baseline missing: 0; broken mappings: 0;
+unexpected fallbacks: 0. The real Accessory PR save API and celebration/recap
+regressions passed. Gate C and the durable release closeout passed.
+
+Canonical DEV contained the restoration before publication. The exact shipped
+commit/export are retained; subsequent commits only reconcile release records.
+The authoritative closeout and machine receipts are retained in canonical
+backend `docs/release/MOVEMENT_IMAGERY_RESTORATION_2026-10-04.md` and
+`docs/release/movement-imagery-restoration-2026-10-04/`.
