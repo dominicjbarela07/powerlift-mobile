@@ -24,7 +24,10 @@ removal receipts. The guarded publisher verifies actual exported/served bytes.
 
 Accessory PR owner policy: free-weight baseline recognition is allowed; a first
 machine baseline must not celebrate. Machines require improvement over an exact
-movement/equipment/reps baseline. Read the canonical release constitution and
+movement/reps baseline across all accepted SetLogs, brands and Other.
+Read `../docs/ACCESSORY_PR_BACKEND_RELEASE.md` in canonical DEV and the release
+constitution. Deploy required server changes by validated Production Git push;
+verify the actual serving SHA, not just a mobile OTA. Read the constitution and
 run both the save-API and mobile recognition regressions. Do not claim live PR
 readiness from local tests or client publication alone.
 

@@ -156980,7 +156980,7 @@
     }
   ],
   "releaseGateFiles": {
-    "AGENTS.md": "cd691a5a29dddcd0b3e1daf321570277912bdae0089dcf9c92b16d0130b20a09",
+    "AGENTS.md": "51b68e35c4e46dde5830bc12ba372b19aff60c6d2165915cbb582c35c3a30ac1",
     "app.config.js": "9c677a722146f9d76bc43d4dcd3bc3dbcd1c27d82f1154d12af15229421d24bf",
     "scripts/testflight-cumulative-integrity.mjs": "9262d199efbe9d1e7234e5d43922d478d7c3db4b0016d2377af7e5b9ebd91637",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
@@ -156998,7 +156998,7 @@
     "package-lock.json": "1343e90757f22b5d2f2b6c9f21ca383a587770f3a68d83f0d60f8d1709ecccac",
     "scripts/test-create-session-return-lifecycle.mjs": "e6bd4631062c55708a1cbd73982c1e63b5ec9337e2aa2c8f30bee7103004fc1a",
     "scripts/verify-testflight-release-integrity.mjs": "72de503b5168d43b17c8e9b4efe7769d799408a99c908d90e67ec0c8634dd85f",
-    "docs/RELEASE_INVARIANTS.md": "5fbfc595013d0734450638843d0e9af02e7a7f62c0933cac7dc424eac9f208e0",
+    "docs/RELEASE_INVARIANTS.md": "810578ae25e6211ddba4296e087caad0f5ebd88c3e191a0b9241f84189963d8d",
     "README.md": "8c1e55b964384a9cbc4fd535bf88bd67bec95995b404f9de5f5177f2607ede12",
     "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
     "config/release-removal-authorizations.json": "79b7e83d8edc0ee3b52954fdf66cf31d152059d1fa056a60b7018f9b8ef215bb",
@@ -157219,7 +157219,7 @@
       "reason": "Retained exact source-bound pre-existing Cable backend holdback; Option E does not modify these bytes. Both lanes retain shipped zero-load editor fix."
     }
   ],
-  "releaseConstitutionSha256": "1b81e2d5a52ed2a262ab196602db84b346b33632e8bf177b7113bc8141ab0afd",
+  "releaseConstitutionSha256": "9331fb24048c521d263ffa20d68cf727c841b5de29b62642c315b3223feeb82b",
   "protectedCatalogSnapshotSha256": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
   "catalogCompatibilityAuthorization": {
     "ownerInstruction": "Everything else deterministic:\nFIX IT.",
@@ -157243,11 +157243,11 @@
     "canonicalFiles": [
       {
         "path": "AGENTS.md",
-        "sha256": "2a8d4fe3291a17e005718d73270ddc1e2aa293a04cc4d82adfd205c740f4465d"
+        "sha256": "c0085b16a58e24efb7e850faddec8b406b06d28c34075cd99b22e257326af0ed"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
-        "sha256": "fa90e55515ede192ee8feac961c670397b73815c1010404a5f77155ac0bc6ebd"
+        "sha256": "052c2c78040093582934297c92cccd7192e4ff0355bf083be126c3ade795bdff"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
@@ -157299,11 +157299,12 @@
     "ownerInstruction": "For free weight accessories, I don't mind establishing a baseline, but for machines, it's pointless.",
     "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-accessory-pr-machine-baseline.txt",
     "ownerEvidenceSha256": "e5510836c795f9fa679b8e678703af5226ba75638b91f4add9116df2faf3b6ef",
-    "machine": "Established exact movement/equipment/reps baseline must improve; first baseline is saved without a celebration.",
+    "machine": "Established exact movement/reps baseline must improve across all accepted sets, brands and Other; first machine baseline is saved without a celebration.",
     "freeWeight": "Establishing a portable exact-movement baseline may celebrate.",
     "backendDelivery": "2.1.0+ only; frozen 2.0.2 and missing/malformed app-version headers do not receive new Accessory events.",
     "deployment": "PENDING_LIVE_BACKEND_VERIFICATION",
-    "currentPublishedClientContainsThisCorrection": false
+    "currentPublishedClientContainsThisCorrection": false,
+    "historyScopeOwnerInstruction": "All sets for that movement, across brands and Other"
   },
   "cableBrandOnly": {
     "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt",
