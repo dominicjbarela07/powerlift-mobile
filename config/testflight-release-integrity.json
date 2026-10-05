@@ -18927,6 +18927,61 @@
       "ownerEvidenceSha256": "69f1ba6ca417408f3e0a5cada3f37bca5fee5f1c26ece4443bec9d855fc8cb9b",
       "ownerDirectiveScope": "cable-brand-only-20261005",
       "reason": "DEV retains the explicitly requested but never-shipped cable brand-only feature while its backend awaits deployment. The identical canonical zero-load edit fix is retained in both source versions; all shipped state stays protected."
+    },
+    {
+      "ownerInstruction": "Implement the approved Option E direction in canonical DEV, validate it, and publish it to TestFlight IN THIS SAME RUN.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-option-e.txt",
+      "ownerEvidenceSha256": "2c307d5aad57c0ae51ce575dbbc4c53f1c6087aa9d034605672dd708494d7931",
+      "scope": "canonical-logger-option-e-20261005",
+      "path": "components/workout-logger/session-clock-text.tsx",
+      "before": "e3b4edd96c3a306e6687068c24fe5bb1f5316e1dfdc77d8b0cc307197d964bcb",
+      "after": "f54292cfd19e9910fc26ea51c18fd8d54da2a1588fd5d8b04d4e09b766dbf714",
+      "action": "MODIFY",
+      "reason": "Exact Option E presentation and targeted copy hygiene. Canonical movement/art/history/SetLog/timer mutation owners unchanged."
+    },
+    {
+      "ownerInstruction": "Implement the approved Option E direction in canonical DEV, validate it, and publish it to TestFlight IN THIS SAME RUN.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-option-e.txt",
+      "ownerEvidenceSha256": "2c307d5aad57c0ae51ce575dbbc4c53f1c6087aa9d034605672dd708494d7931",
+      "scope": "canonical-logger-option-e-20261005",
+      "path": "components/workout-logger/session-history-peek.tsx",
+      "before": "9b4575e4fe9a93bfe6714eb58014b0f558a382ee021536d9ad22c550e7f0e643",
+      "after": "3ebc70337b69b0538c8c770e77cea8c13674cd49db56a2f73c1c2a4cf7606bda",
+      "action": "MODIFY",
+      "reason": "Exact Option E presentation and targeted copy hygiene. Canonical movement/art/history/SetLog/timer mutation owners unchanged."
+    },
+    {
+      "ownerInstruction": "Implement the approved Option E direction in canonical DEV, validate it, and publish it to TestFlight IN THIS SAME RUN.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-option-e.txt",
+      "ownerEvidenceSha256": "2c307d5aad57c0ae51ce575dbbc4c53f1c6087aa9d034605672dd708494d7931",
+      "scope": "canonical-logger-option-e-20261005",
+      "path": "components/workout-logger/session-v3-movement.tsx",
+      "before": "112604069c3fa0bbb2c546aa483c9434edaaa5c2b9518d7e3094fa903243d5f2",
+      "after": "e52f7fd1917ae4e2f2a942c6672c78395ee46086522ac14ca3d10022ddb14884",
+      "action": "MODIFY",
+      "reason": "Exact Option E presentation and targeted copy hygiene. Canonical movement/art/history/SetLog/timer mutation owners unchanged."
+    },
+    {
+      "ownerInstruction": "Implement the approved Option E direction in canonical DEV, validate it, and publish it to TestFlight IN THIS SAME RUN.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-option-e.txt",
+      "ownerEvidenceSha256": "2c307d5aad57c0ae51ce575dbbc4c53f1c6087aa9d034605672dd708494d7931",
+      "scope": "canonical-logger-option-e-20261005",
+      "path": "components/workout-logger/session-v3-shell.tsx",
+      "before": "199e7abbc7aa02057a585a8abe2832645eb28be784b2adc385938c4e76cb4014",
+      "after": "cad4d79c22a6da6485cf05817b10b7b4b0483f3c9108b0396292dbe4cc1df4e8",
+      "action": "MODIFY",
+      "reason": "Exact Option E presentation and targeted copy hygiene. Canonical movement/art/history/SetLog/timer mutation owners unchanged."
+    },
+    {
+      "ownerInstruction": "Implement the approved Option E direction in canonical DEV, validate it, and publish it to TestFlight IN THIS SAME RUN.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-option-e.txt",
+      "ownerEvidenceSha256": "2c307d5aad57c0ae51ce575dbbc4c53f1c6087aa9d034605672dd708494d7931",
+      "scope": "canonical-logger-option-e-20261005",
+      "path": "lib/rest-timer-progress.ts",
+      "before": null,
+      "after": "f6e385f18fb321eb4b284e6e12b99fc7f246ca1ae89eb248e89322fb2248a6bf",
+      "action": "ADD",
+      "reason": "Exact Option E presentation and targeted copy hygiene. Canonical movement/art/history/SetLog/timer mutation owners unchanged."
     }
   ],
   "assetRemovalAuthorizations": [
@@ -156904,24 +156959,24 @@
     }
   ],
   "releaseGateFiles": {
-    "AGENTS.md": "35ff263c76b5e6b0eee94979034583bc6198ff886fe6f2cc9573e0f70c25a19f",
+    "AGENTS.md": "cd691a5a29dddcd0b3e1daf321570277912bdae0089dcf9c92b16d0130b20a09",
     "app.config.js": "9c677a722146f9d76bc43d4dcd3bc3dbcd1c27d82f1154d12af15229421d24bf",
-    "scripts/testflight-cumulative-integrity.mjs": "3c429ca9d88d9b7d7cecc477529c1773f924994907eefad54d0a9fdf80772fa3",
+    "scripts/testflight-cumulative-integrity.mjs": "9262d199efbe9d1e7234e5d43922d478d7c3db4b0016d2377af7e5b9ebd91637",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
-    "scripts/publish-validated-ios-ota.mjs": "5d3526ce165c3d49b52dfa7f8e9dd8a3dff459c4a5bd534c00577e2958bb9336",
+    "scripts/publish-validated-ios-ota.mjs": "3edf122bc2f0dc28c77c96eea8db87d16e5952517e86589790f8c5b2efd478cf",
     "scripts/eas-build-testflight.sh": "946b0857b8b84925906b84547dbb62f1fa05e12ab3771674dd64e359d920e115",
     "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
     "scripts/test-accepted-behavior-contracts.mjs": "85fa14716b0a66d2d7a3c3a79466caa5ea04bbf9bfa3bdc4e68ebe2a4c26165e",
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
     "config/protected-fix-manifest.json": "e096935ee1da6c44af82a0ee8651a0803bc692dc5be5827b06e88b2b20cb32a7",
     "scripts/assert-no-dev-artwork-export.mjs": "403fad1b126d9b77f076d1442009f99a9277f7b6ce4cce8dc82089bd56b58d2c",
-    "scripts/test-release-critical-invariants.mjs": "4e20e9766d7106eb1cf88d4f7c1bef5ae223f878e94f7c6b8a25dfe3053cf74c",
+    "scripts/test-release-critical-invariants.mjs": "6a2d41331008d1a0471a1b9709d62b0ccd698b16fcbc37c80db00938feb8fbea",
     "scripts/test-release-source-lineage.mjs": "abae1f05b4456bf51ee32179036769603de6140c83d7cba35cd56cc38216468a",
     "scripts/release-holdback-policy.mjs": "a7ba5d29951c3206d7723d0594573215d26f907ceb2b568f109c84f1272032df",
     "package.json": "c2257cbf0b5864fc5ab69475aa2b7e8d87ca5b0f111d640becac610d76d73fe4",
     "package-lock.json": "1343e90757f22b5d2f2b6c9f21ca383a587770f3a68d83f0d60f8d1709ecccac",
     "scripts/test-create-session-return-lifecycle.mjs": "e6bd4631062c55708a1cbd73982c1e63b5ec9337e2aa2c8f30bee7103004fc1a",
-    "scripts/verify-testflight-release-integrity.mjs": "5fb9ef216bbf412c315392a31a27ccdc5d7edbe0d3b9fa71cade9ef7e648938f",
+    "scripts/verify-testflight-release-integrity.mjs": "72de503b5168d43b17c8e9b4efe7769d799408a99c908d90e67ec0c8634dd85f",
     "docs/RELEASE_INVARIANTS.md": "5fbfc595013d0734450638843d0e9af02e7a7f62c0933cac7dc424eac9f208e0",
     "README.md": "8c1e55b964384a9cbc4fd535bf88bd67bec95995b404f9de5f5177f2607ede12",
     "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
@@ -156947,7 +157002,13 @@
     "scripts/owner-directed-client-fix.mjs": "fb19f2e2d341125f0ac7173d7c3a1c260b32f738f5db49ebd41d89b433aebe9b",
     "scripts/test-owner-directed-client-fix.mjs": "87dc8b75fcde81d2f9e22d7f8e85833dfcab4f27662383c939df913e921028ff",
     "scripts/test-zero-load-edit-api.mjs": "a19f2b1b7d6b0ad2335f8e3668657a1a74675ca14d14ba8bf13616b16f3dbc2a",
-    "scripts/test-zero-load-edit-set.mjs": "6187f4a68b57230b2fb86f3702e2c89d0f704394f1eef200db689f66cec6e250"
+    "scripts/test-zero-load-edit-set.mjs": "6187f4a68b57230b2fb86f3702e2c89d0f704394f1eef200db689f66cec6e250",
+    "scripts/owner-directed-logger-visual.mjs": "66c8817c12bbb2a2ea5ae8e8e91b3422ba978b6987c3acfb4757b80f1d8146e5",
+    "scripts/test-owner-directed-logger-visual.mjs": "c853b95c1b59e6241f7c40561584de14b8c0f0ce6a9b332ddcd4b85e6b910503",
+    "scripts/test-logger-option-e.mjs": "89a13ae6c6ba4e90d825bc67e6570002c4de895623c947f94417c6f91f5f5fcd",
+    "config/testflight-release-owner-evidence/2026-10-05-option-e.txt": "2c307d5aad57c0ae51ce575dbbc4c53f1c6087aa9d034605672dd708494d7931",
+    "config/testflight-release-owner-evidence/2026-10-05-option-e-reference.png": "e5128d74044413c91469ecee0ca407136c5ff3aa4bb4eff508e9b7a10c021ae9",
+    "docs/LOGGER_OPTION_E.md": "7169d81ba9f4075c8a069dd0c471638ad381c2e4b7f5a29aab92833b4f2916b9"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -157105,6 +157166,36 @@
       "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-03-release-constitution.txt",
       "ownerEvidenceSha256": "085ca631e72e184bb1a2dd19e1ec87157a6998cba6cd821a7b68218f458f46a1",
       "reason": "DEV retains active enrichment plus exact 69 shipped retired compatibility records; release preserves exact original 567 until its separately authorized catalog promotion."
+    },
+    {
+      "ownerInstruction": "Implement the approved Option E direction in canonical DEV, validate it, and publish it to TestFlight IN THIS SAME RUN.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-option-e.txt",
+      "ownerEvidenceSha256": "2c307d5aad57c0ae51ce575dbbc4c53f1c6087aa9d034605672dd708494d7931",
+      "scope": "canonical-logger-option-e-20261005",
+      "path": "app/(tabs)/workout/[workoutId].tsx",
+      "testedHash": "aa2135e0052b009f45c4d37ce8ebc2fa0fffd99b6b60ef8b2f8f14d7168b898d",
+      "candidateHash": "8ba5b86199e291b69755a0dc0a3fd2c7dfcdd83417c41ac257093b9d3acb4bf5",
+      "reason": "Retained exact source-bound pre-existing Cable backend holdback; Option E does not modify these bytes. Both lanes retain shipped zero-load editor fix."
+    },
+    {
+      "ownerInstruction": "Implement the approved Option E direction in canonical DEV, validate it, and publish it to TestFlight IN THIS SAME RUN.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-option-e.txt",
+      "ownerEvidenceSha256": "2c307d5aad57c0ae51ce575dbbc4c53f1c6087aa9d034605672dd708494d7931",
+      "scope": "canonical-logger-option-e-20261005",
+      "path": "lib/equipment-flow-subject.ts",
+      "testedHash": "874fd0e8800b5dcbb961e9c5de65cebfbedd13f1b863242e47d2224da25d6d26",
+      "candidateHash": "4a3c931baf7a23df49c79e8b8eae0e415d5cea99365f9f2e73cca9f89da20650",
+      "reason": "Retained exact source-bound pre-existing Cable backend holdback; Option E does not modify these bytes. Both lanes retain shipped zero-load editor fix."
+    },
+    {
+      "ownerInstruction": "Implement the approved Option E direction in canonical DEV, validate it, and publish it to TestFlight IN THIS SAME RUN.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-option-e.txt",
+      "ownerEvidenceSha256": "2c307d5aad57c0ae51ce575dbbc4c53f1c6087aa9d034605672dd708494d7931",
+      "scope": "canonical-logger-option-e-20261005",
+      "path": "lib/equipment-selection.ts",
+      "testedHash": "7663b3bdaf47d75784aa46345bafb77d401474cb86e45b64e6d91e497086de09",
+      "candidateHash": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84",
+      "reason": "Retained exact source-bound pre-existing Cable backend holdback; Option E does not modify these bytes. Both lanes retain shipped zero-load editor fix."
     }
   ],
   "releaseConstitutionSha256": "1b81e2d5a52ed2a262ab196602db84b346b33632e8bf177b7113bc8141ab0afd",
@@ -157240,5 +157331,34 @@
     "missingFromCanonicalDev": 0,
     "unpublishedCableBackend": "STILL_PENDING",
     "runtimeObservation": "NOT_CLAIMED"
+  },
+  "ownerDirectedLoggerVisual": {
+    "ownerInstruction": "Implement the approved Option E direction in canonical DEV, validate it, and publish it to TestFlight IN THIS SAME RUN.",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-option-e.txt",
+    "ownerEvidenceSha256": "2c307d5aad57c0ae51ce575dbbc4c53f1c6087aa9d034605672dd708494d7931",
+    "scope": "canonical-logger-option-e-20261005",
+    "validation": "ACTUAL_SIMULATOR_VISUAL_CONVERGENCE",
+    "productFingerprint": "b553328a2c94d2ee496767f04bffdeda1518615ee406c4731ef4f6c7e2e83603",
+    "changedProductFiles": {
+      "components/workout-logger/session-clock-text.tsx": "f54292cfd19e9910fc26ea51c18fd8d54da2a1588fd5d8b04d4e09b766dbf714",
+      "components/workout-logger/session-history-peek.tsx": "3ebc70337b69b0538c8c770e77cea8c13674cd49db56a2f73c1c2a4cf7606bda",
+      "components/workout-logger/session-v3-movement.tsx": "e52f7fd1917ae4e2f2a942c6672c78395ee46086522ac14ca3d10022ddb14884",
+      "components/workout-logger/session-v3-shell.tsx": "cad4d79c22a6da6485cf05817b10b7b4b0483f3c9108b0396292dbe4cc1df4e8",
+      "lib/rest-timer-progress.ts": "f6e385f18fb321eb4b284e6e12b99fc7f246ca1ae89eb248e89322fb2248a6bf"
+    },
+    "referenceEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-option-e-reference.png",
+    "referenceSha256": "e5128d74044413c91469ecee0ca407136c5ff3aa4bb4eff508e9b7a10c021ae9",
+    "requiredRuntimeFlows": [
+      "logger.option-e.bodyweight",
+      "logger.option-e.free-weight",
+      "logger.option-e.machine",
+      "logger.option-e.cable",
+      "logger.option-e.timer-progress",
+      "logger.option-e.second-pass"
+    ],
+    "requiredRuntimeRoles": [
+      "self-coach"
+    ],
+    "status": "VALIDATION_IN_PROGRESS"
   }
 }

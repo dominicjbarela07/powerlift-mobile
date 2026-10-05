@@ -54,6 +54,7 @@ export function SessionV3MovementLayout({ title, index, expanded, complete, pres
 
   const stacks = visual?.plateStack?.endpoints || [];
   const load = focus?.currentSetLoadLabel || '';
+  const setPosition = focus?.currentSetPositionLabel?.replace(/^Set (\d+) · SET \1 OF (\d+)$/, 'Set $1 of $2');
   const loadParts = load.match(/^(.*?)\s*(kg|lb)$/i);
   const progress = prior || visual?.progress;
   return <View style={s.workspace}>
@@ -63,7 +64,7 @@ export function SessionV3MovementLayout({ title, index, expanded, complete, pres
     <View style={s.activeHeader}>
     <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen} style={s.heading}>
       <CanonicalMovementArtwork surface="session-v3-movement" requireHumanApproval movement={visual?.movementArtworkInput} accessoryPresentation="muscle-focus" size={approvedArtRuntimeEnabled() ? 68 : 48} />
-      <View style={s.copy}><Text numberOfLines={0} style={s.title}>{title}</Text><Text style={s.eyebrow}>{complete ? 'MOVEMENT COMPLETE' : focus?.currentSetPositionLabel || prescription}</Text></View>
+      <View style={s.copy}><Text numberOfLines={0} style={s.title}>{title}</Text><Text style={s.eyebrow}>{complete ? 'MOVEMENT COMPLETE' : setPosition || prescription}</Text></View>
     </Pressable>
     {!complete && focus ? <>
       <View style={[s.instrument, stacks.length > 1 && s.rangeInstrument]}>

@@ -19,30 +19,28 @@ export function SessionHistoryPeek({ target, workoutId, sessionDate, ownerId, hi
   const read = useSessionExposure({ context: { ownerId, athleteId: target.athleteId, workoutId, sessionDate }, target, history,
     canonicalEditorHistory: beforeEquipmentSelection });
   const content = presentSessionExposure(read.exposure, unit, target.coreMovementId ? 'core' : 'accessory', semantics);
-  const contextLine = content?.equipmentLabel || content?.context;
+  const contextLine = content?.equipmentLabel;
   const emptyCopy = read.status === 'empty' ? beforeEquipmentSelection ? 'No previous exposure' : 'No comparable exposure'
     : read.status === 'loading' ? 'Loading prior exposure…' : 'History unavailable';
   return <Pressable accessibilityRole="button" accessibilityLabel="Open full movement history" onPress={onOpen} style={s.panel}>
-    <View style={s.heading}><Text style={s.label}>{beforeEquipmentSelection ? 'LAST EXPOSURE' : 'LAST COMPARABLE EXPOSURE'}</Text><Text style={s.date}>{content?.date || ''}</Text></View>
+    <View style={s.heading}><Text style={s.label}>{beforeEquipmentSelection ? 'LAST EXPOSURE' : 'LAST COMPARABLE EXPOSURE'}</Text><View style={s.affordance}><Text style={s.date}>{content?.date || ''}</Text><Ionicons name="chevron-forward" size={18} color="#b6cbd5" /></View></View>
     <View style={s.performanceRow}>
       <Text style={s.value}>{content?.performance || emptyCopy}</Text>
       {content?.effort ? <Text style={s.effort}>{content.effort}</Text> : null}
     </View>
     {contextLine ? <Text style={s.context}>{contextLine}</Text> : null}
     {read.status === 'error' && read.retry ? <Pressable accessibilityRole="button" accessibilityLabel="Retry previous exposure" onPress={event => { event.stopPropagation(); read.retry?.(); }}><Text style={s.link}>Retry history</Text></Pressable> : null}
-    <View style={s.linkRow}><Text style={s.linkText}>Movement history · all sets & progression</Text><Ionicons name="arrow-forward" size={15} color="#a8dfe9" /></View>
   </Pressable>;
 }
 const s = StyleSheet.create({
-  panel: { marginTop: 9, borderRadius: 14, padding: 12, backgroundColor: '#0b141a', borderWidth: 1, borderColor: '#293d46' },
+  panel: { marginTop: 9, borderRadius: 14, padding: 13, backgroundColor: '#080b0e', borderWidth: 1, borderColor: '#2d3d45' },
+  affordance: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   heading: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', columnGap: 8, rowGap: 3 },
   label: { color: '#b6dfe6', fontSize: 10, lineHeight: 15, flexShrink: 1 },
   date: { color: '#b6bdca', fontSize: 11, lineHeight: 16 },
-  performanceRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: 7, rowGap: 2, marginTop: 8, marginBottom: 4 },
+  performanceRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: 7, rowGap: 2, marginTop: 4, marginBottom: 0 },
   value: { color: '#f0edf7', fontSize: 21, lineHeight: 27, fontFamily: SLFontFamilies.sansSemiBold, flexShrink: 1 },
-  effort: { color: '#d0d8e0', fontSize: 14, lineHeight: 21 },
+  effort: { color: '#f0edf7', fontSize: 18, lineHeight: 27, fontFamily: SLFontFamilies.sansSemiBold },
   context: { color: '#b6bdca', fontSize: 12, lineHeight: 18 },
   link: { color: '#a8dfe9', fontSize: 12, lineHeight: 18, marginTop: 9, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#29313b' },
-  linkRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 9, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#29313b' },
-  linkText: { color: '#a8dfe9', fontSize: 12, lineHeight: 18, flexShrink: 1 },
 });

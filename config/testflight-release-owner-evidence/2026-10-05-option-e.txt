@@ -1,0 +1,293 @@
+# CANONICAL SESSION LOGGER — OPTION E VISUAL REFINEMENT + COPY HYGIENE → TESTFLIGHT
+
+### Working Directory / Scope
+/Users/dominic/powerlifting_app_dev
+/Users/dominic/powerlifting_app_dev/powerlift_mobile
+
+Implement the approved Option E direction in canonical DEV, validate it, and publish it to TestFlight IN THIS SAME RUN.
+
+### Visual Reference
+
+Use the newly generated **Option E — Progress Ring (Refined)** reference image as the authoritative visual target for this task:
+
+`/mnt/data/a_tall_vertical_smartphone_ui_screenshot_in_dark_m.png`
+
+The reference defines the intended visual direction, NOT permission to alter unrelated Logger behavior.
+
+### Objective
+
+Refine the Canonical Session Logger so its primary material language returns to:
+
+OLED black
++ near-black surfaces
++ movement imagery
++ strong white hierarchy
++ violet Strength Ledger identity
+
+The current large green/teal filled cards are visually overpowering the movement presentation.
+
+Semantic color should communicate STATE.
+
+It should NOT become the dominant material of the Logger.
+
+Implement Option E:
+
+- near-black Last Exposure
+- circular cyan Rest Timer progress treatment
+- restrained semantic color
+- violet primary interaction
+- movement imagery remains visually dominant
+- less vertical clutter from unnecessary helper/backend-looking copy
+
+Do NOT redesign the Logger architecture.
+
+---
+
+### 1. LAST EXPOSURE — REMOVE THE GREEN SLAB
+
+Replace the current heavily teal/green-filled Last Exposure card with the Option E near-black treatment.
+
+Preserve:
+
+`LAST EXPOSURE`
+
+performance:
+
+`BW × 15 @ 1 RIR`
+
+date:
+
+`Sep 23`
+
+and a clear affordance to open Movement History.
+
+The card should primarily be near-black with restrained evidence styling.
+
+Cyan may be used subtly for:
+- border
+- edge treatment
+- small affordance
+- restrained state accent
+
+Do NOT fill the entire card with teal/green.
+
+### 2. REMOVE BACKEND/TUTORIALISTIC COPY
+
+Explicitly remove copy such as:
+
+`Representative set · 3 recorded sets`
+
+That does not help the athlete during the Session and wastes vertical space.
+
+Also remove:
+
+`Movement history · all sets & progression`
+
+as verbose/tutorialistic copy.
+
+The card already represents Last Exposure and provides a History affordance.
+
+Use a simple interaction such as:
+
+`History`
+
+or the clean chevron/affordance shown by the approved reference.
+
+Do a TARGETED copy-hygiene check within the Canonical Logger while implementing this.
+
+Remove muted secondary text that merely:
+- narrates obvious behavior
+- exposes backend/data concepts
+- explains the UI to itself
+
+Do NOT remove genuinely useful training information.
+
+### 3. OPTION E REST TIMER
+
+Replace the large teal/green timer material with the approved Option E progress-ring treatment.
+
+The timer should visually communicate:
+
+TIME REMAINING
+→ circular progress ring
+
+Use cyan for the active progress ring.
+
+Center:
+
+`0:13`
+
+or current remaining time.
+
+Adjacent controls remain available:
+
+`+30 sec`
+`Skip`
+
+The surrounding timer surface should remain near-black.
+
+Do NOT turn the whole timer region cyan/green.
+
+### 4. TIMER PROGRESS
+
+The ring must represent actual remaining Rest Timer progress.
+
+It is not decorative.
+
+Example:
+
+60-second timer begins
+→ full ring
+
+30 seconds remaining
+→ approximately half
+
+0 seconds
+→ depleted/completed according to the approved interaction
+
+Preserve all existing Rest Timer functionality and the current completion-audio/notification behavior.
+
+This task is visual presentation, not permission to rewrite timer semantics.
+
+### 5. GREEN USAGE
+
+Green remains valid for precise SUCCESS/COMPLETE signals.
+
+Example:
+
+completed Set
+→ green check
+
+That is good.
+
+Do NOT globally remove green from Strength Ledger.
+
+The problem is large green/teal MATERIAL surfaces dominating the Logger.
+
+Product direction:
+
+semantic color = signal
+
+OLED black / near-black = material
+
+### 6. PRESERVE THE MOVEMENT HERO
+
+The movement presentation remains the visual hero.
+
+Preserve:
+- canonical movement art
+- anatomy where governed fallback is correct
+- movement title
+- current Set position
+- prescription
+- RIR/RPE
+- current movement identity
+
+Do not reduce or obscure approved movement imagery to make room for the timer.
+
+The Option E reference is specifically intended to make the movement imagery feel sharper by reducing competing colored surfaces.
+
+### 7. TODAY'S SETS
+
+Preserve the existing Set stack behavior.
+
+Continue using:
+- green completed indicator
+- violet current Set state
+- restrained target state
+
+Do not redesign Set logging as part of this task.
+
+### 8. VERTICAL DENSITY
+
+Use the copy cleanup and reduced card chrome to reclaim vertical space.
+
+The screen should feel:
+
+sharper
+cleaner
+less segmented
+less tutorialistic
+
+Do NOT compensate by adding new explanatory text elsewhere.
+
+### Locked / Do Not
+
+- Do NOT redesign Canonical Logger architecture.
+- Do NOT change Set logging behavior.
+- Do NOT change prescriptions.
+- Do NOT change movement identity.
+- Do NOT alter History semantics.
+- Do NOT change Rest Timer timing behavior.
+- Do NOT regress timer sound/notification fixes.
+- Do NOT remove useful evidence.
+- Do NOT add diagnostic/backend copy.
+- Do NOT let anatomy replace approved exact movement art.
+- Do NOT make unrelated product decisions.
+- Do NOT subtract unrelated TestFlight functionality.
+- Never use `workout` in user-facing copy.
+
+### Validation
+
+Validate representative:
+
+BODYWEIGHT MOVEMENT
+→ Copenhagen Adduction
+
+FREE-WEIGHT MOVEMENT
+
+MACHINE MOVEMENT
+
+CABLE MOVEMENT
+
+For each verify:
+- movement hero remains dominant
+- Last Exposure uses near-black Option E treatment
+- no `Representative set · X recorded sets`
+- no verbose `Movement history · all sets & progression`
+- History remains accessible
+- Rest Timer uses real cyan progress ring
+- +30 sec works
+- Skip works
+- completed Set green signal remains
+- current Set violet state remains
+- no vertical clipping
+- no regression to movement art
+
+Perform real simulator visual validation against the supplied Option E reference.
+
+### Release
+
+After validation:
+
+1. Implement in canonical DEV.
+2. Validate real Logger behavior and visual fidelity.
+3. Run adjacent Logger/Rest Timer regressions.
+4. Run the protected TestFlight negative-delta/release-integrity checks.
+5. Confirm no unrelated existing TestFlight state is being removed.
+6. Publish to TestFlight IN THIS SAME RUN.
+7. Verify publication metadata.
+8. Reconcile exact shipped state into canonical DEV.
+9. If a temporary worktree was used, reconcile it and close it after shipment.
+
+When I say implement/fix a TestFlight-targeted change, the task is not complete at DEV. I expect to open TestFlight after the run and see the updated Logger.
+
+### Expected Output
+
+Return:
+- Option E implementation summary
+- Last Exposure before → after
+- copy removed
+- Rest Timer progress-ring implementation
+- semantic color treatment
+- files changed
+- visual validation results
+- Logger/Rest Timer regression results
+- TestFlight release-integrity result
+- TestFlight publication identifier
+- DEV reconciliation status
+- worktree closeout status
+
+Final acceptance:
+
+**The Canonical Logger should look like the approved Option E reference: movement-first, OLED-black, sharp, restrained, with cyan timer progress instead of giant green slabs.**

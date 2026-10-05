@@ -23,6 +23,7 @@ const activeAssessments = valueFor('--active-assessments') || process.env.STRENG
 const runtimeReceipt = valueFor('--runtime-receipt') || process.env.STRENGTH_LEDGER_RUNTIME_RECEIPT;
 const restorationRuntime = args.includes('--owner-directed-restoration');
 const clientFixRuntime = args.includes('--owner-directed-client-fix');
+const loggerVisualRuntime = args.includes('--owner-directed-logger-visual');
 const nodeModules = path.join(root, 'node_modules');
 
 if (branch.toLowerCase().includes('production')) {
@@ -106,6 +107,7 @@ if (branch === 'testflight') {
     if (runtimeReceipt) integrityArgs.push('--runtime-receipt', runtimeReceipt);
     if (restorationRuntime) integrityArgs.push('--restoration-runtime');
     if (clientFixRuntime) integrityArgs.push('--owner-directed-client-fix');
+    if (loggerVisualRuntime) integrityArgs.push('--owner-directed-logger-visual');
   }
   run(process.execPath, integrityArgs);
 }
