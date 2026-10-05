@@ -10,7 +10,7 @@ const areas = [
   ['Session actions safety hierarchy and composition', ['scripts/test-session-actions-sheet.mjs', 'scripts/test-active-session-composition.mjs']],
   ['dedicated muscle-group navigation artwork', ['scripts/test-muscle-group-navigation-artwork.mjs', 'scripts/test-swap-muscle-thumbnail-framing.mjs']],
   ['complete approved artwork and retired library selection', ['scripts/test-retired-movement-discovery.mjs', 'scripts/test-complete-movement-library-art.mjs']],
-  ['pinned compatibility holdbacks cannot introduce release-only behavior', ['scripts/test-release-holdback-policy.mjs']],
+  ['pinned compatibility holdbacks cannot introduce release-only behavior', ['scripts/test-release-holdback-policy.mjs','scripts/test-owner-directed-client-fix.mjs']],
   ['keyboard visibility across composers, forms and sheets', ['scripts/test-keyboard-visibility.mjs']],
   ['initial hydration equals same-movement Swap identity', ['scripts/test-initial-hydration-movement-identity.mjs']],
   ['entire governed catalog retains artwork through thin payloads', ['scripts/test-governed-movement-art-taxonomy.mjs']],
@@ -38,7 +38,7 @@ const areas = [
   ['Smart Warmup lifecycle and physical configuration', ['scripts/test-smart-warmup-engine.mjs']],
   ['expanded Core Logger workspace density', ['scripts/test-expanded-core-card-compaction.mjs']],
   ['canonical compact Set Timeline', ['scripts/test-set-timeline-storyboard.mjs']],
-  ['movement-scoped SetLog edit/delete order', ['scripts/test-setlog-delete-order.mjs']],
+  ['movement-scoped SetLog edit/delete order and zero-load persistence', ['scripts/test-setlog-delete-order.mjs','scripts/test-zero-load-edit-set.mjs','scripts/test-zero-load-edit-api.mjs']],
   ['movement-scoped Logger physical loading', ['scripts/test-logger-movement-physical-loading.mjs']],
   ['canonical rest-timer lifecycle', [
     'scripts/test-rest-timer-flow.mjs',

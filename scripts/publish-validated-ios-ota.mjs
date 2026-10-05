@@ -22,6 +22,7 @@ const prepareOnly = args.includes('--prepare-only');
 const activeAssessments = valueFor('--active-assessments') || process.env.STRENGTH_LEDGER_ACTIVE_WORKTREE_ASSESSMENTS;
 const runtimeReceipt = valueFor('--runtime-receipt') || process.env.STRENGTH_LEDGER_RUNTIME_RECEIPT;
 const restorationRuntime = args.includes('--owner-directed-restoration');
+const clientFixRuntime = args.includes('--owner-directed-client-fix');
 const nodeModules = path.join(root, 'node_modules');
 
 if (branch.toLowerCase().includes('production')) {
@@ -100,10 +101,11 @@ if (branch === 'testflight') run(process.execPath, ['--import','tsx','scripts/te
 if (branch === 'testflight') {
   const integrityArgs = ['scripts/testflight-cumulative-integrity.mjs', '--export-dir', outputDir];
   if (!prepareOnly) {
-    if (!runtimeReceipt && !restorationRuntime) throw new Error('TestFlight publication blocked: actual runtime journey receipt is required.');
+    if (!runtimeReceipt && !restorationRuntime && !clientFixRuntime) throw new Error('TestFlight publication blocked: actual runtime journey receipt or exact owner-directed validation scope is required.');
     integrityArgs.push('--require-runtime');
     if (runtimeReceipt) integrityArgs.push('--runtime-receipt', runtimeReceipt);
     if (restorationRuntime) integrityArgs.push('--restoration-runtime');
+    if (clientFixRuntime) integrityArgs.push('--owner-directed-client-fix');
   }
   run(process.execPath, integrityArgs);
 }
