@@ -1,0 +1,15 @@
+OWNER DIRECTIVE — Accessory PR recognition, 2026-10-05
+
+Owner expectation:
+All right, I was able to verify it. Now, can you guarantee that the accessory PR recognition stuff is gonna play? When I go to the gym in a little bit, I know for a fact I'm gonna do an accessory PR. I need it. I need you to fucking ensure that it's gonna fucking play. That's my fucking expectation. Do you understand me? That is my expectation.
+
+Initial clarification:
+atleast one of them will be a mahcine. remember that we dont reward settting a baseline. we only recognize moving the baseline after its set
+
+Final clarification (supersedes the initial blanket baseline exclusion):
+I guess I stand corrected. For free weight accessories, I don't mind establishing a baseline, but for machines, it's pointless.
+
+Retained owner prohibition:
+You will not do simulator runs. Stop talking about it
+
+Engineering scope: retain free-weight baseline recognition; machines require improving an established exact movement/equipment/reps baseline. Keep actual SetLog evidence and all restored imagery. Protect frozen older client response contracts. This receipt does not certify a deployed backend or a physical phone playing the celebration.

@@ -4,7 +4,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {resolveApprovedExactMovementArtwork} from '../lib/movement-artwork-hero.ts';
 import {canonicalArtworkInputFromDefinition} from '../lib/canonical-movement-art-subject.ts';
-import {sha256,expoHash,protectedDeliveryHashes,assertProtectedArtifactAssets} from './testflight-cumulative-integrity.mjs';
+import {sha256,expoHash,protectedDeliveryHashes,assertProtectedArtifactAssets,assertOwnerEvidence} from './testflight-cumulative-integrity.mjs';
 
 const root=process.cwd(),read=file=>JSON.parse(fs.readFileSync(file));
 const state=read('config/testflight-release-integrity.json'),scope=state.movementImageryRestoration;
@@ -52,7 +52,14 @@ for(const file of ['components/workout-logger/logger-wheel-picker.tsx',
   'lib/logger-recognition-event-types.js','lib/recognition-motion-registry.ts',
   'lib/post-session-pr-evidence.ts']) {
   const bytes=execFileSync('git',['show',`${bugSource}:${file}`],{maxBuffer:16*1024*1024});
-  assert.equal(sha256(fs.readFileSync(file)),sha256(bytes),`Accessory PR celebration fix lost: ${file}`);
+  const actual=sha256(fs.readFileSync(file)),before=sha256(bytes);
+  if(actual!==before) {
+    const correction=state.sourceAuthorizations.find(receipt=>receipt.path===file
+      && receipt.before===before && receipt.after===actual
+      && receipt.ownerDirectiveScope==='accessory-pr-machine-baseline-20261005');
+    assert.ok(correction,`Accessory PR celebration source changed without exact owner-bound correction: ${file}`);
+    assertOwnerEvidence(root,[correction]);
+  }
 }
 const required=protectedDeliveryHashes(root,state);
 assert.throws(()=>assertProtectedArtifactAssets(baselineHashes,baselineHashes.filter(hash=>hash!==rows[0].expoHash)),/SUBTRACTION/,'deliberately missing approved image must fail');

@@ -1,6 +1,7 @@
 import { formatCalculatedWeightFromKgValue } from './calculated-weight-format.js';
 import { formatLoggerWeightDeltaKg, formatLoggerWeightKg, type LoggerDisplayUnit } from './logger-weight-format.js';
 import { LOGGER_RECOGNITION_EVENT_TYPES } from './logger-recognition-event-types.js';
+import { accessoryPrIsRecognizable } from './post-session-pr-evidence';
 
 export { LOGGER_RECOGNITION_EVENT_TYPES } from './logger-recognition-event-types.js';
 
@@ -174,6 +175,7 @@ function canonicalSourceKey(event: LoggerRecognitionEvent): string {
 
 function isEligibleCoreAccomplishment(event: LoggerRecognitionEvent): boolean {
   return TRANSIENT_RECOGNITION_EVENT_TYPES.has(event.event_type)
+    && (event.event_type !== 'ACCESSORY_REP_MAX_PR' || accessoryPrIsRecognizable(event))
     && !COMPLETION_EVENT_TYPES.has(event.event_type)
     && (event.prior_value != null || ['CORE_REP_MAX_PR', 'ACCESSORY_REP_MAX_PR'].includes(event.event_type) || MAJOR_VOLUME_MILESTONE_EVENT_TYPES.has(event.event_type))
     && event.invalidated !== true
@@ -183,6 +185,7 @@ function isEligibleCoreAccomplishment(event: LoggerRecognitionEvent): boolean {
 
 function isEligibleSessionHighlight(event: LoggerRecognitionEvent): boolean {
   return SESSION_HIGHLIGHT_EVENT_TYPES.has(event.event_type)
+    && (event.event_type !== 'ACCESSORY_REP_MAX_PR' || accessoryPrIsRecognizable(event))
     && !COMPLETION_EVENT_TYPES.has(event.event_type)
     && (event.prior_value != null || ['CORE_REP_MAX_PR', 'ACCESSORY_REP_MAX_PR'].includes(event.event_type))
     && event.invalidated !== true
@@ -313,6 +316,7 @@ function historicalRecognitionLabel(value: string): string {
 }
 
 export function recognitionPresentation(event: LoggerRecognitionEvent, displayUnit: LoggerDisplayUnit, mode: 'transient' | 'historical' = 'transient'): RecognitionPresentation | null {
+  if (event.event_type === 'ACCESSORY_REP_MAX_PR' && !accessoryPrIsRecognizable(event)) return null;
   if (mode === 'transient' && ['CORE_E1RM_PR', 'CORE_BLOCK_E1RM_BEST'].includes(event.event_type)) return null;
   if (MAJOR_VOLUME_MILESTONE_EVENT_TYPES.has(event.event_type)) {
     const evidence = event.evidence || {};

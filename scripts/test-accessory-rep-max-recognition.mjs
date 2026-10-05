@@ -19,11 +19,32 @@ const event = (id, weight, prior, setId) => ({
   source_revision: 1, calculation_version: 'core-accomplishment-v1',
   newly_generated: true, replayed: false, consumed: false,
   evidence: { actual_weight_kg: weight, actual_reps: 12, rep_count: 12,
-    movement_definition_id: 71, equipment_configuration_identity_id: 81,
+    movement_definition_id: 71, equipment_configuration_identity_id: 81, comparison_scope: 'exact_implementation',
     equipment_label: 'Hammer Strength · Plate Loaded' },
 });
 const first = event(1, 175, 160, 101);
 const stronger = event(2, 180, 175, 102);
+const freeBaseline = { ...event(7, 20, null, 107), core_movement_key: 'accessory:253',
+  movement_label: 'Dumbbell Curl', evidence: { actual_weight_kg: 20, actual_reps: 12, rep_count: 12,
+    movement_definition_id: 253, equipment_configuration_identity_id: null, comparison_scope: 'portable_exact_movement' } };
+assert.deepEqual(selectCelebrationEvents([freeBaseline]).map((row) => row.id), [7]);
+assert.equal(recognitionPresentation(freeBaseline, 'kg')?.eyebrow, '12RM ESTABLISHED');
+assert.equal(acceptedSetHapticKind([freeBaseline]), 'career');
+assert.equal(buildPersonalBestEvidence([freeBaseline], []).length, 1);
+for (const unearned of [event(3, 175, null, 103), event(4, 175, 175, 104),
+  event(5, 170, 175, 105), event(6, 175.0005, 175, 106)]) {
+  assert.deepEqual(selectCelebrationEvents([unearned]), [], 'Baselines and non-improvements must never celebrate');
+  assert.deepEqual(selectSessionHighlights([unearned], 9), []);
+  assert.equal(recognitionPresentation(unearned, 'kg'), null);
+  assert.equal(acceptedSetHapticKind([unearned]), 'ordinary');
+  assert.deepEqual(buildPersonalBestEvidence([unearned], []), []);
+  const rejected = loggerFeedbackReducer(initialLoggerFeedbackState, {
+    type: 'SUBMIT_SUCCEEDED', setLogId: unearned.source_set_log_id, created: true, replayed: false, events: [unearned],
+  });
+  assert.deepEqual(rejected.recognition.queuedEvents, []);
+  const restored = loggerFeedbackReducer(initialLoggerFeedbackState, { type: 'RESTORE_PENDING', events: [unearned] });
+  assert.deepEqual(restored.recognition.queuedEvents, [], 'Old pending baselines must not reappear');
+}
 assert.equal(CANONICAL_PR_EVENT_TYPES.has(first.event_type), true);
 assert.deepEqual(selectCelebrationEvents([first]).map((row) => row.id), [1]);
 assert.equal(recognitionMotionConfig(first.event_type)?.primitive, 'record-takeover');
@@ -42,6 +63,18 @@ const coalesced = loggerFeedbackReducer(state, {
 });
 assert.deepEqual(coalesced.recognition.queuedEvents.map((row) => row.id), [2]);
 state = loggerFeedbackReducer(state, { type: 'SAVE_CONFIRMATION_FINISHED' });
+const timerPending = loggerFeedbackReducer(state, { type: 'TIMER_PICKER_PENDING' });
+assert.equal(loggerFeedbackReducer(timerPending, { type: 'DISPLAY_NEXT_RECOGNITION' }).recognition.currentEvent, null);
+const timerReleased = loggerFeedbackReducer(timerPending, { type: 'TIMER_IDLE' });
+assert.equal(loggerFeedbackReducer(timerReleased, { type: 'DISPLAY_NEXT_RECOGNITION' }).recognition.currentEvent?.id, 1);
+const background = loggerFeedbackReducer(state, { type: 'APP_BACKGROUNDED' });
+assert.equal(loggerFeedbackReducer(background, { type: 'DISPLAY_NEXT_RECOGNITION' }).recognition.currentEvent, null);
+assert.equal(loggerFeedbackReducer(loggerFeedbackReducer(background, { type: 'APP_RESUMED' }),
+  { type: 'DISPLAY_NEXT_RECOGNITION' }).recognition.currentEvent?.id, 1);
+const replay = loggerFeedbackReducer(initialLoggerFeedbackState, {
+  type: 'SUBMIT_SUCCEEDED', setLogId: 101, created: false, replayed: true, events: [first],
+});
+assert.deepEqual(replay.recognition.queuedEvents, []);
 state = loggerFeedbackReducer(state, { type: 'DISPLAY_NEXT_RECOGNITION' });
 assert.equal(state.recognition.currentEvent?.id, 1);
 assert.deepEqual(selectSessionHighlights([first, stronger], 9).map((row) => row.id), [1, 2]);

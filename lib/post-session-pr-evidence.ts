@@ -48,6 +48,19 @@ export function finitePrNumber(value: unknown): number | null {
   return Number.isFinite(numeric) ? numeric : null;
 }
 
+export function accessoryPrIsRecognizable(event: {
+  current_value?: unknown; prior_value?: unknown; evidence?: Record<string, unknown>;
+}): boolean {
+  const current = finitePrNumber(event.current_value);
+  const prior = finitePrNumber(event.prior_value);
+  if (current == null || current <= 0) return false;
+  if (event.prior_value == null) {
+    return event.evidence?.comparison_scope === 'portable_exact_movement'
+      && event.evidence?.equipment_configuration_identity_id == null;
+  }
+  return prior != null && prior > 0 && current > prior + 0.001;
+}
+
 export function accomplishmentItemId(row: Record<string, any>): number | null {
   const parsed = finitePrNumber(row.workout_item_id ?? row.source?.workout_item_id);
   return parsed != null && parsed > 0 ? parsed : null;
@@ -202,6 +215,7 @@ export function buildPersonalBestEvidence<TMovement extends Record<string, any>>
 ): PersonalBestEvidence<TMovement>[] {
   const groups = new Map<string, PersonalBestEvidence<TMovement>>();
   for (const event of events) {
+    if (event.event_type === 'ACCESSORY_REP_MAX_PR' && !accessoryPrIsRecognizable(event)) continue;
     const movement = movements.find((candidate) => accomplishmentMatchesMovement(event, candidate)) || null;
     const evidence: PersonalBestEvidence<TMovement> = {
       event,
