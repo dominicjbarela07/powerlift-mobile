@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
-import { productFiles, sha256, fingerprintFiles, assertOwnerEvidence, runIntegrityGate, assertProtectedArtifactAssets, expoHash } from './testflight-cumulative-integrity.mjs';
+import { productFiles, sha256, fingerprintFiles, assertOwnerEvidence, runIntegrityGate, assertProtectedArtifactAssets, protectedDeliveryHashes, expoHash } from './testflight-cumulative-integrity.mjs';
 
 const baselineCatalogRef=root=>read(root,'config/testflight-release-integrity.json').previousTestFlight.gitCommitHash;
 const read = (root, file) => JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
@@ -122,7 +122,7 @@ export function runPostReleaseGate({root,devRoot,backendRoot,published,manifest,
   assert.equal(servedBundleSha256,validatedBundleSha256,'Served bundle differs from the exact validated bundle');
   assert.deepEqual([...new Set(manifest.assets.map(a=>a.hash))].sort(),[...new Set(validatedAssetHashes || [])].sort(),'Served asset manifest differs from exact validated export');
   const baseline=read(root,'config/testflight-release-integrity.json');
-  assertProtectedArtifactAssets(baseline.protectedAssetHashes,manifest.assets.map(a=>a.hash),baseline.assetRemovalAuthorizations);
+  assertProtectedArtifactAssets(protectedDeliveryHashes(root,baseline),manifest.assets.map(a=>a.hash),baseline.assetRemovalAuthorizations);
   const result=runDevSupersetGate({root,devRoot,backendRoot,requireCleanCandidate:true});
   assert.equal(result.devProductFingerprint,devProductFingerprint,'DEV product source changed during publication; reconcile exact final state');
   assert.ok(result.pass,`Published TestFlight has state missing from DEV: ${result.missing.map(e=>e.identity).join(', ')}`);
@@ -141,7 +141,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1]
     console.log(`[release-verify] Gate A PASS; valid TestFlight-only source/catalog/artwork state: 0`);
     if(!process.argv.includes('--gate-a-only')) {
       if(!preparation) {assert.ok(value('--export-dir'),'GATE B BLOCKED: fresh source-bound exported artifact required');assertBoundExport(root,value('--export-dir'));}
-      report.gates.B=runIntegrityGate({root,exportDir:value('--export-dir'),runtimeReceipt:value('--runtime-receipt'),requireRuntime:!preparation});
+      report.gates.B=runIntegrityGate({root,exportDir:value('--export-dir'),runtimeReceipt:value('--runtime-receipt'),requireRuntime:!preparation,restorationRuntime:process.argv.includes('--restoration-runtime')});
       if(!preparation) assert.ok(value('--export-dir'),'GATE B BLOCKED: fresh actual exported artifact required');
       for(const script of ['test-release-source-lineage.mjs','test-accepted-behavior-contracts.mjs','test-release-critical-invariants.mjs']) {
         const env={...process.env,STRENGTH_LEDGER_BACKEND_ROOT:value('--backend-root')||process.env.STRENGTH_LEDGER_BACKEND_ROOT||'/Users/dominic/powerlifting_app_dev',STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:baselineCatalogRef(root)};

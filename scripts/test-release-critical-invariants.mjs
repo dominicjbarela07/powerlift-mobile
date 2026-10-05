@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['pre-Oct 2 complete imagery and Accessory PR celebration restoration', ['scripts/test-pre-october-2-restoration.mjs','scripts/test-accessory-pr-save-api.mjs','scripts/test-accessory-rep-max-recognition.mjs','scripts/test-logger-wheel-picker.mjs']],
   ['owner non-recurrence governance, missing protections and false incident closure', ['scripts/test-owner-nonrecurrence-governance.mjs']],
   ['temporary-worktree lifecycle, stranded shipped fixes, safe cleanup and dirty DEV preservation', ['scripts/test-worktree-lifecycle.mjs']],
   ['DEV superset, explicit removals, and exact published-state failure gates', ['scripts/test-dev-testflight-release-gates.mjs']],

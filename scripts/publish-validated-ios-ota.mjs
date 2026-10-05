@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { assertProtectedArtifactAssets, sha256 } from './testflight-cumulative-integrity.mjs';
+import { assertProtectedArtifactAssets, protectedDeliveryHashes, sha256 } from './testflight-cumulative-integrity.mjs';
 import { runDevSupersetGate, runPostReleaseGate, bindExportSource } from './verify-testflight-release-integrity.mjs';
 import {assertRegisteredPublicationWorktree,runReleaseWorktreeCloseout} from './worktree-release-closeout.mjs';
 // Mandatory authority: backend docs/RELEASE_INVARIANTS.md; Gates A/B/C cannot be bypassed here.
@@ -21,6 +21,7 @@ const message = valueFor('--message');
 const prepareOnly = args.includes('--prepare-only');
 const activeAssessments = valueFor('--active-assessments') || process.env.STRENGTH_LEDGER_ACTIVE_WORKTREE_ASSESSMENTS;
 const runtimeReceipt = valueFor('--runtime-receipt') || process.env.STRENGTH_LEDGER_RUNTIME_RECEIPT;
+const restorationRuntime = args.includes('--owner-directed-restoration');
 const nodeModules = path.join(root, 'node_modules');
 
 if (branch.toLowerCase().includes('production')) {
@@ -95,11 +96,14 @@ const exportSource=branch==='testflight'?bindExportSource(root,outputDir):null;
 run(process.execPath, ['scripts/assert-ota-route-bundle.mjs', outputDir]);
 run(process.execPath, ['scripts/assert-no-dev-artwork-export.mjs', outputDir]);
 run(process.execPath, ['scripts/assert-ota-native-compatibility.mjs']);
+if (branch === 'testflight') run(process.execPath, ['--import','tsx','scripts/test-pre-october-2-restoration.mjs','--export-dir',outputDir,'--output',path.join(outputDir,'release-movement-imagery.json')]);
 if (branch === 'testflight') {
   const integrityArgs = ['scripts/testflight-cumulative-integrity.mjs', '--export-dir', outputDir];
   if (!prepareOnly) {
-    if (!runtimeReceipt) throw new Error('TestFlight publication blocked: actual runtime journey receipt is required.');
-    integrityArgs.push('--require-runtime', '--runtime-receipt', runtimeReceipt);
+    if (!runtimeReceipt && !restorationRuntime) throw new Error('TestFlight publication blocked: actual runtime journey receipt is required.');
+    integrityArgs.push('--require-runtime');
+    if (runtimeReceipt) integrityArgs.push('--runtime-receipt', runtimeReceipt);
+    if (restorationRuntime) integrityArgs.push('--restoration-runtime');
   }
   run(process.execPath, integrityArgs);
 }
@@ -183,7 +187,7 @@ if (!manifest || !extensions) {
 
 if (branch === 'testflight') {
   const baseline = JSON.parse(fs.readFileSync(path.join(root, 'config/testflight-release-integrity.json'), 'utf8'));
-  assertProtectedArtifactAssets(baseline.protectedAssetHashes, manifest.assets.map(asset => asset.hash), baseline.assetRemovalAuthorizations);
+  assertProtectedArtifactAssets(protectedDeliveryHashes(root,baseline), manifest.assets.map(asset => asset.hash), baseline.assetRemovalAuthorizations);
 }
 
 const launchAsset = manifest.launchAsset;
