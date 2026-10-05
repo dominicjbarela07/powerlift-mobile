@@ -315,7 +315,6 @@ import {
   optionalMachineLoadIdentity,
   needsEquipmentSelection,
   mostRecentEquipmentChoice,
-  mostRecentCableEquipmentChoice,
   orderEquipmentChoices,
   orderEquipmentTypeChoices,
   presentEquipmentHistory,
@@ -3004,9 +3003,7 @@ export default function WorkoutViewerScreen() {
         .filter(Boolean).join(' ').toLowerCase().includes(needle);
   });
   const recentEquipment = identityPickerSubject && !identityPickerManufacturer && !identityPickerQuery.trim()
-    ? identityPickerSubject.domain === 'cable'
-      ? mostRecentCableEquipmentChoice(identityPickerRows)
-      : mostRecentEquipmentChoice(identityPickerRows, identityPickerSubject.allowedTypes)
+    ? mostRecentEquipmentChoice(identityPickerRows, identityPickerSubject.allowedTypes)
     : null;
   const identityPickerEntryRef = useRef<{ subject: EquipmentFlowSubject; scope: string } | null>(null);
   const identityPickerSaveRef = useRef<object | null>(null);
@@ -3993,7 +3990,7 @@ export default function WorkoutViewerScreen() {
         body: {
           ...(continuation.kind === 'evidence_correction' ? { intent: 'evidence_correction' } : {}),
           ...(portableLoading ? portableLoadingWrite(entry.subject)
-            : equipmentFlowWrite(entry.subject, identity.manufacturer?.key || 'other', equipmentVariant)),
+            : equipmentFlowWrite(entry.subject, identity.manufacturer?.key || 'other', equipmentVariant as MachineEquipmentType)),
           ...(expectedEquipmentId ? { equipment_definition_id: expectedEquipmentId } : {}),
         },
       });
@@ -4062,11 +4059,6 @@ export default function WorkoutViewerScreen() {
   };
 
   const choosePerformedIdentity = async (identity: GeneralMovementIdentity) => {
-    if (identityPickerEntryRef.current?.subject.domain === 'cable') {
-      Keyboard.dismiss();
-      await commitPerformedIdentity(identity);
-      return;
-    }
     setIdentityPickerManufacturer(identity);
     setIdentityPickerQuery('');
     setIdentityPickerError(null);
@@ -8553,7 +8545,7 @@ export default function WorkoutViewerScreen() {
           detailRows={accessoryIsExpanded ? movementPresentation.detailRows : undefined}
           expandedIdentityContext={accessoryIsExpanded && machineAccessory && !hideEquipmentDetails ? (
             <SessionEquipmentContext selected={Boolean(currentEquipment)} manufacturer={currentManufacturer}
-              name={currentEquipmentName} variant={equipmentDomain === 'cable' ? null : currentEquipmentVariantLabel
+              name={currentEquipmentName} variant={currentEquipmentVariantLabel
                 ? `${currentEquipmentVariantLabel}${equipmentDomain === 'cable' ? ' Cable Station' : ''}` : null}
               domain={equipmentDomain} />
           ) : null}
@@ -10392,12 +10384,10 @@ export default function WorkoutViewerScreen() {
                   return (
                     <TouchableOpacity
                       accessibilityRole="button"
-                      accessibilityLabel={`Select most recent equipment, ${[recentEquipment.manufacturer.manufacturer?.display_name, variant?.label].filter(Boolean).join(', ')}. ${[evidence.performance, evidence.detail].filter(Boolean).join('. ')}`}
+                      accessibilityLabel={`Select most recent equipment, ${recentEquipment.manufacturer.manufacturer?.display_name}, ${variant?.label}. ${[evidence.performance, evidence.detail].filter(Boolean).join('. ')}`}
                       disabled={identityPickerLoading || !identityPickerEntryRef.current}
-                      onPress={() => identityPickerSubject?.domain === 'cable'
-                        ? void choosePerformedIdentity(recentEquipment.manufacturer)
-                        : void commitPerformedIdentity(recentEquipment.manufacturer,
-                          recentEquipment.equipmentType, recentEquipment.equipmentDefinitionId)}
+                      onPress={() => void commitPerformedIdentity(recentEquipment.manufacturer,
+                        recentEquipment.equipmentType, recentEquipment.equipmentDefinitionId)}
                       style={styles.recentEquipmentChoice}
                     >
                       <Text style={styles.recentEquipmentKicker}>MOST RECENT EQUIPMENT</Text>
@@ -10405,7 +10395,7 @@ export default function WorkoutViewerScreen() {
                         <ManufacturerBrandMark compact manufacturerName={recentEquipment.manufacturer.manufacturer?.display_name || 'Other'} />
                         <View style={styles.identityPickerCopy}>
                           <Text style={styles.identityPickerManufacturer}>{recentEquipment.manufacturer.manufacturer?.display_name || 'Other'}</Text>
-                          {identityPickerSubject?.domain !== 'cable' ? <Text style={styles.recentEquipmentType}>{variant?.label}</Text> : null}
+                          <Text style={styles.recentEquipmentType}>{variant?.label}</Text>
                           <EquipmentHistoryEvidence evidence={evidence} />
                         </View>
                         <Ionicons name="arrow-forward" size={19} color={SLColors.accentViolet} />
