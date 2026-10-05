@@ -43,3 +43,32 @@ already-shipped exact Cable holdbacks and both lanes' zero-load edit fix; this
 visual task does not publish that pending backend change. Production 2.0.2 is
 untouched. Test fixtures and runtime changes are confined to the local DEV
 server/database and the canonical iPhone Air simulator.
+
+## Published closeout — October 5, 2026
+
+Compatible iOS TestFlight OTA published: 01a10e59-6149-7d98-83a3-8413a56d9006; group ebe8bb5f-7a22-4600-b20f-f0d65b0842a9;
+source 2521a445b9af25113a196184491a7bef40630820; runtime 2.1.0. The actual served
+bundle and complete protected asset manifest passed Gate C with zero missing
+state in canonical DEV. The exact five presentation paths are protected as the
+new cumulative baseline. The preceding zero-load, Accessory PR and artwork fixes
+remain.
+
+Actual canonical iPhone Air validation covered all four movement classes, real
+History/+30/Skip, first and second screenshots, reachable target Sets while rest
+was active, and 1:00/full → 0:30/half → expiry/cleared. Actual-source countdown and
+adjacent timer regressions passed. No audible simulator playback claim is made.
+The guarded publication passed 260 accepted contracts and 77 critical areas,
+TypeScript, lineage, native OTA compatibility, complete artwork inclusion and
+served-bundle equality.
+
+Historical actual runtime receipt SHA-256: 04c06227f0d88ec6ec84fcd185725b46d77d3742aa15d08034b40306902817b4.
+The receipt and screenshots are preserved under the local published artifact
+archive .codex/release-artifacts/01a10e59-6149-7d98-83a3-8413a56d9006/actual-runtime-proof.
+The retained release scope is bound to the old-to-new five-file delta and this
+product fingerprint, so it cannot bypass runtime requirements for another task.
+
+Canonical DEV retains pending Cable work; its backend deployment remains pending.
+Two unchanged DEV-only barbell_overhead_press art-readiness checks remain outside
+the frozen shipped catalog. No assets were invented/approved to suppress them.
+No temporary worktree was created. The durable release checkout and independent
+unfinished owner worktrees remain accounted for; Production 2.0.2 was untouched.
