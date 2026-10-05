@@ -32,6 +32,7 @@ try {
   // pre-fix source. A private shared-object clone retains that history without
   // writing to canonical DEV or creating owner work.
   execFileSync('git',['clone','--quiet','--no-checkout','--shared','--local','--branch','dev/canonical-mobile',devRoot,fixture]);
+  execFileSync('git',['read-tree','HEAD'],{cwd:fixture});
   for(const file of Object.keys(productFiles(devRoot))) {
     const target=path.join(fixture,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.linkSync(path.join(devRoot,file),target);
   }
