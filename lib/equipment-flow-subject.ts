@@ -61,13 +61,18 @@ export function assertEquipmentResponseSubject(subject: EquipmentFlowSubject, re
 }
 
 export function equipmentFlowVariants(subject: EquipmentFlowSubject) {
+  if (subject.domain === 'cable') return [];
   return MACHINE_EQUIPMENT_TYPES.filter(row => subject.allowedTypes.includes(row.key)).map(row => ({
     ...row, label: subject.domain === 'cable' ? `${row.label} Cable Station` : row.label,
   }));
 }
 
-export function equipmentFlowWrite(subject: EquipmentFlowSubject, manufacturerKey: string, equipmentType: MachineEquipmentType) {
-  if (!manufacturerKey || !subject.allowedTypes.includes(equipmentType)) throw new Error('Choose equipment compatible with this exact movement.');
+export function equipmentFlowWrite(subject: EquipmentFlowSubject, manufacturerKey: string, equipmentType?: MachineEquipmentType) {
+  if (subject.domain === 'cable') {
+    if (!manufacturerKey) throw new Error('Choose a manufacturer.');
+    return { manufacturer_key: manufacturerKey };
+  }
+  if (!manufacturerKey || !equipmentType || !subject.allowedTypes.includes(equipmentType)) throw new Error('Choose equipment compatible with this exact movement.');
   // Existing API contract configures physical equipment only. Never send a
   // movement_definition_id here: that legacy field accepts a different subject.
   return { manufacturer_key: manufacturerKey, equipment_type: equipmentType };

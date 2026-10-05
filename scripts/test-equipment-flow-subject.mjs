@@ -30,7 +30,7 @@ for(const item of [a,b]) {
    identity_specificity:'exact',implementation_key:'prime:selectorized',manufacturer:{id:77,key:'prime',display_name:'Prime Fitness'}})};
  assertEquipmentFlowSubject(subject,saved);
  assert.deepEqual(canonicalArtworkInputForLoggerItem(saved),canonicalArtworkInputForLoggerItem(item));
- assert.deepEqual(equipmentFlowWrite(subject,'prime','selectorized'),{manufacturer_key:'prime',equipment_type:'selectorized'});
+ assert.deepEqual(equipmentFlowWrite(subject,'prime','selectorized'),subject.domain === 'cable' ? {manufacturer_key:'prime'} : {manufacturer_key:'prime',equipment_type:'selectorized'});
 }
 assert.throws(()=>assertEquipmentFlowSubject(equipmentFlowSubject(a),b));
 assert.throws(()=>equipmentFlowSubject({...a,effective_movement_definition_id:307}));
@@ -39,7 +39,8 @@ assert.throws(()=>equipmentFlowSubject({id:1,movement:machine.display_name}));
 assert.throws(()=>equipmentFlowSubject(make(1,identity(991,'machine_equipment_prime_selectorized','Prime Fitness','selectorized_machine'))));
 assert.throws(()=>equipmentFlowSubject(make(1,identity(3,'curl','Machine Curl','dumbbell'))),'name cannot classify equipment');
 assert.throws(()=>equipmentFlowSubject({...a,performed_canonical_movement_identity:null}),'incomplete old substitution cannot be overwritten by equipment');
-assert.ok(equipmentFlowVariants(equipmentFlowSubject(b)).every(row=>row.label.endsWith('Cable Station')));
+assert.deepEqual(equipmentFlowVariants(equipmentFlowSubject(b)),[],'cables have no type step');
+assert.deepEqual(equipmentFlowWrite(equipmentFlowSubject(b),'matrix'),{manufacturer_key:'matrix'});
 for(const [equipment,allowed] of [['plate_loaded_machine','plate_loaded'],['selectorized_machine','selectorized']]) {
  const subject=equipmentFlowSubject(make(1,identity(70041,equipment,equipment,equipment)));
  assert.deepEqual(subject.allowedTypes,[allowed]);
@@ -56,7 +57,7 @@ for(const [index,equipment] of variants.entries()) {
 // Execute the actual route's open/load/save/close handlers, including delayed A/B responses.
 const source=fs.readFileSync('app/(tabs)/workout/[workoutId].tsx','utf8');
 const ast=ts.createSourceFile('route.tsx',source,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
-const names=new Set(['openIdentityPicker','loadIdentityPicker','commitPerformedIdentity','closeIdentityPicker']);
+const names=new Set(['openIdentityPicker','loadIdentityPicker','commitPerformedIdentity','closeIdentityPicker','choosePerformedIdentity']);
 const declarations=[];
 const visit=node=>{if(ts.isVariableDeclaration(node)&&names.has(node.name.getText(ast)))declarations.push(`const ${node.getText(ast)};`);ts.forEachChild(node,visit);};visit(ast);
 assert.equal(declarations.length,names.size);
@@ -73,7 +74,7 @@ const ctx={equipmentFlowSubject,assertEquipmentFlowSubject,assertEquipmentRespon
 };
 ctx.dataRef={current:ctx.data};
 for(const field of ['Item','Rows','Subject','Query','Error','Loading','Continuation','Manufacturer'])ctx[`setIdentityPicker${field}`]=value=>{ctx[`identityPicker${field}`]=value;};
-const code=ts.transpileModule(declarations.join('\n')+'\n({openIdentityPicker,loadIdentityPicker,commitPerformedIdentity,closeIdentityPicker});',{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
+const code=ts.transpileModule(declarations.join('\n')+'\n({openIdentityPicker,loadIdentityPicker,commitPerformedIdentity,closeIdentityPicker,choosePerformedIdentity});',{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
 const handlers=vm.runInNewContext(code,ctx);
 handlers.openIdentityPicker(a);
 assert.equal(ctx.identityPickerSubject.movementDefinitionId,machine.id);
@@ -113,7 +114,22 @@ assert.equal(confirmed.set_logs[0].id,909,'equipment reconciliation preserves co
 assert.equal(confirmed.effective_movement_definition_id,machine.id);
 assert.equal(confirmed.performed_movement_identity.id,991);
 assert.equal(notices.at(-1)[0].id,a.id,'continuation uses the confirmed exact item');
+// The real brand handler saves a cable immediately, with no version state.
 handlers.openIdentityPicker(b);
+const cableSave=handlers.choosePerformedIdentity({id:88,manufacturer:{key:'matrix'}});
+assert.deepEqual(JSON.parse(JSON.stringify(requests.at(-1).options.body)),{manufacturer_key:'matrix'});
+assert.equal(ctx.identityPickerManufacturer,null);
+const cableEquipment={id:992,key:'machine_equipment_matrix_cable',display_name:'Matrix · Cable',
+ equipment_type:'cable',identity_specificity:'exact',implementation_key:'matrix:cable',manufacturer:{id:88,key:'matrix',display_name:'Matrix'}};
+requests.at(-1).resolve({ok:true,json:{ok:true,performed_movement_identity:cableEquipment}});await cableSave;
+assert.equal(ctx.identityPickerItem,null);
+assert.equal(ctx.dataRef.current.workout.accessory_groups[0].items[1].effective_movement_definition_id,cable.id);
+handlers.openIdentityPicker(a);
+const beforeMachineBrand=requests.length;
+await handlers.choosePerformedIdentity({id:77,manufacturer:{key:'prime'}});
+assert.equal(requests.length,beforeMachineBrand,'other machines still require their type');
+assert.equal(ctx.identityPickerManufacturer.manufacturer.key,'prime');
+handlers.closeIdentityPicker();handlers.openIdentityPicker(b);
 const otherAccount=handlers.loadIdentityPicker(b);
 ctx.executionScopeRef.current='other-user:session:8';
 requests.at(-1).resolve({ok:true,json:{ok:true,usage_movement_definition_id:cable.id,items:[{id:2,key:'private',display_name:'Old account'}]}});

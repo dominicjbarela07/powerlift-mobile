@@ -1,0 +1,213 @@
+# CABLE EQUIPMENT — REMOVE TYPE/“VERSION” SELECTION — BRAND ONLY
+
+### Working Directory / Scope
+/Users/dominic/powerlifting_app_dev
+/Users/dominic/powerlifting_app_dev/powerlift_mobile
+
+Implement, validate, and ship this to TestFlight in the same run.
+
+### Objective
+
+Simplify equipment selection for CABLE movements.
+
+I do NOT care whether a cable station is:
+
+- Plate Loaded Cable Station
+- Selectorized Cable Station
+
+Remove this secondary `Which version are you using?` step entirely for cable movements.
+
+For cables, equipment identity should stop at:
+
+CABLE MOVEMENT
+→ select manufacturer/brand
+→ done
+
+Example:
+
+Straight-Arm Cable Pulldown
+→ Matrix
+→ equipment selection complete
+
+Do NOT ask whether the Matrix cable station is plate-loaded or selectorized.
+
+### Requirements
+
+#### Cable Equipment Identity
+
+For cable movements, manufacturer is the only machine-equipment detail I want collected.
+
+Examples:
+
+`Matrix`
+
+`Life Fitness`
+
+`Watson`
+
+`Atlantis`
+
+etc.
+
+Do not require or prompt for a secondary cable-station type.
+
+#### Remove the Current Screen
+
+The supplied screenshot shows the exact interaction to eliminate:
+
+`Which version are you using?`
+
+with:
+
+`Plate Loaded Cable Station`
+`Selectorized Cable Station`
+
+For cable movements, this screen should no longer appear.
+
+Manufacturer selection should complete the equipment flow and return naturally to the Logger.
+
+#### Existing Data
+
+Do NOT destroy historical equipment provenance.
+
+Existing historical records that already contain:
+
+- Plate Loaded Cable Station
+- Selectorized Cable Station
+
+may retain that historical metadata.
+
+This change means we STOP asking for that distinction going forward.
+
+Do not run a destructive migration merely to erase old type data.
+
+#### Comparability / History
+
+Update current cable-equipment comparison semantics accordingly.
+
+Going forward, cable equipment comparability should use the canonical movement ID plus selected manufacturer where equipment context is required.
+
+Do not make new cable performances incomparable merely because the new record no longer contains the old plate-loaded/selectorized distinction.
+
+Ensure:
+
+- Last Exposure
+- Last Comparable Exposure
+- Movement History
+- equipment history
+- progression
+- Accessory rep-max evidence where applicable
+
+continue working correctly under the simplified cable identity.
+
+#### Skip Behavior
+
+Preserve the existing ability to skip equipment selection.
+
+Cable movement:
+
+select manufacturer
+→ known manufacturer
+
+OR
+
+Skip
+→ Unknown according to the existing optional-equipment semantics
+
+Do not introduce another prompt to compensate for removing the type step.
+
+### UI
+
+The desired interaction is simply:
+
+`Choose Manufacturer`
+→ tap `Matrix`
+→ selection complete
+→ return to Logger
+
+No intermediate `Which version are you using?`
+
+No replacement confirmation.
+
+No extra explanatory copy.
+
+### Locked / Do Not
+
+- Do NOT ask cable users plate-loaded vs selectorized anymore.
+- Do NOT remove manufacturer selection.
+- Do NOT destroy historical type provenance.
+- Do NOT apply this simplification to unrelated machine Accessories.
+- Do NOT redesign the entire equipment picker.
+- Do NOT change movement identity.
+- Do NOT make historical cable evidence disappear from comparable history.
+- Do NOT make unrelated product decisions.
+- Never use `workout` in user-facing copy.
+
+### Validation
+
+Prove:
+
+**New cable selection**
+Straight-Arm Cable Pulldown
+→ Equipment
+→ Matrix
+→ immediately completes selection
+→ NO version/type screen
+
+**Another manufacturer**
+Cable Archer Row
+→ Life Fitness
+→ completes selection
+→ NO type screen
+
+**Skip**
+Cable movement
+→ Skip
+→ existing Unknown semantics work
+
+**Historical compatibility**
+old Matrix + Selectorized exposure exists
+→ new Matrix exposure without cable type
+→ history remains available/comparable according to the new manufacturer-level cable semantics
+
+old Matrix + Plate Loaded exposure
+→ retained as historical provenance
+→ not discarded
+
+**Other machine movement**
+Machine Lateral Raise
+→ existing manufacturer/type behavior remains unchanged where required
+
+Run regressions for equipment history, Last Comparable Exposure, and applicable Accessory PR evidence.
+
+### Release
+
+After validation:
+
+1. Implement in canonical DEV.
+2. Validate cable equipment selection and historical compatibility.
+3. Run adjacent equipment/history regressions.
+4. Confirm the candidate does not subtract unrelated existing TestFlight product state.
+5. Publish to TestFlight in this same run.
+6. Verify the published update.
+7. Ensure the final shipped state is reconciled into canonical DEV.
+8. Close any temporary worktree used once its valid work is fully reconciled.
+
+### Expected Output
+
+Return:
+- implementation summary
+- old → new cable equipment identity semantics
+- historical-data handling
+- comparability/history result
+- files changed
+- validation results
+- TestFlight publication identifier
+- DEV reconciliation status
+- worktree closeout status
+
+Final acceptance:
+
+`Cable movement → choose brand → DONE.`
+
+No plate-loaded/selectorized cable-station question.

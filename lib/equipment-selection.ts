@@ -425,6 +425,21 @@ function recordedEquipmentType(record: RecordedExposure): 'plate_loaded' | 'sele
   return null;
 }
 
+/** Cable recency is manufacturer evidence, never a required type selection. */
+export function mostRecentCableEquipmentChoice<T extends EquipmentIdentityLike>(rows: readonly T[]) {
+  const candidates = rows.flatMap(manufacturer => {
+    const exposure = manufacturer.equipment_context?.last_exposure;
+    if (!exposure || !exposureFromHistoryRecord(exposure)
+        || exposure.equipment?.manufacturer?.id !== manufacturer.manufacturer?.id) return [];
+    return [{ manufacturer, exposure, equipmentType: undefined,
+      equipmentDefinitionId: Number(exposure.equipment?.id) }];
+  });
+  candidates.sort((left, right) => (Date.parse(right.exposure.performed_at || right.exposure.date) || 0)
+    - (Date.parse(left.exposure.performed_at || left.exposure.date) || 0)
+    || right.exposure.workout_id - left.exposure.workout_id);
+  return candidates[0] || null;
+}
+
 /** The first selectable canonical equipment ID from this movement's History evidence. */
 export function mostRecentEquipmentChoice<T extends EquipmentIdentityLike>(
   rows: readonly T[], allowedTypes: readonly ('plate_loaded' | 'selectorized')[],
