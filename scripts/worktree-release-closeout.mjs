@@ -36,7 +36,8 @@ export function runReleaseWorktreeCloseout({root,gateC,backendRoot=process.env.S
   execFileSync('git',['update-ref',anchor,publication.gitCommitHash],{cwd:worktree});
   entry.historyAnchor=anchor;
   const devRoot=gateC.dev.worktree;
-  const projectionPaths=['app.json','eas.json','config/governed-movement-art-taxonomy.json'];
+  const validatedHoldbacks=JSON.parse(fs.readFileSync(path.join(worktree,'config/protected-fix-manifest.json'),'utf8')).releaseHoldbacks?.files || [];
+  const projectionPaths=[...new Set(['app.json','eas.json','config/governed-movement-art-taxonomy.json',...validatedHoldbacks.filter(row=>row.blob!==null).map(row=>row.path)])];
   entry.accounting=(entry.accounting||[]).filter(item=>!projectionPaths.includes(item.path));
   for(const file of projectionPaths) {
     const source=sha256(fs.readFileSync(path.join(worktree,file))),dev=sha256(fs.readFileSync(path.join(devRoot,file)));

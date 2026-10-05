@@ -3304,7 +3304,9 @@ export default function WorkoutViewerScreen() {
     const repsStr = String(editSetForm.reps ?? '').replace(/[^0-9]/g, '');
     const reps = repsStr ? Number(repsStr) : NaN;
 
-    if (Number.isNaN(weightInUnit) || weightInUnit <= 0) {
+    // Zero is a performed load (for example, bodyweight with no added load),
+    // not missing input. Match the canonical edit-set API's nonnegative rule.
+    if (!Number.isFinite(weightInUnit) || weightInUnit < 0) {
       setError('Weight required');
       return;
     }

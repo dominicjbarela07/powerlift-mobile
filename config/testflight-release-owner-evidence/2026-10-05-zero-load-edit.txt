@@ -1,0 +1,9 @@
+I also want you to confirm that the canonical session logger edit set weight being zero rule is fixed. So, like if I have a body weight movement and I edit it to be fucking zero pounds because it's body weight, sure. Let me fucking log something at zero pounds. I want you to ensure that's fixed on TestFlight 2.
+
+Earlier owner directive, retained verbatim:
+You will not do simulator runs. Stop talking about it
+
+Publication authorization, retained verbatim from the same conversation:
+PUBLISH THE RESTORATION TO TESTFLIGHT IN THIS SAME RUN.
+This is already authorized.
+Do not ask whether I want it published.

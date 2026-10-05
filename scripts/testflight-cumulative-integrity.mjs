@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
+import { runClientFixContracts } from './owner-directed-client-fix.mjs';
 
 export const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 export const expoHash = bytes => crypto.createHash('sha256').update(bytes).digest('base64url');
@@ -155,7 +156,7 @@ export function protectedDeliveryHashes(root, state) {
   return required;
 }
 
-export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,requireRuntime=false,restorationRuntime=false}={}) {
+export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,requireRuntime=false,restorationRuntime=false,clientFixRuntime=false}={}) {
   const protectedState=read(root,'config/testflight-release-integrity.json');
   const removalManifest=read(root,'config/release-removal-authorizations.json');
   assert.equal(removalManifest.schemaVersion,1);
@@ -205,8 +206,15 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
     assert.equal(restorationScope.productFingerprint, fingerprint, 'owner-directed restoration cannot be reused for different product changes');
     assertOwnerEvidence(root, [restorationScope]);
   }
-  const simulatorProhibited = restorationScope?.simulatorValidation === 'OWNER_PROHIBITED';
-  if (simulatorProhibited) {
+  let clientFixContracts;
+  if (clientFixRuntime) {
+    assert.equal(requireRuntime, true, 'client fix validation must be part of publication');
+    assert.equal(restorationRuntime, false, 'distinct owner scopes cannot be combined');
+    assertOwnerEvidence(root, [protectedState.ownerDirectedClientFix]);
+    clientFixContracts = runClientFixContracts({root,scope:protectedState.ownerDirectedClientFix,fingerprint,delta,exportDir});
+  }
+  const simulatorProhibited = restorationScope?.simulatorValidation === 'OWNER_PROHIBITED' || Boolean(clientFixContracts);
+  if (simulatorProhibited && restorationScope) {
     const ownerText = fs.readFileSync(path.join(root,restorationScope.ownerEvidencePath),'utf8');
     assert.ok(ownerText.includes('You will not do simulator runs. Stop talking about it'), 'simulator exclusion requires the exact current owner instruction');
   }
@@ -232,12 +240,12 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
     }
     for (const file of Object.keys(files)) assert.ok(testedFiles[file], `candidate product path was absent during runtime verification: ${file}`);
   }
-  return {productFingerprint:fingerprint,baselines:protectedState.releaseHistory.length,sourceDelta:delta,artifact,runtimeVerified:requireRuntime && !simulatorProhibited,simulatorValidation:simulatorProhibited?'OWNER_PROHIBITED':'STANDARD_RUNTIME_POLICY'};
+  return {productFingerprint:fingerprint,baselines:protectedState.releaseHistory.length,sourceDelta:delta,artifact,runtimeVerified:requireRuntime && !simulatorProhibited,simulatorValidation:simulatorProhibited?'OWNER_PROHIBITED':'STANDARD_RUNTIME_POLICY',clientFixContracts};
 }
 
 if(process.argv[1] && import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href) {
   const value=flag=>{const i=process.argv.indexOf(flag);return i>=0?process.argv[i+1]:undefined;};
-  const result=runIntegrityGate({exportDir:value('--export-dir'),runtimeReceipt:value('--runtime-receipt'),requireRuntime:process.argv.includes('--require-runtime'),restorationRuntime:process.argv.includes('--restoration-runtime')});
+  const result=runIntegrityGate({exportDir:value('--export-dir'),runtimeReceipt:value('--runtime-receipt'),requireRuntime:process.argv.includes('--require-runtime'),restorationRuntime:process.argv.includes('--restoration-runtime'),clientFixRuntime:process.argv.includes('--owner-directed-client-fix')});
   const out=value('--output');if(out)fs.writeFileSync(out,JSON.stringify(result,null,2)+'\n');
   console.log(`[cumulative-testflight] PASS: ${result.baselines} historical releases; unauthorized source subtractions 0; artifact ${result.artifact?'verified':'not yet checked'}; runtime ${result.runtimeVerified?'verified':'not yet checked'}`);
 }

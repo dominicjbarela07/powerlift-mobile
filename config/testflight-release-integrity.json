@@ -18866,6 +18866,36 @@
       "ownerEvidenceSha256": "69f1ba6ca417408f3e0a5cada3f37bca5fee5f1c26ece4443bec9d855fc8cb9b",
       "ownerDirectiveScope": "cable-brand-only-20261005",
       "reason": "Explicit cable-only brand selection and recency; other machines retain type step and all immutable movement/history state."
+    },
+    {
+      "path": "app/(tabs)/workout/[workoutId].tsx",
+      "before": "dd57e366d924f76ee728aa7715918de8b4b55fe4ce2250c6b193b748f4f4487b",
+      "after": "aa2135e0052b009f45c4d37ce8ebc2fa0fffd99b6b60ef8b2f8f14d7168b898d",
+      "ownerInstruction": "I also want you to confirm that the canonical session logger edit set weight being zero rule is fixed. So, like if I have a body weight movement and I edit it to be fucking zero pounds because it's body weight, sure. Let me fucking log something at zero pounds. I want you to ensure that's fixed on TestFlight 2.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-zero-load-edit.txt",
+      "ownerEvidenceSha256": "dcb49b879fef0a28e005ab64326124f9b2a8267a4bbd63741cf3ad043a8cc01e",
+      "ownerDirectiveScope": "canonical-zero-load-edit-20261005",
+      "reason": "Canonical edit-set zero-load correction; exact shared source fix preserved in DEV and scoped cumulative client publication without the unready cable backend change."
+    },
+    {
+      "path": "app/(tabs)/workout/[workoutId].tsx",
+      "before": "dd57e366d924f76ee728aa7715918de8b4b55fe4ce2250c6b193b748f4f4487b",
+      "after": "8ba5b86199e291b69755a0dc0a3fd2c7dfcdd83417c41ac257093b9d3acb4bf5",
+      "ownerInstruction": "I also want you to confirm that the canonical session logger edit set weight being zero rule is fixed. So, like if I have a body weight movement and I edit it to be fucking zero pounds because it's body weight, sure. Let me fucking log something at zero pounds. I want you to ensure that's fixed on TestFlight 2.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-zero-load-edit.txt",
+      "ownerEvidenceSha256": "dcb49b879fef0a28e005ab64326124f9b2a8267a4bbd63741cf3ad043a8cc01e",
+      "ownerDirectiveScope": "canonical-zero-load-edit-20261005",
+      "reason": "Canonical edit-set zero-load correction; exact shared source fix preserved in DEV and scoped cumulative client publication without the unready cable backend change."
+    },
+    {
+      "path": "config/protected-fix-manifest.json",
+      "before": "667e45f70e74ffccec3b20ae65e5ac61a04bfffe1ee56b214797f793aca91a3e",
+      "after": "e096935ee1da6c44af82a0ee8651a0803bc692dc5be5827b06e88b2b20cb32a7",
+      "ownerInstruction": "I also want you to confirm that the canonical session logger edit set weight being zero rule is fixed. So, like if I have a body weight movement and I edit it to be fucking zero pounds because it's body weight, sure. Let me fucking log something at zero pounds. I want you to ensure that's fixed on TestFlight 2.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-zero-load-edit.txt",
+      "ownerEvidenceSha256": "dcb49b879fef0a28e005ab64326124f9b2a8267a4bbd63741cf3ad043a8cc01e",
+      "ownerDirectiveScope": "canonical-zero-load-edit-20261005",
+      "reason": "Canonical edit-set zero-load correction; exact shared source fix preserved in DEV and scoped cumulative client publication without the unready cable backend change."
     }
   ],
   "assetRemovalAuthorizations": [
@@ -156843,32 +156873,32 @@
     }
   ],
   "releaseGateFiles": {
-    "AGENTS.md": "513c5775cbe40fdd0a58d2df0ef56c2cc55667846edf630c9bd9553a3dfa9f33",
+    "AGENTS.md": "35ff263c76b5e6b0eee94979034583bc6198ff886fe6f2cc9573e0f70c25a19f",
     "app.config.js": "9c677a722146f9d76bc43d4dcd3bc3dbcd1c27d82f1154d12af15229421d24bf",
-    "scripts/testflight-cumulative-integrity.mjs": "831014d8b69818bdaf2e8e30543346902b865d154f38e44f709e1ef86ab53dbc",
+    "scripts/testflight-cumulative-integrity.mjs": "3c429ca9d88d9b7d7cecc477529c1773f924994907eefad54d0a9fdf80772fa3",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
-    "scripts/publish-validated-ios-ota.mjs": "a98fcefc7f4e7689bfeaa12494d1964c407c7921e8e80e1ea524e979d1e91a7e",
+    "scripts/publish-validated-ios-ota.mjs": "5d3526ce165c3d49b52dfa7f8e9dd8a3dff459c4a5bd534c00577e2958bb9336",
     "scripts/eas-build-testflight.sh": "946b0857b8b84925906b84547dbb62f1fa05e12ab3771674dd64e359d920e115",
     "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
     "scripts/test-accepted-behavior-contracts.mjs": "85fa14716b0a66d2d7a3c3a79466caa5ea04bbf9bfa3bdc4e68ebe2a4c26165e",
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
     "config/protected-fix-manifest.json": "667e45f70e74ffccec3b20ae65e5ac61a04bfffe1ee56b214797f793aca91a3e",
     "scripts/assert-no-dev-artwork-export.mjs": "403fad1b126d9b77f076d1442009f99a9277f7b6ce4cce8dc82089bd56b58d2c",
-    "scripts/test-release-critical-invariants.mjs": "d5181b09995a6befa0cffd019db8701670fa1594ec637bc7e553fbaebcbe8e1c",
+    "scripts/test-release-critical-invariants.mjs": "4e20e9766d7106eb1cf88d4f7c1bef5ae223f878e94f7c6b8a25dfe3053cf74c",
     "scripts/test-release-source-lineage.mjs": "abae1f05b4456bf51ee32179036769603de6140c83d7cba35cd56cc38216468a",
-    "scripts/release-holdback-policy.mjs": "c4da1351f09b5f5d5b8b68dbc8191d2717b6001acc42169c47cdf336261ea86c",
+    "scripts/release-holdback-policy.mjs": "a7ba5d29951c3206d7723d0594573215d26f907ceb2b568f109c84f1272032df",
     "package.json": "c2257cbf0b5864fc5ab69475aa2b7e8d87ca5b0f111d640becac610d76d73fe4",
     "package-lock.json": "1343e90757f22b5d2f2b6c9f21ca383a587770f3a68d83f0d60f8d1709ecccac",
     "scripts/test-create-session-return-lifecycle.mjs": "e6bd4631062c55708a1cbd73982c1e63b5ec9337e2aa2c8f30bee7103004fc1a",
-    "scripts/verify-testflight-release-integrity.mjs": "d63d17fe5016f6dcf2395332284d657158300adfa55bf0f04246a5159fdf1151",
+    "scripts/verify-testflight-release-integrity.mjs": "5fb9ef216bbf412c315392a31a27ccdc5d7edbe0d3b9fa71cade9ef7e648938f",
     "docs/RELEASE_INVARIANTS.md": "5fbfc595013d0734450638843d0e9af02e7a7f62c0933cac7dc424eac9f208e0",
     "README.md": "8c1e55b964384a9cbc4fd535bf88bd67bec95995b404f9de5f5177f2607ede12",
     "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
     "config/release-removal-authorizations.json": "79b7e83d8edc0ee3b52954fdf66cf31d152059d1fa056a60b7018f9b8ef215bb",
-    "scripts/test-dev-testflight-release-gates.mjs": "26fe9b2c6eb23b1ff9d7c9136d50d786fb351a7ac1c2f29ef881e7ed73345ff3",
+    "scripts/test-dev-testflight-release-gates.mjs": "f8ead8fb64cdc4ca9cc804c6ded6eba7d94e1bdbb786ba5acd895d4f1860e02d",
     "scripts/test-protected-testflight-catalog-compatibility.mjs": "94cddbdd75dcc78f35a74d6bd8a6345c21331f42546a88870a5938072fd08c7c",
     "scripts/test-retired-movement-discovery.mjs": "c5d8c2b21df0e6a0d62062ea6516aec801f4e61670230b9fea22fdaa040d87c4",
-    "scripts/worktree-release-closeout.mjs": "9233953503b926d26d403488b65360a3cbe36cf7e5a237a45739cb7f49e9b7ce",
+    "scripts/worktree-release-closeout.mjs": "5817455c380c5e0db9590e37388fdcee8d10afbf6cfd8c143b3ffa93cbb19607",
     "scripts/worktree-lifecycle.mjs": "f8e9f5cb04a8fc62cd478018685347dab4b893cc94e1b61e6cf557e877e9e3b3",
     "scripts/test-worktree-lifecycle.mjs": "33eb5b43bdcdb439c49113cbc3ba91e4cf5ffe7ec0cd37fcf80adac9f0b8884a",
     "scripts/owner-nonrecurrence-governance.mjs": "2dff59853028ab3c3a48d235aeb0aaa4bc22d20408b253ba0f4e1ff5bbecfc5f",
@@ -156882,7 +156912,11 @@
     "scripts/test-equipment-flow-subject.mjs": "8d06579e7de123fdd29d3bd7d0cbd1b30300fce54504632157fb8c3b78658ffd",
     "scripts/test-cable-brand-equipment-api.mjs": "71889a55559cfd1dc43a5817b0b1ac8bd0c022498e6c30d46ff161ab71949dbc",
     "docs/CABLE_BRAND_EQUIPMENT.md": "0289f45e3859f993ccce52a2ffca383f484f3899c61224179813a6363c151c21",
-    "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt": "69f1ba6ca417408f3e0a5cada3f37bca5fee5f1c26ece4443bec9d855fc8cb9b"
+    "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt": "69f1ba6ca417408f3e0a5cada3f37bca5fee5f1c26ece4443bec9d855fc8cb9b",
+    "scripts/owner-directed-client-fix.mjs": "fb19f2e2d341125f0ac7173d7c3a1c260b32f738f5db49ebd41d89b433aebe9b",
+    "scripts/test-owner-directed-client-fix.mjs": "87dc8b75fcde81d2f9e22d7f8e85833dfcab4f27662383c939df913e921028ff",
+    "scripts/test-zero-load-edit-api.mjs": "a19f2b1b7d6b0ad2335f8e3668657a1a74675ca14d14ba8bf13616b16f3dbc2a",
+    "scripts/test-zero-load-edit-set.mjs": "6187f4a68b57230b2fb86f3702e2c89d0f704394f1eef200db689f66cec6e250"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -157137,5 +157171,29 @@
     "deployedBackendStatus": "UNVERIFIED",
     "publishedUpdate": null,
     "status": "OPEN_PENDING_DEPLOYMENT_AND_PUBLICATION"
+  },
+  "ownerDirectedClientFix": {
+    "scope": "canonical-zero-load-edit-20261005",
+    "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+    "ownerInstruction": "I also want you to confirm that the canonical session logger edit set weight being zero rule is fixed. So, like if I have a body weight movement and I edit it to be fucking zero pounds because it's body weight, sure. Let me fucking log something at zero pounds. I want you to ensure that's fixed on TestFlight 2.",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-zero-load-edit.txt",
+    "ownerEvidenceSha256": "dcb49b879fef0a28e005ab64326124f9b2a8267a4bbd63741cf3ad043a8cc01e",
+    "ownerDirectiveScope": "canonical-zero-load-edit-20261005",
+    "reason": "Canonical edit-set zero-load correction; exact shared source fix preserved in DEV and scoped cumulative client publication without the unready cable backend change.",
+    "productFingerprint": "9b3b001d6455c68a002eb8403437f17ca7a6a4cba3700df3fd8ff3dda9ef8e3d",
+    "changedProductFiles": {
+      "app/(tabs)/create-workout.tsx": "34411075c34c515030195ba5efc944854657b844104a3d9bd14e8904d35c29b2",
+      "app/(tabs)/workout/[workoutId].tsx": "8ba5b86199e291b69755a0dc0a3fd2c7dfcdd83417c41ac257093b9d3acb4bf5",
+      "lib/current-session-movement.ts": "1e35381d7defc2f0abac8f6501ad46a88d7622b4a791030200baa9305ea15dc0",
+      "lib/governed-movement-art-taxonomy.ts": "df2624db93177fef1f1a39cd1ead38779fde300dc8e475787db233187ae33776",
+      "lib/logger-feedback.ts": "f8a6a0ac6b43a5b19db3cb550531af22437eda9cc07614adbdc5de6c83699d41",
+      "lib/post-session-pr-evidence.ts": "a495b6574f487031874f62d8a354741ad0de9394aec4c2502dfe0b568e68bb3f",
+      "config/protected-fix-manifest.json": "e096935ee1da6c44af82a0ee8651a0803bc692dc5be5827b06e88b2b20cb32a7"
+    },
+    "contracts": {
+      "scripts/test-zero-load-edit-api.mjs": "a19f2b1b7d6b0ad2335f8e3668657a1a74675ca14d14ba8bf13616b16f3dbc2a",
+      "scripts/test-zero-load-edit-set.mjs": "6187f4a68b57230b2fb86f3702e2c89d0f704394f1eef200db689f66cec6e250"
+    },
+    "deploymentRequirement": "Existing canonical edit endpoint; no backend deployment change. Cable brand-only remains unshipped pending server access."
   }
 }

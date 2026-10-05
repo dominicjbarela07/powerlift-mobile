@@ -33,3 +33,8 @@ Cable equipment owner law: brand selection finishes setup. Read canonical
 Preserve old typed cable evidence and compare it by canonical movement + brand.
 Do not apply this simplification to non-cable machines or claim shipment without
 the matching deployed backend and actual published update.
+
+Canonical Logger zero-load law: zero is valid performed load when editing a
+bodyweight set. Read `../docs/CANONICAL_LOGGER_ZERO_LOAD.md`; run both actual
+editor-handler and edit-API regressions. Preserve the same set and its immutable
+identity, reload/reopen zero correctly, and invalidate stale recognition.

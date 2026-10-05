@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import { validateDevReleaseHoldbacks } from './release-holdback-policy.mjs';
 import { productFiles, sha256, fingerprintFiles, assertOwnerEvidence, runIntegrityGate, assertProtectedArtifactAssets, protectedDeliveryHashes, expoHash } from './testflight-cumulative-integrity.mjs';
 
 const baselineCatalogRef=root=>read(root,'config/testflight-release-integrity.json').previousTestFlight.gitCommitHash;
@@ -17,7 +18,7 @@ export function gitState(root) {
 // Compare source and the explicit historical catalog separately: active discovery
 // may be narrower after an owner-approved retirement, but shipped identities and
 // their exact compatibility metadata must remain available to DEV readers.
-export function compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog,candidateCatalog,snapshot,removals=[]}) {
+export function compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog,candidateCatalog,snapshot,removals=[],provenHoldbacks=new Set()}) {
   const entries=[], missing=[];
   const add=(identity,area,dev,testflight,label,history,direction='NONE',authorizationEvidence=[])=>{
     const entry={identity,productArea:area,devState:dev,testflightState:testflight,recentHistoricalState:history,authorizationEvidence,label,requiredReconciliationDirection:direction};
@@ -32,6 +33,7 @@ export function compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog,
     const retained=dev && (!historical || dev===historical || accepted.some(a=>a.after===dev));
     const removed=removals.find(a=>a.identity===p&&a.before===historical&&a.after===null&&a.action==='REMOVE');
     if(historical&&!retained&&!removed) add(p,'source / assets',dev,tf,'TESTFLIGHT_ONLY',historical,'TESTFLIGHT → DEV',accepted);
+    else if(tf&&dev!==tf&&provenHoldbacks.has(p)) add(p,'source / assets',dev,tf,'AUTHORIZED_DIFFERENCE',historical,'Shared fix in both sources; preserve never-shipped backend feature in DEV',accepted);
     else if(tf&&dev!==tf) add(p,'source / assets',dev,tf,'TESTFLIGHT_ONLY',historical,'TESTFLIGHT → DEV',accepted);
     else if(dev&&!tf) add(p,'source / assets',dev,null,'DEV_ONLY',historical,'AUTHORIZED DEV → TESTFLIGHT INTEGRATION');
     else add(p,'source / assets',dev,tf,removed?'AUTHORIZED_DIFFERENCE':historical&&dev!==historical?'AUTHORIZED_DIFFERENCE':'EQUIVALENT',historical,'NONE',removed?[removed]:accepted);
@@ -80,7 +82,10 @@ export function runDevSupersetGate({root=process.cwd(),devRoot=process.env.STREN
   assert.equal(backend.branch,'dev/canonical-backend','Release validation must use canonical DEV backend; Production or a temporary backend is not its source of truth');
   if(requireCleanCandidate) assert.equal(candidate.dirty,false,'Release candidate has dirty/untracked state; create a clean cumulative integration');
   const devFiles=productFiles(devRoot), candidateFiles=productFiles(root);
-  const result=compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog:read(devRoot,'config/governed-movement-art-taxonomy.json'),candidateCatalog:read(root,'config/governed-movement-art-taxonomy.json'),snapshot,removals:removals.items});
+  const holdbacks=read(root,'config/protected-fix-manifest.json').releaseHoldbacks;
+  const gitAt=directory=>(...args)=>execFileSync('git',args,{cwd:directory,encoding:'utf8',maxBuffer:16*1024*1024}).trim();
+  const provenHoldbacks=validateDevReleaseHoldbacks(holdbacks,candidateFiles,devFiles,candidate.sha,gitAt(root),gitAt(devRoot));
+  const result=compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog:read(devRoot,'config/governed-movement-art-taxonomy.json'),candidateCatalog:read(root,'config/governed-movement-art-taxonomy.json'),snapshot,removals:removals.items,provenHoldbacks});
   // Historical source must remain, even when absent from the latest broken OTA.
   for(const p of baseline.historicalProtectedPaths) if(!devFiles[p]&&!(baseline.historicalRemovalAuthorizations||[]).some(a=>a.path===p&&a.action==='REMOVE')) {
     const entry={identity:p,productArea:'historical source / assets',devState:null,testflightState:'protected historical state',recentHistoricalState:baseline.releaseHistory.map(r=>({id:r.id,source:r.gitCommitHash})),authorizationEvidence:[],label:'TESTFLIGHT_ONLY',requiredReconciliationDirection:'TESTFLIGHT → DEV'};

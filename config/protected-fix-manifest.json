@@ -195,15 +195,50 @@
   ],
   "releaseHoldbacks": {
     "sourceCommit": "fcf8191bc77b848da9877aed4ca848589098309e",
-    "reason": "Retain the shipped governed taxonomy and omit its DEV-only shared-context test while the separately governed catalog migration awaits a compatible backend release. Equipment history and selection use the current canonical mobile implementation.",
+    "reason": "Retain already-shipped cable selection while the owner-authorized brand-only cable change awaits its matching deployed server. DEV keeps that pending feature and the identical zero-load edit fix. The separate governed catalog migration also remains a compatible-backend holdback.",
     "files": [
       {
         "path": "config/governed-movement-art-taxonomy.json",
-        "blob": "a253d05bb987ca050e2fe19906b031b716c2aec3"
+        "blob": "a253d05bb987ca050e2fe19906b031b716c2aec3",
+        "devSha256": "4cecf895c2035b1a65b1ec2d36b8b4ff1c37b39ea1110c92def256b4a51a3aaf",
+        "candidateSha256": "96829b44057e3fbb88f3be921ca11999742b4a42c7565938c9feef3e6f08cae9"
       },
       {
         "path": "scripts/test-shared-movement-programming-context.mjs",
         "blob": null
+      },
+      {
+        "path": "app/(tabs)/workout/[workoutId].tsx",
+        "sourceCommit": "847d5834f41486bfbf63a5e45e690a514eed0d8a",
+        "blob": "9ffceba5a9d651a57c85b9f59068938415b65071",
+        "devSha256": "aa2135e0052b009f45c4d37ce8ebc2fa0fffd99b6b60ef8b2f8f14d7168b898d",
+        "candidateSha256": "8ba5b86199e291b69755a0dc0a3fd2c7dfcdd83417c41ac257093b9d3acb4bf5",
+        "sharedFix": {
+          "devSourceCommit": "7933a887672d398c69894fc8228362634b54625d",
+          "before": "    if (Number.isNaN(weightInUnit) || weightInUnit <= 0) {\n      setError('Weight required');\n      return;\n    }",
+          "after": "    // Zero is a performed load (for example, bodyweight with no added load),\n    // not missing input. Match the canonical edit-set API's nonnegative rule.\n    if (!Number.isFinite(weightInUnit) || weightInUnit < 0) {\n      setError('Weight required');\n      return;\n    }"
+        }
+      },
+      {
+        "path": "lib/equipment-flow-subject.ts",
+        "sourceCommit": "847d5834f41486bfbf63a5e45e690a514eed0d8a",
+        "blob": "37ae6097cf3e4122811996d913a2106bf74768a3",
+        "devSha256": "874fd0e8800b5dcbb961e9c5de65cebfbedd13f1b863242e47d2224da25d6d26",
+        "candidateSha256": "4a3c931baf7a23df49c79e8b8eae0e415d5cea99365f9f2e73cca9f89da20650"
+      },
+      {
+        "path": "lib/equipment-selection.ts",
+        "sourceCommit": "847d5834f41486bfbf63a5e45e690a514eed0d8a",
+        "blob": "35f83ed2eb4e9fb6149493b74de4d8c25099f2bd",
+        "devSha256": "7663b3bdaf47d75784aa46345bafb77d401474cb86e45b64e6d91e497086de09",
+        "candidateSha256": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84"
+      },
+      {
+        "path": "scripts/test-equipment-flow-subject.mjs",
+        "sourceCommit": "847d5834f41486bfbf63a5e45e690a514eed0d8a",
+        "blob": "759195727b2f1c6855a6d774dedddb7768979af0",
+        "devSha256": "8d06579e7de123fdd29d3bd7d0cbd1b30300fce54504632157fb8c3b78658ffd",
+        "candidateSha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d"
       }
     ]
   }
