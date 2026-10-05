@@ -21,3 +21,9 @@ valid immediately-pre-October-2 imagery baseline and prohibited simulator runs.
 Keep every baseline image and the Accessory PR celebration fix. Preservation
 requires no new approval; retain historical thumbnails on disk and do not invent
 removal receipts. The guarded publisher verifies actual exported/served bytes.
+
+Accessory PR owner policy: free-weight baseline recognition is allowed; a first
+machine baseline must not celebrate. Machines require improvement over an exact
+movement/equipment/reps baseline. Read the canonical release constitution and
+run both the save-API and mobile recognition regressions. Do not claim live PR
+readiness from local tests or client publication alone.
