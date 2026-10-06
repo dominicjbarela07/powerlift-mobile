@@ -157248,7 +157248,7 @@
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
-        "sha256": "aed1c6a74c4c3eaf0665ef86fc1bf240ae021f49a4707f22c9666b1207f08777"
+        "sha256": "d74edb0e2ab9f65bf4958bbf51d72abd97dfccb5ad03e8b45c8f211441fef7de"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
@@ -157303,10 +157303,10 @@
     "machine": "Improvement over established exact movement/equipment/reps baseline, using all sets inside that equipment context. Never pool manufacturers; Other is separate. First machine baselines are quiet.",
     "freeWeight": "Establishing a portable exact-movement baseline may celebrate.",
     "backendDelivery": "2.1.0+ only; frozen 2.0.2 and missing/malformed app-version headers do not receive new Accessory events.",
-    "deployment": "PENDING_EQUIPMENT_ISOLATION_LIVE_VERIFICATION",
+    "deployment": "LIVE_EQUIPMENT_ISOLATED_BACKEND_VERIFIED",
     "currentPublishedClientContainsThisCorrection": true,
     "historyScopeOwnerInstruction": "They should not fucking leak across manufactures",
-    "backendSourceSha": "b8109dadc15cd5ab3397b57668827f4744b02811",
+    "backendSourceSha": "90ef8ec9850c12b764cad0a78ce81c65f06fb9f1",
     "backendSchemaFingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
     "backendMigrationRevisions": [
       "f47a92b1c8d0"
@@ -157315,7 +157315,10 @@
     "supersededHistoryScopeOwnerInstruction": "All sets for that movement, across brands and Other",
     "machineIsolationOwnerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-machine-pr-manufacturer-isolation.txt",
     "machineIsolationOwnerEvidenceSha256": "9871d66a252755c0c8db846115c63f2d7750200d62e3980724920e98975b824c",
-    "backendCandidateSha": "90ef8ec9850c12b764cad0a78ce81c65f06fb9f1"
+    "backendCandidateSha": "90ef8ec9850c12b764cad0a78ce81c65f06fb9f1",
+    "backendPolicyVersion": "accessory-exact-reps-equipment-isolated-v3",
+    "manufacturersIsolated": true,
+    "otherIsSeparateEquipmentContext": true
   },
   "cableBrandOnly": {
     "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt",
