@@ -1,0 +1,38 @@
+# Owner-authorized cumulative TestFlight publication — October 6
+
+Owner: “Okay, let's get all that stuff shipped to TestFlight, please.”
+Authorized cumulative scope from the preceding DEV reviews: compact canonical
+logger actions and final inline title Swap, complete-directory movement search
+assistance for both Workspace and Hot Swap, three-state logger history visibility,
+and refreshed shared pre-Session/daily readiness survey. Include the bounded
+server search dependency; preserve the already-live prescription Save/read repair.
+
+Source before preparation: canonical mobile 78a5ae0cc5de4a9b47e7a57594729901f309ebf2;
+canonical backend 271bef5bcbd2fa47406012ab8f6f3dcae2108447; durable TestFlight
+f9ec54411f59b4e67f158fc98cd113d1ba25cca4; current protected iOS OTA
+01a10e59-6149-7d98-83a3-8413a56d9006 / source 2521a445.
+Production server remote main 210559e431df3927ab7286f9d1c4e895129b6439.
+Existing dirty backend work and untracked mobile evidence are preserved.
+
+Deliver through the guarded TestFlight OTA publisher if runtime/native compatible.
+Cumulative integration onto current valid TestFlight; exact owner evidence binds
+protected modifications. No approved asset, mapping/crop, governed catalog,
+manufacturer policy, immutable SetLog, Session identity or previous fix subtraction.
+Keep the established catalog/Cable holdbacks unless their own required backend
+and destination validation establish readiness; do not silently publish unrelated
+pending DEV changes. Production Mobile 2.0.2 channels/binaries stay frozen.
+
+Acceptance: all authorized four feature groups reach compatible TestFlight;
+bounded Production server search deployment from the Production repository Git
+push plus exact live source verification; original prescription, zero-load,
+Hot Swap, cumulative PR manufacturer isolation, restored imagery and rest timer
+contracts remain. Required accepted/critical/type/native/export/source gates,
+actual recent runtime role/journey receipt, complete asset verification, published
+bundle equality, DEV superset and registered worktree closeout must pass. No
+runtime evidence fabricated, old task exception reused or gate bypassed.
+
+Preserve canonical DEV as the durable superset before/after publication. Use the
+existing durable release checkout; no new temporary worktree needed. Inventory
+and assess legitimate active worktrees without removing their unique owner work.
+Record exact server source, OTA/group/source, validations/actual observations,
+artifact receipt, pending differences and full closeout after delivery.
