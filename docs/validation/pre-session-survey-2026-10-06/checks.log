@@ -1,0 +1,52 @@
+CHECK node --import tsx scripts/test-readiness-modal.mjs
+[readiness-modal] unit, validation, retry, copy, and accessibility tests passed
+CHECK node --import tsx scripts/test-readiness-survey-render.mjs
+PASS: actual readiness survey renderer preserves slider/bodyweight handlers, save/skip/cancel, busy/preview/lookup disable states, existing Continue, daily mode and errors
+CHECK node --import tsx scripts/test-session-readiness-start.mjs
+[session-readiness-start] begin/submit/skip/dismiss, exact existing evidence, retry, double taps, preview and ownership safety PASS
+CHECK node --import tsx scripts/test-bottom-sheet-gestures.mjs
+Bottom sheets: actual canonical/legacy/inline gesture trees; body ownership, reversal/long lists, keyboard, deliberate pull, cancel/spring, explicit/guarded close and reduced motion PASS
+CHECK node --import tsx scripts/test-bottom-sheet-consumer-convergence.mjs
+Bottom-sheet inventory: 69 classified modal presentations, 39 canonical sheet consumers, 3 embedded bottom panels; top regions exclude scroll/input/wheel content PASS
+CHECK node --import tsx scripts/test-keyboard-visibility.mjs
+Keyboard visibility: 36 device/frame geometries; actual focus transitions, refs/events, multiline caps, modal/sheet/navigation ownership and 250 consumer import contracts PASS
+Actual keyboard event store: iOS frame changes, Android did-show/hide, orientation reconciliation, background/foreground and late events PASS
+Messages composer: floating-dock clearance, keyboard-open compact spacing, complete action row and workspace consumption PASS
+CHECK npx tsc --noEmit
+CHECK npm run certify:canonical-dev
+
+> powerlift_mobile@1.0.0 certify:canonical-dev
+> node scripts/certify-canonical-dev-metro.mjs
+
+[canonical-dev-metro] RUNTIME CERTIFICATION PASS
+{
+  "certifiedAt": "2026-10-06T20:32:22.264Z",
+  "requestUrl": "http://127.0.0.1:8081",
+  "source": {
+    "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "gitRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "scriptRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "branch": "dev/canonical-mobile",
+    "sha": "8e4c3b924d14baea2e2d38f37f778e4395f58826",
+    "remoteRef": "origin/dev/canonical-mobile",
+    "remoteSha": "8e4c3b924d14baea2e2d38f37f778e4395f58826",
+    "clean": false
+  },
+  "listener": {
+    "port": 8081,
+    "processes": [
+      {
+        "pid": 61434,
+        "cwd": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+        "command": "node /Users/dominic/powerlifting_app_dev/powerlift_mobile/node_modules/.bin/expo start --port 8081"
+      }
+    ]
+  },
+  "manifest": {
+    "id": "10b7e83e-9e17-451f-92fa-9678db3cd7b4",
+    "runtimeVersion": "2.1.0",
+    "appVersion": "2.1.0",
+    "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "launchAssetUrl": "http://127.0.0.1:8081/node_modules/expo-router/entry.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&transform.reactCompiler=true&unstable_transformProfile=hermes-stable"
+  }
+}

@@ -31,7 +31,7 @@
     "test:set-submission-lifecycle": "node scripts/test-set-submission-lifecycle.mjs",
     "test:session-timing-telemetry": "node --import tsx scripts/test-session-timing-telemetry.mjs",
     "test:transient-recognition-delivery": "node scripts/test-transient-recognition-delivery.mjs",
-    "test:readiness-modal": "node scripts/test-readiness-modal.mjs",
+    "test:readiness-modal": "node scripts/test-readiness-modal.mjs && node --import tsx scripts/test-readiness-survey-render.mjs",
     "test:motion-system": "node scripts/test-motion-system.mjs",
     "test:barbell-loading": "tsx scripts/test-barbell-loading.mjs",
     "test:plate-stack-render-resolver": "node --import tsx scripts/test-plate-stack-render-resolver.mjs",
