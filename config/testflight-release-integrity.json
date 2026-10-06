@@ -19003,6 +19003,94 @@
       "after": "f6e385f18fb321eb4b284e6e12b99fc7f246ca1ae89eb248e89322fb2248a6bf",
       "action": "ADD",
       "reason": "Exact Option E presentation and targeted copy hygiene. Canonical movement/art/history/SetLog/timer mutation owners unchanged."
+    },
+    {
+      "path": "app/(tabs)/workout/[workoutId].tsx",
+      "before": "8ba5b86199e291b69755a0dc0a3fd2c7dfcdd83417c41ac257093b9d3acb4bf5",
+      "after": "8a28be97e4cd5b53b13c80034726cd1156c920ae41a1ca1329f6fc081a757148",
+      "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
+      "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
+    },
+    {
+      "path": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "before": "f776815f2178e8c1884c34b0b27ff3dcfb6e39d8d1d596e4857b2c58b9cd24e9",
+      "after": "5441b63160c4d38912f66f665d37005a317debaffbac23d95f09ca0c57b69035",
+      "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
+      "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
+    },
+    {
+      "path": "components/movement/GovernedAccessoryPickerModal.tsx",
+      "before": "be6e15e91fee31c6bc82d426977fb0a7c3b40d57e797dd7025ef978f1aa0d587",
+      "after": "059001c072588c63899fe883325b2d3279d2d9b098f6aabef94cf68e74068bc7",
+      "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
+      "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
+    },
+    {
+      "path": "components/workout-logger/core-loggers.tsx",
+      "before": "0a0fab12fbf307b9aaadabef7370073275eba249d22993c36d7f193d1850d2a0",
+      "after": "47a7bc903094a37429ee7b655ecfcfd5b4ac4d5c000f1437df6baa3b9718e554",
+      "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
+      "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
+    },
+    {
+      "path": "components/workout-logger/readiness-modal.tsx",
+      "before": "f140bf0265aa48b432a0c34690570f7905792b6fda9307677a44b8767e0e0916",
+      "after": "20a764f2178217d3e81f5570a52dc588530437d328f5f340907b596433161b95",
+      "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
+      "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
+    },
+    {
+      "path": "components/workout-logger/session-equipment-context.tsx",
+      "before": "d858184a5bfcd310b3a52f35b0af46e3c9f6743822fcd9670aa48b0540f62005",
+      "after": "0d2dda7be85b19017b5d0e88b97ad1f3116cc253d530e0f7b66853483fecc20e",
+      "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
+      "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
+    },
+    {
+      "path": "components/workout-logger/session-history-peek.tsx",
+      "before": "3ebc70337b69b0538c8c770e77cea8c13674cd49db56a2f73c1c2a4cf7606bda",
+      "after": "b277848a9d79994f0189b278df41342b150fcc96b97f59581fff15be7b9772d5",
+      "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
+      "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
+    },
+    {
+      "path": "components/workout-logger/session-v3-movement.tsx",
+      "before": "e52f7fd1917ae4e2f2a942c6672c78395ee46086522ac14ca3d10022ddb14884",
+      "after": "2089540d01bef36f925e28faac57275d4a3433213d7762ac73d26a968bd3d3f0",
+      "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
+      "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
+    },
+    {
+      "path": "lib/canonical-movement-search.ts",
+      "before": "aa639bdf256fd34af5de3a02a22abb192c3978be6656777fe67d756dc91e5c44",
+      "after": "8e634457914366a52eceab164af750c2decca849c0343e559a922697129a72e3",
+      "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
+      "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
+    },
+    {
+      "path": "config/protected-fix-manifest.json",
+      "before": "e096935ee1da6c44af82a0ee8651a0803bc692dc5be5827b06e88b2b20cb32a7",
+      "after": "ef1bc47da3c59c259d924f6b50ddce90dd4111868faf819112d52da2484e04c0",
+      "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
+      "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
+    },
+    {
+      "path": "app/(tabs)/workout/[workoutId].tsx",
+      "before": "8ba5b86199e291b69755a0dc0a3fd2c7dfcdd83417c41ac257093b9d3acb4bf5",
+      "after": "eb5251fcc5acce94dad93df31633ee8fc9897ec758c943382c012f9ab31d24b2",
+      "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
+      "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
     }
   ],
   "assetRemovalAuthorizations": [
@@ -156993,8 +157081,8 @@
     "scripts/assert-no-dev-artwork-export.mjs": "403fad1b126d9b77f076d1442009f99a9277f7b6ce4cce8dc82089bd56b58d2c",
     "scripts/test-release-critical-invariants.mjs": "6a2d41331008d1a0471a1b9709d62b0ccd698b16fcbc37c80db00938feb8fbea",
     "scripts/test-release-source-lineage.mjs": "abae1f05b4456bf51ee32179036769603de6140c83d7cba35cd56cc38216468a",
-    "scripts/release-holdback-policy.mjs": "a7ba5d29951c3206d7723d0594573215d26f907ceb2b568f109c84f1272032df",
-    "package.json": "c2257cbf0b5864fc5ab69475aa2b7e8d87ca5b0f111d640becac610d76d73fe4",
+    "scripts/release-holdback-policy.mjs": "55df04b0b8af5a2fcea3a75e48cac68fa299318fccf714040555789465beea74",
+    "package.json": "96db5a8e29d0378d109481ee102c60a7dd313b08e998cae622b427212e5da1eb",
     "package-lock.json": "1343e90757f22b5d2f2b6c9f21ca383a587770f3a68d83f0d60f8d1709ecccac",
     "scripts/test-create-session-return-lifecycle.mjs": "e6bd4631062c55708a1cbd73982c1e63b5ec9337e2aa2c8f30bee7103004fc1a",
     "scripts/verify-testflight-release-integrity.mjs": "72de503b5168d43b17c8e9b4efe7769d799408a99c908d90e67ec0c8634dd85f",

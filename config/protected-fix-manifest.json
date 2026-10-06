@@ -195,7 +195,7 @@
   ],
   "releaseHoldbacks": {
     "sourceCommit": "fcf8191bc77b848da9877aed4ca848589098309e",
-    "reason": "Retain already-shipped cable selection while the owner-authorized brand-only cable change awaits its matching deployed server. DEV keeps that pending feature and the identical zero-load edit fix. The separate governed catalog migration also remains a compatible-backend holdback.",
+    "reason": "Retain already-shipped Cable selection and governed catalog until separately validated matching backend releases. Preserve the zero-load repair and every owner-approved compact Logger change as identical exact patches on both shipped and DEV sources; no unrelated candidate change is allowed.",
     "files": [
       {
         "path": "config/governed-movement-art-taxonomy.json",
@@ -210,13 +210,35 @@
       {
         "path": "app/(tabs)/workout/[workoutId].tsx",
         "sourceCommit": "847d5834f41486bfbf63a5e45e690a514eed0d8a",
-        "blob": "9ffceba5a9d651a57c85b9f59068938415b65071",
-        "devSha256": "aa2135e0052b009f45c4d37ce8ebc2fa0fffd99b6b60ef8b2f8f14d7168b898d",
-        "candidateSha256": "8ba5b86199e291b69755a0dc0a3fd2c7dfcdd83417c41ac257093b9d3acb4bf5",
+        "blob": "3d349b312abf60ac66c587ce776ca7382dfd0b78",
+        "devSha256": "8a28be97e4cd5b53b13c80034726cd1156c920ae41a1ca1329f6fc081a757148",
+        "candidateSha256": "eb5251fcc5acce94dad93df31633ee8fc9897ec758c943382c012f9ab31d24b2",
         "sharedFix": {
           "devSourceCommit": "7933a887672d398c69894fc8228362634b54625d",
           "before": "    if (Number.isNaN(weightInUnit) || weightInUnit <= 0) {\n      setError('Weight required');\n      return;\n    }",
-          "after": "    // Zero is a performed load (for example, bodyweight with no added load),\n    // not missing input. Match the canonical edit-set API's nonnegative rule.\n    if (!Number.isFinite(weightInUnit) || weightInUnit < 0) {\n      setError('Weight required');\n      return;\n    }"
+          "after": "    // Zero is a performed load (for example, bodyweight with no added load),\n    // not missing input. Match the canonical edit-set API's nonnegative rule.\n    if (!Number.isFinite(weightInUnit) || weightInUnit < 0) {\n      setError('Weight required');\n      return;\n    }",
+          "additionalChanges": [
+            {
+              "before": "    setPrescriptionItemId(itemId);\n  };\n  const prescriptionAction = (itemId: number) => canEditPrescription ? (\n    <TouchableOpacity accessibilityRole=\"button\" accessibilityLabel=\"Edit Prescription\"\n      style={styles.accessoryInlineAction} onPress={() => openPrescription(itemId)}>\n      <Ionicons name=\"create-outline\" size={18} color={SLColors.textMuted} />\n      <Text style={styles.accessoryInlineActionText}>Edit Prescription</Text>\n    </TouchableOpacity>\n  ) : null;\n\n  const historyPeekFor = (item: WorkoutItem) => {",
+              "after": "    setPrescriptionItemId(itemId);\n  };\n\n  const historyPeekFor = (item: WorkoutItem) => {"
+            },
+            {
+              "before": "              domain={equipmentDomain} />",
+              "after": "              domain={equipmentDomain}\n              onSwapEquipment={!isCoachAthletePreview && canConfigureMachineEquipment(it)\n                ? () => openIdentityPicker(it) : undefined} />"
+            },
+            {
+              "before": "          auxAction={isCoachAthletePreview ? null : (\n            <>\n              {canConfigureMachineEquipment(it) ? (\n                <TouchableOpacity\n                  style={styles.accessoryInlineAction}\n                  onPress={() => openIdentityPicker(it)}\n                >\n                  <Ionicons name=\"barbell-outline\" size={18} color={SLColors.textMuted} />\n                  <Text adjustsFontSizeToFit minimumFontScale={0.82} numberOfLines={1} style={styles.accessoryInlineActionText}>Equipment</Text>\n                </TouchableOpacity>\n              ) : null}\n              {prescriptionAction(it.id)}\n              {swapLabel ? (\n                <TouchableOpacity\n                  style={styles.accessoryInlineAction}\n                  onPress={() => openSwapAcc(it)}\n                  disabled={savingItemId === it.id}\n                >\n                  <Text style={styles.accessoryInlineActionText}>{swapLabel}</Text>\n                </TouchableOpacity>\n              ) : null}\n            </>\n          )}",
+              "after": "          onEditPrescription={canEditPrescription ? () => openPrescription(it.id) : undefined}\n          movementAction={!isCoachAthletePreview && swapLabel ? (\n            <Text accessible accessibilityRole=\"button\"\n              accessibilityLabel={swapLabel === 'Swap' ? 'Swap movement' : swapLabel}\n              accessibilityState={{ disabled: savingItemId === it.id }}\n              style={[styles.loggerMovementSwapText, savingItemId === it.id && { opacity: 0.45 }]}\n              onPress={savingItemId === it.id ? undefined : () => openSwapAcc(it)}>\n              <Ionicons name=\"swap-horizontal\" size={16} color=\"#c8a6ff\" />{'\\u00a0'}{swapLabel}\n            </Text>\n          ) : null}"
+            },
+            {
+              "before": "                  auxAction={prescriptionAction(movementPresentation.loggerFocus?.itemId || core.id)}",
+              "after": "                  onEditPrescription={canEditPrescription\n                    ? () => openPrescription(movementPresentation.loggerFocus?.itemId || core.id) : undefined}"
+            },
+            {
+              "before": "  },\n  accessoryInlineAction: {",
+              "after": "  },\n  loggerMovementSwapText: { fontSize: 12, fontWeight: '700', color: '#c8a6ff' },\n  accessoryInlineAction: {"
+            }
+          ]
         }
       },
       {
