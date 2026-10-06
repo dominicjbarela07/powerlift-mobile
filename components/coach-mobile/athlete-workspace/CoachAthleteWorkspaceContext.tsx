@@ -1,5 +1,4 @@
-import { resolveCoachWorkspaceAthleteId } from '@/lib/coach-workspace-route-identity';
-import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, {
   createContext,
   type ReactNode,
@@ -143,8 +142,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
   // The workspace owns the display lens across its destinations; the saved
   // account preference remains unchanged, as on Home and Ledger.
   const { unit, setUnit, toggleUnit } = useSurfaceWeightUnit(user?.preferred_units);
-  const pathname = usePathname();
-  const athleteId = resolveCoachWorkspaceAthleteId(params.athleteId, pathname);
+  const athleteId = Number(first(params.athleteId) || 0);
   const accountId = Number(user?.id ?? user?.user_id ?? 0);
   const requestNamespace = `${workspaceKey}:${accountId}:${athleteId}`;
   const namespaceRef = useRef(requestNamespace);

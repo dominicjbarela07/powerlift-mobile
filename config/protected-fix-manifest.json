@@ -246,13 +246,13 @@
       ]
     },
     {
-      "id": "nested-athlete-workspace-subject",
-      "description": "Nested layout resolves the selected canonical athlete path when inherited local params are empty; conflicting and foreign subjects fail closed; existing account/relationship namespace retained.",
+      "id": "fresh-login-canonical-account-identity",
+      "description": "Fresh mobile sign-in reads authenticated canonical account identity before account-scoped workspaces or queues; missing login/settings IDs cannot make valid coach workspaces inaccessible.",
       "acceptedCommits": [
-        "78c98f1450f43c574701490cd514207a0e896e8f"
+        "3079b5d208d466164ac051b1571bc78f6306e08f"
       ],
       "behaviorTests": [
-        "scripts/test-coach-workspace-route-identity.mjs",
+        "scripts/test-fresh-login-canonical-identity.mjs",
         "scripts/test-coach-athlete-workspace-entrypoint.mjs"
       ]
     }
