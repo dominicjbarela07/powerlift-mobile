@@ -48,3 +48,15 @@ Use near-black material, a real cyan remaining-time ring, compact History and
 precise green/violet state signals. Preserve art and all canonical mutations.
 The October 5 Option E task explicitly requires actual simulator convergence
 and a second screenshot pass; its publication scope cannot cover other changes.
+
+## Complete-request delivery
+
+Read the canonical constitution's **Complete-request Delivery Law** before work.
+Record the full request, acceptance criteria, preserved owner rules, restrictions
+and required destination. Reconcile product instructions before implementing;
+ask only about unresolved product conflicts, not already-authorized delivery.
+Account for every requested outcome and separate local tests, publication,
+verified live source/artifact and actual device observations in closeout.
+Respect explicit no-simulator instructions. Shared-backend pushes require the
+source-pinned canonical owner-policy acceptance guard, outside candidate tests.
+Never refresh protection pins merely to pass a candidate.
