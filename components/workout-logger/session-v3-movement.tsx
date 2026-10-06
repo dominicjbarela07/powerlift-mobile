@@ -58,6 +58,8 @@ export function SessionV3MovementLayout({ title, index, expanded, complete, pres
   const setPosition = focus?.currentSetPositionLabel?.replace(/^Set (\d+) · SET \1 OF (\d+)$/, 'Set $1 of $2');
   const loadParts = load.match(/^(.*?)\s*(kg|lb)$/i);
   const progress = prior || visual?.progress;
+  const inlineAction = React.isValidElement<{ onPress?: () => void; accessibilityLabel?: string }>(movementAction)
+    ? movementAction.props : null;
   return <View style={s.workspace}>
     {artwork ? <View pointerEvents="none" style={[s.artworkStage, { height: Math.max(0, artworkEnd + 14) }]}>
       {artwork}
@@ -66,12 +68,16 @@ export function SessionV3MovementLayout({ title, index, expanded, complete, pres
     <View style={s.heading}>
       <CanonicalMovementArtwork surface="session-v3-movement" requireHumanApproval movement={visual?.movementArtworkInput} accessoryPresentation="muscle-focus" size={approvedArtRuntimeEnabled() ? 68 : 48} />
       <View style={s.copy}>
-        <View style={s.titleRow}>
-          <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen} style={s.titleCopy}>
-            <Text numberOfLines={0} style={s.title}>{title}</Text>
-          </Pressable>
-          {movementAction}
-        </View>
+        <Text numberOfLines={0} style={s.title} accessibilityRole="button" accessibilityLabel={title}
+          accessibilityActions={[{ name: 'activate', label: `Collapse ${title}` },
+            ...(inlineAction?.onPress ? [{ name: 'swap', label: inlineAction.accessibilityLabel || 'Swap movement' }] : [])]}
+          onAccessibilityAction={({ nativeEvent }) => {
+            if (nativeEvent.actionName === 'swap') inlineAction?.onPress?.();
+            else if (nativeEvent.actionName === 'activate') onOpen();
+          }}>
+          <Text style={s.title} accessible accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen}>{title}</Text>
+          {movementAction ? '\u00a0 ' : null}{movementAction}
+        </Text>
         <View style={s.positionRow}>
           <Text style={[s.eyebrow, s.positionLabel]}>{complete ? 'MOVEMENT COMPLETE' : setPosition || prescription}</Text>
           {complete && onEditPrescription ? <PrescriptionEditIcon title={title} onPress={onEditPrescription} /> : null}
@@ -130,8 +136,6 @@ const s = StyleSheet.create({
   // Bleed through the Session's 20 px content gutters; foreground keeps its inset.
   artworkStage: { position: 'absolute', top: -14, left: -20, right: -20 },
   workspace: { paddingVertical: 8 }, heading: { flexDirection: 'row', gap: 12, alignItems: 'center', paddingVertical: 8 },
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  titleCopy: { flex: 1, minWidth: 0 },
   title: { color: '#faf7ff', fontFamily: SLFontFamilies.sansBold, fontSize: 26, lineHeight: 31 },
   eyebrow: { color: '#b391ec', fontFamily: SLFontFamilies.sansBold, fontSize: 10, letterSpacing: 1.2, marginTop: 7 },
   positionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 5, flexWrap: 'wrap' },

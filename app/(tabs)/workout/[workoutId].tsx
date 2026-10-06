@@ -8571,13 +8571,13 @@ export default function WorkoutViewerScreen() {
           sessionLifecycle={screenMode}
           onEditPrescription={canEditPrescription ? () => openPrescription(it.id) : undefined}
           movementAction={!isCoachAthletePreview && swapLabel ? (
-            <TouchableOpacity accessibilityRole="button"
+            <Text accessible accessibilityRole="button"
               accessibilityLabel={swapLabel === 'Swap' ? 'Swap movement' : swapLabel}
-              style={styles.loggerMovementSwap} onPress={() => openSwapAcc(it)}
-              disabled={savingItemId === it.id} hitSlop={8}>
-              <Ionicons name="swap-horizontal" size={16} color="#c8a6ff" />
-              <Text style={styles.loggerMovementSwapText}>{swapLabel}</Text>
-            </TouchableOpacity>
+              accessibilityState={{ disabled: savingItemId === it.id }}
+              style={[styles.loggerMovementSwapText, savingItemId === it.id && { opacity: 0.45 }]}
+              onPress={savingItemId === it.id ? undefined : () => openSwapAcc(it)}>
+              <Ionicons name="swap-horizontal" size={16} color="#c8a6ff" />{'\u00a0'}{swapLabel}
+            </Text>
           ) : null}
           onOpen={() => toggleMovementCard(accessoryDetailKey)}
         />
@@ -13231,9 +13231,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: SLColors.review,
   },
-  loggerMovementSwap: { minHeight: 28, paddingHorizontal: 8, borderRadius: 7,
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    borderWidth: 1, borderColor: 'rgba(167,139,250,0.3)', backgroundColor: 'rgba(123,68,191,0.10)' },
   loggerMovementSwapText: { fontSize: 12, fontWeight: '700', color: '#c8a6ff' },
   accessoryInlineAction: {
     minHeight: 44,

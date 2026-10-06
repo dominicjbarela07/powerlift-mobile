@@ -9,7 +9,8 @@ const text = node => node == null || node === false ? '' : typeof node === 'obje
   ? node.children.flat(Infinity).map(text).join('') : String(node);
 const react = { createElement(type, props, ...children) {
   return typeof type === 'function' ? type({ ...props, children }) : { type, props: props || {}, children };
-}, useState: () => [0, () => {}], useCallback: fn => fn };
+}, isValidElement: node => !!node && typeof node === 'object' && 'props' in node,
+useState: () => [0, () => {}], useCallback: fn => fn };
 const deps = { react, 'react-native': { Pressable: 'Pressable', View: 'View', StyleSheet: { create: x => x } },
   '@expo/vector-icons': { Ionicons: 'Icon' }, '@/components/ui/sl-text': { Text: 'Text' },
   '@/lib/approved-art-runtime': { approvedArtRuntimeEnabled: () => false },
@@ -37,6 +38,14 @@ assert.ok(edit, 'real expanded workspace must expose the prescription editor');
 assert.ok(nodes(tree).some(n => n.children.includes(edit) && text(n).includes('PRESCRIBED')),
   'the edit affordance belongs beside the prescription label');
 edit.props.onPress(); assert.equal(edits, 1);
+let movementSwaps = 0;
+const movementAction = react.createElement('Text', { accessibilityLabel: 'Swap movement', onPress() { movementSwaps++; } }, 'Swap');
+const inlineTitle = nodes(SessionV3MovementLayout({ ...props, movementAction }))
+  .find(n => n.children.includes(movementAction));
+assert.equal(inlineTitle.type, 'Text', 'movement Swap must flow after title text, never reserve a column');
+assert.ok(text(inlineTitle).startsWith(props.title));
+inlineTitle.props.onAccessibilityAction({ nativeEvent: { actionName: 'swap' } });
+assert.equal(movementSwaps, 1, 'inline title retains accessible canonical Swap action');
 assert.equal(nodes(SessionV3MovementLayout({ ...props, onEditPrescription: undefined })).some(n => /Edit Prescription/.test(n.props.accessibilityLabel)), false,
   'no edit control without the permission-bound callback');
 assert.ok(nodes(SessionV3MovementLayout({ ...props, complete: true })).some(n => n.props.accessibilityLabel === edit.props.accessibilityLabel),
@@ -55,7 +64,7 @@ const accessory = logger.slice(logger.indexOf('const renderAccessoryMovement'), 
 assert.doesNotMatch(accessory, /auxAction=|accessoryInlineAction/);
 assert.match(accessory, /onSwapEquipment=\{!isCoachAthletePreview && canConfigureMachineEquipment\(it\)/);
 assert.match(accessory, /movementAction=\{!isCoachAthletePreview && swapLabel/);
-assert.match(accessory, /onPress=\{\(\) => openSwapAcc\(it\)\}/);
+assert.match(accessory, /onPress=\{savingItemId === it.id \? undefined : \(\) => openSwapAcc\(it\)\}/);
 assert.match(logger, /onEditPrescription=\{canEditPrescription \? openPrescription/,
   'superset editor entry point remains permission-bound');
 console.log('PASS compact Logger actions: real edit/equipment callbacks, completed/permission/collapsed behavior, no accessory action row, canonical swap gates and superset entry point retained.');

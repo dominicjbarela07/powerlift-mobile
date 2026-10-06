@@ -99,3 +99,24 @@ typecheck and four focused existing contracts pass. Source hashes and final
 proof: `../validation/logger-compact-actions-2026-10-05/plain-controls-title-swap-review.json`.
 Simulator left open. Pending UI remains DEV-only for owner review. No backend,
 TestFlight, asset, permission, or mutation changes in this refinement.
+
+## Owner correction — inline title suffix, October 5, 22:38
+
+The owner explicitly rejected the two-column title/Swap layout. Required DEV
+result: movement Swap appears immediately after the title's last character in
+the same flowing text, with its icon and short label. It must not reserve a
+separate column or sit on the Set position line. Preserve unboxed prescription
+edit/equipment Swap, canonical callbacks and permissions, and all approved art.
+Verify the actual long-title simulator and leave it open; pending UI publication
+remains unauthorized. This correction supersedes the prior title-row placement.
+
+Inline correction complete: native title text now owns the full heading width;
+Swap is an inline text suffix immediately after the last character, rather than
+a separate flex column. Actual High Row now wraps to two lines with Swap after
+“High Row”. Tapping that suffix opened the real governed substitution picker,
+then dismissed without a mutation. Title collapse remains a separate text tap;
+accessible activate/Swap actions are retained and exposed by the actual runtime.
+Typecheck and the existing compact-control contract pass, including native text
+flow placement and the canonical accessible callback. First/second real screens
+were inspected; final simulator remains open. DEV-only; no TestFlight release.
+Evidence: `../validation/logger-compact-actions-2026-10-05/inline-title-swap-review.json`.

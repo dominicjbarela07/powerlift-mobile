@@ -1,0 +1,25 @@
+{
+  "status": "DEV_REVIEW_READY",
+  "supersedes": "plain-controls-title-swap-review.json column layout",
+  "request": "Place Swap immediately after last title character in same flowing text, not separate column",
+  "uiPublishedToTestFlight": false,
+  "observed": "Actual canonical DEV iPhone Air: Single-Arm Machine / High Row followed immediately by icon + Swap; suffix tap opens governed movement picker; closed without saving",
+  "accessibility": "Actual AX exposes activate and swap actions on the title; disabled Swap retains no callback",
+  "typecheck": "PASS",
+  "compactActionsContract": "PASS",
+  "firstPassWeaknessesCorrected": [
+    "Separate column removed",
+    "Full title width restored, returning long title to two lines",
+    "Inline action accessibility preserved with explicit native accessibility actions"
+  ],
+  "sourceHashes": {
+    "app/(tabs)/workout/[workoutId].tsx": "8a28be97e4cd5b53b13c80034726cd1156c920ae41a1ca1329f6fc081a757148",
+    "components/workout-logger/session-v3-movement.tsx": "2089540d01bef36f925e28faac57275d4a3433213d7762ac73d26a968bd3d3f0",
+    "scripts/test-logger-compact-actions.mjs": "9f0847712794804d85be90fb7aa1fd6367e5f93043d50957c35589552962154c"
+  },
+  "screenshots": {
+    "inline-title-swap-second-pass.png": "5b41d1c6b6f19081b5850ae10103625a69205eaca7630ea3b5a5ae1fa08afb04",
+    "inline-title-swap-first-pass.png": "5cb52e704a09dc37eb0962b2bf30c1a86b6f04174033be01dc07c1e5b20d7eb2"
+  },
+  "simulatorLeftOpen": true
+}
