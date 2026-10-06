@@ -19079,7 +19079,7 @@
     {
       "path": "config/protected-fix-manifest.json",
       "before": "e096935ee1da6c44af82a0ee8651a0803bc692dc5be5827b06e88b2b20cb32a7",
-      "after": "3712ad263d1613e60cdb1bebc47f25523f0080b25bdcb9479f50ca2f38775291",
+      "after": "af5d97c0c6dc673ad570adf467f47138bbdd6308e6b3418adc8e72a51e14b43f",
       "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
       "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
       "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
@@ -19088,6 +19088,14 @@
       "path": "app/(tabs)/workout/[workoutId].tsx",
       "before": "8ba5b86199e291b69755a0dc0a3fd2c7dfcdd83417c41ac257093b9d3acb4bf5",
       "after": "e3d2bfb7652ac3501a47ad1707dbc3acf723e3387f96a9d8ffe4c41e3b6749b8",
+      "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
+      "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
+    },
+    {
+      "path": "context/AuthContext.tsx",
+      "before": "8757cfa9927e409ec1a1bebd07c6d4e2ddf6eebffbf0770a9c279e9aab4127db",
+      "after": "18aa6c1fa073a1852ef2ddfc861f75f67c09a0b9e87c4847116c39ed8a8e741f",
       "ownerInstruction": "Okay, let's get all that stuff shipped to TestFlight, please.",
       "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-cumulative-dev-publication.txt",
       "ownerEvidenceSha256": "0161c8e0602b762b15ad4ea6992213289e3859ee723e0ad749e737240cab6b76"
@@ -157077,7 +157085,7 @@
     "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
     "scripts/test-accepted-behavior-contracts.mjs": "85fa14716b0a66d2d7a3c3a79466caa5ea04bbf9bfa3bdc4e68ebe2a4c26165e",
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
-    "config/protected-fix-manifest.json": "3712ad263d1613e60cdb1bebc47f25523f0080b25bdcb9479f50ca2f38775291",
+    "config/protected-fix-manifest.json": "af5d97c0c6dc673ad570adf467f47138bbdd6308e6b3418adc8e72a51e14b43f",
     "scripts/assert-no-dev-artwork-export.mjs": "403fad1b126d9b77f076d1442009f99a9277f7b6ce4cce8dc82089bd56b58d2c",
     "scripts/test-release-critical-invariants.mjs": "6a2d41331008d1a0471a1b9709d62b0ccd698b16fcbc37c80db00938feb8fbea",
     "scripts/test-release-source-lineage.mjs": "abae1f05b4456bf51ee32179036769603de6140c83d7cba35cd56cc38216468a",

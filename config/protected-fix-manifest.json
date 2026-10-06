@@ -244,6 +244,17 @@
         "scripts/test-recognition-rest-handoff-race.mjs",
         "scripts/test-logger-feedback.mjs"
       ]
+    },
+    {
+      "id": "fresh-login-canonical-account-identity",
+      "description": "Fresh mobile sign-in reads authenticated canonical account identity before account-scoped workspaces or queues; missing login/settings IDs cannot make valid coach workspaces inaccessible.",
+      "acceptedCommits": [
+        "3079b5d208d466164ac051b1571bc78f6306e08f"
+      ],
+      "behaviorTests": [
+        "scripts/test-fresh-login-canonical-identity.mjs",
+        "scripts/test-coach-athlete-workspace-entrypoint.mjs"
+      ]
     }
   ],
   "releaseHoldbacks": {
