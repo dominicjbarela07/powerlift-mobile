@@ -467,6 +467,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         await saveMobileViewMode(resolveActiveMobileMode(refreshedUser));
         await persistUser(refreshedUser);
       }
+      // Login/settings payloads do not carry the canonical user ID. Hydrate
+      // authenticated identity before account-scoped workspaces can open.
+      await refreshAccountState();
     }
     startVideoUploadQueue();
   }
