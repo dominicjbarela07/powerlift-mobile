@@ -34,9 +34,9 @@ Status: FUNCTIONAL FIX LIVE; DEV UI READY FOR OWNER REVIEW.
 The functional failure was a stale `performed_*` execution override after the
 base prescription was saved. The backend now updates existing edited overrides,
 without rewriting completed Sets or identity. The real pre-fix API failed reps,
-Sets and RIR; the repair passes the full 11-test prescription suite and the
-127-test guarded production candidate. Production source
-`f1a4a628ba3fe4a456ef249c6cd9acdda4767397` was pushed from the production repository
+Sets and RIR; the repair passes the full 12-test prescription suite and the
+128-test guarded production candidate. Production source
+`210559e431df3927ab7286f9d1c4e895129b6439` was pushed from the production repository
 and is verified live. The existing published TestFlight client calls the repaired
 endpoint; no new OTA/native artifact is required. Exact deployed source and
 frozen 2.0.2 compatibility are retained in
@@ -71,3 +71,8 @@ The durable TestFlight UI and current OTA are unchanged. Only backend deployment
 metadata, its receipt and the current API-suite coverage check were reconciled
 there. No temporary product worktree was created or unique work deleted.
 The visual update remains held for explicit owner sign-off before publication.
+
+The final backend repair also covers previously failed Saves: the editor reads
+the same live execution target as the logger, making reapplication a real change
+instead of a silent no-op. Versioning includes base and execution state. A
+deliberate API failure and actual simulator before/after/reopen proof are retained.

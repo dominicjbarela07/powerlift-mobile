@@ -21,7 +21,8 @@
     "relocatedMovementSwap": "PASS: opens governed self-coach substitution picker",
     "automaticFirstSetEquipmentPicker": "PASS: unconfigured Machine Pullover Log set 1 opens manufacturer picker",
     "noExtraActionRow": "PASS: long-title Single-Arm Machine High Row and Machine Lateral Raise",
-    "existingLoggedMovementSwapHidden": "PASS: saved-Set EZ-Bar Curl and Machine Lateral Raise have no movement Swap"
+    "existingLoggedMovementSwapHidden": "PASS: saved-Set EZ-Bar Curl and Machine Lateral Raise have no movement Swap",
+    "alreadyFailedSaveRecovery": "PASS: base 8-12/execution 6-10 made old Save a no-op; repaired editor shows live 6-10 and reapplying 8-12 immediately updates logger, reopens 8-12, preserves every completed Set column."
   },
   "sourceHashes": {
     "app/(tabs)/workout/[workoutId].tsx": "eaa1f521a23f452a2c66ff4bc3c34d01a33d61ad3d4e8a3b9f317842017d545a",
@@ -35,7 +36,9 @@
     "prescription-after-save.png": "dc32623e72d7cde5b740fbb877b3eb7128f7341a95939cf5dc796ba99855460a",
     "prescription-after-reopen.png": "b2c0fde0f30aa7201749e6a87decb0c69f9e82ea8bdec06e552a3200e27ba8eb",
     "automatic-first-set-equipment-picker.png": "b75d9d0edf21e8d2b77c0fc5516ca8dd977ff716650c9950909e8217e4e9ed30",
-    "prescription-saved-but-stale-before-fix.png": "52a3dcd4e13c60514eb2348860edea11710c0efcce2ee9a9dadb6ecccdd267f7"
+    "prescription-saved-but-stale-before-fix.png": "52a3dcd4e13c60514eb2348860edea11710c0efcce2ee9a9dadb6ecccdd267f7",
+    "stale-reapply-before-read-repair.png": "78cafe2d26bd1369bcea80a65b0680169e04aeb93f118a8058ca24f22fc43e07",
+    "stale-reapply-after-read-repair.png": "c880f7086259de2cdd58c9416962b14b5cfeaa72d93cbaab140ce2ef2f9f52d6"
   },
   "focusedContracts": "PASS: compact callbacks/permissions, active prescription, equipment selection, swap gating, superset equipment, set persistence, Option E",
   "typecheck": "PASS",
@@ -59,8 +62,9 @@
   ],
   "retainedShippedAssetFiles": 2230,
   "missingOrChangedShippedAssets": 0,
-  "backendLiveSource": "f1a4a628ba3fe4a456ef249c6cd9acdda4767397",
-  "backendDevSource": "e16b121ba7721eb00474c783ecac1cf67a23dd26",
+  "backendLiveSource": "210559e431df3927ab7286f9d1c4e895129b6439",
+  "backendDevSource": "ade6c48409ccab2641907b02d90774da2b018154",
   "newTemporaryWorktrees": 0,
-  "uiPublishedToTestFlight": false
+  "uiPublishedToTestFlight": false,
+  "prescriptionRegressionTests": 12
 }
