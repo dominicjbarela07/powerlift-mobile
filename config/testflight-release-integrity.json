@@ -156980,7 +156980,7 @@
     }
   ],
   "releaseGateFiles": {
-    "AGENTS.md": "7ad9f345df99bf559e3c492b6e485a4a04ff1ff2afc995a0db273651a0005d38",
+    "AGENTS.md": "5c62306f36197cfc744adc514aceff8ea350738aeed27ad51937544e1641c21b",
     "app.config.js": "9c677a722146f9d76bc43d4dcd3bc3dbcd1c27d82f1154d12af15229421d24bf",
     "scripts/testflight-cumulative-integrity.mjs": "9262d199efbe9d1e7234e5d43922d478d7c3db4b0016d2377af7e5b9ebd91637",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
@@ -156998,7 +156998,7 @@
     "package-lock.json": "1343e90757f22b5d2f2b6c9f21ca383a587770f3a68d83f0d60f8d1709ecccac",
     "scripts/test-create-session-return-lifecycle.mjs": "e6bd4631062c55708a1cbd73982c1e63b5ec9337e2aa2c8f30bee7103004fc1a",
     "scripts/verify-testflight-release-integrity.mjs": "72de503b5168d43b17c8e9b4efe7769d799408a99c908d90e67ec0c8634dd85f",
-    "docs/RELEASE_INVARIANTS.md": "9575b480918e9773a17505b57b87b6332f9abffc0b001bc72b108dc7d2e9a537",
+    "docs/RELEASE_INVARIANTS.md": "059af33f51ed4a7164eb912cc0ce5451d16792895203f27780843a09ee67aac3",
     "README.md": "8c1e55b964384a9cbc4fd535bf88bd67bec95995b404f9de5f5177f2607ede12",
     "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
     "config/release-removal-authorizations.json": "79b7e83d8edc0ee3b52954fdf66cf31d152059d1fa056a60b7018f9b8ef215bb",
@@ -157220,7 +157220,7 @@
       "reason": "Retained exact source-bound pre-existing Cable backend holdback; Option E does not modify these bytes. Both lanes retain shipped zero-load editor fix."
     }
   ],
-  "releaseConstitutionSha256": "05188331b2ccc9e6b9de5c9a5b49c951d88de85d33a023744f57b213d4b2a876",
+  "releaseConstitutionSha256": "6129a552bd10fbddf3957ab2287de5f2171cfd5e180b1041cdcba7f76ef7a7a3",
   "protectedCatalogSnapshotSha256": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
   "catalogCompatibilityAuthorization": {
     "ownerInstruction": "Everything else deterministic:\nFIX IT.",
@@ -157244,7 +157244,7 @@
     "canonicalFiles": [
       {
         "path": "AGENTS.md",
-        "sha256": "53e748a77350eacbbfd0aac67db53ccbe8fcca4d0f5cbe988417680b7b448300"
+        "sha256": "9cda014a49208fff2ffab92a3c766b424993f766c06ff2d9d379d5812e3c816f"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",

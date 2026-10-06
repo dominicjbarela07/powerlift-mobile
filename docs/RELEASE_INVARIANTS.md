@@ -38,3 +38,12 @@ recognition remains allowed. Preserve existing brand-only Cable behavior within
 a brand. Isolate comparison, record supersession, edits/rebuild and replay/
 history/recap delivery. Deploy through guarded Production Git push and verify
 exact live source, policy and schema; a client OTA alone proves no server delivery.
+
+## Complete-request delivery
+
+Read the canonical constitution's **Complete-request Delivery Law**. Preserve
+the whole request and established owner policy, resolve remaining product
+conflicts before implementing them, and account for every acceptance criterion.
+Report tests, publication, live verification and device observation separately.
+Shared-backend Production pushes require independent canonical owner-policy
+acceptance; candidate-owned tests cannot redefine manufacturer isolation.
