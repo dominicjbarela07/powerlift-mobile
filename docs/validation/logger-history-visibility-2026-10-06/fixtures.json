@@ -1,0 +1,18 @@
+[
+  {
+    "sessionId": 1840,
+    "itemId": 18251,
+    "movementId": 121,
+    "equipmentId": 652,
+    "manufacturer": "hammer_strength",
+    "date": "2026-10-09"
+  },
+  {
+    "sessionId": 1841,
+    "itemId": 18252,
+    "movementId": 121,
+    "equipmentId": 27,
+    "manufacturer": "arsenal_strength",
+    "date": "2026-10-08"
+  }
+]

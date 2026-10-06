@@ -32,7 +32,7 @@ const api=load('lib/canonical-movement-history.ts',{'@/lib/api':{fetchJson:async
   '@/lib/movement-strength-metric':metric,'@/lib/performed-load-semantics':semantics,'@/lib/canonical-movement-history-contract':contract});
 const hooks=load('lib/use-session-exposure.ts',{react,'./canonical-movement-history':api,'./session-exposure-cache':cacheModule,'./session-exposure-snapshot':snapshots});
 const component=load('components/workout-logger/session-history-peek.tsx',{react,'react-native':{Pressable:'Pressable',View:'View',StyleSheet:{create:s=>s}},
-  '@/components/ui/sl-text':{Text:'Text'},'@expo/vector-icons':{Ionicons:'Ionicons'},'@/constants/theme':{SLFontFamilies:{sansSemiBold:'test'}},'@/lib/use-session-exposure':hooks,'@/lib/session-exposure-snapshot':snapshots});
+  '@/components/ui/sl-text':{Text:'Text'},'@expo/vector-icons':{Ionicons:'Ionicons'},'@/constants/theme':{SLFontFamilies:{sansSemiBold:'test'}},'@/lib/use-movement-history-availability':{useMovementHistoryAvailability:()=>({status:fail || response.athlete.id!==4 || response.identity_resolution.subject_id!==314 ? 'error' : response.summary.set_count>0 ? 'found' : 'empty'})},'@/lib/use-session-exposure':hooks,'@/lib/session-exposure-snapshot':snapshots});
 const item={id:7,variant:'ACC',lift:'AX',movement_identity_contract:1,movement_definition_id:314,movement_identity:{id:314},
   original_movement:'Unrelated label',performed_canonical_movement_identity:{id:315},is_substituted:true};
 const resolution=launch.resolveMovementHistoryLaunchForItem({athleteId:4,item}); assert.equal(resolution.ok,true);
@@ -57,9 +57,11 @@ const selected={...props,target:{...props.target,equipmentContextDefinitionId:73
 assert.match(text(render(selected)),/LAST COMPARABLE EXPOSURE.*Sep 10.*110.23 lb × 10/);
 assert.doesNotMatch(text(render(selected)),/250 lb/);assert.equal(selected.target.movementDefinitionId,314);
 const emptySelectedHistory=text(render({...selected,history:{...selected.history,previous_exposure:null}}));
-assert.match(emptySelectedHistory,/No comparable exposure/);
+assert.match(emptySelectedHistory,/Movement history/);
+assert.doesNotMatch(emptySelectedHistory,/LAST COMPARABLE|250 lb|110.23 lb/);
 assert.doesNotMatch(emptySelectedHistory,/Exact movement/,'Empty history should not add a filler context line.');
-assert.match(text(render({...selected,history:{...selected.history,movement_definition_id:315}})),/History unavailable/);
+assert.match(text(render({...selected,history:{...selected.history,movement_definition_id:315}})),/Movement history/);
+assert.doesNotMatch(text(render({...selected,history:{...selected.history,movement_definition_id:315}})),/250 lb|110.23 lb/);
 const option=(id,name,record=null,current=false)=>({id,key:name,display_name:name,manufacturer:{id,key:name,display_name:name},equipment_context:{option_kind:'catalog',is_current:current,
   usage_status:record?'used':'not_used',last_exposure:record,last_used_at:record?.performed_at,equipment_type_last_exposure:record?{plate_loaded:record}:{},
   equipment_latest_exposures:record?{[record.equipment.id]:record}:{},used_equipment_type_keys:record?['plate_loaded']:[]}});
@@ -84,11 +86,11 @@ assert.equal(mostRecentEquipmentChoice([{...hammer,equipment_context:{...hammer.
 const bodyweight={...latest,equipment:null,comparison_scope:'exact_movement',best_set:{...latest.best_set,weight_kg:0,load_convention:'added_bodyweight',measurement_type:'added_weight_reps'}};
 reset();response={...baseline,movement:{id:314,requires_equipment_configuration:false},exposures:[bodyweight]};render();await settle();
 assert.match(text(render()),/LAST EXPOSURE.*BW × 10/);assert.doesNotMatch(text(render()),/Equipment not recorded|No comparable/);
-reset();response={...baseline,exposures:[],summary:{set_count:0,exposure_count:0}};render();await settle();assert.match(text(render()),/No previous exposure/);
+reset();response={...baseline,exposures:[],summary:{set_count:0,exposure_count:0}};render();await settle();assert.equal(render(),null);
 for(const bad of [{...baseline,athlete:{id:5}},{...baseline,identity_resolution:{...baseline.identity_resolution,subject_id:315}}]){
-  reset();response=bad;render();await settle();assert.match(text(render()),/History unavailable/);assert.doesNotMatch(text(render()),/250 lb|No previous exposure/);
+  reset();response=bad;render();await settle();assert.match(text(render()),/Movement history.*Unavailable/);assert.doesNotMatch(text(render()),/250 lb|No previous exposure/);
 }
-reset();fail=true;render();await settle();assert.match(text(render()),/History unavailable.*Retry history/);
+reset();fail=true;render();await settle();assert.match(text(render()),/Movement history.*Unavailable/);
 const route=fs.readFileSync('app/(tabs)/workout/[workoutId].tsx','utf8');
 assert.match(route,/assertEquipmentResponseSubject\(entry.subject, response.json\)/);
 assert.match(route,/orderEquipmentTypeChoices\(equipmentFlowVariants/);
