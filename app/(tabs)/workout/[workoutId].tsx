@@ -2426,6 +2426,16 @@ export default function WorkoutViewerScreen() {
       events: rawEvents,
       completionBoundary: json?.completion_boundary?.authority === 'canonical' ? json.completion_boundary : null,
     });
+    // Reserve the rest handoff before the save confirmation can release recognition.
+    // Waiting until the accepted-sheet dwell ends lets a PR play behind the picker.
+    if (json?.created === true && json?.replayed !== true
+      && acceptedRestOfferRef.current.offer
+      && !isNewCanonicalSessionFinalSet({
+        created: json.created, replayed: json.replayed,
+        completionBoundary: json?.completion_boundary,
+      })) {
+      feedbackDispatch({ type: 'TIMER_PICKER_PENDING' });
+    }
     if (events.length && json?.created === true && json?.replayed !== true) {
       transientRecognitionTrace(7, 'transient recognition enqueued');
     }
@@ -2751,6 +2761,7 @@ export default function WorkoutViewerScreen() {
       app_backgrounded: feedbackState.appLifecycle === 'background',
       timer_pending: feedbackState.timer.status === 'picker_pending',
       timer_visible: timerPickerVisible,
+      logger_sheet: !!coreWheel || !!accessoryWheel,
     };
     const releaseBlocked = Object.values(blockers).some(Boolean);
     const evaluationKey = JSON.stringify({ blockers, first: feedbackState.recognition.queuedEvents[0] ? recognitionDeliveryId(feedbackState.recognition.queuedEvents[0]) : null });
@@ -2760,7 +2771,7 @@ export default function WorkoutViewerScreen() {
     }
     if (releaseBlocked) return;
     feedbackDispatch({ type: 'DISPLAY_NEXT_RECOGNITION' });
-  }, [feedbackState.appLifecycle, feedbackState.recognition.currentEvent, feedbackState.recognition.queuedEvents, feedbackState.recognition.saveConfirmationVisible, feedbackState.timer.status, timerPickerVisible, transientRecognitionTrace]);
+  }, [feedbackState.appLifecycle, feedbackState.recognition.currentEvent, feedbackState.recognition.queuedEvents, feedbackState.recognition.saveConfirmationVisible, feedbackState.timer.status, timerPickerVisible, coreWheel, accessoryWheel, transientRecognitionTrace]);
 
   useEffect(() => {
     const event = feedbackState.recognition.currentEvent;
