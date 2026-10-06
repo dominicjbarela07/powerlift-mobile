@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-06T22:09:09.022045+00:00",
+  "status": "PUBLISHED_VERIFIED",
+  "publication": {
+    "id": "01a11340-9ccc-7498-a71d-77a367aa6f5f",
+    "createdAt": "2026-10-06T22:06:03.980Z",
+    "group": "d94afb31-3d19-4265-9040-0c2566c490b3",
+    "branch": "testflight",
+    "message": "Compact Logger controls, assisted movement search, conditional history and refreshed pre-Session check-in; preserve earned PR playback",
+    "runtimeVersion": "2.1.0",
+    "platform": "ios",
+    "manifestPermalink": "https://u.expo.dev/update/01a11340-9ccc-7498-a71d-77a367aa6f5f",
+    "isRollBackToEmbedded": false,
+    "gitCommitHash": "59641028e514c3edc957c95de2d4882f2f3bf3e0"
+  },
+  "backendLiveSha": "751a1173b301cb382557c5cbda59e4fdf72633b2",
+  "acceptedContractsPassed": 266,
+  "releaseCriticalAreasPassed": 77,
+  "actualRuntimeFlowsPassed": 32,
+  "actualRuntimeRolesPassed": [
+    "self-coach",
+    "team-coach",
+    "athlete"
+  ],
+  "actualRuntimeSource": "Actual canonical DEV Expo Go Metro8081/API5002; exact separately reviewed catalog/Cable holdbacks project to candidate. All flows observed; no Mac-lock skips needed.",
+  "runtimeSourceRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "testedProductFingerprint": "4ebb6501fb77826f5d1be5aafd0c09136eb44f1588fc82945d1cae485cba2750",
+  "candidateProductFingerprint": "238ebc68aa9455a5b2c7c43da19206f8283352b2a3c37a491934582faa98ac4a",
+  "runtimeBackendSourceSha": "e0de8757045614b09a6256ec8a5d6875ea3b0353",
+  "runtimeBackendProductFingerprint": "9e7f36edbe472d08a9943506ea29c847fbcb006443f6e84599b743f9c27d2a6d",
+  "runtimeReceiptPath": "/Users/dominic/Documents/Codex/2026-10-03/re/outputs/cumulative-publication-2026-10-06/runtime/runtime-receipt.json",
+  "runtimeReceiptSha256": "59e9b5078b731931bba2796b97f5dce0d434ec75b877f3be1aa81291fe8ab6aa",
+  "approvedMovementMappings": 489,
+  "servedAssetsVerified": 991,
+  "unauthorizedMissingAssets": 0,
+  "brokenMappings": 0,
+  "unexpectedFallbacks": 0,
+  "macLockSkippedChecks": [],
+  "worktreeCloseoutComplete": true,
+  "productionMobileUpdateGroupsUnchanged": true
+}

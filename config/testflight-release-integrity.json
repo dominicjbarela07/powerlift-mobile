@@ -3,6 +3,25 @@
   "policy": "TestFlight is cumulative. Explicit owner authorization is required for every subtraction and protected modification. Never replace this historical baseline with a regressed export.",
   "incident": "2026-10-02 direct EAS update omitted TestFlight artwork switch; 492 asset entries absent",
   "currentTestFlight": {
+    "id": "01a11340-9ccc-7498-a71d-77a367aa6f5f",
+    "createdAt": "2026-10-06T22:06:03.980Z",
+    "group": "d94afb31-3d19-4265-9040-0c2566c490b3",
+    "branch": "testflight",
+    "message": "Compact Logger controls, assisted movement search, conditional history and refreshed pre-Session check-in; preserve earned PR playback",
+    "runtimeVersion": "2.1.0",
+    "platform": "ios",
+    "manifestPermalink": "https://u.expo.dev/update/01a11340-9ccc-7498-a71d-77a367aa6f5f",
+    "isRollBackToEmbedded": false,
+    "gitCommitHash": "59641028e514c3edc957c95de2d4882f2f3bf3e0",
+    "sourceAvailable": true,
+    "appRevision": 56,
+    "nativeBuildInSource": null,
+    "recoverableRefs": [
+      "refs/archive/testflight-published/01a11340-9ccc-7498-a71d-77a367aa6f5f",
+      "origin/release/testflight/hot-swap-r56-20261001"
+    ]
+  },
+  "previousTestFlight": {
     "id": "01a10e59-6149-7d98-83a3-8413a56d9006",
     "createdAt": "2026-10-05T23:15:01.065Z",
     "group": "ebe8bb5f-7a22-4600-b20f-f0d65b0842a9",
@@ -21,26 +40,16 @@
       "origin/release/testflight/hot-swap-r56-20261001"
     ]
   },
-  "previousTestFlight": {
-    "id": "01a10e35-af83-7ad6-90f0-8bc76d356129",
-    "createdAt": "2026-10-05T22:36:01.795Z",
-    "group": "81ccfb10-4863-4799-8d76-f61e54aade8c",
-    "branch": "testflight",
-    "message": "Fix canonical Logger editing bodyweight sets to zero load; preserve all restored art and cumulative Session fixes",
-    "runtimeVersion": "2.1.0",
-    "platform": "ios",
-    "manifestPermalink": "https://u.expo.dev/update/01a10e35-af83-7ad6-90f0-8bc76d356129",
-    "isRollBackToEmbedded": false,
-    "gitCommitHash": "7f5107e808a6fc12b8126303bc5a3f32fb8d6bc3",
-    "sourceAvailable": true,
-    "appRevision": 56,
-    "nativeBuildInSource": null,
-    "recoverableRefs": [
-      "refs/archive/testflight-published/01a10e35-af83-7ad6-90f0-8bc76d356129",
-      "origin/release/testflight/hot-swap-r56-20261001"
-    ]
-  },
   "releaseHistory": [
+    {
+      "id": "01a11340-9ccc-7498-a71d-77a367aa6f5f",
+      "group": "d94afb31-3d19-4265-9040-0c2566c490b3",
+      "createdAt": "2026-10-06T22:06:03.980Z",
+      "runtimeVersion": "2.1.0",
+      "appRevision": 56,
+      "gitCommitHash": "59641028e514c3edc957c95de2d4882f2f3bf3e0",
+      "message": "Compact Logger controls, assisted movement search, conditional history and refreshed pre-Session check-in; preserve earned PR playback"
+    },
     {
       "id": "01a10e59-6149-7d98-83a3-8413a56d9006",
       "createdAt": "2026-10-05T23:15:01.065Z",
@@ -157344,7 +157353,7 @@
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
-        "sha256": "a29e4acd8f78a7b88e39e5315dbd355c412aadb00709926c72bca02dc2f2ebf7"
+        "sha256": "c5b1a8b315deaeea9ed0edad0c1545f526acabf8eaefc10b57f3a0476d200fa7"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",

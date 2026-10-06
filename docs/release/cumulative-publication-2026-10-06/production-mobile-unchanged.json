@@ -1,0 +1,12 @@
+{
+  "branch": "production-live-2.0.2",
+  "updateGroupsUnchanged": true,
+  "comparedLatestGroups": 5,
+  "groups": [
+    "0cceb494-ae13-4c9a-931c-b583976707e5",
+    "5d1077a8-48c2-4d3d-b972-1127ef17d5f6",
+    "63c47300-6e05-48be-aba3-74bb90bbb6e5",
+    "bd4cf833-25f2-4ea6-b6bc-1a9dc52bff7d",
+    "b9687f12-f5b1-4e08-b832-c986f0d14876"
+  ]
+}
