@@ -1,0 +1,72 @@
+{
+  "destination": "canonical DEV only; no TestFlight or Production deployment",
+  "sourceBefore": {
+    "backend": "ade6c48409ccab2641907b02d90774da2b018154",
+    "mobile": "b31b6417ba4ce57a998a82dd144caaeebdd4c074"
+  },
+  "runtime": {
+    "api": "127.0.0.1:5002",
+    "metro": "127.0.0.1:8081",
+    "device": "iPhone Air iOS 26.2",
+    "app": "actual Expo Go canonical npm start"
+  },
+  "inventory": {
+    "names": 513,
+    "aliases": 854,
+    "prefixes": 1367,
+    "typos": 1358
+  },
+  "inventoryFailures": [],
+  "directoryPagination": {
+    "pages": 20,
+    "expectedVisibleIdentities": 475,
+    "returnedIdentities": 475,
+    "missingIDs": [],
+    "extraIDs": [],
+    "duplicateCount": 0
+  },
+  "runtimeObservations": [
+    "Both authenticated Hot Swap and Session Workspace show partial-query suggestions and approved exact artwork.",
+    "Suggestion tap refines the query only; Workspace movement selection remains an explicit separate action; the QA selection was removed locally without saving.",
+    "Hot Swap cble pullovr returns Straight-Arm Cable Pulldown first, then the distinct Single-Arm variant.",
+    "Unmatched query exposes working muscle browse recovery.",
+    "Hot Swap machines for hamstrings suggests Kneeling, Lying and Seated Leg Curl without entering any movement name."
+  ],
+  "visualWeaknessesCorrected": [
+    "Completion hints repeated suggestion labels; retain useful alias explanations only.",
+    "Typo labels repeated canonical titles; use compact Spelling match.",
+    "Typo ranking favored a more specific variant; compare complete best-name/alias density.",
+    "Generic metadata explanation repeated on every card; canonical muscle and equipment text already communicates it."
+  ],
+  "checks": {
+    "backend": "9 tests pass including full catalog prefix/typo discovery, natural muscle/equipment discovery, authorized full directory pagination and legacy identity search",
+    "mobile": "actual consumer stale/clear/close/pagination effects, canonical search helper/consumer contracts, Swap gates, picker layout and Workspace integration pass",
+    "typecheck": "passed"
+  },
+  "physicalHapticsObserved": false,
+  "haptics": "selection haptic requested for completion/clear taps; pressed and focus states implemented",
+  "preserved": "no movement/catalog/alias/taxonomy/equipment/assets/saved performed history edits; no unrelated predirty backend edits staged",
+  "files": {
+    "cable-pullover-before.png": "9424a509b276e8829a030af8bb8fd058f11078b4919d0d641ea4decbd4db7985",
+    "swap-autocomplete-first-pass.png": "3e4e366f6bf064b5f3d79c1a33c85fa979edc62df7bb0ba29c0193e1244d65ec",
+    "workspace-autocomplete-second-pass.png": "ebf30f828a5dec54faca7f86f7ae540a0049a7917688a866c93404acf4a536f4",
+    "swap-typo-second-pass.png": "85b48a31ce94550ed7861425d0013a7124cd178f3226431f7bf4f9450cfd88da",
+    "swap-empty-help.png": "bb0fae9d32a2ab38cca13174e4d8b936bd48e62f036911e9623a999354aeb80c",
+    "swap-muscle-equipment-first-pass.png": "3d70659969444a030ea67dd7c47ecf157370847f1332d53b19962358a50158bf",
+    "swap-muscle-equipment-second-pass.png": "c04bb0217aca210cbbaae422f6e3b05659c27d2fe84fe38ddc6fe8731decd57b",
+    "full-inventory-search.json": "531f71932f7b1ecf1c0cd6eefdaf88674bb48703040d2476163542b759c9ec8d",
+    "backend-before.log": "6bb3b6d173347f69ae12139ba3d03f18caabff583ea033a589939b74ba7f30d1",
+    "backend-final.log": "bc0be7cdfd633f9f745e630080f20c9b49bd24532c3922ea980113d26e6c6fec",
+    "muscle-discovery-before.log": "8f13decce8f5b8d18f0f981c4fba78369be507f6d8c314e0a5007795aa6992e6",
+    "mobile-response.log": "65a14d8099d5b6a9d051450118d7e04ca35ff49d376457728f0d46a7eac35e77",
+    "typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "backendCommit": "271bef5bcbd2fa47406012ab8f6f3dcae2108447",
+  "canonicalMetroCertification": "PASS: certified project, Git root, branch, listener cwd and Expo launch manifest are canonical DEV",
+  "mobileSourceFiles": {
+    "components/movement/MovementSearchField.tsx": "027237493aa96f3f50c139caeef3e7343313acbd17b05d7ba7409684dac64eef",
+    "components/movement/GovernedAccessoryPickerModal.tsx": "059001c072588c63899fe883325b2d3279d2d9b098f6aabef94cf68e74068bc7",
+    "app/(tabs)/workout/session-workspace/[workoutId].tsx": "5441b63160c4d38912f66f665d37005a317debaffbac23d95f09ca0c57b69035",
+    "lib/canonical-movement-search.ts": "8e634457914366a52eceab164af750c2decca849c0343e559a922697129a72e3"
+  }
+}

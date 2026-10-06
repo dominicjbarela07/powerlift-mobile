@@ -47,10 +47,10 @@ for (const [query, expectedId] of [
   assert.equal(ranked[0]?.id, expectedId, `${query} must preserve and rank the exact governed choice`);
 }
 assert.deepEqual(rankCanonicalMovementChoices(choices, 'zxqv nonsense', (choice) => choice.text), []);
-assert.equal(CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS, 200);
+assert.equal(CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS, 140);
 assert.equal(
   canonicalMovementSearchEmptyCopy('tricep press'),
-  'No matching movements yet. Try another familiar term.',
+  'No close matches. Try fewer words, an equipment name, or a muscle.',
 );
 
 for (const [source, label] of [

@@ -1,0 +1,582 @@
+{
+  "canonicalDefinitionsChecked": 513,
+  "casesChecked": {
+    "names": 513,
+    "aliases": 854,
+    "prefixes": 1367,
+    "typos": 1358
+  },
+  "failures": [],
+  "method": "rank eligibility for every active global name/alias, shortened tokens, and one adjacent-letter transposition; authenticated API examples separately",
+  "directoryPagination": {
+    "pages": 20,
+    "expectedVisibleIdentities": 475,
+    "returnedIdentities": 475,
+    "missingIDs": [],
+    "extraIDs": [],
+    "duplicateCount": 0
+  },
+  "authenticatedAPIExamples": [
+    {
+      "query": "cable pullov",
+      "ms": 125.4,
+      "count": 2,
+      "first": [
+        {
+          "id": 170,
+          "name": "Straight-Arm Cable Pulldown",
+          "primary": "lats",
+          "equipment": "CABLE"
+        },
+        {
+          "id": 173,
+          "name": "Single-Arm Cable Pullover",
+          "primary": "lats",
+          "equipment": "CABLE"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "prefix",
+          "label": "Cable Pullover",
+          "movement_definition_id": 170,
+          "query": "Cable Pullover"
+        },
+        {
+          "kind": "prefix",
+          "label": "Single-Arm Cable Pullover",
+          "movement_definition_id": 173,
+          "query": "Single-Arm Cable Pullover"
+        }
+      ]
+    },
+    {
+      "query": "cble pullovr",
+      "ms": 110.7,
+      "count": 2,
+      "first": [
+        {
+          "id": 170,
+          "name": "Straight-Arm Cable Pulldown",
+          "primary": "lats",
+          "equipment": "CABLE"
+        },
+        {
+          "id": 173,
+          "name": "Single-Arm Cable Pullover",
+          "primary": "lats",
+          "equipment": "CABLE"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "typo",
+          "label": "Cable Pullover",
+          "movement_definition_id": 170,
+          "query": "Cable Pullover"
+        },
+        {
+          "kind": "typo",
+          "label": "Single-Arm Cable Pullover",
+          "movement_definition_id": 173,
+          "query": "Single-Arm Cable Pullover"
+        }
+      ]
+    },
+    {
+      "query": "db row",
+      "ms": 125.5,
+      "count": 8,
+      "first": [
+        {
+          "id": 150,
+          "name": "Dumbbell Archer Row",
+          "primary": "rear_delts",
+          "equipment": "FREE_WEIGHT"
+        },
+        {
+          "id": 206,
+          "name": "Dumbbell High Row",
+          "primary": "upper_back",
+          "equipment": "FREE_WEIGHT"
+        },
+        {
+          "id": 111,
+          "name": "Dumbbell Upright Row",
+          "primary": "side_delts",
+          "equipment": "FREE_WEIGHT"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "name",
+          "label": "Dumbbell Archer Row",
+          "movement_definition_id": 150,
+          "query": "Dumbbell Archer Row"
+        },
+        {
+          "kind": "name",
+          "label": "Dumbbell High Row",
+          "movement_definition_id": 206,
+          "query": "Dumbbell High Row"
+        },
+        {
+          "kind": "name",
+          "label": "Dumbbell Upright Row",
+          "movement_definition_id": 111,
+          "query": "Dumbbell Upright Row"
+        }
+      ]
+    },
+    {
+      "query": "chest suported row",
+      "ms": 140.2,
+      "count": 10,
+      "first": [
+        {
+          "id": 195,
+          "name": "Chest-Supported Barbell Row",
+          "primary": "upper_back",
+          "equipment": "FREE_WEIGHT"
+        },
+        {
+          "id": 213,
+          "name": "Chest-Supported Cable Row",
+          "primary": "upper_back",
+          "equipment": "CABLE"
+        },
+        {
+          "id": 194,
+          "name": "Chest-Supported Dumbbell Row",
+          "primary": "upper_back",
+          "equipment": "FREE_WEIGHT"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "typo",
+          "label": "Chest-Supported Barbell Row",
+          "movement_definition_id": 195,
+          "query": "Chest-Supported Barbell Row"
+        },
+        {
+          "kind": "typo",
+          "label": "Chest-Supported Cable Row",
+          "movement_definition_id": 213,
+          "query": "Chest-Supported Cable Row"
+        },
+        {
+          "kind": "typo",
+          "label": "Chest-Supported Row",
+          "movement_definition_id": 194,
+          "query": "Chest-Supported Row"
+        }
+      ]
+    },
+    {
+      "query": "ham curl",
+      "ms": 127.2,
+      "count": 18,
+      "first": [
+        {
+          "id": 408,
+          "name": "Nordic Hamstring Curl",
+          "primary": "hamstrings",
+          "equipment": "BODYWEIGHT"
+        },
+        {
+          "id": 409,
+          "name": "Assisted Nordic Hamstring Curl",
+          "primary": "hamstrings",
+          "equipment": "BODYWEIGHT"
+        },
+        {
+          "id": 263,
+          "name": "Hammer Curl",
+          "primary": "biceps",
+          "equipment": "FREE_WEIGHT"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "name",
+          "label": "Nordic Hamstring Curl",
+          "movement_definition_id": 408,
+          "query": "Nordic Hamstring Curl"
+        },
+        {
+          "kind": "name",
+          "label": "Assisted Nordic Hamstring Curl",
+          "movement_definition_id": 409,
+          "query": "Assisted Nordic Hamstring Curl"
+        },
+        {
+          "kind": "prefix",
+          "label": "Hammer Curl",
+          "movement_definition_id": 263,
+          "query": "Hammer Curl"
+        }
+      ]
+    },
+    {
+      "query": "tri push",
+      "ms": 142.9,
+      "count": 24,
+      "first": [
+        {
+          "id": 322,
+          "name": "Band Triceps Pressdown",
+          "primary": "triceps",
+          "equipment": "BAND"
+        },
+        {
+          "id": 301,
+          "name": "Cable Triceps Pressdown",
+          "primary": "triceps",
+          "equipment": "CABLE"
+        },
+        {
+          "id": 305,
+          "name": "Reverse-Grip Triceps Pressdown",
+          "primary": "triceps",
+          "equipment": "CABLE"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "prefix",
+          "label": "Band Triceps Pressdown",
+          "movement_definition_id": 322,
+          "query": "Band Triceps Pressdown"
+        },
+        {
+          "kind": "prefix",
+          "label": "Cable Triceps Pressdown",
+          "movement_definition_id": 301,
+          "query": "Cable Triceps Pressdown"
+        },
+        {
+          "kind": "prefix",
+          "label": "Reverse-Grip Triceps Pressdown",
+          "movement_definition_id": 305,
+          "query": "Reverse-Grip Triceps Pressdown"
+        }
+      ]
+    },
+    {
+      "query": "something to train my shoulders",
+      "ms": 144.0,
+      "count": 24,
+      "first": [
+        {
+          "id": 100,
+          "name": "Band Shoulder Press",
+          "primary": "front_delts",
+          "equipment": "BAND"
+        },
+        {
+          "id": 91,
+          "name": "Machine Shoulder Press",
+          "primary": "front_delts",
+          "equipment": "MACHINE"
+        },
+        {
+          "id": 92,
+          "name": "Iso-Lateral Shoulder Press",
+          "primary": "front_delts",
+          "equipment": "MACHINE"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "name",
+          "label": "Band Shoulder Press",
+          "movement_definition_id": 100,
+          "query": "Band Shoulder Press"
+        },
+        {
+          "kind": "name",
+          "label": "Machine Shoulder Press",
+          "movement_definition_id": 91,
+          "query": "Machine Shoulder Press"
+        },
+        {
+          "kind": "name",
+          "label": "Iso-Lateral Shoulder Press",
+          "movement_definition_id": 92,
+          "query": "Iso-Lateral Shoulder Press"
+        }
+      ]
+    },
+    {
+      "query": "machines for hamstrings",
+      "ms": 174.8,
+      "count": 12,
+      "first": [
+        {
+          "id": 400,
+          "name": "Kneeling Leg Curl",
+          "primary": "hamstrings",
+          "equipment": "MACHINE"
+        },
+        {
+          "id": 398,
+          "name": "Lying Leg Curl",
+          "primary": "hamstrings",
+          "equipment": "MACHINE"
+        },
+        {
+          "id": 397,
+          "name": "Seated Leg Curl",
+          "primary": "hamstrings",
+          "equipment": "MACHINE"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "description",
+          "label": "Kneeling Leg Curl",
+          "movement_definition_id": 400,
+          "query": "Kneeling Leg Curl"
+        },
+        {
+          "kind": "description",
+          "label": "Lying Leg Curl",
+          "movement_definition_id": 398,
+          "query": "Lying Leg Curl"
+        },
+        {
+          "kind": "description",
+          "label": "Seated Leg Curl",
+          "movement_definition_id": 397,
+          "query": "Seated Leg Curl"
+        }
+      ]
+    },
+    {
+      "query": "show me back machines",
+      "ms": 145.0,
+      "count": 19,
+      "first": [
+        {
+          "id": 555,
+          "name": "Lumbar Extension Machine",
+          "primary": "lower_back",
+          "equipment": "MACHINE"
+        },
+        {
+          "id": 245,
+          "name": "Machine Kelso Shrug",
+          "primary": "traps",
+          "equipment": "MACHINE"
+        },
+        {
+          "id": 244,
+          "name": "Smith-Machine Shrug",
+          "primary": "traps",
+          "equipment": "MACHINE"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "description",
+          "label": "Lumbar Extension Machine",
+          "movement_definition_id": 555,
+          "query": "Lumbar Extension Machine"
+        },
+        {
+          "kind": "description",
+          "label": "Machine Kelso Shrug",
+          "movement_definition_id": 245,
+          "query": "Machine Kelso Shrug"
+        },
+        {
+          "kind": "description",
+          "label": "Smith-Machine Shrug",
+          "movement_definition_id": 244,
+          "query": "Smith-Machine Shrug"
+        }
+      ]
+    },
+    {
+      "query": "exercise for core",
+      "ms": 113.5,
+      "count": 24,
+      "first": [
+        {
+          "id": 14,
+          "name": "Plank",
+          "primary": "abs",
+          "equipment": "BODYWEIGHT"
+        },
+        {
+          "id": 520,
+          "name": "Band Crunch",
+          "primary": "abs",
+          "equipment": "BAND"
+        },
+        {
+          "id": 499,
+          "name": "Barbell Rollout",
+          "primary": "abs",
+          "equipment": "BODYWEIGHT"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "description",
+          "label": "Plank",
+          "movement_definition_id": 14,
+          "query": "Plank"
+        },
+        {
+          "kind": "description",
+          "label": "Band Crunch",
+          "movement_definition_id": 520,
+          "query": "Band Crunch"
+        },
+        {
+          "kind": "description",
+          "label": "Barbell Rollout",
+          "movement_definition_id": 499,
+          "query": "Barbell Rollout"
+        }
+      ]
+    },
+    {
+      "query": "something for legs",
+      "ms": 135.4,
+      "count": 24,
+      "first": [
+        {
+          "id": 365,
+          "name": "Leg Extension",
+          "primary": "quads",
+          "equipment": "MACHINE"
+        },
+        {
+          "id": 367,
+          "name": "Leg Press",
+          "primary": "quads",
+          "equipment": "MACHINE"
+        },
+        {
+          "id": 415,
+          "name": "Band Leg Curl",
+          "primary": "hamstrings",
+          "equipment": "BAND"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "name",
+          "label": "Leg Extension",
+          "movement_definition_id": 365,
+          "query": "Leg Extension"
+        },
+        {
+          "kind": "name",
+          "label": "Leg Press",
+          "movement_definition_id": 367,
+          "query": "Leg Press"
+        },
+        {
+          "kind": "name",
+          "label": "Band Leg Curl",
+          "movement_definition_id": 415,
+          "query": "Band Leg Curl"
+        }
+      ]
+    },
+    {
+      "query": "free weights for chest",
+      "ms": 145.8,
+      "count": 24,
+      "first": [
+        {
+          "id": 45,
+          "name": "Guillotine Press",
+          "primary": "chest",
+          "equipment": "FREE_WEIGHT"
+        },
+        {
+          "id": 39,
+          "name": "Dumbbell Fly",
+          "primary": "chest",
+          "equipment": "FREE_WEIGHT"
+        },
+        {
+          "id": 614,
+          "name": "Larsen Press",
+          "primary": "chest",
+          "equipment": "FREE_WEIGHT"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "description",
+          "label": "Guillotine Press",
+          "movement_definition_id": 45,
+          "query": "Guillotine Press"
+        },
+        {
+          "kind": "description",
+          "label": "Dumbbell Fly",
+          "movement_definition_id": 39,
+          "query": "Dumbbell Fly"
+        },
+        {
+          "kind": "description",
+          "label": "Larsen Press",
+          "movement_definition_id": 614,
+          "query": "Larsen Press"
+        }
+      ]
+    },
+    {
+      "query": "body weight for abs",
+      "ms": 177.8,
+      "count": 24,
+      "first": [
+        {
+          "id": 14,
+          "name": "Plank",
+          "primary": "abs",
+          "equipment": "BODYWEIGHT"
+        },
+        {
+          "id": 499,
+          "name": "Barbell Rollout",
+          "primary": "abs",
+          "equipment": "BODYWEIGHT"
+        },
+        {
+          "id": 515,
+          "name": "Body Saw",
+          "primary": "abs",
+          "equipment": "BODYWEIGHT"
+        }
+      ],
+      "suggestions": [
+        {
+          "kind": "description",
+          "label": "Plank",
+          "movement_definition_id": 14,
+          "query": "Plank"
+        },
+        {
+          "kind": "description",
+          "label": "Barbell Rollout",
+          "movement_definition_id": 499,
+          "query": "Barbell Rollout"
+        },
+        {
+          "kind": "description",
+          "label": "Body Saw",
+          "movement_definition_id": 515,
+          "query": "Body Saw"
+        }
+      ]
+    }
+  ]
+}

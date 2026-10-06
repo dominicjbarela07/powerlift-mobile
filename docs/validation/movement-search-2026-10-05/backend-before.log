@@ -1,0 +1,58 @@
+/Users/dominic/powerlifting_app_dev/app/services/accessory_movement_platform.py:513: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  decided_at=datetime.utcnow(),
+/Users/dominic/powerlifting_app_dev/app/services/accessory_movement_platform.py:520: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  source.retired_at = source.retired_at or datetime.utcnow()
+/Users/dominic/powerlifting_app_dev/app/services/relationships.py:79: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return datetime.utcnow()
+/Users/dominic/powerlifting_app_dev/venv/lib/python3.12/site-packages/flask_sqlalchemy/query.py:30: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  rv = self.get(ident)
+FFFFF
+======================================================================
+FAIL: test_everyday_queries_and_short_typos_find_the_same_canonical_movement (tests.test_canonical_movement_search.CanonicalMovementSearchTest.test_everyday_queries_and_short_typos_find_the_same_canonical_movement) (query='pullover with cables')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dominic/powerlifting_app_dev/tests/test_canonical_movement_search.py", line 223, in test_everyday_queries_and_short_typos_find_the_same_canonical_movement
+    self.assertIn(expected_id, [row["id"] for row in items], query)
+AssertionError: 147 not found in [] : pullover with cables
+
+======================================================================
+FAIL: test_everyday_queries_and_short_typos_find_the_same_canonical_movement (tests.test_canonical_movement_search.CanonicalMovementSearchTest.test_everyday_queries_and_short_typos_find_the_same_canonical_movement) (query='cble pullovr')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dominic/powerlifting_app_dev/tests/test_canonical_movement_search.py", line 223, in test_everyday_queries_and_short_typos_find_the_same_canonical_movement
+    self.assertIn(expected_id, [row["id"] for row in items], query)
+AssertionError: 147 not found in [] : cble pullovr
+
+======================================================================
+FAIL: test_everyday_queries_and_short_typos_find_the_same_canonical_movement (tests.test_canonical_movement_search.CanonicalMovementSearchTest.test_everyday_queries_and_short_typos_find_the_same_canonical_movement) (query='ca pu')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dominic/powerlifting_app_dev/tests/test_canonical_movement_search.py", line 223, in test_everyday_queries_and_short_typos_find_the_same_canonical_movement
+    self.assertIn(expected_id, [row["id"] for row in items], query)
+AssertionError: 147 not found in [] : ca pu
+
+======================================================================
+FAIL: test_everyday_queries_and_short_typos_find_the_same_canonical_movement (tests.test_canonical_movement_search.CanonicalMovementSearchTest.test_everyday_queries_and_short_typos_find_the_same_canonical_movement) (query='cable pull over')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dominic/powerlifting_app_dev/tests/test_canonical_movement_search.py", line 223, in test_everyday_queries_and_short_typos_find_the_same_canonical_movement
+    self.assertIn(expected_id, [row["id"] for row in items], query)
+AssertionError: 147 not found in [] : cable pull over
+
+======================================================================
+FAIL: test_opt_in_assistance_completes_authorized_in_scope_names_only (tests.test_canonical_movement_search.CanonicalMovementSearchTest.test_opt_in_assistance_completes_authorized_in_scope_names_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dominic/powerlifting_app_dev/tests/test_canonical_movement_search.py", line 241, in test_opt_in_assistance_completes_authorized_in_scope_names_only
+    self.assertEqual(payload["search_contract"]["version"], "canonical-movement-search-v3")
+AssertionError: 'canonical-movement-search-v2' != 'canonical-movement-search-v3'
+- canonical-movement-search-v2
+?                            ^
++ canonical-movement-search-v3
+?                            ^
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 3.311s
+
+FAILED (failures=5)
