@@ -66,12 +66,14 @@ export function SessionV3MovementLayout({ title, index, expanded, complete, pres
     <View style={s.heading}>
       <CanonicalMovementArtwork surface="session-v3-movement" requireHumanApproval movement={visual?.movementArtworkInput} accessoryPresentation="muscle-focus" size={approvedArtRuntimeEnabled() ? 68 : 48} />
       <View style={s.copy}>
-        <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen}>
-          <Text numberOfLines={0} style={s.title}>{title}</Text>
-        </Pressable>
+        <View style={s.titleRow}>
+          <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen} style={s.titleCopy}>
+            <Text numberOfLines={0} style={s.title}>{title}</Text>
+          </Pressable>
+          {movementAction}
+        </View>
         <View style={s.positionRow}>
           <Text style={[s.eyebrow, s.positionLabel]}>{complete ? 'MOVEMENT COMPLETE' : setPosition || prescription}</Text>
-          {movementAction}
           {complete && onEditPrescription ? <PrescriptionEditIcon title={title} onPress={onEditPrescription} /> : null}
         </View>
       </View>
@@ -114,7 +116,7 @@ export function SessionV3MovementLayout({ title, index, expanded, complete, pres
 function PrescriptionEditIcon({ title, onPress }: { title: string; onPress: () => void }) {
   return <Pressable accessibilityRole="button" accessibilityLabel={`Edit Prescription for ${title}`}
     accessibilityHint="Change this Session’s Sets, reps and effort target" hitSlop={8}
-    onPress={onPress} style={({ pressed }) => [s.editPrescription, pressed && s.pressed]}>
+    onPress={onPress} style={({ pressed }) => [s.editPrescription, pressed && s.controlPressed]}>
     <Ionicons name="create-outline" size={20} color="#c8a6ff" />
   </Pressable>;
 }
@@ -128,15 +130,16 @@ const s = StyleSheet.create({
   // Bleed through the Session's 20 px content gutters; foreground keeps its inset.
   artworkStage: { position: 'absolute', top: -14, left: -20, right: -20 },
   workspace: { paddingVertical: 8 }, heading: { flexDirection: 'row', gap: 12, alignItems: 'center', paddingVertical: 8 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  titleCopy: { flex: 1, minWidth: 0 },
   title: { color: '#faf7ff', fontFamily: SLFontFamilies.sansBold, fontSize: 26, lineHeight: 31 },
   eyebrow: { color: '#b391ec', fontFamily: SLFontFamilies.sansBold, fontSize: 10, letterSpacing: 1.2, marginTop: 7 },
   positionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 5, flexWrap: 'wrap' },
   positionLabel: { marginTop: 0 },
   prescriptionHeading: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 28 },
   prescriptionLabel: { marginTop: 0 },
-  editPrescription: { width: 30, height: 28, borderRadius: 7, borderWidth: 1,
-    borderColor: 'rgba(167,139,250,0.45)', backgroundColor: 'rgba(123,68,191,0.12)',
-    alignItems: 'center', justifyContent: 'center' },
+  editPrescription: { width: 30, height: 28, alignItems: 'center', justifyContent: 'center' },
+  controlPressed: { opacity: 0.6 },
   instrument: { minHeight: 145, flexDirection: 'row', alignItems: 'center' },
   rangeInstrument: { minHeight: 125 },
   loadCopy: { width: '53%', zIndex: 1 }, load: { color: '#f7f4ff', fontFamily: SLFontFamilies.sansBold, fontSize: 53, letterSpacing: -1.5, marginVertical: 4 },

@@ -8576,7 +8576,7 @@ export default function WorkoutViewerScreen() {
               style={styles.loggerMovementSwap} onPress={() => openSwapAcc(it)}
               disabled={savingItemId === it.id} hitSlop={8}>
               <Ionicons name="swap-horizontal" size={16} color="#c8a6ff" />
-              <Text style={styles.loggerMovementSwapText}>{swapLabel === 'Swap' ? 'Swap movement' : swapLabel}</Text>
+              <Text style={styles.loggerMovementSwapText}>{swapLabel}</Text>
             </TouchableOpacity>
           ) : null}
           onOpen={() => toggleMovementCard(accessoryDetailKey)}

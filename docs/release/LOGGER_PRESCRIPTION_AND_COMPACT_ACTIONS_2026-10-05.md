@@ -76,3 +76,26 @@ The final backend repair also covers previously failed Saves: the editor reads
 the same live execution target as the logger, making reapplication a real change
 instead of a silent no-op. Versioning includes base and execution state. A
 deliberate API failure and actual simulator before/after/reopen proof are retained.
+
+## Owner visual refinement — October 5, 22:32
+
+Before implementation, the owner requested this quick DEV-only refinement:
+remove the background/container around the Prescribed edit icon; put movement
+Swap on the title line, rather than beside Set position, with the visible label
+“Swap” and its icon; remove the Current Equipment Swap background/container.
+Keep the existing edit, equipment, substitution callbacks and permissions,
+approved imagery/crops, saved prescription repair, and all other layout behavior.
+Refresh the actual canonical DEV simulator and leave it open for another visual
+review. This does not authorize TestFlight publication of the pending layout.
+Acceptance: all three changes visible, long title readable, no Set-line overlap,
+existing controls functional, typecheck and focused existing contracts pass.
+
+Refinement complete in canonical DEV: edit and equipment Swap are now unboxed
+with opacity-only pressed feedback; movement Swap shares the title row and uses
+“Swap” plus its icon. Actual edit, movement substitution, and equipment pickers
+were opened and dismissed without changing the QA Session. The full long title
+wraps without truncation or overlap. Both real screenshot passes were inspected;
+typecheck and four focused existing contracts pass. Source hashes and final
+proof: `../validation/logger-compact-actions-2026-10-05/plain-controls-title-swap-review.json`.
+Simulator left open. Pending UI remains DEV-only for owner review. No backend,
+TestFlight, asset, permission, or mutation changes in this refinement.

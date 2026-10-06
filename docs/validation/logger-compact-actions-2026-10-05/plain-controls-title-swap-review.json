@@ -1,0 +1,38 @@
+{
+  "status": "DEV_REVIEW_READY",
+  "ownerRequest": "October 5 22:32: unboxed prescription edit and equipment Swap; movement Swap beside title, visible Swap plus icon",
+  "uiPublishedToTestFlight": false,
+  "runtime": "canonical npm start / Expo Go / iPhone Air iOS 26.2",
+  "sessionId": 1837,
+  "visualReview": {
+    "correctedRequestedWeaknesses": [
+      "Prescription edit no background or border, including pressed state",
+      "Movement Swap removed from Set line and placed alongside title, label shortened to Swap",
+      "Equipment Swap no background or border, including pressed state"
+    ],
+    "secondPass": "Real screenshot inspected: full long movement title readable with wrapping, all controls visible, no overlap with Set position or prescribed values"
+  },
+  "observedControls": {
+    "prescriptionEdit": "PASS: opened actual existing editor",
+    "movementSwap": "PASS: opened actual governed accessory substitution picker",
+    "equipmentSwap": "PASS: opened actual manufacturer picker",
+    "fixtureMutations": "NONE; all pickers closed without saving"
+  },
+  "checks": {
+    "typecheck": "PASS",
+    "compactActions": "PASS",
+    "activeSessionPrescription": "PASS",
+    "equipmentSelection": "PASS",
+    "accessorySwapSessionGating": "PASS"
+  },
+  "sourceHashes": {
+    "app/(tabs)/workout/[workoutId].tsx": "08727a0e42a15959614d0df617dc480b037d3e37e039f134115dae5926677754",
+    "components/workout-logger/session-v3-movement.tsx": "87107fcae6a81b39c2c56f76ea547168361db41736f365741b46301bdacb3a4a",
+    "components/workout-logger/session-equipment-context.tsx": "0d2dda7be85b19017b5d0e88b97ad1f3116cc253d530e0f7b66853483fecc20e"
+  },
+  "screenshots": {
+    "plain-controls-title-swap-second-pass.png": "efdc4abe814a1558375534a40f80ed978849107a9dc819b88875f48f0a3ed51c",
+    "plain-controls-title-swap-first-pass.png": "df887f4b94488c22820fa3d58a24543fdd71074efc7029353d8d2f8872183d7c"
+  },
+  "simulatorLeftOpen": true
+}

@@ -37,9 +37,7 @@ const s = StyleSheet.create({
   eyebrow: { color: SLColors.review, fontSize: SLTypography.micro.fontSize, fontWeight: '900', letterSpacing: 0.7 },
   name: { color: SLColors.textStrong, fontSize: SLTypography.label.fontSize, lineHeight: 20, fontWeight: '900' },
   meta: { color: SLColors.textMuted, fontSize: SLTypography.caption.fontSize, lineHeight: 17 },
-  swap: { minHeight: 44, paddingHorizontal: 8, flexDirection: 'row', alignItems: 'center', gap: 4,
-    borderRadius: 8, borderWidth: 1, borderColor: 'rgba(167,139,250,0.24)',
-    backgroundColor: 'rgba(123,68,191,0.08)' },
+  swap: { minHeight: 44, paddingHorizontal: 8, flexDirection: 'row', alignItems: 'center', gap: 4 },
   swapLabel: { color: '#c8a6ff', fontSize: 13, fontWeight: '700' },
-  pressed: { backgroundColor: 'rgba(123,68,191,0.14)' },
+  pressed: { opacity: 0.6 },
 });
