@@ -8,6 +8,7 @@ import { assertProgrammingMutationSubject, assertProgrammingResponseSubject, res
 import { AccessibilityInfo, ActivityIndicator, Alert, Image, Platform, StyleSheet, View } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
+import { MovementSearchField } from '@/components/movement/MovementSearchField';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { GovernedMuscleThumbnail } from '@/components/anatomy/GovernedMuscleThumbnail';
 import { CanonicalMuscleGroupArtwork } from '@/components/movement/CanonicalMuscleGroupArtwork';
@@ -31,6 +32,9 @@ import {
   CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS,
   canonicalMovementSearchEmptyCopy,
   rankCanonicalMovementChoices,
+  movementSearchSuggestions,
+  type MovementSearchMatch,
+  type MovementSearchSuggestion,
 } from '@/lib/canonical-movement-search';
 import {
   ACCESSORY_EXECUTION_FAMILIES,
@@ -232,6 +236,7 @@ type RosterAthlete = {
 };
 
 type MovementPreset = {
+  search_match?: MovementSearchMatch | null;
   id?: number | null;
   core_movement_id?: number | null;
   name?: string | null;
@@ -1834,6 +1839,7 @@ function AccessoryEditorModal({
   const [searchLoadingMore, setSearchLoadingMore] = useState(false);
   const [searchNextCursor, setSearchNextCursor] = useState<string | null>(null);
   const [searchError, setSearchError] = useState('');
+  const [searchSuggestions, setSearchSuggestions] = useState<MovementSearchSuggestion[]>([]);
   const [searchRevision, setSearchRevision] = useState(0);
   const [creatingCustom, setCreatingCustom] = useState(false);
   const [reviewingCustom, setReviewingCustom] = useState(false);
@@ -1865,8 +1871,8 @@ function AccessoryEditorModal({
   const hasCoreCatalog = state?.mode === 'add' && coreEnabled;
   const activeClass = hasCoreCatalog ? movementClass : 'accessory';
   const coreCatalog = useMemo(() => governedCoreChoices(coreGroups), [coreGroups]);
-  const matchingCore = useMemo(() => coreCatalog.filter((row) =>
-    governedCoreClass(row) === activeClass && row.display_name.toLowerCase().includes(movementQuery.trim().toLowerCase())),
+  const matchingCore = useMemo(() => rankCanonicalMovementChoices(coreCatalog.filter((row) =>
+    governedCoreClass(row) === activeClass), movementQuery, row => `${row.display_name} ${row.lift} ${row.core_movement_family}`),
   [activeClass, coreCatalog, movementQuery]);
   const showsResults = pickerStep === 'targets'
     || pickerStep === 'results'
@@ -1889,6 +1895,7 @@ function AccessoryEditorModal({
     setSearchResultGroups(null);
     setSearchNextCursor(null);
     setSearchError('');
+    setSearchSuggestions([]);
     setCustomError('');
     setCustomReviewed(false);
     setCustomMatches([]);
@@ -1911,7 +1918,9 @@ function AccessoryEditorModal({
       setSearchError('Athlete context is unavailable.');
       return;
     }
+    const controller = new AbortController();
     setSearchLoading(true);
+    setSearchSuggestions([]);
     setSearchLoadingMore(false);
     setSearchNextCursor(null);
     setSearchResultGroups(null);
@@ -1921,6 +1930,7 @@ function AccessoryEditorModal({
         athlete_id: String(targetAthleteId),
         q: movementQuery.trim(),
         limit: '24',
+        search_assist: '1',
       });
       if (pickerStep === 'results' && primaryMuscleFilter) {
         params.set('primary_muscle_group', primaryMuscleFilter);
@@ -1935,7 +1945,7 @@ function AccessoryEditorModal({
       if (resultMode === 'favorites') params.set('favorites_only', '1');
       if (resultMode === 'recent') params.set('recent_only', '1');
       if (resultMode === 'custom') params.set('custom_only', '1');
-      void fetchJson<any>(`/workouts/mobile/movement-definitions/search?${params.toString()}`, { method: 'GET' })
+      void fetchJson<any>(`/workouts/mobile/movement-definitions/search?${params.toString()}`, { method: 'GET', signal: controller.signal })
         .then((response) => {
           if (requestId !== searchRequestRef.current) return;
           const json = response.json || {};
@@ -1945,6 +1955,8 @@ function AccessoryEditorModal({
           setSearchResults(grouped
             ? uniqueMovementResults([...grouped.primary.items, ...grouped.secondary.items])
             : Array.isArray(json.items) ? json.items : []);
+          setSearchSuggestions(movementSearchSuggestions(json.search_suggestions,
+            grouped ? [...grouped.primary.items, ...grouped.secondary.items] : (json.items || [])));
           setSearchNextCursor(typeof json.next_cursor === 'string' ? json.next_cursor : null);
         })
         .catch((error: any) => {
@@ -1958,7 +1970,11 @@ function AccessoryEditorModal({
           if (requestId === searchRequestRef.current) setSearchLoading(false);
         });
     }, movementQuery.trim() ? CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS : 0);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+      if (requestId === searchRequestRef.current) searchRequestRef.current += 1;
+    };
   }, [
     athleteId,
     discoveryMode,
@@ -2111,9 +2127,10 @@ function AccessoryEditorModal({
     if (!state || !groupCursor || searchLoadingMore) return;
     const targetAthleteId = Number(athleteId);
     if (!Number.isFinite(targetAthleteId) || targetAthleteId <= 0) return;
+    const requestId = searchRequestRef.current;
     try {
       setSearchLoadingMore(true);
-      const params = new URLSearchParams({
+      const params = new URLSearchParams({ search_assist: '1',
         athlete_id: String(targetAthleteId),
         q: movementQuery.trim(),
         limit: '24',
@@ -2135,6 +2152,7 @@ function AccessoryEditorModal({
       if (resultMode === 'recent') params.set('recent_only', '1');
       if (resultMode === 'custom') params.set('custom_only', '1');
       const response = await fetchJson<any>(`/workouts/mobile/movement-definitions/search?${params.toString()}`, { method: 'GET' });
+      if (requestId !== searchRequestRef.current) return;
       const json = response.json || {};
       if (!response.ok || !json.ok) throw new Error(json.error || `HTTP ${response.status}`);
       const grouped = movementSearchResultGroups(json.result_groups);
@@ -2158,9 +2176,10 @@ function AccessoryEditorModal({
       });
       setSearchNextCursor(typeof json.next_cursor === 'string' ? json.next_cursor : null);
     } catch (error: any) {
+      if (requestId !== searchRequestRef.current) return;
       setSearchError(error?.message || 'More accessory movements could not load.');
     } finally {
-      setSearchLoadingMore(false);
+      if (requestId === searchRequestRef.current) setSearchLoadingMore(false);
     }
   };
 
@@ -2305,6 +2324,13 @@ function AccessoryEditorModal({
     finally { choosingRef.current = false; }
   };
 
+  const updateMovementQuery = (value: string) => {
+    searchRequestRef.current += 1;
+    setSearchSuggestions([]);
+    setSearchLoading(activeClass === 'accessory');
+    setMovementQuery(value);
+  };
+
   const movementCard = (movement: MovementPreset, relationship: 'default' | 'primary' | 'secondary' = 'default') => {
     const primaryLabel = accessoryTaxonomyLabel(movement.primary_muscle_group) || 'Primary muscle not specified';
     const executionLabel = accessoryTaxonomyLabel(movement.execution_family) || 'Execution not specified';
@@ -2330,6 +2356,7 @@ function AccessoryEditorModal({
               <Text> · {executionLabel}</Text>
             </Text>
           )}
+          {movementQuery.trim() && movement.search_match?.label ? <Text style={styles.accessoryPickerMatchHint}>{movement.search_match.label}</Text> : null}
           {movement.ownership_scope === 'coach' ? <Text style={styles.accessoryPickerMovementSource}>My Movement</Text> : null}
           {movement.kind === 'core' && movement.programming_contexts?.includes('accessory') ? <Text style={styles.accessoryPickerMovementSource}>Core variant · accessory use</Text> : null}
         </View>
@@ -2355,7 +2382,7 @@ function AccessoryEditorModal({
   const ungroupedResults = resultMode === 'all'
     ? searchResults.filter((movement) => !movement.is_favorite && !movement.last_used_on)
     : searchResults;
-  const unscopedResultSections = [
+  const unscopedResultSections = movementQuery.trim() ? [{ label: 'Best matches', items: searchResults }] : [
     ...(favoriteResults.length ? [{ label: 'Favorites', items: favoriteResults }] : []),
     ...(recentResults.length ? [{ label: 'Recently Used', items: recentResults }] : []),
     ...(ungroupedResults.length ? [{
@@ -2436,7 +2463,14 @@ function AccessoryEditorModal({
       {!searchLoading && !searchError && !searchResults.length ? (
         <View style={styles.accessoryEditorStatusBlock}>
           <Text style={styles.trainingLiftMuted}>{canonicalMovementSearchEmptyCopy(movementQuery, 'No matching accessory movements.')}</Text>
-          <Text style={styles.trainingLiftMuted}>Change the scope or create a coach-owned movement.</Text>
+          <Pressable accessibilityRole="button" onPress={() => {
+            setMovementQuery(''); setPickerStep('discovery'); setDiscoveryMode('muscle');
+          }} style={styles.trainingLiftSecondaryButton}><Text style={styles.trainingLiftSecondaryText}>Browse by muscle</Text></Pressable>
+          {primaryMuscleFilter || regionalMuscleFilters.length || executionFamilyFilter || resultMode !== 'all' ?
+            <Pressable accessibilityRole="button" onPress={() => {
+              setPrimaryMuscleFilter(''); setRegionalMuscleFilters([]); setExecutionFamilyFilter('');
+              setResultMode('all'); setPickerStep('discovery'); setDiscoveryMode('movement');
+            }} style={styles.trainingLiftSecondaryButton}><Text style={styles.trainingLiftSecondaryText}>Search all Accessories</Text></Pressable> : null}
         </View>
       ) : null}
       {searchNextCursor && !searchResultGroups && !searchLoading ? (
@@ -2527,10 +2561,10 @@ function AccessoryEditorModal({
                     setDiscoveryMode((mode) => mode === 'movement' ? 'muscle' : 'movement');
                   }} style={{ minHeight: 44, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 8 }}><Ionicons name={discoveryMode === 'movement' ? 'body-outline' : 'search-outline'} size={18} color={colors.violet} /><Text style={{ color: colors.violet }}>{discoveryMode === 'movement' ? 'Browse by muscle' : 'Search movements'}</Text></Pressable>
                   <View style={styles.accessoryPickerSectionInset}>
-                    <View style={styles.accessoryPickerSearchField}>
-                      <Ionicons name="search-outline" size={20} color={colors.muted} />
-                      <TextInput accessibilityLabel="Search movements" value={movementQuery} onChangeText={(value) => { setMovementQuery(value); if (discoveryMode === 'muscle') setDiscoveryMode('movement'); }} placeholder={`Search ${activeClass === 'core' ? 'Core lifts' : activeClass === 'variant' ? 'variants' : 'Accessories'}...`} placeholderTextColor={colors.subtle} returnKeyType="search" style={styles.accessoryPickerSearchInput} />
-                    </View>
+                    <MovementSearchField accessibilityLabel="Search movements" value={movementQuery}
+                      onChangeText={(value) => { updateMovementQuery(value); if (discoveryMode === 'muscle') setDiscoveryMode('movement'); }}
+                      loading={activeClass === 'accessory' && searchLoading} suggestions={activeClass === 'accessory' ? searchSuggestions : []}
+                      placeholder={activeClass === 'accessory' ? 'Name, equipment, or muscle' : `Search ${activeClass === 'core' ? 'Core lifts' : 'variants'}`} />
                     {hasCoreCatalog ? <View style={styles.movementClassRow} accessibilityRole="tablist">
                       {MOVEMENT_CLASS_OPTIONS.map((option) => <Pressable key={option.key} accessibilityRole="tab" accessibilityState={{ selected: activeClass === option.key }} onPress={() => { setMovementClass(option.key); setDiscoveryMode('movement'); setResultMode('all'); }} style={[styles.movementClassTab, activeClass === option.key && styles.movementClassTabActive]}><Text style={[styles.movementClassText, activeClass === option.key && styles.movementClassTextActive]}>{option.label}</Text></Pressable>)}
                     </View> : null}
@@ -2658,10 +2692,9 @@ function AccessoryEditorModal({
                     </View>
                   ) : null}
                   <View style={styles.accessoryPickerSectionInset}>
-                    <View style={styles.accessoryPickerSearchField}>
-                      <Ionicons name="search-outline" size={20} color={colors.muted} />
-                      <TextInput accessibilityLabel="Search accessory movements" value={movementQuery} onChangeText={setMovementQuery} placeholder="Search this movement scope" placeholderTextColor={colors.subtle} returnKeyType="search" style={styles.accessoryPickerSearchInput} />
-                    </View>
+                    <MovementSearchField accessibilityLabel="Search accessory movements" value={movementQuery}
+                      onChangeText={updateMovementQuery} loading={searchLoading} suggestions={searchSuggestions}
+                      placeholder="Search this movement scope" />
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trainingLiftFamilyRow}>
                       {([
                         ['all', 'All'],
@@ -5330,6 +5363,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
     gap: 3,
   },
+  accessoryPickerMatchHint: { color: '#c5a7ef', fontSize: 12, lineHeight: 17, marginTop: 4 },
   accessoryPickerMovementTitle: {
     color: colors.textStrong,
     fontSize: SLTypography.cardTitle.fontSize,

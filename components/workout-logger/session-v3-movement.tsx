@@ -18,6 +18,7 @@ type SessionMovementProps = {
   visual?: ActiveMovementVisualContext | null; note?: string | null;
   prior?: AccessoryLastBestCue | null;
   equipment?: React.ReactNode; actions?: React.ReactNode; warmup?: React.ReactNode;
+  movementAction?: React.ReactNode; onEditPrescription?: () => void;
   history?: React.ReactNode; timeline?: React.ReactNode; onOpen: () => void;
 };
 
@@ -32,7 +33,7 @@ export function SessionV3Movement(props: SessionMovementProps) {
  * the private DEV reviewer supplies a clearly labelled candidate layer. */
 export function SessionV3MovementLayout({ title, index, expanded, complete, prescription, focus,
   visual, note, prior, equipment, actions, warmup, history, timeline, onOpen, reduceMotion = false,
-  artwork,
+  artwork, movementAction, onEditPrescription,
 }: SessionMovementProps & { artwork?: React.ReactNode }) {
   const thumbnailPresentation = expanded ? 'muscle-focus' : 'movement';
   const [artworkEnd, setArtworkEnd] = useState(0);
@@ -57,19 +58,39 @@ export function SessionV3MovementLayout({ title, index, expanded, complete, pres
   const setPosition = focus?.currentSetPositionLabel?.replace(/^Set (\d+) · SET \1 OF (\d+)$/, 'Set $1 of $2');
   const loadParts = load.match(/^(.*?)\s*(kg|lb)$/i);
   const progress = prior || visual?.progress;
+  const inlineAction = React.isValidElement<{ onPress?: () => void; accessibilityLabel?: string }>(movementAction)
+    ? movementAction.props : null;
   return <View style={s.workspace}>
     {artwork ? <View pointerEvents="none" style={[s.artworkStage, { height: Math.max(0, artworkEnd + 14) }]}>
       {artwork}
     </View> : null}
     <View style={s.activeHeader}>
-    <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen} style={s.heading}>
+    <View style={s.heading}>
       <CanonicalMovementArtwork surface="session-v3-movement" requireHumanApproval movement={visual?.movementArtworkInput} accessoryPresentation="muscle-focus" size={approvedArtRuntimeEnabled() ? 68 : 48} />
-      <View style={s.copy}><Text numberOfLines={0} style={s.title}>{title}</Text><Text style={s.eyebrow}>{complete ? 'MOVEMENT COMPLETE' : setPosition || prescription}</Text></View>
-    </Pressable>
+      <View style={s.copy}>
+        <Text numberOfLines={0} style={s.title} accessibilityRole="button" accessibilityLabel={title}
+          accessibilityActions={[{ name: 'activate', label: `Collapse ${title}` },
+            ...(inlineAction?.onPress ? [{ name: 'swap', label: inlineAction.accessibilityLabel || 'Swap movement' }] : [])]}
+          onAccessibilityAction={({ nativeEvent }) => {
+            if (nativeEvent.actionName === 'swap') inlineAction?.onPress?.();
+            else if (nativeEvent.actionName === 'activate') onOpen();
+          }}>
+          <Text style={s.title} accessible accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen}>{title}</Text>
+          {movementAction ? '\u00a0 ' : null}{movementAction}
+        </Text>
+        <View style={s.positionRow}>
+          <Text style={[s.eyebrow, s.positionLabel]}>{complete ? 'MOVEMENT COMPLETE' : setPosition || prescription}</Text>
+          {complete && onEditPrescription ? <PrescriptionEditIcon title={title} onPress={onEditPrescription} /> : null}
+        </View>
+      </View>
+    </View>
     {!complete && focus ? <>
       <View style={[s.instrument, stacks.length > 1 && s.rangeInstrument]}>
         <View style={s.loadCopy}>
-          <Text style={s.eyebrow}>{load ? 'TARGET LOAD' : 'PRESCRIBED'}</Text>
+          <View style={s.prescriptionHeading}>
+            <Text style={[s.eyebrow, s.prescriptionLabel]}>{load ? 'TARGET LOAD' : 'PRESCRIBED'}</Text>
+            {onEditPrescription ? <PrescriptionEditIcon title={title} onPress={onEditPrescription} /> : null}
+          </View>
           <Text adjustsFontSizeToFit minimumFontScale={0.7} numberOfLines={1} style={[s.load, (stacks.length > 1 || load.length > 10) && s.rangeLoad]}>{loadParts ? loadParts[1] : load || focus.currentSetRepsLabel || '—'}{loadParts ? <Text style={s.loadUnit}> {loadParts[2]}</Text> : null}</Text>
           <Text style={s.target}>{[load ? focus.currentSetRepsLabel : null, focus.currentSetEffortLabel].filter(Boolean).join(' · ')}</Text>
         </View>
@@ -92,10 +113,18 @@ export function SessionV3MovementLayout({ title, index, expanded, complete, pres
       <View style={s.historyAction}><Text style={s.historyLink}>Movement history</Text><Ionicons name="arrow-forward" size={15} color="#aadce5" /></View>
     </Pressable> : focus?.onViewHistory ? <Pressable onPress={focus.onViewHistory} accessibilityRole="button" style={s.emptyHistory}><View style={s.historyAction}><Text style={s.historyLink}>Movement history</Text><Ionicons name="arrow-forward" size={15} color="#aadce5" /></View></Pressable> : null)}
     </View>
-    <View style={s.tools}>{actions}</View>
+    {actions ? <View style={s.tools}>{actions}</View> : null}
     {timeline}
     {warmup}
   </View>;
+}
+
+function PrescriptionEditIcon({ title, onPress }: { title: string; onPress: () => void }) {
+  return <Pressable accessibilityRole="button" accessibilityLabel={`Edit Prescription for ${title}`}
+    accessibilityHint="Change this Session’s Sets, reps and effort target" hitSlop={8}
+    onPress={onPress} style={({ pressed }) => [s.editPrescription, pressed && s.controlPressed]}>
+    <Ionicons name="create-outline" size={20} color="#c8a6ff" />
+  </Pressable>;
 }
 
 const s = StyleSheet.create({
@@ -109,6 +138,12 @@ const s = StyleSheet.create({
   workspace: { paddingVertical: 8 }, heading: { flexDirection: 'row', gap: 12, alignItems: 'center', paddingVertical: 8 },
   title: { color: '#faf7ff', fontFamily: SLFontFamilies.sansBold, fontSize: 26, lineHeight: 31 },
   eyebrow: { color: '#b391ec', fontFamily: SLFontFamilies.sansBold, fontSize: 10, letterSpacing: 1.2, marginTop: 7 },
+  positionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 5, flexWrap: 'wrap' },
+  positionLabel: { marginTop: 0 },
+  prescriptionHeading: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 28 },
+  prescriptionLabel: { marginTop: 0 },
+  editPrescription: { width: 30, height: 28, alignItems: 'center', justifyContent: 'center' },
+  controlPressed: { opacity: 0.6 },
   instrument: { minHeight: 145, flexDirection: 'row', alignItems: 'center' },
   rangeInstrument: { minHeight: 125 },
   loadCopy: { width: '53%', zIndex: 1 }, load: { color: '#f7f4ff', fontFamily: SLFontFamilies.sansBold, fontSize: 53, letterSpacing: -1.5, marginVertical: 4 },

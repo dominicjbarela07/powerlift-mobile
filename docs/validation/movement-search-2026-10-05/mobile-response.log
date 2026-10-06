@@ -1,0 +1,1 @@
+PASS: actual Swap/Workspace effects reject late, cleared, closed and paginated responses; abort prior reads; show pending before debounce; suggestions retain authorized result IDs only.

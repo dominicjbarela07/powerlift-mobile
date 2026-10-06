@@ -31,3 +31,12 @@ assert.throws(() => validateDevReleaseHoldbacks(projected, {'app/logger.tsx':'wr
 assert.throws(() => validateDevReleaseHoldbacks(projected, {'app/logger.tsx':'shipped-fixed'}, {'app/logger.tsx':'dev-fixed'}, candidate, projectionGit, () => 'lost zero fix'), /exactly once|identical shared fix/);
 assert.throws(() => validateReleaseHoldbacks(projected, candidate, (...args) => args[0] === 'show' && args[1].startsWith(candidate) ? `shipped ${after} hidden change` : projectionGit(...args)), /only the exact shared fix/);
 console.log('Shared client fix projections: exact shipped source + identical fix retained in DEV; stale hash, lost fix, duplicate patch and unrelated candidate changes all fail');
+
+const moreBefore = 'const visibleAction = oldTitleAction();';
+const moreAfter = 'const visibleAction = inlineTitleAction();';
+const cumulativeShared = {...shared, additionalChanges:[{before:moreBefore, after:moreAfter}]};
+assert.equal(applySharedReleaseFix(`${before} ${moreBefore}`, cumulativeShared), `${after} ${moreAfter}`);
+assert.throws(() => applySharedReleaseFix(`${before} ${moreBefore} ${moreBefore}`, cumulativeShared), /exactly once/);
+assert.throws(() => applySharedReleaseFix(`${before} unrelated UI bytes`, cumulativeShared), /exactly once/);
+assert.throws(() => applySharedReleaseFix(`${before} ${moreBefore}`, {...shared, additionalChanges:[]}), /exact patch list/);
+console.log('Cumulative shared fixes retain identical exact patches in DEV and shipped projection; missing or duplicate UI patches fail.');

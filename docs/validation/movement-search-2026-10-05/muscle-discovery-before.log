@@ -1,0 +1,53 @@
+/Users/dominic/powerlifting_app_dev/app/services/accessory_movement_platform.py:513: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  decided_at=datetime.utcnow(),
+/Users/dominic/powerlifting_app_dev/app/services/accessory_movement_platform.py:520: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  source.retired_at = source.retired_at or datetime.utcnow()
+/Users/dominic/powerlifting_app_dev/app/services/relationships.py:79: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return datetime.utcnow()
+/Users/dominic/powerlifting_app_dev/venv/lib/python3.12/site-packages/flask_sqlalchemy/query.py:30: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  rv = self.get(ident)
+FFFFF
+======================================================================
+FAIL: test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name (tests.test_canonical_movement_search.CanonicalMovementSearchTest.test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name) (query='something to train my shoulders')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dominic/powerlifting_app_dev/tests/test_canonical_movement_search.py", line 247, in test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name
+    self.assertTrue(payload["items"], query)
+AssertionError: [] is not true : something to train my shoulders
+
+======================================================================
+FAIL: test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name (tests.test_canonical_movement_search.CanonicalMovementSearchTest.test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name) (query='machines for hamstrings')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dominic/powerlifting_app_dev/tests/test_canonical_movement_search.py", line 248, in test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name
+    self.assertIn(payload["items"][0]["primary_muscle_group"], muscles)
+AssertionError: 'glutes' not found in {'hamstrings'}
+
+======================================================================
+FAIL: test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name (tests.test_canonical_movement_search.CanonicalMovementSearchTest.test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name) (query='show me back machines')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dominic/powerlifting_app_dev/tests/test_canonical_movement_search.py", line 247, in test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name
+    self.assertTrue(payload["items"], query)
+AssertionError: [] is not true : show me back machines
+
+======================================================================
+FAIL: test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name (tests.test_canonical_movement_search.CanonicalMovementSearchTest.test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name) (query='exercise for core')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dominic/powerlifting_app_dev/tests/test_canonical_movement_search.py", line 247, in test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name
+    self.assertTrue(payload["items"], query)
+AssertionError: [] is not true : exercise for core
+
+======================================================================
+FAIL: test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name (tests.test_canonical_movement_search.CanonicalMovementSearchTest.test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name) (query='something for legs')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dominic/powerlifting_app_dev/tests/test_canonical_movement_search.py", line 247, in test_discovery_starts_with_muscle_and_equipment_without_a_catalog_name
+    self.assertTrue(payload["items"], query)
+AssertionError: [] is not true : something for legs
+
+----------------------------------------------------------------------
+Ran 1 test in 2.101s
+
+FAILED (failures=5)

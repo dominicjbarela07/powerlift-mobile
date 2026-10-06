@@ -273,6 +273,8 @@ export function CoreMovementLedgerRow({
   expanded,
   detailRows,
   auxAction,
+  movementAction,
+  onEditPrescription,
   warmupAction,
   expandedIdentityContext,
   sessionIndex,
@@ -301,6 +303,8 @@ export function CoreMovementLedgerRow({
   expanded?: boolean;
   detailRows?: ActiveMovementDetailRow[];
   auxAction?: React.ReactNode;
+  movementAction?: React.ReactNode;
+  onEditPrescription?: () => void;
   warmupAction?: React.ReactNode;
   expandedIdentityContext?: React.ReactNode;
   sessionIndex?: number;
@@ -410,6 +414,7 @@ export function CoreMovementLedgerRow({
       prescription={headerPrescription} focus={loggerFocus ? { ...loggerFocus, currentSetPositionLabel: positionLabel } : null} visual={visualContext}
       note={expanded ? movementNote : null} prior={priorPerformanceCue}
       equipment={expandedIdentityContext} actions={auxAction} warmup={warmupAction}
+      movementAction={movementAction} onEditPrescription={onEditPrescription}
       history={historyPeek} onOpen={onOpen}
       timeline={expanded ? <View style={v3Sets.list}>
         <Text style={v3Sets.heading}>{isPreSessionCard ? 'PRESCRIBED SETS' : 'TODAY’S SETS'}</Text>

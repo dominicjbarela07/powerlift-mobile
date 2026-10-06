@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "status": "DEV_VISUAL_REVIEW_READY",
+  "uiPublicationAuthorized": false,
+  "canonicalDevRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "canonicalBranch": "dev/canonical-mobile",
+  "runtime": "canonical npm start; actual Expo Go iPhone Air iOS 26.2; local DEV backend",
+  "simulatorUdId": "932A8DB1-E374-4040-9DD3-627EDA94EE26",
+  "reviewFixtureOnly": true,
+  "sessionId": 1837,
+  "firstPassWeaknessesCorrected": [
+    "Distinguish movement Swap from equipment Swap with explicit Swap movement label.",
+    "Give inline equipment Swap a clearer tap boundary without adding a row.",
+    "Remove empty tools-slot spacing after deleting the full action row."
+  ],
+  "observedInteractions": {
+    "prescriptionEditSaveImmediate": "PASS: EZ-Bar Curl 6-10 \u2192 8-12",
+    "prescriptionReopenAndSessionReopen": "PASS: 8-12 retained",
+    "completedSetPreserved": "PASS: every persisted SetLog column unchanged",
+    "inlineEquipmentPicker": "PASS: opens canonical picker; future-Sets-only warning retained",
+    "relocatedMovementSwap": "PASS: opens governed self-coach substitution picker",
+    "automaticFirstSetEquipmentPicker": "PASS: unconfigured Machine Pullover Log set 1 opens manufacturer picker",
+    "noExtraActionRow": "PASS: long-title Single-Arm Machine High Row and Machine Lateral Raise",
+    "existingLoggedMovementSwapHidden": "PASS: saved-Set EZ-Bar Curl and Machine Lateral Raise have no movement Swap",
+    "alreadyFailedSaveRecovery": "PASS: base 8-12/execution 6-10 made old Save a no-op; repaired editor shows live 6-10 and reapplying 8-12 immediately updates logger, reopens 8-12, preserves every completed Set column."
+  },
+  "sourceHashes": {
+    "app/(tabs)/workout/[workoutId].tsx": "eaa1f521a23f452a2c66ff4bc3c34d01a33d61ad3d4e8a3b9f317842017d545a",
+    "components/workout-logger/core-loggers.tsx": "47a7bc903094a37429ee7b655ecfcfd5b4ac4d5c000f1437df6baa3b9718e554",
+    "components/workout-logger/session-v3-movement.tsx": "db6af9e3db3d61c15478c7cab5c93f839d65c7af75b1f1a80aacce7820af3ea7",
+    "components/workout-logger/session-equipment-context.tsx": "a30ec262ae4a9d40c4350a8a92974725e889f9b77b6acf0accb157ad1a9125ea"
+  },
+  "evidence": {
+    "compact-high-row-first-pass.png": "b2a113950dd32d13ae2795aa849160f63f98bf49362033b69f81ba7df5b34e26",
+    "compact-high-row-second-pass.png": "9631daee0eac6e890c0a952d16eeaa9c95a0c3d20960d1e28be5b6b0cb3517c4",
+    "prescription-after-save.png": "dc32623e72d7cde5b740fbb877b3eb7128f7341a95939cf5dc796ba99855460a",
+    "prescription-after-reopen.png": "b2c0fde0f30aa7201749e6a87decb0c69f9e82ea8bdec06e552a3200e27ba8eb",
+    "automatic-first-set-equipment-picker.png": "b75d9d0edf21e8d2b77c0fc5516ca8dd977ff716650c9950909e8217e4e9ed30",
+    "prescription-saved-but-stale-before-fix.png": "52a3dcd4e13c60514eb2348860edea11710c0efcce2ee9a9dadb6ecccdd267f7",
+    "stale-reapply-before-read-repair.png": "78cafe2d26bd1369bcea80a65b0680169e04aeb93f118a8058ca24f22fc43e07",
+    "stale-reapply-after-read-repair.png": "c880f7086259de2cdd58c9416962b14b5cfeaa72d93cbaab140ce2ef2f9f52d6"
+  },
+  "focusedContracts": "PASS: compact callbacks/permissions, active prescription, equipment selection, swap gating, superset equipment, set persistence, Option E",
+  "typecheck": "PASS",
+  "completeDevContractsFirstRun": {
+    "passed": 257,
+    "failed": [
+      "test-accessory-pr-save-api.mjs",
+      "test-complete-movement-library-art.mjs",
+      "test-core-artwork-coverage.mjs",
+      "test-dev-testflight-release-gates.mjs",
+      "test-superset-equipment-control.mjs"
+    ]
+  },
+  "correctedHarnesses": [
+    "PR API assertion expected obsolete four tests; now requires successful complete suite with at least seven including isolation/replay protections.",
+    "Standalone equipment-control assertions updated to new inline callback; superset member controls unchanged."
+  ],
+  "remainingDevReleaseReadiness": [
+    "Unapproved compact UI differs from pinned TestFlight/DEV release projection: release gate intentionally blocks publication pending owner sign-off; pins were not weakened.",
+    "Two existing artwork coverage assertions fail on barbell_overhead_press; all relevant source/manifest bytes match pre-task DEV. No new art approval or replacement was invented."
+  ],
+  "retainedShippedAssetFiles": 2230,
+  "missingOrChangedShippedAssets": 0,
+  "backendLiveSource": "210559e431df3927ab7286f9d1c4e895129b6439",
+  "backendDevSource": "ade6c48409ccab2641907b02d90774da2b018154",
+  "newTemporaryWorktrees": 0,
+  "uiPublishedToTestFlight": false,
+  "prescriptionRegressionTests": 12
+}

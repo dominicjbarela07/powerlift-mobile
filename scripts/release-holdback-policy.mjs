@@ -34,6 +34,11 @@ export function validateReleaseHoldbacks(holdbacks, candidate, git) {
 }
 
 export function applySharedReleaseFix(source, fix) {
+  if (fix.additionalChanges) {
+    assert.ok(Array.isArray(fix.additionalChanges) && fix.additionalChanges.length > 0, 'additional shared changes require an exact patch list');
+    const {additionalChanges, ...first} = fix;
+    return additionalChanges.reduce((value, change) => applySharedReleaseFix(value, change), applySharedReleaseFix(source, first));
+  }
   assert.ok(fix.before?.length > 20 && fix.after?.length > 20 && fix.before !== fix.after, 'shared fix requires an exact nonempty source change');
   assert.equal(source.split(fix.before).length, 2, 'shared fix must match exactly once');
   return source.replace(fix.before, fix.after);

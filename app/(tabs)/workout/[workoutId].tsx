@@ -8415,13 +8415,6 @@ export default function WorkoutViewerScreen() {
     if (!canEditPrescription || canonicalSetSubmissionControllerRef.current.isInFlight()) return;
     setPrescriptionItemId(itemId);
   };
-  const prescriptionAction = (itemId: number) => canEditPrescription ? (
-    <TouchableOpacity accessibilityRole="button" accessibilityLabel="Edit Prescription"
-      style={styles.accessoryInlineAction} onPress={() => openPrescription(itemId)}>
-      <Ionicons name="create-outline" size={18} color={SLColors.textMuted} />
-      <Text style={styles.accessoryInlineActionText}>Edit Prescription</Text>
-    </TouchableOpacity>
-  ) : null;
 
   const historyPeekFor = (item: WorkoutItem) => {
     const resolution = sessionMovementHistoryResolution(item, athlete.id);
@@ -8547,7 +8540,9 @@ export default function WorkoutViewerScreen() {
             <SessionEquipmentContext selected={Boolean(currentEquipment)} manufacturer={currentManufacturer}
               name={currentEquipmentName} variant={currentEquipmentVariantLabel
                 ? `${currentEquipmentVariantLabel}${equipmentDomain === 'cable' ? ' Cable Station' : ''}` : null}
-              domain={equipmentDomain} />
+              domain={equipmentDomain}
+              onSwapEquipment={!isCoachAthletePreview && canConfigureMachineEquipment(it)
+                ? () => openIdentityPicker(it) : undefined} />
           ) : null}
           meta={accessoryIsComplete ? accessorySummary.meta : `${loggedCount}/${totalSets || 0} sets logged`}
           top={accessoryIsComplete ? accessorySummary.top : lookbackLine}
@@ -8566,29 +8561,16 @@ export default function WorkoutViewerScreen() {
             1
           }
           sessionLifecycle={screenMode}
-          auxAction={isCoachAthletePreview ? null : (
-            <>
-              {canConfigureMachineEquipment(it) ? (
-                <TouchableOpacity
-                  style={styles.accessoryInlineAction}
-                  onPress={() => openIdentityPicker(it)}
-                >
-                  <Ionicons name="barbell-outline" size={18} color={SLColors.textMuted} />
-                  <Text adjustsFontSizeToFit minimumFontScale={0.82} numberOfLines={1} style={styles.accessoryInlineActionText}>Equipment</Text>
-                </TouchableOpacity>
-              ) : null}
-              {prescriptionAction(it.id)}
-              {swapLabel ? (
-                <TouchableOpacity
-                  style={styles.accessoryInlineAction}
-                  onPress={() => openSwapAcc(it)}
-                  disabled={savingItemId === it.id}
-                >
-                  <Text style={styles.accessoryInlineActionText}>{swapLabel}</Text>
-                </TouchableOpacity>
-              ) : null}
-            </>
-          )}
+          onEditPrescription={canEditPrescription ? () => openPrescription(it.id) : undefined}
+          movementAction={!isCoachAthletePreview && swapLabel ? (
+            <Text accessible accessibilityRole="button"
+              accessibilityLabel={swapLabel === 'Swap' ? 'Swap movement' : swapLabel}
+              accessibilityState={{ disabled: savingItemId === it.id }}
+              style={[styles.loggerMovementSwapText, savingItemId === it.id && { opacity: 0.45 }]}
+              onPress={savingItemId === it.id ? undefined : () => openSwapAcc(it)}>
+              <Ionicons name="swap-horizontal" size={16} color="#c8a6ff" />{'\u00a0'}{swapLabel}
+            </Text>
+          ) : null}
           onOpen={() => toggleMovementCard(accessoryDetailKey)}
         />
       </View>
@@ -9126,7 +9108,8 @@ export default function WorkoutViewerScreen() {
                     type: opportunity.eyebrow,
                     item_id: movementPresentation.loggerFocus?.itemId || core.id,
                   })}
-                  auxAction={prescriptionAction(movementPresentation.loggerFocus?.itemId || core.id)}
+                  onEditPrescription={canEditPrescription
+                    ? () => openPrescription(movementPresentation.loggerFocus?.itemId || core.id) : undefined}
                   sessionIndex={coreIndex + 1}
                   sessionLifecycle={screenMode}
                   onOpen={() => toggleMovementCard(`core:${core.id}`)}
@@ -13238,6 +13221,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: SLColors.review,
   },
+  loggerMovementSwapText: { fontSize: 12, fontWeight: '700', color: '#c8a6ff' },
   accessoryInlineAction: {
     minHeight: 44,
     flex: 1,

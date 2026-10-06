@@ -1,0 +1,14 @@
+CHECK node --import tsx scripts/test-logger-history-visibility.mjs
+PASS: exact all-equipment history existence; manufacturer-independent link only; owner/athlete/movement isolation; stale response rejection; evidence invalidation; no repeat render reads; empty/error distinction; actual full/compact/hidden rendering and History navigation
+CHECK node --import tsx scripts/test-logger-equipment-recency.mjs
+PASS: exact movement pre-equipment evidence, full History parity, selected-equipment transition, no-history/error distinction, bodyweight semantics, athlete/movement isolation, latest evidence, units and manufacturer/type recency
+CHECK node --import tsx scripts/test-session-exposure-snapshot.mjs
+PASS: exposure deduplication, remount/focus/timer reuse, targeted invalidation, retained offline value, revision races, identity/equipment isolation, current-Session exclusion, representative copy and wrapping
+CHECK node --import tsx scripts/test-exact-accessory-history.mjs
+[accessory-history] exact identity, fail-closed UI, and logger-default contracts passed
+CHECK node --import tsx scripts/test-programming-last-exposure.mjs
+PASS — Editor/History same canonical accessory and SetLog despite missing/stale hydration/provenance; pagination, empty/error/retry, equipment context, unchanged Logger; real Core history, variants, self/Team isolation and stable cache
+CHECK node --import tsx scripts/test-logger-option-e.mjs
+Option E PASS: actual countdown TSX full/half/depleted ring; shared deadline/extension/cues/Skip retained; compact near-black History with equipment evidence and working affordance.
+CHECK npx tsc --noEmit
+FINAL FOLLOW-UP: new lifecycle regression after Session-date key protection — PASS; npx tsc --noEmit — PASS. Actual second-pass no-history and other-equipment screenshots inspected.

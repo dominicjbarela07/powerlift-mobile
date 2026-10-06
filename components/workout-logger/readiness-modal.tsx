@@ -1,16 +1,16 @@
 import { KeyboardAvoidingView } from '@/components/keyboard/KeyboardSurface';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Animated, Platform, StyleSheet, View } from 'react-native';
 import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLButton } from '@/components/ui/sl-button';
-import { SLMaterialOverlay } from '@/components/ui/sl-workspace';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { StrengthLedgerBottomSheet, StrengthLedgerBottomSheetScrollView } from '@/components/sheets/StrengthLedgerBottomSheet';
 
-import { SLColors, SLMotion, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
+import { SLColors, SLMotion, SLRadius, SLTypography } from '@/constants/theme';
 import {
   bodyweightKgToDisplay,
   clampReadinessPosition,
@@ -113,7 +113,7 @@ export function ReadinessScale({
     <View style={styles.scaleGroup}>
       <View style={styles.scaleHeaderRow}>
         <Text typographyRole="shortTechnicalLabel" style={styles.sectionLabel}>{label}</Text>
-        <Text typographyRole={hasSelection && valueText ? 'numeric' : 'bodyStrong'} style={styles.liveValue}>{hasSelection ? valueText || descriptor : 'Tap to choose'}</Text>
+        <Text typographyRole={hasSelection ? valueText ? 'numeric' : 'bodyStrong' : 'caption'} style={[styles.liveValue, hasSelection ? styles.selectedValue : styles.unselectedValue]}>{hasSelection ? valueText || descriptor : 'Tap to choose'}</Text>
       </View>
       {prompt ? <Text typographyRole="bodyStrong" style={styles.prompt}>{prompt}</Text> : null}
       <View style={styles.endpointRow}>
@@ -226,11 +226,11 @@ export function ReadinessModal({
         style={styles.backdrop}
       >
         <View style={styles.sheet} accessibilityViewIsModal>
-          <SLMaterialOverlay level={3} />
           <View style={styles.headerRow}>
             <View style={styles.headerCopy}>
+              <Text typographyRole="shortTechnicalLabel" style={styles.eyebrow}>{isDaily ? 'DAILY CHECK-IN' : 'PRE-SESSION'}</Text>
               <Text typographyRole="modalTitle" style={styles.title}>{isDaily ? 'How are you feeling today?' : 'How are we feeling?'}</Text>
-              <Text typographyRole="modalBody" style={styles.subtitle}>
+              <Text typographyRole="caption" style={styles.subtitle}>
                 {isDaily
                   ? 'Record readiness, recovery, and optional body weight.'
                   : 'Take a quick moment to check in before we begin.'}
@@ -271,7 +271,6 @@ export function ReadinessModal({
               <Text typographyRole="shortTechnicalLabel" style={styles.sectionLabel}>BODY WEIGHT</Text>
               {!values.bodyweightSkipped ? (
             <View style={styles.weightEntry}>
-              <SLMaterialOverlay compact level={2} />
                   <TextInput
                     accessibilityLabel={`Body weight in ${unit === 'kg' ? 'kilograms' : 'pounds'}`}
                     accessibilityHint="Enter an exact body weight or skip for today"
@@ -308,7 +307,6 @@ export function ReadinessModal({
 
             <ReadinessScale
               label="SLEEP"
-              prompt="How much sleep did you get?"
               low="3 hr"
               high="12 hr"
               position={values.sleepPosition}
@@ -328,20 +326,23 @@ export function ReadinessModal({
 
           </StrengthLedgerBottomSheetScrollView>
           <View style={styles.actions}>
-            <SLButton
+            <Pressable
+              accessibilityRole="button"
               accessibilityLabel={submitting
                 ? (isDaily ? 'Saving check-in' : 'Beginning session')
                 : submitLabel}
               accessibilityState={{ busy: submitting, disabled: submitDisabled }}
               disabled={submitDisabled}
-              fullWidth
-              label={submitLabel}
-              loading={submitting}
               onPress={onSubmit}
-              size="lg"
-              style={styles.primaryButton}
-              variant="primary"
-            />
+              style={[styles.primaryButton, submitDisabled ? styles.disabledAction : null]}
+            >
+              <LinearGradient colors={['#9c59ee', '#6726cf']} start={{ x: 0, y: 0 }} end={{ x: 0.7, y: 1 }}
+                pointerEvents="none" style={StyleSheet.absoluteFillObject} />
+              {submitting ? <ActivityIndicator color="#ffffff" /> : <>
+                <Text typographyRole="longButtonLabel" style={styles.primaryLabel}>{submitLabel}</Text>
+                <Ionicons name="arrow-forward" size={19} color="#ffffff" />
+              </>}
+            </Pressable>
             {onSkip && !isDaily ? <SLButton
               accessibilityLabel="Skip readiness and begin Session"
               disabled={submitting || readOnly}
@@ -349,8 +350,9 @@ export function ReadinessModal({
               label="Skip & Begin Session"
               onPress={onSkip}
               size="lg"
-              variant="secondary"
-              style={styles.primaryButton}
+              variant="ghost"
+              style={styles.skipButton}
+              textStyle={styles.skipButtonLabel}
             /> : null}
             {isDaily ? <Pressable
               accessibilityRole="button"
@@ -370,36 +372,43 @@ export function ReadinessModal({
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: SLColors.surfaceScrim },
-  sheet: { flex: 1, width: '100%', backgroundColor: SLColors.surfaceFloating, borderTopLeftRadius: SLRadius.radiusSheet, borderTopRightRadius: SLRadius.radiusSheet, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStrong, borderTopColor: SLColors.borderFocus, overflow: 'hidden', ...SLShadows.level3 },
-  headerRow: { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 18, paddingTop: 18, paddingBottom: 12 },
+  backdrop: { flex: 1, backgroundColor: 'transparent' },
+  sheet: { flex: 1, width: '100%', backgroundColor: '#08080c' },
+  headerRow: { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 20, paddingTop: 8, paddingBottom: 20 },
   headerCopy: { flex: 1, paddingRight: 10 },
-  title: { ...SLTypography.hero, color: SLColors.text, fontWeight: '900', letterSpacing: -0.6 },
-  subtitle: { color: SLColors.textMuted, fontSize: SLTypography.label.fontSize, lineHeight: 20, marginTop: 5 },
+  eyebrow: { color: '#bc91ef', fontSize: 10, lineHeight: 15, letterSpacing: 1.5, marginBottom: 7 },
+  title: { ...SLTypography.hero, color: '#f4f0fa', fontSize: 25, lineHeight: 31, letterSpacing: -0.6 },
+  subtitle: { color: '#aaa5b5', fontSize: 13, lineHeight: 19, marginTop: 6 },
   closeButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginTop: -8, marginRight: -10 },
   formScroll: { flex: 1 },
-  actions: { paddingHorizontal: 18, paddingBottom: 14, paddingTop: 4, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderStrong, backgroundColor: SLColors.surfaceFloating },
-  scrollContent: { paddingHorizontal: 18, paddingBottom: 16 },
-  bodyweightGroup: { paddingTop: 5, paddingBottom: 15, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.border },
-  sectionLabel: { color: SLColors.textMuted, fontSize: SLTypography.caption.fontSize, fontWeight: '900', letterSpacing: 1.2 },
-  weightEntry: { height: 54, marginTop: 9, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: SLColors.borderStrong, borderRadius: SLRadius.md, backgroundColor: SLColors.surfaceRaised },
+  actions: { paddingHorizontal: 20, paddingBottom: 4, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#292532', backgroundColor: '#08080c' },
+  scrollContent: { paddingHorizontal: 20, paddingBottom: 14 },
+  bodyweightGroup: { paddingTop: 0, paddingBottom: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#292532' },
+  sectionLabel: { color: '#b7afc5', fontSize: 10, lineHeight: 15, letterSpacing: 1.2 },
+  weightEntry: { height: 54, marginTop: 10, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#3a3548', borderRadius: 12, backgroundColor: '#101017' },
   weightInput: { ...SLTypography.kpiNumber, flex: 1, height: 54, color: SLColors.text, fontWeight: '800', paddingHorizontal: 14 },
   unit: { ...SLTypography.sectionTitle, color: SLColors.textMuted, fontWeight: '800', paddingRight: 14 },
   weightMetaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginTop: 9 },
-  skipAction: { color: SLColors.textStrong, fontSize: SLTypography.label.fontSize, fontWeight: '800' },
+  skipAction: { color: '#c79cf6', fontSize: 14, lineHeight: 20 },
   priorWeight: { flex: 1, textAlign: 'right', color: SLColors.textMuted, fontSize: SLTypography.caption.fontSize },
-  scaleGroup: { paddingTop: 15 },
+  scaleGroup: { paddingTop: 12, paddingBottom: 4, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#211e29' },
   scaleHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  liveValue: { color: SLColors.text, fontSize: SLTypography.label.fontSize, fontWeight: '800' },
-  prompt: { color: SLColors.text, fontSize: SLTypography.label.fontSize, fontWeight: '700', marginTop: 5 },
-  endpointRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
-  endpoint: { color: SLColors.textMuted, fontSize: SLTypography.caption.fontSize, fontWeight: '700' },
-  railTouchTarget: { height: 42, justifyContent: 'center' },
-  rail: { position: 'absolute', left: 0, right: 0, height: 4, borderRadius: SLRadius.pill, backgroundColor: SLColors.borderStrong },
-  railFill: { position: 'absolute', left: 0, height: 4, borderRadius: SLRadius.pill, backgroundColor: SLColors.accent },
-  thumb: { position: 'absolute', width: 22, height: 22, borderRadius: SLRadius.pill, backgroundColor: SLColors.accent, borderWidth: 3, borderColor: SLColors.surfaceFloating },
+  liveValue: { color: '#f4f0fa', fontSize: 16, lineHeight: 22 },
+  selectedValue: { color: '#c79cf6' },
+  unselectedValue: { color: '#aaa5b5', fontSize: 13 },
+  prompt: { color: '#e5dfef', fontSize: 14, lineHeight: 20, marginTop: 6 },
+  endpointRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
+  endpoint: { color: '#9992a8', fontSize: 12, lineHeight: 18 },
+  railTouchTarget: { height: 46, justifyContent: 'center' },
+  rail: { position: 'absolute', left: 0, right: 0, height: 4, borderRadius: SLRadius.pill, backgroundColor: '#2e2839' },
+  railFill: { position: 'absolute', left: 0, height: 4, borderRadius: SLRadius.pill, backgroundColor: '#b586ed' },
+  thumb: { position: 'absolute', width: 22, height: 22, borderRadius: SLRadius.pill, backgroundColor: '#c79cf6', borderWidth: 3, borderColor: '#08080c' },
   errorText: { color: SLColors.danger, fontSize: SLTypography.label.fontSize, lineHeight: 19, marginTop: 10 },
-  primaryButton: { marginTop: 8 },
+  primaryButton: { minHeight: 54, paddingHorizontal: 16, paddingVertical: 14, borderRadius: 14, borderWidth: 1, borderColor: '#aa77e8', overflow: 'hidden', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+  primaryLabel: { color: '#ffffff', fontSize: 16, lineHeight: 22, flexShrink: 1, textAlign: 'center' },
+  disabledAction: { opacity: 0.5 },
+  skipButton: { marginTop: 4, minHeight: 44, paddingVertical: 10 },
+  skipButtonLabel: { color: '#b9b2c9', fontSize: 14, lineHeight: 20 },
   cancelButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
   cancelText: { color: SLColors.textMuted, fontSize: SLTypography.label.fontSize, fontWeight: '700' },
 });

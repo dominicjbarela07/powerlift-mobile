@@ -139,8 +139,8 @@ assert.match(
 );
 assert.match(
   routeSource,
-  /\{canConfigureMachineEquipment\(it\) \? \([\s\S]*?onPress=\{\(\) => openIdentityPicker\(it\)\}[\s\S]*?>Equipment<\/Text>/,
-  'A standalone machine accessory must retain its canonical Equipment action.',
+  /onSwapEquipment=\{!isCoachAthletePreview && canConfigureMachineEquipment\(it\)\s*\? \(\) => openIdentityPicker\(it\) : undefined\}/,
+  'A standalone machine accessory retains its canonical picker within Current Equipment.',
 );
 assert.match(
   routeSource,
