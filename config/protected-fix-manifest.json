@@ -191,6 +191,48 @@
       "behaviorTests": [
         "scripts/test-coach-session-review-scroll-lifecycle.mjs"
       ]
+    },
+    {
+      "id": "compact-canonical-logger-controls",
+      "description": "Compact Logger actions retain equipment/edit/swap authority, true inline title suffix and bodyweight zero-load edit.",
+      "acceptedCommits": [
+        "b31b6417ba4ce57a998a82dd144caaeebdd4c074"
+      ],
+      "behaviorTests": [
+        "scripts/test-logger-compact-actions.mjs",
+        "scripts/test-zero-load-edit-set.mjs"
+      ]
+    },
+    {
+      "id": "catalog-wide-assisted-movement-discovery",
+      "description": "Whole-catalog aliases, prefixes, bounded typos, muscle/equipment discovery and stale-request isolation in Workspace and Hot Swap.",
+      "acceptedCommits": [
+        "7ac0665ecfed4ecda4d6b4ba1152df41bc5a2035"
+      ],
+      "behaviorTests": [
+        "scripts/test-canonical-movement-search-contract.mjs",
+        "scripts/test-movement-search-response-lifecycle.mjs"
+      ]
+    },
+    {
+      "id": "logger-history-presence-visibility",
+      "description": "Hide known-empty history, retain any-history navigation and distinct unresolved reads without borrowing equipment performance.",
+      "acceptedCommits": [
+        "8e4c3b924d14baea2e2d38f37f778e4395f58826"
+      ],
+      "behaviorTests": [
+        "scripts/test-logger-history-visibility.mjs"
+      ]
+    },
+    {
+      "id": "shared-readiness-survey-visual-contract",
+      "description": "Shared survey retains readiness controls, keyboard behavior, saved callbacks, skip path and busy guards.",
+      "acceptedCommits": [
+        "78a5ae0cc5de4a9b47e7a57594729901f309ebf2"
+      ],
+      "behaviorTests": [
+        "scripts/test-readiness-survey-render.mjs"
+      ]
     }
   ],
   "releaseHoldbacks": {
