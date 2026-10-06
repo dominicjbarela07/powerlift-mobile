@@ -244,6 +244,17 @@
         "scripts/test-recognition-rest-handoff-race.mjs",
         "scripts/test-logger-feedback.mjs"
       ]
+    },
+    {
+      "id": "nested-athlete-workspace-subject",
+      "description": "Nested layout resolves the selected canonical athlete path when inherited local params are empty; conflicting and foreign subjects fail closed; existing account/relationship namespace retained.",
+      "acceptedCommits": [
+        "78c98f1450f43c574701490cd514207a0e896e8f"
+      ],
+      "behaviorTests": [
+        "scripts/test-coach-workspace-route-identity.mjs",
+        "scripts/test-coach-athlete-workspace-entrypoint.mjs"
+      ]
     }
   ],
   "releaseHoldbacks": {
