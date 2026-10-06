@@ -13,11 +13,21 @@ The regression test covers reps, Sets and RIR, immediate response, fresh Session
 read, reopened editor, every untouched item column and every completed Set column.
 It failed three subcases on the original service and passes with the repair.
 
+A previously failed save can also leave base 8–12 and execution 6–10. The old
+editor then reopened with base 8–12, making reapplying that target a client no-op.
+The read snapshot now projects the same live Sets/reps/RIR the logger uses, while
+versioning both base and execution state. Reads do not repair or rewrite data.
+A separate real API regression failed on that mismatch and now passes; the real
+DEV client likewise reads 6–10, saves 8–12 and reopens with 8–12 while preserving
+every completed Set column. The full prescription suite has 12 passing tests.
+The initial write repair was shipped at `f1a4a628ba3fe4a456ef249c6cd9acdda4767397`;
+the final read/write repair is the cumulative revision verified below.
+
 The production push originated from `/Users/dominic/powerlifting_app`, using the
-installed source-pinned guard. Source `f1a4a628ba3fe4a456ef249c6cd9acdda4767397`
+installed source-pinned guard. Source `210559e431df3927ab7286f9d1c4e895129b6439`
 is verified live by the server's public readiness endpoint. The existing
 TestFlight 2.1.0 client calls this repaired endpoint; no client OTA is necessary.
-127 candidate tests pass, independent manufacturer-isolation acceptance passes,
+128 candidate tests pass, independent manufacturer-isolation acceptance passes,
 and all 104 frozen 2.0.2 responses on each of iOS/Android remain identical.
 Models/migrations and Production Mobile release channels were not changed.
 

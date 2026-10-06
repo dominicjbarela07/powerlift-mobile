@@ -157306,7 +157306,7 @@
     "deployment": "LIVE_EQUIPMENT_ISOLATED_BACKEND_VERIFIED",
     "currentPublishedClientContainsThisCorrection": true,
     "historyScopeOwnerInstruction": "They should not fucking leak across manufactures",
-    "backendSourceSha": "f1a4a628ba3fe4a456ef249c6cd9acdda4767397",
+    "backendSourceSha": "210559e431df3927ab7286f9d1c4e895129b6439",
     "backendSchemaFingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
     "backendMigrationRevisions": [
       "f47a92b1c8d0"
@@ -157420,8 +157420,8 @@
   },
   "canonicalActivePrescriptionExecutionFix": {
     "status": "LIVE_SHARED_BACKEND_FIX",
-    "backendSourceSha": "f1a4a628ba3fe4a456ef249c6cd9acdda4767397",
-    "backendBaselineSha": "90ef8ec9850c12b764cad0a78ce81c65f06fb9f1",
+    "backendSourceSha": "210559e431df3927ab7286f9d1c4e895129b6439",
+    "backendBaselineSha": "f1a4a628ba3fe4a456ef249c6cd9acdda4767397",
     "delivery": "Existing published TestFlight client uses the corrected prescription endpoint; no new OTA or native build required.",
     "clientUpdateId": "01a10e59-6149-7d98-83a3-8413a56d9006",
     "clientPublishedSource": "2521a445b9af25113a196184491a7bef40630820",
@@ -157431,14 +157431,16 @@
       "lib/active-session-prescription.ts": "d6751f05481afe6baf482e79108cf5703b4dc4e90f9bbbd2eebcfff82d229c93",
       "lib/api-base.ts": "332da47842ab7301a03e74d4d08e7765742dd12402dc8f1b5a57106e195bd3ac"
     },
-    "regressionBeforeRepair": "FAIL: reps, Sets and RIR execution overrides stay stale",
-    "regressionAfterRepair": "PASS: 11 prescription tests and 127 guarded shared-backend tests",
+    "regressionBeforeRepair": "FAIL: three edited execution override cases; FAIL: already stale editor returns base target and reapplying becomes a client no-op",
+    "regressionAfterRepair": "PASS: 12 active prescription tests; 128 guarded candidate tests",
     "liveSourceVerified": true,
     "completedSetsUnchanged": true,
     "devSourceExact": true,
     "physicalOwnerPhoneSaveObserved": false,
     "compactUiPublished": false,
     "compactUiDelivery": "Canonical DEV only, pending owner visual sign-off",
-    "receipt": "docs/release/LOGGER_PRESCRIPTION_EXECUTION_FIX_2026-10-05.json"
+    "receipt": "docs/release/LOGGER_PRESCRIPTION_EXECUTION_FIX_2026-10-05.json",
+    "firstWriteRepairSource": "f1a4a628ba3fe4a456ef249c6cd9acdda4767397",
+    "alreadyFailedSaveRecovery": "PASS: editor uses live target; real reapply/reopen works; execution-only changes invalidate stale editor."
   }
 }
