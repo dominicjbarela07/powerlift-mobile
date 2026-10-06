@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-06T22:06:44.099953+00:00",
+  "worktreeUsed": "/Users/dominic/powerlifting_app/powerlift_mobile_testflight",
+  "head": "59641028e514c3edc957c95de2d4882f2f3bf3e0",
+  "pass": true,
+  "errors": [],
+  "uniqueValidWorkRemaining": 0,
+  "accountedProductDifferences": [
+    {
+      "path": "app.json",
+      "sourceSha256": "0136963e01e6bee9ff257e7d3e4b49a664123d130effa91ca765b16cd1f947f1",
+      "canonicalSha256": "87e4fec5363704839e0371d5fa9e4596a44a8642c976e8b7cdaae403f98049e6",
+      "testflightSha256": "0136963e01e6bee9ff257e7d3e4b49a664123d130effa91ca765b16cd1f947f1",
+      "untracked": false,
+      "committedSha256": "0136963e01e6bee9ff257e7d3e4b49a664123d130effa91ca765b16cd1f947f1"
+    },
+    {
+      "path": "app/(tabs)/workout/[workoutId].tsx",
+      "sourceSha256": "e3d2bfb7652ac3501a47ad1707dbc3acf723e3387f96a9d8ffe4c41e3b6749b8",
+      "canonicalSha256": "86156c699fba0f30fca2e296d153e1c4a38e0da356207b953668bec3bb778b29",
+      "testflightSha256": "e3d2bfb7652ac3501a47ad1707dbc3acf723e3387f96a9d8ffe4c41e3b6749b8",
+      "untracked": false,
+      "committedSha256": "e3d2bfb7652ac3501a47ad1707dbc3acf723e3387f96a9d8ffe4c41e3b6749b8"
+    },
+    {
+      "path": "config/governed-movement-art-taxonomy.json",
+      "sourceSha256": "96829b44057e3fbb88f3be921ca11999742b4a42c7565938c9feef3e6f08cae9",
+      "canonicalSha256": "4cecf895c2035b1a65b1ec2d36b8b4ff1c37b39ea1110c92def256b4a51a3aaf",
+      "testflightSha256": "96829b44057e3fbb88f3be921ca11999742b4a42c7565938c9feef3e6f08cae9",
+      "untracked": false,
+      "committedSha256": "96829b44057e3fbb88f3be921ca11999742b4a42c7565938c9feef3e6f08cae9"
+    },
+    {
+      "path": "eas.json",
+      "sourceSha256": "a49e4a6db596dcb820b1fac0b465f1368c36fddf446d2e14dbed49a9419e7e95",
+      "canonicalSha256": "846a3c8ad076557ca5340181e52af0b9f7c3b5c515bbf45905fd808e38117dab",
+      "testflightSha256": "a49e4a6db596dcb820b1fac0b465f1368c36fddf446d2e14dbed49a9419e7e95",
+      "untracked": false,
+      "committedSha256": "a49e4a6db596dcb820b1fac0b465f1368c36fddf446d2e14dbed49a9419e7e95"
+    },
+    {
+      "path": "lib/equipment-flow-subject.ts",
+      "sourceSha256": "4a3c931baf7a23df49c79e8b8eae0e415d5cea99365f9f2e73cca9f89da20650",
+      "canonicalSha256": "874fd0e8800b5dcbb961e9c5de65cebfbedd13f1b863242e47d2224da25d6d26",
+      "testflightSha256": "4a3c931baf7a23df49c79e8b8eae0e415d5cea99365f9f2e73cca9f89da20650",
+      "untracked": false,
+      "committedSha256": "4a3c931baf7a23df49c79e8b8eae0e415d5cea99365f9f2e73cca9f89da20650"
+    },
+    {
+      "path": "lib/equipment-selection.ts",
+      "sourceSha256": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84",
+      "canonicalSha256": "7663b3bdaf47d75784aa46345bafb77d401474cb86e45b64e6d91e497086de09",
+      "testflightSha256": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84",
+      "untracked": false,
+      "committedSha256": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84"
+    },
+    {
+      "path": "scripts/test-equipment-flow-subject.mjs",
+      "sourceSha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d",
+      "canonicalSha256": "8d06579e7de123fdd29d3bd7d0cbd1b30300fce54504632157fb8c3b78658ffd",
+      "testflightSha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d",
+      "untracked": false,
+      "committedSha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d"
+    }
+  ],
+  "backPropagatedToCanonicalDev": true,
+  "publishedTestflightMinusDev": [],
+  "published": {
+    "id": "01a11340-9ccc-7498-a71d-77a367aa6f5f",
+    "group": "d94afb31-3d19-4265-9040-0c2566c490b3",
+    "gitCommitHash": "59641028e514c3edc957c95de2d4882f2f3bf3e0",
+    "manifestId": "01a11340-9ccc-7498-a71d-77a367aa6f5f",
+    "servedBundleSha256": "2b85ffca9696edb4b56a0862b9d293db0e9fa0398fe2f38821b1260cc360080f"
+  },
+  "otherActiveWorktreeAssessments": {
+    "/Users/dominic/powerlifting_app_mobile_optional_dev": {
+      "status": "NOT_REQUIRED",
+      "reason": "The unchanged unfinished education draft is not an cumulative Logger/search/survey validation or publication source. Its eight previously recorded synchronization conflicts remain, so preserve its unique owner work. All approved cumulative shared presentation state is committed in canonical DEV and the cumulative release checkout, with exact-source runtime and release regression protection; this independent draft requires reconciliation within its existing task before use as a release source.",
+      "canonicalSha": "5b8d0eafbcbd5de18bf30250126bb7c798cc9c96",
+      "sourceFingerprint": "05f19d845034eea0b4c342044a31c5f9450117c121d813e283f4a9f13d8c146a",
+      "assessedHead": "e2496257819acd1d85f790b1169bff1b3316e7b4"
+    },
+    "/Users/dominic/powerlifting_app_prod_mobile_optional_equipment": {
+      "status": "NOT_REQUIRED",
+      "reason": "Owner prohibits touching Production Mobile 2.0.2. This unchanged independent equipment draft targets that locked runtime; This cumulative release is published only to compatible TestFlight 2.1.0. No synchronization or promotion into Production is authorized.",
+      "canonicalSha": "5b8d0eafbcbd5de18bf30250126bb7c798cc9c96",
+      "sourceFingerprint": "d70c6a8615e829767cac1864887dc0ec7d0043c018885ac9596f7f4ee5a72d6c",
+      "assessedHead": "61a6893f5ca02cb53b347460adeef5121d681cad"
+    }
+  },
+  "tempWorktreeRemoved": "NOT_APPLICABLE_DURABLE_RELEASE_CHECKOUT",
+  "workflowComplete": true
+}
