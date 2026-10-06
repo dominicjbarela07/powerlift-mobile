@@ -36,3 +36,7 @@ existing durable release checkout; no new temporary worktree needed. Inventory
 and assess legitimate active worktrees without removing their unique owner work.
 Record exact server source, OTA/group/source, validations/actual observations,
 artifact receipt, pending differences and full closeout after delivery.
+
+Release projection review: The previous holdback accepted one exact shared zero-load patch only. The approved compact Logger changes require five additional identical exact replacement patches, each required to match exactly once on both the shipped pre-feature route and DEV route. The projection still rejects any unrelated candidate edit, wrong source hash, missing patch or duplicate match. New negative controls cover cumulative missing/duplicate patches; existing subtraction, ancestry, legacy zero-load and unrelated-edit controls remain mandatory. This does not approve the pending Cable backend/catalog migration.
+
+The four reviewed feature groups are registered in the protected-fix manifest. The manifest and exact-patch guard pins are updated only for the reviewed additive protection. No runtime flow, role, asset inventory or owner-removal requirement is removed. Artwork renderer test doubles now support the React element helpers required by inline actions; all artwork assertions remain. Swap discovery copy assertions follow the approved helpful-search labels; all authority, identity and mutation assertions remain.

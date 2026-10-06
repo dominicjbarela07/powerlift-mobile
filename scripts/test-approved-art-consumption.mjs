@@ -30,7 +30,7 @@ const NativeImage=Object.assign(function Image(){},{resolveAssetSource:source=>{
  const png=fs.readFileSync(source.replace('@/', ''));
  return {width:png.readUInt32BE(16),height:png.readUInt32BE(20)};
 }});
-const react={createElement:(type,props,...children)=>typeof type==='function' && ['SessionV3MovementLayout','MovementArtworkHeroLayer'].includes(type.name)
+const react={isValidElement:x=>Boolean(x && typeof x==='object' && 'type' in x && x.props),cloneElement:(x,p)=>({...x,props:{...x.props,...p}}),createElement:(type,props,...children)=>typeof type==='function' && ['SessionV3MovementLayout','MovementArtworkHeroLayer'].includes(type.name)
  ? type({...props,children}) : ({type:type===NativeImage?'Image':type,props:{...props,children}}),useEffect:callback=>callback(),useState:x=>x===0?[measuredArtworkEnd,update=>{measuredArtworkEnd=typeof update==='function'?update(measuredArtworkEnd):update;}]:[x?.width===0&&x?.height===0?{width:393,height:250}:x,()=>{}],useCallback:f=>f,memo:f=>f};
 const mocks={react,'react-native':{View:'View',Image:NativeImage,Pressable:'Pressable',ActivityIndicator:'ActivityIndicator',StyleSheet:{create:x=>x,hairlineWidth:1}},
  '@expo/vector-icons':{Ionicons:'Ionicons'},'expo-image':{Image:'ExpoImage'},'expo-linear-gradient':{LinearGradient:'LinearGradient'},'@/components/ui/sl-text':{Text:'Text'},
