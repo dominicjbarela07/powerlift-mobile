@@ -156980,7 +156980,7 @@
     }
   ],
   "releaseGateFiles": {
-    "AGENTS.md": "51b68e35c4e46dde5830bc12ba372b19aff60c6d2165915cbb582c35c3a30ac1",
+    "AGENTS.md": "7ad9f345df99bf559e3c492b6e485a4a04ff1ff2afc995a0db273651a0005d38",
     "app.config.js": "9c677a722146f9d76bc43d4dcd3bc3dbcd1c27d82f1154d12af15229421d24bf",
     "scripts/testflight-cumulative-integrity.mjs": "9262d199efbe9d1e7234e5d43922d478d7c3db4b0016d2377af7e5b9ebd91637",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
@@ -156998,7 +156998,7 @@
     "package-lock.json": "1343e90757f22b5d2f2b6c9f21ca383a587770f3a68d83f0d60f8d1709ecccac",
     "scripts/test-create-session-return-lifecycle.mjs": "e6bd4631062c55708a1cbd73982c1e63b5ec9337e2aa2c8f30bee7103004fc1a",
     "scripts/verify-testflight-release-integrity.mjs": "72de503b5168d43b17c8e9b4efe7769d799408a99c908d90e67ec0c8634dd85f",
-    "docs/RELEASE_INVARIANTS.md": "810578ae25e6211ddba4296e087caad0f5ebd88c3e191a0b9241f84189963d8d",
+    "docs/RELEASE_INVARIANTS.md": "9575b480918e9773a17505b57b87b6332f9abffc0b001bc72b108dc7d2e9a537",
     "README.md": "8c1e55b964384a9cbc4fd535bf88bd67bec95995b404f9de5f5177f2607ede12",
     "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
     "config/release-removal-authorizations.json": "79b7e83d8edc0ee3b52954fdf66cf31d152059d1fa056a60b7018f9b8ef215bb",
@@ -157029,7 +157029,8 @@
     "scripts/test-logger-option-e.mjs": "89a13ae6c6ba4e90d825bc67e6570002c4de895623c947f94417c6f91f5f5fcd",
     "config/testflight-release-owner-evidence/2026-10-05-option-e.txt": "2c307d5aad57c0ae51ce575dbbc4c53f1c6087aa9d034605672dd708494d7931",
     "config/testflight-release-owner-evidence/2026-10-05-option-e-reference.png": "e5128d74044413c91469ecee0ca407136c5ff3aa4bb4eff508e9b7a10c021ae9",
-    "docs/LOGGER_OPTION_E.md": "c114294c9c4842353479be888377c996095c0316d4809e876290fdd13b5d22d4"
+    "docs/LOGGER_OPTION_E.md": "c114294c9c4842353479be888377c996095c0316d4809e876290fdd13b5d22d4",
+    "config/testflight-release-owner-evidence/2026-10-05-machine-pr-manufacturer-isolation.txt": "9871d66a252755c0c8db846115c63f2d7750200d62e3980724920e98975b824c"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -157219,7 +157220,7 @@
       "reason": "Retained exact source-bound pre-existing Cable backend holdback; Option E does not modify these bytes. Both lanes retain shipped zero-load editor fix."
     }
   ],
-  "releaseConstitutionSha256": "9331fb24048c521d263ffa20d68cf727c841b5de29b62642c315b3223feeb82b",
+  "releaseConstitutionSha256": "05188331b2ccc9e6b9de5c9a5b49c951d88de85d33a023744f57b213d4b2a876",
   "protectedCatalogSnapshotSha256": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
   "catalogCompatibilityAuthorization": {
     "ownerInstruction": "Everything else deterministic:\nFIX IT.",
@@ -157243,11 +157244,11 @@
     "canonicalFiles": [
       {
         "path": "AGENTS.md",
-        "sha256": "c0085b16a58e24efb7e850faddec8b406b06d28c34075cd99b22e257326af0ed"
+        "sha256": "53e748a77350eacbbfd0aac67db53ccbe8fcca4d0f5cbe988417680b7b448300"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
-        "sha256": "a09dcd3db4353e5242bad28578c9dd8a7c674d1c8458ae74ae9b5d84f7c3de67"
+        "sha256": "aed1c6a74c4c3eaf0665ef86fc1bf240ae021f49a4707f22c9666b1207f08777"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
@@ -157299,18 +157300,22 @@
     "ownerInstruction": "For free weight accessories, I don't mind establishing a baseline, but for machines, it's pointless.",
     "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-accessory-pr-machine-baseline.txt",
     "ownerEvidenceSha256": "e5510836c795f9fa679b8e678703af5226ba75638b91f4add9116df2faf3b6ef",
-    "machine": "Established exact movement/reps baseline must improve across all accepted sets, brands and Other; first machine baseline is saved without a celebration.",
+    "machine": "Improvement over established exact movement/equipment/reps baseline, using all sets inside that equipment context. Never pool manufacturers; Other is separate. First machine baselines are quiet.",
     "freeWeight": "Establishing a portable exact-movement baseline may celebrate.",
     "backendDelivery": "2.1.0+ only; frozen 2.0.2 and missing/malformed app-version headers do not receive new Accessory events.",
-    "deployment": "LIVE_BACKEND_VERIFIED",
+    "deployment": "PENDING_EQUIPMENT_ISOLATION_LIVE_VERIFICATION",
     "currentPublishedClientContainsThisCorrection": true,
-    "historyScopeOwnerInstruction": "All sets for that movement, across brands and Other",
+    "historyScopeOwnerInstruction": "They should not fucking leak across manufactures",
     "backendSourceSha": "b8109dadc15cd5ab3397b57668827f4744b02811",
     "backendSchemaFingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
     "backendMigrationRevisions": [
       "f47a92b1c8d0"
     ],
-    "physicalPhonePlaybackObserved": false
+    "physicalPhonePlaybackObserved": false,
+    "supersededHistoryScopeOwnerInstruction": "All sets for that movement, across brands and Other",
+    "machineIsolationOwnerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-machine-pr-manufacturer-isolation.txt",
+    "machineIsolationOwnerEvidenceSha256": "9871d66a252755c0c8db846115c63f2d7750200d62e3980724920e98975b824c",
+    "backendCandidateSha": "90ef8ec9850c12b764cad0a78ce81c65f06fb9f1"
   },
   "cableBrandOnly": {
     "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt",

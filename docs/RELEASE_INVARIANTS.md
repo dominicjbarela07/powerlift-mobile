@@ -28,13 +28,13 @@ record all seven closeout fields, and carry guards through releases. Known
 equivalent failures or unknown counts prohibit closure. Recurrence is also a
 release/process failure. Product decisions require owner approval; default NO.
 
-## Accessory PR backend delivery — October 5 owner correction
+## Accessory PR backend delivery — latest October 5 machine isolation correction
 
-Accessory PR compares all accepted sets for the exact governed movement across
-brands and Other, retaining exact completed rep-count buckets. First machine
-baselines stay quiet; free-weight baseline recognition remains allowed. See
-canonical DEV `../docs/ACCESSORY_PR_BACKEND_RELEASE.md` and its authoritative
-release constitution. Required server changes ship by validated Git push from
-the Production repository to SCUI/main, with the exact-source frozen 2.0.2
-compatibility push guard and live serving-SHA/schema verification. A mobile OTA
-or local regression pass cannot establish server delivery.
+Machine PRs MUST NOT leak across manufacturers. Compare all eligible saved sets
+for the exact movement/reps inside the same governed equipment configuration;
+Other is separate. This latest owner directive supersedes earlier cross-brand
+PR scope. First machine baselines stay quiet; free-weight first baseline
+recognition remains allowed. Preserve existing brand-only Cable behavior within
+a brand. Isolate comparison, record supersession, edits/rebuild and replay/
+history/recap delivery. Deploy through guarded Production Git push and verify
+exact live source, policy and schema; a client OTA alone proves no server delivery.

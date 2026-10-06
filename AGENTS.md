@@ -22,14 +22,15 @@ Keep every baseline image and the Accessory PR celebration fix. Preservation
 requires no new approval; retain historical thumbnails on disk and do not invent
 removal receipts. The guarded publisher verifies actual exported/served bytes.
 
-Accessory PR owner policy: free-weight baseline recognition is allowed; a first
-machine baseline must not celebrate. Machines require improvement over an exact
-movement/reps baseline across all accepted SetLogs, brands and Other.
-Read `../docs/ACCESSORY_PR_BACKEND_RELEASE.md` in canonical DEV and the release
-constitution. Deploy required server changes by validated Production Git push;
-verify the actual serving SHA, not just a mobile OTA. Read the constitution and
-run both the save-API and mobile recognition regressions. Do not claim live PR
-readiness from local tests or client publication alone.
+Accessory PR owner policy: machine records MUST NOT leak across manufacturers.
+Compare all accepted historical sets inside the same governed equipment context;
+Other is separate. This supersedes the earlier cross-brand PR scope. Machines
+recognize improvements over their own baseline; first baselines stay quiet.
+Free-weight baseline recognition remains allowed. Read canonical DEV's
+`../docs/ACCESSORY_PR_BACKEND_RELEASE.md` and the release constitution; run save,
+supersession/rebuild, replay/query/recap isolation and mobile recognition guards.
+Deploy the required server fix by validated Production Git push; verify the
+actual serving SHA and equipment-isolation policy afterward.
 
 Cable equipment owner law: brand selection finishes setup. Read canonical
 `../docs/CABLE_BRAND_EQUIPMENT.md`; run the cable API and actual-handler regressions.

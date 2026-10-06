@@ -1,0 +1,7 @@
+Latest explicit owner correction:
+“I’ve fuckign specified that before!!!! They should not fucking leak across manufactures!!!! God damn it bro!”
+
+Machine PRs must stay inside the same governed equipment/manufacturer context.
+All saved sets means the full history inside that context. Other stays separate.
+The latest correction supersedes the previous cross-brand PR scope. Quiet first
+machine baselines and existing free-weight baseline recognition remain.
