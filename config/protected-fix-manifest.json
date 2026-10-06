@@ -233,6 +233,17 @@
       "behaviorTests": [
         "scripts/test-readiness-survey-render.mjs"
       ]
+    },
+    {
+      "id": "earned-recognition-rest-handoff",
+      "description": "Earned Core/accessory recognition remains queued through the actual accepted-sheet and rest-picker handoff; original delayed reservation fails the route-callback regression.",
+      "acceptedCommits": [
+        "84657bdf315b9ad4d44b3f7c44d320b3f9c6fe48"
+      ],
+      "behaviorTests": [
+        "scripts/test-recognition-rest-handoff-race.mjs",
+        "scripts/test-logger-feedback.mjs"
+      ]
     }
   ],
   "releaseHoldbacks": {
@@ -252,9 +263,9 @@
       {
         "path": "app/(tabs)/workout/[workoutId].tsx",
         "sourceCommit": "847d5834f41486bfbf63a5e45e690a514eed0d8a",
-        "blob": "3d349b312abf60ac66c587ce776ca7382dfd0b78",
-        "devSha256": "8a28be97e4cd5b53b13c80034726cd1156c920ae41a1ca1329f6fc081a757148",
-        "candidateSha256": "eb5251fcc5acce94dad93df31633ee8fc9897ec758c943382c012f9ab31d24b2",
+        "blob": "e75584aea1b2d69f006cec3c46890bb8433b23da",
+        "devSha256": "86156c699fba0f30fca2e296d153e1c4a38e0da356207b953668bec3bb778b29",
+        "candidateSha256": "e3d2bfb7652ac3501a47ad1707dbc3acf723e3387f96a9d8ffe4c41e3b6749b8",
         "sharedFix": {
           "devSourceCommit": "7933a887672d398c69894fc8228362634b54625d",
           "before": "    if (Number.isNaN(weightInUnit) || weightInUnit <= 0) {\n      setError('Weight required');\n      return;\n    }",
@@ -279,6 +290,18 @@
             {
               "before": "  },\n  accessoryInlineAction: {",
               "after": "  },\n  loggerMovementSwapText: { fontSize: 12, fontWeight: '700', color: '#c8a6ff' },\n  accessoryInlineAction: {"
+            },
+            {
+              "before": "    if (events.length && json?.created === true && json?.replayed !== true) {\n      transientRecognitionTrace(7, 'transient recognition enqueued');\n    }",
+              "after": "    // Reserve the rest handoff before the save confirmation can release recognition.\n    // Waiting until the accepted-sheet dwell ends lets a PR play behind the picker.\n    if (json?.created === true && json?.replayed !== true\n      && acceptedRestOfferRef.current.offer\n      && !isNewCanonicalSessionFinalSet({\n        created: json.created, replayed: json.replayed,\n        completionBoundary: json?.completion_boundary,\n      })) {\n      feedbackDispatch({ type: 'TIMER_PICKER_PENDING' });\n    }\n    if (events.length && json?.created === true && json?.replayed !== true) {\n      transientRecognitionTrace(7, 'transient recognition enqueued');\n    }"
+            },
+            {
+              "before": "      timer_visible: timerPickerVisible,\n    };",
+              "after": "      timer_visible: timerPickerVisible,\n      logger_sheet: !!coreWheel || !!accessoryWheel,\n    };"
+            },
+            {
+              "before": "feedbackState.timer.status, timerPickerVisible, transientRecognitionTrace]);",
+              "after": "feedbackState.timer.status, timerPickerVisible, coreWheel, accessoryWheel, transientRecognitionTrace]);"
             }
           ]
         }
