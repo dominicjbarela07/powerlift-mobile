@@ -31,8 +31,8 @@ for (const args of [[undefined, true, 'in_progress', false], [true, false, 'in_p
 const logger = fs.readFileSync('app/(tabs)/workout/[workoutId].tsx', 'utf8');
 const editor = fs.readFileSync('components/workout-logger/active-prescription-editor.tsx', 'utf8');
 assert.match(logger, /canEditActivePrescription\(data.permissions\?\.can_edit_prescription/);
-assert.match(logger, /auxAction=\{prescriptionAction\(movementPresentation.loggerFocus\?\.itemId \|\| core.id\)\}/);
-assert.match(logger, /prescriptionAction\(it.id\)/);
+assert.match(logger, /onEditPrescription=\{canEditPrescription\s*\? \(\) => openPrescription\(movementPresentation.loggerFocus\?\.itemId \|\| core.id\)/);
+assert.match(logger, /onEditPrescription=\{canEditPrescription \? \(\) => openPrescription\(it.id\)/);
 assert.match(logger, /onEditPrescription=\{canEditPrescription \? openPrescription/);
 assert.match(editor, /MovementQuickPrescriptionEditor prescriptionOnly/);
 assert.match(editor, /method: 'PATCH'/); assert.doesNotMatch(editor, /swap|substitute|movement_definition_id/);

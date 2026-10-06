@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "incident": "Active prescription save updates base fields while existing execution overrides remain stale",
+  "ownerRequestedExample": "EZ-Bar Curl 6-10 \u2192 8-12 reps",
+  "delivery": "shared backend used by existing TestFlight 2.1.0 client; no mobile OTA necessary",
+  "productionSource": "f1a4a628ba3fe4a456ef249c6cd9acdda4767397",
+  "productionBaseline": "90ef8ec9850c12b764cad0a78ce81c65f06fb9f1",
+  "productionPushFrom": "/Users/dominic/powerlifting_app",
+  "productionPushVerified": true,
+  "liveDeploymentVerified": true,
+  "liveHealth": {
+    "machine_first_baseline_recognized": false,
+    "manufacturers_isolated": true,
+    "migration_revisions": [
+      "f47a92b1c8d0"
+    ],
+    "minimum_delivery_client_version": "2.1.0",
+    "other_is_separate_equipment_context": true,
+    "policy_version": "accessory-exact-reps-equipment-isolated-v3",
+    "pr_comparison_scope": "canonical_movement_exact_equipment",
+    "ready": true,
+    "schema_fingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+    "source_sha": "f1a4a628ba3fe4a456ef249c6cd9acdda4767397"
+  },
+  "canonicalDevExactFiles": {
+    "app/services/active_session_prescription.py": "254fd1d84efc9436f85a5e13580185a5e55037b7b773081b6a797408269aa92c",
+    "tests/test_active_session_prescription.py": "1bf7aa5f3398c6f0c7b8aa071b466590fd9262c07a51c0c5bc7631a9674cf1e0",
+    "scripts/shared_backend_release_gate.py": "371344586e190c0998e4474c84dddde87dccfe353ebf445ffe3ca6de7b9edf12"
+  },
+  "regressionBeforeRepair": "3 deliberate real API failures for existing reps/sets/RIR execution overrides",
+  "regressionAfterRepair": "11 active prescription tests pass; full guarded candidate 127 tests pass",
+  "completedSetEvidenceImmutable": true,
+  "frozenProductionRuntime2_0_2": {
+    "ios": 104,
+    "android": 104
+  },
+  "ownerPolicyAcceptance": {
+    "pass": true,
+    "candidateOwned": false,
+    "cases": 3,
+    "probeSha256": "4e80578545338622565a3d8b143cbc8762c2a4dd6cf6a9bc639bc1fbaa8a511b"
+  },
+  "schemaChanged": false,
+  "simulatorEvidence": {
+    "fixtureOnly": true,
+    "sessionId": 1836,
+    "immediateLogger": "8-12 reps",
+    "remainingSets": "8-12 @1 RIR",
+    "reopenedEditor": "8\u201312",
+    "leaveAndReopenLogger": "8-12 reps",
+    "completedSet": "55 lb \u00d7 8 @ RIR 1.0 unchanged"
+  },
+  "layoutPublished": false,
+  "newUiRequiresOwnerSignoff": true
+}

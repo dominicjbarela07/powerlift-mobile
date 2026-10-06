@@ -508,8 +508,8 @@ assert.notEqual(
 
 assert.match(
   routeSource,
-  /canConfigureMachineEquipment\(it\) \? \([\s\S]*?>Equipment<\/Text>/,
-  'Machine accessories must expose the Equipment action.',
+  /onSwapEquipment=\{!isCoachAthletePreview && canConfigureMachineEquipment\(it\)\s*\? \(\) => openIdentityPicker\(it\) : undefined\}/,
+  'Machine accessories expose equipment swapping within Current Equipment with the same permission guard.',
 );
 assert.match(routeSource, /expandedIdentityContext=\{accessoryIsExpanded && machineAccessory && !hideEquipmentDetails/);
 assert.match(routeSource, /historyPeek=\{accessoryIsExpanded \? historyPeekFor\(it\) : null\}/);

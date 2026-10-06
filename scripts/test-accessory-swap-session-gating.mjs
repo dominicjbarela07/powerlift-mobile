@@ -91,7 +91,7 @@ assert.match(
 );
 assert.match(
   loggerSource,
-  /\{swapLabel \? \(/,
+  /movementAction=\{!isCoachAthletePreview && swapLabel \? \(/,
   'ineligible swap action is removed from layout instead of rendered disabled',
 );
 assert.doesNotMatch(
