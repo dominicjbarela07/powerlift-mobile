@@ -1,0 +1,26 @@
+[
+  {
+    "case": "actual installed clean candidate",
+    "expectedPass": true,
+    "exit": 0,
+    "output": "{\"pass\": true, \"bundleSHA256\": \"302f88c61d660fe08e73f942e3c00e4332dfbb6b0dc5351d12657b3e3b98cf99\", \"apiBase\": \"https://app.strengthledger.fit\", \"liveSourceSHA\": \"d4b6a8b22549a9853db71fbbd0485c708471519f\"}"
+  },
+  {
+    "case": "original missing-entitlement shell",
+    "expectedPass": false,
+    "exit": 1,
+    "output": "SIMULATOR HANDOFF FAIL: Missing embedded simulator keychain entitlements"
+  },
+  {
+    "case": "stale candidate bundle",
+    "expectedPass": false,
+    "exit": 1,
+    "output": "SIMULATOR HANDOFF FAIL: Installed bundle is stale or differs from the tested candidate"
+  },
+  {
+    "case": "local backend instead of live",
+    "expectedPass": false,
+    "exit": 1,
+    "output": "SIMULATOR HANDOFF FAIL: Candidate is not using the actual live Production backend"
+  }
+]

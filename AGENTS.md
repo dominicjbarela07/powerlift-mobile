@@ -90,3 +90,13 @@ approved-art channel AND runtime switches must agree in the resolver and inline
 asset registries. Audit actual exported bytes independently on each platform;
 source approval alone cannot prove bundling. Preserve Production 2.0.2 and human
 image/crop approvals. This profile grants no build, publish or submit authority.
+
+## Native simulator candidate handoff
+
+When the owner explicitly requests a native simulator candidate, read
+`docs/release/SIMULATOR_LIVE_BACKEND_HANDOFF_2026-10-07.md` and run
+`scripts/verify-ios-simulator-handoff.py` against the installed app and fresh
+native runtime receipt before handoff. Verify embedded keychain permissions,
+actual installed candidate bundle and actual native live-backend request; a Metro
+manifest or visible login screen alone is insufficient. Leave owner takeover at
+the requested screen. This is separate from store/device release certification.
