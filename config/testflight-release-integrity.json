@@ -157594,7 +157594,7 @@
     "config/testflight-release-owner-evidence/2026-10-04-pre-october-2-restoration.txt": "0fccb3dc8b6c5542e961e40d753c5f0b93ca3e26e4a5cd8b8b446b3a480c0c1a",
     "docs/release/MOVEMENT_IMAGERY_RESTORATION_2026-10-04.md": "e97b55d17af2b3165b11646ea6b635b628af50b395a672d04c7f0f5c8b8c5b4e",
     "config/testflight-release-owner-evidence/2026-10-05-accessory-pr-machine-baseline.txt": "e5510836c795f9fa679b8e678703af5226ba75638b91f4add9116df2faf3b6ef",
-    "scripts/test-equipment-flow-subject.mjs": "8d06579e7de123fdd29d3bd7d0cbd1b30300fce54504632157fb8c3b78658ffd",
+    "scripts/test-equipment-flow-subject.mjs": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d",
     "scripts/test-cable-brand-equipment-api.mjs": "71889a55559cfd1dc43a5817b0b1ac8bd0c022498e6c30d46ff161ab71949dbc",
     "docs/CABLE_BRAND_EQUIPMENT.md": "0289f45e3859f993ccce52a2ffca383f484f3899c61224179813a6363c151c21",
     "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt": "69f1ba6ca417408f3e0a5cada3f37bca5fee5f1c26ece4443bec9d855fc8cb9b",
