@@ -128,8 +128,8 @@ reports are preserved under
 
 Barbell Overhead Press650 needs an exact human artwork approval or an explicit
 valid reuse decision. The canonical artwork law in
-`../../../docs/DEV_MOVEMENT_ART_REVIEW.md` says, “Codex and automated tools must
-never approve real candidates.” No qualifying approval was found. Keep this
+`../../../docs/DEV_MOVEMENT_ART_REVIEW.md` says Codex “must never call review
+decisions on behalf of the human.” No qualifying approval was found. Keep this
 item open; do not remove the movement, substitute Bench artwork, weaken coverage
 or call the entire readiness incident closed. All other identified DEV code and
 presentation findings have been addressed.
