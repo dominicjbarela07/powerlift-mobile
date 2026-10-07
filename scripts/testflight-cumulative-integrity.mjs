@@ -7,6 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { runClientFixContracts } from './owner-directed-client-fix.mjs';
 import { assertLoggerVisualScope } from './owner-directed-logger-visual.mjs';
 import { assertReviewedArtwork, assertReviewedCatalog, assertReviewedPublicationSource } from './reviewed-release-progression.mjs';
+import { assertReviewedRuntimeContinuation } from './reviewed-runtime-continuation.mjs';
 
 export const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 export const expoHash = bytes => crypto.createHash('sha256').update(bytes).digest('base64url');
@@ -158,7 +159,7 @@ export function protectedDeliveryHashes(root, state) {
   return required;
 }
 
-export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,requireRuntime=false,restorationRuntime=false,clientFixRuntime=false,loggerVisualRuntime=false}={}) {
+export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,requireRuntime=false,restorationRuntime=false,clientFixRuntime=false,loggerVisualRuntime=false,reviewedRuntime=false}={}) {
   const protectedState=read(root,'config/testflight-release-integrity.json');
   const removalManifest=read(root,'config/release-removal-authorizations.json');
   assert.equal(removalManifest.schemaVersion,1);
@@ -223,7 +224,13 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
     const ownerText = fs.readFileSync(path.join(root,restorationScope.ownerEvidencePath),'utf8');
     assert.ok(ownerText.includes('You will not do simulator runs. Stop talking about it'), 'simulator exclusion requires the exact current owner instruction');
   }
-  if(requireRuntime && !simulatorProhibited) {
+  let retainedRuntime;
+  if (reviewedRuntime) {
+    assert.ok(requireRuntime && exportDir, 'reviewed continuation requires full publication and its actual artifact');
+    assert.equal(restorationRuntime || clientFixRuntime || loggerVisualRuntime, false, 'owner runtime scopes cannot be combined');
+    retainedRuntime = assertReviewedRuntimeContinuation(root, protectedState, fingerprint);
+  }
+  if(requireRuntime && !simulatorProhibited && !retainedRuntime) {
     assert.ok(runtimeReceipt,'RELEASE BLOCKED: --runtime-receipt is required before publication');
     const receipt=JSON.parse(fs.readFileSync(runtimeReceipt,'utf8'));
     const scope = loggerVisualRuntime ? protectedState.ownerDirectedLoggerVisual : restorationScope;
@@ -256,12 +263,12 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
     }
     for (const file of Object.keys(files)) assert.ok(testedFiles[file], `candidate product path was absent during runtime verification: ${file}`);
   }
-  return {productFingerprint:fingerprint,baselines:protectedState.releaseHistory.length,sourceDelta:delta,artifact,runtimeVerified:requireRuntime && !simulatorProhibited,simulatorValidation:simulatorProhibited?'OWNER_PROHIBITED':loggerVisualRuntime?'OWNER_OPTION_E_ACTUAL_RUNTIME':'STANDARD_RUNTIME_POLICY',clientFixContracts};
+  return {productFingerprint:fingerprint,baselines:protectedState.releaseHistory.length,sourceDelta:delta,artifact,runtimeVerified:requireRuntime && !simulatorProhibited && !retainedRuntime,simulatorValidation:retainedRuntime?.mode || (simulatorProhibited?'OWNER_PROHIBITED':loggerVisualRuntime?'OWNER_OPTION_E_ACTUAL_RUNTIME':'STANDARD_RUNTIME_POLICY'),retainedRuntime,clientFixContracts};
 }
 
 if(process.argv[1] && import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href) {
   const value=flag=>{const i=process.argv.indexOf(flag);return i>=0?process.argv[i+1]:undefined;};
-  const result=runIntegrityGate({exportDir:value('--export-dir'),runtimeReceipt:value('--runtime-receipt'),requireRuntime:process.argv.includes('--require-runtime'),restorationRuntime:process.argv.includes('--restoration-runtime'),clientFixRuntime:process.argv.includes('--owner-directed-client-fix'),loggerVisualRuntime:process.argv.includes('--owner-directed-logger-visual')});
+  const result=runIntegrityGate({exportDir:value('--export-dir'),runtimeReceipt:value('--runtime-receipt'),requireRuntime:process.argv.includes('--require-runtime'),restorationRuntime:process.argv.includes('--restoration-runtime'),clientFixRuntime:process.argv.includes('--owner-directed-client-fix'),loggerVisualRuntime:process.argv.includes('--owner-directed-logger-visual'),reviewedRuntime:process.argv.includes('--reviewed-cumulative-runtime')});
   const out=value('--output');if(out)fs.writeFileSync(out,JSON.stringify(result,null,2)+'\n');
   console.log(`[cumulative-testflight] PASS: ${result.baselines} historical releases; unauthorized source subtractions 0; artifact ${result.artifact?'verified':'not yet checked'}; runtime ${result.runtimeVerified?'verified':'not yet checked'}`);
 }

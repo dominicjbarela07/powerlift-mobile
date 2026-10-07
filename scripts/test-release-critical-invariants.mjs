@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['owner-directed retained runtime observations require exact equivalent current native code', ['scripts/test-reviewed-runtime-continuation.mjs']],
   ['reviewed cumulative source and human art/crop progression reject unauthorized changes', ['scripts/test-reviewed-release-progression.mjs']],
   ['unavailable Session lifecycle survives every date and projection', ['scripts/test-unavailable-session-projections.mjs']],
   ['bounded DEV additions retain the shipped baseline and reject hidden changes', ['scripts/test-dev-source-progression.mjs']],
