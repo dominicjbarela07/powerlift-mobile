@@ -24,6 +24,7 @@ const runtimeReceipt = valueFor('--runtime-receipt') || process.env.STRENGTH_LED
 const restorationRuntime = args.includes('--owner-directed-restoration');
 const clientFixRuntime = args.includes('--owner-directed-client-fix');
 const loggerVisualRuntime = args.includes('--owner-directed-logger-visual');
+const reviewedRuntime = args.includes('--reviewed-cumulative-runtime');
 const nodeModules = path.join(root, 'node_modules');
 
 if (branch.toLowerCase().includes('production')) {
@@ -102,12 +103,13 @@ if (branch === 'testflight') run(process.execPath, ['--import','tsx','scripts/te
 if (branch === 'testflight') {
   const integrityArgs = ['scripts/testflight-cumulative-integrity.mjs', '--export-dir', outputDir];
   if (!prepareOnly) {
-    if (!runtimeReceipt && !restorationRuntime && !clientFixRuntime) throw new Error('TestFlight publication blocked: actual runtime journey receipt or exact owner-directed validation scope is required.');
+    if (!runtimeReceipt && !restorationRuntime && !clientFixRuntime && !reviewedRuntime) throw new Error('TestFlight publication blocked: actual runtime journey receipt or exact owner-directed validation scope is required.');
     integrityArgs.push('--require-runtime');
     if (runtimeReceipt) integrityArgs.push('--runtime-receipt', runtimeReceipt);
     if (restorationRuntime) integrityArgs.push('--restoration-runtime');
     if (clientFixRuntime) integrityArgs.push('--owner-directed-client-fix');
     if (loggerVisualRuntime) integrityArgs.push('--owner-directed-logger-visual');
+    if (reviewedRuntime) integrityArgs.push('--reviewed-cumulative-runtime');
   }
   run(process.execPath, integrityArgs);
 }

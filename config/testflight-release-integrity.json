@@ -157560,16 +157560,16 @@
   "releaseGateFiles": {
     "AGENTS.md": "a6548c6458f695b98f51b8569d116b1ba09d266b48a743a99d3ea214cabf7b7f",
     "app.config.js": "063f497ab71e48b2b88cf13af0b8669da2e0458295f9733dfd1f89bc8d5b4861",
-    "scripts/testflight-cumulative-integrity.mjs": "53d8593547552aa03289f17c1acd22210aae521c0900e8beddab1cd6a90362d1",
+    "scripts/testflight-cumulative-integrity.mjs": "dc79e6966dacf24c3a84cbe45fd8a7cfb16311d3fc907fa890bbd480ea23631c",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
-    "scripts/publish-validated-ios-ota.mjs": "3edf122bc2f0dc28c77c96eea8db87d16e5952517e86589790f8c5b2efd478cf",
+    "scripts/publish-validated-ios-ota.mjs": "69959622baaf438c9c99cad88a99d28694fdbf1e49b0bb15e7c4d7d1e889549b",
     "scripts/eas-build-testflight.sh": "946b0857b8b84925906b84547dbb62f1fa05e12ab3771674dd64e359d920e115",
     "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
     "scripts/test-accepted-behavior-contracts.mjs": "112b5c8ca4d4039cfc0d8d3859924a56843f8d5f83b8c085ad88a06c8863c502",
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
     "config/protected-fix-manifest.json": "d284544ea1b563c29850808e1aa51efaebcb471ff6044d24d7ba322cec7eab26",
     "scripts/assert-no-dev-artwork-export.mjs": "610934d315a2f34c534e80545d7c8361fbad0110c313c48f3d9642f2c04a7c22",
-    "scripts/test-release-critical-invariants.mjs": "76a2dc39c5d6d5cfb49ee07612cb8c40e2c7281978b886fc2f719444a4bba2de",
+    "scripts/test-release-critical-invariants.mjs": "7c98160c79c3e74cddc11e521ae7969749786bfe9dfc1caf17787d53ca2e9971",
     "scripts/test-release-source-lineage.mjs": "e7850ec385320f620ebc156dfa0dea62934d87114108c0ccf978ad03f53042b6",
     "scripts/release-holdback-policy.mjs": "3ff3d255b82fa2cd583f66da1656217c13ba959cc72fe65eb0dd50d21d4fc148",
     "package.json": "96db5a8e29d0378d109481ee102c60a7dd313b08e998cae622b427212e5da1eb",
@@ -157614,7 +157614,9 @@
     "scripts/test-production3-art-policy.mjs": "3e5c45025c5ffa0d1df046b3e7ff22481c80be9d2bcf3bcb1907432957cfb5d1",
     "scripts/test-mobile3-visual-policy.mjs": "3ac446c081323630913ca78271167b016c30ca22260608bfcb69802ab6ada016",
     "scripts/audit-ui-constitution.js": "c14e4631723433c5528131adc17c2f376dbef912a6288cd2575c2a10c460024b",
-    "scripts/audit-transparent-screen-roots.js": "2cb55a6dc2987baa0693dfa6325437c50c1dc1057bd8817fbdadde8defc88518"
+    "scripts/audit-transparent-screen-roots.js": "2cb55a6dc2987baa0693dfa6325437c50c1dc1057bd8817fbdadde8defc88518",
+    "scripts/reviewed-runtime-continuation.mjs": "20622b5f378d0ad86666fd80c154e51946fdfe95354159fe50ff77fd13df3b4b",
+    "scripts/test-reviewed-runtime-continuation.mjs": "8e4d6049dfae485175d65bb4ec7f14dd093eab3fe1e7f74f99955b781fae7b87"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -160490,5 +160492,26 @@
       "lib/session-availability.ts": "41c1e683f24f1a200438a0b19dceb0cf7550896204184f70494c2d85a406d952",
       "lib/training-hub-session-labels.ts": "fb7086b39b181328748e7f88fb40914e9ccf58404253a64bc653d667244e99c9"
     }
+  },
+  "reviewedRuntimeContinuation": {
+    "ownerInstruction": "Okay, forget about the canonical education and guidance. I don't give a fuck. Just, just, okay, update TestFlight to be up to date, please. And then after that, I want you to do a final go no-go against production. Give me a go or no-go to start building, and then I will do the build. You do not have that right to do the build. I will do it and monitor the build.",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-07-current-testflight.txt",
+    "ownerEvidenceSha256": "dcec7fe2ee580e86ccacb103792983058dee0bab6be2dd9a1d32138b130cef4c",
+    "productFingerprint": "77d3ad7d8e68b9df01cdde766cbee813848031f928a7908d47c128598b611cae",
+    "priorUpdateId": "01a11340-9ccc-7498-a71d-77a367aa6f5f",
+    "priorProductFingerprint": "238ebc68aa9455a5b2c7c43da19206f8283352b2a3c37a491934582faa98ac4a",
+    "priorReceipt": {
+      "path": "/Users/dominic/Documents/Codex/2026-10-03/re/outputs/cumulative-publication-2026-10-06/runtime/runtime-receipt.json",
+      "sha256": "59e9b5078b731931bba2796b97f5dce0d434ec75b877f3be1aa81291fe8ab6aa"
+    },
+    "nativeReceipt": {
+      "path": "/Users/dominic/Documents/Codex/2026-10-03/re/outputs/production-candidate-simulator-2026-10-07/candidate-final-runtime.json",
+      "sha256": "c6d3a13365031a7010375cfe6fbb70453b3f7eca64405b693ba04f97a296a51b"
+    },
+    "nativeSourceSha": "464f0919534afa8c3058e889626763e7954131d1",
+    "nativeObservedAt": "2026-10-07T20:32:22.528807+00:00",
+    "liveBackendSource": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+    "freshFullJourneyRun": false,
+    "productionNativeBinaryCertified": false
   }
 }
