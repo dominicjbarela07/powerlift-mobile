@@ -14,6 +14,7 @@ import type { NotificationResponse } from 'expo-notifications';
 import { Keyboard, ActivityIndicator, Alert, AppState, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { MobileEducationProvider } from '@/context/MobileEducationContext';
 import { API_BASE, registerPushToken } from '@/lib/api';
 import { isUpdateReloadSafe, subscribeUpdateSafety } from '@/lib/updateSafety';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
@@ -539,9 +540,11 @@ export default function RootLayout() {
         ) : (
           <AuthProvider>
             <ThemeProvider value={appOLEDTheme}>
-              <RootStack />
-              <OtaUpdateController />
-              <StatusBar style="light" />
+              <MobileEducationProvider>
+                <RootStack />
+                <OtaUpdateController />
+                <StatusBar style="light" />
+              </MobileEducationProvider>
             </ThemeProvider>
           </AuthProvider>
         )}

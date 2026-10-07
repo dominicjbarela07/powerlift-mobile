@@ -15,6 +15,7 @@ import { CompletedSessionCorrection } from '@/components/workout-logger/complete
 import { SessionSetEntryContext } from '@/components/workout-logger/session-set-entry-context';
 import { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator } from '@/components/workout-logger/session-v3-shell';
 import { EquipmentHistoryEvidence } from '@/components/workout-logger/equipment-history-evidence';
+import { EducationInlineHint, useEducationHint, useMobileEducation } from '@/context/MobileEducationContext';
 import { SessionHistoryPeek } from '@/components/workout-logger/session-history-peek';
 import { invalidateEvidenceReads } from '@/lib/evidence-read-cache';
 import { sessionExecutionCapabilities } from '@/lib/session-logger-lifecycle';
@@ -1670,6 +1671,7 @@ function completedSetSummary(logs: SetLog[], totalSets: number, unit: 'kg' | 'lb
 
 export default function WorkoutViewerScreen() {
   const { user } = useAuth(); // we only need session + role to decide logging availability
+  const education = useMobileEducation();
   const {
     workoutId,
     loggerScenario,
@@ -4088,6 +4090,7 @@ export default function WorkoutViewerScreen() {
     variant: MachineEquipmentType,
   ) => {
     if (!identityPickerManufacturer) return;
+    if (presentEquipmentHistory(identityPickerManufacturer, unit, false, variant).performance) education.markLearned('equipment-history');
     if (isIdealWorkoutDetailPreview) {
       const identity = workoutDetailMachineVariantIdentity(
         identityPickerManufacturer,
@@ -7407,6 +7410,15 @@ export default function WorkoutViewerScreen() {
     mode: loggerShellMode,
     hasCompletedRecap: Boolean(data?.workout?.completed_recap),
   });
+  const showActiveEditHint = useEducationHint('active-session-edit', Boolean(
+    data && data.workout.status === 'in_progress'
+    && canEditActiveComposition(data.permissions?.can_edit_composition, data.permissions?.is_self_coached, data.workout.status, coachPreviewRequested)
+    && !compositionMode && !coreWheel && !accessoryWheel,
+  ));
+  const showEquipmentHistoryHint = useEducationHint('equipment-history', Boolean(
+    identityPickerItem && identityPickerManufacturer && askForEquipmentDetails
+    && presentEquipmentHistory(identityPickerManufacturer, unit, false).performance,
+  ));
 
   if (loading && !data) {
     return (
@@ -8426,6 +8438,7 @@ export default function WorkoutViewerScreen() {
     data.permissions?.is_self_coached, workout.status, isCoachAthletePreview || coachPreviewRequested);
   const openComposition = (mode: 'add' | 'remove') => {
     if (!canEditComposition || canonicalSetSubmissionControllerRef.current.isInFlight()) return;
+    education.markLearned('active-session-edit');
     setCompositionMode(mode);
   };
   const canEditPrescription = canEditActivePrescription(data.permissions?.can_edit_prescription,
@@ -8835,6 +8848,7 @@ export default function WorkoutViewerScreen() {
         scrollEventThrottle={16}
         keyboardShouldPersistTaps="handled"
       >
+        {showActiveEditHint ? <EducationInlineHint feature="active-session-edit" title="Edit this Session while you train." /> : null}
         {canEditComposition && getOrderedWorkoutMovements(workout).length === 0 ? <View style={{ paddingVertical: 28, gap: 16 }}>
           <Text style={styles.accessoryInlineActionText}>No movements in this Session.</Text>
           <TouchableOpacity accessibilityRole="button" accessibilityLabel="Add Movement" onPress={() => openComposition('add')} style={styles.accessoryInlineAction}>
@@ -10267,6 +10281,7 @@ export default function WorkoutViewerScreen() {
                           || 'Other'}
                       </Text>
                     </View>
+                    {showEquipmentHistoryHint ? <EducationInlineHint feature="equipment-history" title="See prior performance for this equipment." /> : null}
                     {identityPickerContinuation.kind !== 'evidence_correction' ? <TouchableOpacity
                       accessibilityRole="button" accessibilityLabel="Skip equipment details"
                       disabled={identityPickerLoading}

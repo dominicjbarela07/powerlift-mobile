@@ -13,6 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { ThemedText } from '@/components/themed-text';
 import { SLProfileAvatar, SLScreen } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
+import { useMobileEducation } from '@/context/MobileEducationContext';
 import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 import {
   API_BASE,
@@ -126,7 +127,7 @@ type TrainingProfileContext = {
 };
 
 type ProfileEditor = 'details' | 'units' | 'maxes' | 'context' | null;
-type SettingsPanel = 'coach' | 'review_queue' | 'equipment' | 'notifications' | 'privacy' | 'about' | 'logout' | null;
+type SettingsPanel = 'coach' | 'review_queue' | 'equipment' | 'notifications' | 'privacy' | 'guidance' | 'about' | 'logout' | null;
 
 type AccountTransitionMode = {
   mode?: string | null;
@@ -302,6 +303,7 @@ function supportedTimezones(deviceTimezone: string | null) {
 }
 
 export default function SettingsScreen() {
+  const education = useMobileEducation();
   const router = useRouter();
   const { height: viewportHeight } = useWindowDimensions();
   const keyboard = useKeyboardState();
@@ -1673,6 +1675,8 @@ export default function SettingsScreen() {
         ? 'Equipment Details'
       : settingsPanel === 'notifications'
         ? 'Notifications'
+      : settingsPanel === 'guidance'
+        ? 'Guidance & What’s New'
         : settingsPanel === 'privacy'
           ? 'Video Data Use'
           : settingsPanel === 'about'
@@ -1835,6 +1839,13 @@ export default function SettingsScreen() {
         {settingsGroup(
           <>
             {settingsRow({
+              icon: 'sparkles-outline',
+              title: 'Guidance & What’s New',
+              summary: education.state.guidanceEnabled ? 'On' : 'Off',
+              onPress: () => setSettingsPanel('guidance'),
+              accent: 'neutral',
+            })}
+            {settingsRow({
               icon: 'chatbubble-ellipses-outline',
               title: 'Send Feedback',
               onPress: () => setFeedbackModalOpen(true),
@@ -1975,6 +1986,28 @@ export default function SettingsScreen() {
                 disabled: equipmentPreferenceSaving,
                 onChange: (nextValue) => void saveEquipmentPreference(nextValue),
               }) : null}
+
+              {settingsPanel === 'guidance' ? <>
+                {settingsRow({
+                  icon: 'sparkles-outline',
+                  title: 'What’s New in 3.0',
+                  description: 'Reopen your current mode’s introduction',
+                  onPress: () => closeSettingsPanelThen(education.replayIntroduction),
+                })}
+                {settingsToggleRow({
+                  label: 'Feature Guidance',
+                  description: 'Brief tips when they become useful',
+                  value: education.state.guidanceEnabled,
+                  onChange: education.setGuidanceEnabled,
+                })}
+                {settingsRow({
+                  icon: 'refresh-outline',
+                  title: 'Reset Feature Guidance',
+                  description: 'Let unused tips appear again',
+                  onPress: education.resetGuidance,
+                })}
+                <View style={styles.editorInfoCard}><ThemedText style={styles.editorInfoText}>Reset never changes training data or account settings.</ThemedText></View>
+              </> : null}
 
               {settingsPanel === 'notifications' ? (
                 <>

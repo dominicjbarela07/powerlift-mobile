@@ -22,7 +22,7 @@ import {
 import { SLCanonicalIcon } from '@/components/ui/sl-trophy';
 import { Text } from '@/components/ui/sl-text';
 import { SLMotionPressable } from '@/components/ui/sl-motion';
-import { SLColors, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing } from '@/constants/theme';
+import { SLColors, SLFontFamilies, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing } from '@/constants/theme';
 
 export const SL_TAB_ROW_FALLBACK_SHEEN = [
   'rgba(255, 255, 255, 0.12)',
@@ -64,6 +64,7 @@ export const SL_TAB_ROW_CONTROL = {
 export type SLFloatingNavigationDockItem = {
   accessibilityLabel: string;
   badge?: number | 'dot';
+  new?: boolean;
   icon: keyof typeof Ionicons.glyphMap;
   key: string;
   onLongPress?: () => void;
@@ -220,6 +221,7 @@ export function SLFloatingNavigationDock({
                 </View>
               </SLMotionPressable>
               {item.badge === 'dot' ? <View pointerEvents="none" style={styles.notificationDot} /> : null}
+              {item.new ? <View pointerEvents="none" style={styles.newBadge}><Text style={styles.newBadgeText}>NEW</Text></View> : null}
               {typeof item.badge === 'number' && item.badge > 0 ? (
                 <View pointerEvents="none" style={styles.countBadge}>
                   <Text style={styles.countBadgeText}>{item.badge > 99 ? '99+' : item.badge}</Text>
@@ -427,6 +429,8 @@ const styles = StyleSheet.create({
     top: -3,
   },
   countBadgeText: { color: '#fff', fontSize: 8, fontWeight: '900' },
+  newBadge: { backgroundColor: '#7B42BE', borderColor: SLColors.shellCanvas, borderRadius: 7, borderWidth: 1, paddingHorizontal: 3, paddingVertical: 1, position: 'absolute', right: -2, top: -6, zIndex: 3 },
+  newBadgeText: { color: '#FFF', fontFamily: SLFontFamilies.bodyBold, fontSize: 7, letterSpacing: 0.3 },
   shell: {
     height: SL_TAB_ROW_CONTROL.shellHeight,
     flexDirection: 'row',

@@ -1,0 +1,135 @@
+{
+  "sourceRoot": "/Users/dominic/powerlifting_app_mobile_optional_dev",
+  "filesCopied": [
+    {
+      "path": "context/MobileEducationContext.tsx",
+      "sha256": "0da5e9ddd8c35c310cd68c701a3f24e8634fcf0cd120c82c78e993965e530c3d"
+    },
+    {
+      "path": "lib/mobile-education.ts",
+      "sha256": "4992bc712a5be736f8e5946463aafa7402aa8051e464e14b0b5c5485bb43ab0b"
+    },
+    {
+      "path": "scripts/test-mobile-3-education.mjs",
+      "sha256": "389a056cf617ac0db99b938eaff4429f38f5ba66f8b6db5cf8f3df92c54dd4a5"
+    },
+    {
+      "path": "components/education/SelfCoachEducationOpening.tsx",
+      "sha256": "8379318160427742c300bb12164820f70440e3ba0380ec592c1f32754ddd9212"
+    },
+    {
+      "path": "components/education/MobileEducationRolePreview.tsx",
+      "sha256": "11c7221e5cc798b2afdf960aaa6d974ca09982d2ea5ef521f186e847fd2350e6"
+    },
+    {
+      "path": "components/education/CoachEducationOpening.tsx",
+      "sha256": "46ccc6a6120fdb3e0db604438cfa03360b6f1db8ffd35d6c19ead4744bfbe888"
+    },
+    {
+      "path": "components/education/AthleteEducationOpening.tsx",
+      "sha256": "19cb3735643e8ea0959b84bca47f767096dfc2e6999234f5feb81d1c960d0dbc"
+    },
+    {
+      "path": "assets/images/mobile-3-education/athlete-history-20261001.png",
+      "sha256": "800d5f5d674f39325f5edd48e44d174f321e2e51a80cc34387964815cd319fbf"
+    },
+    {
+      "path": "assets/images/mobile-3-education/athlete-ledger-20261001.png",
+      "sha256": "c887a22163d38f85743c27d71c88cce5e3ea76a3311a89376bbc7c14c0365f1d"
+    },
+    {
+      "path": "assets/images/mobile-3-education/athlete-ledger-seeded.png",
+      "sha256": "efa96bed45638e6cc2a826c749493f1888620c3385e958559ec62fe60e4940bf"
+    },
+    {
+      "path": "assets/images/mobile-3-education/athlete-movement-history-seeded.png",
+      "sha256": "1ff5c0d6c7cf21f748eedc0d70fdaecc1cdd16f1f5bc1a991311da1b2efec658"
+    },
+    {
+      "path": "assets/images/mobile-3-education/athlete-session-20261001.png",
+      "sha256": "b9b4a94e058984f44196ac707266c8962fba8ad9d83f83d6c16fbed2c0a8f10a"
+    },
+    {
+      "path": "assets/images/mobile-3-education/athlete-session-live-seeded.png",
+      "sha256": "7870e0e5663bb012c1d8d212e55e5e2e56bdd43d76be7a56752df36967605b26"
+    },
+    {
+      "path": "assets/images/mobile-3-education/coach-brief.png",
+      "sha256": "9780719d11bf8a04f4afd8572700763c17ccc25ff39079d6ae237c11bcebd7db"
+    },
+    {
+      "path": "assets/images/mobile-3-education/coach-hero-20261001.png",
+      "sha256": "a792cfc256eb21d7e5882f0375236c03aa0487009b7be462022ab0dc5acdd05e"
+    },
+    {
+      "path": "assets/images/mobile-3-education/coach-home-20261001.png",
+      "sha256": "6753a69101678e19acffc4286c327c317ddf09e1ae2fc39a28f4aca9f207d4a1"
+    },
+    {
+      "path": "assets/images/mobile-3-education/coach-programming-20261001.png",
+      "sha256": "aaa18eb7fc21fb763f75f75ca084521334a14da3d8647084cc82de89f36470e1"
+    },
+    {
+      "path": "assets/images/mobile-3-education/coach-programming.png",
+      "sha256": "410e8abb277f1945b283c85c195fc15937f84d5d2f5aa47469a4d02e5890968d"
+    },
+    {
+      "path": "assets/images/mobile-3-education/coach-review-20261001.png",
+      "sha256": "ac10d056c6d10a03b99efb446797896ce1cc191cc09dbdd61351550a5a1cd9ac"
+    },
+    {
+      "path": "assets/images/mobile-3-education/self-coach-hero-20261001.png",
+      "sha256": "4d87b686730fbe25c9bf0968ef06d88b936b6421e4d635846893a6b19ac9dc37"
+    },
+    {
+      "path": "assets/images/mobile-3-education/self-coach-logger-20261006.png",
+      "sha256": "c74773f76eb8107e889820260b789314418f3464d4e9ffe1c2fd0ccea8576c8f"
+    },
+    {
+      "path": "assets/images/mobile-3-education/self-coach-programming-20261006.png",
+      "sha256": "5413f9cc5ee619538dc3fb49a4ba1b991da38ab12088dfd420a0d46c42e085fe"
+    },
+    {
+      "path": "assets/images/mobile-3-education/self-ledger.png",
+      "sha256": "93e7ce340086617d4bb27e69ebdb83b925cb81c6f27fc6b2385fdd6721c3ec20"
+    },
+    {
+      "path": "assets/images/mobile-3-education/self-session.png",
+      "sha256": "41f5389d6a40e758b86ad5307da8eb55b100066c8e4310681d74939c5ce7ab87"
+    }
+  ],
+  "existingApprovedHeroPreserved": "assets/images/post-session-ledger-concept-v1.png",
+  "developerCaptureOverridesExcluded": true,
+  "canonicalAdaptations": [
+    "canonical KeyboardScrollView/KeyboardModal boundaries",
+    "remove replaced 2.0 patch-note presentation and update its exact classified inventory",
+    "illustrative chart labels its barbell equipment",
+    "exclude developer capture routes and launch overrides"
+  ],
+  "currentCanonicalHashes": {
+    "context/MobileEducationContext.tsx": "d86fa554ec272d97d696e7a87e032fcbfbf5a881ec680c4af339a87124922c50",
+    "lib/mobile-education.ts": "4992bc712a5be736f8e5946463aafa7402aa8051e464e14b0b5c5485bb43ab0b",
+    "scripts/test-mobile-3-education.mjs": "389a056cf617ac0db99b938eaff4429f38f5ba66f8b6db5cf8f3df92c54dd4a5",
+    "components/education/SelfCoachEducationOpening.tsx": "e449b95a4c726247cb442d4a604d28b4c931daeba20e847b64446b374c2e89e1",
+    "components/education/MobileEducationRolePreview.tsx": "25e51b19e5d2a447ecfe38580bb3d1dfae6f3d5e2190fee82d373312122e0e3a",
+    "components/education/CoachEducationOpening.tsx": "46ccc6a6120fdb3e0db604438cfa03360b6f1db8ffd35d6c19ead4744bfbe888",
+    "components/education/AthleteEducationOpening.tsx": "19cb3735643e8ea0959b84bca47f767096dfc2e6999234f5feb81d1c960d0dbc",
+    "assets/images/mobile-3-education/athlete-history-20261001.png": "800d5f5d674f39325f5edd48e44d174f321e2e51a80cc34387964815cd319fbf",
+    "assets/images/mobile-3-education/athlete-ledger-20261001.png": "c887a22163d38f85743c27d71c88cce5e3ea76a3311a89376bbc7c14c0365f1d",
+    "assets/images/mobile-3-education/athlete-ledger-seeded.png": "efa96bed45638e6cc2a826c749493f1888620c3385e958559ec62fe60e4940bf",
+    "assets/images/mobile-3-education/athlete-movement-history-seeded.png": "1ff5c0d6c7cf21f748eedc0d70fdaecc1cdd16f1f5bc1a991311da1b2efec658",
+    "assets/images/mobile-3-education/athlete-session-20261001.png": "b9b4a94e058984f44196ac707266c8962fba8ad9d83f83d6c16fbed2c0a8f10a",
+    "assets/images/mobile-3-education/athlete-session-live-seeded.png": "7870e0e5663bb012c1d8d212e55e5e2e56bdd43d76be7a56752df36967605b26",
+    "assets/images/mobile-3-education/coach-brief.png": "9780719d11bf8a04f4afd8572700763c17ccc25ff39079d6ae237c11bcebd7db",
+    "assets/images/mobile-3-education/coach-hero-20261001.png": "a792cfc256eb21d7e5882f0375236c03aa0487009b7be462022ab0dc5acdd05e",
+    "assets/images/mobile-3-education/coach-home-20261001.png": "6753a69101678e19acffc4286c327c317ddf09e1ae2fc39a28f4aca9f207d4a1",
+    "assets/images/mobile-3-education/coach-programming-20261001.png": "aaa18eb7fc21fb763f75f75ca084521334a14da3d8647084cc82de89f36470e1",
+    "assets/images/mobile-3-education/coach-programming.png": "410e8abb277f1945b283c85c195fc15937f84d5d2f5aa47469a4d02e5890968d",
+    "assets/images/mobile-3-education/coach-review-20261001.png": "ac10d056c6d10a03b99efb446797896ce1cc191cc09dbdd61351550a5a1cd9ac",
+    "assets/images/mobile-3-education/self-coach-hero-20261001.png": "4d87b686730fbe25c9bf0968ef06d88b936b6421e4d635846893a6b19ac9dc37",
+    "assets/images/mobile-3-education/self-coach-logger-20261006.png": "c74773f76eb8107e889820260b789314418f3464d4e9ffe1c2fd0ccea8576c8f",
+    "assets/images/mobile-3-education/self-coach-programming-20261006.png": "5413f9cc5ee619538dc3fb49a4ba1b991da38ab12088dfd420a0d46c42e085fe",
+    "assets/images/mobile-3-education/self-ledger.png": "93e7ce340086617d4bb27e69ebdb83b925cb81c6f27fc6b2385fdd6721c3ec20",
+    "assets/images/mobile-3-education/self-session.png": "41f5389d6a40e758b86ad5307da8eb55b100066c8e4310681d74939c5ce7ab87"
+  }
+}

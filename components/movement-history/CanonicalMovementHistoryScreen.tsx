@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import { Image, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { AnalyticalHistoryChart } from '@/components/movement-history/AnalyticalHistoryChart';
+import { EducationInlineHint, useEducationHint, useMobileEducation } from '@/context/MobileEducationContext';
 import { ChartAxisModeToggle } from '@/components/charts/ChartAxisModeToggle';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { canonicalArtworkInputFromDefinition } from '@/lib/canonical-movement-artwork';
@@ -201,6 +202,7 @@ export function CanonicalMovementHistoryScreen({
   onRequestClose?: () => void;
 }) {
   const router = useRouter();
+  const education = useMobileEducation();
   const navigation = useNavigation();
   useLayoutEffect(() => {
     if (presentation === 'sheet') return undefined;
@@ -232,6 +234,7 @@ export function CanonicalMovementHistoryScreen({
   const [recentSessionError, setRecentSessionError] = useState(false);
   const [recentSessionRetry, setRecentSessionRetry] = useState(0);
   const requestGeneration = useRef(0);
+  const showHistoryHint = useEducationHint('movement-history', Boolean(history && history.summary.exposure_count > 1 && !selectedExposureId));
 
   useEffect(() => {
     setResolvedAthleteId(athleteId || null);
@@ -333,6 +336,7 @@ export function CanonicalMovementHistoryScreen({
 
   const openExposure = useCallback(async (exposureId: string) => {
     if (!query) return;
+    education.markLearned('movement-history');
     setSelectedExposureId(exposureId);
     setExposureDetail(null);
     setDetailError(null);
@@ -347,7 +351,7 @@ export function CanonicalMovementHistoryScreen({
     } finally {
       setDetailLoading(false);
     }
-  }, [history?.movement, query]);
+  }, [education.markLearned, history?.movement, query]);
 
   const closeExposure = () => {
     setSelectedExposureId(null);
@@ -428,6 +432,8 @@ export function CanonicalMovementHistoryScreen({
               <SummaryFact value={String(history.summary.set_count)} label="Sets" />
               <SummaryFact value={history.summary.first_performed_on ? `${dateLabel(history.summary.first_performed_on, false)} – ${dateLabel(history.summary.last_performed_on, false)}` : '—'} label="Date Range" wide />
             </View>
+
+            {showHistoryHint ? <EducationInlineHint feature="movement-history" title="Compare past Sets for this movement." /> : null}
 
             <View style={styles.controlRow}>
               <TopControl icon="options-outline" label="Filters" active={filterPreset !== 'all'} onPress={() => setFilterSheetOpen(true)} />

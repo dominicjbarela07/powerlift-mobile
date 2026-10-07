@@ -9,6 +9,7 @@ import { StrengthLedgerBottomSheet, type StrengthLedgerBottomSheetHandle } from 
 import { SLMotionPressable } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLFontFamilies, SLLayout, SLMotion, SLRadius, SLSpacing } from '@/constants/theme';
+import { useMobileEducation } from '@/context/MobileEducationContext';
 import {
   COACH_MORE_ACCOUNT_DESTINATIONS,
   COACH_MORE_TOOL_DESTINATIONS,
@@ -43,6 +44,7 @@ export function useCoachMoreNavigation() {
 }
 
 export function CoachMoreNavigationProvider({ children, enabled }: Readonly<{ children: React.ReactNode; enabled: boolean }>) {
+  const education = useMobileEducation();
   const router = useRouter();
   const sheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
   const pendingDestinationRef = useRef<CoachMoreDestination | null>(null);
@@ -85,10 +87,11 @@ export function CoachMoreNavigationProvider({ children, enabled }: Readonly<{ ch
 
   const selectDestination = useCallback((destination: CoachMoreDestination) => {
     if (pendingDestinationRef.current) return;
+    if (destination.key === 'review-hub') education.markVisited('review-hub');
     void Haptics.selectionAsync().catch(() => undefined);
     pendingDestinationRef.current = destination;
     sheetRef.current?.dismiss();
-  }, []);
+  }, [education]);
 
   const value = useMemo(() => ({ isOpen, open, close }), [close, isOpen, open]);
 
@@ -119,6 +122,7 @@ function DestinationSection({ destinations, onSelect, title }: Readonly<{
   onSelect: (destination: CoachMoreDestination) => void;
   title: string;
 }>) {
+  const education = useMobileEducation();
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -139,7 +143,7 @@ function DestinationSection({ destinations, onSelect, title }: Readonly<{
               <View style={[styles.icon, { backgroundColor: `${accent}18`, borderColor: `${accent}55` }]}>
                 <Ionicons color={accent} name={destination.icon as keyof typeof Ionicons.glyphMap} size={22} />
               </View>
-              <Text numberOfLines={1} style={styles.label}>{destination.label}</Text>
+              <View style={styles.tileTitle}><Text numberOfLines={1} style={styles.label}>{destination.label}</Text>{destination.key === 'review-hub' && education.showNew('review-hub') ? <Text style={styles.newLabel}>NEW</Text> : null}</View>
               <Text numberOfLines={1} style={styles.detail}>{destination.detail}</Text>
             </SLMotionPressable>
           );
@@ -158,5 +162,7 @@ const styles = StyleSheet.create({
   tile: { width: '48.8%', minHeight: 96, justifyContent: 'center', paddingHorizontal: 12, paddingVertical: 10, borderRadius: SLRadius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceRaised },
   icon: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 11, borderWidth: StyleSheet.hairlineWidth, marginBottom: 7 },
   label: { color: SLColors.textStrong, fontFamily: SLFontFamilies.bodyBold, fontSize: 14, lineHeight: 18 },
+  tileTitle: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  newLabel: { color: '#C68FFF', fontFamily: SLFontFamilies.bodyBold, fontSize: 9, letterSpacing: 0.5 },
   detail: { color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 10, lineHeight: 14, marginTop: 2 },
 });

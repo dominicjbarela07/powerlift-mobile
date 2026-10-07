@@ -12,6 +12,7 @@ import { SLAthleteAvatar, SLErrorState, SLScreen } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
 import { FloatingControlCoordinator, FloatingControlStack, FloatingUtilityButton } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
+import { EducationInlineHint, useEducationHint, useMobileEducation } from '@/context/MobileEducationContext';
 
 import { useCoachAthleteWorkspace, type WorkspaceDestination } from './CoachAthleteWorkspaceContext';
 
@@ -38,6 +39,7 @@ function workspaceDestination(pathname: string): WorkspaceDestination | null {
 }
 
 export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }) {
+  const education = useMobileEducation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
@@ -46,6 +48,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
   const [overflowOpen, setOverflowOpen] = useState(false);
   const [toolkitOpen, setToolkitOpen] = useState(false);
   const selected = workspaceDestination(pathname);
+  const showWorkspaceHint = useEducationHint('athlete-workspace', Boolean(workspace.bootstrap && !workspace.loading && selected === 'brief'));
   const athlete = workspace.bootstrap?.athlete;
   const basePath = `/(tabs)/coach-athlete/${workspace.athleteId}`;
   const pendingReviewCount = Number(workspace.summary?.pending_session_reviews.count || 0)
@@ -61,6 +64,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
   }), [pendingReviewCount, workspace.bootstrap?.check_ins.submitted_unreviewed_count, workspace.summary]);
 
   const navigate = (destination: WorkspaceDestination) => {
+    education.markLearned('athlete-workspace');
     const suffix = DESTINATIONS.find((item) => item.key === destination)?.suffix || '';
     router.navigate({
       pathname: `${basePath}${suffix}` as any,
@@ -150,6 +154,8 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
           <Ionicons color={COACH_V2.text} name="ellipsis-horizontal" size={23} />
         </Pressable>
       </View>
+
+      {showWorkspaceHint ? <View style={styles.educationInset}><EducationInlineHint feature="athlete-workspace" title="The plan, recent Sessions, and signals for this athlete are here." /></View> : null}
 
       <View key={workspace.subjectKey} style={styles.content}>{children}</View>
 
@@ -253,6 +259,7 @@ function ToolkitAction({ icon, label, onPress }: { icon: keyof typeof Ionicons.g
 }
 
 const styles = StyleSheet.create({
+  educationInset: { paddingHorizontal: SLLayout.screenGutter },
   screen: { backgroundColor: '#000', flex: 1 },
   state: { alignItems: 'center', flex: 1, justifyContent: 'center', padding: 28 },
   stateTitle: { color: COACH_V2.text, fontSize: 20, fontWeight: '800', marginTop: 18 },

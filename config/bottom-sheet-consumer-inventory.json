@@ -401,13 +401,7 @@
       "file": "app/(tabs)/athlete-dashboard.tsx",
       "index": 0,
       "presentation": "excluded-non-bottom-modal",
-      "reason": "centered patch-note dialog"
-    },
-    {
-      "file": "app/(tabs)/athlete-dashboard.tsx",
-      "index": 1,
-      "presentation": "excluded-non-bottom-modal",
-      "reason": "centered patch-note dialog"
+      "reason": "centered individual Today welcome dialog; obsolete 2.0 patch-note presentation replaced by role-aware 3.0 Education"
     },
     {
       "file": "app/(tabs)/coach-calendar.tsx",
