@@ -157616,7 +157616,8 @@
     "scripts/audit-ui-constitution.js": "c14e4631723433c5528131adc17c2f376dbef912a6288cd2575c2a10c460024b",
     "scripts/audit-transparent-screen-roots.js": "2cb55a6dc2987baa0693dfa6325437c50c1dc1057bd8817fbdadde8defc88518",
     "scripts/reviewed-runtime-continuation.mjs": "20622b5f378d0ad86666fd80c154e51946fdfe95354159fe50ff77fd13df3b4b",
-    "scripts/test-reviewed-runtime-continuation.mjs": "8e4d6049dfae485175d65bb4ec7f14dd093eab3fe1e7f74f99955b781fae7b87"
+    "scripts/test-reviewed-runtime-continuation.mjs": "8e4d6049dfae485175d65bb4ec7f14dd093eab3fe1e7f74f99955b781fae7b87",
+    "scripts/test-governed-movement-art-taxonomy.mjs": "3a24ad4b0858af7653088693bea99a0c1a886800b3b7d0b40dac561c57ce3f4f"
   },
   "historicalRemovalAuthorizations": [
     {
