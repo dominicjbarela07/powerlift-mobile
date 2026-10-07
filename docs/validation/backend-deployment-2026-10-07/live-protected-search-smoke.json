@@ -1,0 +1,43 @@
+{
+  "verifiedAt": "2026-10-07T19:55:08.542444+00:00",
+  "environment": "Production app.strengthledger.fit",
+  "accountState": "Unauthenticated, no bearer token",
+  "workflow": "Direct movement-search API request",
+  "url": "https://app.strengthledger.fit/workouts/mobile/movement-definitions/search?q=lat%20pulldwn&limit=3",
+  "expected": "Unauthenticated request rejected without private movement records",
+  "observedStatus": 401,
+  "response": {
+    "account_state": "LOGIN_REQUIRED",
+    "account_state_detail": {
+      "account_state": "LOGIN_REQUIRED",
+      "athlete_id": null,
+      "billing_entitlement": null,
+      "billing_required": false,
+      "can_access_product": false,
+      "coach_id": null,
+      "is_owner_admin": false,
+      "link_coach_required": false,
+      "next_route": "auth.login",
+      "next_url": "/auth/login",
+      "reason": "missing_or_unauthenticated_user",
+      "role": null,
+      "verification_required": false,
+      "workspace_mode": null
+    },
+    "athlete_id": null,
+    "billing_required": false,
+    "can_access_product": false,
+    "coach_id": null,
+    "error": "login required",
+    "link_coach_required": false,
+    "next_route": "auth.login",
+    "next_url": "/auth/login",
+    "ok": false,
+    "reason": "missing_or_unauthenticated_user",
+    "role": null,
+    "verification_required": false,
+    "workspace_mode": null
+  },
+  "pass": true,
+  "authenticatedCustomerWorkflowValidated": false
+}

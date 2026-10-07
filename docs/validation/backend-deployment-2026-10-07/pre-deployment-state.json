@@ -1,0 +1,157 @@
+{
+  "recordedAt": "2026-10-07T19:46:30.699174+00:00",
+  "candidateSha": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+  "remoteBaselineSha": "751a1173b301cb382557c5cbda59e4fdf72633b2",
+  "beforeLiveHealth": {
+    "machine_first_baseline_recognized": false,
+    "manufacturers_isolated": true,
+    "migration_revisions": [
+      "f47a92b1c8d0"
+    ],
+    "minimum_delivery_client_version": "2.1.0",
+    "other_is_separate_equipment_context": true,
+    "policy_version": "accessory-exact-reps-equipment-isolated-v3",
+    "pr_comparison_scope": "canonical_movement_exact_equipment",
+    "ready": true,
+    "schema_fingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+    "source_sha": "751a1173b301cb382557c5cbda59e4fdf72633b2"
+  },
+  "preExistingTrackedDirty": [
+    {
+      "path": ".DS_Store",
+      "sha256": "a98ad9854b88d660a53ae8ba96b86bdc8aa698ff34760356528767a99c84fb9f",
+      "bytes": 8196
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "b8c70793096c03a38331c97a4a9c86105ce1a98d213493cf2c5b620fe263db5e",
+      "bytes": 1998
+    },
+    {
+      "path": "__pycache__/wsgi.cpython-311.pyc",
+      "sha256": "618686dcac992ddcd121174d05cfb24dea3d3e0aa26084c2d9f0e811e72adb4c",
+      "bytes": 365
+    },
+    {
+      "path": "__pycache__/wsgi.cpython-312.pyc",
+      "sha256": "4562a39073c3d398f04497f4beef9e9f1e65622c403542a6c8e31250b9dae1d4",
+      "bytes": 308
+    },
+    {
+      "path": "app/.DS_Store",
+      "sha256": "fefe72f498de8a1e389405efde08bf40208f9d5e86f008cce56c3f2ece210f28",
+      "bytes": 8196
+    },
+    {
+      "path": "app/__pycache__/__init__.cpython-311.pyc",
+      "sha256": "3785e9c3ce9a3ddc9c536d8c1296d3368e782a1078894332330d280b90f384d5",
+      "bytes": 112799
+    },
+    {
+      "path": "app/__pycache__/__init__.cpython-312.pyc",
+      "sha256": "4e577306a5e406a4aae5d9b14ec009c66358c4dacf4cd33e7c569122417471b0",
+      "bytes": 103172
+    },
+    {
+      "path": "app/__pycache__/models.cpython-311.pyc",
+      "sha256": "19beefbdd30494e8def161e25a0a708b16033847173e2404a83d9dc7959cc6d3",
+      "bytes": 189048
+    },
+    {
+      "path": "app/__pycache__/models.cpython-312.pyc",
+      "sha256": "f1e2dedeb10f8f426512ed1dfa70357b3917c7a821894e0b90c721d3ffbcf629",
+      "bytes": 192842
+    },
+    {
+      "path": "app/blueprints/__pycache__/athletes.cpython-311.pyc",
+      "sha256": "65c1a06ba20893b8190f686d32435d8487d0024dde83064b5ee6acb22ae30b27",
+      "bytes": 324202
+    },
+    {
+      "path": "app/blueprints/__pycache__/athletes.cpython-312.pyc",
+      "sha256": "731f4fd29649bf6907e05b48728a84d89c60a4fcc44e17922035d4689eb450d6",
+      "bytes": 287995
+    },
+    {
+      "path": "app/blueprints/__pycache__/auth.cpython-311.pyc",
+      "sha256": "a101d6bd0674a10d27792af95a03f590f600f42180f971b70866e49e109e84c6",
+      "bytes": 134605
+    },
+    {
+      "path": "app/blueprints/__pycache__/auth.cpython-312.pyc",
+      "sha256": "b157e4548aa28a7b9ef3aeb0a7ea25dd3df572e5ab6b1cfc10e59696752e7c7b",
+      "bytes": 119953
+    },
+    {
+      "path": "app/blueprints/__pycache__/main.cpython-311.pyc",
+      "sha256": "8215ca6e64641a116a0906113c24e7c174775c67355c9b7e1072755cacbccaff",
+      "bytes": 610075
+    },
+    {
+      "path": "app/blueprints/__pycache__/main.cpython-312.pyc",
+      "sha256": "6e838c4b10b78f000750952dc27b8e64de5150f1cf76740da7af1c31521522cc",
+      "bytes": 551466
+    },
+    {
+      "path": "app/blueprints/__pycache__/templates.cpython-311.pyc",
+      "sha256": "80e644bba11006f64f06ca6b571d0ef587a436ff060e4dcf598a0562d05929cf",
+      "bytes": 37053
+    },
+    {
+      "path": "app/blueprints/__pycache__/workouts.cpython-311.pyc",
+      "sha256": "da17eb7deea44a3dbe4c21ff1e73d8049871055c8838e682ceef2a60cfdcf957",
+      "bytes": 581091
+    },
+    {
+      "path": "app/blueprints/__pycache__/workouts.cpython-312.pyc",
+      "sha256": "1f65c33768a8e75cdc8ae9cdcacfbae2fcda66e5d070e8d57fc5886b1c51560d",
+      "bytes": 510644
+    },
+    {
+      "path": "app/utils/__pycache__/calculations.cpython-311.pyc",
+      "sha256": "0ec43a754e73492e8ad104313811023f703174ebdf4998f20ac0dafed24d455a",
+      "bytes": 2892
+    },
+    {
+      "path": "app/utils/__pycache__/ensure_self_athlete.cpython-311.pyc",
+      "sha256": "3e3249b0465ed684a47729a28c124f6072e9a1a65e217438f8c259cd29d45bfd",
+      "bytes": 594
+    },
+    {
+      "path": "app/utils/__pycache__/load_calc.cpython-311.pyc",
+      "sha256": "7e97ea071d6acccd4efcdc844a188d1547281e3fced205cd2c4a3f6adc7c782c",
+      "bytes": 8243
+    },
+    {
+      "path": "app/utils/__pycache__/presets.cpython-311.pyc",
+      "sha256": "752839523d731f41c335d4fa15fa84103aee04e2ca5ba6f90543d20c70771a43",
+      "bytes": 14059
+    },
+    {
+      "path": "app/utils/__pycache__/security.cpython-311.pyc",
+      "sha256": "c7387d2576210e445630db16e34f2659c01b93daade826058f56dea1e749872f",
+      "bytes": 2825
+    },
+    {
+      "path": "app/utils/__pycache__/workout_helpers.cpython-311.pyc",
+      "sha256": "674d97d7c0165ec9228337d2da94cca7e152ae1624c192edc0a218f2c1b46b15",
+      "bytes": 23021
+    },
+    {
+      "path": "app/utils/__pycache__/workout_logic.cpython-311.pyc",
+      "sha256": "afa09b12dccf50110c8f3452db1c211e3b9ccab3f95b0c67882317f9b8b5db13",
+      "bytes": 2800
+    },
+    {
+      "path": "instance/powerlift.db",
+      "sha256": "9067eca1953ebdbcc8d206fb6462407917515abb1e9f524a84dd72d0f979de7e",
+      "bytes": 2072576
+    },
+    {
+      "path": "tests/test_core_accomplishment_queries_stage6.py",
+      "sha256": "beb3b4fc5ee1834e12192dff2ea57240b2a2e0090098ac5058b8a5119e5720b1",
+      "bytes": 24089
+    }
+  ],
+  "pushPerformed": false
+}

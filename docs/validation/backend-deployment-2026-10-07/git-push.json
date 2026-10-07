@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-10-07T19:52:20.419869+00:00",
+  "repository": "/Users/dominic/powerlifting_app",
+  "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+  "destination": "origin refs/heads/main",
+  "force": false,
+  "hookBypassed": false,
+  "exit": 0,
+  "log": "git-push.log"
+}

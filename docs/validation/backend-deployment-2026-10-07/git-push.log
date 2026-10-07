@@ -1,0 +1,3 @@
+Shared-backend release gate: PASS; frozen iOS/Android response parity and deliberate failure control verified
+To https://github.com/dominicjbarela07/SCUI.git
+   751a1173..d4b6a8b2  HEAD -> main

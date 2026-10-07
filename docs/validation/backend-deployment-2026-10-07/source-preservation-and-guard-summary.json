@@ -1,0 +1,22 @@
+{
+  "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+  "frozenResponsesIdentical": {
+    "ios": 104,
+    "android": 104
+  },
+  "independentOwnerPolicyCases": 3,
+  "negativePermissionControlRejected": true,
+  "schemaChanged": false,
+  "preservedOriginalDirtyFiles": 27,
+  "searchImplementationMatchesCanonicalDEV": true,
+  "guardTestSummaries": {
+    "candidate-tests.log": [
+      "Ran 128 tests in 43.596s",
+      "OK"
+    ],
+    "owner-policy.log": [
+      "Ran 3 tests in 4.143s",
+      "OK"
+    ]
+  }
+}
