@@ -22,7 +22,7 @@ type TrendPoint = CoachTeamBriefResponse['progress']['series'][number];
 type LiftKey = 'total' | 'squat' | 'bench' | 'deadlift';
 
 const PERIODS: PeriodKey[] = ['7D', '4W', '12W', '6M', 'YTD', 'ALL'];
-const METRIC_LABELS: Record<CoachAnalyticsMetricKey, string> = { max_progression: 'Max Progression', dots_progression: 'Estimated DOTS Progression', adherence: 'Adherence', pr_rate: 'PR Rate' };
+const METRIC_LABELS: Record<CoachAnalyticsMetricKey, string> = { max_progression: 'Max Progression', dots_progression: 'Estimated DOTS', adherence: 'Adherence', pr_rate: 'PR Rate' };
 const LIFT_LABELS: Record<LiftKey, string> = { total: 'Total', squat: 'Squat', bench: 'Bench', deadlift: 'Deadlift' };
 
 function metricText(value?: number | null, metric: CoachAnalyticsMetricKey = 'max_progression') {

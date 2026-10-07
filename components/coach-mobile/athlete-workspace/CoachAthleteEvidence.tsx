@@ -43,7 +43,7 @@ export function CoachAthleteEvidence() {
       <View style={styles.intro}>
         <Text style={styles.kicker}>ATHLETE EVIDENCE</Text>
         <Text style={styles.title}>{athlete.name}’s Ledger</Text>
-        <Text style={styles.subtitle}>Every room below inherits the verified athlete subject from this workspace.</Text>
+        <Text style={styles.subtitle}>Explore their training history and progress.</Text>
       </View>
       <View style={styles.list}>
         {ROOMS.map((room, index) => (
@@ -55,7 +55,7 @@ export function CoachAthleteEvidence() {
           </Pressable>
         ))}
       </View>
-      <Text style={styles.guard}>Athlete ID is addressing only. Each Ledger resource independently enforces the active coaching relationship.</Text>
+      <Text style={styles.guard}>This Ledger shows your athlete’s record.</Text>
       <View style={styles.bottomSpace} />
     </ScrollView>
   );
@@ -64,17 +64,17 @@ export function CoachAthleteEvidence() {
 const styles = StyleSheet.create({
   content: { gap: SLSpacing.lg, padding: SLLayout.screenGutter, paddingBottom: 96 },
   intro: { paddingTop: 4 },
-  kicker: { color: COACH_V2.violetBright, fontSize: 11, fontWeight: '900', letterSpacing: 1.5 },
+  kicker: { color: COACH_V2.violetBright, fontSize: 12, fontWeight: '900', letterSpacing: 1.5 },
   title: { color: COACH_V2.text, fontSize: 28, fontWeight: '800', marginTop: 4 },
   subtitle: { color: COACH_V2.muted, fontSize: 14, lineHeight: 20, marginTop: 5 },
   list: { backgroundColor: COACH_V2.surface, borderColor: COACH_V2.border, borderRadius: SLRadius.lg, borderWidth: 1, overflow: 'hidden', paddingHorizontal: 13 },
   row: { alignItems: 'center', borderBottomColor: COACH_V2.border, borderBottomWidth: StyleSheet.hairlineWidth, flexDirection: 'row', gap: 10, minHeight: 76, paddingVertical: 10 },
-  index: { color: COACH_V2.subtle, fontSize: 11, fontWeight: '800', width: 20 },
+  index: { color: COACH_V2.subtle, fontSize: 12, fontWeight: '800', width: 20 },
   icon: { alignItems: 'center', backgroundColor: 'rgba(157,92,255,0.12)', borderRadius: 13, height: 43, justifyContent: 'center', width: 43 },
   flex: { flex: 1, minWidth: 0 },
   rowTitle: { color: COACH_V2.text, fontSize: 16, fontWeight: '800' },
   rowDetail: { color: COACH_V2.muted, fontSize: 12, lineHeight: 17, marginTop: 3 },
   pressed: { opacity: 0.7 },
-  guard: { color: COACH_V2.subtle, fontSize: 11, lineHeight: 16, paddingHorizontal: 4 },
+  guard: { color: COACH_V2.subtle, fontSize: 12, lineHeight: 16, paddingHorizontal: 4 },
   bottomSpace: { height: SLSpacing.xl },
 });

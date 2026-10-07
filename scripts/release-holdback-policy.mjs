@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 
 /** A release may retain pinned, already-shipped bytes while DEV awaits a
  * separate compatible backend/catalog release. It may not invent product code. */
@@ -15,8 +16,8 @@ export function validateReleaseHoldbacks(holdbacks, candidate, git) {
     assert.ok(row.path && !row.path.startsWith('/') && !row.path.split('/').includes('..'));
     assert.ok(!paths.has(row.path), 'holdbacks must be unique');
     if (row.blob === null) {
-      assert.throws(() => git('cat-file', '-e', `${source}:${row.path}`), 'an excluded DEV-only file must be absent from the shipped baseline');
-      assert.throws(() => git('cat-file', '-e', `${candidate}:${row.path}`), 'an excluded DEV-only file must remain absent from the candidate');
+      assert.equal(git('ls-tree', '--name-only', source, '--', row.path).trim(), '', 'an excluded DEV-only file must be absent from the shipped baseline');
+      assert.equal(git('ls-tree', '--name-only', candidate, '--', row.path).trim(), '', 'an excluded DEV-only file must remain absent from the candidate');
     } else {
       assert.match(row.blob, /^[a-f0-9]{40}$/);
       if (row.sharedFix) {
@@ -58,7 +59,16 @@ export function validateDevReleaseHoldbacks(holdbacks, candidateFiles, devFiles,
     assert.equal(devFiles[row.path], row.devSha256, 'holdback DEV changed');
     if (row.sharedFix) {
       const base = devGit('show', `${row.sharedFix.devSourceCommit}:${row.path}`);
-      assert.equal(applySharedReleaseFix(base, row.sharedFix), devGit('show', `HEAD:${row.path}`), 'canonical DEV must contain the identical shared fix without losing its pending feature');
+      let expected = applySharedReleaseFix(base, row.sharedFix);
+      if (row.devOnlyProgression) {
+        const progression = row.devOnlyProgression;
+        assert.ok(progression.ownerInstruction && progression.ownerEvidenceSha256 && progression.reason?.length > 30);
+        assert.equal(crypto.createHash('sha256').update(expected).digest('hex'), progression.before, 'DEV-only progression must start from the existing tested shared fix');
+        assert.equal(progression.after, row.devSha256, 'DEV-only progression must own the new endpoint');
+        expected = progression.changes.reduce((source, change) => applySharedReleaseFix(source, change), expected);
+        assert.equal(crypto.createHash('sha256').update(expected).digest('hex'), progression.after, 'DEV-only progression must prove every new byte');
+      }
+      assert.equal(expected, devGit('show', `HEAD:${row.path}`), 'canonical DEV must contain the identical shared fix plus only exact reviewed DEV additions, preserving its pending feature');
     }
     assert.ok(held.has(row.path));
     proven.add(row.path);

@@ -18,19 +18,19 @@ export function SessionV3Header({ title, subtitle, active, preview, inset, onBac
 }) {
   return <View style={[s.header, { paddingTop: inset + 4 }]}>
     <View style={s.headerRow}>
-      <Pressable accessibilityRole="button" accessibilityLabel={preview ? 'Return to Coach Editor' : active ? 'Minimize Session' : 'Back to Training'} onPress={onBack} style={s.icon}><Ionicons name={active && !preview ? 'chevron-down' : 'chevron-back'} size={22} color="#d4cadd" /></Pressable>
-      <View style={s.copy}><Text style={s.headerTitle}>{preview ? `Preview · ${preview}` : title}</Text><Text style={s.subtitle}>{preview ? 'Read only · Return to Coach Editor' : subtitle}</Text></View>
+      <Pressable accessibilityRole="button" accessibilityLabel={preview ? 'Return to Session Workspace' : active ? 'Minimize Session' : 'Back to Training'} onPress={onBack} style={s.icon}><Ionicons name={active && !preview ? 'chevron-down' : 'chevron-back'} size={22} color="#d4cadd" /></Pressable>
+      <View style={s.copy}><Text style={s.headerTitle}>{preview ? `Preview · ${preview}` : title}</Text><Text style={s.subtitle}>{preview ? 'Read only · Return to Session Workspace' : subtitle}</Text></View>
       <Pressable accessibilityRole="button" accessibilityLabel="Session actions" onPress={onActions} style={s.icon}><Ionicons name="ellipsis-horizontal" size={23} color="#d4cadd" /></Pressable>
     </View>
     {active ? <><View style={s.progressRow}><Text style={s.subtitle}><Text style={s.green}>●</Text> {logged} / {total} sets saved</Text><SessionElapsedClockText startedAt={startedAt} style={s.subtitle} /></View><View style={s.track}><View style={[s.fill, { width: `${Math.min(100, total ? logged / total * 100 : 0)}%` }]} /></View></> : null}
   </View>;
 }
 
-export function SessionV3PlanHero({ title, focus, planned, movements, artwork, note }: {
-  title: string; focus: string; planned: number; movements: number; artwork?: CanonicalMovementArtworkInput | null; note?: string | null;
+export function SessionV3PlanHero({ title, focus, planned, movements, artwork, note, eyebrow = 'YOUR SESSION' }: {
+  title: string; focus: string; planned: number; movements: number; artwork?: CanonicalMovementArtworkInput | null; note?: string | null; eyebrow?: string;
 }) {
   return <View style={s.hero}>
-    <View style={s.heroRow}><View style={s.heroCopy}><Text style={s.eyebrow}>TODAY’S SESSION</Text><Text style={s.title}>{title}</Text><Text style={s.focus}>{focus}</Text></View><CanonicalMovementArtwork surface="session-v3-shell" movement={artwork} size={120} style={s.heroArt} /></View>
+    <View style={s.heroRow}><View style={s.heroCopy}><Text style={s.eyebrow}>{eyebrow}</Text><Text style={s.title}>{title}</Text><Text style={s.focus}>{focus}</Text></View><CanonicalMovementArtwork surface="session-v3-shell" movement={artwork} size={120} style={s.heroArt} /></View>
     <View style={s.stats}><View><Text style={s.number}>{planned}</Text><Text style={s.subtitle}>work sets</Text></View><View><Text style={s.number}>{movements}</Text><Text style={s.subtitle}>movements</Text></View></View>
     {note ? <View style={s.note}><Text style={s.eyebrow}>SESSION NOTE</Text><Text style={s.noteText}>{note}</Text></View> : null}
   </View>;

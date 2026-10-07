@@ -128,6 +128,7 @@ export function AthleteEducationExperience({
         </View>
       </> : scene && <>
         <View style={styles.sceneHeading}>
+          <Text style={{ color: '#bba7ce', fontSize: 12, letterSpacing: 1.4, marginBottom: 10 }}>EXAMPLE</Text>
           <Text style={[styles.sceneTitle, { fontSize: Math.min(34, width * 0.081), lineHeight: Math.min(39, width * 0.093) }]}>{scene.title}</Text>
         </View>
         <View style={styles.screenWindow}>

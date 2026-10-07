@@ -20,6 +20,22 @@
       "android": {
         "distribution": "store"
       }
+    },
+    "production3-preparation": {
+      "channel": "production-3-preparation",
+      "autoIncrement": true,
+      "env": {
+        "STRENGTH_LEDGER_RELEASE_TARGET": "production3",
+        "EXPO_PUBLIC_APPROVED_ART_CHANNEL": "production3",
+        "EXPO_PUBLIC_ART_RUNTIME_VERSION": "3.0.0",
+        "EXPO_PUBLIC_API_BASE": "https://app.strengthledger.fit"
+      },
+      "ios": {
+        "distribution": "store"
+      },
+      "android": {
+        "distribution": "store"
+      }
     }
   },
   "submit": {

@@ -12,6 +12,7 @@ import {
   resolveTrainingHubSessionPreviewAction,
   trainingHubMovementPrescription,
 } from '@/lib/training-hub-session-preview';
+import { sessionUnavailableExplanation } from '@/lib/session-availability';
 import type { AthleteTrainingProgram, AthleteTrainingSession } from './AthleteTrainingHubExperience';
 
 type SessionContext = { blockName?: string | null; weekNumber?: number | null } | null;
@@ -86,7 +87,7 @@ export function TrainingHubSessionPreviewBottomSheet({ context, onClose, onOpen,
       </StrengthLedgerBottomSheetScrollView>
       <View style={styles.footer}>{action.ctaLabel ? <SLMotionPressable accessibilityLabel={action.ctaLabel} accessibilityRole="button" accessibilityState={{ busy: opening, disabled: opening }} disabled={opening} onPress={openCanonicalDestination} pressScale={0.985} style={[styles.action, completed && styles.completedAction, opening && styles.disabledAction]}>
         <Text style={styles.actionText}>{action.ctaLabel}</Text><Ionicons name="arrow-forward" size={19} color="#FFFFFF" />
-      </SLMotionPressable> : <View style={styles.unavailable}><Ionicons name="lock-closed-outline" size={18} color={SLColors.textMuted} /><Text style={styles.unavailableText}>This Session is not available to open.</Text></View>}</View>
+      </SLMotionPressable> : <View style={styles.unavailable}><Ionicons name="lock-closed-outline" size={18} color={SLColors.textMuted} /><Text style={styles.unavailableText}>{sessionUnavailableExplanation({ status: session.lifecycleStatus, canBegin: false }) || 'This Session is not available to open.'}</Text></View>}</View>
     </View>
   </StrengthLedgerBottomSheet>;
 }

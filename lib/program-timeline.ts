@@ -1,4 +1,5 @@
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import { unavailableSessionLifecycle } from './session-availability';
 
 export type ProgramTimelineLifecycle =
   | 'completed'
@@ -6,6 +7,9 @@ export type ProgramTimelineLifecycle =
   | 'today'
   | 'upcoming'
   | 'missed'
+  | 'draft'
+  | 'canceled'
+  | 'archived'
   | 'no_session';
 
 export type ProgramTimelineSession = {
@@ -124,10 +128,12 @@ function sessionTitle(session: RawSession) {
 }
 
 function sessionLifecycle(session: RawSession, date: string, today: string): ProgramTimelineSession['lifecycle'] {
-  const status = String(session.status || session.kind || session.lifecycle_status || '').toLowerCase();
-  if (['completed', 'complete', 'logged', 'done'].some((value) => status.includes(value))) return 'completed';
-  if (['in_progress', 'started', 'active'].some((value) => status.includes(value))) return 'in_progress';
-  if (['missed', 'past_due', 'incomplete'].some((value) => status.includes(value))) return 'missed';
+  const status = String(session.raw_status || session.status || session.kind || session.lifecycle_status || '').trim().toLowerCase();
+  const unavailable = unavailableSessionLifecycle(status);
+  if (unavailable) return unavailable;
+  if (['completed', 'complete', 'logged', 'done'].includes(status)) return 'completed';
+  if (['in_progress', 'started', 'active'].includes(status)) return 'in_progress';
+  if (['missed', 'past_due', 'incomplete', 'missed_excused', 'tardy'].includes(status)) return 'missed';
   if (date === today) return 'today';
   return date < today ? 'missed' : 'upcoming';
 }
@@ -206,9 +212,11 @@ function blockSessions(blockId: number, pendingMap: Record<string, RawSession[]>
 }
 
 function weekLifecycle(week: Omit<ProgramTimelineWeek, 'lifecycle'>, today: string): ProgramTimelineLifecycle {
+  const available = week.days.flatMap(day => day.sessions).filter(session => !unavailableSessionLifecycle(session.lifecycle));
+  if (week.sessionCount && !available.length) return week.days.flatMap(day => day.sessions)[0].lifecycle;
   if (week.current) return 'today';
   if (week.sessionCount === 0) return 'no_session';
-  if (week.completedCount === week.sessionCount) return 'completed';
+  if (week.completedCount === available.length) return 'completed';
   if (week.endDate < today && week.missedCount > 0) return 'missed';
   return week.startDate > today ? 'upcoming' : 'in_progress';
 }

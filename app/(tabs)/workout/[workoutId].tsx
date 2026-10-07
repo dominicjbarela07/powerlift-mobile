@@ -19,6 +19,7 @@ import { EducationInlineHint, useEducationHint, useMobileEducation } from '@/con
 import { SessionHistoryPeek } from '@/components/workout-logger/session-history-peek';
 import { invalidateEvidenceReads } from '@/lib/evidence-read-cache';
 import { sessionExecutionCapabilities } from '@/lib/session-logger-lifecycle';
+import { sessionUnavailableExplanation } from '@/lib/session-availability';
 import { registerFocusedSession } from '@/lib/session-logger-focus';
 import { scheduleRestTimerEnd } from '@/lib/rest-timer-notification-scheduling';
 import { shouldOfferRestAfterAcceptedSet } from '@/lib/set-rest-handoff';
@@ -7474,6 +7475,13 @@ export default function WorkoutViewerScreen() {
   const canLog = canLogFromServer && workout.status === 'in_progress';
   const canManageSetVideo = canLogFromServer && !isCoachView;
   const canBegin = executionCapabilities.canBegin;
+  const unavailableExplanation = sessionUnavailableExplanation({
+    status: workout.raw_status || workout.status,
+    blockReason: workout.block_reason,
+    loggable: workout.loggable,
+    canBegin,
+    selfCoached: isIndividualUser,
+  });
   const canCompleteOrCancel =
     canLogFromServer &&
     (workout.status === 'in_progress' || workout.status === 'completed');
@@ -8803,7 +8811,7 @@ export default function WorkoutViewerScreen() {
         logged={loggedSets} total={plannedSets} startedAt={workout.started_at}
         onBack={() => { if (isPreSession && focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else handleBackToTrainingHub(); }}
         onActions={() => canLog ? setSessionActionsVisible(true) : Alert.alert('Session actions', undefined, [
-          ...(isCoachAthletePreview ? [{ text: 'Return to Coach Editor', onPress: handleReturnToCoachEditor }] : [
+          ...(isCoachAthletePreview ? [{ text: 'Return to Session Workspace', onPress: handleReturnToCoachEditor }] : [
             ...(canEdit ? [{ text: 'Edit Session', onPress: handleEditWorkout }] : []),
           ]), { text: 'Close', style: 'cancel' },
         ])} />
@@ -8859,11 +8867,17 @@ export default function WorkoutViewerScreen() {
           </TouchableOpacity>
         </View> : null}
         {isPreSession && !focusedMovementKey ? <SessionV3PlanHero
+          eyebrow={workout.status === 'draft' ? 'DRAFT SESSION' : 'YOUR SESSION'}
           title={workout.label || 'Training Session'} focus={focusLine} planned={plannedSets}
           movements={coreMovementCount + accessoryMovementOrder.length}
           artwork={canonicalArtworkInputForLoggerItem(workout.core_items.find(item => !item.parent_item_id) || accessoryMovementOrder[0])}
           note={workout.programming_notes}
         /> : null}
+        {isPreSession && !isCoachAthletePreview && unavailableExplanation ? (
+          <View accessibilityRole="alert" style={{ paddingVertical: 16 }}>
+            <Text typographyRole="body" style={{ color: SLColors.textMuted }}>{unavailableExplanation}</Text>
+          </View>
+        ) : null}
         {isFinishedSession && workout.impact_summary?.canonically_completed ? (
           <SessionImpactPanel
             summary={workout.impact_summary}

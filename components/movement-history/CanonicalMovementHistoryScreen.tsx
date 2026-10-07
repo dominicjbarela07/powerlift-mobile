@@ -454,7 +454,7 @@ export function CanonicalMovementHistoryScreen({
                     />
                   ))}
                 </ScrollView>
-                <Text style={styles.comparisonNote}>{unknownEquipmentSeries ? `${history.filters.analytics_exposure_count ?? history.performance_trend.length} Unknown exposure${(history.filters.analytics_exposure_count ?? history.performance_trend.length) === 1 ? '' : 's'} plotted as one recorded historical series. It is never mixed with named equipment.` : `${history.filters.comparable_exposure_count ?? history.performance_trend.length} comparable of ${history.filters.filtered_exposure_count ?? history.summary.exposure_count} scoped exposures inform the analytics. Every canonical exposure remains available under All History.`}</Text>
+                <Text style={styles.comparisonNote}>{unknownEquipmentSeries ? 'Equipment wasn’t recorded for these Sessions. They are kept separate from named equipment.' : `${history.filters.comparable_exposure_count ?? history.performance_trend.length} comparable Sessions. See every saved Set in All History.`}</Text>
               </Section>
             ) : null}
 
@@ -481,7 +481,7 @@ export function CanonicalMovementHistoryScreen({
             </Section>
 
             <Section title="EXPOSURE HISTORY" meta={`${history.filters.filtered_exposure_count ?? history.summary.exposure_count} exposure${(history.filters.filtered_exposure_count ?? history.summary.exposure_count) === 1 ? '' : 's'}`}>
-              {history.exposures.length ? <View style={styles.exposureList}>{history.exposures.map((exposure) => <ExposureRow key={exposure.id} exposure={exposure} metricLabel={history.strength_metric.short_label} unit={unit} estimated={!assistanceHistory} onPress={() => void openExposure(exposure.id)} />)}</View> : <View style={styles.truthfulEmpty}><Text style={styles.truthfulEmptyTitle}>No canonical exposures in this filter.</Text><Text style={styles.truthfulEmptyBody}>Try All History or a different date and performance filter.</Text></View>}
+              {history.exposures.length ? <View style={styles.exposureList}>{history.exposures.map((exposure) => <ExposureRow key={exposure.id} exposure={exposure} metricLabel={history.strength_metric.short_label} unit={unit} estimated={!assistanceHistory} onPress={() => void openExposure(exposure.id)} />)}</View> : <View style={styles.truthfulEmpty}><Text style={styles.truthfulEmptyTitle}>No Sessions in this filter.</Text><Text style={styles.truthfulEmptyBody}>Try All History or a different date and performance filter.</Text></View>}
               {history.has_more ? <Pressable accessibilityRole="button" onPress={() => void loadMore()} style={styles.loadMore}><Text style={styles.loadMoreText}>{loadingMore ? 'Loading…' : 'View all exposures'}</Text><Ionicons name="chevron-down" size={16} color="#B778F2" /></Pressable> : null}
             </Section>
           </>
@@ -596,7 +596,7 @@ function RangePills({ selected, onSelect }: { selected: MovementHistoryDateRange
 }
 
 function AllHistoryCard({ selected, count, onPress }: { selected: boolean; count: number; onPress: () => void }) {
-  return <Pressable onPress={onPress} style={[styles.equipmentCard, selected && styles.equipmentCardSelected]}><View style={styles.allComparableIcon}><Ionicons name="layers-outline" size={22} color="#B676F5" /></View><Text style={styles.equipmentName}>All History</Text><Text style={styles.equipmentCount}>{count} exposure{count === 1 ? '' : 's'}</Text><Text style={styles.equipmentMetricLabel}>CANONICAL SCOPE</Text><Text style={styles.equipmentMetricValue}>Every resolved exposure</Text></Pressable>;
+  return <Pressable onPress={onPress} style={[styles.equipmentCard, selected && styles.equipmentCardSelected]}><View style={styles.allComparableIcon}><Ionicons name="layers-outline" size={22} color="#B676F5" /></View><Text style={styles.equipmentName}>All History</Text><Text style={styles.equipmentCount}>{count} exposure{count === 1 ? '' : 's'}</Text><Text style={styles.equipmentMetricLabel}>SAVED HISTORY</Text><Text style={styles.equipmentMetricValue}>Every saved Session</Text></Pressable>;
 }
 
 function EquipmentCard({ equipment, unit, onPress }: { equipment: CanonicalMovementHistory['equipment_breakdown'][number]; unit: MovementHistoryUnit; onPress: () => void }) {

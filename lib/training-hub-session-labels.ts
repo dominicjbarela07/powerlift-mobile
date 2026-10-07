@@ -1,5 +1,6 @@
 export type TrainingHubSessionLabelInput = {
   status?: string | null;
+  raw_status?: string | null;
   kind?: string | null;
   timeliness?: string | null;
 };
@@ -41,11 +42,16 @@ export function trainingHubSessionDayLabel(
 
 export function trainingHubSessionStatusLabel({
   status,
+  raw_status,
   kind,
   timeliness,
 }: TrainingHubSessionLabelInput) {
   const values = new Set([normalized(status), normalized(kind)]);
   const timing = normalized(timeliness);
+  const unavailable = unavailableSessionLifecycle(raw_status || status);
+  if (unavailable === 'draft') return 'Draft';
+  if (unavailable === 'canceled') return 'Canceled';
+  if (unavailable === 'archived') return 'Archived';
 
   if (timing.includes('moved')) return 'Moved';
   if (values.has('completed') || values.has('logged') || values.has('done')) return 'Completed';
@@ -61,3 +67,4 @@ export function trainingHubSessionStatusLabel({
   if (values.has('cancelled') || values.has('canceled')) return 'Canceled';
   return 'Not Started';
 }
+import { unavailableSessionLifecycle } from './session-availability';

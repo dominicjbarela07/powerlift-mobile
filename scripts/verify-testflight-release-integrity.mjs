@@ -5,6 +5,7 @@ import path from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { validateDevReleaseHoldbacks } from './release-holdback-policy.mjs';
+import { validateDevSourceProgressions } from './dev-source-progression.mjs';
 import { productFiles, sha256, fingerprintFiles, assertOwnerEvidence, runIntegrityGate, assertProtectedArtifactAssets, protectedDeliveryHashes, expoHash } from './testflight-cumulative-integrity.mjs';
 
 const baselineCatalogRef=root=>read(root,'config/testflight-release-integrity.json').previousTestFlight.gitCommitHash;
@@ -18,7 +19,7 @@ export function gitState(root) {
 // Compare source and the explicit historical catalog separately: active discovery
 // may be narrower after an owner-approved retirement, but shipped identities and
 // their exact compatibility metadata must remain available to DEV readers.
-export function compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog,candidateCatalog,snapshot,removals=[],provenHoldbacks=new Set()}) {
+export function compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog,candidateCatalog,snapshot,removals=[],provenHoldbacks=new Set(),provenDevProgressions=new Set()}) {
   const entries=[], missing=[];
   const add=(identity,area,dev,testflight,label,history,direction='NONE',authorizationEvidence=[])=>{
     const entry={identity,productArea:area,devState:dev,testflightState:testflight,recentHistoricalState:history,authorizationEvidence,label,requiredReconciliationDirection:direction};
@@ -30,10 +31,11 @@ export function compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog,
     if(p===taxonomy) continue;
     const historical=baseline.protectedFiles[p] || null, dev=devFiles[p] || null, tf=candidateFiles[p] || historical;
     const accepted=receipts.filter(a=>a.path===p&&a.before===historical);
-    const retained=dev && (!historical || dev===historical || accepted.some(a=>a.after===dev));
+    const retained=dev && (!historical || dev===historical || accepted.some(a=>a.after===dev) || provenHoldbacks.has(p) || provenDevProgressions.has(p));
     const removed=removals.find(a=>a.identity===p&&a.before===historical&&a.after===null&&a.action==='REMOVE');
     if(historical&&!retained&&!removed) add(p,'source / assets',dev,tf,'TESTFLIGHT_ONLY',historical,'TESTFLIGHT → DEV',accepted);
     else if(tf&&dev!==tf&&provenHoldbacks.has(p)) add(p,'source / assets',dev,tf,'AUTHORIZED_DIFFERENCE',historical,'Shared fix in both sources; preserve never-shipped backend feature in DEV',accepted);
+    else if(tf&&dev!==tf&&provenDevProgressions.has(p)) add(p,'source / assets',dev,tf,'DEV_ONLY',historical,'Reviewed DEV additions retained; no publication inferred',baseline.devSourceProgressions.filter(row=>row.path===p));
     else if(tf&&dev!==tf) add(p,'source / assets',dev,tf,'TESTFLIGHT_ONLY',historical,'TESTFLIGHT → DEV',accepted);
     else if(dev&&!tf) add(p,'source / assets',dev,null,'DEV_ONLY',historical,'AUTHORIZED DEV → TESTFLIGHT INTEGRATION');
     else add(p,'source / assets',dev,tf,removed?'AUTHORIZED_DIFFERENCE':historical&&dev!==historical?'AUTHORIZED_DIFFERENCE':'EQUIVALENT',historical,'NONE',removed?[removed]:accepted);
@@ -58,7 +60,10 @@ export function compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog,
 }
 
 export function runDevSupersetGate({root=process.cwd(),devRoot=process.env.STRENGTH_LEDGER_DEV_MOBILE_ROOT || '/Users/dominic/powerlifting_app_dev/powerlift_mobile',backendRoot=process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev',requireCleanCandidate=false}={}) {
-  const baseline=read(root,'config/testflight-release-integrity.json');
+  // Canonical DEV owns current reconciliation evidence. An older release
+  // checkout cannot erase a later owner-authorized DEV addition by supplying
+  // its stale copy of the evidence. Candidate bytes are still compared below.
+  const baseline=read(devRoot,'config/testflight-release-integrity.json');
   assertOwnerNonRecurrenceGovernance({root,backendRoot});
   const constitutionFile=path.join(backendRoot,'docs/RELEASE_INVARIANTS.md');
   const constitution=fs.readFileSync(constitutionFile);
@@ -74,7 +79,7 @@ export function runDevSupersetGate({root=process.cwd(),devRoot=process.env.STREN
     assert.ok(removal.identity&&removal.action==='REMOVE'&&removal.before&&removal.after===null,'Removal requires exact identity/before hash, REMOVE, and after:null');
   }
   assertOwnerEvidence(root,removals.items);
-  assertOwnerEvidence(root,[...(baseline.sourceAuthorizations||[]),...(baseline.historicalRemovalAuthorizations||[]),baseline.catalogCompatibilityAuthorization].filter(Boolean));
+  assertOwnerEvidence(devRoot,[...(baseline.sourceAuthorizations||[]),...(baseline.historicalRemovalAuthorizations||[]),baseline.catalogCompatibilityAuthorization].filter(Boolean));
   const snapshot=read(devRoot,'config/protected-testflight-catalog.json');
   assert.equal(sha256(fs.readFileSync(path.join(devRoot,'config/protected-testflight-catalog.json'))),baseline.protectedCatalogSnapshotSha256,'Exact shipped catalog metadata disappeared or changed in DEV');
   const dev=gitState(devRoot),candidate=gitState(root),backend=gitState(backendRoot);
@@ -82,10 +87,12 @@ export function runDevSupersetGate({root=process.cwd(),devRoot=process.env.STREN
   assert.equal(backend.branch,'dev/canonical-backend','Release validation must use canonical DEV backend; Production or a temporary backend is not its source of truth');
   if(requireCleanCandidate) assert.equal(candidate.dirty,false,'Release candidate has dirty/untracked state; create a clean cumulative integration');
   const devFiles=productFiles(devRoot), candidateFiles=productFiles(root);
-  const holdbacks=read(root,'config/protected-fix-manifest.json').releaseHoldbacks;
+  const holdbacks=read(devRoot,'config/protected-fix-manifest.json').releaseHoldbacks;
   const gitAt=directory=>(...args)=>execFileSync('git',args,{cwd:directory,encoding:'utf8',maxBuffer:16*1024*1024}).trim();
   const provenHoldbacks=validateDevReleaseHoldbacks(holdbacks,candidateFiles,devFiles,candidate.sha,gitAt(root),gitAt(devRoot));
-  const result=compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog:read(devRoot,'config/governed-movement-art-taxonomy.json'),candidateCatalog:read(root,'config/governed-movement-art-taxonomy.json'),snapshot,removals:removals.items,provenHoldbacks});
+  assertOwnerEvidence(devRoot, [...(baseline.devSourceProgressions || []), ...(holdbacks?.files || []).map(row=>row.devOnlyProgression).filter(Boolean)]);
+  const provenDevProgressions=validateDevSourceProgressions(baseline.devSourceProgressions,candidateFiles,devFiles,root,devRoot);
+  const result=compareDevSuperset({baseline,devFiles,candidateFiles,devCatalog:read(devRoot,'config/governed-movement-art-taxonomy.json'),candidateCatalog:read(root,'config/governed-movement-art-taxonomy.json'),snapshot,removals:removals.items,provenHoldbacks,provenDevProgressions});
   // Historical source must remain, even when absent from the latest broken OTA.
   for(const p of baseline.historicalProtectedPaths) if(!devFiles[p]&&!(baseline.historicalRemovalAuthorizations||[]).some(a=>a.path===p&&a.action==='REMOVE')) {
     const entry={identity:p,productArea:'historical source / assets',devState:null,testflightState:'protected historical state',recentHistoricalState:baseline.releaseHistory.map(r=>({id:r.id,source:r.gitCommitHash})),authorizationEvidence:[],label:'TESTFLIGHT_ONLY',requiredReconciliationDirection:'TESTFLIGHT → DEV'};

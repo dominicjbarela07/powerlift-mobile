@@ -4,12 +4,13 @@ import os from 'node:os';
 import path from 'node:path';
 import { assertHumanArtworkGate, approvedExactArtworkPolicy } from './canonical-art-review-gate.mjs';
 import { isMovementArtworkReviewDenied } from '../lib/movement-art-review-policy.ts';
+import { production3ArtBundleCondition } from './approved-art-bundle-policy.mjs';
 
 const root = process.cwd();
 const state = JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
 assert.equal(assertHumanArtworkGate(root).canonical, state.canonical_assets.length);
-assert.match(fs.readFileSync('lib/canonical-movement-artwork-assets.ts', 'utf8'), />> = \(__DEV__ \|\| process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight'\) \? \{/,
-  'only DEV and explicitly authorized TestFlight exports include the approved family');
+assert.ok(fs.readFileSync('lib/canonical-movement-artwork-assets.ts', 'utf8').includes(`>> = ${production3ArtBundleCondition} ? {`),
+  'DEV, TestFlight and the separately versioned 3.0 preparation include only the approved family');
 assert.match(fs.readFileSync('components/movement/CanonicalMovementArtwork.tsx', 'utf8'), /const approved = accessoryPresentation === 'movement' \? resolveApprovedExactMovementArtwork\(subject\) : null/, 'every exact image requires a positive human receipt; absence retains anatomy');
 // Actual decision totals belong to the human and must never be reset by a test.
 for (const item of state.items) {

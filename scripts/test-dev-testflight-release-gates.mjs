@@ -36,6 +36,12 @@ try {
   for(const file of Object.keys(productFiles(devRoot))) {
     const target=path.join(fixture,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.linkSync(path.join(devRoot,file),target);
   }
+  // Reconciliation governance is excluded from its own product fingerprint,
+  // but the positive fixture must carry the canonical owner's exact receipts.
+  for (const file of ['config/testflight-release-integrity.json', ...fs.readdirSync(path.join(devRoot,'config/testflight-release-owner-evidence')).map(name=>`config/testflight-release-owner-evidence/${name}`)]) {
+    const target=path.join(fixture,file);fs.mkdirSync(path.dirname(target),{recursive:true});
+    if (!fs.existsSync(target)) fs.linkSync(path.join(devRoot,file),target);
+  }
   fs.writeFileSync(path.join(fixture,'fixture.txt'),'Isolated failure-mode fixture');
   execFileSync('git',['add','fixture.txt'],{cwd:fixture});
   execFileSync('git',['-c','user.name=Release gate test','-c','user.email=release-gate-test@localhost','commit','-qm','Isolated test fixture'],{cwd:fixture});

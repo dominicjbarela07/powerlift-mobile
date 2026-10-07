@@ -14,7 +14,7 @@ import { analyticalMetricDefinition, formatAnalyticalValue } from '@/lib/chart-f
 import type { CoachAnalyticsMetricKey, CoachAthleteTeamRelativeResponse } from '@/lib/coach-mobile';
 
 const METRICS: CoachAnalyticsMetricKey[] = ['max_progression', 'dots_progression', 'adherence', 'pr_rate'];
-const LABELS: Record<CoachAnalyticsMetricKey, string> = { max_progression: 'Max Progression', dots_progression: 'Estimated DOTS Progression', adherence: 'Adherence', pr_rate: 'PR Rate' };
+const LABELS: Record<CoachAnalyticsMetricKey, string> = { max_progression: 'Max Progression', dots_progression: 'Estimated DOTS', adherence: 'Adherence', pr_rate: 'PR Rate' };
 
 function valueText(value: number | null | undefined, metric: CoachAnalyticsMetricKey) { return formatAnalyticalValue(value, analyticalMetricDefinition(metric)); }
 

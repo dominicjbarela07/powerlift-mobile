@@ -5237,7 +5237,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   movementClassTabActive: { borderBottomColor: colors.violet },
-  movementClassText: { color: colors.muted, fontSize: 11, fontFamily: SLFontFamilies.sansBold, letterSpacing: 0.9 },
+  movementClassText: { color: colors.muted, fontSize: 12, fontFamily: SLFontFamilies.sansBold, letterSpacing: 0.9 },
   movementClassTextActive: { color: colors.textStrong },
   movementClassResult: { minHeight: 64, flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
   movementClassResultName: { color: colors.textStrong, fontSize: 16, fontFamily: SLFontFamilies.sansBold },

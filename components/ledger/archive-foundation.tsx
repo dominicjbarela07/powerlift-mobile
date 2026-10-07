@@ -711,7 +711,7 @@ function CompetitionShelf({ items, onItem, onAll }: { items: ArchiveItem[]; onIt
 }
 
 function RediscoveredEvidence({ item, onPress }: { item: ArchiveItem; onPress: () => void }) {
-  return <Pressable onPress={onPress} style={({ pressed }) => [styles.rediscovered, pressed && styles.pressed]}><View style={styles.rediscoveredDate}><Text typographyRole="numeric" style={styles.rediscoveredYear}>{yearLabel(item.occurred_on)}</Text><Text typographyRole="shortTechnicalLabel" style={styles.rediscoveredLabel}>from the archive</Text></View><View style={styles.rediscoveredCopy}><Text typographyRole="cardTitle" style={styles.rediscoveredTitle}>{item.title}</Text><Text typographyRole="body" style={styles.rediscoveredBody}><ArchiveEvidence item={item} /></Text><Text typographyRole="caption" style={styles.rediscoveredMeta}>{dateLabel(item.occurred_on)} · {item.provenance_label}</Text></View><Ionicons name="arrow-forward" size={18} color={SLColors.iconMuted} /></Pressable>;
+  return <Pressable onPress={onPress} style={({ pressed }) => [styles.rediscovered, pressed && styles.pressed]}><View style={styles.rediscoveredDate}><Text typographyRole="cardTitle" numberOfLines={0} style={styles.rediscoveredYear}>{yearLabel(item.occurred_on)}</Text><Text typographyRole="shortTechnicalLabel" style={styles.rediscoveredLabel}>ARCHIVE</Text></View><View style={styles.rediscoveredCopy}><Text typographyRole="cardTitle" style={styles.rediscoveredTitle}>{item.title}</Text><Text typographyRole="body" style={styles.rediscoveredBody}><ArchiveEvidence item={item} /></Text><Text typographyRole="caption" style={styles.rediscoveredMeta}>{dateLabel(item.occurred_on)} · {item.provenance_label}</Text></View><Ionicons name="arrow-forward" size={18} color={SLColors.iconMuted} /></Pressable>;
 }
 
 function ArchiveResults({ collection, count, items, query, thumbnailUrls, onBack, onItem }: { collection: ArchiveCollection | null; count?: number; items: ArchiveItem[]; query: string; thumbnailUrls: Record<number, string>; onBack: () => void; onItem: (item: ArchiveItem) => void }) {
@@ -890,7 +890,7 @@ const styles = StyleSheet.create({
   meetEvidence: { color: SLColors.textPrimary },
   meetDate: { color: SLColors.textMuted },
   rediscovered: { minHeight: 120, flexDirection: 'row', alignItems: 'center', gap: 14, padding: 17, borderRadius: SLRadius.radiusCard, backgroundColor: SLColors.surfaceFlat, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault },
-  rediscoveredDate: { width: 73, gap: 3 },
+  rediscoveredDate: { minWidth: 73, flexShrink: 0, gap: 3 },
   rediscoveredYear: { color: SLColors.accentMuted, fontSize: 20 },
   rediscoveredLabel: { color: SLColors.textMuted, textTransform: 'uppercase' },
   rediscoveredCopy: { flex: 1, minWidth: 0, gap: 4 },
@@ -914,7 +914,7 @@ const styles = StyleSheet.create({
   mediaGridDate: { color: SLColors.textMuted },
   competitionList: { gap: 0 },
   competitionRecord: { minHeight: 126, flexDirection: 'row', alignItems: 'stretch', gap: 10 },
-  competitionDate: { width: 58, paddingTop: 16, alignItems: 'flex-end' },
+  competitionDate: { flexShrink: 0, width: 58, paddingTop: 16, alignItems: 'flex-end' },
   competitionYear: { color: SLColors.textSecondary, fontSize: 15 },
   competitionMonth: { color: SLColors.textMuted, textAlign: 'right' },
   competitionSpine: { width: 15, alignItems: 'center' },

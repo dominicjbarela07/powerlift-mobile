@@ -176,7 +176,7 @@ function ReviewItem({ row, onPress }: { row: ReviewRow; onPress: () => void }) {
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   intro: { paddingHorizontal: SLLayout.screenGutter, paddingTop: SLSpacing.md },
-  kicker: { color: COACH_V2.violetBright, fontSize: 11, fontWeight: '900', letterSpacing: 1.5 },
+  kicker: { color: COACH_V2.violetBright, fontSize: 12, fontWeight: '900', letterSpacing: 1.5 },
   title: { color: COACH_V2.text, fontFamily: SLFontFamilies.display, fontSize: 31, marginTop: 6 },
   subtitle: { color: COACH_V2.muted, fontSize: 14, lineHeight: 20, marginTop: 5 },
   segmented: { borderBottomColor: COACH_V2.border, borderBottomWidth: 1, flexDirection: 'row', gap: 9, marginHorizontal: SLLayout.screenGutter, marginTop: 20 },
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   itemIcon: { alignItems: 'center', borderRadius: 14, height: 44, justifyContent: 'center', width: 44 },
   flex: { flex: 1, minWidth: 0 },
   itemTop: { alignItems: 'center', flexDirection: 'row', gap: 8 },
-  itemKind: { fontSize: 11, fontWeight: '900', letterSpacing: 1.1 },
+  itemKind: { fontSize: 12, fontWeight: '900', letterSpacing: 1.1 },
   followup: { backgroundColor: 'rgba(243,184,62,0.12)', borderRadius: 999, color: COACH_V2.gold, fontSize: 8, fontWeight: '900', overflow: 'hidden', paddingHorizontal: 6, paddingVertical: 3 },
   itemTitle: { color: COACH_V2.text, fontSize: 15, fontWeight: '800', marginTop: 4 },
   itemSummary: { color: COACH_V2.muted, fontSize: 12, lineHeight: 17, marginTop: 3 },

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { approvedExactArtworkPolicy } from './canonical-art-review-gate.mjs';
+import { production3ArtBundleCondition } from './approved-art-bundle-policy.mjs';
 
 // Historical mappings remain auditable in DEV. Only positive, exact human
 // receipts may contribute requires to a TestFlight bundle.
@@ -21,7 +22,7 @@ assert.ok(start > 0 && end > start);
 const generated = original.slice(0, start) + `export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Partial<Record<
   CanonicalMovementArtworkKey,
   Readonly<{ source: ImageSourcePropType; label: string }>
->>> = (__DEV__ || process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight') ? {
+>>> = ${production3ArtBundleCondition} ? {
 ${visible.join('\n')}
   // Archive bytes remain reviewable locally and are removed from release exports.
   ...(__DEV__ ? {

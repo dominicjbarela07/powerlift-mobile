@@ -1300,7 +1300,7 @@ function SessionDatePickerModal({ scheduledDate, visible, onDismiss, onSelect }:
           </View>
           <View style={styles.datePickerCalendar}>
             <View style={styles.datePickerMonthHeader}>
-              <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={styles.datePickerMonthTitle}>{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</Text>
+              <Text style={styles.datePickerMonthTitle}>{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</Text>
               <View style={styles.datePickerMonthActions}>
                 {([-1, 1] as const).map((direction) => <Pressable key={direction} accessibilityRole="button" accessibilityLabel={direction < 0 ? 'Previous month' : 'Next month'} onPress={() => setMonth((current) => new Date(current.getFullYear(), current.getMonth() + direction, 1, 12))} style={({ pressed }) => [styles.datePickerMonthAction, pressed && styles.pressed]}><Ionicons name={direction < 0 ? 'chevron-back' : 'chevron-forward'} size={18} color={palette.text} /></Pressable>)}
               </View>
@@ -2065,12 +2065,12 @@ const workspacePrescriptionStyles = StyleSheet.create({
   stack: { gap: 12 }, designationRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 }, designationPicker: { width: 180, maxWidth: '62%' }, selectorRow: { flexDirection: 'row', gap: 8 }, blocks: { gap: 9 },
   block: { borderWidth: 1, borderColor: '#392C43', borderRadius: 11, backgroundColor: '#0A0910', padding: 12, gap: 9 },
   blockHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  eyebrow: { color: '#ACA0B8', fontSize: 10, fontWeight: '800', letterSpacing: 1.1 },
+  eyebrow: { color: '#ACA0B8', fontSize: 12, fontWeight: '800', letterSpacing: 1.1 },
   edit: { color: SLColors.accentViolet, fontSize: 12, fontWeight: '700' },
   workValue: { color: SLColors.textPrimary, fontSize: 16, fontWeight: '700' },
   targetValue: { color: SLColors.accentCyanMuted, fontSize: 12, fontWeight: '700', flexShrink: 1, marginLeft: 'auto', textAlign: 'right' },
   targetValueManual: { color: SLColors.warning, fontSize: 12, fontWeight: '700', flexShrink: 1, marginLeft: 'auto', textAlign: 'right' },
-  hint: { color: palette.muted, fontSize: 11 }, targetLine: { borderTopWidth: 1, borderColor: '#302738', paddingTop: 11, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
+  hint: { color: palette.muted, fontSize: 12 }, targetLine: { borderTopWidth: 1, borderColor: '#302738', paddingTop: 11, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   setStack: { gap: 2 }, setRow: { minHeight: 50, borderBottomWidth: 1, borderColor: '#302537', flexDirection: 'row', alignItems: 'center', gap: 8 },
   setIndex: { width: 24, color: '#BDA9D1', fontSize: 13, fontWeight: '700' },
   addSet: { marginTop: 9, borderWidth: 1, borderStyle: 'dashed', borderColor: '#704F8F', borderRadius: 10, padding: 10, flexDirection: 'row', gap: 5, justifyContent: 'center', alignItems: 'center' },
@@ -2825,7 +2825,7 @@ const authorStyles = StyleSheet.create({
   saveState: { fontFamily: SLFontFamilies.sans, fontSize: 12 },
   overflow: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   identity: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 12, gap: 5 },
-  subject: { color: palette.violet, fontSize: 11, letterSpacing: 0.7, fontFamily: SLFontFamilies.sansSemiBold },
+  subject: { color: palette.violet, fontSize: 12, letterSpacing: 0.7, fontFamily: SLFontFamilies.sansSemiBold },
   title: { color: palette.text, fontSize: 27, lineHeight: 33, fontFamily: SLFontFamilies.sansBold },
   identityLine: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 30 },
   date: { color: palette.muted, fontFamily: SLFontFamilies.sans, fontSize: 14 },
@@ -2842,7 +2842,7 @@ const authorStyles = StyleSheet.create({
   toolbarLayer: { position: 'absolute', left: 16, right: 16, bottom: 0 },
   toolbar: { minHeight: 64, padding: 6, flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 23, borderWidth: 1, borderColor: 'rgba(167,139,250,0.25)', backgroundColor: 'rgba(19,17,28,0.98)', shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 20, shadowOffset: { width: 0, height: 5 } },
   toolbarAction: { minWidth: 60, minHeight: 50, justifyContent: 'center', alignItems: 'center', gap: 3, paddingHorizontal: 8 },
-  toolbarLabel: { color: palette.muted, fontFamily: SLFontFamilies.sans, fontSize: 11 },
+  toolbarLabel: { color: palette.muted, fontFamily: SLFontFamilies.sans, fontSize: 12 },
   primaryAction: { flex: 1, flexDirection: 'row', gap: 7, backgroundColor: '#56318F', borderRadius: 17 },
   primaryLabel: { color: palette.text, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 14 },
 });
@@ -2895,7 +2895,7 @@ const styles = StyleSheet.create({
   datePickerModalLayer: { paddingHorizontal: SLLayout.screenGutter, paddingTop: SLSpacing.sm, paddingBottom: SLSpacing.lg },
   datePickerModalCard: { width: '100%', gap: SLSpacing.md },
   datePickerModalHeader: { minHeight: 62, justifyContent: 'center' },
-  datePickerModalEyebrow: { color: palette.violet, fontFamily: SLFontFamilies.technical, fontSize: 11, lineHeight: 16, letterSpacing: 1.5 },
+  datePickerModalEyebrow: { color: palette.violet, fontFamily: SLFontFamilies.technical, fontSize: 12, lineHeight: 16, letterSpacing: 1.5 },
   datePickerModalTitle: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 23, lineHeight: 30 },
   datePickerCalendar: { paddingHorizontal: SLSpacing.sm, paddingTop: SLSpacing.sm, paddingBottom: SLSpacing.md, borderWidth: StyleSheet.hairlineWidth, borderColor: palette.lineStrong, borderRadius: SLRadius.lg, backgroundColor: SLColors.surfaceMedia },
   datePickerMonthHeader: { minHeight: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SLSpacing.xs, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: palette.line },
@@ -2903,7 +2903,7 @@ const styles = StyleSheet.create({
   datePickerMonthActions: { flexDirection: 'row', gap: SLSpacing.xs },
   datePickerMonthAction: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, backgroundColor: SLColors.surfaceFlat },
   datePickerWeekRow: { flexDirection: 'row', paddingTop: SLSpacing.sm, paddingBottom: SLSpacing.xs },
-  datePickerWeekday: { width: '14.2857%', color: palette.muted, textAlign: 'center', fontFamily: SLFontFamilies.technical, fontSize: 11, lineHeight: 20, textTransform: 'uppercase' },
+  datePickerWeekday: { width: '14.2857%', color: palette.muted, textAlign: 'center', fontFamily: SLFontFamilies.technical, fontSize: 12, lineHeight: 20, textTransform: 'uppercase' },
   datePickerDays: { flexDirection: 'row', flexWrap: 'wrap' },
   datePickerDaySlot: { width: '14.2857%', height: 44, alignItems: 'center', justifyContent: 'center' },
   datePickerDay: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 20 },

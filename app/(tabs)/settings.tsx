@@ -3069,7 +3069,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   section: {
-    backgroundColor: SLColors.surfaceEmbedded,
+    backgroundColor: 'transparent',
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: SLColors.shellHairline,
