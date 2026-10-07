@@ -56,6 +56,7 @@ const swap = nodes(tree).find(n => n.props.accessibilityLabel === 'Swap equipmen
 assert.ok(swap); swap.props.onPress(); assert.equal(swaps, 1);
 assert.equal(text(tree).split('Hammer Strength').length - 1, 1, 'retain manufacturer once with useful configuration');
 assert.ok(text(tree).includes('Plate Loaded'));
+assert.ok(nodes(tree).some(n => n.type === 'Brand'), 'selected equipment retains its manufacturer mark');
 assert.equal(nodes(SessionEquipmentContext({ selected: false, onSwapEquipment() {} })).some(n => n.props.accessibilityLabel === 'Swap equipment'), false,
   'unselected equipment offers Select rather than Swap in the existing equipment area');
 let selections = 0;
@@ -63,6 +64,8 @@ for (const domain of ['machine', 'cable']) {
   const unselected = SessionEquipmentContext({ selected: false, domain, onSwapEquipment() { selections++; } });
   const select = nodes(unselected).find(n => n.props.accessibilityLabel === 'Select equipment');
   assert.ok(select, `${domain}: unresolved equipment must expose Select`);
+  assert.equal(nodes(unselected).some(n => n.type === 'Brand'), false, 'unresolved equipment has no unknown manufacturer placeholder');
+  assert.equal(/history comparable|identify your cable station/.test(text(unselected)), false, 'unresolved equipment has no explanatory helper text');
   assert.equal(text(select), 'Select');
   select.props.onPress();
   assert.equal(select.props.style({ pressed: false }).some(s => s?.backgroundColor || s?.borderWidth), false,

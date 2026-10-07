@@ -1,0 +1,26 @@
+{
+  "destination": "canonical DEV only",
+  "change": "Remove unresolved equipment placeholder and helper copy",
+  "component_sha256": "69b6b76311aeba7461d7fd44d573de58ca12948d289fe8ee906ee92bb2befd1a",
+  "checks": {
+    "compact_logger_actions": "PASS",
+    "typescript": "PASS",
+    "actual_dev_visual": "PASS"
+  },
+  "actual_runtime": {
+    "device": "iPhone Air",
+    "session_id": 1846,
+    "movement": "Machine Pullover",
+    "observed": [
+      "EQUIPMENT NEEDED",
+      "Choose the machine you are using",
+      "Select equipment"
+    ],
+    "absent": [
+      "Unknown manufacturer",
+      "Manufacturer + type keep history comparable."
+    ]
+  },
+  "screenshot": "select-clean-review.png",
+  "testflight_published": false
+}
