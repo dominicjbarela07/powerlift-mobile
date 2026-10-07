@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-07T19:11:09.009Z",
+  "publicationAuthorized": false,
+  "gates": {},
+  "error": "holdback must retain exact shipped bytes\n+ actual - expected\n\n+ 'b66aadced6dd202e267a1e9499c606b5547d7128'\n- 'a253d05bb987ca050e2fe19906b031b716c2aec3'\n"
+}

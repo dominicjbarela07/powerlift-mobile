@@ -1,0 +1,27 @@
+{
+  "path": "config/governed-movement-art-taxonomy.json",
+  "beforeSha256": "7263a41db832c5f15eef3909de0604c39df38a6efe133bfdcb11e8f541338743",
+  "afterSha256": "4cecf895c2035b1a65b1ec2d36b8b4ff1c37b39ea1110c92def256b4a51a3aaf",
+  "stageSource": "exact canonical DEV catalog",
+  "activeMovements": 499,
+  "compatibilityMovements": 69,
+  "protectedIdentitiesRetained": 567,
+  "OHPIdentity": {
+    "id": 650,
+    "key": "barbell_overhead_press",
+    "display_name": "Barbell Overhead Press",
+    "kind": "core",
+    "family": "bench",
+    "primary_muscle_group": null,
+    "secondary_muscle_groups": [],
+    "equipment_type": "barbell",
+    "programming_contexts": [
+      "core"
+    ],
+    "core_movement_definition_id": 62,
+    "core_kind": "variant"
+  },
+  "retiredDiscoveryEntriesReactivated": 0,
+  "catalogProtectionPinsChanged": false,
+  "scope": "Owner-directed local Production3 candidate staging. The complete reviewed active directory and exact compatibility metadata are staged. No destination database mutation, numeric ID transfer or Cable backend deployment performed. Existing release holdback pins are unchanged and must be reconciled before publication."
+}

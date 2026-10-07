@@ -1,0 +1,36 @@
+{
+  "pass": true,
+  "baselineSha": "751a1173b301cb382557c5cbda59e4fdf72633b2",
+  "candidateSha": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+  "candidateTree": "ea168f85f3e3b500b53c2f4a741a999a84af284f",
+  "schemaChanged": false,
+  "modelSha256": "996e4bdb7ce98cab1a24e15814195c9dc2c38fea3aa64e2e9288547022fdc403",
+  "frozenMobileBaselineSha256": "16db350a9bff4a0694d972fdc3801ee6e8a8782605a02fcef70824ed0343a12d",
+  "frozenClients": {
+    "ios": {
+      "source": "a5d56d2205f93ab6b00b3be0ca836d4235b82a57",
+      "update": "01a05051-47f5-7b6a-b930-b59c8d6a9248",
+      "launchAssetSha256": "4c2c1543d3fff0b9dc5a405b8f42bbc284c1c5130c80153138790ddce49079c3",
+      "apiContractSourceSha256": "7748f5c1d8eafa747212414dd4b1bb8d874009a72bc59e53662d27d63cfba405"
+    },
+    "android": {
+      "source": "3d5a38a22b893f67bfed0e7ee3d6e9a2c685ab95",
+      "update": "01a05c7f-48f2-701c-8968-1c619536f57e",
+      "launchAssetSha256": "d6f7b26b91b7c98752c3366e1d92a3184133d162b399bd9a4dc26e18d1b5360b",
+      "apiContractSourceSha256": "7748f5c1d8eafa747212414dd4b1bb8d874009a72bc59e53662d27d63cfba405"
+    }
+  },
+  "legacyResponsesIdentical": {
+    "ios": 104,
+    "android": 104
+  },
+  "legacyBreakingPermissionControlRejected": true,
+  "ownerPolicyAcceptance": {
+    "pass": true,
+    "candidateOwned": false,
+    "cases": 3,
+    "probeSha256": "4e80578545338622565a3d8b143cbc8762c2a4dd6cf6a9bc639bc1fbaa8a511b"
+  },
+  "logs": "/Users/dominic/Documents/Codex/2026-10-03/re/outputs/production3-staging-2026-10-07/d4b6a8b22549-checks",
+  "liveDeploymentVerified": false
+}

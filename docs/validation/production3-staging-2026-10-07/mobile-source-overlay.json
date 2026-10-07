@@ -1,0 +1,1861 @@
+{
+  "canonicalSourceSha": "1a15ab521dc133ea1d1ca6d067dedfe68b5fcbdd",
+  "candidateBaseSha": "57de0daf66a10579a92a1cb983bf0a88ead035fd",
+  "destination": "/Users/dominic/powerlifting_app/powerlift_mobile",
+  "filesOverlaid": 287,
+  "changes": [
+    {
+      "path": "AGENTS.md",
+      "sourceBlob": "d31e743884a5d93554309666903e57997997b05c",
+      "destinationPriorBlob": "beae2042def96303ac780a74db6875a496780a6b",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app.config.js",
+      "sourceBlob": "45e2780af80c7e87387510c434eeaf3cbc7213d8",
+      "destinationPriorBlob": "ed66387a091801871a35f834603c288511b0db9b",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app.json",
+      "sourceBlob": "c45007c8ffaf6359e1e31d2aa8d46b7515f62b37",
+      "destinationPriorBlob": "52e1bb3b554aa1a75a008137fb290dd53affb1e6",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app/(tabs)/_layout.tsx",
+      "sourceBlob": "545f6cc34f12edc2ff628c615bc461d24b5297d7",
+      "destinationPriorBlob": "c8a6ab347c22553c0eb359d0d469e898c0d9f5b4",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app/(tabs)/athlete-dashboard.tsx",
+      "sourceBlob": "64ebe33d6e890d151a5cfe286bafcade7d50a3bf",
+      "destinationPriorBlob": "3a393a6ad3fde78bd831139681397b420df0ed52",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app/(tabs)/dev-mocks/anatomy-system.tsx",
+      "sourceBlob": "ca385bd181f87012d98ae0226be209a5b602b22a",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app/(tabs)/dev-mocks/movement-art-hero.tsx",
+      "sourceBlob": "b39b983bb515b1816c9a6aa8e17e91bf88a3a7ee",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app/(tabs)/dev-mocks/text-layout.tsx",
+      "sourceBlob": "9acb50c163b52a5d6493275f32038ce5d2ab61aa",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app/(tabs)/messages/[threadId].tsx",
+      "sourceBlob": "8beb66b7dda82f1d48af18bc2e396dbdb948b795",
+      "destinationPriorBlob": "45eafa2859602f99ef39bcaf065c6e0ce522839c",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app/(tabs)/settings.tsx",
+      "sourceBlob": "10fc2dc3094813e6c01c6749386a8ef76378608c",
+      "destinationPriorBlob": "0dfcb933bdcd3aa462b3a87a472ef36c521da0a6",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "sourceBlob": "2db60fe48f1b36fd30a9f604c88a0e3d619d745d",
+      "destinationPriorBlob": "2d9861d8aeeecda992d8836ba35bfecd9c1a5777",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app/_layout.tsx",
+      "sourceBlob": "4dd261b40f287b44332c586cc692a8ee61c21446",
+      "destinationPriorBlob": "bfceb42046c9a1f7552b59b85a94aadf84dbb106",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app/coach-athlete-analytics/[athleteId].tsx",
+      "sourceBlob": "f67e1614956ed72e7ab2454f24913a6898a4551b",
+      "destinationPriorBlob": "8a9371879986e07007936b6d90b184424549ed6f",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app/coach-team-brief.tsx",
+      "sourceBlob": "d8794d33ae92abd232871af91fd2d0ca278e1300",
+      "destinationPriorBlob": "6fe918a0b65f12a26d56a23a847bd68d738d6bfd",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "app/coach-team-methodology.tsx",
+      "sourceBlob": "5b7926c0eee54d571fab7b2c7220c31c1b55e1a3",
+      "destinationPriorBlob": "6fe487f989fa7c30cc79f519db7f56b10daa8eed",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "artwork-review/candidates/013655e475e56a3dcb0364ce/app.png",
+      "sourceBlob": "d5c582caebae35ec8ed2bc9ace941a7b3ebc7a79",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "artwork-review/candidates/013655e475e56a3dcb0364ce/master.png",
+      "sourceBlob": "8d3d50148bd93393b771621b73c14162c9b8fb83",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "artwork-review/candidates/013655e475e56a3dcb0364ce/thumbnail.png",
+      "sourceBlob": "c36c6b76c8bce80512c97e5dd14299e4c2bcc411",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "artwork-review/core-coverage-plan.json",
+      "sourceBlob": "988fd6c7255b3f4a5abc0d06e8cf63eeeee94b0e",
+      "destinationPriorBlob": "6cf7754baac8c16e736f1408a1eeb46c5ceb136c",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "artwork-review/exports/approved.json",
+      "sourceBlob": "4862699a769c8508d234be103b904386d4bd0b0d",
+      "destinationPriorBlob": "89484590504143cd1eb853f9cd939c4dec782c38",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "artwork-review/exports/rejected.json",
+      "sourceBlob": "efd0594d9671feb17e7aef762ed4ac639a88539a",
+      "destinationPriorBlob": "0e2cc30a86200d30af751da132449199afae1e34",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "artwork-review/exports/review-results.json",
+      "sourceBlob": "e07d10f8978c9ce2ae26044af2144c18707122d1",
+      "destinationPriorBlob": "4fdcc90e60ae6be9fffd40495d3856a4a0fd3515",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "artwork-review/generation-attempts/ohp-2026-10-07/650/attempt-01.png",
+      "sourceBlob": "7ea4b29e7082f809d4b24995cd5f6504500d5fe4",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "artwork-review/generation-attempts/ohp-2026-10-07/650/attempt-02.png",
+      "sourceBlob": "8d3d50148bd93393b771621b73c14162c9b8fb83",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "artwork-review/review-state.json",
+      "sourceBlob": "e1ae9dbe4385ee8c70c2e9b15fdb086ddac80db3",
+      "destinationPriorBlob": "fee4adb419936c75cf1bcaf2ac863ea0c66d3647",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "artwork-review/runtime-policy.json",
+      "sourceBlob": "194899b9aee3190417aea8a74b9f90a049bf6c97",
+      "destinationPriorBlob": "d5dfc5e3a637ed417cd9022f7a1f40bda4f33aba",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/athlete-history-20261001.png",
+      "sourceBlob": "01905e72a268e90e635a0120683dfb493592531a",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/athlete-ledger-20261001.png",
+      "sourceBlob": "dcb160b14a568696505b2102f0f07eaef00ee798",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/athlete-ledger-seeded.png",
+      "sourceBlob": "685f37a261b2c8196aaaa2e5b3a47cd232a8debb",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/athlete-movement-history-seeded.png",
+      "sourceBlob": "1eec510d6acd409eeb9bfd5b24e01b7306939e5f",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/athlete-session-20261001.png",
+      "sourceBlob": "73bf5262ebbac5ecb6ece9b2cb70d45d837b4ca0",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/athlete-session-live-seeded.png",
+      "sourceBlob": "71273e3fc8a5fd1ea365e1f1d1f15477084c83af",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/coach-brief.png",
+      "sourceBlob": "8ee56f64245a64effdfb1a9387c7de6131ef2caa",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/coach-hero-20261001.png",
+      "sourceBlob": "a551580653f97aa3e95378599289bef910ee43df",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/coach-home-20261001.png",
+      "sourceBlob": "8d59758bd0861227604afbefba2712efd3b320f8",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/coach-programming-20261001.png",
+      "sourceBlob": "34cd4ef07f06314997dfe47f9302ad4aa0cc3bcd",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/coach-programming.png",
+      "sourceBlob": "a5ad6d616efdc4ad227b51608094bbd80e9ab40b",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/coach-review-20261001.png",
+      "sourceBlob": "122308bc00f92898b22ef627cedf322aaa932720",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/self-coach-hero-20261001.png",
+      "sourceBlob": "422769e2984c4b30ac39e17f14a49a1c67aedfdb",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/self-coach-logger-20261006.png",
+      "sourceBlob": "7799e8cca93cd74b3c97ef6cf51b416f9dc02a06",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/self-coach-programming-20261006.png",
+      "sourceBlob": "715d517c403c5bf40c3f0a3e03e1841edbf8050c",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/self-ledger.png",
+      "sourceBlob": "e90a4f71ea4176b76309ad8d008776901801c86e",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/mobile-3-education/self-session.png",
+      "sourceBlob": "ba05abaad40a84bdfad74852985e412df8feb64c",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/movement-artwork/core-variants-v1/barbell_overhead_press-app.png",
+      "sourceBlob": "d5c582caebae35ec8ed2bc9ace941a7b3ebc7a79",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/movement-artwork/core-variants-v1/barbell_overhead_press-master.png",
+      "sourceBlob": "8d3d50148bd93393b771621b73c14162c9b8fb83",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "assets/images/movement-artwork/core-variants-v1/barbell_overhead_press-thumbnail.png",
+      "sourceBlob": "c36c6b76c8bce80512c97e5dd14299e4c2bcc411",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/coach-mobile/SessionEditingWorkspace.tsx",
+      "sourceBlob": "77c0205b75b3a35f904579ac3cbe7d77b73b49b4",
+      "destinationPriorBlob": "a46ff6a5aa38f41ac00164a90651482da4f0621e",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/coach-mobile/athlete-workspace/CoachAthleteBrief.tsx",
+      "sourceBlob": "1d14c43c9220902a9c65aab4cc03a48967d8a902",
+      "destinationPriorBlob": "218dc0032d2d4d4a6d1bb5e5a92ae81b3787bb0b",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/coach-mobile/athlete-workspace/CoachAthleteContext.tsx",
+      "sourceBlob": "d99cc33c0f3370b5305b98cbf2db4b760d3ea3e4",
+      "destinationPriorBlob": "f601f7f7b1f99728bdc731de013c438bc2bf7352",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/coach-mobile/athlete-workspace/CoachAthleteEvidence.tsx",
+      "sourceBlob": "a8f3a82e41f7651ce1fc164965437b1bf5c03531",
+      "destinationPriorBlob": "5462a45370858bea3e285000f8b4b01875bd97e3",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/coach-mobile/athlete-workspace/CoachAthleteMessages.tsx",
+      "sourceBlob": "a50263f3d5988d402dd4d285b01ec5a1780e8bc0",
+      "destinationPriorBlob": "6553b0a4f4677f441c6766b0fbf541edad0ab5fc",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/coach-mobile/athlete-workspace/CoachAthleteNotes.tsx",
+      "sourceBlob": "bbe38c73d63df861d998006bb23e52e923fd3754",
+      "destinationPriorBlob": "7eda7e3a65982e02b58694b776033b31116ea508",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/coach-mobile/athlete-workspace/CoachAthleteReviews.tsx",
+      "sourceBlob": "ebdc83883bcb6e600f318e8769bf12a5d1b16a20",
+      "destinationPriorBlob": "b62a4ae894ce008a6f2ed2e8eb40fc96e306fc2b",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx",
+      "sourceBlob": "b7c4966752f8af5cf0c46efee85480875af0a07c",
+      "destinationPriorBlob": "e4a47aa40174f5302ada4e3a23810e4400dbdefb",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/coach-mobile/athlete-workspace/PerformanceVisuals.tsx",
+      "sourceBlob": "eed1596f294584a564850ed69c4ca3804e41d572",
+      "destinationPriorBlob": "f7a9d0b463f3bba78960886291d986a15142c24e",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/education/AthleteEducationOpening.tsx",
+      "sourceBlob": "77da041aef1b7f92d13bec8ee2e9f75662155799",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/education/CoachEducationOpening.tsx",
+      "sourceBlob": "217667478f14f8519a2e487f0f8ca76f81a19091",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/education/MobileEducationRolePreview.tsx",
+      "sourceBlob": "45dc5b69ee49f2c18655f4765b66a2132ed070bd",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/education/SelfCoachEducationOpening.tsx",
+      "sourceBlob": "ce11c7fb5d1eb74abb0277362a99a9b40876b5d2",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/ledger/AchievementsExperience.tsx",
+      "sourceBlob": "645c4e5225c104c64db784a9df1f4be1272293e4",
+      "destinationPriorBlob": "cce435492e04b192d154304211b935ccab120b89",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/ledger/StrengthExperience.tsx",
+      "sourceBlob": "a79c798435cae8f8507d17071678363c875d3df9",
+      "destinationPriorBlob": "b0448cd3e1b34d23eb10fbd45b045454df3a6fc2",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/ledger/archive-foundation.tsx",
+      "sourceBlob": "cd3ab2a9c7945337942a532062b9dfb8f752b985",
+      "destinationPriorBlob": "6f6ee8f5714c7e6f9d2aed92fce6f1c8ae7dbd62",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/ledger/exploration-experiences.tsx",
+      "sourceBlob": "2b4eb67b49c3b4e22f22f1f4e45ef6f534188c10",
+      "destinationPriorBlob": "9f76e63e5054eeb05a9cec8cd022eee929fc5ace",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/movement-history/CanonicalMovementHistoryScreen.tsx",
+      "sourceBlob": "c14fd4d20cab8d76a2e99d6f0d04cf5d16e2afa2",
+      "destinationPriorBlob": "879a7b3d4ff05097591b34750f65dd49554ab168",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/navigation/CoachMoreNavigationSheet.tsx",
+      "sourceBlob": "b311b8564a839632bc96b610663a832f145b529b",
+      "destinationPriorBlob": "51f83a1182b2d825667693cbb281a4daa7815acd",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/navigation/sl-tab-row-control.tsx",
+      "sourceBlob": "7e641e7b72fb07881c859a8b03c86182bf2567df",
+      "destinationPriorBlob": "93f9f318e369ea57e4492a5dfb3eefc0de3701b6",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/training-hub/AthleteProgramTimeline.tsx",
+      "sourceBlob": "4c7b50a3338e6ffc717d4a42a3085ee962152631",
+      "destinationPriorBlob": "1f90e6d616b9b8b82cb0e1a8fbcaf7ea7c60c33d",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/training-hub/TrainingHubSessionPreviewSheet.tsx",
+      "sourceBlob": "49fd02f389c2806aefbf14da04ac9560d1f0a27f",
+      "destinationPriorBlob": "8ce7fa8e7b44924365a8261d2d5b6953577f6c60",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/workout-logger/session-equipment-context.tsx",
+      "sourceBlob": "ddbf7ea9ab17a4da2c7b5204ed5d07cf72285618",
+      "destinationPriorBlob": "d83ea14758a13bf61281aa8536e2f7891f28b519",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/workout-logger/session-v3-closeout.tsx",
+      "sourceBlob": "d0b18ceea50bdb1a400c5133e96b6d2e9378b37f",
+      "destinationPriorBlob": "2f825e6663b570308454d9f12b4917058ed3f432",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "components/workout-logger/session-v3-shell.tsx",
+      "sourceBlob": "2a275bac1745e9f6753336a5a47a58367959c860",
+      "destinationPriorBlob": "fad0addee68489102976a512ff3e4b6d42b747d3",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "config/bottom-sheet-consumer-inventory.json",
+      "sourceBlob": "b346d07b3c0929be7b09c051c8435e948ec5b7ac",
+      "destinationPriorBlob": "eae636d664c6159e16e28443d06606805fa24f9d",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "config/governed-core-artwork-reuse.json",
+      "sourceBlob": "0ee43e8f32e58f310f26e089acdf0f23b0e2a504",
+      "destinationPriorBlob": "5e5fca2483ba836a75317f40e8b6707e861c1265",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "config/protected-fix-manifest.json",
+      "sourceBlob": "5f97b9bb527b0ca7bb985da970cf42169ed59603",
+      "destinationPriorBlob": "7d5d6e18819e979e922879426478ae48088bce4a",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "config/testflight-release-integrity.json",
+      "sourceBlob": "d80b3a3dfe40c2ccc70f33407a9f4fd311f498f8",
+      "destinationPriorBlob": "28e99f8c648844903b6630bda139f3416c3b138c",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "config/testflight-release-owner-evidence/2026-10-06-readiness-fixes.txt",
+      "sourceBlob": "5f4b6982e0eaa466dfe9bcf4af70ea18e31c9eaa",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "context/MobileEducationContext.tsx",
+      "sourceBlob": "19b567486cc44174b1e651bcf45f5aef9bd2f559",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/MOBILE_3_EDUCATION_CANONICAL_2026-10-06.md",
+      "sourceBlob": "adce9310e98278cbb64019affbd29a2d27e12cab",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/release/ATHLETE_SESSION_REUSE_INVESTIGATION_2026-10-06.md",
+      "sourceBlob": "4c9eee5c4e028db44f394d095697d98457e930d0",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/release/LOGGER_EQUIPMENT_SELECT_DEV_2026-10-06.md",
+      "sourceBlob": "afccc0bf19cf5c9bb848148da19b423f1860077a",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/release/MOBILE_3_READINESS_FIXES_2026-10-06.md",
+      "sourceBlob": "366cca5de6c59c3018124b74c60f9d5498debef8",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/release/PRODUCTION_3_CANDIDATE_STAGING_2026-10-07.md",
+      "sourceBlob": "c53bc29e75018291910c27e67c0054bb088e16e9",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/release/PRODUCTION_READINESS_RESWEEP_2026-10-07.md",
+      "sourceBlob": "ccc7721c2a55e9e0f84d5e54c074e7b1ee9f70ca",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/release/PRODUCTION_READINESS_SWEEP_2026-10-06.md",
+      "sourceBlob": "613fbbf76b52df33cfaee670ee4237bfe6ef89ce",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/athlete-session-reuse-2026-10-06/destination-after.json",
+      "sourceBlob": "2475d52b090394670c0ffb6c8341507708d2dc28",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/athlete-session-reuse-2026-10-06/destination-before.json",
+      "sourceBlob": "cd31aa35241e5717c014e2c770ca0e97f5432824",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/athlete-session-reuse-2026-10-06/reused-draft.png",
+      "sourceBlob": "715d517c403c5bf40c3f0a3e03e1841edbf8050c",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/athlete-session-reuse-2026-10-06/runtime-validation.json",
+      "sourceBlob": "d9af991fb6b8bba6c563b5917ed6ac4aaa5d52c4",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/athlete-session-reuse-2026-10-06/shipped-source-comparison.json",
+      "sourceBlob": "af55d19bbde2372566087697da5e5ddd2e1cc47f",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/athlete-session-reuse-2026-10-06/source-after.json",
+      "sourceBlob": "350903c3ece643e9d1244303935588971f07786f",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/athlete-session-reuse-2026-10-06/source-before.json",
+      "sourceBlob": "350903c3ece643e9d1244303935588971f07786f",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/logger-equipment-select-2026-10-06/cleanup-validation.json",
+      "sourceBlob": "f59b66c564e7e13871d0bff2c7a59c14f3a1bb93",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/logger-equipment-select-2026-10-06/opted-out-hidden.png",
+      "sourceBlob": "2a9f94450643df3c9444c5bfd02da058a8df834d",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/logger-equipment-select-2026-10-06/select-clean-review.png",
+      "sourceBlob": "7799e8cca93cd74b3c97ef6cf51b416f9dc02a06",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/logger-equipment-select-2026-10-06/select-first-pass.png",
+      "sourceBlob": "be7e815f2eb1d0e392211d35fbf6ed19b3691d27",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/logger-equipment-select-2026-10-06/select-review.png",
+      "sourceBlob": "effba22e0fd017ea8388b685a5785e5b10f23f80",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/logger-equipment-select-2026-10-06/selected-swap.png",
+      "sourceBlob": "cf733268aa16f28b4f8fd4738a0a9a7b6141d14a",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/logger-equipment-select-2026-10-06/validation.json",
+      "sourceBlob": "d53249ca94f4bae261afca6884dd4ec1117d39b8",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/01-settings.png",
+      "sourceBlob": "b508411f9f9ec4a49a35659a339ebcb439d866c3",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/05-programming.png",
+      "sourceBlob": "aa03579ce1bbf2c52705d3f7a0355695d4493595",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/06-assisted-search.png",
+      "sourceBlob": "22ec93cfe60580ea7f7d1f75287b4d5295840fc4",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/07-session-preview.png",
+      "sourceBlob": "c81cc46731fb6f6485fb9b422e64cd5319aafb0a",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/08-canonical-education-programming.png",
+      "sourceBlob": "13ae2225241836407f99bb3c98fd06e7715ad8fc",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/09-canonical-education-ledger.png",
+      "sourceBlob": "53838dfc5061cf5aebd479a851ea9161d6293c1f",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/10-prescription-saved-reopened.png",
+      "sourceBlob": "6567b0d6252fd4952144c0afd002483b1507ebc7",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/11-movement-history.png",
+      "sourceBlob": "d58ad954a9541d8ca4d2af255248fcaa268709e1",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/12-achievements-volume.png",
+      "sourceBlob": "18e358ae5acc6bbbf2f9aef2e9954bbc709791bc",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/13-coach-education.png",
+      "sourceBlob": "7c366a061b36d5ae022d6921cc860cf058eb18cf",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/14-coach-queue-empty.png",
+      "sourceBlob": "6630d7a4fd8f5c09696aa15f96c39e83b2020f59",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/15-coach-message-empty-copy.png",
+      "sourceBlob": "2e447eee22cec95acfca44c4af88f8d92725b6a8",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/16-team-brief.png",
+      "sourceBlob": "6600a17b370bd4231201c2722ad014289b898518",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/17-athlete-education.png",
+      "sourceBlob": "2b67b840c20249fe3c9f70f8eaf68f5e0d2b5d4a",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/18-zero-load-edit-reopened.png",
+      "sourceBlob": "43e14a26b98ee0011336dd665c01df196c723e53",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/19-athlete-draft-missed.png",
+      "sourceBlob": "c9bf0b7e2996f1afb75e4230fe4d317dadab3597",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/accepted-after-education.log",
+      "sourceBlob": "5eb0a2617f0b3ad8c2faf46fe43df098a82cd9f5",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/accepted-behavior.log",
+      "sourceBlob": "9dc253dcb91fd36cb9f196b99a16b27e4b62eac8",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/accepted-final.log",
+      "sourceBlob": "bfc7f784f07400a5b9ed6a05957dc8e4c9f04055",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/critical-after-education.log",
+      "sourceBlob": "480e15230ec54590f3c356da02c95220fae0ea71",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/critical-invariants.log",
+      "sourceBlob": "9c1589f8f90264ce5d9d448f30338055bf4d72f1",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/current-artwork-inventory.json",
+      "sourceBlob": "4b826b67571a3a8abc4791554c773133238441da",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/current-testflight.json",
+      "sourceBlob": "64526ebf089b4a67328f3903dbc42d210b927418",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/dev-gate-final-summary.json",
+      "sourceBlob": "d418b53dfb53af8122bfa2dcd2b00f99b1e6c95c",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/dev-gate-final.log",
+      "sourceBlob": "59d9c5a212970afe17d1edbc6f6f97c5f9a243da",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/dev-superset-summary.json",
+      "sourceBlob": "db30aae70489e5c3206f362abdf4151466fab742",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/education-keyboard.log",
+      "sourceBlob": "d322a94f4367f495262fdeef94a6152f940bfbaa",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/education-modal-inventory.log",
+      "sourceBlob": "efd2686f3f07dd887c6ef28d0e4bb4e607395a14",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/education-transfer.json",
+      "sourceBlob": "c47bf0db2059751ab98e4d50e12a197a5e1efdd3",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/horizontal-layout.log",
+      "sourceBlob": "d1e68e7d08eb0e4121f2c94fe7b0f4b61ae2e695",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/ios-export-asset-audit.json",
+      "sourceBlob": "9de01e266c22e115e1d13f4f7b91711988410f26",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/ios-export-missing-protected-assets.json",
+      "sourceBlob": "81419640192b7baf73abfa1ea491a98daeb1332a",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/ios-export.log",
+      "sourceBlob": "28fc2f4a5c4618a3f48fc3e2f2a8913b7e1d36c5",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/live-recognition-health.json",
+      "sourceBlob": "181bb223af6585f4bd4270955bb50039b15b1722",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/native-compatibility.log",
+      "sourceBlob": "f2f4648e173f7cbb40cedc00fbd50f1ce65f7af3",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/qa-bodyweight-zero-evidence.json",
+      "sourceBlob": "1a43a0fe79097b29a2a9ac278ba39864dd39f6e1",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/qa-draft-state-evidence.json",
+      "sourceBlob": "dcda9cc8edfef2790bab6b2b8cf0be3a1b226b75",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/qa-machine-recognition-evidence.json",
+      "sourceBlob": "1f62cacca417d90ad79471d000a53adf591e1b7a",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/qa-machine-set-evidence.json",
+      "sourceBlob": "9b276fdda4d5ae33560564344bce200820053818",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/route-coverage.json",
+      "sourceBlob": "58078c729f592ba961da60c5093af0a100f0b4bb",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/route-inventory.txt",
+      "sourceBlob": "3f7220fa1ce77bae500b4bd1bc818e9c5e5e3bab",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/runtime-certificate.log",
+      "sourceBlob": "5f0b5c4dacc41aaa3f1bc93c8b61f1413822135c",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/runtime-source-observation.json",
+      "sourceBlob": "050c0dfe845f868a6743c1d5cc150fdc791313d3",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/transparent-roots.log",
+      "sourceBlob": "a3aabd23fc0d5c8d3825e6fe6f8bba5ceb8b4689",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/typecheck-after-education.log",
+      "sourceBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/typecheck-final.log",
+      "sourceBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/typecheck.log",
+      "sourceBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/typography.log",
+      "sourceBlob": "70010a9c5d3af4a59eff75e6d41dbdea74529e9b",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-06/visual-audits.log",
+      "sourceBlob": "a6b4299cac4dacb56ef942a2f5a2b2862859cbb9",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/01-athlete-training.png",
+      "sourceBlob": "7915e65a0e2543f1700528c8021e5d73e64f9e49",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/02-athlete-settings.png",
+      "sourceBlob": "c6da6e771e913bc47a200e584b7f1e7246138dc1",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/03-athlete-settings-support.png",
+      "sourceBlob": "511a44790dfda9c536b1bcdd6183ed375b80119f",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/04-settings-lower.png",
+      "sourceBlob": "43c4e289a3a75b6a5ea72f9ab1dddd27eda003ba",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/05-settings-return.png",
+      "sourceBlob": "fe3cb9e1891fc539063dcf6b3eef54455c5affbd",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/06-draft-lifecycle-return.png",
+      "sourceBlob": "5f5f73108efbd72162d2663f985444f8b6ef5dbd",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/07-draft-preview.png",
+      "sourceBlob": "b706dc79d49d51f7db3e47cc523d2036deba334f",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/accepted.exit",
+      "sourceBlob": "d00491fd7e5bb6fa28c517a0bb32b8b506539d4d",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/accepted.log",
+      "sourceBlob": "bae9fac4019888ec6de3b9e0399ea2df236a7db2",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/account-access-api.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/account-access-api.log",
+      "sourceBlob": "5c23364de8c2a607780da28aac1aece82f95a18a",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/artifact-diagnostic.mjs",
+      "sourceBlob": "29a5f8d99f885a4e7685998fef569cc0f1de5699",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/baseline-resolver-audit.json",
+      "sourceBlob": "1a1375e61d28e187031825e917de3e7b161489c4",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/canonical-metro.exit",
+      "sourceBlob": "d00491fd7e5bb6fa28c517a0bb32b8b506539d4d",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/canonical-metro.log",
+      "sourceBlob": "b52fa82f0082cb7007ad48e317741d7dafe4b55b",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/critical.exit",
+      "sourceBlob": "d00491fd7e5bb6fa28c517a0bb32b8b506539d4d",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/critical.log",
+      "sourceBlob": "667a1336e4073090a1e64cf7daa0b3f73da3b91c",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/dev-superset.exit",
+      "sourceBlob": "d00491fd7e5bb6fa28c517a0bb32b8b506539d4d",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/dev-superset.json",
+      "sourceBlob": "de5b5d7979c1ee638183df7325bc3fe250a5d55d",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/dev-superset.log",
+      "sourceBlob": "9bc9a531146f1c41f0f5571cb2c65bf56301477b",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/evidence-sha256.json",
+      "sourceBlob": "4d9e7cf17cbc4708349789e23229d5df94ce84da",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/export-art-audit.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/export-art-audit.log",
+      "sourceBlob": "5bc24b1f9c0aa3560ed2c52ecec25c4f284c3b15",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/horizontal.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/horizontal.log",
+      "sourceBlob": "50296e97891c5a263925a88364d149728161c6fa",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/local-export-source.json",
+      "sourceBlob": "dce3984ee5d979bab8337bdf7cd8c93fa8844ae0",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/platform-asset-audit.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/platform-asset-audit.json",
+      "sourceBlob": "56a8722e865a9d8106a2f3b22c40f9f0649c2546",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/platform-asset-audit.log",
+      "sourceBlob": "a084a12afbc6ffe66f744fb37088aa105bfccb3b",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/production-channel.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/production-channel.json",
+      "sourceBlob": "dc5cf8a9239b55a96f3e385961bf7613d1016312",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/production-channel.log",
+      "sourceBlob": "980c6710c7e18365a691b40adbc731f4b5ab47f1",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/production-update-details.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/production-update-details.json",
+      "sourceBlob": "0445c88c0dbcf972228bcffa651c2d1592f7c00d",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/production-update-details.log",
+      "sourceBlob": "5f1b7bd37c5742168a7939ad152177e9e88a4dfd",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/production-updates.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/production-updates.json",
+      "sourceBlob": "3d2ec46e0fb1fcbb0059c25057226df7c440e9f2",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/production-updates.log",
+      "sourceBlob": "5f1b7bd37c5742168a7939ad152177e9e88a4dfd",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/production3-export.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/production3-export.log",
+      "sourceBlob": "ba7ab0e02137cfded119e72a4e2cc94fbc23c1f4",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/protected-asset-deltas-initial.json",
+      "sourceBlob": "d72d5128bdd92c683726dd62bdde23edf268ed52",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/recognition-api.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/recognition-api.log",
+      "sourceBlob": "631d291fdcf028cc28b7d93a031ef6fb69f6af06",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/release-evidence-diagnosis.json",
+      "sourceBlob": "32b702b4eb8f9a828ee9409891a8a713e52865b1",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/remote-dev-ref.txt",
+      "sourceBlob": "92cee42bdfccd402f8cd184547d02ca157cc640b",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/roots.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/roots.log",
+      "sourceBlob": "85ec5b07ab07454cb4aacf44657063b83f9a1c9b",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/search-backend-live-comparison.diff",
+      "sourceBlob": "800b6fde3c839398b3543f0dfae53e6676ccf993",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/search-backend-live-comparison.json",
+      "sourceBlob": "e53128f5aa4dc27f7bb2fd54d07c0a3445359650",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/session-search-api.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/session-search-api.log",
+      "sourceBlob": "0a7e99d92938c3a95617dac8f9780199f6c2bb5d",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/shared-backend-health.json",
+      "sourceBlob": "722eab63c7e4f21d76b9c066de986b7ee633c3c8",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/source-inventory.json",
+      "sourceBlob": "5a71e2d64310fe3ca3375b31785ab82d9cc48da2",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/testflight-channel.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/testflight-channel.json",
+      "sourceBlob": "cd2598dfbfdd4a3e41f52df3b384cd8f2218d9bf",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/testflight-channel.log",
+      "sourceBlob": "482d6f8f8faa851882e5457ec45dcd015518fc93",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/testflight-update-details.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/testflight-update-details.json",
+      "sourceBlob": "d914458c341bd4488fd24780505b882432028c8c",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/testflight-update-details.log",
+      "sourceBlob": "5f1b7bd37c5742168a7939ad152177e9e88a4dfd",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/testflight-updates.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/testflight-updates.json",
+      "sourceBlob": "76564f03c0f32ec1a88303d26581ed59c6d82c6f",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/testflight-updates.log",
+      "sourceBlob": "5f1b7bd37c5742168a7939ad152177e9e88a4dfd",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/typecheck.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/typecheck.log",
+      "sourceBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/typography.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/typography.log",
+      "sourceBlob": "f2571c71402ec5dffb58f69f1fbbe35317636375",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/ui-constitution.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/ui-constitution.log",
+      "sourceBlob": "8698362f05038cd27809a9feafd961e47c2bf9bb",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/validation-summary.json",
+      "sourceBlob": "ddb1ee69b2ea59d841a207ac8b24be38d2680ded",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/visual-coverage.json",
+      "sourceBlob": "2f7aea301976d53cd9cc473de0337c8340969378",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/worktree-inventory.exit",
+      "sourceBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/production-readiness-2026-10-07/worktree-inventory.json",
+      "sourceBlob": "84548b08a7f760a585a554a5f20179d25310549c",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/01-draft-training.png",
+      "sourceBlob": "3f2163f5b71c7eed3e94ab67b7d23a03a8c7bc2b",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/02-draft-explanation.png",
+      "sourceBlob": "0adca266b4e062c0adbbabb46b1d58ec70fe9c21",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/03-draft-explanation-final.png",
+      "sourceBlob": "a451f1a2349d4e6d6c7ad9e9efebd38452a94937",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/accepted-verified.log",
+      "sourceBlob": "6b0afc9d63750d5925806a2c8c1db7d5a89aa85c",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/accessory-pr-api-final.log",
+      "sourceBlob": "bd8c625639fd4148751ebcbd18af8cb32d717a4c",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/canonical-metro-final.json",
+      "sourceBlob": "353bfa475d510e21cfa6942cbb92d292902e37c9",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/canonical-metro-final.log",
+      "sourceBlob": "8c7f8b440b1cf3842b4ec9799eaa8a85a584ea62",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/critical-verified.log",
+      "sourceBlob": "ef0efe3c65b57e2a80432765afffade09a971cf7",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/dev-release-failure-tests-final.log",
+      "sourceBlob": "85d177282540376a4f15ba8dc8682d5610e0f42e",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/dev-superset-final.log",
+      "sourceBlob": "0005caeac1f5515f6b810b76dbc14479d1723883",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/dev-superset-summary.json",
+      "sourceBlob": "be5ae833e5ba0fd0073f2c45869bc113618b9774",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/holdback-policy.log",
+      "sourceBlob": "35bb98e08dbc8d53eb97c045d2967c077bcaf1f3",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/horizontal-final.log",
+      "sourceBlob": "50296e97891c5a263925a88364d149728161c6fa",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/live-dev-search.json",
+      "sourceBlob": "88b57e04e7b1810564fa4ced869348faa93a1d0b",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/production3-complete-asset-audit.log",
+      "sourceBlob": "3ab1d8b84abb7f61b5a7ef90eb00299bd23065d8",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/production3-complete-export.log",
+      "sourceBlob": "66bfe9b95ce8f21f4918925e41f29eb3b19a43f6",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/production3-platform-assets.json",
+      "sourceBlob": "77cb46f15c09903d423f8d9b2131f8146224c787",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/production3-policy-final.log",
+      "sourceBlob": "00971ac9d76224bcd50d97002418b0d17438d6dc",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/registry-final.log",
+      "sourceBlob": "86b51265d2a6884021a27faa675f4f7c1cc76490",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/restoration-artifact-final.json",
+      "sourceBlob": "43436cc58b260fa23a1f997259f635e0536a9623",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/restoration-artifact-final.log",
+      "sourceBlob": "0688c5462098efe61e547dcf403004871e5d8125",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/restoration-source-final.log",
+      "sourceBlob": "780ddfbc47dada25fea7a68b4d9cfc06947dce18",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/search-api-suite.log",
+      "sourceBlob": "cac65fe1f5e3f5101892cecb142eaaeebb4e253b",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/session-api-suite.log",
+      "sourceBlob": "1471b292e8f91d6ea3a573e857d2baaec941cb49",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/session-projections.log",
+      "sourceBlob": "4b8eda9584832a1b5dda629b2967af99c7f72e5f",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/source-delta-registration.json",
+      "sourceBlob": "0683c7e8eb6ed8e8cf39a281055d890b6c16d649",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/surface-owners.log",
+      "sourceBlob": "85ec5b07ab07454cb4aacf44657063b83f9a1c9b",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/typecheck-verified.log",
+      "sourceBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/typography.log",
+      "sourceBlob": "f2571c71402ec5dffb58f69f1fbbe35317636375",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/validation-summary.json",
+      "sourceBlob": "3b9e4a1a2efac08070eed4526681f24b0d38c96f",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/visual-failure-tests.log",
+      "sourceBlob": "1fdca2705e4ebd75b244588c5d327d46a4455a0b",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "docs/validation/readiness-fixes-2026-10-06/visual-values.log",
+      "sourceBlob": "8698362f05038cd27809a9feafd961e47c2bf9bb",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "eas.json",
+      "sourceBlob": "200740b461f8fcd4bfe534019eb012f7f9148e0d",
+      "destinationPriorBlob": "cee5509b798a6580f9f8eb4b95fb6407bf4a9b53",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "lib/approved-art-runtime.ts",
+      "sourceBlob": "68b5e389ca4b740b55357c4d9f9e6ed9402ca5d3",
+      "destinationPriorBlob": "f9eb00d4c304ed2ced54a3ddedb1ae96e7d2fdcc",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "lib/canonical-core-artwork-identities.ts",
+      "sourceBlob": "cc0dd3b69ca1c48e043ddea8a4b12ca5b2202ea6",
+      "destinationPriorBlob": "4899940a32caff55224993d23516e8934c23eb23",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "lib/canonical-movement-artwork-assets.ts",
+      "sourceBlob": "9203516950da70003d280a447af926bbf2c7d57f",
+      "destinationPriorBlob": "e2d30ec569b7c2731d4884bb4f211ae464353bcd",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "lib/equipment-type-artwork.ts",
+      "sourceBlob": "42a5044a1bdede558bccd19696308c59439d44c4",
+      "destinationPriorBlob": "c6f78fa6ca7c62d44e9a772d01b65fa9261b50a2",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "lib/mobile-education.ts",
+      "sourceBlob": "27bf31646b97a6eb9ddfba71ab7ee14a2edb9a90",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "lib/program-timeline.ts",
+      "sourceBlob": "fee6ee308c101f77c5f689b4966be0a105e1af34",
+      "destinationPriorBlob": "4697c7b116d23351c304ddcb6d48090572d67c93",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "lib/session-availability.ts",
+      "sourceBlob": "5195b1eea985d5825ec7ee5fdd17db446e304aa8",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "lib/training-hub-session-labels.ts",
+      "sourceBlob": "1d8d5501ea80f12d88e44ee76af9b0f0ce5a4de7",
+      "destinationPriorBlob": "4a71a6d07bc4d13ba578cdb76b643b70db579b14",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/approved-art-bundle-policy.mjs",
+      "sourceBlob": "41172b3cf7b9455a076491858d529ff73b3fb398",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/assert-no-dev-artwork-export.mjs",
+      "sourceBlob": "e06922e5647a1b4f082d4e2347684bde093dd251",
+      "destinationPriorBlob": "cb62c61ffbb021099d618f8aab061f2c66637e15",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/audit-transparent-screen-roots.js",
+      "sourceBlob": "2fde2bf111c20ab671218cbfe5c02ef4f77ced4d",
+      "destinationPriorBlob": "f2f774ad289b5b0d3e95c414f53ce8e80c1f09b1",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/audit-ui-constitution.js",
+      "sourceBlob": "eb8e2a408a7bbba377b57963863bfc2bc9948e61",
+      "destinationPriorBlob": "4453557630c2150ada7b8258bb1db418585aa80a",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/dev-source-progression.mjs",
+      "sourceBlob": "bb5961cd430e8f9f9d1e7a1df4349b2dcdc230bc",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/mobile-3-surface-owners.json",
+      "sourceBlob": "72a608ff0ea8424544a12d9b6e195edb224b2469",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/release-holdback-policy.mjs",
+      "sourceBlob": "4a4d4e29f9254ba50355b0d51b549b8f534efaa2",
+      "destinationPriorBlob": "0a781e3d9675d651712ec306f951b97a70b0514f",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/sync-approved-artwork-registry.mjs",
+      "sourceBlob": "65babd680d1bd3a4d2845ea9792380e6d3d91d96",
+      "destinationPriorBlob": "9440832b58df7083247ea88152f4988d1ae12b87",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-accepted-behavior-contracts.mjs",
+      "sourceBlob": "e8bd83d447644142396b575aa1723665406ae8a9",
+      "destinationPriorBlob": "09b5f043b26fee3c7b24aec8af4102a76965e868",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-accessory-pr-save-api.mjs",
+      "sourceBlob": "f416632bb2f534e50c32744196ed3a709f17d391",
+      "destinationPriorBlob": "23c011cbe5d6cb3ebcb32e9b2602e4fe66597721",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-canonical-movement-history-v2.mjs",
+      "sourceBlob": "0897567b5b093b7284717477ff1b7059dcc084fa",
+      "destinationPriorBlob": "63d72dd13bd5c7e399e962e3e4f338719cb5d1ac",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-chart-fidelity-standard.mjs",
+      "sourceBlob": "2a876465410dc195d578d21e42a272f441afc8ed",
+      "destinationPriorBlob": "3ec02279638111f4cfb2abb27413c853c77171ac",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-complete-movement-library-art.mjs",
+      "sourceBlob": "5fc3732b2b7072d44965825e3d3932cdd559035c",
+      "destinationPriorBlob": "9ca70408398d6a7ccd386fb9ca55dec6a37f2780",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-dev-source-progression.mjs",
+      "sourceBlob": "c5cc1cf4bc8943f5edd7f0ffe07dc39d1b0432da",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-dev-testflight-release-gates.mjs",
+      "sourceBlob": "bf01dd69ec6dcfaef00ed0bccb679f71a8632396",
+      "destinationPriorBlob": "8fd0194319205044ab07e9dc003b17cf57b5e453",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-equipment-type-artwork.mjs",
+      "sourceBlob": "a300ba0dc9a768f1ddd1eebce75e30310f7bcc9a",
+      "destinationPriorBlob": "c8227dc427ce3aeef51b2831c63f596ee02487d1",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-human-movement-art-approval.mjs",
+      "sourceBlob": "f2e9e33c2954dbaaf25a5a753fbc246fe0bc5189",
+      "destinationPriorBlob": "b532f1fb6f0038d864da2f341bb9a0f4c9316d18",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-logger-compact-actions.mjs",
+      "sourceBlob": "db5d65bdfa24b3f8555145a3597892966675c174",
+      "destinationPriorBlob": "17a123a07ee2aeb8cf1145014d7664b2b72ede6e",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-mobile-3-education-navigation.mjs",
+      "sourceBlob": "b8ce9995ffa69794e2fbd1381ac02e5f686faec4",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-mobile-3-education.mjs",
+      "sourceBlob": "b7b6cafb5dd7dc62c5bc45d2a1dd66be530f4b70",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-mobile3-visual-policy.mjs",
+      "sourceBlob": "e416f7568f0755ce0cb098b085b0375c1ad7be76",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-pre-october-2-restoration.mjs",
+      "sourceBlob": "1f590d4b6fa9d933573549411306ff9cb5ae41ff",
+      "destinationPriorBlob": "cda047c83c35430de01083ecc11c19a0cea65e9c",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-production3-art-policy.mjs",
+      "sourceBlob": "03e658ae46c7cb5686d18907f49d54aadd4937b5",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-release-critical-invariants.mjs",
+      "sourceBlob": "003d12497707e97102ea4159d08a6d970c580cc7",
+      "destinationPriorBlob": "ff52cd77c059c1d327a7ab1e9a9631e319211d95",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/test-unavailable-session-projections.mjs",
+      "sourceBlob": "480ecb5e8d4e111b51a5f4630a181361ccd0b40e",
+      "destinationPriorBlob": null,
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/ui-constitution-exceptions.json",
+      "sourceBlob": "0d9f6f88fd39ac847f3adb4715fe5e85f0fbde8b",
+      "destinationPriorBlob": "e62a310176901079fff7f7b237dffe7aa099c9f4",
+      "method": "copy exact canonical tracked bytes"
+    },
+    {
+      "path": "scripts/verify-testflight-release-integrity.mjs",
+      "sourceBlob": "9eb370b0cf7a733be1c1e29cd0a17c9859c99bd8",
+      "destinationPriorBlob": "7b0ed482f8dd457c5ea7a263051689b4cc594fe6",
+      "method": "copy exact canonical tracked bytes"
+    }
+  ],
+  "governedHoldbacks": [
+    {
+      "path": "config/governed-movement-art-taxonomy.json",
+      "blob": "a253d05bb987ca050e2fe19906b031b716c2aec3",
+      "devSha256": "4cecf895c2035b1a65b1ec2d36b8b4ff1c37b39ea1110c92def256b4a51a3aaf",
+      "candidateSha256": "96829b44057e3fbb88f3be921ca11999742b4a42c7565938c9feef3e6f08cae9"
+    },
+    {
+      "path": "scripts/test-shared-movement-programming-context.mjs",
+      "blob": null
+    },
+    {
+      "path": "app/(tabs)/workout/[workoutId].tsx",
+      "sourceCommit": "847d5834f41486bfbf63a5e45e690a514eed0d8a",
+      "blob": "e75584aea1b2d69f006cec3c46890bb8433b23da",
+      "devSha256": "5b4f45da4bcd443d6b478f74d004bebec810db78cb3964e53cafdc8dcd6b01ec",
+      "candidateSha256": "e3d2bfb7652ac3501a47ad1707dbc3acf723e3387f96a9d8ffe4c41e3b6749b8",
+      "sharedFix": {
+        "devSourceCommit": "7933a887672d398c69894fc8228362634b54625d",
+        "before": "    if (Number.isNaN(weightInUnit) || weightInUnit <= 0) {\n      setError('Weight required');\n      return;\n    }",
+        "after": "    // Zero is a performed load (for example, bodyweight with no added load),\n    // not missing input. Match the canonical edit-set API's nonnegative rule.\n    if (!Number.isFinite(weightInUnit) || weightInUnit < 0) {\n      setError('Weight required');\n      return;\n    }",
+        "additionalChanges": [
+          {
+            "before": "    setPrescriptionItemId(itemId);\n  };\n  const prescriptionAction = (itemId: number) => canEditPrescription ? (\n    <TouchableOpacity accessibilityRole=\"button\" accessibilityLabel=\"Edit Prescription\"\n      style={styles.accessoryInlineAction} onPress={() => openPrescription(itemId)}>\n      <Ionicons name=\"create-outline\" size={18} color={SLColors.textMuted} />\n      <Text style={styles.accessoryInlineActionText}>Edit Prescription</Text>\n    </TouchableOpacity>\n  ) : null;\n\n  const historyPeekFor = (item: WorkoutItem) => {",
+            "after": "    setPrescriptionItemId(itemId);\n  };\n\n  const historyPeekFor = (item: WorkoutItem) => {"
+          },
+          {
+            "before": "              domain={equipmentDomain} />",
+            "after": "              domain={equipmentDomain}\n              onSwapEquipment={!isCoachAthletePreview && canConfigureMachineEquipment(it)\n                ? () => openIdentityPicker(it) : undefined} />"
+          },
+          {
+            "before": "          auxAction={isCoachAthletePreview ? null : (\n            <>\n              {canConfigureMachineEquipment(it) ? (\n                <TouchableOpacity\n                  style={styles.accessoryInlineAction}\n                  onPress={() => openIdentityPicker(it)}\n                >\n                  <Ionicons name=\"barbell-outline\" size={18} color={SLColors.textMuted} />\n                  <Text adjustsFontSizeToFit minimumFontScale={0.82} numberOfLines={1} style={styles.accessoryInlineActionText}>Equipment</Text>\n                </TouchableOpacity>\n              ) : null}\n              {prescriptionAction(it.id)}\n              {swapLabel ? (\n                <TouchableOpacity\n                  style={styles.accessoryInlineAction}\n                  onPress={() => openSwapAcc(it)}\n                  disabled={savingItemId === it.id}\n                >\n                  <Text style={styles.accessoryInlineActionText}>{swapLabel}</Text>\n                </TouchableOpacity>\n              ) : null}\n            </>\n          )}",
+            "after": "          onEditPrescription={canEditPrescription ? () => openPrescription(it.id) : undefined}\n          movementAction={!isCoachAthletePreview && swapLabel ? (\n            <Text accessible accessibilityRole=\"button\"\n              accessibilityLabel={swapLabel === 'Swap' ? 'Swap movement' : swapLabel}\n              accessibilityState={{ disabled: savingItemId === it.id }}\n              style={[styles.loggerMovementSwapText, savingItemId === it.id && { opacity: 0.45 }]}\n              onPress={savingItemId === it.id ? undefined : () => openSwapAcc(it)}>\n              <Ionicons name=\"swap-horizontal\" size={16} color=\"#c8a6ff\" />{'\\u00a0'}{swapLabel}\n            </Text>\n          ) : null}"
+          },
+          {
+            "before": "                  auxAction={prescriptionAction(movementPresentation.loggerFocus?.itemId || core.id)}",
+            "after": "                  onEditPrescription={canEditPrescription\n                    ? () => openPrescription(movementPresentation.loggerFocus?.itemId || core.id) : undefined}"
+          },
+          {
+            "before": "  },\n  accessoryInlineAction: {",
+            "after": "  },\n  loggerMovementSwapText: { fontSize: 12, fontWeight: '700', color: '#c8a6ff' },\n  accessoryInlineAction: {"
+          },
+          {
+            "before": "    if (events.length && json?.created === true && json?.replayed !== true) {\n      transientRecognitionTrace(7, 'transient recognition enqueued');\n    }",
+            "after": "    // Reserve the rest handoff before the save confirmation can release recognition.\n    // Waiting until the accepted-sheet dwell ends lets a PR play behind the picker.\n    if (json?.created === true && json?.replayed !== true\n      && acceptedRestOfferRef.current.offer\n      && !isNewCanonicalSessionFinalSet({\n        created: json.created, replayed: json.replayed,\n        completionBoundary: json?.completion_boundary,\n      })) {\n      feedbackDispatch({ type: 'TIMER_PICKER_PENDING' });\n    }\n    if (events.length && json?.created === true && json?.replayed !== true) {\n      transientRecognitionTrace(7, 'transient recognition enqueued');\n    }"
+          },
+          {
+            "before": "      timer_visible: timerPickerVisible,\n    };",
+            "after": "      timer_visible: timerPickerVisible,\n      logger_sheet: !!coreWheel || !!accessoryWheel,\n    };"
+          },
+          {
+            "before": "feedbackState.timer.status, timerPickerVisible, transientRecognitionTrace]);",
+            "after": "feedbackState.timer.status, timerPickerVisible, coreWheel, accessoryWheel, transientRecognitionTrace]);"
+          }
+        ]
+      },
+      "devOnlyProgression": {
+        "ownerInstruction": "Fix them all, please. Fix them all. Don't assume that you will have the computer open because I'm going to step away so it will lock on its own. Fix them all and then we'll leave it at that for now, please.",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-readiness-fixes.txt",
+        "ownerEvidenceSha256": "f701e344e6b4162601d3afde807624bee4b13e8382b95f79c338b8b31e2c4040",
+        "before": "86156c699fba0f30fca2e296d153e1c4a38e0da356207b953668bec3bb778b29",
+        "after": "5b4f45da4bcd443d6b478f74d004bebec810db78cb3964e53cafdc8dcd6b01ec",
+        "reason": "Preserve every identical shipped compact Logger/zero-load/PR-rest patch and pending Cable code; add only canonical Education hints and Draft unavailable explanations/Session Workspace copy from the owner readiness request. This is DEV-only, not publication authorization.",
+        "changes": [
+          {
+            "before": "import { CompletedSessionCorrection } from '@/components/workout-logger/completed-session-correction';\nimport { SessionSetEntryContext } from '@/components/workout-logger/session-set-entry-context';\nimport { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator } from '@/components/workout-logger/session-v3-shell';\nimport { EquipmentHistoryEvidence } from '@/components/workout-logger/equipment-history-evidence';\nimport { SessionHistoryPeek } from '@/components/workout-logger/session-history-peek';\nimport { invalidateEvidenceReads } from '@/lib/evidence-read-cache';\nimport { sessionExecutionCapabilities } from '@/lib/session-logger-lifecycle';\nimport { registerFocusedSession } from '@/lib/session-logger-focus';\nimport { scheduleRestTimerEnd } from '@/lib/rest-timer-notification-scheduling';\nimport { shouldOfferRestAfterAcceptedSet } from '@/lib/set-rest-handoff';\nimport { ApprovedSubstitutionPicker } from '@/components/workout-logger/approved-substitution-picker';\n",
+            "after": "import { CompletedSessionCorrection } from '@/components/workout-logger/completed-session-correction';\nimport { SessionSetEntryContext } from '@/components/workout-logger/session-set-entry-context';\nimport { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator } from '@/components/workout-logger/session-v3-shell';\nimport { EquipmentHistoryEvidence } from '@/components/workout-logger/equipment-history-evidence';\nimport { EducationInlineHint, useEducationHint, useMobileEducation } from '@/context/MobileEducationContext';\nimport { SessionHistoryPeek } from '@/components/workout-logger/session-history-peek';\nimport { invalidateEvidenceReads } from '@/lib/evidence-read-cache';\nimport { sessionExecutionCapabilities } from '@/lib/session-logger-lifecycle';\nimport { sessionUnavailableExplanation } from '@/lib/session-availability';\nimport { registerFocusedSession } from '@/lib/session-logger-focus';\nimport { scheduleRestTimerEnd } from '@/lib/rest-timer-notification-scheduling';\nimport { shouldOfferRestAfterAcceptedSet } from '@/lib/set-rest-handoff';\nimport { ApprovedSubstitutionPicker } from '@/components/workout-logger/approved-substitution-picker';\n"
+          },
+          {
+            "before": "}\n\nexport default function WorkoutViewerScreen() {\n  const { user } = useAuth(); // we only need session + role to decide logging availability\n  const {\n    workoutId,\n    loggerScenario,\n    loggerLifecycle,\n",
+            "after": "}\n\nexport default function WorkoutViewerScreen() {\n  const { user } = useAuth(); // we only need session + role to decide logging availability\n  const education = useMobileEducation();\n  const {\n    workoutId,\n    loggerScenario,\n    loggerLifecycle,\n"
+          },
+          {
+            "before": "      ) != null,\n      acceptedPersistedSetLogForItem: acceptedSetEvidenceItemIds.has(Number(it.id)),\n    });\n    if (!swapAction) return;\n    setSwapError(null);\n    setSwapAccItem(it);\n    // The programmed/effective identity is context, never a selectable\n    // replacement. A deliberate new governed identity is required.\n",
+            "after": "      ) != null,\n      acceptedPersistedSetLogForItem: acceptedSetEvidenceItemIds.has(Number(it.id)),\n    });\n    if (!swapAction) return;\n    education.markLearned('active-session-edit');\n    setSwapError(null);\n    setSwapAccItem(it);\n    // The programmed/effective identity is context, never a selectable\n    // replacement. A deliberate new governed identity is required.\n"
+          },
+          {
+            "before": "  const chooseEquipmentVariant = async (\n    variant: MachineEquipmentType,\n  ) => {\n    if (!identityPickerManufacturer) return;\n    if (isIdealWorkoutDetailPreview) {\n      const identity = workoutDetailMachineVariantIdentity(\n        identityPickerManufacturer,\n        variant,\n",
+            "after": "  const chooseEquipmentVariant = async (\n    variant: MachineEquipmentType,\n  ) => {\n    if (!identityPickerManufacturer) return;\n    if (presentEquipmentHistory(identityPickerManufacturer, unit, false, variant).performance) education.markLearned('equipment-history');\n    if (isIdealWorkoutDetailPreview) {\n      const identity = workoutDetailMachineVariantIdentity(\n        identityPickerManufacturer,\n        variant,\n"
+          },
+          {
+            "before": "  const loggerHeaderShown = sessionLoggerSharedHeaderShown({\n    mode: loggerShellMode,\n    hasCompletedRecap: Boolean(data?.workout?.completed_recap),\n  });\n\n  if (loading && !data) {\n    return (\n      <>\n",
+            "after": "  const loggerHeaderShown = sessionLoggerSharedHeaderShown({\n    mode: loggerShellMode,\n    hasCompletedRecap: Boolean(data?.workout?.completed_recap),\n  });\n  const showActiveEditHint = useEducationHint('active-session-edit', Boolean(\n    data && data.workout.status === 'in_progress'\n    && canEditActiveComposition(data.permissions?.can_edit_composition, data.permissions?.is_self_coached, data.workout.status, coachPreviewRequested)\n    && !compositionMode && !coreWheel && !accessoryWheel,\n  ));\n  const showEquipmentHistoryHint = useEducationHint('equipment-history', Boolean(\n    identityPickerItem && identityPickerManufacturer && askForEquipmentDetails\n    && presentEquipmentHistory(identityPickerManufacturer, unit, false).performance,\n  ));\n\n  if (loading && !data) {\n    return (\n      <>\n"
+          },
+          {
+            "before": "    ['assigned', 'draft', 'tardy'].includes(String(workout.status || '').toLowerCase());\n  const canLog = canLogFromServer && workout.status === 'in_progress';\n  const canManageSetVideo = canLogFromServer && !isCoachView;\n  const canBegin = executionCapabilities.canBegin;\n  const canCompleteOrCancel =\n    canLogFromServer &&\n    (workout.status === 'in_progress' || workout.status === 'completed');\n  const screenMode = deriveScreenMode(workout.status);\n",
+            "after": "    ['assigned', 'draft', 'tardy'].includes(String(workout.status || '').toLowerCase());\n  const canLog = canLogFromServer && workout.status === 'in_progress';\n  const canManageSetVideo = canLogFromServer && !isCoachView;\n  const canBegin = executionCapabilities.canBegin;\n  const unavailableExplanation = sessionUnavailableExplanation({\n    status: workout.raw_status || workout.status,\n    blockReason: workout.block_reason,\n    loggable: workout.loggable,\n    canBegin,\n    selfCoached: isIndividualUser,\n  });\n  const canCompleteOrCancel =\n    canLogFromServer &&\n    (workout.status === 'in_progress' || workout.status === 'completed');\n  const screenMode = deriveScreenMode(workout.status);\n"
+          },
+          {
+            "before": "  const canEditComposition = canEditActiveComposition(data.permissions?.can_edit_composition,\n    data.permissions?.is_self_coached, workout.status, isCoachAthletePreview || coachPreviewRequested);\n  const openComposition = (mode: 'add' | 'remove') => {\n    if (!canEditComposition || canonicalSetSubmissionControllerRef.current.isInFlight()) return;\n    setCompositionMode(mode);\n  };\n  const canEditPrescription = canEditActivePrescription(data.permissions?.can_edit_prescription,\n    data.permissions?.is_self_coached, workout.status, isCoachAthletePreview || coachPreviewRequested);\n  const openPrescription = (itemId: number) => {\n    if (!canEditPrescription || canonicalSetSubmissionControllerRef.current.isInFlight()) return;\n    setPrescriptionItemId(itemId);\n  };\n\n  const historyPeekFor = (item: WorkoutItem) => {\n",
+            "after": "  const canEditComposition = canEditActiveComposition(data.permissions?.can_edit_composition,\n    data.permissions?.is_self_coached, workout.status, isCoachAthletePreview || coachPreviewRequested);\n  const openComposition = (mode: 'add' | 'remove') => {\n    if (!canEditComposition || canonicalSetSubmissionControllerRef.current.isInFlight()) return;\n    education.markLearned('active-session-edit');\n    setCompositionMode(mode);\n  };\n  const canEditPrescription = canEditActivePrescription(data.permissions?.can_edit_prescription,\n    data.permissions?.is_self_coached, workout.status, isCoachAthletePreview || coachPreviewRequested);\n  const openPrescription = (itemId: number) => {\n    if (!canEditPrescription || canonicalSetSubmissionControllerRef.current.isInFlight()) return;\n    education.markLearned('active-session-edit');\n    setPrescriptionItemId(itemId);\n  };\n\n  const historyPeekFor = (item: WorkoutItem) => {\n"
+          },
+          {
+            "before": "      <SessionV3Header title={workout.label || 'Training Session'} subtitle={[workout.week_number ? `W${workout.week_number}` : null, workout.date ? new Date(`${workout.date.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : null].filter(Boolean).join(' \u00b7 ')} active={isActiveSession} preview={isCoachAthletePreview ? athlete.name : null} inset={insets.top}\n        logged={loggedSets} total={plannedSets} startedAt={workout.started_at}\n        onBack={() => { if (isPreSession && focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else handleBackToTrainingHub(); }}\n        onActions={() => canLog ? setSessionActionsVisible(true) : Alert.alert('Session actions', undefined, [\n          ...(isCoachAthletePreview ? [{ text: 'Return to Coach Editor', onPress: handleReturnToCoachEditor }] : [\n            ...(canEdit ? [{ text: 'Edit Session', onPress: handleEditWorkout }] : []),\n          ]), { text: 'Close', style: 'cancel' },\n        ])} />\n      <SessionActionsSheet visible={sessionActionsVisible && canLog} canEditComposition={canEditComposition}\n",
+            "after": "      <SessionV3Header title={workout.label || 'Training Session'} subtitle={[workout.week_number ? `W${workout.week_number}` : null, workout.date ? new Date(`${workout.date.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : null].filter(Boolean).join(' \u00b7 ')} active={isActiveSession} preview={isCoachAthletePreview ? athlete.name : null} inset={insets.top}\n        logged={loggedSets} total={plannedSets} startedAt={workout.started_at}\n        onBack={() => { if (isPreSession && focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else handleBackToTrainingHub(); }}\n        onActions={() => canLog ? setSessionActionsVisible(true) : Alert.alert('Session actions', undefined, [\n          ...(isCoachAthletePreview ? [{ text: 'Return to Session Workspace', onPress: handleReturnToCoachEditor }] : [\n            ...(canEdit ? [{ text: 'Edit Session', onPress: handleEditWorkout }] : []),\n          ]), { text: 'Close', style: 'cancel' },\n        ])} />\n      <SessionActionsSheet visible={sessionActionsVisible && canLog} canEditComposition={canEditComposition}\n"
+          },
+          {
+            "before": "        }}\n        scrollEventThrottle={16}\n        keyboardShouldPersistTaps=\"handled\"\n      >\n        {canEditComposition && getOrderedWorkoutMovements(workout).length === 0 ? <View style={{ paddingVertical: 28, gap: 16 }}>\n          <Text style={styles.accessoryInlineActionText}>No movements in this Session.</Text>\n          <TouchableOpacity accessibilityRole=\"button\" accessibilityLabel=\"Add Movement\" onPress={() => openComposition('add')} style={styles.accessoryInlineAction}>\n            <Ionicons name=\"add-circle-outline\" size={22} color={SLColors.accentViolet} />\n            <Text style={styles.accessoryInlineActionText}>Add Movement</Text>\n          </TouchableOpacity>\n        </View> : null}\n        {isPreSession && !focusedMovementKey ? <SessionV3PlanHero\n          title={workout.label || 'Training Session'} focus={focusLine} planned={plannedSets}\n          movements={coreMovementCount + accessoryMovementOrder.length}\n          artwork={canonicalArtworkInputForLoggerItem(workout.core_items.find(item => !item.parent_item_id) || accessoryMovementOrder[0])}\n          note={workout.programming_notes}\n        /> : null}\n        {isFinishedSession && workout.impact_summary?.canonically_completed ? (\n          <SessionImpactPanel\n            summary={workout.impact_summary}\n            displayUnit={unit}\n",
+            "after": "        }}\n        scrollEventThrottle={16}\n        keyboardShouldPersistTaps=\"handled\"\n      >\n        {showActiveEditHint ? <EducationInlineHint feature=\"active-session-edit\" title=\"Edit this Session while you train.\" /> : null}\n        {canEditComposition && getOrderedWorkoutMovements(workout).length === 0 ? <View style={{ paddingVertical: 28, gap: 16 }}>\n          <Text style={styles.accessoryInlineActionText}>No movements in this Session.</Text>\n          <TouchableOpacity accessibilityRole=\"button\" accessibilityLabel=\"Add Movement\" onPress={() => openComposition('add')} style={styles.accessoryInlineAction}>\n            <Ionicons name=\"add-circle-outline\" size={22} color={SLColors.accentViolet} />\n            <Text style={styles.accessoryInlineActionText}>Add Movement</Text>\n          </TouchableOpacity>\n        </View> : null}\n        {isPreSession && !focusedMovementKey ? <SessionV3PlanHero\n          eyebrow={workout.status === 'draft' ? 'DRAFT SESSION' : 'YOUR SESSION'}\n          title={workout.label || 'Training Session'} focus={focusLine} planned={plannedSets}\n          movements={coreMovementCount + accessoryMovementOrder.length}\n          artwork={canonicalArtworkInputForLoggerItem(workout.core_items.find(item => !item.parent_item_id) || accessoryMovementOrder[0])}\n          note={workout.programming_notes}\n        /> : null}\n        {isPreSession && !isCoachAthletePreview && unavailableExplanation ? (\n          <View accessibilityRole=\"alert\" style={{ paddingVertical: 16 }}>\n            <Text typographyRole=\"body\" style={{ color: SLColors.textMuted }}>{unavailableExplanation}</Text>\n          </View>\n        ) : null}\n        {isFinishedSession && workout.impact_summary?.canonically_completed ? (\n          <SessionImpactPanel\n            summary={workout.impact_summary}\n            displayUnit={unit}\n"
+          },
+          {
+            "before": "                        {identityPickerManufacturer.manufacturer?.display_name\n                          || 'Other'}\n                      </Text>\n                    </View>\n                    {identityPickerContinuation.kind !== 'evidence_correction' ? <TouchableOpacity\n                      accessibilityRole=\"button\" accessibilityLabel=\"Skip equipment details\"\n                      disabled={identityPickerLoading}\n                      onPress={() => identityPickerItem && void saveUnknownEquipment(identityPickerItem, identityPickerContinuation, false)}\n",
+            "after": "                        {identityPickerManufacturer.manufacturer?.display_name\n                          || 'Other'}\n                      </Text>\n                    </View>\n                    {showEquipmentHistoryHint ? <EducationInlineHint feature=\"equipment-history\" title=\"See prior performance for this equipment.\" /> : null}\n                    {identityPickerContinuation.kind !== 'evidence_correction' ? <TouchableOpacity\n                      accessibilityRole=\"button\" accessibilityLabel=\"Skip equipment details\"\n                      disabled={identityPickerLoading}\n                      onPress={() => identityPickerItem && void saveUnknownEquipment(identityPickerItem, identityPickerContinuation, false)}\n"
+          }
+        ]
+      }
+    },
+    {
+      "path": "lib/equipment-flow-subject.ts",
+      "sourceCommit": "847d5834f41486bfbf63a5e45e690a514eed0d8a",
+      "blob": "37ae6097cf3e4122811996d913a2106bf74768a3",
+      "devSha256": "874fd0e8800b5dcbb961e9c5de65cebfbedd13f1b863242e47d2224da25d6d26",
+      "candidateSha256": "4a3c931baf7a23df49c79e8b8eae0e415d5cea99365f9f2e73cca9f89da20650"
+    },
+    {
+      "path": "lib/equipment-selection.ts",
+      "sourceCommit": "847d5834f41486bfbf63a5e45e690a514eed0d8a",
+      "blob": "35f83ed2eb4e9fb6149493b74de4d8c25099f2bd",
+      "devSha256": "7663b3bdaf47d75784aa46345bafb77d401474cb86e45b64e6d91e497086de09",
+      "candidateSha256": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84"
+    },
+    {
+      "path": "scripts/test-equipment-flow-subject.mjs",
+      "sourceCommit": "847d5834f41486bfbf63a5e45e690a514eed0d8a",
+      "blob": "759195727b2f1c6855a6d774dedddb7768979af0",
+      "devSha256": "8d06579e7de123fdd29d3bd7d0cbd1b30300fce54504632157fb8c3b78658ffd",
+      "candidateSha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d"
+    }
+  ],
+  "preservedCandidateOnlyPaths": [],
+  "publicationPerformed": false
+}

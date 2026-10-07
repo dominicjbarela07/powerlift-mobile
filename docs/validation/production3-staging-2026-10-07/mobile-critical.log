@@ -1,0 +1,3136 @@
+[release-critical-invariants] PASS — unavailable Session lifecycle survives every date and projection
+[release-critical-invariants] PASS — bounded DEV additions retain the shipped baseline and reject hidden changes
+[release-critical-invariants] PASS — version-scoped Production 3 preparation preserves legacy runtime artwork policy
+[release-critical-invariants] PASS — reviewed Mobile 3 values reject color, root and horizontal-inset drift
+[release-critical-invariants] FAIL — pre-Oct 2 complete imagery and Accessory PR celebration restoration
+[release-critical-invariants] PASS — owner non-recurrence governance, missing protections and false incident closure
+[release-critical-invariants] PASS — temporary-worktree lifecycle, stranded shipped fixes, safe cleanup and dirty DEV preservation
+[release-critical-invariants] FAIL — DEV superset, explicit removals, and exact published-state failure gates
+[release-critical-invariants] PASS — all shipped governed IDs survive thin-payload compatibility
+[release-critical-invariants] PASS — live Session Edit, Add, Remove, and Swap persistence
+[release-critical-invariants] PASS — Session actions safety hierarchy and composition
+[release-critical-invariants] PASS — dedicated muscle-group navigation artwork
+[release-critical-invariants] PASS — complete approved artwork and retired library selection
+[release-critical-invariants] PASS — pinned compatibility holdbacks cannot introduce release-only behavior
+[release-critical-invariants] PASS — keyboard visibility across composers, forms and sheets
+[release-critical-invariants] PASS — initial hydration equals same-movement Swap identity
+[release-critical-invariants] FAIL — entire governed catalog retains artwork through thin payloads
+[release-critical-invariants] PASS — Programming exact Last Exposure and subject isolation
+[release-critical-invariants] PASS — bottom sheets reserve dismissal for top chrome
+[release-critical-invariants] PASS — movement artwork identity survives completion
+[release-critical-invariants] PASS — canonical superset storyboard and next-member progression
+[release-critical-invariants] PASS — platform-wide mobile full-width and text layout
+[release-critical-invariants] PASS — Athlete Meet Packet V2 lifecycle and immersive shell
+[release-critical-invariants] PASS — Coach Session Reviewer V3 evidence and shared tools
+[release-critical-invariants] PASS — canonical shared athlete and coach post-Session surface
+[release-critical-invariants] PASS — Coach Check-Ins V2 command center and evidence lifecycle
+[release-critical-invariants] PASS — substitution authority
+[release-critical-invariants] PASS — canonical movement identity
+[release-critical-invariants] PASS — catalog authoring
+[release-critical-invariants] PASS — individual movement artwork
+[release-critical-invariants] PASS — approved artwork completion and saved Logger crops
+[release-critical-invariants] PASS — approved Core images, shared variant references and honest missing coverage
+[release-critical-invariants] PASS — human approval of canonical movement artwork
+[release-critical-invariants] PASS — exact movement subject through Equipment
+[release-critical-invariants] PASS — pre-Session readiness before execution
+[release-critical-invariants] PASS — Swap and Session Workspace muscle drill-down anatomy
+[release-critical-invariants] PASS — Swap muscle-result equipment-type narrowing
+[release-critical-invariants] PASS — Session Logger shell
+[release-critical-invariants] PASS — Smart Warmup lifecycle and physical configuration
+[release-critical-invariants] PASS — expanded Core Logger workspace density
+[release-critical-invariants] PASS — canonical compact Set Timeline
+[release-critical-invariants] PASS — movement-scoped SetLog edit/delete order and zero-load persistence
+[release-critical-invariants] PASS — movement-scoped Logger physical loading
+[release-critical-invariants] PASS — canonical rest-timer lifecycle
+[release-critical-invariants] PASS — Session Logger performance, route, and resume ownership
+[release-critical-invariants] PASS — Session Logger request timeout ownership
+[release-critical-invariants] PASS — equipment
+[release-critical-invariants] PASS — completed Session equipment evidence correction
+[release-critical-invariants] PASS — rich Plan / Compare
+[release-critical-invariants] PASS — Coach Session review shared cross-tab tools
+[release-critical-invariants] PASS — Coach Coming Up exact Session navigation
+[release-critical-invariants] PASS — Coach Calendar direct filter controls
+[release-critical-invariants] PASS — relationship-scoped athlete coaching scratchpad
+[release-critical-invariants] PASS — movement-class strength metrics
+[release-critical-invariants] PASS — assisted movement evidence semantics
+[release-critical-invariants] PASS — persistent global app-shell navigation
+[release-critical-invariants] PASS — immediate mode switching
+[release-critical-invariants] PASS — Settings account identity and mode parity
+[release-critical-invariants] PASS — grouped PR coaching recognition
+[release-critical-invariants] PASS — mobile coach Meet Day visibility and athlete parity
+[release-critical-invariants] PASS — Team Brief coaching analytics and team-relative Athlete Workspace
+[release-critical-invariants] PASS — platform-wide analytical chart fidelity
+[release-critical-invariants] PASS — global display-unit propagation
+[release-critical-invariants] PASS — historical Ledger preservation
+[release-critical-invariants] PASS — Journey continuous storyboard, chapter evidence, bodyweight context, and timeline drill-downs
+[release-critical-invariants] PASS — Accessories continuous anatomy-led evidence, exact progression, bests, and history
+[release-critical-invariants] PASS — data-driven sex-specific strength standards and lifter-facing achievement language
+[release-critical-invariants] PASS — Achievements storyboard hierarchy, evidence details, and asset families
+[release-critical-invariants] PASS — Strength Overview canonical lift navigation, multi-lens progression, standards, evidence, and destination-composed semantic assets
+[release-critical-invariants] PASS — strength-tier certification app-shell integrity
+[release-critical-invariants] PASS — canonical DEV Metro source lineage
+[release-critical-invariants] PASS — background unread-summary network resilience
+[release-critical-invariants] PASS — consolidated Week Programming Manager
+[release-critical-invariants] PASS — Session Workspace composition and presentation-only units
+[release-critical-invariants] PASS — Session Workspace dirty-state reorder transaction
+[release-critical-invariants] PASS — Session Workspace canonical accessory drilldown
+[release-critical-invariants] PASS — Session Workspace Athlete View handoff
+[release-critical-invariants] PASS — Athlete Training Hub Program Timeline navigation
+[release-critical-invariants] PASS — Athlete Training Hub same-day PR hero truth
+[release-critical-invariants] PASS — visible control action reachability
+[release-critical-invariants] PASS — Production Android/iOS release parity guard
+
+pre-Oct 2 complete imagery and Accessory PR celebration restoration: scripts/test-pre-october-2-restoration.mjs
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: 3.0 art policy requires its exact owner-bound extension receipt
+    at file:///Users/dominic/powerlifting_app/powerlift_mobile/scripts/test-pre-october-2-restoration.mjs:30:12
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v25.2.1
+
+DEV superset, explicit removals, and exact published-state failure gates: scripts/test-dev-testflight-release-gates.mjs
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: valid protected DEV snapshot:  lib/canonical-movement-artwork-assets.ts: unregistered DEV changes
++ actual - expected
+
++ '4d7c1899497dc7f1370bbdad4507f556b6e9327712911edd53bab6d2c4d1d39e'
+- '0803f68afa0103617473a14a13c61fb42816dcb8aca94a4fa20a6773b6e19762'
+
+
+
+false !== true
+
+    at run (file:///Users/dominic/powerlifting_app/powerlift_mobile/scripts/test-dev-testflight-release-gates.mjs:50:12)
+    at file:///Users/dominic/powerlifting_app/powerlift_mobile/scripts/test-dev-testflight-release-gates.mjs:53:3
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.2.1
+
+entire governed catalog retains artwork through thin payloads: scripts/test-governed-movement-art-taxonomy.mjs
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: release projection must contain the current validated DEV catalog
++ actual - expected
+... Skipped lines
+
+  [
+    {
+      core_kind: 'competition',
+      core_movement_definition_id: 1,
+      display_name: 'Competition Squat',
+...
+      primary_muscle_group: null,
++     programming_contexts: [
++       'core'
++     ],
+      secondary_muscle_groups: []
+    },
+    {
+      core_kind: 'competition',
+      core_movement_definition_id: 2,
+...
+      primary_muscle_group: null,
++     programming_contexts: [
++       'core'
++     ],
+      secondary_muscle_groups: []
+    },
+    {
+      core_kind: 'competition',
+      core_movement_definition_id: 3,
+...
+      primary_muscle_group: null,
++     programming_contexts: [
++       'core'
++     ],
+      secondary_muscle_groups: []
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
+-     display_name: 'Barbell Row',
+-     equipment_type: 'barbell',
+-     family: 'horizontal_pull',
+-     id: 4,
+-     key: 'barbell_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'upper_back',
+-     secondary_muscle_groups: [
+-       'lats',
+-       'rear_delts',
+-       'biceps'
+-     ]
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Single-Arm Dumbbell Row',
+-     equipment_type: 'dumbbell',
+-     family: 'horizontal_pull',
+-     id: 5,
+-     key: 'single_arm_dumbbell_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'upper_back',
+-     secondary_muscle_groups: [
+-       'lats',
+-       'rear_delts',
+-       'biceps'
+-     ]
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+      display_name: 'Incline Barbell Press',
+      equipment_type: 'barbell',
+      family: 'horizontal_push',
+      id: 6,
+      key: 'incline_barbell_press',
+      kind: 'accessory',
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'front_delts',
+-       'triceps'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Incline Dumbbell Press',
+-     equipment_type: 'dumbbell',
+-     family: 'horizontal_push',
+-     id: 7,
+-     key: 'incline_dumbbell_press',
+-     kind: 'accessory',
+-     primary_muscle_group: 'chest',
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
+-     display_name: 'Cable Row',
+-     equipment_type: 'cable',
+-     family: 'horizontal_pull',
+-     id: 8,
+-     key: 'cable_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'upper_back',
+-     secondary_muscle_groups: [
+-       'lats',
+-       'rear_delts',
+-       'biceps'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+      display_name: 'Pull-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_lats',
+      id: 11,
+      key: 'pull_up_bodyweight',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'biceps',
+-       'upper_back'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Weighted Pull-Up',
+-     equipment_type: 'bodyweight',
+-     family: 'accessory_lats',
+-     id: 12,
+-     key: 'pull_up_added_weight',
+-     kind: 'accessory',
+-     primary_muscle_group: 'lats',
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
+      display_name: 'Assisted Pull-Up',
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Plank',
+      equipment_type: 'bodyweight',
+      family: 'trunk',
+      id: 14,
+      key: 'plank_duration',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'duration',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'abs',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'obliques'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
+      display_name: 'Machine Lat Pulldown',
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'biceps',
+-       'upper_back'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Unknown Machine Lat Pulldown',
+-     equipment_type: 'machine',
+-     family: 'vertical_pull',
+-     id: 21,
+-     key: 'unknown_machine_lat_pulldown',
+-     kind: 'accessory',
+-     primary_muscle_group: 'lats',
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'front_delts',
+-       'triceps'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Spoto Press',
+-     equipment_type: 'free_weight',
+-     family: 'accessory_chest',
+-     id: 43,
+-     key: 'accessory_spoto_press',
+-     kind: 'accessory',
+-     primary_muscle_group: 'chest',
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      core_movement_definition_id: null,
+-     display_name: 'Larsen Press',
+-     equipment_type: 'free_weight',
+-     family: 'accessory_chest',
+-     id: 44,
+-     key: 'accessory_larsen_press',
+-     kind: 'accessory',
+-     primary_muscle_group: 'chest',
+-     secondary_muscle_groups: [
+-       'front_delts',
+-       'triceps'
+-     ]
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+      display_name: 'Guillotine Press',
+      equipment_type: 'free_weight',
+      family: 'accessory_chest',
+      id: 45,
+      key: 'accessory_guillotine_press',
+      kind: 'accessory',
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'front_delts',
+-       'triceps'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Pec Deck',
+-     equipment_type: 'machine',
+-     family: 'accessory_chest',
+-     id: 52,
+-     key: 'accessory_pec_deck',
+-     kind: 'accessory',
+-     primary_muscle_group: 'chest',
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts'
+      ]
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Push-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_chest',
+      id: 67,
+      key: 'accessory_push_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Deficit Push-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_chest',
+      id: 68,
+      key: 'accessory_deficit_push_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Ring Push-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_chest',
+      id: 69,
+      key: 'accessory_ring_push_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Wide-Grip Push-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_chest',
+      id: 70,
+      key: 'accessory_wide_grip_push_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Decline Push-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_chest',
+      id: 71,
+      key: 'accessory_decline_push_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Incline Push-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_chest',
+      id: 72,
+      key: 'accessory_incline_push_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
+-     display_name: 'Weighted Push-Up',
+-     equipment_type: 'free_weight',
+-     family: 'accessory_chest',
+-     id: 73,
+-     key: 'accessory_weighted_push_up',
+-     kind: 'accessory',
+-     primary_muscle_group: 'chest',
+-     secondary_muscle_groups: [
+-       'front_delts',
+-       'triceps'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+      display_name: 'Chest Dip',
+      equipment_type: 'bodyweight',
+      family: 'accessory_chest',
+      id: 74,
+      key: 'accessory_chest_dip',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Ring Dip',
+      equipment_type: 'bodyweight',
+      family: 'accessory_chest',
+      id: 75,
+      key: 'accessory_ring_dip',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'triceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
+      display_name: 'Band Chest Press',
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'chest',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ]
+    },
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts'
+      ]
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Pike Push-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_front_delts',
+      id: 101,
+      key: 'accessory_pike_push_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Handstand Push-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_front_delts',
+      id: 102,
+      key: 'accessory_handstand_push_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'front_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'side_delts',
+        'triceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
+      display_name: 'Dumbbell Lateral Raise',
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'front_delts',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'traps'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'traps'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'traps'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'traps'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'side_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'traps'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'upper_back'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Incline-Bench Rear-Delt Fly',
+-     equipment_type: 'free_weight',
+-     family: 'accessory_rear_delts',
+-     id: 128,
+-     key: 'accessory_incline_bench_rear_delt_flye',
+-     kind: 'accessory',
+-     primary_muscle_group: 'rear_delts',
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'upper_back'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Wide-Elbow Dumbbell Row',
+-     equipment_type: 'dumbbell',
+-     family: 'accessory_rear_delts',
+-     id: 130,
+-     key: 'accessory_wide_elbow_dumbbell_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'rear_delts',
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'upper_back'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Reverse Pec Deck',
+-     equipment_type: 'machine',
+-     family: 'accessory_rear_delts',
+-     id: 134,
+-     key: 'accessory_reverse_pec_deck',
+-     kind: 'accessory',
+-     primary_muscle_group: 'rear_delts',
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'upper_back'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Chest-Supported Rear-Delt Machine Row',
+-     equipment_type: 'machine',
+-     family: 'accessory_rear_delts',
+-     id: 137,
+-     key: 'accessory_chest_supported_rear_delt_machine_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'rear_delts',
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'traps'
+      ]
+    },
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'lats'
+      ]
+    },
+...
+      primary_muscle_group: 'rear_delts',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'lats'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'biceps'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'biceps'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'biceps'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'biceps'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'upper_back',
+-       'biceps'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Three-Point Dumbbell Row',
+-     equipment_type: 'dumbbell',
+-     family: 'accessory_lats',
+-     id: 158,
+-     key: 'accessory_three_point_dumbbell_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'lats',
+      secondary_muscle_groups: [
+        'upper_back',
+        'biceps'
+      ]
+    },
+...
+      core_movement_definition_id: null,
+-     display_name: 'Landmine Row',
+-     equipment_type: 'free_weight',
+-     family: 'accessory_lats',
+-     id: 159,
+-     key: 'accessory_landmine_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'lats',
+-     secondary_muscle_groups: [
+-       'upper_back',
+-       'biceps'
+-     ]
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+      display_name: 'One-Arm Landmine Row',
+      equipment_type: 'free_weight',
+      family: 'accessory_lats',
+      id: 160,
+      key: 'accessory_one_arm_landmine_row',
+      kind: 'accessory',
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'biceps'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'biceps'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back',
+        'biceps'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'biceps',
+-       'upper_back'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Cross-Bench Cable Pulldown',
+-     equipment_type: 'cable',
+-     family: 'accessory_lats',
+-     id: 177,
+-     key: 'accessory_cross_bench_cable_pulldown',
+-     kind: 'accessory',
+-     primary_muscle_group: 'lats',
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ]
+    },
+...
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Neutral-Grip Pull-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_lats',
+      id: 183,
+      key: 'accessory_neutral_grip_pull_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Wide-Grip Pull-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_lats',
+      id: 184,
+      key: 'accessory_wide_grip_pull_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Chin-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_lats',
+      id: 185,
+      key: 'accessory_chin_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Sternum Chin-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_lats',
+      id: 186,
+      key: 'accessory_sternum_chin_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Scapular Pull-Up',
+      equipment_type: 'bodyweight',
+      family: 'accessory_lats',
+      id: 187,
+      key: 'accessory_scapular_pull_up',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps',
+        'upper_back'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
+      display_name: 'Band Straight-Arm Pulldown',
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'lats',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'biceps'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'lats',
+-       'rear_delts',
+-       'biceps'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Incline-Bench Dumbbell Row',
+-     equipment_type: 'dumbbell',
+-     family: 'accessory_upper_back',
+-     id: 196,
+-     key: 'accessory_incline_bench_dumbbell_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'upper_back',
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'lats',
+-       'rear_delts',
+-       'biceps'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Chest-Supported T-Bar Row',
+-     equipment_type: 'free_weight',
+-     family: 'accessory_upper_back',
+-     id: 199,
+-     key: 'accessory_chest_supported_t_bar_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'upper_back',
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'lats',
+-       'rear_delts',
+-       'biceps'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Wide-Elbow Barbell Row',
+-     equipment_type: 'barbell',
+-     family: 'accessory_upper_back',
+-     id: 204,
+-     key: 'accessory_wide_elbow_barbell_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'upper_back',
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      core_movement_definition_id: null,
+-     display_name: 'Chest-Supported Kelso Row',
+-     equipment_type: 'free_weight',
+-     family: 'accessory_upper_back',
+-     id: 205,
+-     key: 'accessory_chest_supported_kelso_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'upper_back',
+-     secondary_muscle_groups: [
+-       'lats',
+-       'rear_delts',
+-       'biceps'
+-     ]
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+      display_name: 'Dumbbell High Row',
+      equipment_type: 'dumbbell',
+      family: 'accessory_upper_back',
+      id: 206,
+      key: 'accessory_dumbbell_high_row',
+      kind: 'accessory',
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'lats',
+-       'rear_delts',
+-       'biceps'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Machine Mid Row',
+-     equipment_type: 'machine',
+-     family: 'accessory_upper_back',
+-     id: 221,
+-     key: 'accessory_machine_mid_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'upper_back',
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ]
+...
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
+-     display_name: 'Machine Seated Row',
+-     equipment_type: 'machine',
+-     family: 'accessory_upper_back',
+-     id: 222,
+-     key: 'accessory_plate_loaded_seated_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'upper_back',
+-     secondary_muscle_groups: [
+-       'lats',
+-       'rear_delts',
+-       'biceps'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Chest-Supported High Row',
+-     equipment_type: 'machine',
+-     family: 'accessory_upper_back',
+-     id: 223,
+-     key: 'accessory_chest_supported_high_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'upper_back',
+-     secondary_muscle_groups: [
+-       'lats',
+-       'rear_delts',
+-       'biceps'
+-     ]
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Wide-Elbow Machine Row',
+-     equipment_type: 'machine',
+-     family: 'accessory_upper_back',
+-     id: 224,
+-     key: 'accessory_wide_elbow_machine_row',
+-     kind: 'accessory',
+-     primary_muscle_group: 'upper_back',
+-     secondary_muscle_groups: [
+-       'lats',
+-       'rear_delts',
+-       'biceps'
+-     ]
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+      display_name: 'Inverted Row',
+      equipment_type: 'bodyweight',
+      family: 'accessory_upper_back',
+      id: 225,
+      key: 'accessory_inverted_row',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Feet-Elevated Inverted Row',
+      equipment_type: 'bodyweight',
+      family: 'accessory_upper_back',
+      id: 226,
+      key: 'accessory_feet_elevated_inverted_row',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Ring Row',
+      equipment_type: 'bodyweight',
+      family: 'accessory_upper_back',
+      id: 227,
+      key: 'accessory_ring_row',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Suspension-Trainer Row',
+      equipment_type: 'bodyweight',
+      family: 'accessory_upper_back',
+      id: 228,
+      key: 'accessory_suspension_trainer_row',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     discovery_execution_families: [
++       'BODYWEIGHT',
++       'FREE_WEIGHT'
++     ],
+      display_name: 'Scapular Inverted Row',
+      equipment_type: 'bodyweight',
+      family: 'accessory_upper_back',
+      id: 229,
+      key: 'accessory_scapular_inverted_row',
+      kind: 'accessory',
++     load_convention: 'added_bodyweight',
++     loading_implementation: 'added_bodyweight',
++     measurement_type: 'added_weight_reps',
++     optional_equipment_domains: [],
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts',
+        'biceps'
+      ],
++     supports_added_load: true
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
+      display_name: 'Band Row',
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts'
+      ]
+    },
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts'
+      ]
+    },
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'lats',
+        'rear_delts'
+      ]
+    },
+...
+      primary_muscle_group: 'upper_back',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'rear_delts',
+        'lats'
+      ]
+    },
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'forearms',
+-       'upper_back'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Kelso Shrug',
+-     equipment_type: 'free_weight',
+-     family: 'accessory_traps',
+-     id: 242,
+-     key: 'accessory_kelso_shrug',
+-     kind: 'accessory',
+-     primary_muscle_group: 'traps',
+      secondary_muscle_groups: [
+        'forearms',
+        'upper_back'
+      ]
+    },
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'upper_back'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Cable Kelso Shrug',
+-     equipment_type: 'cable',
+-     family: 'accessory_traps',
+-     id: 248,
+-     key: 'accessory_cable_kelso_shrug',
+-     kind: 'accessory',
+-     primary_muscle_group: 'traps',
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'traps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'upper_back'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+      core_kind: null,
+      core_movement_definition_id: null,
++     display_name: 'Standing Dumbbell Curl',
+-     display_name: 'Dumbbell Curl',
+      equipment_type: 'dumbbell',
+      family: 'accessory_biceps',
+      id: 253,
+      key: 'accessory_dumbbell_curl',
+      kind: 'accessory',
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
+-     secondary_muscle_groups: [
+-       'forearms'
+      ],
+-   },
+-   {
+-     core_kind: null,
+-     core_movement_definition_id: null,
+-     display_name: 'Standing Dumbbell Curl',
+-     equipment_type: 'dumbbell',
+-     family: 'accessory_biceps',
+-     id: 256,
+-     key: 'accessory_standing_dumbbell_curl',
+-     kind: 'accessory',
+-     primary_muscle_group: 'biceps',
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_muscle_groups: [
+        'forearms'
+      ]
+    },
+    {
+...
+      primary_muscle_group: 'biceps',
++     programming_contexts: [
++       'accessory'
++     ],
+      secondary_musc
