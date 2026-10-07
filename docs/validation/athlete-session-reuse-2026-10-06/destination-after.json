@@ -1,0 +1,861 @@
+{
+  "athlete_id": 70,
+  "authoring_version": "28fe7db85ec01fcc09618fbad751e6214e0af07f79a43976d105d61539a5f1ad",
+  "workout": {
+    "id": 1851,
+    "date": "2026-10-07",
+    "label": "New Session",
+    "raw_status": "draft",
+    "program_id": 30,
+    "program_name": "Cumulative Release Copy QA",
+    "training_block_id": 169,
+    "block_name": "Cumulative QA Block",
+    "workspace_capabilities": {
+      "assign_blocked_reason": null,
+      "can_add_movement": true,
+      "can_assign": true,
+      "can_copy": true,
+      "can_delete": true,
+      "can_edit_movement": true,
+      "can_edit_session_notes": true,
+      "can_move": true,
+      "can_open_athlete_view": true,
+      "can_remove_movement": true,
+      "can_rename": true,
+      "can_reorder": true,
+      "can_revert_to_draft": false,
+      "can_save_template": true,
+      "editable": true,
+      "locked_reason": ""
+    }
+  },
+  "items": [
+    {
+      "id": 18271,
+      "movement": "Competition Bench",
+      "movement_definition_id": 2,
+      "core_movement_id": null,
+      "sets": 1,
+      "mode": "RPE",
+      "rpe_target": 7.0,
+      "rir_target": null,
+      "pct": null,
+      "superset_group": null,
+      "superset_pos": null,
+      "repetitions": "5",
+      "movement_identity": {
+        "aliases": [
+          "Competition Bench"
+        ],
+        "comparison_ineligible_reason": null,
+        "comparison_policy": {
+          "comparison_class": "free_weight",
+          "comparison_scope": "portable_exact_movement",
+          "confidence": "high",
+          "key": "portable_free_weight",
+          "progression_profile_key": "rep_strength",
+          "reason": "Free-weight loads are portable when movement identity and load convention match.",
+          "recognition_enabled": false,
+          "required_fields": [
+            "family_id",
+            "load_convention"
+          ],
+          "version": 1
+        },
+        "comparison_status": "eligible",
+        "core_movement_definition_id": 2,
+        "custom_notes": null,
+        "discovery_execution_families": [],
+        "display_name": "Competition Bench",
+        "equipment": "barbell",
+        "equipment_model": null,
+        "equipment_type": "barbell",
+        "execution_family": null,
+        "family": "bench",
+        "family_display_name": "Bench Press",
+        "family_id": 2,
+        "id": 2,
+        "identity_specificity": "exact",
+        "identity_status": "canonical",
+        "implementation_key": null,
+        "key": "competition_bench",
+        "kind": "core",
+        "load_convention": "total_external_load",
+        "loading_implementation": "free_weight",
+        "manufacturer": null,
+        "material_parameters": {},
+        "measurement_type": "load_reps",
+        "optional_equipment_domains": [],
+        "ownership_scope": "global",
+        "primary_muscle_group": null,
+        "programming_contexts": [
+          "core"
+        ],
+        "progression_profile_key": "rep_strength",
+        "provenance": "stage7_reviewed_seed",
+        "recognition_status": "disabled",
+        "recognition_version": "general-v1",
+        "replacement_key": null,
+        "requires_equipment_configuration": false,
+        "secondary_muscle_groups": [],
+        "sidedness": "bilateral",
+        "supports_added_load": false
+      },
+      "effective_movement_identity": {
+        "aliases": [
+          "Competition Bench"
+        ],
+        "comparison_ineligible_reason": null,
+        "comparison_policy": {
+          "comparison_class": "free_weight",
+          "comparison_scope": "portable_exact_movement",
+          "confidence": "high",
+          "key": "portable_free_weight",
+          "progression_profile_key": "rep_strength",
+          "reason": "Free-weight loads are portable when movement identity and load convention match.",
+          "recognition_enabled": false,
+          "required_fields": [
+            "family_id",
+            "load_convention"
+          ],
+          "version": 1
+        },
+        "comparison_status": "eligible",
+        "core_movement_definition_id": 2,
+        "custom_notes": null,
+        "discovery_execution_families": [],
+        "display_name": "Competition Bench",
+        "equipment": "barbell",
+        "equipment_model": null,
+        "equipment_type": "barbell",
+        "execution_family": null,
+        "family": "bench",
+        "family_display_name": "Bench Press",
+        "family_id": 2,
+        "id": 2,
+        "identity_specificity": "exact",
+        "identity_status": "canonical",
+        "implementation_key": null,
+        "key": "competition_bench",
+        "kind": "core",
+        "load_convention": "total_external_load",
+        "loading_implementation": "free_weight",
+        "manufacturer": null,
+        "material_parameters": {},
+        "measurement_type": "load_reps",
+        "optional_equipment_domains": [],
+        "ownership_scope": "global",
+        "primary_muscle_group": null,
+        "programming_contexts": [
+          "core"
+        ],
+        "progression_profile_key": "rep_strength",
+        "provenance": "stage7_reviewed_seed",
+        "recognition_status": "disabled",
+        "recognition_version": "general-v1",
+        "replacement_key": null,
+        "requires_equipment_configuration": false,
+        "secondary_muscle_groups": [],
+        "sidedness": "bilateral",
+        "supports_added_load": false
+      }
+    },
+    {
+      "id": 18272,
+      "movement": "Incline Dumbbell Curl",
+      "movement_definition_id": 257,
+      "core_movement_id": null,
+      "sets": 3,
+      "mode": "RIR",
+      "rpe_target": null,
+      "rir_target": 1.0,
+      "pct": null,
+      "superset_group": null,
+      "superset_pos": null,
+      "repetitions": "8-12",
+      "movement_identity": {
+        "aliases": [
+          "Incline Dumbbell Curl",
+          "Incline DB Curl"
+        ],
+        "comparison_ineligible_reason": null,
+        "comparison_policy": {
+          "comparison_class": "free_weight",
+          "comparison_scope": "portable_exact_movement",
+          "confidence": "high",
+          "key": "portable_free_weight",
+          "progression_profile_key": "rep_strength",
+          "reason": "Free-weight loads are portable when movement identity and load convention match.",
+          "recognition_enabled": false,
+          "required_fields": [
+            "family_id",
+            "load_convention"
+          ],
+          "version": 1
+        },
+        "comparison_status": "eligible",
+        "core_movement_definition_id": null,
+        "custom_notes": null,
+        "discovery_execution_families": [
+          "FREE_WEIGHT"
+        ],
+        "display_name": "Incline Dumbbell Curl",
+        "equipment": "dumbbell",
+        "equipment_model": null,
+        "equipment_type": "dumbbell",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "family_display_name": "Biceps Accessories",
+        "family_id": 16,
+        "id": 257,
+        "identity_specificity": "exact",
+        "identity_status": "canonical",
+        "implementation_key": null,
+        "key": "accessory_incline_dumbbell_curl",
+        "kind": "accessory",
+        "load_convention": "per_hand",
+        "loading_implementation": "free_weight",
+        "manufacturer": null,
+        "material_parameters": {
+          "accessory_taxonomy": {
+            "catalog_version": 10,
+            "discovery_execution_families": [
+              "FREE_WEIGHT"
+            ],
+            "execution_family": "FREE_WEIGHT",
+            "notes": null,
+            "optional_equipment_domains": [],
+            "primary_muscle_group": "biceps",
+            "requires_equipment_configuration": false,
+            "secondary_muscle_groups": [
+              "forearms"
+            ],
+            "supports_added_load": false
+          }
+        },
+        "measurement_type": "load_reps",
+        "optional_equipment_domains": [],
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps",
+        "programming_contexts": [
+          "accessory"
+        ],
+        "progression_profile_key": "rep_strength",
+        "provenance": "canonical_accessory_catalog_v10",
+        "recognition_status": "disabled",
+        "recognition_version": "general-v1",
+        "replacement_key": null,
+        "requires_equipment_configuration": false,
+        "secondary_muscle_groups": [
+          "forearms"
+        ],
+        "sidedness": "bilateral",
+        "supports_added_load": false
+      },
+      "effective_movement_identity": {
+        "aliases": [
+          "Incline Dumbbell Curl",
+          "Incline DB Curl"
+        ],
+        "comparison_ineligible_reason": null,
+        "comparison_policy": {
+          "comparison_class": "free_weight",
+          "comparison_scope": "portable_exact_movement",
+          "confidence": "high",
+          "key": "portable_free_weight",
+          "progression_profile_key": "rep_strength",
+          "reason": "Free-weight loads are portable when movement identity and load convention match.",
+          "recognition_enabled": false,
+          "required_fields": [
+            "family_id",
+            "load_convention"
+          ],
+          "version": 1
+        },
+        "comparison_status": "eligible",
+        "core_movement_definition_id": null,
+        "custom_notes": null,
+        "discovery_execution_families": [
+          "FREE_WEIGHT"
+        ],
+        "display_name": "Incline Dumbbell Curl",
+        "equipment": "dumbbell",
+        "equipment_model": null,
+        "equipment_type": "dumbbell",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "family_display_name": "Biceps Accessories",
+        "family_id": 16,
+        "id": 257,
+        "identity_specificity": "exact",
+        "identity_status": "canonical",
+        "implementation_key": null,
+        "key": "accessory_incline_dumbbell_curl",
+        "kind": "accessory",
+        "load_convention": "per_hand",
+        "loading_implementation": "free_weight",
+        "manufacturer": null,
+        "material_parameters": {
+          "accessory_taxonomy": {
+            "catalog_version": 10,
+            "discovery_execution_families": [
+              "FREE_WEIGHT"
+            ],
+            "execution_family": "FREE_WEIGHT",
+            "notes": null,
+            "optional_equipment_domains": [],
+            "primary_muscle_group": "biceps",
+            "requires_equipment_configuration": false,
+            "secondary_muscle_groups": [
+              "forearms"
+            ],
+            "supports_added_load": false
+          }
+        },
+        "measurement_type": "load_reps",
+        "optional_equipment_domains": [],
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps",
+        "programming_contexts": [
+          "accessory"
+        ],
+        "progression_profile_key": "rep_strength",
+        "provenance": "canonical_accessory_catalog_v10",
+        "recognition_status": "disabled",
+        "recognition_version": "general-v1",
+        "replacement_key": null,
+        "requires_equipment_configuration": false,
+        "secondary_muscle_groups": [
+          "forearms"
+        ],
+        "sidedness": "bilateral",
+        "supports_added_load": false
+      }
+    },
+    {
+      "id": 18273,
+      "movement": "Long-Lever Copenhagen Adduction",
+      "movement_definition_id": 457,
+      "core_movement_id": null,
+      "sets": 1,
+      "mode": "RIR",
+      "rpe_target": null,
+      "rir_target": 1.0,
+      "pct": null,
+      "superset_group": null,
+      "superset_pos": null,
+      "repetitions": "6-10",
+      "movement_identity": {
+        "aliases": [
+          "Long-Lever Copenhagen Adduction",
+          "Copenhagen Adduction"
+        ],
+        "comparison_ineligible_reason": null,
+        "comparison_policy": {
+          "comparison_class": "weighted_bodyweight",
+          "comparison_scope": "portable_exact_movement",
+          "confidence": "high",
+          "key": "weighted_bodyweight",
+          "progression_profile_key": "rep_strength",
+          "reason": "Weighted bodyweight work is portable when external-load convention matches.",
+          "recognition_enabled": false,
+          "required_fields": [
+            "family_id",
+            "load_convention"
+          ],
+          "version": 1
+        },
+        "comparison_status": "eligible",
+        "core_movement_definition_id": null,
+        "custom_notes": null,
+        "discovery_execution_families": [
+          "BODYWEIGHT",
+          "FREE_WEIGHT"
+        ],
+        "display_name": "Long-Lever Copenhagen Adduction",
+        "equipment": "bodyweight",
+        "equipment_model": null,
+        "equipment_type": "bodyweight",
+        "execution_family": "BODYWEIGHT",
+        "family": "accessory_adductors",
+        "family_display_name": "Adductors Accessories",
+        "family_id": 22,
+        "id": 457,
+        "identity_specificity": "exact",
+        "identity_status": "canonical",
+        "implementation_key": null,
+        "key": "accessory_long_lever_copenhagen_adduction",
+        "kind": "accessory",
+        "load_convention": "added_bodyweight",
+        "loading_implementation": "added_bodyweight",
+        "manufacturer": null,
+        "material_parameters": {
+          "accessory_taxonomy": {
+            "catalog_version": 10,
+            "discovery_execution_families": [
+              "BODYWEIGHT",
+              "FREE_WEIGHT"
+            ],
+            "execution_family": "BODYWEIGHT",
+            "notes": null,
+            "optional_equipment_domains": [],
+            "primary_muscle_group": "adductors",
+            "requires_equipment_configuration": false,
+            "secondary_muscle_groups": [
+              "obliques"
+            ],
+            "supports_added_load": true
+          }
+        },
+        "measurement_type": "added_weight_reps",
+        "optional_equipment_domains": [],
+        "ownership_scope": "global",
+        "primary_muscle_group": "adductors",
+        "programming_contexts": [
+          "accessory"
+        ],
+        "progression_profile_key": "rep_strength",
+        "provenance": "canonical_accessory_catalog_v10",
+        "recognition_status": "disabled",
+        "recognition_version": "general-v1",
+        "replacement_key": null,
+        "requires_equipment_configuration": false,
+        "secondary_muscle_groups": [
+          "obliques"
+        ],
+        "sidedness": "bilateral",
+        "supports_added_load": true
+      },
+      "effective_movement_identity": {
+        "aliases": [
+          "Long-Lever Copenhagen Adduction",
+          "Copenhagen Adduction"
+        ],
+        "comparison_ineligible_reason": null,
+        "comparison_policy": {
+          "comparison_class": "weighted_bodyweight",
+          "comparison_scope": "portable_exact_movement",
+          "confidence": "high",
+          "key": "weighted_bodyweight",
+          "progression_profile_key": "rep_strength",
+          "reason": "Weighted bodyweight work is portable when external-load convention matches.",
+          "recognition_enabled": false,
+          "required_fields": [
+            "family_id",
+            "load_convention"
+          ],
+          "version": 1
+        },
+        "comparison_status": "eligible",
+        "core_movement_definition_id": null,
+        "custom_notes": null,
+        "discovery_execution_families": [
+          "BODYWEIGHT",
+          "FREE_WEIGHT"
+        ],
+        "display_name": "Long-Lever Copenhagen Adduction",
+        "equipment": "bodyweight",
+        "equipment_model": null,
+        "equipment_type": "bodyweight",
+        "execution_family": "BODYWEIGHT",
+        "family": "accessory_adductors",
+        "family_display_name": "Adductors Accessories",
+        "family_id": 22,
+        "id": 457,
+        "identity_specificity": "exact",
+        "identity_status": "canonical",
+        "implementation_key": null,
+        "key": "accessory_long_lever_copenhagen_adduction",
+        "kind": "accessory",
+        "load_convention": "added_bodyweight",
+        "loading_implementation": "added_bodyweight",
+        "manufacturer": null,
+        "material_parameters": {
+          "accessory_taxonomy": {
+            "catalog_version": 10,
+            "discovery_execution_families": [
+              "BODYWEIGHT",
+              "FREE_WEIGHT"
+            ],
+            "execution_family": "BODYWEIGHT",
+            "notes": null,
+            "optional_equipment_domains": [],
+            "primary_muscle_group": "adductors",
+            "requires_equipment_configuration": false,
+            "secondary_muscle_groups": [
+              "obliques"
+            ],
+            "supports_added_load": true
+          }
+        },
+        "measurement_type": "added_weight_reps",
+        "optional_equipment_domains": [],
+        "ownership_scope": "global",
+        "primary_muscle_group": "adductors",
+        "programming_contexts": [
+          "accessory"
+        ],
+        "progression_profile_key": "rep_strength",
+        "provenance": "canonical_accessory_catalog_v10",
+        "recognition_status": "disabled",
+        "recognition_version": "general-v1",
+        "replacement_key": null,
+        "requires_equipment_configuration": false,
+        "secondary_muscle_groups": [
+          "obliques"
+        ],
+        "sidedness": "bilateral",
+        "supports_added_load": true
+      }
+    },
+    {
+      "id": 18274,
+      "movement": "Machine Lateral Raise",
+      "movement_definition_id": 121,
+      "core_movement_id": null,
+      "sets": 1,
+      "mode": "RIR",
+      "rpe_target": null,
+      "rir_target": 1.0,
+      "pct": null,
+      "superset_group": null,
+      "superset_pos": null,
+      "repetitions": "6-10",
+      "movement_identity": {
+        "aliases": [
+          "Machine Lateral Raise",
+          "Selectorized Lateral Raise",
+          "Plate-Loaded Lateral Raise"
+        ],
+        "comparison_ineligible_reason": "exact_equipment_required",
+        "comparison_policy": {
+          "comparison_class": "broad_prescription",
+          "comparison_scope": "disabled",
+          "confidence": "unknown",
+          "key": "broad_prescription",
+          "progression_profile_key": null,
+          "reason": "Broad prescriptions require an exact performed identity before comparison.",
+          "recognition_enabled": false,
+          "required_fields": [
+            "family_id"
+          ],
+          "version": 1
+        },
+        "comparison_status": "ineligible",
+        "core_movement_definition_id": null,
+        "custom_notes": null,
+        "discovery_execution_families": [
+          "MACHINE"
+        ],
+        "display_name": "Machine Lateral Raise",
+        "equipment": "machine",
+        "equipment_model": null,
+        "equipment_type": "machine",
+        "execution_family": "MACHINE",
+        "family": "accessory_side_delts",
+        "family_display_name": "Side Delts Accessories",
+        "family_id": 11,
+        "id": 121,
+        "identity_specificity": "broad",
+        "identity_status": "canonical",
+        "implementation_key": null,
+        "key": "accessory_machine_lateral_raise",
+        "kind": "accessory",
+        "load_convention": "machine_stack_display",
+        "loading_implementation": "machine_unspecified",
+        "manufacturer": null,
+        "material_parameters": {
+          "accessory_taxonomy": {
+            "catalog_version": 10,
+            "discovery_execution_families": [
+              "MACHINE"
+            ],
+            "execution_family": "MACHINE",
+            "notes": null,
+            "optional_equipment_domains": [],
+            "primary_muscle_group": "side_delts",
+            "requires_equipment_configuration": true,
+            "secondary_muscle_groups": [
+              "traps"
+            ],
+            "supports_added_load": false
+          }
+        },
+        "measurement_type": "load_reps",
+        "optional_equipment_domains": [],
+        "ownership_scope": "global",
+        "primary_muscle_group": "side_delts",
+        "programming_contexts": [
+          "accessory"
+        ],
+        "progression_profile_key": null,
+        "provenance": "canonical_accessory_catalog_v10",
+        "recognition_status": "disabled",
+        "recognition_version": "general-v1",
+        "replacement_key": null,
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "traps"
+        ],
+        "sidedness": "bilateral",
+        "supports_added_load": false
+      },
+      "effective_movement_identity": {
+        "aliases": [
+          "Machine Lateral Raise",
+          "Selectorized Lateral Raise",
+          "Plate-Loaded Lateral Raise"
+        ],
+        "comparison_ineligible_reason": "exact_equipment_required",
+        "comparison_policy": {
+          "comparison_class": "broad_prescription",
+          "comparison_scope": "disabled",
+          "confidence": "unknown",
+          "key": "broad_prescription",
+          "progression_profile_key": null,
+          "reason": "Broad prescriptions require an exact performed identity before comparison.",
+          "recognition_enabled": false,
+          "required_fields": [
+            "family_id"
+          ],
+          "version": 1
+        },
+        "comparison_status": "ineligible",
+        "core_movement_definition_id": null,
+        "custom_notes": null,
+        "discovery_execution_families": [
+          "MACHINE"
+        ],
+        "display_name": "Machine Lateral Raise",
+        "equipment": "machine",
+        "equipment_model": null,
+        "equipment_type": "machine",
+        "execution_family": "MACHINE",
+        "family": "accessory_side_delts",
+        "family_display_name": "Side Delts Accessories",
+        "family_id": 11,
+        "id": 121,
+        "identity_specificity": "broad",
+        "identity_status": "canonical",
+        "implementation_key": null,
+        "key": "accessory_machine_lateral_raise",
+        "kind": "accessory",
+        "load_convention": "machine_stack_display",
+        "loading_implementation": "machine_unspecified",
+        "manufacturer": null,
+        "material_parameters": {
+          "accessory_taxonomy": {
+            "catalog_version": 10,
+            "discovery_execution_families": [
+              "MACHINE"
+            ],
+            "execution_family": "MACHINE",
+            "notes": null,
+            "optional_equipment_domains": [],
+            "primary_muscle_group": "side_delts",
+            "requires_equipment_configuration": true,
+            "secondary_muscle_groups": [
+              "traps"
+            ],
+            "supports_added_load": false
+          }
+        },
+        "measurement_type": "load_reps",
+        "optional_equipment_domains": [],
+        "ownership_scope": "global",
+        "primary_muscle_group": "side_delts",
+        "programming_contexts": [
+          "accessory"
+        ],
+        "progression_profile_key": null,
+        "provenance": "canonical_accessory_catalog_v10",
+        "recognition_status": "disabled",
+        "recognition_version": "general-v1",
+        "replacement_key": null,
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "traps"
+        ],
+        "sidedness": "bilateral",
+        "supports_added_load": false
+      }
+    },
+    {
+      "id": 18275,
+      "movement": "Machine Pullover",
+      "movement_definition_id": 178,
+      "core_movement_id": null,
+      "sets": 1,
+      "mode": "RIR",
+      "rpe_target": null,
+      "rir_target": 1.0,
+      "pct": null,
+      "superset_group": null,
+      "superset_pos": null,
+      "repetitions": "6-10",
+      "movement_identity": {
+        "aliases": [
+          "Machine Pullover",
+          "Plate-Loaded Pullover",
+          "Selectorized Pullover"
+        ],
+        "comparison_ineligible_reason": "exact_equipment_required",
+        "comparison_policy": {
+          "comparison_class": "broad_prescription",
+          "comparison_scope": "disabled",
+          "confidence": "unknown",
+          "key": "broad_prescription",
+          "progression_profile_key": null,
+          "reason": "Broad prescriptions require an exact performed identity before comparison.",
+          "recognition_enabled": false,
+          "required_fields": [
+            "family_id"
+          ],
+          "version": 1
+        },
+        "comparison_status": "ineligible",
+        "core_movement_definition_id": null,
+        "custom_notes": null,
+        "discovery_execution_families": [
+          "MACHINE"
+        ],
+        "display_name": "Machine Pullover",
+        "equipment": "machine",
+        "equipment_model": null,
+        "equipment_type": "machine",
+        "execution_family": "MACHINE",
+        "family": "accessory_lats",
+        "family_display_name": "Lats Accessories",
+        "family_id": 13,
+        "id": 178,
+        "identity_specificity": "broad",
+        "identity_status": "canonical",
+        "implementation_key": null,
+        "key": "accessory_machine_pullover",
+        "kind": "accessory",
+        "load_convention": "machine_stack_display",
+        "loading_implementation": "machine_unspecified",
+        "manufacturer": null,
+        "material_parameters": {
+          "accessory_taxonomy": {
+            "catalog_version": 10,
+            "discovery_execution_families": [
+              "MACHINE"
+            ],
+            "execution_family": "MACHINE",
+            "notes": null,
+            "optional_equipment_domains": [],
+            "primary_muscle_group": "lats",
+            "requires_equipment_configuration": true,
+            "secondary_muscle_groups": [
+              "biceps",
+              "upper_back"
+            ],
+            "supports_added_load": false
+          }
+        },
+        "measurement_type": "load_reps",
+        "optional_equipment_domains": [],
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats",
+        "programming_contexts": [
+          "accessory"
+        ],
+        "progression_profile_key": null,
+        "provenance": "canonical_accessory_catalog_v10",
+        "recognition_status": "disabled",
+        "recognition_version": "general-v1",
+        "replacement_key": null,
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ],
+        "sidedness": "bilateral",
+        "supports_added_load": false
+      },
+      "effective_movement_identity": {
+        "aliases": [
+          "Machine Pullover",
+          "Plate-Loaded Pullover",
+          "Selectorized Pullover"
+        ],
+        "comparison_ineligible_reason": "exact_equipment_required",
+        "comparison_policy": {
+          "comparison_class": "broad_prescription",
+          "comparison_scope": "disabled",
+          "confidence": "unknown",
+          "key": "broad_prescription",
+          "progression_profile_key": null,
+          "reason": "Broad prescriptions require an exact performed identity before comparison.",
+          "recognition_enabled": false,
+          "required_fields": [
+            "family_id"
+          ],
+          "version": 1
+        },
+        "comparison_status": "ineligible",
+        "core_movement_definition_id": null,
+        "custom_notes": null,
+        "discovery_execution_families": [
+          "MACHINE"
+        ],
+        "display_name": "Machine Pullover",
+        "equipment": "machine",
+        "equipment_model": null,
+        "equipment_type": "machine",
+        "execution_family": "MACHINE",
+        "family": "accessory_lats",
+        "family_display_name": "Lats Accessories",
+        "family_id": 13,
+        "id": 178,
+        "identity_specificity": "broad",
+        "identity_status": "canonical",
+        "implementation_key": null,
+        "key": "accessory_machine_pullover",
+        "kind": "accessory",
+        "load_convention": "machine_stack_display",
+        "loading_implementation": "machine_unspecified",
+        "manufacturer": null,
+        "material_parameters": {
+          "accessory_taxonomy": {
+            "catalog_version": 10,
+            "discovery_execution_families": [
+              "MACHINE"
+            ],
+            "execution_family": "MACHINE",
+            "notes": null,
+            "optional_equipment_domains": [],
+            "primary_muscle_group": "lats",
+            "requires_equipment_configuration": true,
+            "secondary_muscle_groups": [
+              "biceps",
+              "upper_back"
+            ],
+            "supports_added_load": false
+          }
+        },
+        "measurement_type": "load_reps",
+        "optional_equipment_domains": [],
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats",
+        "programming_contexts": [
+          "accessory"
+        ],
+        "progression_profile_key": null,
+        "provenance": "canonical_accessory_catalog_v10",
+        "recognition_status": "disabled",
+        "recognition_version": "general-v1",
+        "replacement_key": null,
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ],
+        "sidedness": "bilateral",
+        "supports_added_load": false
+      }
+    }
+  ],
+  "full_response_sha256": "01c130961fede0f8a67580931dfcf78826084bf1559f504a4bb0f48b5c9a610c"
+}

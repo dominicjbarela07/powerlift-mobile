@@ -1,0 +1,21 @@
+# Athlete-mode Session reuse investigation — October 6, 2026
+
+Owner reports TestFlight Reuse a Session said a Program was needed while creating a new Session in athlete mode. Owner explicitly confirms the failing Session was inside a Program/Block. Investigate the actual athlete-mode library, canonical copy mutation and persistence; fix a demonstrated defect without inventing permission changes or unrelated UX. The supplied DEV screenshot shows New Session / Cumulative Release Copy QA / Cumulative QA Block / W2.
+
+Acceptance: inspect current DEV and shipped source, attempt reproduction with the existing Program-backed draft, validate source listing plus apply-template and reload, and retain evidence/limitations. Preserve stable athlete identity, canonical capability/relationship/entitlement enforcement, empty versioned destination identity/date/status, source prescriptions and logged evidence, existing artwork and shipped fixes. Do not grant coached athletes programming permissions. No unrelated UI, assets, Production Mobile 2.0.2 or release changes are included.
+
+Destination: investigate/fix in canonical DEV first. Distinguish DEV runtime evidence from actual TestFlight observations; no blanket OTA publication of pending DEV visual changes is authorized by this investigation.
+
+## Findings and validation
+
+No product code was changed: the reported Program-required failure was not reproduced in the current Program-backed DEV path. The potential missing Program handoff was checked, not assumed to be the cause. Current API includes Program30/Block169; the actual shared library received that context and listed six sources successfully. The source listing service deliberately validates Program ownership; it was not weakened.
+
+Actual iPhone Air canonical DEV journey on isolated QA user80 (individual/self-coach athlete workspace, athlete70): opened Reuse a Session from the supplied New Session draft1851 (Oct7), selected completed source1845, reviewed and used it. The same destination shows five movements/seven prescribed Sets. Independent API reload verifies matching effective prescriptions, new item IDs, preserved destination ID/title/date/draft status/Program/Block, unchanged complete source response, and unchanged Session count. No Sets were logged. Range prescriptions are compared by reps_text where supplied: Curl remains 3×8–12 @1 RIR despite legacy numeric-reps normalization.
+
+Three existing real backend tests passed: same empty-destination reuse/preservation; another-athlete/nonempty-destination rejection; individual authoring with stable self identity/recovery generation. Four mobile suites passed: draft state, authoring recovery, Programming Workspace sheet and athlete preview handoff. No authentication, role, capability, entitlement or relationship state machine was changed. Adjacent source-library access, authoring versions, destination persistence, source immutability and preview navigation were validated. No new permissions were granted. True coached athlete accounts remain read/log only under established policy; the observed runtime was the self-coach athlete workspace.
+
+Source comparison: the Session Workspace route, ProgrammingReuseLibrary and API-to-editor mapper are byte-identical to published OTA source59641028e514c3edc957c95de2d4882f2f3bf3e0, OTA01a11340-9ccc-7498-a71d-77a367aa6f5f. This establishes source equivalence, not the OTA actually running on the owner's phone or success against their live Session. Public live revision policy was readable; no Production personal Session data was accessed and no deployment occurred.
+
+Evidence: docs/validation/athlete-session-reuse-2026-10-06/ contains bounded synthetic before/after projections, immutable full-response hashes, runtime validation, shipped-source comparison and actual screenshot. Simulator remains on the successfully reused DEV draft.
+
+Open gap: exact reported TestFlight Session/error and running-update context are not yet identified. Owner confirms it was inside a Program/Block. Asked whether it still fails now and requested its Session name/exact error if so. Do not label this incident fixed or dismiss it as user error. No new OTA/backend publication was performed.
