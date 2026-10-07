@@ -1,3 +1,4 @@
+import { educationImage } from '@/lib/mobile-education-images';
 import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import React, { useRef, useState } from 'react';
 import { Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
@@ -7,45 +8,45 @@ import { SLFontFamilies } from '@/constants/theme';
 import type { EducationRole } from '@/lib/mobile-education';
 
 type PreviewMode = EducationRole | 'dual';
-type Capture = { label: string; source: number; focus: number };
+type Capture = { label: string; source: ReturnType<typeof educationImage>; focus: number };
 
 // Captured from the canonical native DEV app with seeded, saved Session evidence.
 // The images are screenshots of real surfaces, not recreated interface artwork.
 const CAPTURES: Record<PreviewMode, readonly Capture[]> = {
   individual: [
-    { label: 'During your Session', source: require('@/assets/images/mobile-3-education/self-session.png'), focus: 0.055 },
-    { label: 'Your Ledger', source: require('@/assets/images/mobile-3-education/self-ledger.png'), focus: 0.14 },
+    { label: 'During your Session', source: educationImage('self-session.png'), focus: 0.055 },
+    { label: 'Your Ledger', source: educationImage('self-ledger.png'), focus: 0.14 },
   ],
   athlete: [
-    { label: 'Core Lifts', source: require('@/assets/images/mobile-3-education/athlete-ledger-seeded.png'), focus: 0.47 },
-    { label: 'Movement History', source: require('@/assets/images/mobile-3-education/athlete-movement-history-seeded.png'), focus: 0.46 },
+    { label: 'Core Lifts', source: educationImage('athlete-ledger-seeded.png'), focus: 0.47 },
+    { label: 'Movement History', source: educationImage('athlete-movement-history-seeded.png'), focus: 0.46 },
   ],
   coach: [
-    { label: 'Athlete Workspace', source: require('@/assets/images/mobile-3-education/coach-brief.png'), focus: 0.06 },
-    { label: 'Programming Manager', source: require('@/assets/images/mobile-3-education/coach-programming.png'), focus: 0.07 },
+    { label: 'Athlete Workspace', source: educationImage('coach-brief.png'), focus: 0.06 },
+    { label: 'Programming Manager', source: educationImage('coach-programming.png'), focus: 0.07 },
   ],
   dual: [
-    { label: 'Your training', source: require('@/assets/images/mobile-3-education/self-session.png'), focus: 0.10 },
-    { label: 'Athlete Workspace', source: require('@/assets/images/mobile-3-education/coach-brief.png'), focus: 0.06 },
+    { label: 'Your training', source: educationImage('self-session.png'), focus: 0.10 },
+    { label: 'Athlete Workspace', source: educationImage('coach-brief.png'), focus: 0.06 },
   ],
 };
 
 const WELCOME_CAPTURES: Record<PreviewMode, readonly Capture[]> = {
   individual: [
-    { label: 'Your Session', source: require('@/assets/images/mobile-3-education/self-session.png'), focus: 0.12 },
-    { label: 'Your Ledger', source: require('@/assets/images/mobile-3-education/self-ledger.png'), focus: 0.22 },
+    { label: 'Your Session', source: educationImage('self-session.png'), focus: 0.12 },
+    { label: 'Your Ledger', source: educationImage('self-ledger.png'), focus: 0.22 },
   ],
   athlete: [
-    { label: 'During your Session', source: require('@/assets/images/mobile-3-education/athlete-session-live-seeded.png'), focus: 0.17 },
-    { label: 'Your Ledger', source: require('@/assets/images/mobile-3-education/athlete-ledger-seeded.png'), focus: 0.15 },
+    { label: 'During your Session', source: educationImage('athlete-session-live-seeded.png'), focus: 0.17 },
+    { label: 'Your Ledger', source: educationImage('athlete-ledger-seeded.png'), focus: 0.15 },
   ],
   coach: [
-    { label: 'Athlete Workspace', source: require('@/assets/images/mobile-3-education/coach-brief.png'), focus: 0.12 },
-    { label: 'Programming', source: require('@/assets/images/mobile-3-education/coach-programming.png'), focus: 0.12 },
+    { label: 'Athlete Workspace', source: educationImage('coach-brief.png'), focus: 0.12 },
+    { label: 'Programming', source: educationImage('coach-programming.png'), focus: 0.12 },
   ],
   dual: [
-    { label: 'Your Session', source: require('@/assets/images/mobile-3-education/self-session.png'), focus: 0.12 },
-    { label: 'Athlete Workspace', source: require('@/assets/images/mobile-3-education/coach-brief.png'), focus: 0.12 },
+    { label: 'Your Session', source: educationImage('self-session.png'), focus: 0.12 },
+    { label: 'Athlete Workspace', source: educationImage('coach-brief.png'), focus: 0.12 },
   ],
 };
 
