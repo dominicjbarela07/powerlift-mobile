@@ -1,0 +1,13 @@
+{
+  "candidateSha": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+  "baselineSha": "751a1173b301cb382557c5cbda59e4fdf72633b2",
+  "candidatePaths": [
+    "app/services/canonical_movement_search.py",
+    "docs/MOBILE_3_READINESS_SEARCH_FIX_2026-10-06.md",
+    "tests/test_canonical_movement_search.py"
+  ],
+  "actualDestinationSearchEqualsCanonicalDEV": true,
+  "preExistingTrackedDirtyFilesRetainedExactly": 26,
+  "collisionFilesRestoredExactly": true,
+  "productionPushPerformed": false
+}

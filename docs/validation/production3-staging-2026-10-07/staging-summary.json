@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-07T19:22:13.233444+00:00",
+  "scope": "Local Production3 candidate staging only. No push, deployment, OTA, native build or store submission.",
+  "stagingComplete": true,
+  "publicationGo": false,
+  "productionValidated": false,
+  "branch": "release/production3-staged-20261007",
+  "backend": {
+    "candidateSha": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+    "baselineSha": "751a1173b301cb382557c5cbda59e4fdf72633b2",
+    "candidatePaths": [
+      "app/services/canonical_movement_search.py",
+      "docs/MOBILE_3_READINESS_SEARCH_FIX_2026-10-06.md",
+      "tests/test_canonical_movement_search.py"
+    ],
+    "actualDestinationSearchEqualsCanonicalDEV": true,
+    "preExistingTrackedDirtyFilesRetainedExactly": 26,
+    "collisionFilesRestoredExactly": true,
+    "productionPushPerformed": false
+  },
+  "mobile": {
+    "destination": "/Users/dominic/powerlifting_app/powerlift_mobile",
+    "testedProductSourceSha": "13d066ab6227a53e163d507f9e6887f74bf3bcab",
+    "canonicalDEVSourceSha": "1a15ab521dc133ea1d1ca6d067dedfe68b5fcbdd",
+    "productFingerprint": "6ae1009bc63a888ef8d80394e7a75e7539c45a7ddb3f18dc8772db7472c33f35",
+    "catalog": {
+      "path": "config/governed-movement-art-taxonomy.json",
+      "beforeSha256": "7263a41db832c5f15eef3909de0604c39df38a6efe133bfdcb11e8f541338743",
+      "afterSha256": "4cecf895c2035b1a65b1ec2d36b8b4ff1c37b39ea1110c92def256b4a51a3aaf",
+      "stageSource": "exact canonical DEV catalog",
+      "activeMovements": 499,
+      "compatibilityMovements": 69,
+      "protectedIdentitiesRetained": 567,
+      "OHPIdentity": {
+        "id": 650,
+        "key": "barbell_overhead_press",
+        "display_name": "Barbell Overhead Press",
+        "kind": "core",
+        "family": "bench",
+        "primary_muscle_group": null,
+        "secondary_muscle_groups": [],
+        "equipment_type": "barbell",
+        "programming_contexts": [
+          "core"
+        ],
+        "core_movement_definition_id": 62,
+        "core_kind": "variant"
+      },
+      "retiredDiscoveryEntriesReactivated": 0,
+      "catalogProtectionPinsChanged": false,
+      "scope": "Owner-directed local Production3 candidate staging. The complete reviewed active directory and exact compatibility metadata are staged. No destination database mutation, numeric ID transfer or Cable backend deployment performed. Existing release holdback pins are unchanged and must be reconciled before publication."
+    },
+    "parity": {
+      "canonicalSourceSha": "1a15ab521dc133ea1d1ca6d067dedfe68b5fcbdd",
+      "stagedCandidateSha": "13d066ab6227a53e163d507f9e6887f74bf3bcab",
+      "exactMatchingTrackedPaths": 8471,
+      "reviewedDivergentPaths": [
+        "app/(tabs)/workout/[workoutId].tsx",
+        "lib/equipment-flow-subject.ts",
+        "lib/equipment-selection.ts",
+        "scripts/test-equipment-flow-subject.mjs",
+        "scripts/test-shared-movement-programming-context.mjs"
+      ],
+      "catalogMatchesCanonicalDEVExactly": true,
+      "loggerSharedUIChangesCarried": 10,
+      "deferredCableRuntimeImplementationPreserved": true,
+      "unknownDestinationDifferences": 0,
+      "shipped": false,
+      "releaseGatePassed": false
+    },
+    "artifactInventory": {
+      "sourceSha": "13d066ab6227a53e163d507f9e6887f74bf3bcab",
+      "publicationAuthorized": false,
+      "nativeBinaryBuilt": false,
+      "approvedMappings": 490,
+      "uniqueMovementImages": 487,
+      "platforms": {
+        "ios": {
+          "assetCount": 1015,
+          "uniqueAssetHashes": 1009,
+          "approvedMovementImages": 487,
+          "approvedEquipmentCategoryImages": 3,
+          "missingApprovedEquipmentCategoryImages": 0,
+          "missingApprovedMovementImages": 0,
+          "missingProtectedMovementImages": 0,
+          "ownerAuthorizedHistoricalRemovalHashes": 47,
+          "historicalConsolidationSourceBytesPreserved": true,
+          "platformOnlyNavigationAssets": [],
+          "OHPIncluded": true,
+          "bundle": "_expo/static/js/ios/entry-f2ed94eaf6b141c22665549d05d6e3ad.hbc",
+          "bundleSha256": "a914429777333c0570e92dcfe0b5f3faf96051cb4fad3f1623599b04ddb0ac16"
+        },
+        "android": {
+          "assetCount": 1015,
+          "uniqueAssetHashes": 1010,
+          "approvedMovementImages": 487,
+          "approvedEquipmentCategoryImages": 3,
+          "missingApprovedEquipmentCategoryImages": 0,
+          "missingApprovedMovementImages": 0,
+          "missingProtectedMovementImages": 0,
+          "ownerAuthorizedHistoricalRemovalHashes": 47,
+          "historicalConsolidationSourceBytesPreserved": true,
+          "platformOnlyNavigationAssets": [
+            {
+              "hash": "3Fa5dr1FY44RJfZol0NSXmiGrgvvLI9GUZlIM2hagx8",
+              "originalFiles": [
+                "node_modules/@react-navigation/elements/lib/module/assets/search-icon@1x.ios.png"
+              ]
+            },
+            {
+              "hash": "7xP8DfxS7COBdYX9fhCfvfWTo7JUnEDOcaybDtoSzCw",
+              "originalFiles": [
+                "node_modules/@react-navigation/elements/lib/module/assets/search-icon@4x.ios.png"
+              ]
+            },
+            {
+              "hash": "K3RDqaWOksoRpXW9wRWYYVpX3eMFzYznDWAmBrMCzZg",
+              "originalFiles": [
+                "node_modules/@react-navigation/elements/lib/module/assets/back-icon@2x.ios.png"
+              ]
+            },
+            {
+              "hash": "LN_rjlzN55dvcBL7jM5zryIpAp7iHU8VCf7RFIccbNg",
+              "originalFiles": [
+                "node_modules/@react-navigation/elements/lib/module/assets/back-icon@1x.ios.png"
+              ]
+            },
+            {
+              "hash": "Pd0Hc-0n4j0leJ8wFzGzrEVa2L5aonoKG4OPicbSciU",
+              "originalFiles": [
+                "node_modules/@react-navigation/elements/lib/module/assets/back-icon@3x.ios.png"
+              ]
+            },
+            {
+              "hash": "ku2BdqyMtENipfxqNwNiagAGrGt8snLumfWFAmLsBw4",
+              "originalFiles": [
+                "node_modules/@react-navigation/elements/lib/module/assets/back-icon@4x.ios.png"
+              ]
+            },
+            {
+              "hash": "tDSnzxjC1M50fHCULqL-4tRBLZOWftkrNy-BC7kmHqU",
+              "originalFiles": [
+                "node_modules/@react-navigation/elements/lib/module/assets/search-icon@3x.ios.png"
+              ]
+            }
+          ],
+          "OHPIncluded": true,
+          "bundle": "_expo/static/js/android/entry-6a180cffecd2675f23e4957fd512fd35.hbc",
+          "bundleSha256": "1b4af551837b92d3ed17899d2b17d06499880a2e97533d3a75881ab06afb5e4d"
+        }
+      }
+    }
+  },
+  "checks": {
+    "backend-compatibility": {
+      "exit": 0,
+      "log": "backend-compatibility.log"
+    },
+    "backend-search": {
+      "exit": 0,
+      "log": "backend-search.log"
+    },
+    "mobile-typecheck-final": {
+      "exit": 0,
+      "log": "mobile-typecheck-final.log"
+    },
+    "mobile-catalog-final": {
+      "exit": 0,
+      "log": "mobile-catalog-final.log"
+    },
+    "mobile-compatibility-final": {
+      "exit": 0,
+      "log": "mobile-compatibility-final.log"
+    },
+    "mobile-export-final": {
+      "exit": 0,
+      "log": "mobile-export-final.log"
+    },
+    "mobile-art-audit-final": {
+      "exit": 0,
+      "log": "mobile-art-audit-final.log"
+    },
+    "mobile-platform-art-audit-final": {
+      "exit": 0,
+      "log": "mobile-platform-art-audit-final.log"
+    },
+    "mobile-release-source-gate-final": {
+      "exit": 1,
+      "log": "mobile-release-source-gate-final.log"
+    }
+  },
+  "aggregateBeforeCatalogCorrection": {
+    "accepted": {
+      "pass": 269,
+      "fail": 3,
+      "total": 272
+    },
+    "critical": {
+      "pass": 78,
+      "fail": 3,
+      "total": 81
+    },
+    "catalogFailureFixedAndFullActiveCompatibilityChecksRerun": true,
+    "finalAggregateRerun": false
+  },
+  "remainingReleaseBlockers": [
+    "Original source/holdback protections require bounded reconciliation of reviewed catalog/UI/OHP/crop changes, with deliberate unauthorized-negative controls; final source gate still fails.",
+    "Canonical reviewed source synchronization remains part of release preparation.",
+    "Actual Production3 native/device/customer certification remains required."
+  ],
+  "preservation": {
+    "originalTrackedBackendFileHashesRetained": 26,
+    "checkoutCollisionFilesRestoredExactly": true,
+    "legacyMobileMainSha": "61a6893f5ca02cb53b347460adeef5121d681cad",
+    "temporaryWorktreesCreated": 0,
+    "productionDatabaseChanged": false
+  },
+  "closeoutDocumentationCommits": "Documentation/evidence only; tested product bytes remain unchanged. Export remains bound to its exact tested product source SHA above.",
+  "completeEvidenceDirectory": "/Users/dominic/Documents/Codex/2026-10-03/re/outputs/production3-staging-2026-10-07"
+}

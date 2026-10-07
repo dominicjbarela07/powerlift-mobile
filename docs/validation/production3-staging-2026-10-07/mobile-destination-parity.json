@@ -1,0 +1,18 @@
+{
+  "canonicalSourceSha": "1a15ab521dc133ea1d1ca6d067dedfe68b5fcbdd",
+  "stagedCandidateSha": "13d066ab6227a53e163d507f9e6887f74bf3bcab",
+  "exactMatchingTrackedPaths": 8471,
+  "reviewedDivergentPaths": [
+    "app/(tabs)/workout/[workoutId].tsx",
+    "lib/equipment-flow-subject.ts",
+    "lib/equipment-selection.ts",
+    "scripts/test-equipment-flow-subject.mjs",
+    "scripts/test-shared-movement-programming-context.mjs"
+  ],
+  "catalogMatchesCanonicalDEVExactly": true,
+  "loggerSharedUIChangesCarried": 10,
+  "deferredCableRuntimeImplementationPreserved": true,
+  "unknownDestinationDifferences": 0,
+  "shipped": false,
+  "releaseGatePassed": false
+}
