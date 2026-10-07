@@ -1,0 +1,30 @@
+{
+  "projectRoot": "/Users/dominic/powerlifting_app/powerlift_mobile",
+  "sourceSHA": "464f0919534afa8c3058e889626763e7954131d1",
+  "bundleSHA256": "302f88c61d660fe08e73f942e3c00e4332dfbb6b0dc5351d12657b3e3b98cf99",
+  "bundleMode": "Clean non-development Production checkout source embedded in repaired existing local simulator shell; not a certified new store binary",
+  "apiBase": "https://app.strengthledger.fit",
+  "liveBackendSource": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+  "nativeExpoSecureStoreProof": {
+    "apiBase": "https://app.strengthledger.fit",
+    "realAuthKeysAccessed": false,
+    "missingReadIsNull": true,
+    "roundtrip": true,
+    "deletedReadIsNull": true,
+    "liveHealthStatus": 200,
+    "liveSourceSHA": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+    "liveReady": true,
+    "pass": true
+  },
+  "temporaryProbeRemoved": true,
+  "expectedExportAssetHashes": 1009,
+  "missingExportAssets": 0,
+  "nativeNavigationVariantHashesPreserved": 3,
+  "approvedMovementImages": 487,
+  "nativeShellVersion": "2.1.0",
+  "productionNativeBinaryCertified": false,
+  "finalLoginObserved": true,
+  "emailAndPasswordBlank": true,
+  "ownerLoginSubmitted": false,
+  "observedVia": "Device Hub CUA screenshot after final clean candidate launch"
+}
