@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const root = path.resolve(__dirname, '..');
 const scanRoots = ['app', 'components'];
@@ -37,7 +38,8 @@ for (const scanRoot of scanRoots) {
       Object.entries(patterns).map(([name, pattern]) => [name, (source.match(pattern) || []).length]),
     );
     const total = Object.values(counts).reduce((sum, value) => sum + value, 0);
-    if (total) rows.push({ file: relative, total, ...counts });
+    if (total) rows.push({ file: relative, total, ...counts,
+      literalSha256: crypto.createHash('sha256').update(JSON.stringify(Object.entries(patterns).map(([name, pattern]) => [name, source.match(pattern) || []]))).digest('hex') });
   }
 }
 
@@ -64,6 +66,9 @@ for (const row of rows) {
   }
   if (!reviewed.reason || !reviewed.reason.trim()) {
     mismatches.push({ file: row.file, issue: 'missing reason', actual: row.total, expected: row.total });
+  }
+  if (reviewed.literalSha256 && reviewed.literalSha256 !== row.literalSha256) {
+    mismatches.push({ file: row.file, issue: 'reviewed values changed (even if counts match)', actual: row.literalSha256, expected: reviewed.literalSha256 });
   }
 }
 

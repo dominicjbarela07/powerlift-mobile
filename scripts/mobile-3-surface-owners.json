@@ -1,0 +1,186 @@
+{
+  "app/(tabs)/accessory-catalog-review.tsx::screen": {
+    "backgroundExpression": "SLColors.canvas",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "app/(tabs)/create-workout.tsx::screen": {
+    "backgroundExpression": "SLColors.canvas",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "app/(tabs)/dev-mocks/anatomy-system.tsx::page": {
+    "backgroundExpression": "'#020306'",
+    "horizontalInsets": [],
+    "reason": "DEV-only calibration surface owns its canvas; it is outside normal product navigation."
+  },
+  "app/(tabs)/dev-mocks/movement-art-hero.tsx::page": {
+    "backgroundExpression": "'#000'",
+    "horizontalInsets": [],
+    "reason": "DEV-only calibration surface owns its canvas; it is outside normal product navigation."
+  },
+  "app/(tabs)/workout/[workoutId].tsx::screen": {
+    "backgroundExpression": "SLColors.canvas",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "app/(tabs)/workout/index.tsx::root": {
+    "backgroundExpression": "SLColors.canvas",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "app/coach-athlete-analytics/[athleteId].tsx::screen": {
+    "backgroundExpression": "'#000'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "app/coach-team-brief.tsx::screen": {
+    "backgroundExpression": "'#000'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "app/coach-team-methodology.tsx::screen": {
+    "backgroundExpression": "'#030408'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "app/coach-team-outliers.tsx::screen": {
+    "backgroundExpression": "'#000'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/anatomy/GovernedMuscleThumbnail.tsx::root": {
+    "backgroundExpression": "'#15111D'",
+    "horizontalInsets": [],
+    "reason": "Embedded canonical anatomy thumbnail owns its bounded material, not the route background."
+  },
+  "components/calendar/AthleteCalendarStoryboardV2.tsx::root": {
+    "backgroundExpression": "SLColors.surfaceCanvas",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/calendar/TrainingScheduleSheet.tsx::root": {
+    "backgroundExpression": "SLColors.canvas",
+    "horizontalInsets": [],
+    "reason": "Canonical modal/editor owns its OLED material inside the shared sheet host; it does not mount another AppShell background."
+  },
+  "components/coach-mobile/CoachActivityHome.tsx::screen": {
+    "backgroundExpression": "'#000'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/coach-mobile/CoachAthleteHubV2.tsx::screen": {
+    "backgroundExpression": "COACH_V2.black",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/coach-mobile/CoachAttentionDetailV2.tsx::screen": {
+    "backgroundExpression": "COACH_V2.black",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/coach-mobile/CoachCheckInsV2.tsx::screen": {
+    "backgroundExpression": "C.canvas",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/coach-mobile/CoachHomeV2.tsx::screen": {
+    "backgroundExpression": "COACH_V2.black",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/coach-mobile/CompletedSessionRecap.tsx::screen": {
+    "backgroundExpression": "'#050409'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/coach-mobile/FocusedSessionAuthoring.tsx::root": {
+    "backgroundExpression": "SLColors.canvas",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/coach-mobile/InlineSessionReorder.tsx::root": {
+    "backgroundExpression": null,
+    "horizontalInsets": [
+      "paddingHorizontal"
+    ],
+    "reason": "Embedded reorder editor owns movement-row insets inside its modal, not page-level app gutters."
+  },
+  "components/coach-mobile/SessionEditingWorkspace.tsx::root": {
+    "backgroundExpression": "palette.canvas",
+    "horizontalInsets": [],
+    "reason": "Canonical modal/editor owns its OLED material inside the shared sheet host; it does not mount another AppShell background."
+  },
+  "components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx::screen": {
+    "backgroundExpression": "'#000'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/education/AthleteEducationOpening.tsx::root": {
+    "backgroundExpression": "'#05030A'",
+    "horizontalInsets": [],
+    "reason": "Owner-requested canonical 3.0 full-screen Education owns its near-black illustration scrim and lesson canvas."
+  },
+  "components/education/CoachEducationOpening.tsx::root": {
+    "backgroundExpression": "'#05030A'",
+    "horizontalInsets": [],
+    "reason": "Owner-requested canonical 3.0 full-screen Education owns its near-black illustration scrim and lesson canvas."
+  },
+  "components/education/SelfCoachEducationOpening.tsx::root": {
+    "backgroundExpression": "'#05030A'",
+    "horizontalInsets": [],
+    "reason": "Owner-requested canonical 3.0 full-screen Education owns its near-black illustration scrim and lesson canvas."
+  },
+  "components/ledger/JourneyExperience.tsx::page": {
+    "backgroundExpression": "'#000000'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/ledger/StrengthExperience.tsx::page": {
+    "backgroundExpression": null,
+    "horizontalInsets": [
+      "paddingHorizontal"
+    ],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/ledger/index-experience.tsx::page": {
+    "backgroundExpression": "'#000000'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/meet-packet/AthleteMeetPacketV2.tsx::screen": {
+    "backgroundExpression": "SLColors.canvas",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/movement-history/CanonicalMovementHistoryScreen.tsx::screen": {
+    "backgroundExpression": "'#020205'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/training-hub/AthleteProgramTimeline.tsx::root": {
+    "backgroundExpression": "'#000000'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/training-hub/AthleteTrainingHubExperience.tsx::root": {
+    "backgroundExpression": "'#000000'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/training-hub/TrainingHubSessionPreviewSheet.tsx::root": {
+    "backgroundExpression": "SLColors.canvasRaised",
+    "horizontalInsets": [],
+    "reason": "Canonical modal/editor owns its OLED material inside the shared sheet host; it does not mount another AppShell background."
+  },
+  "components/workout-logger/movement-card-material.tsx::root": {
+    "backgroundExpression": "SLMovementCardMaterial.base",
+    "horizontalInsets": [],
+    "reason": "Embedded approved movement card owns its near-black material; global app background remains AppShell-owned."
+  },
+  "components/workout-logger/session-v3-closeout.tsx::screen": {
+    "backgroundExpression": "'#08060d'",
+    "horizontalInsets": [],
+    "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  }
+}

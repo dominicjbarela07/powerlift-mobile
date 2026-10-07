@@ -1,0 +1,31 @@
+/private/var/folders/lb/2j2b2zcj37bfw9d3f137tjc80000gn/T/sl-backend-deploy-exact-59mo0dyk/tests/test_billing_entitlement_guard.py:66: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  created_at=datetime.utcnow(),
+/private/var/folders/lb/2j2b2zcj37bfw9d3f137tjc80000gn/T/sl-backend-deploy-exact-59mo0dyk/tests/test_billing_entitlement_guard.py:67: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  email_verified_at=datetime.utcnow(),
+...../private/var/folders/lb/2j2b2zcj37bfw9d3f137tjc80000gn/T/sl-backend-deploy-exact-59mo0dyk/app/models.py:136: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  return User.query.get(int(user_id))
+[2026-10-07 15:48:08,903] WARNING in security: [SECURITY_REJECTION] status=402 guard=product_access_gate reason=billing required context={'path': '/dashboard', 'method': 'GET', 'endpoint': 'main.dashboard', 'blueprint': 'main', 'remote_addr': '127.0.0.1', 'host': 'localhost', 'origin': None, 'referer': None, 'user_agent': 'Werkzeug/3.1.4', 'auth_header_present': False, 'current_user_authenticated': True, 'mobile_token_user_id': None, 'mobile_token_user_role': None, 'is_mobile_api': False}
+[2026-10-07 15:48:08,907] WARNING in security: [SECURITY_REJECTION] status=402 guard=product_access_gate reason=billing required context={'path': '/coach/mobile/dashboard', 'method': 'GET', 'endpoint': 'main.coach_mobile_dashboard', 'blueprint': 'main', 'remote_addr': '127.0.0.1', 'host': 'localhost', 'origin': None, 'referer': None, 'user_agent': 'Werkzeug/3.1.4', 'auth_header_present': True, 'current_user_authenticated': True, 'mobile_token_user_id': 1, 'mobile_token_user_role': 'coach', 'is_mobile_api': True}
+./private/var/folders/lb/2j2b2zcj37bfw9d3f137tjc80000gn/T/sl-backend-deploy-exact-59mo0dyk/tests/test_delete_account_billing_cancellation.py:64: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  created_at=datetime.utcnow(),
+/private/var/folders/lb/2j2b2zcj37bfw9d3f137tjc80000gn/T/sl-backend-deploy-exact-59mo0dyk/tests/test_delete_account_billing_cancellation.py:65: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  email_verified_at=datetime.utcnow(),
+./private/var/folders/lb/2j2b2zcj37bfw9d3f137tjc80000gn/T/sl-backend-deploy-exact-59mo0dyk/app/services/relationships.py:79: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return datetime.utcnow()
+/Users/dominic/powerlifting_app_dev/venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3599: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+......./private/var/folders/lb/2j2b2zcj37bfw9d3f137tjc80000gn/T/sl-backend-deploy-exact-59mo0dyk/app/services/billing.py:280: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "timestamp": datetime.utcnow().isoformat() + "Z",
+[2026-10-07 15:48:10,777] WARNING in billing: [BILLING_TERMINATION] complete user_id=1 customer=cus_delete_deferred_local_finalization deleted_customer=True canceled_subscriptions=['sub_delete_deferred_local_finalization'] reason=test deferred finalization
+../private/var/folders/lb/2j2b2zcj37bfw9d3f137tjc80000gn/T/sl-backend-deploy-exact-59mo0dyk/tests/test_onboarding_billing_contract.py:66: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  created_at=datetime.utcnow(),
+/private/var/folders/lb/2j2b2zcj37bfw9d3f137tjc80000gn/T/sl-backend-deploy-exact-59mo0dyk/tests/test_onboarding_billing_contract.py:69: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  user.email_verified_at = datetime.utcnow()
+...[2026-10-07 15:48:12,138] WARNING in security: [SECURITY_REJECTION] status=402 guard=product_access_gate reason=billing required context={'path': '/dashboard', 'method': 'GET', 'endpoint': 'main.dashboard', 'blueprint': 'main', 'remote_addr': '127.0.0.1', 'host': 'localhost', 'origin': None, 'referer': None, 'user_agent': 'Werkzeug/3.1.4', 'auth_header_present': False, 'current_user_authenticated': True, 'mobile_token_user_id': None, 'mobile_token_user_role': None, 'is_mobile_api': False}
+/private/var/folders/lb/2j2b2zcj37bfw9d3f137tjc80000gn/T/sl-backend-deploy-exact-59mo0dyk/app/blueprints/main.py:4857: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  coach_row = User.query.get(coach_id)
+..
+----------------------------------------------------------------------
+Ran 21 tests in 6.243s
+
+OK

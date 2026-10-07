@@ -1,0 +1,45 @@
+{
+  "recordedAt": "2026-10-07T19:51:04.407535+00:00",
+  "candidateSha": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+  "isolation": "Exact immutable outgoing Git archive; isolated SQLite databases. No Git worktree created or owner database used. Preflight constituent checks avoid pre-existing dirty/untracked test contamination.",
+  "checks": [
+    {
+      "check": "forbidden-staged-files",
+      "exit": 0,
+      "log": "forbidden-staged-files.log",
+      "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+    },
+    {
+      "check": "billing-gates",
+      "exit": 0,
+      "log": "billing-gates.log",
+      "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+    },
+    {
+      "check": "compile",
+      "exit": 0,
+      "log": "compile.log",
+      "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+    },
+    {
+      "check": "identity-leak-hunt",
+      "exit": 0,
+      "log": "identity-leak-hunt.log",
+      "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+    },
+    {
+      "check": "constitutional-validation",
+      "exit": 0,
+      "log": "constitutional-validation.log",
+      "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+    },
+    {
+      "check": "canonical-search",
+      "exit": 0,
+      "log": "canonical-search.log",
+      "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+    }
+  ],
+  "pass": true,
+  "completeCustomerWorkflowValidated": false
+}

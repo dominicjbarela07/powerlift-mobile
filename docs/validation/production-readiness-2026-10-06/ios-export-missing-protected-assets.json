@@ -1,0 +1,703 @@
+[
+  {
+    "hash": "20VAL0v0FX0lqMfHQRZfSj5ezqf6w738eIELdAfobwg",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/barbell-back-extension-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/barbell-back-extension-v1.png",
+        "replacementMovementId": 551
+      }
+    ]
+  },
+  {
+    "hash": "2Ny5MnhEh9Os9Ov4dC6XtcsMoVCs3aUYxgAViosK3Oc",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/donkey-calf-raise-with-weight-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/donkey-calf-raise-with-weight-v1.png",
+        "replacementMovementId": 491
+      }
+    ]
+  },
+  {
+    "hash": "5TbZmMjF4m2ePYkcIUd_r0yficI9qYzfw0C_cz5ey-g",
+    "sourcePaths": [
+      "assets/images/movement-artwork/machine-v1/accessory_reverse_hyperextension_machine-v4.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/machine-v1/accessory_reverse_hyperextension_machine-v4.png",
+        "replacementMovementId": 435
+      }
+    ]
+  },
+  {
+    "hash": "5oOfEf98h6LvUYh195fO1XH6rIesumvdxHP-nQQjC-c",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/three-point-dumbbell-row-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/three-point-dumbbell-row-v1.png",
+        "replacementMovementId": 154
+      }
+    ]
+  },
+  {
+    "hash": "76lF2q_R9oe3Z_sjhi9BMLRYNV06kGajXJFVYHGmmZI",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/dumbbell-step-down-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/dumbbell-step-down-v1.png",
+        "replacementMovementId": 383
+      }
+    ]
+  },
+  {
+    "hash": "9T84yN67AXi6aWQ0Alx9Q4DMj9ujmZhcE6EvVOZZ-Qc",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/barbell-row-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/barbell-row-v1.png",
+        "replacementMovementId": 191
+      }
+    ]
+  },
+  {
+    "hash": "9ufFb7ZWXdLFju1n0Fw4bPImza8Enz08YcBWhq7Em5M",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/wide-elbow-dumbbell-row-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/wide-elbow-dumbbell-row-v1.png",
+        "replacementMovementId": 129
+      }
+    ]
+  },
+  {
+    "hash": "AD9J5f_p7V5pYVKnHY-HPP87Oe8dwXQ69MvKLNoJv40",
+    "sourcePaths": [
+      "assets/images/movement-artwork/machine-v1/accessory_plate_loaded_seated_row-v4.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/machine-v1/accessory_plate_loaded_seated_row-v4.png",
+        "replacementMovementId": 216
+      }
+    ]
+  },
+  {
+    "hash": "E7EEyaal2pQqpNVe61uBEwYk-jXaPKIWD3oWRyYHKuk",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/dumbbell-glute-bridge-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/dumbbell-glute-bridge-v1.png",
+        "replacementMovementId": 442
+      }
+    ]
+  },
+  {
+    "hash": "Fttj-Jg1ESvG248eOM_px-9Atv_vatC6Ikcu3HcJAMA",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/good-morning-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/good-morning-v1.png",
+        "replacementMovementId": 393
+      }
+    ]
+  },
+  {
+    "hash": "GORt4gSW8gfp3LMrz0PJSMNkRq7sp9iqK1CKTTic6jE",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/weighted-decline-sit-up-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/weighted-decline-sit-up-v1.png",
+        "replacementMovementId": 509
+      }
+    ]
+  },
+  {
+    "hash": "H30JKFhX7p2bnDsRARCvjrQR8pCaWWeOXKb-c7PNU3o",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/single-leg-dumbbell-calf-raise-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/single-leg-dumbbell-calf-raise-v1.png",
+        "replacementMovementId": 489
+      }
+    ]
+  },
+  {
+    "hash": "JL4vXYC6RFC0NVse9BSLl0fRZG23QmZ1nY0aFRieMw8",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/single-arm-dumbbell-row-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/single-arm-dumbbell-row-v1.png",
+        "replacementMovementId": 154
+      }
+    ]
+  },
+  {
+    "hash": "MrkSlN-3AQu7R4pdPZ-L03pGWS-4Ql4Bw3Fhtn1o9FA",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/glute-ham-raise-with-weight-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/glute-ham-raise-with-weight-v1.png",
+        "replacementMovementId": 412
+      }
+    ]
+  },
+  {
+    "hash": "Nsxk7WXOGyisQvZ-Jl1H7mOadx0BEBL5hq5VHgLLk24",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/kelso-shrug-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/kelso-shrug-v1.png",
+        "replacementMovementId": 241
+      }
+    ]
+  },
+  {
+    "hash": "QGeRgtxWHdaTYtlVBwJwXUrUTq67G6tnEjtftrPpNzA",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/ankle-weight-hip-flexion-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/ankle-weight-hip-flexion-v1.png",
+        "replacementMovementId": 574
+      }
+    ]
+  },
+  {
+    "hash": "T-DPJtigMnf5hvPrEfcaJhDtWq0IP2jHzkACVoIZUD0",
+    "sourcePaths": [
+      "assets/images/movement-artwork/machine-v1/accessory_chest_supported_rear_delt_machine_row-v6.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/machine-v1/accessory_chest_supported_rear_delt_machine_row-v6.png",
+        "replacementMovementId": 136
+      }
+    ]
+  },
+  {
+    "hash": "U8gNT99aLDoMcaEJTbPnTzaA1hUv-md9ZjDrEMjF71s",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/plate-sit-up-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/plate-sit-up-v1.png",
+        "replacementMovementId": 496
+      }
+    ]
+  },
+  {
+    "hash": "UabhiX7axuJZH1q2eFgDNwNUtW0y0TTowY_G2-mdj8o",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/standing-dumbbell-curl-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/standing-dumbbell-curl-v1.png",
+        "replacementMovementId": 253
+      }
+    ]
+  },
+  {
+    "hash": "VDI498ehXFEcDCjZSuE58HzfS7QWL0wsqemQHxIIAPs",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/barbell-calf-raise-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/barbell-calf-raise-v1.png",
+        "replacementMovementId": 488
+      }
+    ]
+  },
+  {
+    "hash": "VXGI9sJAQHTtp_QO7dC_icR0ofRqMheyBKoMuEwkk3o",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/incline-dumbbell-press-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/incline-dumbbell-press-v1.png",
+        "replacementMovementId": 33
+      }
+    ]
+  },
+  {
+    "hash": "WRhDwSN-mpEXtSfnkhmK8grhpZQIgSNhBkBqys_ZWt8",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/wide-elbow-barbell-row-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/wide-elbow-barbell-row-v1.png",
+        "replacementMovementId": 131
+      }
+    ]
+  },
+  {
+    "hash": "Wny_DDJtPK0w6sFmxbNis8A99W_P4y18NXs_RPTMylg",
+    "sourcePaths": [
+      "assets/images/movement-artwork/machine-v1/accessory_glute_ham_raise-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/machine-v1/accessory_glute_ham_raise-v1.png",
+        "replacementMovementId": 412
+      }
+    ]
+  },
+  {
+    "hash": "WvlgY7qp11OgUKVGhEBNFrYobCSVXpe4mDbSHmFSCoU",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/landmine-row-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/landmine-row-v1.png",
+        "replacementMovementId": 197
+      }
+    ]
+  },
+  {
+    "hash": "XzU5jPvqLiuxnN3U1Xi4XuaH4ns_jIW7rHQOgcBZ-Mc",
+    "sourcePaths": [
+      "assets/images/movement-artwork/machine-v1/accessory_machine_mid_row-v4.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/machine-v1/accessory_machine_mid_row-v4.png",
+        "replacementMovementId": 216
+      }
+    ]
+  },
+  {
+    "hash": "YuKyT_BNC7Ltl6pO8itfY8J2sZ7qneEpl7w43Lzt6fQ",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/dumbbell-hip-thrust-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/dumbbell-hip-thrust-v1.png",
+        "replacementMovementId": 418
+      }
+    ]
+  },
+  {
+    "hash": "Zh-t0xnRfhy1wdJzx22lX2eO0uIgKp_8C8g5TXBnCk4",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/barbell-glute-bridge-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/barbell-glute-bridge-v1.png",
+        "replacementMovementId": 442
+      }
+    ]
+  },
+  {
+    "hash": "a7KbNRiAkkIVypN3Up43jhThDSsG_l-Y-VVHbupdEdg",
+    "sourcePaths": [
+      "assets/images/movement-artwork/bodyweight-v1/accessory_copenhagen_adduction-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/bodyweight-v1/accessory_copenhagen_adduction-v1.png",
+        "replacementMovementId": 457
+      }
+    ]
+  },
+  {
+    "hash": "aeYCWnc3GC9Tt50tmM4DmauAXPEkWCZHjv2Mh7tYgVM",
+    "sourcePaths": [
+      "assets/images/movement-artwork/machine-v1/accessory_chest_supported_high_row-v4.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/machine-v1/accessory_chest_supported_high_row-v4.png",
+        "replacementMovementId": 217
+      }
+    ]
+  },
+  {
+    "hash": "bmpRQBLYboHmqbiIHM4wHYA90zkxILCj_bcyfDi3vGk",
+    "sourcePaths": [
+      "assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_walking_lunge-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/bodyweight-v1/accessory_bodyweight_walking_lunge-v1.png",
+        "replacementMovementId": 358
+      }
+    ]
+  },
+  {
+    "hash": "ciErkyMQebkjVhbnO69KuGEqOFwyGis8_kRGMhWWUJ8",
+    "sourcePaths": [],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_REMOVAL: owner-directed completion cue replacement",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-28-audio-replacement.json"
+      }
+    ]
+  },
+  {
+    "hash": "cs9AZMuCyEyLuKqhs_fEcriipSnZrbx1dulTUP7YwpE",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/weighted-crunch-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/weighted-crunch-v1.png",
+        "replacementMovementId": 507
+      }
+    ]
+  },
+  {
+    "hash": "h09mxw2EHeux1JoZAI9JSBprsDKZr29O9jRTyGNCu4s",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-row-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-row-v1.png",
+        "replacementMovementId": 241
+      }
+    ]
+  },
+  {
+    "hash": "hZE3SINCvAFHCPrGsUAXsaPocKxC7inUoucGL8ExXA0",
+    "sourcePaths": [
+      "assets/images/movement-artwork/bodyweight-v1/accessory_bird_dog_back_extension-v2.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/bodyweight-v1/accessory_bird_dog_back_extension-v2.png",
+        "replacementMovementId": 541
+      }
+    ]
+  },
+  {
+    "hash": "lwvRveWjdaBbhFLc4oHSt8SxxSkWcC5JDqk5JUChf9g",
+    "sourcePaths": [
+      "assets/images/movement-artwork/machine-v1/accessory_single_leg_calf_raise_machine-v2.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/machine-v1/accessory_single_leg_calf_raise_machine-v2.png",
+        "replacementMovementId": 489
+      }
+    ]
+  },
+  {
+    "hash": "n9fz4CGsIggYVdE-iTJNnH93-CUoaju0kcgDo7aU388",
+    "sourcePaths": [
+      "assets/images/movement-artwork/machine-v1/accessory_reverse_pec_deck-v4.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/machine-v1/accessory_reverse_pec_deck-v4.png",
+        "replacementMovementId": 135
+      }
+    ]
+  },
+  {
+    "hash": "pxtm48r0VFit7d6IpKK3nIeilbzfsfITX2FWntSh85A",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/incline-bench-rear-delt-flye-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/incline-bench-rear-delt-flye-v1.png",
+        "replacementMovementId": 127
+      }
+    ]
+  },
+  {
+    "hash": "soQ9utWeRSn2ese06VBlDTlJo8Pb9oThXAIBwHGMlUc",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/incline-bench-dumbbell-row-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/incline-bench-dumbbell-row-v1.png",
+        "replacementMovementId": 194
+      }
+    ]
+  },
+  {
+    "hash": "u4gXjCq1nr0N0igp5ReEnuu7RAF7LkIHa2sgQe-IQXA",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/standing-dumbbell-calf-raise-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/standing-dumbbell-calf-raise-v1.png",
+        "replacementMovementId": 488
+      }
+    ]
+  },
+  {
+    "hash": "uh4B3g-6FLaEQz7rVvsA76IUlxyUd-l3nvRo0jb-Qyo",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/spanish-squat-with-weight-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/spanish-squat-with-weight-v1.png",
+        "replacementMovementId": 382
+      }
+    ]
+  },
+  {
+    "hash": "vryPjMGq51yrHWvo-pB7_8LgLDUEJQ4gy12F54OBdKM",
+    "sourcePaths": [
+      "assets/images/movement-artwork/machine-v1/accessory_pec_deck-v2.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/machine-v1/accessory_pec_deck-v2.png",
+        "replacementMovementId": 51
+      }
+    ]
+  },
+  {
+    "hash": "vwdwHcVx4MF_NhDbeMjI9yp07egjfAjjWARpGTRTC94",
+    "sourcePaths": [
+      "assets/images/movement-artwork/machine-v1/accessory_single_leg_adductor_machine-v3.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/machine-v1/accessory_single_leg_adductor_machine-v3.png",
+        "replacementMovementId": null
+      }
+    ]
+  },
+  {
+    "hash": "xIHR3wpkoNo74Z-smxy2NlHsGuyJDkTC9vn5YIu8D4g",
+    "sourcePaths": [
+      "assets/images/movement-artwork/machine-v1/accessory_glute_drive_machine-v2.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/machine-v1/accessory_glute_drive_machine-v2.png",
+        "replacementMovementId": 431
+      }
+    ]
+  },
+  {
+    "hash": "yNubhGTRPkq92kF09DuGzKlGPMtWmif9q0pYKylvmQ8",
+    "sourcePaths": [
+      "assets/images/movement-artwork/machine-v1/accessory_wide_elbow_machine_row-v6.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/machine-v1/accessory_wide_elbow_machine_row-v6.png",
+        "replacementMovementId": 136
+      }
+    ]
+  },
+  {
+    "hash": "yTXqAZt0KhD4ji6cG6pU-i3W5Dchbg5J0RWi6YbUd8M",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/weighted-push-up-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/weighted-push-up-v1.png",
+        "replacementMovementId": 67
+      }
+    ]
+  },
+  {
+    "hash": "yc2QjTBiRlt7onW7ZKd6lsbd2fSOQaugrvFolonVzpI",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/dumbbell-dead-bug-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/dumbbell-dead-bug-v1.png",
+        "replacementMovementId": 516
+      }
+    ]
+  },
+  {
+    "hash": "zeRZjEUwJ6VDHSU3g17N6Lnup3t-XTNioroYwlOYxVo",
+    "sourcePaths": [
+      "assets/images/movement-artwork/free-weight-v1/dumbbell-frog-pump-v1.png"
+    ],
+    "authorization": [
+      {
+        "action": "REMOVE",
+        "classification": "AUTHORIZED_CHANGE: owner-directed physical movement consolidation; original approved image bytes retained",
+        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-09-20-consolidation.json",
+        "retainedPath": "assets/images/movement-artwork/free-weight-v1/dumbbell-frog-pump-v1.png",
+        "replacementMovementId": 444
+      }
+    ]
+  }
+]

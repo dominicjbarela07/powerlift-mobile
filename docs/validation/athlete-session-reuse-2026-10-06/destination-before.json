@@ -1,0 +1,34 @@
+{
+  "athlete_id": 70,
+  "authoring_version": "b2f0dfbc807620d76606e5adb8253543be1253fe7ccba4f39d0c9e90cc88c4f0",
+  "workout": {
+    "id": 1851,
+    "date": "2026-10-07",
+    "label": "New Session",
+    "raw_status": "draft",
+    "program_id": 30,
+    "program_name": "Cumulative Release Copy QA",
+    "training_block_id": 169,
+    "block_name": "Cumulative QA Block",
+    "workspace_capabilities": {
+      "assign_blocked_reason": "Add at least one movement before assigning this Session.",
+      "can_add_movement": true,
+      "can_assign": false,
+      "can_copy": true,
+      "can_delete": true,
+      "can_edit_movement": true,
+      "can_edit_session_notes": true,
+      "can_move": true,
+      "can_open_athlete_view": true,
+      "can_remove_movement": true,
+      "can_rename": true,
+      "can_reorder": true,
+      "can_revert_to_draft": false,
+      "can_save_template": true,
+      "editable": true,
+      "locked_reason": ""
+    }
+  },
+  "items": [],
+  "full_response_sha256": "36fb878c4596f7ff304d5d0b291a7b438666c09acf883797abfc31a630dd8d76"
+}

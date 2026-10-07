@@ -1,0 +1,614 @@
+{
+  "productSource": "d0f0d32d78adf77bcd77b4cb687335be832bf5a0",
+  "device": "iPhone Air / iOS26.2 / canonical Metro8081",
+  "routeFileCount": 84,
+  "actualSurfaceRouteFiles": 33,
+  "countsByKind": {
+    "bridge": 5,
+    "developer": 7,
+    "entry": 1,
+    "layout": 4,
+    "product": 66,
+    "unlinked-template": 1
+  },
+  "modalCoverage": "Education all three roles; prescription editor; equipment chooser; Set logging/edit/rest; Session preview; canonical Movement History; Coach More; Check-In template/detail/editor; safe logout. No count-based claim that all modal states were opened.",
+  "unobservedNativeCases": [
+    "Apple sign-in and new onboarding",
+    "purchase/restore/access transition",
+    "media upload/playback/review completion",
+    "push/background sound",
+    "compact phone/tablet/larger text",
+    "Android",
+    "physical PR visual/audio delivery"
+  ],
+  "routes": [
+    {
+      "path": "app/(tabs)/_layout.tsx",
+      "kind": "layout",
+      "coverage": "shared navigation exercised; no standalone screen",
+      "note": null,
+      "sha256": "15e40d26a74bf0aa01cae85fe03c2b7482ac7ccaec161d65bc47da824b77fa87"
+    },
+    {
+      "path": "app/(tabs)/accessory-catalog-review.tsx",
+      "kind": "developer",
+      "coverage": "excluded from production surface sweep; source inventory only",
+      "note": null,
+      "sha256": "9755d9c9bc813d04f8d506c5f76357f31bf789dccad32a086bb09e147ac736c0"
+    },
+    {
+      "path": "app/(tabs)/athlete-calendar.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Self-Coach day details/recap; Athlete month",
+      "sha256": "d81d6ccdce2f79faff040be3c5a2a61751f7c85dc9600db416b5e671b3051106"
+    },
+    {
+      "path": "app/(tabs)/athlete-dashboard.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Self-Coach and Athlete Today; resume, completed entry, week summary",
+      "sha256": "c7a9491f9d62cb57402d401d87fc951fd71eb83102cb7d942ef19e23a0c7e3bb"
+    },
+    {
+      "path": "app/(tabs)/athlete-meet-plan.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "09f5412f21edfefec68b9e4285e7932c643936d10092f3f67cd48bae12338362"
+    },
+    {
+      "path": "app/(tabs)/athlete-progression.tsx",
+      "kind": "bridge",
+      "coverage": "source routing inventoried; target surface observed, direct bridge not separately traversed",
+      "note": null,
+      "sha256": "62febc4f675233e12bb177b64f08d3874d0563acad8a79e91ff9e384c338f419"
+    },
+    {
+      "path": "app/(tabs)/check-in/[submissionId].tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "e18e309cc71d6b51585560d1b6a5a9754674316898cbb461fd6a249840c819b3"
+    },
+    {
+      "path": "app/(tabs)/check-ins.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Coach templates, creation, detail and question editor; no assignment",
+      "sha256": "776a442a2a93c95bb2ee763551d42a0fa49db385503d4d5c019be10a2e6db0b5"
+    },
+    {
+      "path": "app/(tabs)/coach-athlete/[athleteId]/_layout.tsx",
+      "kind": "layout",
+      "coverage": "shared navigation exercised; no standalone screen",
+      "note": null,
+      "sha256": "b10ad59caf9cc377dc82b5f2d807eb0b5263f3abae40ed969921fb0b8f85a86f"
+    },
+    {
+      "path": "app/(tabs)/coach-athlete/[athleteId]/brief.tsx",
+      "kind": "bridge",
+      "coverage": "source routing inventoried; target surface observed, direct bridge not separately traversed",
+      "note": null,
+      "sha256": "47b61c627e95f6ae942ea6361e86648c87770b11ef3a57b759fa7b57d9818e6c"
+    },
+    {
+      "path": "app/(tabs)/coach-athlete/[athleteId]/context.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Relationship and missing profile values",
+      "sha256": "47cbb7739f0b4e25bde85929cdab93c03f6fe5f4607edc59ae803bdb083b3c4c"
+    },
+    {
+      "path": "app/(tabs)/coach-athlete/[athleteId]/evidence/index.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Scoped Evidence room directory and Journey/Variants/Archive",
+      "sha256": "5aaf826e3f01cc332889c88db2a79b6637b69c421c0db4b651bea94d4f3a56b2"
+    },
+    {
+      "path": "app/(tabs)/coach-athlete/[athleteId]/index.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Brief for athlete68",
+      "sha256": "baf00a3ba4b8250a06e383cc8bcdee43736b0faebf9e0994a163de3d7e5a84ad"
+    },
+    {
+      "path": "app/(tabs)/coach-athlete/[athleteId]/messages/index.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "ef4d601a19ae3d6acea14ab0d633c9802caba258063d87f50784c4295ebd4dc8"
+    },
+    {
+      "path": "app/(tabs)/coach-athlete/[athleteId]/notes.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Private notes empty state",
+      "sha256": "3341358e21346cd54dbf6df7a3b4063a09b97bde1b7892aec601d5615f7737f3"
+    },
+    {
+      "path": "app/(tabs)/coach-athlete/[athleteId]/performance/index.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "90-day single-observation performance; incomplete lift coverage explicit",
+      "sha256": "cdadb5371d46ccd286f609153e87d3cfc7db772747d820536805224ba02aeec9"
+    },
+    {
+      "path": "app/(tabs)/coach-athlete/[athleteId]/reviews/index.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Pending review and toolkit",
+      "sha256": "cb24e1ad06653b28fd8ad4d8f60992ed0aa30c256bac66f2f990188573287280"
+    },
+    {
+      "path": "app/(tabs)/coach-athlete/[athleteId]/training/create-program.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "24717747a482b9785889841b4331ca1882207438c55e9e9d40d19fcf102b690a"
+    },
+    {
+      "path": "app/(tabs)/coach-athlete/[athleteId]/training/index.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Scoped Programming for athlete68",
+      "sha256": "efb7b7f26cc475b934f4e18b2ccaf5f3e5f7453d5bc71ceb7532414572e0d79e"
+    },
+    {
+      "path": "app/(tabs)/coach-attention/[athleteId].tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "1cf7dbf0c188ad1d9ebc6dac4bd315648b48a332d20891f19fb3f2c63b6181ec"
+    },
+    {
+      "path": "app/(tabs)/coach-calendar.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Month, agenda, counts",
+      "sha256": "8a7e3cc124dc750de1b912095bb033d74cd84d167bd365a8f0a021a1f1bf3cac"
+    },
+    {
+      "path": "app/(tabs)/coach-dashboard.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Coach attention queue, athlete cards and upcoming",
+      "sha256": "c3eb23136fa992662d52fd0afccaa1f6f116150a8e0946ee04b0390931b8fbf8"
+    },
+    {
+      "path": "app/(tabs)/coach-invite-athlete.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "6d977ab2f2b8258176377ec47e04dd87ee149a4d7fc5ae8a4d8782456a87d18a"
+    },
+    {
+      "path": "app/(tabs)/coach-kpi/[kind].tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "196e04d2c5a33f6d218e849d63d377a878f2b0ab8511a15ae41fe1dda11db206"
+    },
+    {
+      "path": "app/(tabs)/coach-more.tsx",
+      "kind": "bridge",
+      "coverage": "source routing inventoried; target surface observed, direct bridge not separately traversed",
+      "note": null,
+      "sha256": "4dfdc369cd14a6856e4bf9610b1d642750c5a945ae7f47a938afd837e3ff39d9"
+    },
+    {
+      "path": "app/(tabs)/coach-review-history.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "d74fd03fe43a502362db2e5586847a40fa4a9bb2a0144e9af5f7bbff7dd36b0c"
+    },
+    {
+      "path": "app/(tabs)/coach-review-queue.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Video-filter all-caught-up state and queue",
+      "sha256": "a329409aeffbcb9333634a6fba17fffe9e374475257bf0129c57d7aa9b99f38a"
+    },
+    {
+      "path": "app/(tabs)/coach-reviews.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "2feca009605a04aa2d273ebb959c1edbb45939acc78ac7c997b42c5e4621df67"
+    },
+    {
+      "path": "app/(tabs)/coach-roster.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "7df8f2b778a3988bcf14a2c8fc1e46fa68516748d4de7706b6b6d6f5993a5356"
+    },
+    {
+      "path": "app/(tabs)/coach-session-review.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Canonical completed Coach review surface, no submission; route address not independently captured",
+      "sha256": "4faaeeead9e4d2364e434f33c7a26efaa0cf83296318500641d64e2494831b8a"
+    },
+    {
+      "path": "app/(tabs)/coach-video-archive.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "0770f8afbacd5dc812935d85b4487678b0e0890413b9a9b0099c504ef707576e"
+    },
+    {
+      "path": "app/(tabs)/coach-video-review.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "c2b6f3ba83442458090a5d62d22cff79be66bd74d4997055b779a7b3e796ff64"
+    },
+    {
+      "path": "app/(tabs)/coach-videos.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Review Hub, counts and first-visit marker",
+      "sha256": "6e9b954c516e8c608911409d70f002f74dda4f8a18040fad674ddd6deb21a606"
+    },
+    {
+      "path": "app/(tabs)/create-workout.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "34411075c34c515030195ba5efc944854657b844104a3d9bd14e8904d35c29b2"
+    },
+    {
+      "path": "app/(tabs)/dev-mocks/anatomy-system.tsx",
+      "kind": "developer",
+      "coverage": "excluded from production surface sweep; source inventory only",
+      "note": null,
+      "sha256": "ea11a1f46b2ae50fbe4903e63b993167bc65783bec5659b3600719126cbba47e"
+    },
+    {
+      "path": "app/(tabs)/dev-mocks/movement-art-hero.tsx",
+      "kind": "developer",
+      "coverage": "excluded from production surface sweep; source inventory only",
+      "note": null,
+      "sha256": "4cd30d5374c4c8f34b59e8404cadbacedd665e93bf8d11cc0ca7e401e6702139"
+    },
+    {
+      "path": "app/(tabs)/dev-mocks/text-layout.tsx",
+      "kind": "developer",
+      "coverage": "excluded from production surface sweep; source inventory only",
+      "note": null,
+      "sha256": "a24a853079d8c65506cc434ac87084d05fb83fe91c841039f76ace4724257993"
+    },
+    {
+      "path": "app/(tabs)/ledger/_layout.tsx",
+      "kind": "layout",
+      "coverage": "shared navigation exercised; no standalone screen",
+      "note": null,
+      "sha256": "d36d3ad79db13a037c6c8c171de9e921df6fc5ee00883cd74b6ac40a5a6c0e97"
+    },
+    {
+      "path": "app/(tabs)/ledger/accessories.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Front muscle figure and Biceps detail; surface shared with muscle routes",
+      "sha256": "48c8c5b00003118eb7e6b7f89e253d816819e5115b6b2cf02d4a509ada4eac06"
+    },
+    {
+      "path": "app/(tabs)/ledger/achievements.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Core/total/volume overview and volume landmarks",
+      "sha256": "8ee377e4b8c18da5bbdc754b21e0ec20cac61623ed1ff688f2212b45e9bd7574"
+    },
+    {
+      "path": "app/(tabs)/ledger/archive.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Coach-authorized Archive, latest actual completed Session and album cards",
+      "sha256": "5d9e0988ff38e373ca8d0e43e08bbb52ed3bfd1e246da6747d36ea2ef9ac3b7f"
+    },
+    {
+      "path": "app/(tabs)/ledger/archive/[itemType]/[sourceId].tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "d314fd983435f100a87d7e8e61523c343cb056532f4fdf1c0ab7e203a7b62d53"
+    },
+    {
+      "path": "app/(tabs)/ledger/dev-strength-tier-certification.tsx",
+      "kind": "developer",
+      "coverage": "excluded from production surface sweep; source inventory only",
+      "note": null,
+      "sha256": "2a814ef0307956562c227823e26f85abec12176c43cb3c75358a1c3e54e0ae53"
+    },
+    {
+      "path": "app/(tabs)/ledger/filters.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "66996662af1a79d26aa64341f4d5cefe056453e506fdbf9a71ed3b056b3211f7"
+    },
+    {
+      "path": "app/(tabs)/ledger/home.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Self-Coach and Athlete Ledger home",
+      "sha256": "0d3128d2e20d6293dac41f06c94d2f73e93b9f7f979b583f106d40f97fe73ac4"
+    },
+    {
+      "path": "app/(tabs)/ledger/index.tsx",
+      "kind": "bridge",
+      "coverage": "source routing inventoried; target surface observed, direct bridge not separately traversed",
+      "note": null,
+      "sha256": "52d19af3265bcd3240433b616d1fe9243ac38ade3416eb0588f26f6f1c9fa2b1"
+    },
+    {
+      "path": "app/(tabs)/ledger/journey.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Coach-authorized athlete Journey",
+      "sha256": "a4870ccd28d1b2bd4125811559e1533af8d4310f717a907d8e3e795b81ad7e0e"
+    },
+    {
+      "path": "app/(tabs)/ledger/movement/[movementId].tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "443ae61273b521c5c6f1d254218bb9ba4c24c814609524df3787d63340a8022d"
+    },
+    {
+      "path": "app/(tabs)/ledger/muscle-groups.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "96b642c0274d854dfcf6f351f03f3449b71c847502d1e6bfe74ec1f871a20f5a"
+    },
+    {
+      "path": "app/(tabs)/ledger/muscle-groups/[region].tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Biceps muscle detail surface",
+      "sha256": "15edd3e3668486e98babc057490b842f7ca5f076351fa0a322a74fcc45af4711"
+    },
+    {
+      "path": "app/(tabs)/ledger/strength.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Overview, Bench progression, evidence/standards tabs",
+      "sha256": "93b1ae4d0707819a1305777af266a7d9b171a9ab0eae5069a714614d57a96c63"
+    },
+    {
+      "path": "app/(tabs)/ledger/variant-family/[family].tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "d16e5e0cef9ed3a97fa237c741fd2a7c9a61bec83256acb31f34a7184755ffce"
+    },
+    {
+      "path": "app/(tabs)/ledger/variant/[variantId].tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "bd7d25769baefb830f1b3b6bf5ba12799d9bda6f077fb0271b15382adf9b8d09"
+    },
+    {
+      "path": "app/(tabs)/ledger/variants.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Coach-authorized empty current rotation and family cards",
+      "sha256": "2c6ad2f37b1d656c49235e61f4ea09dd0c0b43aa70dc011d40dde2321c5de7d2"
+    },
+    {
+      "path": "app/(tabs)/link-coach.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "5a14fdc09ff83057a8b1170ee2ac0657d7dccfffddf1ec032dea3538acc9e6b6"
+    },
+    {
+      "path": "app/(tabs)/messages/[threadId].tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Coach empty athlete thread and composer; no send",
+      "sha256": "6bb949e45813a0278560ec1607d9d921fca71f0b00f9be43ad96b37fe0d28627"
+    },
+    {
+      "path": "app/(tabs)/messages/announcements.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "4f87bb92ec0b16e2566df7b7db90434049d23a6bc18b896ba259a155c93e33cb"
+    },
+    {
+      "path": "app/(tabs)/messages/index.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Coach inbox, zero unread and announcements count",
+      "sha256": "1682752d4f61955bb921cb8ed55a72bcfe729ca564dc81abddc007f4ba24ce8b"
+    },
+    {
+      "path": "app/(tabs)/reflection.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "bfc60f01dda537a8cc685f9d42865d8f33c8e7de9fd1e79fedd63aa4fd36e501"
+    },
+    {
+      "path": "app/(tabs)/session-surveys.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "2b7d75092dcd3c50849998df2a359238b44586e3a21dcfcb7ba22dbed7efddc8"
+    },
+    {
+      "path": "app/(tabs)/settings.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "All three role accounts, guidance replay, logout",
+      "sha256": "aedffcbb536f1a4d34e7b57e33c3f2635d5c4954314ce6adccdb30adf439f14b"
+    },
+    {
+      "path": "app/(tabs)/training-focus.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "b963c9fdca23bbdd010b5ed30c5d82da41ab7d9e3aa18fa14c858678dd14c3be"
+    },
+    {
+      "path": "app/(tabs)/video-archive.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "5037059db00f5e47e3aad72a42998d83930e2c7cf4c1bc5f3fa23fea4ebec6bc"
+    },
+    {
+      "path": "app/(tabs)/workout/[workoutId].tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Actual Active Logger and completed recap; machine prescription/Set mutations; Athlete zero load",
+      "sha256": "e3b361fb24ee920370850428ecde6a103674372f8a7e1441c29c9d10cce958b3"
+    },
+    {
+      "path": "app/(tabs)/workout/block-details.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "5e694c30297fa9aee51b79f1584f0e407620c2470277fd87e429349698bca7c3"
+    },
+    {
+      "path": "app/(tabs)/workout/create-program.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "76b2a7ff08ea58a6a9690808f1c1ded42bd99b23001e6b2c903f72ccc23489aa"
+    },
+    {
+      "path": "app/(tabs)/workout/index.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Self-Coach/Coach Programming; Athlete Training Hub",
+      "sha256": "56f91b81aa3f404d8e4cb7a8e574b45823486ad15ba1648fd45247c619d3fb83"
+    },
+    {
+      "path": "app/(tabs)/workout/movement-history.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "9ffe2eec0a7e7748f0785d1c221a896aff6be2e590b4d60ac842189abe21e8e1"
+    },
+    {
+      "path": "app/(tabs)/workout/program-timeline.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Athlete Program map and draft-state finding",
+      "sha256": "70357520bcd2d8c548c82174ff80b508ba711194c0689369d30f4671010262d5"
+    },
+    {
+      "path": "app/(tabs)/workout/session-history.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "fc1d68794e7c9af8033acceddcb68607433254295f99b96403065aade9b2f9b3"
+    },
+    {
+      "path": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Self-Coach saved draft composition, picker and preview",
+      "sha256": "5441b63160c4d38912f66f665d37005a317debaffbac23d95f09ca0c57b69035"
+    },
+    {
+      "path": "app/(tabs)/workouts.tsx",
+      "kind": "bridge",
+      "coverage": "source routing inventoried; target surface observed, direct bridge not separately traversed",
+      "note": null,
+      "sha256": "4d1ac5fd199615b152997dad2409362bd53b2a0413f006853e15c8585aa0fe56"
+    },
+    {
+      "path": "app/_layout.tsx",
+      "kind": "layout",
+      "coverage": "shared navigation exercised; no standalone screen",
+      "note": null,
+      "sha256": "b50461be74491168a7a7826822b8df871032f7dc913f1526e01a296856ba4af2"
+    },
+    {
+      "path": "app/coach-athlete-analytics/[athleteId].tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "173617b54b166bfc13db87340efea8e6993582783947f7a79af1dfd3fd1fc720"
+    },
+    {
+      "path": "app/coach-team-brief.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Snapshot and limited-history/empty trend context",
+      "sha256": "4e64198056d9c002af893ba1594a50f64810a50200010c9e6545e3f95ec21ca0"
+    },
+    {
+      "path": "app/coach-team-methodology.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "a9923907c111e33db4c489a0cd8037c836439fb4abff08809497309250d384e2"
+    },
+    {
+      "path": "app/coach-team-outliers.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "2f809f4515d5686b339c66aae3b15e7a7104acdd884e19e19158c55f30435308"
+    },
+    {
+      "path": "app/dev-session-recap-certification.tsx",
+      "kind": "developer",
+      "coverage": "excluded from production surface sweep; source inventory only",
+      "note": null,
+      "sha256": "b02af0d3b44930aa8ef3d7c9a3722391db962c33471324b54c3eef200c5b920e"
+    },
+    {
+      "path": "app/dev-strength-tier-certification.tsx",
+      "kind": "developer",
+      "coverage": "excluded from production surface sweep; source inventory only",
+      "note": null,
+      "sha256": "a1f864a925d0dcbabd8ff47482fcfc6039bb96bdbecd79a589eeb7f9b9cb806d"
+    },
+    {
+      "path": "app/index.tsx",
+      "kind": "entry",
+      "coverage": "actual login/home transitions exercised; all access states not certified",
+      "note": null,
+      "sha256": "a2087c96483df7fd583781412f6a04c8aba41824969cd0983451d5de3d02ec15"
+    },
+    {
+      "path": "app/login.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Existing QA email sign-in and role transitions",
+      "sha256": "c0429b56b2cacd08a047d3b9a77396b560c238d6513b72d899c64080500d4f28"
+    },
+    {
+      "path": "app/modal.tsx",
+      "kind": "unlinked-template",
+      "coverage": "source inventory; starter modal has no observed normal navigation entry",
+      "note": null,
+      "sha256": "57b935a97243e8b68804e1f21cc0cd0e3156084f6aff61dbb1cd7495c89f4ee2"
+    },
+    {
+      "path": "app/movement-history-sheet.tsx",
+      "kind": "product",
+      "coverage": "actual surface observed on canonical iPhone Air; only states in note are claimed",
+      "note": "Actual Movement History modal; completed Curl history",
+      "sha256": "e6679bd660fc07439aff83137248713ab3aefa03772a700456560e834ff66c67"
+    },
+    {
+      "path": "app/verify-email.tsx",
+      "kind": "product",
+      "coverage": "not opened in this sweep; source inventoried, no fresh visual PASS claimed",
+      "note": null,
+      "sha256": "f0464882cb5edc123783a99507ee3391f053a04225ee919bfc300d465bd7339b"
+    }
+  ]
+}

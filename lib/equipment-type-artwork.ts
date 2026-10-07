@@ -10,7 +10,7 @@ export type EquipmentTypeArtwork = Readonly<{
 // Category illustrations only. Equipment identity, manufacturer, model and
 // comparability continue to be owned by the existing equipment flow.
 // The validated category pair is enabled for DEV and the governed TestFlight OTA only.
-export const EQUIPMENT_TYPE_ARTWORK: Readonly<Record<MachineEquipmentType, EquipmentTypeArtwork>> | null = (__DEV__ || process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight') ? {
+export const EQUIPMENT_TYPE_ARTWORK: Readonly<Record<MachineEquipmentType, EquipmentTypeArtwork>> | null = (__DEV__ || process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight' || (process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'production3' && process.env.EXPO_PUBLIC_ART_RUNTIME_VERSION === '3.0.0')) ? {
   plate_loaded: {
     source: require('@/assets/images/equipment-types/v1/plate-loaded.png'),
     description: 'Plates on loading horns',
@@ -25,7 +25,7 @@ export const EQUIPMENT_TYPE_ARTWORK: Readonly<Record<MachineEquipmentType, Equip
 
 // The exact plate-loaded cable image was approved by the owner for TestFlight.
 // Production remains on its separate, unchanged art channel.
-export const CABLE_EQUIPMENT_TYPE_ARTWORK: Readonly<Record<MachineEquipmentType, EquipmentTypeArtwork>> | null = (__DEV__ || process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight') ? {
+export const CABLE_EQUIPMENT_TYPE_ARTWORK: Readonly<Record<MachineEquipmentType, EquipmentTypeArtwork>> | null = (__DEV__ || process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight' || (process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'production3' && process.env.EXPO_PUBLIC_ART_RUNTIME_VERSION === '3.0.0')) ? {
   plate_loaded: {
     source: require('@/assets/images/equipment-types/cable-review/plate-loaded-cable-station-candidate-v1.png'),
     description: 'Plate-loaded cable station',

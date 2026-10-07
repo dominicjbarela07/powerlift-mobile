@@ -1,0 +1,13 @@
+{
+  "session_id": 1815,
+  "api_status": "draft",
+  "api_raw_status": "draft",
+  "api_loggable": false,
+  "api_timeliness": "missed",
+  "actualTrainingHubLabel": "Not Started",
+  "actualProgramMapLabel": "Missed",
+  "actualPreview": "Begin Session disabled; no visible draft explanation",
+  "date": "2026-10-04",
+  "subject": "isolated local QA athlete68",
+  "finding": "Draft state lost by Training label and date-based Program map projection; not evidence of successful draft start"
+}

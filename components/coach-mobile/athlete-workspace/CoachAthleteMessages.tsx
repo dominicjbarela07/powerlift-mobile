@@ -62,7 +62,7 @@ export function CoachAthleteMessages() {
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   intro: { paddingHorizontal: SLLayout.screenGutter, paddingTop: 16, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: COACH_V2.border },
-  kicker: { color: COACH_V2.violetBright, fontSize: 11, letterSpacing: 1.5 },
+  kicker: { color: COACH_V2.violetBright, fontSize: 12, letterSpacing: 1.5 },
   title: { color: COACH_V2.text, fontFamily: SLFontFamilies.display, fontSize: 32, marginTop: 5 },
   state: { alignItems: 'center', flex: 1, justifyContent: 'center', padding: SLLayout.screenGutter },
   stateTitle: { color: COACH_V2.text, fontSize: 20, fontWeight: '800', marginTop: 15, textAlign: 'center' },

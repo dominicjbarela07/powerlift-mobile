@@ -1,0 +1,11 @@
+Owner current complete request:
+Fix them all, please. Fix them all. Don't assume that you will have the computer open because I'm going to step away so it will lock on its own. Fix them all and then we'll leave it at that for now, please.
+
+Established owner Education instruction:
+ok well add the education to the canonical shit
+
+Established equipment row instructions:
+I don't know if you noticed, but when before a machine accessory, just give me, like, a select button within that area too. Because it's already there saying no equipment selected. You need to select an equipment. Put that there. Remember, if we opt out of it, it disappears. So run those due diligent checks. Just do that in Dev first, let me have a look.
+We're overdoing it on text. The manufacturer plus type key history comparable, that doesn't need to fucking be there. We don't really need a fucking image saying unknown manufacturer. Clean it up a little bit.
+
+Scope is canonical DEV corrections and release protection preparation. No Production/TestFlight publication or asset approval is granted.

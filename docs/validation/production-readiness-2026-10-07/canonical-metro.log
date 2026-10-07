@@ -1,0 +1,12 @@
+file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/canonical-dev-metro-lineage.mjs:52
+    throw new Error(`CANONICAL DEV SOURCE CHECK FAILED — ${failures.join('; ')}`);
+          ^
+
+Error: CANONICAL DEV SOURCE CHECK FAILED — HEAD 293c5b0a081db06c677bd259f442509fc7f7cc91 does not equal origin/dev/canonical-mobile 44ad12952ea9831f60465d0295a5ffde8d3ae646
+    at assertCanonicalSource (file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/canonical-dev-metro-lineage.mjs:52:11)
+    at assertCanonicalMetroSnapshot (file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/canonical-dev-metro-lineage.mjs:78:3)
+    at certifyCanonicalDevMetro (file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/canonical-dev-metro-lineage.mjs:124:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/certify-canonical-dev-metro.mjs:13:18
+
+Node.js v25.2.1

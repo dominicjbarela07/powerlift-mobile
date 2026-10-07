@@ -49,6 +49,16 @@ precise green/violet state signals. Preserve art and all canonical mutations.
 The October 5 Option E task explicitly requires actual simulator convergence
 and a second screenshot pass; its publication scope cannot cover other changes.
 
+## Canonical Mobile 3.0 Education
+
+Read `docs/MOBILE_3_EDUCATION_CANONICAL_2026-10-06.md` when changing Education.
+The role-aware provider, lessons, replay controls and contextual tips now live
+in canonical DEV. Keep completion and learned-state scoped to the canonical
+user ID; AuthContext continues to own readiness, access and mobile mode.
+Retain the automatically discovered Education policy and actual-provider
+navigation contracts, including deliberate exit-loop failure testing. Verify
+permitted consumer actions retire their tips without changing mutation guards.
+
 ## Complete-request delivery
 
 Read the canonical constitution's **Complete-request Delivery Law** before work.
@@ -60,3 +70,33 @@ verified live source/artifact and actual device observations in closeout.
 Respect explicit no-simulator instructions. Shared-backend pushes require the
 source-pinned canonical owner-policy acceptance guard, outside candidate tests.
 Never refresh protection pins merely to pass a candidate.
+
+## Mobile 3 readiness and release evidence
+
+Read `docs/release/MOBILE_3_READINESS_FIXES_2026-10-06.md` for the readiness fixes
+and the remaining human-art/native certification gaps. Explicit Draft, Canceled
+and Archived states outrank date projections; clients never grant execution
+access. Keep the unavailable-Session projection failure contract.
+
+Canonical DEV owns current source-delta receipts. A release must retain the
+original protected files and prove every owner-directed DEV addition with its
+exact before/after patch; filename exemptions and refreshed hashes are invalid.
+Keep the existing Cable backend/catalog holdback until separately reconciled.
+Run the accepted and critical suites, including their deliberate subtraction,
+hidden-source-change and visual-value/root-drift failures.
+
+`production3-preparation` is a separate 3.0.0 native preparation target. Its
+approved-art channel AND runtime switches must agree in the resolver and inline
+asset registries. Audit actual exported bytes independently on each platform;
+source approval alone cannot prove bundling. Preserve Production 2.0.2 and human
+image/crop approvals. This profile grants no build, publish or submit authority.
+
+## Native simulator candidate handoff
+
+When the owner explicitly requests a native simulator candidate, read
+`docs/release/SIMULATOR_LIVE_BACKEND_HANDOFF_2026-10-07.md` and run
+`scripts/verify-ios-simulator-handoff.py` against the installed app and fresh
+native runtime receipt before handoff. Verify embedded keychain permissions,
+actual installed candidate bundle and actual native live-backend request; a Metro
+manifest or visible login screen alone is insufficient. Leave owner takeover at
+the requested screen. This is separate from store/device release certification.

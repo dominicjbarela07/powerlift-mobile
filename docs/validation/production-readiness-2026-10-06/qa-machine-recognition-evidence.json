@@ -1,0 +1,53 @@
+[
+  {
+    "set_id": 20552,
+    "item_id": 18270,
+    "reps": 12,
+    "weight_kg": 9.071847400000001,
+    "eligible": true,
+    "comparison_key": [
+      178,
+      641
+    ],
+    "events": []
+  },
+  {
+    "set_id": 20553,
+    "item_id": 18270,
+    "reps": 12,
+    "weight_kg": 10.205828325,
+    "eligible": true,
+    "comparison_key": [
+      178,
+      641
+    ],
+    "events": [
+      {
+        "id": 1273,
+        "type": "ACCESSORY_REP_MAX_PR",
+        "current": 10.205828325,
+        "prior": 9.071847400000001,
+        "validity": "valid",
+        "evidence": {
+          "actual_reps": 12,
+          "actual_weight_kg": 10.205828325,
+          "comparison_scope": "exact_implementation",
+          "equipment_configuration_identity_id": 641,
+          "equipment_label": "Other \u00b7 Selectorized",
+          "equipment_manufacturer": "Other",
+          "equipment_type": "selectorized_machine",
+          "metric": "rep_max",
+          "movement_definition_id": 178,
+          "pr_comparison_scope": "canonical_movement_exact_equipment",
+          "pr_equipment_configuration_identity_id": 641,
+          "prior_source_set_log_id": 20552,
+          "prior_weight_kg": 9.071847400000001,
+          "prior_workout_date": "2026-10-06",
+          "prior_workout_id": 1849,
+          "rep_count": 12,
+          "rep_max_policy": "accessory-exact-reps-equipment-isolated-v3"
+        }
+      }
+    ]
+  }
+]

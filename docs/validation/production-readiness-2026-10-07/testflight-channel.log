@@ -1,0 +1,12 @@
+★ eas-cli@24.11.0 is now available.
+To upgrade, run:
+npm install -g eas-cli
+Proceeding with outdated version.
+
+
+Channel:
+Name    testflight
+ID      019fdf64-842f-7ec7-a3a4-95e1be8aff1e
+Status  Active
+
+Branches pointed at this channel and their most recent update group:

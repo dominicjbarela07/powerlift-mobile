@@ -11,7 +11,7 @@ import { Text } from '@/components/ui/sl-text';
 import { fetchJson } from '@/lib/api';
 import type { CoachTeamBriefResponse } from '@/lib/coach-mobile';
 
-const TITLES: Record<string, string> = { max_progression: 'Max Progression', dots_progression: 'Estimated DOTS Progression', adherence: 'Adherence', pr_rate: 'PR Rate', normal_band: 'Normal Range', strength_score: 'Strength Score' };
+const TITLES: Record<string, string> = { max_progression: 'Max Progression', dots_progression: 'Estimated DOTS', adherence: 'Adherence', pr_rate: 'PR Rate', normal_band: 'Normal Range', strength_score: 'Strength Score' };
 
 export default function CoachTeamMethodologyScreen() {
   const router = useRouter();

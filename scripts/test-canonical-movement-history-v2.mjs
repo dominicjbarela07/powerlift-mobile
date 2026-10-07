@@ -119,12 +119,12 @@ assert.match(screen, /EQUIPMENT BREAKDOWN[\s\S]*PERFORMANCE TREND[\s\S]*LOAD PRO
 assert.match(screen, /fetchCanonicalMovementExposure\(query, exposureId\)/);
 assert.match(screen, /StrengthLedgerBottomSheet[\s\S]*Exposure Details/);
 assert.match(screen, /All History/);
-assert.match(screen, /Every resolved exposure/);
-assert.match(screen, /No canonical exposures in this filter\./);
+assert.match(screen, /Every saved Session/);
+assert.match(screen, /No Sessions in this filter\./);
 assert.match(screen, /Equipment was not recorded/);
 assert.match(screen, /recorded_unknown_equipment/);
-assert.match(screen, /Unknown exposure/);
-assert.match(screen, /never mixed with named equipment/);
+assert.match(screen, /Equipment wasn’t recorded/);
+assert.match(screen, /kept separate from named equipment/);
 assert.match(screen, /function compactSetLoad/);
 assert.match(screen, /function compactSetEffort/);
 assert.match(screen, /function compactEquipmentLabel/);

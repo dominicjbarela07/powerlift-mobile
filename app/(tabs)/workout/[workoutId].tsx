@@ -15,9 +15,11 @@ import { CompletedSessionCorrection } from '@/components/workout-logger/complete
 import { SessionSetEntryContext } from '@/components/workout-logger/session-set-entry-context';
 import { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator } from '@/components/workout-logger/session-v3-shell';
 import { EquipmentHistoryEvidence } from '@/components/workout-logger/equipment-history-evidence';
+import { EducationInlineHint, useEducationHint, useMobileEducation } from '@/context/MobileEducationContext';
 import { SessionHistoryPeek } from '@/components/workout-logger/session-history-peek';
 import { invalidateEvidenceReads } from '@/lib/evidence-read-cache';
 import { sessionExecutionCapabilities } from '@/lib/session-logger-lifecycle';
+import { sessionUnavailableExplanation } from '@/lib/session-availability';
 import { registerFocusedSession } from '@/lib/session-logger-focus';
 import { scheduleRestTimerEnd } from '@/lib/rest-timer-notification-scheduling';
 import { shouldOfferRestAfterAcceptedSet } from '@/lib/set-rest-handoff';
@@ -1669,6 +1671,7 @@ function completedSetSummary(logs: SetLog[], totalSets: number, unit: 'kg' | 'lb
 
 export default function WorkoutViewerScreen() {
   const { user } = useAuth(); // we only need session + role to decide logging availability
+  const education = useMobileEducation();
   const {
     workoutId,
     loggerScenario,
@@ -3090,6 +3093,7 @@ export default function WorkoutViewerScreen() {
       acceptedPersistedSetLogForItem: acceptedSetEvidenceItemIds.has(Number(it.id)),
     });
     if (!swapAction) return;
+    education.markLearned('active-session-edit');
     setSwapError(null);
     setSwapAccItem(it);
     // The programmed/effective identity is context, never a selectable
@@ -4080,6 +4084,7 @@ export default function WorkoutViewerScreen() {
     variant: MachineEquipmentType,
   ) => {
     if (!identityPickerManufacturer) return;
+    if (presentEquipmentHistory(identityPickerManufacturer, unit, false, variant).performance) education.markLearned('equipment-history');
     if (isIdealWorkoutDetailPreview) {
       const identity = workoutDetailMachineVariantIdentity(
         identityPickerManufacturer,
@@ -7399,6 +7404,15 @@ export default function WorkoutViewerScreen() {
     mode: loggerShellMode,
     hasCompletedRecap: Boolean(data?.workout?.completed_recap),
   });
+  const showActiveEditHint = useEducationHint('active-session-edit', Boolean(
+    data && data.workout.status === 'in_progress'
+    && canEditActiveComposition(data.permissions?.can_edit_composition, data.permissions?.is_self_coached, data.workout.status, coachPreviewRequested)
+    && !compositionMode && !coreWheel && !accessoryWheel,
+  ));
+  const showEquipmentHistoryHint = useEducationHint('equipment-history', Boolean(
+    identityPickerItem && identityPickerManufacturer && askForEquipmentDetails
+    && presentEquipmentHistory(identityPickerManufacturer, unit, false).performance,
+  ));
 
   if (loading && !data) {
     return (
@@ -7453,6 +7467,13 @@ export default function WorkoutViewerScreen() {
   const canLog = canLogFromServer && workout.status === 'in_progress';
   const canManageSetVideo = canLogFromServer && !isCoachView;
   const canBegin = executionCapabilities.canBegin;
+  const unavailableExplanation = sessionUnavailableExplanation({
+    status: workout.raw_status || workout.status,
+    blockReason: workout.block_reason,
+    loggable: workout.loggable,
+    canBegin,
+    selfCoached: isIndividualUser,
+  });
   const canCompleteOrCancel =
     canLogFromServer &&
     (workout.status === 'in_progress' || workout.status === 'completed');
@@ -8418,12 +8439,14 @@ export default function WorkoutViewerScreen() {
     data.permissions?.is_self_coached, workout.status, isCoachAthletePreview || coachPreviewRequested);
   const openComposition = (mode: 'add' | 'remove') => {
     if (!canEditComposition || canonicalSetSubmissionControllerRef.current.isInFlight()) return;
+    education.markLearned('active-session-edit');
     setCompositionMode(mode);
   };
   const canEditPrescription = canEditActivePrescription(data.permissions?.can_edit_prescription,
     data.permissions?.is_self_coached, workout.status, isCoachAthletePreview || coachPreviewRequested);
   const openPrescription = (itemId: number) => {
     if (!canEditPrescription || canonicalSetSubmissionControllerRef.current.isInFlight()) return;
+    education.markLearned('active-session-edit');
     setPrescriptionItemId(itemId);
   };
 
@@ -8780,7 +8803,7 @@ export default function WorkoutViewerScreen() {
         logged={loggedSets} total={plannedSets} startedAt={workout.started_at}
         onBack={() => { if (isPreSession && focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else handleBackToTrainingHub(); }}
         onActions={() => canLog ? setSessionActionsVisible(true) : Alert.alert('Session actions', undefined, [
-          ...(isCoachAthletePreview ? [{ text: 'Return to Coach Editor', onPress: handleReturnToCoachEditor }] : [
+          ...(isCoachAthletePreview ? [{ text: 'Return to Session Workspace', onPress: handleReturnToCoachEditor }] : [
             ...(canEdit ? [{ text: 'Edit Session', onPress: handleEditWorkout }] : []),
           ]), { text: 'Close', style: 'cancel' },
         ])} />
@@ -8827,6 +8850,7 @@ export default function WorkoutViewerScreen() {
         scrollEventThrottle={16}
         keyboardShouldPersistTaps="handled"
       >
+        {showActiveEditHint ? <EducationInlineHint feature="active-session-edit" title="Edit this Session while you train." /> : null}
         {canEditComposition && getOrderedWorkoutMovements(workout).length === 0 ? <View style={{ paddingVertical: 28, gap: 16 }}>
           <Text style={styles.accessoryInlineActionText}>No movements in this Session.</Text>
           <TouchableOpacity accessibilityRole="button" accessibilityLabel="Add Movement" onPress={() => openComposition('add')} style={styles.accessoryInlineAction}>
@@ -8835,11 +8859,17 @@ export default function WorkoutViewerScreen() {
           </TouchableOpacity>
         </View> : null}
         {isPreSession && !focusedMovementKey ? <SessionV3PlanHero
+          eyebrow={workout.status === 'draft' ? 'DRAFT SESSION' : 'YOUR SESSION'}
           title={workout.label || 'Training Session'} focus={focusLine} planned={plannedSets}
           movements={coreMovementCount + accessoryMovementOrder.length}
           artwork={canonicalArtworkInputForLoggerItem(workout.core_items.find(item => !item.parent_item_id) || accessoryMovementOrder[0])}
           note={workout.programming_notes}
         /> : null}
+        {isPreSession && !isCoachAthletePreview && unavailableExplanation ? (
+          <View accessibilityRole="alert" style={{ paddingVertical: 16 }}>
+            <Text typographyRole="body" style={{ color: SLColors.textMuted }}>{unavailableExplanation}</Text>
+          </View>
+        ) : null}
         {isFinishedSession && workout.impact_summary?.canonically_completed ? (
           <SessionImpactPanel
             summary={workout.impact_summary}
@@ -10259,6 +10289,7 @@ export default function WorkoutViewerScreen() {
                           || 'Other'}
                       </Text>
                     </View>
+                    {showEquipmentHistoryHint ? <EducationInlineHint feature="equipment-history" title="See prior performance for this equipment." /> : null}
                     {identityPickerContinuation.kind !== 'evidence_correction' ? <TouchableOpacity
                       accessibilityRole="button" accessibilityLabel="Skip equipment details"
                       disabled={identityPickerLoading}

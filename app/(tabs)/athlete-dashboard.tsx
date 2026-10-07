@@ -230,7 +230,6 @@ function normalizeTodayPayload(payload: TodayPayload): TodayPayload {
   };
 }
 
-const PATCH_NOTE_VERSION = 'strength_ledger_mobile_2_0_athlete_tour_seen';
 const INDIVIDUAL_TODAY_WELCOME_VERSION = 'strength_ledger_individual_today_welcome_seen_v1';
 const TODAY_CACHE_VERSION = 'strength_ledger.today.cache.v2';
 const REST_DAY_IMAGE = require('@/assets/images/chair.png');
@@ -266,7 +265,6 @@ export default function AthleteDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [creatingTodaySession, setCreatingTodaySession] = useState(false);
   const creatingTodaySessionRef = useRef(false);
-  const [showPatchNote, setShowPatchNote] = useState(false);
   const [showIndividualWelcome, setShowIndividualWelcome] = useState(false);
   const [dailyReadinessVisible, setDailyReadinessVisible] = useState(false);
   const [dailyReadinessSubmitting, setDailyReadinessSubmitting] = useState(false);
@@ -302,34 +300,6 @@ export default function AthleteDashboard() {
       mounted = false;
     };
   }, [todayCacheKey]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const checkPatchNote = async () => {
-      try {
-        const seen = await AsyncStorage.getItem(PATCH_NOTE_VERSION);
-        if (!cancelled && !isIndividual && seen !== '1') setShowPatchNote(true);
-      } catch {
-        if (!cancelled && !isIndividual) setShowPatchNote(true);
-      }
-    };
-
-    checkPatchNote();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isIndividual]);
-
-  const dismissPatchNote = async () => {
-    setShowPatchNote(false);
-    try {
-      await AsyncStorage.setItem(PATCH_NOTE_VERSION, '1');
-    } catch {
-      // no-op
-    }
-  };
 
   useEffect(() => {
     let cancelled = false;
@@ -728,7 +698,6 @@ export default function AthleteDashboard() {
   return (
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <FloatingControlCoordinator context="tab-screen">
-      <PatchNoteModal dismissPatchNote={dismissPatchNote} showPatchNote={showPatchNote && !isIndividual} />
       <IndividualTodayWelcomeModal
         onGoToProgramming={goToProgrammingFromWelcome}
         onNotNow={dismissIndividualWelcome}
@@ -1282,93 +1251,6 @@ function IndividualTodayWelcomeModal({
               <Text style={styles.individualWelcomeSecondaryText}>Not now</Text>
             </Pressable>
           </View>
-        </View>
-      </View>
-    </Modal>
-  );
-}
-
-function PatchNoteModal({
-  dismissPatchNote,
-  showPatchNote,
-}: {
-  dismissPatchNote: () => void;
-  showPatchNote: boolean;
-}) {
-  const tourItems = [
-    {
-      title: 'Today',
-      purpose: 'Your starting point.',
-      bullets: ['What am I doing today?', 'Do I have a session?', 'Is there a meet coming up?', 'Do I have coach updates?'],
-    },
-    {
-      title: 'Training Hub',
-      purpose: 'Your training structure.',
-      bullets: ['See upcoming sessions', 'Understand your block', 'Navigate your training plan'],
-    },
-    {
-      title: 'Calendar',
-      purpose: 'Your training rhythm.',
-      bullets: ['Look ahead', 'Review training cadence', 'View meet timelines'],
-    },
-    {
-      title: 'Reflection',
-      purpose: 'Your coaching history.',
-      bullets: ['Review coaching focus', 'See coach feedback', 'Follow coaching notes over time'],
-    },
-    {
-      title: 'Film Room',
-      purpose: 'Your movement study space.',
-      bullets: ['Review videos', 'Study technique', 'Revisit feedback'],
-    },
-    {
-      title: 'Progression',
-      purpose: 'Your performance story.',
-      bullets: ['Track strength trends', 'Review milestones', 'See how training is working'],
-    },
-    {
-      title: 'Meet Packet',
-      purpose: 'Your competition preparation system.',
-      bullets: ['Prepare attempts', 'Review warmups', 'Organize meet-day information'],
-    },
-  ];
-
-  return (
-    <Modal visible={showPatchNote} transparent animationType="fade" onRequestClose={dismissPatchNote}>
-      <View style={styles.patchModalBackdrop}>
-        <View style={styles.patchModalCard}>
-          <View style={styles.patchModalHeader}>
-            <View style={styles.patchModalIconWrap}>
-              <Ionicons name="sparkles" size={22} color={palette.violetSoft} />
-            </View>
-            <View style={styles.patchModalHeaderCopy}>
-              <Text style={styles.patchModalTitle}>Strength Ledger Mobile 2.0</Text>
-              <Text style={styles.patchModalSubtitle}>A completely refreshed athlete experience.</Text>
-            </View>
-          </View>
-          <Text style={styles.patchModalBody}>
-            Here’s where to go depending on what you need.
-          </Text>
-          <ScrollView
-            contentContainerStyle={styles.patchModalTourContent}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-            style={styles.patchModalTour}
-          >
-            {tourItems.map((item) => (
-              <View key={item.title} style={styles.patchModalTourRow}>
-                <Text style={styles.patchModalFlowLabel}>{item.title}</Text>
-                <Text style={styles.patchModalPurpose}>{item.purpose}</Text>
-                <Text style={styles.patchModalFlowDetail}>{item.bullets.join(' / ')}</Text>
-              </View>
-            ))}
-          </ScrollView>
-          <Pressable
-            onPress={dismissPatchNote}
-            style={({ pressed }) => [styles.patchModalButton, pressed && styles.primaryActionPressed]}
-          >
-            <Text style={styles.patchModalButtonText}>Start exploring</Text>
-          </Pressable>
         </View>
       </View>
     </Modal>

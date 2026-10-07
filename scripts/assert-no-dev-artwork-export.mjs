@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { createRequire } from 'node:module';
 import { assertHumanArtworkGate, approvedExactArtworkPolicy } from './canonical-art-review-gate.mjs';
 
 /** Approval results may ship to TestFlight; candidates, masters and review UI may not.
@@ -18,6 +19,16 @@ export function assertApprovedArtworkExport(exported, { root = process.cwd(), ch
   assert.deepEqual(runtime.approved_exact_artwork, approved, 'runtime projection must match human approval');
   const app = read('app.json').expo;
   const testflight = channel === 'testflight';
+  const production3 = channel === 'production3';
+  if (production3) {
+    assert.equal(process.env.STRENGTH_LEDGER_RELEASE_TARGET, 'production3', '3.0 artwork requires the explicit native preparation target');
+    assert.equal(process.env.EXPO_PUBLIC_ART_RUNTIME_VERSION, '3.0.0', '3.0 artwork cannot target a legacy runtime');
+    const resolved = createRequire(import.meta.url)(path.join(root, 'app.config.js')).expo;
+    assert.equal(resolved.version, '3.0.0'); assert.equal(resolved.runtimeVersion, '3.0.0');
+    assert.equal(resolved.extra.releaseTrack, 'production3');
+    assert.equal(resolved.extra.publicationAuthorized, false, 'local preparation cannot grant publication');
+  }
+  const enabled = testflight || production3;
   if (testflight) {
     assert.equal(app.extra?.releaseTrack, 'testflight', 'approved artwork requires the TestFlight release projection');
     assert.match(app.version, /^2\.1\.\d+$/, 'approved artwork requires the compatible TestFlight runtime');
@@ -37,20 +48,20 @@ export function assertApprovedArtworkExport(exported, { root = process.cwd(), ch
     allKnown.add(expected);
   }
   const allowed = new Set();
-  if (testflight) for (const receipt of approved) {
+  if (enabled) for (const receipt of approved) {
     assert.ok(!runtime.denied_keys.includes(receipt.key));
     const mapping = state.canonical_assets.find(row => row.key === receipt.key && row.candidate_id === receipt.candidate_id);
     assert.ok(mapping, 'only currently approved mapped derivatives may ship');
     allowed.add(mapping.files.app.sha256);
   }
-  if (testflight) for (const row of equipment) {
+  if (enabled) for (const row of equipment) {
     const bytes = fs.readFileSync(path.join(root, row.files.app.path));
     assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), row.files.app.sha256, 'equipment category bytes must match the validated pair');
     allowed.add(row.files.app.sha256);
   }
-  if (testflight) allowed.add(cable.app_sha256);
+  if (enabled) allowed.add(cable.app_sha256);
   const seen = assertArtworkExportBytes(exported, {knownHashes: allKnown, allowedHashes: allowed});
-  return {channel:testflight?'testflight':'disabled',approved_movements:testflight?approved.length:0,approved_derivatives:testflight?seen.size-equipment.length-1:0,equipment_category_assets:testflight?equipment.length+1:0,pending_rejected_master_assets:0};
+  return {channel:enabled?channel:'disabled',approved_movements:enabled?approved.length:0,approved_derivatives:enabled?seen.size-equipment.length-1:0,equipment_category_assets:enabled?equipment.length+1:0,pending_rejected_master_assets:0};
 }
 
 export function assertArtworkExportBytes(exported, {knownHashes: allKnown, allowedHashes: allowed}) {

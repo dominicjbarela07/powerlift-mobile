@@ -26,7 +26,7 @@ export const CANONICAL_CORE_MOVEMENT_ARTWORK: Readonly<
 export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Partial<Record<
   CanonicalMovementArtworkKey,
   Readonly<{ source: ImageSourcePropType; label: string }>
->>> = (__DEV__ || process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight') ? {
+>>> = (__DEV__ || process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight' || (process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'production3' && process.env.EXPO_PUBLIC_ART_RUNTIME_VERSION === '3.0.0')) ? {
   incline_barbell_press: {
     source: require('@/assets/images/movement-artwork/free-weight-v1/incline-barbell-press-v1.png'),
     label: 'Athlete performing incline barbell press',
@@ -1982,6 +1982,10 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Partial<Record<
   sumo_deadlift: {
     source: require('@/assets/images/movement-artwork/core-variants-v1/sumo_deadlift-app.png'),
     label: 'Athlete performing Sumo Deadlift',
+  },
+  barbell_overhead_press: {
+    source: require('@/assets/images/movement-artwork/core-variants-v1/barbell_overhead_press-app.png'),
+    label: 'Athlete performing Barbell Overhead Press',
   },
   // Archive bytes remain reviewable locally and are removed from release exports.
   ...(__DEV__ ? {

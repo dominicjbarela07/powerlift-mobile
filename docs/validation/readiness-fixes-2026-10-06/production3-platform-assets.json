@@ -1,0 +1,71 @@
+{
+  "localPreparationOnly": true,
+  "nativeBinaryBuilt": false,
+  "publicationAuthorized": false,
+  "approval": {
+    "channel": "production3",
+    "approved_movements": 489,
+    "approved_derivatives": 486,
+    "equipment_category_assets": 3,
+    "pending_rejected_master_assets": 0
+  },
+  "platforms": {
+    "ios": {
+      "assetCount": 1014,
+      "uniqueAssets": 1008,
+      "approvedMovementAndEquipmentDerivatives": 489,
+      "missingApprovedAssets": 0,
+      "missingProtectedAssets": 0,
+      "iosOnlyNavigationIconDifferences": [],
+      "bundle": "_expo/static/js/ios/entry-fbf907ab7f2f2d2c3147c831a9c0ebf0.hbc",
+      "bundleSha256": "506c287667e889cceddb266492b699c3aef024d0c33921f6b64ac60691da0c46"
+    },
+    "android": {
+      "assetCount": 1014,
+      "uniqueAssets": 1009,
+      "approvedMovementAndEquipmentDerivatives": 489,
+      "missingApprovedAssets": 0,
+      "missingProtectedAssets": 0,
+      "iosOnlyNavigationIconDifferences": [
+        {
+          "path": "node_modules/@react-navigation/elements/lib/module/assets/back-icon@1x.ios.png",
+          "hash": "LN_rjlzN55dvcBL7jM5zryIpAp7iHU8VCf7RFIccbNg"
+        },
+        {
+          "path": "node_modules/@react-navigation/elements/lib/module/assets/back-icon@2x.ios.png",
+          "hash": "K3RDqaWOksoRpXW9wRWYYVpX3eMFzYznDWAmBrMCzZg"
+        },
+        {
+          "path": "node_modules/@react-navigation/elements/lib/module/assets/back-icon@3x.ios.png",
+          "hash": "Pd0Hc-0n4j0leJ8wFzGzrEVa2L5aonoKG4OPicbSciU"
+        },
+        {
+          "path": "node_modules/@react-navigation/elements/lib/module/assets/back-icon@4x.ios.png",
+          "hash": "ku2BdqyMtENipfxqNwNiagAGrGt8snLumfWFAmLsBw4"
+        },
+        {
+          "path": "node_modules/@react-navigation/elements/lib/module/assets/search-icon@1x.ios.png",
+          "hash": "3Fa5dr1FY44RJfZol0NSXmiGrgvvLI9GUZlIM2hagx8"
+        },
+        {
+          "path": "node_modules/@react-navigation/elements/lib/module/assets/search-icon@2x.ios.png",
+          "hash": "7xP8DfxS7COBdYX9fhCfvfWTo7JUnEDOcaybDtoSzCw"
+        },
+        {
+          "path": "node_modules/@react-navigation/elements/lib/module/assets/search-icon@3x.ios.png",
+          "hash": "tDSnzxjC1M50fHCULqL-4tRBLZOWftkrNy-BC7kmHqU"
+        },
+        {
+          "path": "node_modules/@react-navigation/elements/lib/module/assets/search-icon@4x.ios.png",
+          "hash": "7xP8DfxS7COBdYX9fhCfvfWTo7JUnEDOcaybDtoSzCw"
+        }
+      ],
+      "bundle": "_expo/static/js/android/entry-6eeebb32f6dc7f809df5cfad6eca32d4.hbc",
+      "bundleSha256": "e34d1930dea08daea0c2b08d7c39e97ca675803f93cf9d123f5a28ee6a751278"
+    }
+  },
+  "source": {
+    "candidateSha": "0662d2921ea2abfa3ed27ef911ddd4ae7d33b70c",
+    "productFingerprint": "fe4575b4ae7e19d74b83af6dfef65f1329d0584a8fc454d782b354ebc9fe6132"
+  }
+}

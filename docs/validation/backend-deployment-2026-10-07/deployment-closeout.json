@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "completedAt": "2026-10-07T19:55:46.838206+00:00",
+  "ownerRequest": "i want the live backend fully updated!",
+  "completeStagedBackendDeployed": true,
+  "unpublishedStagedBackendChanges": 0,
+  "productionRepo": "/Users/dominic/powerlifting_app",
+  "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+  "baselineSha": "751a1173b301cb382557c5cbda59e4fdf72633b2",
+  "push": {
+    "recordedAt": "2026-10-07T19:52:20.419869+00:00",
+    "repository": "/Users/dominic/powerlifting_app",
+    "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+    "destination": "origin refs/heads/main",
+    "force": false,
+    "hookBypassed": false,
+    "exit": 0,
+    "log": "git-push.log"
+  },
+  "live": {
+    "verifiedAt": "2026-10-07T19:53:57.842503+00:00",
+    "url": "https://app.strengthledger.fit/health/recognition?verify=d4b6a8b22549a9853db71fbbd0485c708471519f",
+    "status": 200,
+    "health": {
+      "machine_first_baseline_recognized": false,
+      "manufacturers_isolated": true,
+      "migration_revisions": [
+        "f47a92b1c8d0"
+      ],
+      "minimum_delivery_client_version": "2.1.0",
+      "other_is_separate_equipment_context": true,
+      "policy_version": "accessory-exact-reps-equipment-isolated-v3",
+      "pr_comparison_scope": "canonical_movement_exact_equipment",
+      "ready": true,
+      "schema_fingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+      "source_sha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+    },
+    "exactSourceVerified": true,
+    "schemaAndPolicyUnchanged": true
+  },
+  "preflight": {
+    "recordedAt": "2026-10-07T19:51:04.407535+00:00",
+    "candidateSha": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+    "isolation": "Exact immutable outgoing Git archive; isolated SQLite databases. No Git worktree created or owner database used. Preflight constituent checks avoid pre-existing dirty/untracked test contamination.",
+    "checks": [
+      {
+        "check": "forbidden-staged-files",
+        "exit": 0,
+        "log": "forbidden-staged-files.log",
+        "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+      },
+      {
+        "check": "billing-gates",
+        "exit": 0,
+        "log": "billing-gates.log",
+        "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+      },
+      {
+        "check": "compile",
+        "exit": 0,
+        "log": "compile.log",
+        "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+      },
+      {
+        "check": "identity-leak-hunt",
+        "exit": 0,
+        "log": "identity-leak-hunt.log",
+        "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+      },
+      {
+        "check": "constitutional-validation",
+        "exit": 0,
+        "log": "constitutional-validation.log",
+        "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+      },
+      {
+        "check": "canonical-search",
+        "exit": 0,
+        "log": "canonical-search.log",
+        "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+      }
+    ],
+    "pass": true,
+    "completeCustomerWorkflowValidated": false
+  },
+  "compatibility": {
+    "pass": true,
+    "baselineSha": "751a1173b301cb382557c5cbda59e4fdf72633b2",
+    "candidateSha": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+    "candidateTree": "ea168f85f3e3b500b53c2f4a741a999a84af284f",
+    "schemaChanged": false,
+    "modelSha256": "996e4bdb7ce98cab1a24e15814195c9dc2c38fea3aa64e2e9288547022fdc403",
+    "frozenMobileBaselineSha256": "16db350a9bff4a0694d972fdc3801ee6e8a8782605a02fcef70824ed0343a12d",
+    "frozenClients": {
+      "ios": {
+        "source": "a5d56d2205f93ab6b00b3be0ca836d4235b82a57",
+        "update": "01a05051-47f5-7b6a-b930-b59c8d6a9248",
+        "launchAssetSha256": "4c2c1543d3fff0b9dc5a405b8f42bbc284c1c5130c80153138790ddce49079c3",
+        "apiContractSourceSha256": "7748f5c1d8eafa747212414dd4b1bb8d874009a72bc59e53662d27d63cfba405"
+      },
+      "android": {
+        "source": "3d5a38a22b893f67bfed0e7ee3d6e9a2c685ab95",
+        "update": "01a05c7f-48f2-701c-8968-1c619536f57e",
+        "launchAssetSha256": "d6f7b26b91b7c98752c3366e1d92a3184133d162b399bd9a4dc26e18d1b5360b",
+        "apiContractSourceSha256": "7748f5c1d8eafa747212414dd4b1bb8d874009a72bc59e53662d27d63cfba405"
+      }
+    },
+    "legacyResponsesIdentical": {
+      "ios": 104,
+      "android": 104
+    },
+    "legacyBreakingPermissionControlRejected": true,
+    "ownerPolicyAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 3,
+      "probeSha256": "4e80578545338622565a3d8b143cbc8762c2a4dd6cf6a9bc639bc1fbaa8a511b"
+    },
+    "logs": "/Users/dominic/powerlifting_app/.git/release-receipts/d4b6a8b22549-checks",
+    "liveDeploymentVerified": false
+  },
+  "preservation": {
+    "sourceSha": "d4b6a8b22549a9853db71fbbd0485c708471519f",
+    "frozenResponsesIdentical": {
+      "ios": 104,
+      "android": 104
+    },
+    "independentOwnerPolicyCases": 3,
+    "negativePermissionControlRejected": true,
+    "schemaChanged": false,
+    "preservedOriginalDirtyFiles": 27,
+    "searchImplementationMatchesCanonicalDEV": true,
+    "guardTestSummaries": {
+      "candidate-tests.log": [
+        "Ran 128 tests in 43.596s",
+        "OK"
+      ],
+      "owner-policy.log": [
+        "Ran 3 tests in 4.143s",
+        "OK"
+      ]
+    }
+  },
+  "liveProtectedSearchSmoke": {
+    "verifiedAt": "2026-10-07T19:55:08.542444+00:00",
+    "environment": "Production app.strengthledger.fit",
+    "accountState": "Unauthenticated, no bearer token",
+    "workflow": "Direct movement-search API request",
+    "url": "https://app.strengthledger.fit/workouts/mobile/movement-definitions/search?q=lat%20pulldwn&limit=3",
+    "expected": "Unauthenticated request rejected without private movement records",
+    "observedStatus": 401,
+    "response": {
+      "account_state": "LOGIN_REQUIRED",
+      "account_state_detail": {
+        "account_state": "LOGIN_REQUIRED",
+        "athlete_id": null,
+        "billing_entitlement": null,
+        "billing_required": false,
+        "can_access_product": false,
+        "coach_id": null,
+        "is_owner_admin": false,
+        "link_coach_required": false,
+        "next_route": "auth.login",
+        "next_url": "/auth/login",
+        "reason": "missing_or_unauthenticated_user",
+        "role": null,
+        "verification_required": false,
+        "workspace_mode": null
+      },
+      "athlete_id": null,
+      "billing_required": false,
+      "can_access_product": false,
+      "coach_id": null,
+      "error": "login required",
+      "link_coach_required": false,
+      "next_route": "auth.login",
+      "next_url": "/auth/login",
+      "ok": false,
+      "reason": "missing_or_unauthenticated_user",
+      "role": null,
+      "verification_required": false,
+      "workspace_mode": null
+    },
+    "pass": true,
+    "authenticatedCustomerWorkflowValidated": false
+  },
+  "allCandidateProductChangesAlreadyInCanonicalDEV": true,
+  "productionMobileChanged": false,
+  "productionDataMigrationPerformed": false,
+  "temporaryGitWorktreesCreated": 0,
+  "authenticatedLiveCustomerWorkflowPerformed": false,
+  "physicalPhonePlaybackObserved": false,
+  "scopeLimit": "All staged backend changes are now live. Separate held-back DEV Cable/catalog/schema work and Mobile3 native certification are not certified by this bounded deployment.",
+  "validationClassification": "NOT PRODUCTION VALIDATED - automated checks passed, but complete customer workflow validation is still required."
+}

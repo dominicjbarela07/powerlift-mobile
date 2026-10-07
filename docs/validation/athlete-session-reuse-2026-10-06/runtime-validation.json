@@ -1,0 +1,102 @@
+{
+  "result": "PASS in current DEV; reported TestFlight error not reproduced",
+  "actor": {
+    "user_id": 80,
+    "athlete_id": 70,
+    "mode": "individual (self-coach athlete workspace)"
+  },
+  "source_id": 1845,
+  "destination_id": 1851,
+  "program_id": 30,
+  "block_id": 169,
+  "source_listing": {
+    "status": 200,
+    "count": 6
+  },
+  "real_ui_copy": {
+    "movement_count": 5,
+    "effective_prescriptions_match": true,
+    "fresh_item_ids": true,
+    "destination_identity_date_program_block_status_preserved": true,
+    "source_full_response_unchanged": true,
+    "no_extra_session_created": true
+  },
+  "comparison_note": "Reps range is canonical when reps_text exists; underlying unused numeric reps can normalize None to the serializer default without changing the prescription. Incline Curl remains 3 x 8-12 @ 1 RIR.",
+  "destination_after": {
+    "id": 1851,
+    "date": "2026-10-07",
+    "label": "New Session",
+    "raw_status": "draft",
+    "program_id": 30,
+    "training_block_id": 169
+  },
+  "prescriptions": [
+    {
+      "movement": "Competition Bench",
+      "movement_definition_id": 2,
+      "core_movement_id": null,
+      "sets": 1,
+      "mode": "RPE",
+      "rpe_target": 7.0,
+      "rir_target": null,
+      "pct": null,
+      "superset_group": null,
+      "superset_pos": null,
+      "repetitions": "5"
+    },
+    {
+      "movement": "Incline Dumbbell Curl",
+      "movement_definition_id": 257,
+      "core_movement_id": null,
+      "sets": 3,
+      "mode": "RIR",
+      "rpe_target": null,
+      "rir_target": 1.0,
+      "pct": null,
+      "superset_group": null,
+      "superset_pos": null,
+      "repetitions": "8-12"
+    },
+    {
+      "movement": "Long-Lever Copenhagen Adduction",
+      "movement_definition_id": 457,
+      "core_movement_id": null,
+      "sets": 1,
+      "mode": "RIR",
+      "rpe_target": null,
+      "rir_target": 1.0,
+      "pct": null,
+      "superset_group": null,
+      "superset_pos": null,
+      "repetitions": "6-10"
+    },
+    {
+      "movement": "Machine Lateral Raise",
+      "movement_definition_id": 121,
+      "core_movement_id": null,
+      "sets": 1,
+      "mode": "RIR",
+      "rpe_target": null,
+      "rir_target": 1.0,
+      "pct": null,
+      "superset_group": null,
+      "superset_pos": null,
+      "repetitions": "6-10"
+    },
+    {
+      "movement": "Machine Pullover",
+      "movement_definition_id": 178,
+      "core_movement_id": null,
+      "sets": 1,
+      "mode": "RIR",
+      "rpe_target": null,
+      "rir_target": 1.0,
+      "pct": null,
+      "superset_group": null,
+      "superset_pos": null,
+      "repetitions": "6-10"
+    }
+  ],
+  "testflight_device_verified": false,
+  "product_code_changed": false
+}
