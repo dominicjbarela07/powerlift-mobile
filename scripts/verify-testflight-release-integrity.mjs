@@ -6,6 +6,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { validateDevReleaseHoldbacks } from './release-holdback-policy.mjs';
 import { validateDevSourceProgressions } from './dev-source-progression.mjs';
+import { assertReviewedArtwork } from './reviewed-release-progression.mjs';
 import { productFiles, sha256, fingerprintFiles, assertOwnerEvidence, runIntegrityGate, assertProtectedArtifactAssets, protectedDeliveryHashes, expoHash } from './testflight-cumulative-integrity.mjs';
 
 const baselineCatalogRef=root=>read(root,'config/testflight-release-integrity.json').previousTestFlight.gitCommitHash;
@@ -104,7 +105,8 @@ export function runDevSupersetGate({root=process.cwd(),devRoot=process.env.STREN
     result.entries.push(entry);result.missing.push(entry);result.pass=false;
   }
   const devPolicy=read(devRoot,'artwork-review/runtime-policy.json');
-  for(const prior of baseline.approvedArtwork) {
+  if (baseline.reviewedPublication) assertReviewedArtwork(devRoot, baseline, devPolicy);
+  else for(const prior of baseline.approvedArtwork) {
     const current=devPolicy.approved_exact_artwork.find(row=>row.key===prior.key);
     if(JSON.stringify(current)!==JSON.stringify(prior)) {
       const entry={identity:`artwork:${prior.movement_definition_id}:${prior.key}`,productArea:'approved exact movement art / crop',devState:current||null,testflightState:prior,recentHistoricalState:prior,authorizationEvidence:[],label:'TESTFLIGHT_ONLY',requiredReconciliationDirection:'TESTFLIGHT → DEV'};

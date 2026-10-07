@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['reviewed cumulative source and human art/crop progression reject unauthorized changes', ['scripts/test-reviewed-release-progression.mjs']],
   ['unavailable Session lifecycle survives every date and projection', ['scripts/test-unavailable-session-projections.mjs']],
   ['bounded DEV additions retain the shipped baseline and reject hidden changes', ['scripts/test-dev-source-progression.mjs']],
   ['version-scoped Production 3 preparation preserves legacy runtime artwork policy', ['scripts/test-production3-art-policy.mjs']],

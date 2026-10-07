@@ -1,0 +1,7 @@
+Okay, forget about the canonical education and guidance. I don't give a fuck. Just, just, okay, update TestFlight to be up to date, please. And then after that, I want you to do a final go no-go against production. Give me a go or no-go to start building, and then I will do the build. You do not have that right to do the build. I will do it and monitor the build.
+
+Retained existing owner operational directive:
+if the mac locks on you, just continue any other checks not requiring the sim and push if passing.
+
+Retained existing owner repeat-check directive:
+you dont need to recheck screens that you determined were fine btw
