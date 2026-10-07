@@ -1,0 +1,28 @@
+{
+  "published_ota_id": "01a11340-9ccc-7498-a71d-77a367aa6f5f",
+  "published_source_sha": "59641028e514c3edc957c95de2d4882f2f3bf3e0",
+  "reuse_files": [
+    {
+      "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+      "matches_published_source": true,
+      "sha256": "5441b63160c4d38912f66f665d37005a317debaffbac23d95f09ca0c57b69035"
+    },
+    {
+      "file": "components/coach-mobile/ProgrammingReuseLibrary.tsx",
+      "matches_published_source": true,
+      "sha256": "4ecae8a393aaabfa003d3479dd237c496ccb0e154bc7a401c6106c71d029ce02"
+    },
+    {
+      "file": "lib/coach-session-editor.ts",
+      "matches_published_source": true,
+      "sha256": "0c431bddbadafb5ed244d1b888fa2e9bf9e1d14f3367bf6c312a2ef5befab8ec"
+    }
+  ],
+  "public_live_policy": {
+    "current_revision": 1,
+    "force_update": false,
+    "minimum_revision": 1
+  },
+  "production_user_session_queried": false,
+  "phone_running_update_identified": false
+}

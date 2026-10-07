@@ -12,6 +12,7 @@ import { SLAthleteAvatar, SLErrorState, SLScreen } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
 import { FloatingControlCoordinator, FloatingControlStack, FloatingUtilityButton } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
+import { EducationInlineHint, useEducationHint, useMobileEducation } from '@/context/MobileEducationContext';
 
 import { useCoachAthleteWorkspace, type WorkspaceDestination } from './CoachAthleteWorkspaceContext';
 
@@ -38,6 +39,7 @@ function workspaceDestination(pathname: string): WorkspaceDestination | null {
 }
 
 export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }) {
+  const education = useMobileEducation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
@@ -46,6 +48,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
   const [overflowOpen, setOverflowOpen] = useState(false);
   const [toolkitOpen, setToolkitOpen] = useState(false);
   const selected = workspaceDestination(pathname);
+  const showWorkspaceHint = useEducationHint('athlete-workspace', Boolean(workspace.bootstrap && !workspace.loading && selected === 'brief'));
   const athlete = workspace.bootstrap?.athlete;
   const basePath = `/(tabs)/coach-athlete/${workspace.athleteId}`;
   const pendingReviewCount = Number(workspace.summary?.pending_session_reviews.count || 0)
@@ -61,6 +64,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
   }), [pendingReviewCount, workspace.bootstrap?.check_ins.submitted_unreviewed_count, workspace.summary]);
 
   const navigate = (destination: WorkspaceDestination) => {
+    education.markLearned('athlete-workspace');
     const suffix = DESTINATIONS.find((item) => item.key === destination)?.suffix || '';
     router.navigate({
       pathname: `${basePath}${suffix}` as any,
@@ -150,6 +154,8 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
           <Ionicons color={COACH_V2.text} name="ellipsis-horizontal" size={23} />
         </Pressable>
       </View>
+
+      {showWorkspaceHint ? <View style={styles.educationInset}><EducationInlineHint feature="athlete-workspace" title="The plan, recent Sessions, and signals for this athlete are here." /></View> : null}
 
       <View key={workspace.subjectKey} style={styles.content}>{children}</View>
 
@@ -253,6 +259,7 @@ function ToolkitAction({ icon, label, onPress }: { icon: keyof typeof Ionicons.g
 }
 
 const styles = StyleSheet.create({
+  educationInset: { paddingHorizontal: SLLayout.screenGutter },
   screen: { backgroundColor: '#000', flex: 1 },
   state: { alignItems: 'center', flex: 1, justifyContent: 'center', padding: 28 },
   stateTitle: { color: COACH_V2.text, fontSize: 20, fontWeight: '800', marginTop: 18 },
@@ -292,14 +299,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 9,
   },
-  headerBackLabel: { color: COACH_V2.text, fontSize: 11, fontWeight: '800' },
+  headerBackLabel: { color: COACH_V2.text, fontSize: 12, fontWeight: '800' },
   pressed: { opacity: 0.7 },
   identity: { flex: 1, minWidth: 0 },
-  eyebrow: { color: COACH_V2.violetBright, fontSize: 10, fontWeight: '800', letterSpacing: 1.4 },
+  eyebrow: { color: COACH_V2.violetBright, fontSize: 12, fontWeight: '800', letterSpacing: 1.4 },
   athleteName: { color: COACH_V2.text, fontSize: 20, fontWeight: '800', marginTop: 2 },
   content: { flex: 1 },
   sheet: { paddingBottom: SLSpacing.xl, paddingHorizontal: SLLayout.screenGutter, paddingTop: 4 },
-  sheetEyebrow: { color: COACH_V2.violetBright, fontSize: 11, fontWeight: '900', letterSpacing: 1.6 },
+  sheetEyebrow: { color: COACH_V2.violetBright, fontSize: 12, fontWeight: '900', letterSpacing: 1.6 },
   sheetTitle: { color: COACH_V2.text, fontSize: 25, fontWeight: '800', marginBottom: 16, marginTop: 5 },
   sheetAction: { alignItems: 'center', borderBottomColor: COACH_V2.border, borderBottomWidth: StyleSheet.hairlineWidth, flexDirection: 'row', gap: 12, minHeight: 58 },
   sheetIcon: { alignItems: 'center', backgroundColor: 'rgba(157,92,255,0.12)', borderRadius: 12, height: 36, justifyContent: 'center', width: 36 },

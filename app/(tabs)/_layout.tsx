@@ -21,6 +21,7 @@ import {
 } from '@/components/navigation/sl-tab-row-control';
 import { SLTrophy } from '@/components/ui';
 import { useAuth, type AuthUser } from '@/context/AuthContext';
+import { useMobileEducation } from '@/context/MobileEducationContext';
 import { useDevLiveScreenSession } from '@/lib/release-preview-stubs';
 import { fetchJson, getUnreadSummary } from '@/lib/api';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
@@ -81,6 +82,7 @@ function FilteredTabBar({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const education = useMobileEducation();
   const focusedParams = useGlobalSearchParams<{ returnToWorkspace?: string }>();
   const { isOpen: isMoreOpen, open: openMore } = useCoachMoreNavigation();
   const sessionEditorOverlayOpen = useSessionEditorOverlayOpen();
@@ -187,6 +189,7 @@ function FilteredTabBar({
         return {
           accessibilityLabel: cfg.label,
           badge: isMessagesRoute && hasMessageNotifications ? 'dot' as const : undefined,
+          new: isLedgerHomeRoute && education.showNew('ledger'),
           icon: cfg.icon,
           key: route.key,
           selected: isFocused,
@@ -208,6 +211,7 @@ function FilteredTabBar({
                 params: { returnTo: normalizedPathname },
               } as any);
             } else if (isLedgerHomeRoute && !event.defaultPrevented) {
+              education.markVisited('ledger');
               router.navigate('/(tabs)/ledger/home' as any);
             } else if (!isStateFocused && !event.defaultPrevented) {
               if (isTrainingRoute) router.navigate('/(tabs)/workout');
@@ -236,6 +240,7 @@ export default function TabsLayout() {
   } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const education = useMobileEducation();
   const isDevStrengthTierCertification =
     __DEV__
     && pathname.endsWith('/ledger/dev-strength-tier-certification');
@@ -255,6 +260,10 @@ export default function TabsLayout() {
   const meetPlanPollingRef = useRef(false);
 
   const isCoach = !!user?.is_coach;
+  useEffect(() => {
+    if (pathname.startsWith('/ledger')) education.markVisited('ledger');
+    if (pathname.startsWith('/coach-videos') || pathname.startsWith('/coach-review-queue')) education.markVisited('review-hub');
+  }, [education.markVisited, pathname]);
   const accountState = user?.account_state;
   const isUnlinkedAthlete =
     !!user &&

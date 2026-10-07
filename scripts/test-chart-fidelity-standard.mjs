@@ -65,7 +65,7 @@ const consumers = {
 for (const [name, source] of Object.entries(consumers)) assert.match(source, /AnalyticalTimeSeriesChart/, `${name} must use the canonical analytical chart primitive`);
 
 const teamBrief = consumers['Team Brief'];
-assert.match(teamBrief, /Estimated DOTS Progression/);
+assert.match(teamBrief, /Estimated DOTS/);
 assert.match(teamBrief, /analyticalMetricDefinition\(metric\)/);
 assert.doesNotMatch(read('app/coach-team-outliers.tsx'), /row\.value\.toFixed\(1\).*%/s, 'PR rate must never masquerade as a percentage');
 

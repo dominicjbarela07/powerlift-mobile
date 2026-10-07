@@ -37,6 +37,9 @@ const lifecycleTone: Record<ProgramTimelineLifecycle, string> = {
   today: SLColors.accentViolet,
   upcoming: SLColors.textMuted,
   missed: SLColors.accentRed,
+  draft: SLColors.textMuted,
+  canceled: SLColors.textMuted,
+  archived: SLColors.textMuted,
   no_session: SLColors.textSubtle,
 };
 
@@ -50,6 +53,9 @@ function lifecycleLabel(value: ProgramTimelineLifecycle) {
   if (value === 'today') return 'Current';
   if (value === 'upcoming') return 'Upcoming';
   if (value === 'missed') return 'Missed';
+  if (value === 'draft') return 'Draft';
+  if (value === 'canceled') return 'Canceled';
+  if (value === 'archived') return 'Archived';
   return 'No Sessions';
 }
 

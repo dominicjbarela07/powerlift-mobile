@@ -1,0 +1,478 @@
+{
+  "completedAt": "2026-10-07T18:34:49.171919+00:00",
+  "request": "Run the same go no-go, without repeating screens already judged satisfactory.",
+  "verdict": {
+    "beginBoundedProductionPreparation": "GO",
+    "publishOrFinalCandidateCertification": "NO-GO"
+  },
+  "testedMobileSourceSha": "293c5b0a081db06c677bd259f442509fc7f7cc91",
+  "testedProductFingerprint": "4d1dac715c9a6992b4f51c68be7bb7d7da00e13fc8e2bffca0dac753d545d670",
+  "currentRemoteCanonicalMobileSha": "44ad12952ea9831f60465d0295a5ffde8d3ae646",
+  "sourceInventory": {
+    "mobile_dev": {
+      "path": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+      "branch": "dev/canonical-mobile",
+      "sha": "293c5b0a081db06c677bd259f442509fc7f7cc91",
+      "tracked_dirty_paths": 0
+    },
+    "backend_dev": {
+      "path": "/Users/dominic/powerlifting_app_dev",
+      "branch": "dev/canonical-backend",
+      "sha": "35027c051cb22dd9611ee7b3c0cf3ada8eb803f3",
+      "tracked_dirty_paths": 615
+    },
+    "testflight": {
+      "path": "/Users/dominic/powerlifting_app/powerlift_mobile_testflight",
+      "branch": "release/testflight/hot-swap-r56-20261001",
+      "sha": "57de0daf66a10579a92a1cb983bf0a88ead035fd",
+      "tracked_dirty_paths": 0
+    },
+    "production_backend": {
+      "path": "/Users/dominic/powerlifting_app",
+      "branch": "release/testflight-polish-2026-08-09",
+      "sha": "ada0ed1861027b2d2d346794ef9fac2e851821f8",
+      "tracked_dirty_paths": 26
+    },
+    "education_optional": {
+      "path": "/Users/dominic/powerlifting_app_mobile_optional_dev",
+      "branch": "dev/mobile-3-education-20260928",
+      "sha": "0afa7990a87cf43396bc28d322de9fb1b679d5f4",
+      "tracked_dirty_paths": 66
+    }
+  },
+  "checks": {
+    "accepted": {
+      "exitCode": 1,
+      "log": "accepted.log",
+      "pass": 271,
+      "fail": 2,
+      "failures": [
+        "test-dev-testflight-release-gates.mjs",
+        "test-pre-october-2-restoration.mjs"
+      ]
+    },
+    "account-access-api": {
+      "exitCode": 0,
+      "log": "account-access-api.log",
+      "testsPassed": 52,
+      "subtestsPassed": 21,
+      "summary": "52 passed, 240 warnings, 21 subtests passed in 16.58s"
+    },
+    "canonical-metro": {
+      "exitCode": 1,
+      "log": "canonical-metro.log"
+    },
+    "critical": {
+      "exitCode": 1,
+      "log": "critical.log",
+      "pass": 79,
+      "fail": 2,
+      "failures": [
+        "pre-Oct 2 complete imagery and Accessory PR celebration restoration",
+        "DEV superset, explicit removals, and exact published-state failure gates"
+      ]
+    },
+    "dev-superset": {
+      "exitCode": 1,
+      "log": "dev-superset.log"
+    },
+    "export-art-audit": {
+      "exitCode": 0,
+      "log": "export-art-audit.log"
+    },
+    "horizontal": {
+      "exitCode": 0,
+      "log": "horizontal.log"
+    },
+    "platform-asset-audit": {
+      "exitCode": 0,
+      "log": "platform-asset-audit.log"
+    },
+    "production-channel": {
+      "exitCode": 0,
+      "log": "production-channel.log"
+    },
+    "production-update-details": {
+      "exitCode": 0,
+      "log": "production-update-details.log"
+    },
+    "production-updates": {
+      "exitCode": 0,
+      "log": "production-updates.log"
+    },
+    "production3-export": {
+      "exitCode": 0,
+      "log": "production3-export.log"
+    },
+    "recognition-api": {
+      "exitCode": 0,
+      "log": "recognition-api.log",
+      "testsPassed": 22,
+      "subtestsPassed": 0,
+      "summary": "22 passed, 410 warnings in 14.39s"
+    },
+    "roots": {
+      "exitCode": 0,
+      "log": "roots.log"
+    },
+    "session-search-api": {
+      "exitCode": 0,
+      "log": "session-search-api.log",
+      "testsPassed": 44,
+      "subtestsPassed": 55,
+      "summary": "44 passed, 966 warnings, 55 subtests passed in 42.36s"
+    },
+    "testflight-channel": {
+      "exitCode": 0,
+      "log": "testflight-channel.log"
+    },
+    "testflight-update-details": {
+      "exitCode": 0,
+      "log": "testflight-update-details.log"
+    },
+    "testflight-updates": {
+      "exitCode": 0,
+      "log": "testflight-updates.log"
+    },
+    "typecheck": {
+      "exitCode": 0,
+      "log": "typecheck.log"
+    },
+    "typography": {
+      "exitCode": 0,
+      "log": "typography.log"
+    },
+    "ui-constitution": {
+      "exitCode": 0,
+      "log": "ui-constitution.log"
+    },
+    "worktree-inventory": {
+      "exitCode": 0,
+      "output": "worktree-inventory.json"
+    }
+  },
+  "artwork": {
+    "currentGovernedMovements": 499,
+    "currentGovernedMovementsWithApprovedArtAndCrop": 499,
+    "coreMovements": 31,
+    "coreMovementsWithApprovedArtAndCrop": 31,
+    "policyApprovalMappings": 490,
+    "uniqueApprovedMovementImages": 487,
+    "platforms": {
+      "ios": {
+        "assetCount": 1015,
+        "uniqueAssetHashes": 1009,
+        "approvedMovementImages": 487,
+        "approvedEquipmentCategoryImages": 3,
+        "missingApprovedEquipmentCategoryImages": 0,
+        "missingApprovedMovementImages": 0,
+        "missingProtectedMovementImages": 0,
+        "ownerAuthorizedHistoricalRemovalHashes": 47,
+        "historicalConsolidationSourceBytesPreserved": true,
+        "platformOnlyNavigationAssets": [],
+        "OHPIncluded": true,
+        "bundle": "_expo/static/js/ios/entry-2f1c85bc6a858ba2728f8d9b45b28d06.hbc",
+        "bundleSha256": "0540e39be8fda5a9becef6009c01caf5634b4029c97027ce787c5b971b27f1f1"
+      },
+      "android": {
+        "assetCount": 1015,
+        "uniqueAssetHashes": 1010,
+        "approvedMovementImages": 487,
+        "approvedEquipmentCategoryImages": 3,
+        "missingApprovedEquipmentCategoryImages": 0,
+        "missingApprovedMovementImages": 0,
+        "missingProtectedMovementImages": 0,
+        "ownerAuthorizedHistoricalRemovalHashes": 47,
+        "historicalConsolidationSourceBytesPreserved": true,
+        "platformOnlyNavigationAssets": [
+          {
+            "hash": "3Fa5dr1FY44RJfZol0NSXmiGrgvvLI9GUZlIM2hagx8",
+            "originalFiles": [
+              "node_modules/@react-navigation/elements/lib/module/assets/search-icon@1x.ios.png"
+            ]
+          },
+          {
+            "hash": "7xP8DfxS7COBdYX9fhCfvfWTo7JUnEDOcaybDtoSzCw",
+            "originalFiles": [
+              "node_modules/@react-navigation/elements/lib/module/assets/search-icon@4x.ios.png"
+            ]
+          },
+          {
+            "hash": "K3RDqaWOksoRpXW9wRWYYVpX3eMFzYznDWAmBrMCzZg",
+            "originalFiles": [
+              "node_modules/@react-navigation/elements/lib/module/assets/back-icon@2x.ios.png"
+            ]
+          },
+          {
+            "hash": "LN_rjlzN55dvcBL7jM5zryIpAp7iHU8VCf7RFIccbNg",
+            "originalFiles": [
+              "node_modules/@react-navigation/elements/lib/module/assets/back-icon@1x.ios.png"
+            ]
+          },
+          {
+            "hash": "Pd0Hc-0n4j0leJ8wFzGzrEVa2L5aonoKG4OPicbSciU",
+            "originalFiles": [
+              "node_modules/@react-navigation/elements/lib/module/assets/back-icon@3x.ios.png"
+            ]
+          },
+          {
+            "hash": "ku2BdqyMtENipfxqNwNiagAGrGt8snLumfWFAmLsBw4",
+            "originalFiles": [
+              "node_modules/@react-navigation/elements/lib/module/assets/back-icon@4x.ios.png"
+            ]
+          },
+          {
+            "hash": "tDSnzxjC1M50fHCULqL-4tRBLZOWftkrNy-BC7kmHqU",
+            "originalFiles": [
+              "node_modules/@react-navigation/elements/lib/module/assets/search-icon@3x.ios.png"
+            ]
+          }
+        ],
+        "OHPIncluded": true,
+        "bundle": "_expo/static/js/android/entry-0e40b4cc4b5844d3ac3ef3f226dd07e8.hbc",
+        "bundleSha256": "8290923a0fe89d14730f3242c795e1d3eca915b7f48fe79ac21c2778d5f3fa84"
+      }
+    },
+    "baselineResolver": {
+      "sourceSha": "293c5b0a081db06c677bd259f442509fc7f7cc91",
+      "baselineSourceSha": "b847241b326e080fbdc823b43d8519df4b351b42",
+      "baselineUpdateId": "01a0f865-e738-72a3-b556-b52e0b323099",
+      "baselineApprovedMappings": 489,
+      "canonicalIdentities": 567,
+      "exactArtIdentities": 557,
+      "establishedFallbackIdentities": 10,
+      "missingApprovedMappings": 0,
+      "changedApprovedImageBytes": 0,
+      "unexpectedFallbacks": 0,
+      "unauthorizedCropChanges": 0,
+      "authorizedCropChanges": [
+        {
+          "key": "deficit_deadlift",
+          "candidateId": "d224a191da6cb034d98f0601",
+          "priorCrop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.07,
+            "y": -0.16
+          },
+          "currentCrop": {
+            "fit": "original",
+            "zoom": 0.62,
+            "x": 0.1,
+            "y": -0.11
+          },
+          "humanReceipt": {
+            "action": "approve",
+            "crop": {
+              "fit": "original",
+              "zoom": 0.62,
+              "x": 0.1,
+              "y": -0.11
+            },
+            "reason": "",
+            "reviewed_at": "2026-10-07T17:29:15.972017+00:00",
+            "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
+            "reviewer_user_id": 1,
+            "candidate_sha256": "5ba80bffaf5c22def85f3a83a5b774b35bfc71c582eb8b682c6c6f01be54f847",
+            "app_sha256": "a731909502e6fa74a17fbdec51f443c0ceb1ff21d3ff2cb3249c100e4f83f874",
+            "source": "human_logger_crop_ui"
+          }
+        }
+      ],
+      "productFingerprint": "4d1dac715c9a6992b4f51c68be7bb7d7da00e13fc8e2bffca0dac753d545d670",
+      "scope": "Independent whole-inventory check using actual approved image/crop receipts. Does not pass the failed source-bound release gates or certify a native/delivered build."
+    }
+  },
+  "releaseEvidenceDiagnosis": {
+    "scope": "Independent inventory diagnosis; this does not bypass or pass the failed release-source gate.",
+    "protectedPreRegressionApprovedMappings": 489,
+    "missingOrChangedApprovedImageBytes": [],
+    "ownerApprovedCropChanges": [
+      {
+        "key": "deficit_deadlift",
+        "candidateId": "d224a191da6cb034d98f0601",
+        "priorCrop": {
+          "fit": "original",
+          "zoom": 0.7,
+          "x": 0.07,
+          "y": -0.16
+        },
+        "currentCrop": {
+          "fit": "original",
+          "zoom": 0.62,
+          "x": 0.1,
+          "y": -0.11
+        },
+        "humanReceipt": {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.62,
+            "x": 0.1,
+            "y": -0.11
+          },
+          "reason": "",
+          "reviewed_at": "2026-10-07T17:29:15.972017+00:00",
+          "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5ba80bffaf5c22def85f3a83a5b774b35bfc71c582eb8b682c6c6f01be54f847",
+          "app_sha256": "a731909502e6fa74a17fbdec51f443c0ceb1ff21d3ff2cb3249c100e4f83f874",
+          "source": "human_logger_crop_ui"
+        }
+      }
+    ],
+    "sourceDeltas": [
+      {
+        "path": "lib/canonical-movement-artwork-assets.ts",
+        "protectedHash": "33b654638af49fa13bbccd7ae9751af830fef4e80affcddfba8c508049431964",
+        "currentHash": "4d7c1899497dc7f1370bbdad4507f556b6e9327712911edd53bab6d2c4d1d39e",
+        "registeredCurrentProgression": false,
+        "registeredCurrentAuthorization": false
+      },
+      {
+        "path": "lib/canonical-core-artwork-identities.ts",
+        "protectedHash": "8ccaa4fd7b80e6239fd301a0f987583e86f4f37c1213e7f5594b90f9c26fcc08",
+        "currentHash": "80703a0fa6c7ca720936a9a74e6acb9f97a8424a5992dcbefac7c723e458a5dd",
+        "registeredCurrentProgression": false,
+        "registeredCurrentAuthorization": false
+      },
+      {
+        "path": "config/governed-core-artwork-reuse.json",
+        "protectedHash": "cd8622b02f09278a61bbe964f62a06730cc9f68197da302365ae7cfa7dd0c972",
+        "currentHash": "db9e90f4334de79994c3120684d28319085258177936ca6cc3666a2f676a75f6",
+        "registeredCurrentProgression": false,
+        "registeredCurrentAuthorization": false
+      },
+      {
+        "path": "artwork-review/runtime-policy.json",
+        "protectedHash": "d1e5cd931e47517f7e183a4c00f29683f8374789a261d5d0311910b5b8c82eef",
+        "currentHash": "8467bae20de4e8a9aac05bcd53f04048fd11d4c83add0cc3201f0621a29b7c30",
+        "registeredCurrentProgression": false,
+        "registeredCurrentAuthorization": false
+      }
+    ]
+  },
+  "remainingRequiredWork": [
+    "Reconcile exact already-human-approved OHP source additions and saved Deficit Deadlift crop with permanent release protections; preserve original restoration pins and reject deliberately unauthorized additions/subtractions/crop changes.",
+    "Synchronize reviewed canonical DEV and assemble/certify exact clean cumulative release source while retaining the Cable holdback.",
+    "Integrate and validate the bounded DEV search-ranking server change in the serving backend; preserve legacy 2.0.2 and verify actual deployed source.",
+    "Certify the actual 3.0 native/store/device candidate before publication."
+  ],
+  "liveTestFlightUpdates": [
+    {
+      "id": "01a11340-9ccc-7498-a71d-77a367aa6f5f",
+      "createdAt": "2026-10-06T22:06:03.980Z",
+      "group": "d94afb31-3d19-4265-9040-0c2566c490b3",
+      "branch": "testflight",
+      "message": "Compact Logger controls, assisted movement search, conditional history and refreshed pre-Session check-in; preserve earned PR playback",
+      "runtimeVersion": "2.1.0",
+      "platform": "ios",
+      "manifestPermalink": "https://u.expo.dev/update/01a11340-9ccc-7498-a71d-77a367aa6f5f",
+      "isRollBackToEmbedded": false,
+      "gitCommitHash": "59641028e514c3edc957c95de2d4882f2f3bf3e0"
+    }
+  ],
+  "liveProductionUpdates": [
+    {
+      "id": "01a0e5d0-6863-77fe-9d28-5fc894376eb6",
+      "createdAt": "2026-09-28T02:20:35.811Z",
+      "group": "0cceb494-ae13-4c9a-931c-b583976707e5",
+      "branch": "production-live-2.0.2",
+      "message": "Production 2.0.2: simplify skipped equipment presentation",
+      "runtimeVersion": "2.0.2",
+      "platform": "ios",
+      "manifestPermalink": "https://u.expo.dev/update/01a0e5d0-6863-77fe-9d28-5fc894376eb6",
+      "isRollBackToEmbedded": false,
+      "gitCommitHash": "3d5816a1b824eff00b9ce605f8d544a1264c6376"
+    },
+    {
+      "id": "01a0e5d0-6863-7819-8f15-1d98982a5af1",
+      "createdAt": "2026-09-28T02:20:35.811Z",
+      "group": "0cceb494-ae13-4c9a-931c-b583976707e5",
+      "branch": "production-live-2.0.2",
+      "message": "Production 2.0.2: simplify skipped equipment presentation",
+      "runtimeVersion": "2.0.2",
+      "platform": "android",
+      "manifestPermalink": "https://u.expo.dev/update/01a0e5d0-6863-7819-8f15-1d98982a5af1",
+      "isRollBackToEmbedded": false,
+      "gitCommitHash": "3d5816a1b824eff00b9ce605f8d544a1264c6376"
+    }
+  ],
+  "liveRecognitionHealth": {
+    "machine_first_baseline_recognized": false,
+    "manufacturers_isolated": true,
+    "migration_revisions": [
+      "f47a92b1c8d0"
+    ],
+    "minimum_delivery_client_version": "2.1.0",
+    "other_is_separate_equipment_context": true,
+    "policy_version": "accessory-exact-reps-equipment-isolated-v3",
+    "pr_comparison_scope": "canonical_movement_exact_equipment",
+    "ready": true,
+    "schema_fingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+    "source_sha": "751a1173b301cb382557c5cbda59e4fdf72633b2"
+  },
+  "searchBackendLiveComparison": {
+    "servingSourceSha": "751a1173b301cb382557c5cbda59e4fdf72633b2",
+    "path": "app/services/canonical_movement_search.py",
+    "sourceComparisonAvailable": true,
+    "servingSourceFileSha256": "6ddf8605b69879fa75dbd9bdc273e0a80f5301ceacc71e05ff32f5680261421b",
+    "devSourceFileSha256": "61aea32ef97d179ee51cfed7e56c4bf159f1d8b33b3d5ade9fd3deaa8b2cef56",
+    "sameSourceBytes": false
+  },
+  "visualCoverage": {
+    "ownerSteering": "you dont need to recheck screens that you determined were fine btw",
+    "retainedPriorReport": "../../release/PRODUCTION_READINESS_SWEEP_2026-10-06.md",
+    "freshObserved": [
+      {
+        "surface": "Athlete Training / Draft preview",
+        "result": "Draft label retained; execution unavailable with visible explanation; no Draft started",
+        "screens": [
+          "06-draft-lifecycle-return.png",
+          "07-draft-preview.png"
+        ]
+      },
+      {
+        "surface": "Updated Settings / support / account actions",
+        "result": "Updated near-black presentation, readable and reachable; no consequential action taken",
+        "screens": [
+          "05-settings-return.png"
+        ]
+      }
+    ],
+    "OHPApprovalScope": "Existing owner source and real Logger crop-editor receipt; complete resolver and exported-byte verification; no new OHP Session or phone playback observation",
+    "transientCaptureNotFinalProof": [
+      "04-settings-lower.png"
+    ],
+    "lateComputerState": "Mac locked; no unlock request; independent checks completed",
+    "notFreshlyObserved": [
+      "Unchanged previously satisfactory screens",
+      "Archive/editor/Team Brief visual second pass after lock",
+      "OHP in a newly seeded Logger Session",
+      "3.0 native/store/platform certification",
+      "Physical-phone PR visible/audio delivery"
+    ]
+  },
+  "worktrees": {
+    "inventory": {
+      "count": 63,
+      "ambiguous": 7,
+      "output": null
+    },
+    "created": 0,
+    "deleted": 0,
+    "OHPOnlyInTemporaryWorktree": false
+  },
+  "mutations": {
+    "productCode": false,
+    "releaseGates": false,
+    "ownerData": false,
+    "push": false,
+    "backendDeployment": false,
+    "nativeBinaryBuild": false,
+    "testflightPublication": false,
+    "productionPublication": false,
+    "storeSubmission": false,
+    "scope": "Audit report/evidence only. Tests used disposable local databases; unrelated work preserved."
+  }
+}

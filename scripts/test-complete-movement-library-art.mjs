@@ -27,9 +27,10 @@ for (const definition of active) {
   assert.deepEqual(input, before, 'artwork never changes movement or history identity');
   results.push({ id: definition.id, key: definition.key, kind: definition.kind, candidate: candidate.candidate_id, asset: mapping.files.app.path, sha256: mapping.files.app.sha256, crop });
 }
-assert.equal(active.length, 498);
+// Includes the owner's canonical Barbell Overhead Press (#650 / Core #62).
+assert.equal(active.length, 499);
 assert.equal(active.filter(row => row.kind === 'accessory').length, 468);
-assert.equal(active.filter(row => row.kind === 'core').length, 30);
+assert.equal(active.filter(row => row.kind === 'core').length, 31);
 const outputIndex = process.argv.indexOf('--output');
 if (outputIndex >= 0) fs.writeFileSync(process.argv[outputIndex + 1], JSON.stringify(results, null, 2) + '\n');
 console.log(JSON.stringify({ active_built_in_movements: results.length, approved_images: results.length, approved_crops: results.length, retired_excluded: catalog.length - active.length, missing: 0, custom_art_not_required: true }));

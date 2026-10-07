@@ -9067,6 +9067,18 @@
       }
     },
     {
+      "key": "barbell_overhead_press",
+      "movement_definition_id": 650,
+      "candidate_id": "013655e475e56a3dcb0364ce",
+      "app_sha256": "f3f3329ed714811397f8f317b37b88d0f9411940bf255bb34599d5961dfdbc5a",
+      "logger_crop": {
+        "fit": "original",
+        "zoom": 0.69,
+        "x": 0.12,
+        "y": -0.05
+      }
+    },
+    {
       "key": "block_pull",
       "movement_definition_id": 623,
       "candidate_id": "7cd2d4198df556b025b4dbdb",
@@ -9156,9 +9168,9 @@
       "app_sha256": "a731909502e6fa74a17fbdec51f443c0ceb1ff21d3ff2cb3249c100e4f83f874",
       "logger_crop": {
         "fit": "original",
-        "zoom": 0.7,
-        "x": 0.07,
-        "y": -0.16
+        "zoom": 0.62,
+        "x": 0.1,
+        "y": -0.11
       }
     },
     {

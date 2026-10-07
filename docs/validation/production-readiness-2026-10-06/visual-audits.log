@@ -1,0 +1,311 @@
+
+> powerlift_mobile@1.0.0 audit:ui-constitution
+> node scripts/audit-ui-constitution.js && node scripts/audit-transparent-screen-roots.js && node scripts/audit-mobile-horizontal-layout.mjs
+
+Strength Ledger mobile UI constitution drift report
+This command reports existing drift; it does not mutate files.
+┌─────────┬────────────────────────────────────────────────────────────────────────────┬───────┬────────┬────────┬──────────┬────────┐
+│ (index) │ file                                                                       │ total │ colors │ radius │ fontSize │ shadow │
+├─────────┼────────────────────────────────────────────────────────────────────────────┼───────┼────────┼────────┼──────────┼────────┤
+│ 0       │ 'components/coach-mobile/CompletedSessionRecap.tsx'                        │ 605   │ 308    │ 77     │ 220      │ 0      │
+│ 1       │ 'components/ledger/experiences.tsx'                                        │ 463   │ 277    │ 63     │ 115      │ 8      │
+│ 2       │ 'components/ledger/AchievementsExperience.tsx'                             │ 457   │ 286    │ 49     │ 88       │ 34     │
+│ 3       │ 'components/movement-history/CanonicalMovementHistoryScreen.tsx'           │ 282   │ 173    │ 32     │ 77       │ 0      │
+│ 4       │ 'components/ledger/StrengthExperience.tsx'                                 │ 270   │ 159    │ 37     │ 74       │ 0      │
+│ 5       │ 'components/ledger/JourneyExperience.tsx'                                  │ 231   │ 137    │ 30     │ 64       │ 0      │
+│ 6       │ 'components/ledger/VariantsExperience.tsx'                                 │ 213   │ 117    │ 31     │ 65       │ 0      │
+│ 7       │ 'components/ledger/index-experience.tsx'                                   │ 162   │ 102    │ 15     │ 45       │ 0      │
+│ 8       │ 'components/ledger/exploration-experiences.tsx'                            │ 158   │ 94     │ 19     │ 45       │ 0      │
+│ 9       │ 'components/home/AthleteHomeV3.tsx'                                        │ 142   │ 90     │ 15     │ 34       │ 3      │
+│ 10      │ 'components/ledger/AccessoriesExperience.tsx'                              │ 140   │ 80     │ 19     │ 41       │ 0      │
+│ 11      │ 'app/(tabs)/workout/index.tsx'                                             │ 136   │ 37     │ 26     │ 65       │ 8      │
+│ 12      │ 'components/coach-mobile/SessionEditingWorkspace.tsx'                      │ 131   │ 20     │ 13     │ 90       │ 8      │
+│ 13      │ 'components/volume-achievements/VolumeAchievementExperience.tsx'           │ 127   │ 64     │ 11     │ 52       │ 0      │
+│ 14      │ 'components/coach-mobile/CoachActivityHome.tsx'                            │ 113   │ 49     │ 20     │ 41       │ 3      │
+│ 15      │ 'app/(tabs)/coach-calendar.tsx'                                            │ 111   │ 6      │ 37     │ 54       │ 14     │
+│ 16      │ 'components/ledger/StrengthProgressionStory.tsx'                           │ 101   │ 60     │ 14     │ 27       │ 0      │
+│ 17      │ 'components/coach-mobile/CoachAthleteHubV2.tsx'                            │ 96    │ 27     │ 26     │ 40       │ 3      │
+│ 18      │ 'components/coach-mobile/CoachAthleteHubSheet.tsx'                         │ 86    │ 8      │ 26     │ 52       │ 0      │
+│ 19      │ 'components/workout-logger/smart-warmup-sheet.tsx'                         │ 80    │ 45     │ 25     │ 6        │ 4      │
+│ 20      │ 'components/coach-mobile/CoachCheckInsV2.tsx'                              │ 77    │ 16     │ 25     │ 36       │ 0      │
+│ 21      │ 'components/calendar/AthleteCalendarStoryboardV2.tsx'                      │ 76    │ 33     │ 16     │ 22       │ 5      │
+│ 22      │ 'components/movement/GovernedAccessoryPickerModal.tsx'                     │ 68    │ 37     │ 6      │ 25       │ 0      │
+│ 23      │ 'app/(tabs)/dev-mocks/anatomy-system.tsx'                                  │ 64    │ 41     │ 10     │ 13       │ 0      │
+│ 24      │ 'app/coach-team-brief.tsx'                                                 │ 64    │ 17     │ 8      │ 39       │ 0      │
+│ 25      │ 'app/(tabs)/workout/session-workspace/[workoutId].tsx'                     │ 59    │ 48     │ 5      │ 6        │ 0      │
+│ 26      │ 'components/meet-packet/AthleteMeetPacketV2.tsx'                           │ 56    │ 0      │ 7      │ 49       │ 0      │
+│ 27      │ 'components/calendar/AthleteCalendarExperience.tsx'                        │ 54    │ 2      │ 30     │ 18       │ 4      │
+│ 28      │ 'components/workout-logger/session-v3-shell.tsx'                           │ 54    │ 38     │ 4      │ 12       │ 0      │
+│ 29      │ 'components/workout-logger/session-v3-closeout.tsx'                        │ 49    │ 34     │ 2      │ 13       │ 0      │
+│ 30      │ 'app/(tabs)/workout/[workoutId].tsx'                                       │ 47    │ 16     │ 4      │ 26       │ 1      │
+│ 31      │ 'components/workout-logger/superset-round-workspace.tsx'                   │ 45    │ 30     │ 1      │ 14       │ 0      │
+│ 32      │ 'components/coach-mobile/CoachHomeV2.tsx'                                  │ 41    │ 3      │ 12     │ 26       │ 0      │
+│ 33      │ 'components/training-hub/AthleteTrainingHubExperience.tsx'                 │ 41    │ 23     │ 9      │ 9        │ 0      │
+│ 34      │ 'components/workout-logger/canonical-record-recognition.tsx'               │ 41    │ 19     │ 3      │ 4        │ 15     │
+│ 35      │ 'components/workout-logger/readiness-modal.tsx'                            │ 41    │ 28     │ 2      │ 11       │ 0      │
+│ 36      │ 'app/coach-athlete-analytics/[athleteId].tsx'                              │ 39    │ 14     │ 6      │ 19       │ 0      │
+│ 37      │ 'components/charts/AnalyticalTimeSeriesChart.tsx'                          │ 39    │ 16     │ 6      │ 17       │ 0      │
+│ 38      │ 'components/workout-logger/major-volume-milestone-recognition.tsx'         │ 39    │ 24     │ 4      │ 5        │ 6      │
+│ 39      │ 'components/workout-logger/session-v3-movement.tsx'                        │ 39    │ 23     │ 1      │ 15       │ 0      │
+│ 40      │ 'components/workout-logger/core-loggers.tsx'                               │ 38    │ 10     │ 4      │ 16       │ 8      │
+│ 41      │ 'components/coach-mobile/athlete-workspace/PerformanceVisuals.tsx'         │ 37    │ 17     │ 4      │ 16       │ 0      │
+│ 42      │ 'components/ledger/CompetitiveStandingCard.tsx'                            │ 37    │ 19     │ 6      │ 12       │ 0      │
+│ 43      │ 'components/ledger/archive-foundation.tsx'                                 │ 35    │ 8      │ 17     │ 10       │ 0      │
+│ 44      │ 'app/(tabs)/accessory-catalog-review.tsx'                                  │ 34    │ 0      │ 7      │ 27       │ 0      │
+│ 45      │ 'components/coach-mobile/CoachAttentionDetailV2.tsx'                       │ 34    │ 3      │ 13     │ 18       │ 0      │
+│ 46      │ 'components/workout-logger/completed-session-correction.tsx'               │ 33    │ 22     │ 3      │ 8        │ 0      │
+│ 47      │ 'components/training-hub/AthleteBlockDetailsSheet.tsx'                     │ 32    │ 4      │ 9      │ 19       │ 0      │
+│ 48      │ 'app/(tabs)/coach-videos.tsx'                                              │ 30    │ 7      │ 4      │ 19       │ 0      │
+│ 49      │ 'app/(tabs)/dev-mocks/movement-art-hero.tsx'                               │ 30    │ 17     │ 1      │ 12       │ 0      │
+│ 50      │ 'components/workout-logger/substitution-confirmation-sheet.tsx'            │ 30    │ 15     │ 4      │ 11       │ 0      │
+│ 51      │ 'components/coach-mobile/athlete-workspace/CoachAthletePerformance.tsx'    │ 29    │ 2      │ 1      │ 26       │ 0      │
+│ 52      │ 'components/home/TodayHomeExperience.tsx'                                  │ 29    │ 0      │ 7      │ 22       │ 0      │
+│ 53      │ 'components/movement-history/AnalyticalHistoryChart.tsx'                   │ 28    │ 14     │ 3      │ 11       │ 0      │
+│ 54      │ 'app/coach-team-methodology.tsx'                                           │ 25    │ 11     │ 5      │ 9        │ 0      │
+│ 55      │ 'components/workout-logger/logger-feedback.tsx'                            │ 24    │ 10     │ 3      │ 3        │ 8      │
+│ 56      │ 'app/coach-team-outliers.tsx'                                              │ 23    │ 7      │ 4      │ 12       │ 0      │
+│ 57      │ 'components/workout-logger/session-history-peek.tsx'                       │ 23    │ 14     │ 1      │ 8        │ 0      │
+│ 58      │ 'components/movement/MovementSearchField.tsx'                              │ 22    │ 16     │ 2      │ 4        │ 0      │
+│ 59      │ 'components/coach-mobile/coach-mobile-v2-ui.tsx'                           │ 21    │ 14     │ 2      │ 5        │ 0      │
+│ 60      │ 'components/coach-mobile/ProgrammingReuseLibrary.tsx'                      │ 19    │ 4      │ 3      │ 12       │ 0      │
+│ 61      │ 'components/coach-mobile/athlete-workspace/CoachAthleteBrief.tsx'          │ 18    │ 1      │ 3      │ 14       │ 0      │
+│ 62      │ 'components/training-hub/AthleteProgramTimeline.tsx'                       │ 18    │ 11     │ 4      │ 3        │ 0      │
+│ 63      │ 'app/(tabs)/athlete-meet-plan.tsx'                                         │ 17    │ 0      │ 7      │ 10       │ 0      │
+│ 64      │ 'components/workout-logger/rest-timer-focus.tsx'                           │ 17    │ 1      │ 3      │ 2        │ 11     │
+│ 65      │ 'components/ledger/archive-detail.tsx'                                     │ 16    │ 10     │ 5      │ 1        │ 0      │
+│ 66      │ 'components/SetVideoPlayerModal.tsx'                                       │ 16    │ 0      │ 1      │ 11       │ 4      │
+│ 67      │ 'components/coach-mobile/athlete-workspace/CoachAthleteReviews.tsx'        │ 14    │ 0      │ 2      │ 12       │ 0      │
+│ 68      │ 'components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx' │ 14    │ 1      │ 3      │ 10       │ 0      │
+│ 69      │ 'components/coach-mobile/AthleteCoachingScratchpad.tsx'                    │ 13    │ 0      │ 1      │ 12       │ 0      │
+│ 70      │ 'components/reviews/review-list-screen.tsx'                                │ 13    │ 2      │ 3      │ 8        │ 0      │
+│ 71      │ 'components/ui/sl-contextual-header.tsx'                                   │ 13    │ 5      │ 1      │ 7        │ 0      │
+│ 72      │ 'components/workout-logger/active-composition-editor.tsx'                  │ 13    │ 3      │ 3      │ 7        │ 0      │
+│ 73      │ 'components/workout-logger/equipment-type-choice.tsx'                      │ 13    │ 9      │ 1      │ 3        │ 0      │
+│ 74      │ 'components/reviews/review-item-card.tsx'                                  │ 12    │ 2      │ 3      │ 7        │ 0      │
+│ 75      │ 'components/workout-logger/approved-substitution-picker.tsx'               │ 12    │ 7      │ 0      │ 5        │ 0      │
+│ 76      │ 'app/(tabs)/athlete-dashboard.tsx'                                         │ 11    │ 0      │ 1      │ 10       │ 0      │
+│ 77      │ 'app/(tabs)/create-workout.tsx'                                            │ 11    │ 0      │ 0      │ 11       │ 0      │
+│ 78      │ 'components/ui/sl-compact-dropdown.tsx'                                    │ 11    │ 2      │ 2      │ 2        │ 5      │
+│ 79      │ 'components/coach-mobile/InlineSessionReorder.tsx'                         │ 10    │ 3      │ 1      │ 6        │ 0      │
+│ 80      │ 'components/workout-logger/compact-set-timeline.tsx'                       │ 10    │ 0      │ 1      │ 1        │ 8      │
+│ 81      │ 'components/charts/ChartAxisModeToggle.tsx'                                │ 9     │ 6      │ 2      │ 1        │ 0      │
+│ 82      │ 'components/coach-mobile/athlete-workspace/CoachAthleteNotes.tsx'          │ 9     │ 0      │ 0      │ 9        │ 0      │
+│ 83      │ 'components/workout-logger/logger-wheel-picker.tsx'                        │ 9     │ 0      │ 0      │ 9        │ 0      │
+│ 84      │ 'components/workout-logger/session-set-entry-context.tsx'                  │ 9     │ 5      │ 0      │ 4        │ 0      │
+│ 85      │ 'app/(tabs)/settings.tsx'                                                  │ 8     │ 0      │ 4      │ 4        │ 0      │
+│ 86      │ 'components/calendar/CalendarEventSheet.tsx'                               │ 8     │ 0      │ 3      │ 5        │ 0      │
+│ 87      │ 'components/coach-mobile/athlete-workspace/CoachAthleteContext.tsx'        │ 8     │ 0      │ 1      │ 7        │ 0      │
+│ 88      │ 'components/coach-mobile/athlete-workspace/CoachAthleteEvidence.tsx'       │ 8     │ 0      │ 1      │ 7        │ 0      │
+│ 89      │ 'components/ledger/journey-moments.ts'                                     │ 8     │ 8      │ 0      │ 0        │ 0      │
+│ 90      │ 'components/workout-logger/active-prescription-editor.tsx'                 │ 8     │ 1      │ 2      │ 5        │ 0      │
+│ 91      │ 'components/workout-logger/post-session-ledger-ceremony.tsx'               │ 8     │ 2      │ 1      │ 1        │ 4      │
+│ 92      │ 'components/coach-mobile/athlete-workspace/CoachAthleteMessages.tsx'       │ 7     │ 1      │ 1      │ 5        │ 0      │
+│ 93      │ 'components/coach-mobile/coach-material-layer.tsx'                         │ 7     │ 7      │ 0      │ 0        │ 0      │
+│ 94      │ 'components/ledger/primitives.tsx'                                         │ 6     │ 3      │ 3      │ 0        │ 0      │
+│ 95      │ 'components/workout-logger/equipment-history-evidence.tsx'                 │ 6     │ 3      │ 0      │ 3        │ 0      │
+│ 96      │ 'components/workout-logger/session-shell.tsx'                              │ 6     │ 0      │ 0      │ 6        │ 0      │
+│ 97      │ 'app/(tabs)/link-coach.tsx'                                                │ 5     │ 0      │ 5      │ 0        │ 0      │
+│ 98      │ 'app/(tabs)/messages/[threadId].tsx'                                       │ 5     │ 0      │ 0      │ 5        │ 0      │
+│ 99      │ 'app/(tabs)/messages/index.tsx'                                            │ 5     │ 0      │ 2      │ 3        │ 0      │
+│ 100     │ 'components/navigation/CoachMoreNavigationSheet.tsx'                       │ 5     │ 0      │ 1      │ 4        │ 0      │
+│ 101     │ 'components/sheets/StrengthLedgerBottomSheet.tsx'                          │ 5     │ 1      │ 3      │ 1        │ 0      │
+│ 102     │ 'components/training-hub/TrainingHubSessionPreviewSheet.tsx'               │ 5     │ 4      │ 1      │ 0        │ 0      │
+│ 103     │ 'components/workout-logger/logger-modals.tsx'                              │ 5     │ 0      │ 1      │ 4        │ 0      │
+│ 104     │ 'components/workout-logger/session-actions-sheet.tsx'                      │ 5     │ 0      │ 1      │ 4        │ 0      │
+│ 105     │ 'app/(tabs)/coach-session-review.tsx'                                      │ 4     │ 1      │ 0      │ 3        │ 0      │
+│ 106     │ 'app/(tabs)/messages/announcements.tsx'                                    │ 4     │ 0      │ 0      │ 4        │ 0      │
+│ 107     │ 'app/(tabs)/reflection.tsx'                                                │ 4     │ 0      │ 2      │ 2        │ 0      │
+│ 108     │ 'app/(tabs)/video-archive.tsx'                                             │ 4     │ 0      │ 0      │ 4        │ 0      │
+│ 109     │ 'components/calendar/TrainingScheduleSheet.tsx'                            │ 4     │ 0      │ 3      │ 1        │ 0      │
+│ 110     │ 'components/coach-mobile/ProgrammingLastExposure.tsx'                      │ 4     │ 0      │ 0      │ 4        │ 0      │
+│ 111     │ 'components/home/HomeTrendPlot.tsx'                                        │ 4     │ 2      │ 0      │ 2        │ 0      │
+│ 112     │ 'components/ui/sl-accessory-icon.tsx'                                      │ 4     │ 0      │ 0      │ 0        │ 4      │
+│ 113     │ 'app/(tabs)/coach-video-archive.tsx'                                       │ 3     │ 0      │ 1      │ 2        │ 0      │
+│ 114     │ 'app/(tabs)/workout/program-timeline.tsx'                                  │ 3     │ 1      │ 2      │ 0        │ 0      │
+│ 115     │ 'components/anatomy/MuscleMap.tsx'                                         │ 3     │ 2      │ 1      │ 0        │ 0      │
+│ 116     │ 'components/movement/CanonicalMuscleGroupArtwork.tsx'                      │ 3     │ 2      │ 0      │ 1        │ 0      │
+│ 117     │ 'components/navigation/MeetModeHeader.tsx'                                 │ 3     │ 0      │ 1      │ 2        │ 0      │
+│ 118     │ 'components/navigation/sl-tab-row-control.tsx'                             │ 3     │ 1      │ 1      │ 1        │ 0      │
+│ 119     │ 'components/workout-logger/post-session-surfaces.tsx'                      │ 3     │ 3      │ 0      │ 0        │ 0      │
+│ 120     │ 'components/workout-logger/session-equipment-context.tsx'                  │ 3     │ 2      │ 0      │ 1        │ 0      │
+│ 121     │ 'app/(tabs)/athlete-calendar.tsx'                                          │ 2     │ 0      │ 2      │ 0        │ 0      │
+│ 122     │ 'app/(tabs)/ledger/_layout.tsx'                                            │ 2     │ 0      │ 0      │ 2        │ 0      │
+│ 123     │ 'components/AthleteCheckInExperience.tsx'                                  │ 2     │ 0      │ 0      │ 2        │ 0      │
+│ 124     │ 'components/reviews/review-filter-row.tsx'                                 │ 2     │ 0      │ 1      │ 1        │ 0      │
+│ 125     │ 'components/workout-logger/final-session-completion-presenter.tsx'         │ 2     │ 1      │ 1      │ 0        │ 0      │
+│ 126     │ 'components/workout-logger/session-clock-text.tsx'                         │ 2     │ 2      │ 0      │ 0        │ 0      │
+│ 127     │ 'app/_layout.tsx'                                                          │ 1     │ 0      │ 1      │ 0        │ 0      │
+│ 128     │ 'app/(tabs)/coach-video-review.tsx'                                        │ 1     │ 0      │ 0      │ 1        │ 0      │
+│ 129     │ 'components/anatomy/anatomy-mask-registry.tsx'                             │ 1     │ 1      │ 0      │ 0        │ 0      │
+│ 130     │ 'components/anatomy/GovernedMuscleThumbnail.tsx'                           │ 1     │ 1      │ 0      │ 0        │ 0      │
+│ 131     │ 'components/anatomy/ProgrammingMuscleRegionArt.tsx'                        │ 1     │ 0      │ 1      │ 0        │ 0      │
+│ 132     │ 'components/ui/floating-control-coordinator.tsx'                           │ 1     │ 0      │ 0      │ 1        │ 0      │
+│ 133     │ 'components/ui/surface-weight-unit-toggle.tsx'                             │ 1     │ 0      │ 0      │ 1        │ 0      │
+│ 134     │ 'components/workout-logger/manufacturer-brand-mark.tsx'                    │ 1     │ 1      │ 0      │ 0        │ 0      │
+└─────────┴────────────────────────────────────────────────────────────────────────────┴───────┴────────┴────────┴──────────┴────────┘
+Files with raw visual literals: 135
+Total raw visual literals: 6262
+Reviewed justified exceptions: 6262
+Unreviewed or changed findings: 158
+┌─────────┬────────────────────────────────────────────────────────────────────────────┬─────────────────────────┬────────┬──────────┐
+│ (index) │ file                                                                       │ issue                   │ actual │ expected │
+├─────────┼────────────────────────────────────────────────────────────────────────────┼─────────────────────────┼────────┼──────────┤
+│ 0       │ 'components/coach-mobile/CompletedSessionRecap.tsx'                        │ 'unreviewed literals'   │ 605    │ 0        │
+│ 1       │ 'components/ledger/experiences.tsx'                                        │ 'unreviewed literals'   │ 463    │ 0        │
+│ 2       │ 'components/ledger/AchievementsExperience.tsx'                             │ 'unreviewed literals'   │ 457    │ 0        │
+│ 3       │ 'components/movement-history/CanonicalMovementHistoryScreen.tsx'           │ 'unreviewed literals'   │ 282    │ 0        │
+│ 4       │ 'components/ledger/StrengthExperience.tsx'                                 │ 'unreviewed literals'   │ 270    │ 0        │
+│ 5       │ 'components/ledger/JourneyExperience.tsx'                                  │ 'unreviewed literals'   │ 231    │ 0        │
+│ 6       │ 'components/ledger/VariantsExperience.tsx'                                 │ 'unreviewed literals'   │ 213    │ 0        │
+│ 7       │ 'components/ledger/index-experience.tsx'                                   │ 'unreviewed literals'   │ 162    │ 0        │
+│ 8       │ 'components/ledger/exploration-experiences.tsx'                            │ 'unreviewed literals'   │ 158    │ 0        │
+│ 9       │ 'components/home/AthleteHomeV3.tsx'                                        │ 'unreviewed literals'   │ 142    │ 0        │
+│ 10      │ 'components/ledger/AccessoriesExperience.tsx'                              │ 'unreviewed literals'   │ 140    │ 0        │
+│ 11      │ 'app/(tabs)/workout/index.tsx'                                             │ 'colors'                │ 37     │ 0        │
+│ 12      │ 'app/(tabs)/workout/index.tsx'                                             │ 'radius'                │ 26     │ 0        │
+│ 13      │ 'app/(tabs)/workout/index.tsx'                                             │ 'fontSize'              │ 65     │ 5        │
+│ 14      │ 'app/(tabs)/workout/index.tsx'                                             │ 'shadow'                │ 8      │ 0        │
+│ 15      │ 'components/coach-mobile/SessionEditingWorkspace.tsx'                      │ 'colors'                │ 20     │ 9        │
+│ 16      │ 'components/coach-mobile/SessionEditingWorkspace.tsx'                      │ 'radius'                │ 13     │ 18       │
+│ 17      │ 'components/coach-mobile/SessionEditingWorkspace.tsx'                      │ 'fontSize'              │ 90     │ 40       │
+│ 18      │ 'components/coach-mobile/SessionEditingWorkspace.tsx'                      │ 'shadow'                │ 8      │ 0        │
+│ 19      │ 'components/volume-achievements/VolumeAchievementExperience.tsx'           │ 'colors'                │ 64     │ 56       │
+│ 20      │ 'components/volume-achievements/VolumeAchievementExperience.tsx'           │ 'radius'                │ 11     │ 10       │
+│ 21      │ 'components/volume-achievements/VolumeAchievementExperience.tsx'           │ 'fontSize'              │ 52     │ 45       │
+│ 22      │ 'components/coach-mobile/CoachActivityHome.tsx'                            │ 'unreviewed literals'   │ 113    │ 0        │
+│ 23      │ 'app/(tabs)/coach-calendar.tsx'                                            │ 'colors'                │ 6      │ 0        │
+│ 24      │ 'app/(tabs)/coach-calendar.tsx'                                            │ 'radius'                │ 37     │ 0        │
+│ 25      │ 'app/(tabs)/coach-calendar.tsx'                                            │ 'fontSize'              │ 54     │ 5        │
+│ 26      │ 'app/(tabs)/coach-calendar.tsx'                                            │ 'shadow'                │ 14     │ 0        │
+│ 27      │ 'components/ledger/StrengthProgressionStory.tsx'                           │ 'unreviewed literals'   │ 101    │ 0        │
+│ 28      │ 'components/coach-mobile/CoachAthleteHubV2.tsx'                            │ 'unreviewed literals'   │ 96     │ 0        │
+│ 29      │ 'components/coach-mobile/CoachAthleteHubSheet.tsx'                         │ 'unreviewed literals'   │ 86     │ 0        │
+│ 30      │ 'components/workout-logger/smart-warmup-sheet.tsx'                         │ 'unreviewed literals'   │ 80     │ 0        │
+│ 31      │ 'components/coach-mobile/CoachCheckInsV2.tsx'                              │ 'unreviewed literals'   │ 77     │ 0        │
+│ 32      │ 'components/calendar/AthleteCalendarStoryboardV2.tsx'                      │ 'unreviewed literals'   │ 76     │ 0        │
+│ 33      │ 'components/movement/GovernedAccessoryPickerModal.tsx'                     │ 'unreviewed literals'   │ 68     │ 0        │
+│ 34      │ 'app/(tabs)/dev-mocks/anatomy-system.tsx'                                  │ 'unreviewed literals'   │ 64     │ 0        │
+│ 35      │ 'app/coach-team-brief.tsx'                                                 │ 'unreviewed literals'   │ 64     │ 0        │
+│ 36      │ 'app/(tabs)/workout/session-workspace/[workoutId].tsx'                     │ 'unreviewed literals'   │ 59     │ 0        │
+│ 37      │ 'components/meet-packet/AthleteMeetPacketV2.tsx'                           │ 'unreviewed literals'   │ 56     │ 0        │
+│ 38      │ 'components/calendar/AthleteCalendarExperience.tsx'                        │ 'colors'                │ 2      │ 0        │
+│ 39      │ 'components/calendar/AthleteCalendarExperience.tsx'                        │ 'radius'                │ 30     │ 11       │
+│ 40      │ 'components/calendar/AthleteCalendarExperience.tsx'                        │ 'fontSize'              │ 18     │ 0        │
+│ 41      │ 'components/calendar/AthleteCalendarExperience.tsx'                        │ 'shadow'                │ 4      │ 0        │
+│ 42      │ 'components/workout-logger/session-v3-shell.tsx'                           │ 'unreviewed literals'   │ 54     │ 0        │
+│ 43      │ 'components/workout-logger/session-v3-closeout.tsx'                        │ 'unreviewed literals'   │ 49     │ 0        │
+│ 44      │ 'app/(tabs)/workout/[workoutId].tsx'                                       │ 'colors'                │ 16     │ 0        │
+│ 45      │ 'app/(tabs)/workout/[workoutId].tsx'                                       │ 'radius'                │ 4      │ 1        │
+│ 46      │ 'app/(tabs)/workout/[workoutId].tsx'                                       │ 'fontSize'              │ 26     │ 11       │
+│ 47      │ 'app/(tabs)/workout/[workoutId].tsx'                                       │ 'shadow'                │ 1      │ 0        │
+│ 48      │ 'components/workout-logger/superset-round-workspace.tsx'                   │ 'unreviewed literals'   │ 45     │ 0        │
+│ 49      │ 'components/coach-mobile/CoachHomeV2.tsx'                                  │ 'unreviewed literals'   │ 41     │ 0        │
+│ 50      │ 'components/training-hub/AthleteTrainingHubExperience.tsx'                 │ 'unreviewed literals'   │ 41     │ 0        │
+│ 51      │ 'components/workout-logger/canonical-record-recognition.tsx'               │ 'unreviewed literals'   │ 41     │ 0        │
+│ 52      │ 'components/workout-logger/readiness-modal.tsx'                            │ 'unreviewed literals'   │ 41     │ 0        │
+│ 53      │ 'app/coach-athlete-analytics/[athleteId].tsx'                              │ 'unreviewed literals'   │ 39     │ 0        │
+│ 54      │ 'components/charts/AnalyticalTimeSeriesChart.tsx'                          │ 'unreviewed literals'   │ 39     │ 0        │
+│ 55      │ 'components/workout-logger/major-volume-milestone-recognition.tsx'         │ 'unreviewed literals'   │ 39     │ 0        │
+│ 56      │ 'components/workout-logger/session-v3-movement.tsx'                        │ 'unreviewed literals'   │ 39     │ 0        │
+│ 57      │ 'components/workout-logger/core-loggers.tsx'                               │ 'colors'                │ 10     │ 0        │
+│ 58      │ 'components/workout-logger/core-loggers.tsx'                               │ 'radius'                │ 4      │ 0        │
+│ 59      │ 'components/workout-logger/core-loggers.tsx'                               │ 'fontSize'              │ 16     │ 8        │
+│ 60      │ 'components/workout-logger/core-loggers.tsx'                               │ 'shadow'                │ 8      │ 0        │
+│ 61      │ 'components/coach-mobile/athlete-workspace/PerformanceVisuals.tsx'         │ 'unreviewed literals'   │ 37     │ 0        │
+│ 62      │ 'components/ledger/CompetitiveStandingCard.tsx'                            │ 'unreviewed literals'   │ 37     │ 0        │
+│ 63      │ 'components/ledger/archive-foundation.tsx'                                 │ 'unreviewed literals'   │ 35     │ 0        │
+│ 64      │ 'app/(tabs)/accessory-catalog-review.tsx'                                  │ 'unreviewed literals'   │ 34     │ 0        │
+│ 65      │ 'components/coach-mobile/CoachAttentionDetailV2.tsx'                       │ 'unreviewed literals'   │ 34     │ 0        │
+│ 66      │ 'components/workout-logger/completed-session-correction.tsx'               │ 'unreviewed literals'   │ 33     │ 0        │
+│ 67      │ 'components/training-hub/AthleteBlockDetailsSheet.tsx'                     │ 'unreviewed literals'   │ 32     │ 0        │
+│ 68      │ 'app/(tabs)/coach-videos.tsx'                                              │ 'colors'                │ 7      │ 0        │
+│ 69      │ 'app/(tabs)/coach-videos.tsx'                                              │ 'radius'                │ 4      │ 1        │
+│ 70      │ 'app/(tabs)/coach-videos.tsx'                                              │ 'fontSize'              │ 19     │ 0        │
+│ 71      │ 'app/(tabs)/dev-mocks/movement-art-hero.tsx'                               │ 'unreviewed literals'   │ 30     │ 0        │
+│ 72      │ 'components/workout-logger/substitution-confirmation-sheet.tsx'            │ 'unreviewed literals'   │ 30     │ 0        │
+│ 73      │ 'components/coach-mobile/athlete-workspace/CoachAthletePerformance.tsx'    │ 'unreviewed literals'   │ 29     │ 0        │
+│ 74      │ 'components/home/TodayHomeExperience.tsx'                                  │ 'radius'                │ 7      │ 5        │
+│ 75      │ 'components/home/TodayHomeExperience.tsx'                                  │ 'fontSize'              │ 22     │ 20       │
+│ 76      │ 'components/movement-history/AnalyticalHistoryChart.tsx'                   │ 'unreviewed literals'   │ 28     │ 0        │
+│ 77      │ 'app/coach-team-methodology.tsx'                                           │ 'unreviewed literals'   │ 25     │ 0        │
+│ 78      │ 'components/workout-logger/logger-feedback.tsx'                            │ 'unreviewed literals'   │ 24     │ 0        │
+│ 79      │ 'app/coach-team-outliers.tsx'                                              │ 'unreviewed literals'   │ 23     │ 0        │
+│ 80      │ 'components/workout-logger/session-history-peek.tsx'                       │ 'unreviewed literals'   │ 23     │ 0        │
+│ 81      │ 'components/movement/MovementSearchField.tsx'                              │ 'unreviewed literals'   │ 22     │ 0        │
+│ 82      │ 'components/coach-mobile/coach-mobile-v2-ui.tsx'                           │ 'unreviewed literals'   │ 21     │ 0        │
+│ 83      │ 'components/coach-mobile/ProgrammingReuseLibrary.tsx'                      │ 'unreviewed literals'   │ 19     │ 0        │
+│ 84      │ 'components/coach-mobile/athlete-workspace/CoachAthleteBrief.tsx'          │ 'unreviewed literals'   │ 18     │ 0        │
+│ 85      │ 'components/training-hub/AthleteProgramTimeline.tsx'                       │ 'unreviewed literals'   │ 18     │ 0        │
+│ 86      │ 'components/workout-logger/rest-timer-focus.tsx'                           │ 'unreviewed literals'   │ 17     │ 0        │
+│ 87      │ 'components/ledger/archive-detail.tsx'                                     │ 'unreviewed literals'   │ 16     │ 0        │
+│ 88      │ 'components/coach-mobile/athlete-workspace/CoachAthleteReviews.tsx'        │ 'unreviewed literals'   │ 14     │ 0        │
+│ 89      │ 'components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx' │ 'unreviewed literals'   │ 14     │ 0        │
+│ 90      │ 'components/coach-mobile/AthleteCoachingScratchpad.tsx'                    │ 'unreviewed literals'   │ 13     │ 0        │
+│ 91      │ 'components/reviews/review-list-screen.tsx'                                │ 'unreviewed literals'   │ 13     │ 0        │
+│ 92      │ 'components/ui/sl-contextual-header.tsx'                                   │ 'unreviewed literals'   │ 13     │ 0        │
+│ 93      │ 'components/workout-logger/active-composition-editor.tsx'                  │ 'unreviewed literals'   │ 13     │ 0        │
+│ 94      │ 'components/workout-logger/equipment-type-choice.tsx'                      │ 'unreviewed literals'   │ 13     │ 0        │
+│ 95      │ 'components/reviews/review-item-card.tsx'                                  │ 'unreviewed literals'   │ 12     │ 0        │
+│ 96      │ 'components/workout-logger/approved-substitution-picker.tsx'               │ 'unreviewed literals'   │ 12     │ 0        │
+│ 97      │ 'app/(tabs)/athlete-dashboard.tsx'                                         │ 'fontSize'              │ 10     │ 11       │
+│ 98      │ 'app/(tabs)/create-workout.tsx'                                            │ 'radius'                │ 0      │ 1        │
+│ 99      │ 'app/(tabs)/create-workout.tsx'                                            │ 'fontSize'              │ 11     │ 0        │
+│ 100     │ 'components/ui/sl-compact-dropdown.tsx'                                    │ 'unreviewed literals'   │ 11     │ 0        │
+│ 101     │ 'components/coach-mobile/InlineSessionReorder.tsx'                         │ 'unreviewed literals'   │ 10     │ 0        │
+│ 102     │ 'components/workout-logger/compact-set-timeline.tsx'                       │ 'unreviewed literals'   │ 10     │ 0        │
+│ 103     │ 'components/charts/ChartAxisModeToggle.tsx'                                │ 'unreviewed literals'   │ 9      │ 0        │
+│ 104     │ 'components/coach-mobile/athlete-workspace/CoachAthleteNotes.tsx'          │ 'unreviewed literals'   │ 9      │ 0        │
+│ 105     │ 'components/workout-logger/logger-wheel-picker.tsx'                        │ 'unreviewed literals'   │ 9      │ 0        │
+│ 106     │ 'components/workout-logger/session-set-entry-context.tsx'                  │ 'unreviewed literals'   │ 9      │ 0        │
+│ 107     │ 'app/(tabs)/settings.tsx'                                                  │ 'radius'                │ 4      │ 2        │
+│ 108     │ 'app/(tabs)/settings.tsx'                                                  │ 'fontSize'              │ 4      │ 3        │
+│ 109     │ 'components/calendar/CalendarEventSheet.tsx'                               │ 'radius'                │ 3      │ 1        │
+│ 110     │ 'components/calendar/CalendarEventSheet.tsx'                               │ 'fontSize'              │ 5      │ 1        │
+│ 111     │ 'components/coach-mobile/athlete-workspace/CoachAthleteContext.tsx'        │ 'unreviewed literals'   │ 8      │ 0        │
+│ 112     │ 'components/coach-mobile/athlete-workspace/CoachAthleteEvidence.tsx'       │ 'unreviewed literals'   │ 8      │ 0        │
+│ 113     │ 'components/ledger/journey-moments.ts'                                     │ 'unreviewed literals'   │ 8      │ 0        │
+│ 114     │ 'components/workout-logger/active-prescription-editor.tsx'                 │ 'unreviewed literals'   │ 8      │ 0        │
+│ 115     │ 'components/workout-logger/post-session-ledger-ceremony.tsx'               │ 'unreviewed literals'   │ 8      │ 0        │
+│ 116     │ 'components/coach-mobile/athlete-workspace/CoachAthleteMessages.tsx'       │ 'unreviewed literals'   │ 7      │ 0        │
+│ 117     │ 'components/coach-mobile/coach-material-layer.tsx'                         │ 'unreviewed literals'   │ 7      │ 0        │
+│ 118     │ 'components/ledger/primitives.tsx'                                         │ 'unreviewed literals'   │ 6      │ 0        │
+│ 119     │ 'components/workout-logger/equipment-history-evidence.tsx'                 │ 'unreviewed literals'   │ 6      │ 0        │
+│ 120     │ 'components/workout-logger/session-shell.tsx'                              │ 'fontSize'              │ 6      │ 4        │
+│ 121     │ 'components/navigation/CoachMoreNavigationSheet.tsx'                       │ 'unreviewed literals'   │ 5      │ 0        │
+│ 122     │ 'components/sheets/StrengthLedgerBottomSheet.tsx'                          │ 'unreviewed literals'   │ 5      │ 0        │
+│ 123     │ 'components/training-hub/TrainingHubSessionPreviewSheet.tsx'               │ 'unreviewed literals'   │ 5      │ 0        │
+│ 124     │ 'components/workout-logger/logger-modals.tsx'                              │ 'unreviewed literals'   │ 5      │ 0        │
+│ 125     │ 'components/workout-logger/session-actions-sheet.tsx'                      │ 'unreviewed literals'   │ 5      │ 0        │
+│ 126     │ 'app/(tabs)/coach-session-review.tsx'                                      │ 'unreviewed literals'   │ 4      │ 0        │
+│ 127     │ 'components/calendar/TrainingScheduleSheet.tsx'                            │ 'unreviewed literals'   │ 4      │ 0        │
+│ 128     │ 'components/coach-mobile/ProgrammingLastExposure.tsx'                      │ 'unreviewed literals'   │ 4      │ 0        │
+│ 129     │ 'components/home/HomeTrendPlot.tsx'                                        │ 'unreviewed literals'   │ 4      │ 0        │
+│ 130     │ 'components/ui/sl-accessory-icon.tsx'                                      │ 'unreviewed literals'   │ 4      │ 0        │
+│ 131     │ 'app/(tabs)/workout/program-timeline.tsx'                                  │ 'unreviewed literals'   │ 3      │ 0        │
+│ 132     │ 'components/anatomy/MuscleMap.tsx'                                         │ 'unreviewed literals'   │ 3      │ 0        │
+│ 133     │ 'components/movement/CanonicalMuscleGroupArtwork.tsx'                      │ 'unreviewed literals'   │ 3      │ 0        │
+│ 134     │ 'components/navigation/MeetModeHeader.tsx'                                 │ 'unreviewed literals'   │ 3      │ 0        │
+│ 135     │ 'components/navigation/sl-tab-row-control.tsx'                             │ 'unreviewed literals'   │ 3      │ 0        │
+│ 136     │ 'components/workout-logger/post-session-surfaces.tsx'                      │ 'unreviewed literals'   │ 3      │ 0        │
+│ 137     │ 'components/workout-logger/session-equipment-context.tsx'                  │ 'unreviewed literals'   │ 3      │ 0        │
+│ 138     │ 'app/(tabs)/athlete-calendar.tsx'                                          │ 'radius'                │ 2      │ 1        │
+│ 139     │ 'app/(tabs)/ledger/_layout.tsx'                                            │ 'unreviewed literals'   │ 2      │ 0        │
+│ 140     │ 'components/reviews/review-filter-row.tsx'                                 │ 'unreviewed literals'   │ 2      │ 0        │
+│ 141     │ 'components/workout-logger/final-session-completion-presenter.tsx'         │ 'unreviewed literals'   │ 2      │ 0        │
+│ 142     │ 'components/workout-logger/session-clock-text.tsx'                         │ 'unreviewed literals'   │ 2      │ 0        │
+│ 143     │ 'app/_layout.tsx'                                                          │ 'unreviewed literals'   │ 1      │ 0        │
+│ 144     │ 'components/anatomy/anatomy-mask-registry.tsx'                             │ 'unreviewed literals'   │ 1      │ 0        │
+│ 145     │ 'components/anatomy/GovernedMuscleThumbnail.tsx'                           │ 'unreviewed literals'   │ 1      │ 0        │
+│ 146     │ 'components/anatomy/ProgrammingMuscleRegionArt.tsx'                        │ 'unreviewed literals'   │ 1      │ 0        │
+│ 147     │ 'components/ui/floating-control-coordinator.tsx'                           │ 'unreviewed literals'   │ 1      │ 0        │
+│ 148     │ 'components/ui/surface-weight-unit-toggle.tsx'                             │ 'unreviewed literals'   │ 1      │ 0        │
+│ 149     │ 'components/workout-logger/manufacturer-brand-mark.tsx'                    │ 'unreviewed literals'   │ 1      │ 0        │
+│ 150     │ 'app/(tabs)/dev-mocks/milestones.tsx'                                      │ 'stale exception entry' │ 0      │ 222      │
+│ 151     │ 'app/(tabs)/dev-mocks/ledger/[screen].tsx'                                 │ 'stale exception entry' │ 0      │ 1        │
+│ 152     │ 'components/barbell/LoadedSleeve3D.tsx'                                    │ 'stale exception entry' │ 0      │ 8        │
+│ 153     │ 'app/(tabs)/dev-mocks/index.tsx'                                           │ 'stale exception entry' │ 0      │ 2        │
+│ 154     │ 'app/(tabs)/dev-mocks/workspace-system.tsx'                                │ 'stale exception entry' │ 0      │ 3        │
+│ 155     │ 'app/(tabs)/coach-dashboard.tsx'                                           │ 'stale exception entry' │ 0      │ 9        │
+│ 156     │ 'components/workout-logger/stage5-impact-summary.tsx'                      │ 'stale exception entry' │ 0      │ 3        │
+│ 157     │ 'app/(tabs)/coach-athlete/[athleteId].tsx'                                 │ 'stale exception entry' │ 0      │ 3        │
+└─────────┴────────────────────────────────────────────────────────────────────────────┴─────────────────────────┴────────┴──────────┘

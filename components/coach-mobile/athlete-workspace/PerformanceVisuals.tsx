@@ -72,7 +72,7 @@ export function StrengthHero({ data, unit, compact = false, dense = false, onPre
 export const v = StyleSheet.create({
   flex: { flex: 1, minWidth: 0 },
   pressed: { opacity: 0.75, transform: [{ scale: 0.987 }] },
-  eyebrow: { color: INK.violet, fontSize: 11, fontWeight: '700', letterSpacing: 1.5 },
+  eyebrow: { color: INK.violet, fontSize: 12, fontWeight: '700', letterSpacing: 1.5 },
   heading: { color: INK.text, fontFamily: SLFontFamilies.display, fontSize: 23, flex: 1 },
   headingRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   body: { color: INK.muted, fontSize: 14, lineHeight: 20 },

@@ -1,0 +1,3 @@
+Release holdbacks: exact prior shipped blobs and ancestor required; arbitrary product changes rejected
+Shared client fix projections: exact shipped source + identical fix retained in DEV; stale hash, lost fix, duplicate patch and unrelated candidate changes all fail
+Cumulative shared fixes retain identical exact patches in DEV and shipped projection; missing or duplicate UI patches fail.

@@ -8037,6 +8037,21 @@
       "equipment_type": "free_weight",
       "core_movement_definition_id": null,
       "core_kind": null
+    },
+    {
+      "id": 650,
+      "key": "barbell_overhead_press",
+      "display_name": "Barbell Overhead Press",
+      "kind": "core",
+      "family": "bench",
+      "primary_muscle_group": null,
+      "secondary_muscle_groups": [],
+      "equipment_type": "barbell",
+      "programming_contexts": [
+        "core"
+      ],
+      "core_movement_definition_id": 62,
+      "core_kind": "variant"
     }
   ]
 }

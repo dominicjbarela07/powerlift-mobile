@@ -1,0 +1,82 @@
+{
+  "sourceSha": "293c5b0a081db06c677bd259f442509fc7f7cc91",
+  "publicationAuthorized": false,
+  "nativeBinaryBuilt": false,
+  "approvedMappings": 490,
+  "uniqueMovementImages": 487,
+  "platforms": {
+    "ios": {
+      "assetCount": 1015,
+      "uniqueAssetHashes": 1009,
+      "approvedMovementImages": 487,
+      "approvedEquipmentCategoryImages": 3,
+      "missingApprovedEquipmentCategoryImages": 0,
+      "missingApprovedMovementImages": 0,
+      "missingProtectedMovementImages": 0,
+      "ownerAuthorizedHistoricalRemovalHashes": 47,
+      "historicalConsolidationSourceBytesPreserved": true,
+      "platformOnlyNavigationAssets": [],
+      "OHPIncluded": true,
+      "bundle": "_expo/static/js/ios/entry-2f1c85bc6a858ba2728f8d9b45b28d06.hbc",
+      "bundleSha256": "0540e39be8fda5a9becef6009c01caf5634b4029c97027ce787c5b971b27f1f1"
+    },
+    "android": {
+      "assetCount": 1015,
+      "uniqueAssetHashes": 1010,
+      "approvedMovementImages": 487,
+      "approvedEquipmentCategoryImages": 3,
+      "missingApprovedEquipmentCategoryImages": 0,
+      "missingApprovedMovementImages": 0,
+      "missingProtectedMovementImages": 0,
+      "ownerAuthorizedHistoricalRemovalHashes": 47,
+      "historicalConsolidationSourceBytesPreserved": true,
+      "platformOnlyNavigationAssets": [
+        {
+          "hash": "3Fa5dr1FY44RJfZol0NSXmiGrgvvLI9GUZlIM2hagx8",
+          "originalFiles": [
+            "node_modules/@react-navigation/elements/lib/module/assets/search-icon@1x.ios.png"
+          ]
+        },
+        {
+          "hash": "7xP8DfxS7COBdYX9fhCfvfWTo7JUnEDOcaybDtoSzCw",
+          "originalFiles": [
+            "node_modules/@react-navigation/elements/lib/module/assets/search-icon@4x.ios.png"
+          ]
+        },
+        {
+          "hash": "K3RDqaWOksoRpXW9wRWYYVpX3eMFzYznDWAmBrMCzZg",
+          "originalFiles": [
+            "node_modules/@react-navigation/elements/lib/module/assets/back-icon@2x.ios.png"
+          ]
+        },
+        {
+          "hash": "LN_rjlzN55dvcBL7jM5zryIpAp7iHU8VCf7RFIccbNg",
+          "originalFiles": [
+            "node_modules/@react-navigation/elements/lib/module/assets/back-icon@1x.ios.png"
+          ]
+        },
+        {
+          "hash": "Pd0Hc-0n4j0leJ8wFzGzrEVa2L5aonoKG4OPicbSciU",
+          "originalFiles": [
+            "node_modules/@react-navigation/elements/lib/module/assets/back-icon@3x.ios.png"
+          ]
+        },
+        {
+          "hash": "ku2BdqyMtENipfxqNwNiagAGrGt8snLumfWFAmLsBw4",
+          "originalFiles": [
+            "node_modules/@react-navigation/elements/lib/module/assets/back-icon@4x.ios.png"
+          ]
+        },
+        {
+          "hash": "tDSnzxjC1M50fHCULqL-4tRBLZOWftkrNy-BC7kmHqU",
+          "originalFiles": [
+            "node_modules/@react-navigation/elements/lib/module/assets/search-icon@3x.ios.png"
+          ]
+        }
+      ],
+      "OHPIncluded": true,
+      "bundle": "_expo/static/js/android/entry-0e40b4cc4b5844d3ac3ef3f226dd07e8.hbc",
+      "bundleSha256": "8290923a0fe89d14730f3242c795e1d3eca915b7f48fe79ac21c2778d5f3fa84"
+    }
+  }
+}

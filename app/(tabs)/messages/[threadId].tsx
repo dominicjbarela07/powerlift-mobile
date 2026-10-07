@@ -328,7 +328,7 @@ export function ThreadScreen({
   workspaceAthleteId?: number;
   workspaceSubjectKey?: string;
 } = {}) {
-  const { user } = useAuth();
+  const { user, activeMobileMode } = useAuth();
   const router = useRouter();
   const params = useLocalSearchParams<{
     threadId?: string;
@@ -712,7 +712,7 @@ export function ThreadScreen({
               </View>
               <Text typographyRole="emptyStateTitle" style={styles.emptyTitle}>No messages yet</Text>
               <Text typographyRole="emptyStateBody" style={styles.emptyBody}>
-                {embedded && workspaceAthleteId && user?.is_coach
+                {activeMobileMode === 'coach'
                   ? `Start the conversation with ${title}.`
                   : 'Start the conversation with your coach.'}
               </Text>

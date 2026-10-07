@@ -41,6 +41,8 @@ const prohibitedHorizontalInsetProperties = new Set([
   'paddingRight',
 ]);
 const transparentRootStyles = new Set();
+const reviewedSurfaceOwners = JSON.parse(fs.readFileSync(path.join(root, 'scripts/mobile-3-surface-owners.json'), 'utf8'));
+const inspectedOwners = new Set();
 
 function walk(directory) {
   if (!fs.existsSync(directory)) return [];
@@ -102,13 +104,21 @@ for (const file of sourceFiles) {
         const expression = backgroundExpression(styleProperty.initializer, sourceFile);
         const identity = `${relative}::${styleName}`;
         const horizontalInsets = horizontalInsetProperties(styleProperty.initializer);
-        if (horizontalInsets.length && !gutterOwners.has(identity)) {
+        const reviewed = reviewedSurfaceOwners[identity];
+        const matchesReview = reviewed && reviewed.reason?.length > 30
+          && reviewed.backgroundExpression === expression
+          && JSON.stringify([...horizontalInsets].sort()) === JSON.stringify([...reviewed.horizontalInsets].sort());
+        if (reviewed) {
+          inspectedOwners.add(identity);
+          if (!matchesReview) findings.push(`${identity} changed its reviewed 3.0 surface ownership`);
+        }
+        if (horizontalInsets.length && !gutterOwners.has(identity) && !matchesReview) {
           findings.push(`${identity} adds prohibited page-level inset(s): ${horizontalInsets.join(', ')}`);
         }
         if (!expression) continue;
         if (identity === backgroundOwner) continue;
         if (transparentExpressions.has(expression)) transparentRootStyles.add(identity);
-        if (!transparentExpressions.has(expression)) {
+        if (!transparentExpressions.has(expression) && !matchesReview) {
           findings.push(`${identity} paints ${expression}`);
         }
       }
@@ -165,6 +175,9 @@ for (const identity of [
   if (!transparentRootStyles.has(identity)) {
     findings.push(`${identity} must explicitly declare a transparent background`);
   }
+}
+for (const identity of Object.keys(reviewedSurfaceOwners)) {
+  if (!inspectedOwners.has(identity)) findings.push(`${identity} is a stale reviewed surface owner`);
 }
 
 const workspaceConsumers = sourceFiles

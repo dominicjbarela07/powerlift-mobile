@@ -1,0 +1,1 @@
+Release constitution failure-mode checks PASS: [{"kind":"missing approved artwork","exitStatus":1},{"kind":"69 missing governed movement IDs","exitStatus":1},{"kind":"missing valid TestFlight feature / Hot Swap source","exitStatus":1},{"kind":"unauthorized exported asset removal","exitStatus":1}]; wrong published source also blocks Gate C

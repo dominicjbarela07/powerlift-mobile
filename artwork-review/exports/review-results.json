@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 2927,
+  "revision": 2941,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-24T19:59:43.103765+00:00",
-  "updated_at_display": "Sep 24, 2026 12:59 PM PT (Sep 24, 2026 03:59 PM Eastern)",
+  "updated_at": "2026-10-07T17:32:26.285753+00:00",
+  "updated_at_display": "Oct 07, 2026 10:32 AM PT (Oct 07, 2026 01:32 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -27410,22 +27410,22 @@
       "status": "approved",
       "crop": {
         "fit": "original",
-        "zoom": 0.7,
-        "x": 0.07,
-        "y": -0.16
+        "zoom": 0.62,
+        "x": 0.1,
+        "y": -0.11
       },
       "reason": "",
       "review": {
         "action": "approve",
         "crop": {
           "fit": "original",
-          "zoom": 0.7,
-          "x": 0.07,
-          "y": -0.16
+          "zoom": 0.62,
+          "x": 0.1,
+          "y": -0.11
         },
         "reason": "",
-        "reviewed_at": "2026-09-24T19:49:30.005851+00:00",
-        "reviewed_at_display": "Sep 24, 2026 12:49 PM PT (Sep 24, 2026 03:49 PM Eastern)",
+        "reviewed_at": "2026-10-07T17:29:15.972017+00:00",
+        "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
         "reviewer_user_id": 1,
         "candidate_sha256": "5ba80bffaf5c22def85f3a83a5b774b35bfc71c582eb8b682c6c6f01be54f847",
         "app_sha256": "a731909502e6fa74a17fbdec51f443c0ceb1ff21d3ff2cb3249c100e4f83f874",
@@ -27443,6 +27443,22 @@
           "reason": "",
           "reviewed_at": "2026-09-24T19:49:30.005851+00:00",
           "reviewed_at_display": "Sep 24, 2026 12:49 PM PT (Sep 24, 2026 03:49 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5ba80bffaf5c22def85f3a83a5b774b35bfc71c582eb8b682c6c6f01be54f847",
+          "app_sha256": "a731909502e6fa74a17fbdec51f443c0ceb1ff21d3ff2cb3249c100e4f83f874",
+          "source": "human_logger_crop_ui"
+        },
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.62,
+            "x": 0.1,
+            "y": -0.11
+          },
+          "reason": "",
+          "reviewed_at": "2026-10-07T17:29:15.972017+00:00",
+          "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
           "reviewer_user_id": 1,
           "candidate_sha256": "5ba80bffaf5c22def85f3a83a5b774b35bfc71c582eb8b682c6c6f01be54f847",
           "app_sha256": "a731909502e6fa74a17fbdec51f443c0ceb1ff21d3ff2cb3249c100e4f83f874",
@@ -27468,8 +27484,8 @@
           "y": -0.17
         },
         "reason": "",
-        "reviewed_at": "2026-09-24T19:49:40.365054+00:00",
-        "reviewed_at_display": "Sep 24, 2026 12:49 PM PT (Sep 24, 2026 03:49 PM Eastern)",
+        "reviewed_at": "2026-10-07T17:29:23.030695+00:00",
+        "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
         "reviewer_user_id": 1,
         "candidate_sha256": "87a47e793d5c39a33198613b5bb41bae5f16164e8f7f2d97abe2f091efa619a9",
         "app_sha256": "1eac91df53c0d64f37fa0a7311320c11186c3f3acbf50114893ef20c88119852",
@@ -27487,6 +27503,22 @@
           "reason": "",
           "reviewed_at": "2026-09-24T19:49:40.365054+00:00",
           "reviewed_at_display": "Sep 24, 2026 12:49 PM PT (Sep 24, 2026 03:49 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "87a47e793d5c39a33198613b5bb41bae5f16164e8f7f2d97abe2f091efa619a9",
+          "app_sha256": "1eac91df53c0d64f37fa0a7311320c11186c3f3acbf50114893ef20c88119852",
+          "source": "human_logger_crop_ui"
+        },
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.06,
+            "y": -0.17
+          },
+          "reason": "",
+          "reviewed_at": "2026-10-07T17:29:23.030695+00:00",
+          "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
           "reviewer_user_id": 1,
           "candidate_sha256": "87a47e793d5c39a33198613b5bb41bae5f16164e8f7f2d97abe2f091efa619a9",
           "app_sha256": "1eac91df53c0d64f37fa0a7311320c11186c3f3acbf50114893ef20c88119852",
@@ -27512,8 +27544,8 @@
           "y": -0.11
         },
         "reason": "",
-        "reviewed_at": "2026-09-24T19:49:48.467448+00:00",
-        "reviewed_at_display": "Sep 24, 2026 12:49 PM PT (Sep 24, 2026 03:49 PM Eastern)",
+        "reviewed_at": "2026-10-07T17:29:24.333219+00:00",
+        "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
         "reviewer_user_id": 1,
         "candidate_sha256": "c4837497b7cb86912620c9e946bbe9038dbb7eb6ecc2815a89e012fe52557ccd",
         "app_sha256": "2f572c65f24a5dc61420f2fff70991d5b460fb2391d03c692ede01d945d615a4",
@@ -27531,6 +27563,22 @@
           "reason": "",
           "reviewed_at": "2026-09-24T19:49:48.467448+00:00",
           "reviewed_at_display": "Sep 24, 2026 12:49 PM PT (Sep 24, 2026 03:49 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "c4837497b7cb86912620c9e946bbe9038dbb7eb6ecc2815a89e012fe52557ccd",
+          "app_sha256": "2f572c65f24a5dc61420f2fff70991d5b460fb2391d03c692ede01d945d615a4",
+          "source": "human_logger_crop_ui"
+        },
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.09,
+            "y": -0.11
+          },
+          "reason": "",
+          "reviewed_at": "2026-10-07T17:29:24.333219+00:00",
+          "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
           "reviewer_user_id": 1,
           "candidate_sha256": "c4837497b7cb86912620c9e946bbe9038dbb7eb6ecc2815a89e012fe52557ccd",
           "app_sha256": "2f572c65f24a5dc61420f2fff70991d5b460fb2391d03c692ede01d945d615a4",
@@ -27556,8 +27604,8 @@
           "y": -0.07
         },
         "reason": "",
-        "reviewed_at": "2026-09-24T19:50:04.941755+00:00",
-        "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+        "reviewed_at": "2026-10-07T17:29:25.314089+00:00",
+        "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
         "reviewer_user_id": 1,
         "candidate_sha256": "2d8f580c00218e5694041f285ff59994106f7f4f317096f1d3e7602219b22545",
         "app_sha256": "31b72cbcb7594eeb60dbab318bda1577ef253c8f0c8bb9d2c3d410b758c4dbd0",
@@ -27575,6 +27623,22 @@
           "reason": "",
           "reviewed_at": "2026-09-24T19:50:04.941755+00:00",
           "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "2d8f580c00218e5694041f285ff59994106f7f4f317096f1d3e7602219b22545",
+          "app_sha256": "31b72cbcb7594eeb60dbab318bda1577ef253c8f0c8bb9d2c3d410b758c4dbd0",
+          "source": "human_logger_crop_ui"
+        },
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.09,
+            "y": -0.07
+          },
+          "reason": "",
+          "reviewed_at": "2026-10-07T17:29:25.314089+00:00",
+          "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
           "reviewer_user_id": 1,
           "candidate_sha256": "2d8f580c00218e5694041f285ff59994106f7f4f317096f1d3e7602219b22545",
           "app_sha256": "31b72cbcb7594eeb60dbab318bda1577ef253c8f0c8bb9d2c3d410b758c4dbd0",
@@ -27600,8 +27664,8 @@
           "y": -0.08
         },
         "reason": "",
-        "reviewed_at": "2026-09-24T19:50:17.594108+00:00",
-        "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+        "reviewed_at": "2026-10-07T17:29:26.562006+00:00",
+        "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
         "reviewer_user_id": 1,
         "candidate_sha256": "f5275d4b16fb92025f9920bf5547c860b164929b3806aa32a9520a06253ed6e7",
         "app_sha256": "f33b8aad1b47058e5e656871073b219dae6be5671d96469c02c1faeeadd3c295",
@@ -27619,6 +27683,22 @@
           "reason": "",
           "reviewed_at": "2026-09-24T19:50:17.594108+00:00",
           "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "f5275d4b16fb92025f9920bf5547c860b164929b3806aa32a9520a06253ed6e7",
+          "app_sha256": "f33b8aad1b47058e5e656871073b219dae6be5671d96469c02c1faeeadd3c295",
+          "source": "human_logger_crop_ui"
+        },
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.7,
+            "x": 0.1,
+            "y": -0.08
+          },
+          "reason": "",
+          "reviewed_at": "2026-10-07T17:29:26.562006+00:00",
+          "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
           "reviewer_user_id": 1,
           "candidate_sha256": "f5275d4b16fb92025f9920bf5547c860b164929b3806aa32a9520a06253ed6e7",
           "app_sha256": "f33b8aad1b47058e5e656871073b219dae6be5671d96469c02c1faeeadd3c295",
@@ -27644,8 +27724,8 @@
           "y": -0.04
         },
         "reason": "",
-        "reviewed_at": "2026-09-24T19:50:31.695748+00:00",
-        "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+        "reviewed_at": "2026-10-07T17:29:27.638627+00:00",
+        "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
         "reviewer_user_id": 1,
         "candidate_sha256": "d8e6d93f56d7cb3b366bbcb9a40d7d94a7f7966d4a927090e33ef22861874249",
         "app_sha256": "5ff1cdb4901c22668806196b8d7c09c4940948db6e95753ec5b46da53b622c28",
@@ -27663,6 +27743,22 @@
           "reason": "",
           "reviewed_at": "2026-09-24T19:50:31.695748+00:00",
           "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d8e6d93f56d7cb3b366bbcb9a40d7d94a7f7966d4a927090e33ef22861874249",
+          "app_sha256": "5ff1cdb4901c22668806196b8d7c09c4940948db6e95753ec5b46da53b622c28",
+          "source": "human_logger_crop_ui"
+        },
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.9,
+            "x": 0.1,
+            "y": -0.04
+          },
+          "reason": "",
+          "reviewed_at": "2026-10-07T17:29:27.638627+00:00",
+          "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
           "reviewer_user_id": 1,
           "candidate_sha256": "d8e6d93f56d7cb3b366bbcb9a40d7d94a7f7966d4a927090e33ef22861874249",
           "app_sha256": "5ff1cdb4901c22668806196b8d7c09c4940948db6e95753ec5b46da53b622c28",
@@ -27688,8 +27784,8 @@
           "y": -0.08
         },
         "reason": "",
-        "reviewed_at": "2026-09-24T19:50:47.829902+00:00",
-        "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+        "reviewed_at": "2026-10-07T17:29:34.754298+00:00",
+        "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
         "reviewer_user_id": 1,
         "candidate_sha256": "5e3f3eccd0af6f64e36106f307c5938b5213f099fe0dfdec5a2fe6eba3cb862d",
         "app_sha256": "6aa86f28bec8b6b277eb469437cf8f35ce618c5c9df48fc3af48e0d2d91362e3",
@@ -27707,6 +27803,22 @@
           "reason": "",
           "reviewed_at": "2026-09-24T19:50:47.829902+00:00",
           "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5e3f3eccd0af6f64e36106f307c5938b5213f099fe0dfdec5a2fe6eba3cb862d",
+          "app_sha256": "6aa86f28bec8b6b277eb469437cf8f35ce618c5c9df48fc3af48e0d2d91362e3",
+          "source": "human_logger_crop_ui"
+        },
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.8,
+            "x": 0.12,
+            "y": -0.08
+          },
+          "reason": "",
+          "reviewed_at": "2026-10-07T17:29:34.754298+00:00",
+          "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
           "reviewer_user_id": 1,
           "candidate_sha256": "5e3f3eccd0af6f64e36106f307c5938b5213f099fe0dfdec5a2fe6eba3cb862d",
           "app_sha256": "6aa86f28bec8b6b277eb469437cf8f35ce618c5c9df48fc3af48e0d2d91362e3",
@@ -27732,8 +27844,8 @@
           "y": -0.09
         },
         "reason": "",
-        "reviewed_at": "2026-09-24T19:50:59.134468+00:00",
-        "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+        "reviewed_at": "2026-10-07T17:29:36.233181+00:00",
+        "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
         "reviewer_user_id": 1,
         "candidate_sha256": "5993833c52ae778f3a1d25004cd7564e215bbd09b5ca63d604e6fceb129f494c",
         "app_sha256": "5a979dbcdd6a976f718cb12e378e24f2abd6219110eda48a8e6a7708b00467bd",
@@ -27751,6 +27863,22 @@
           "reason": "",
           "reviewed_at": "2026-09-24T19:50:59.134468+00:00",
           "reviewed_at_display": "Sep 24, 2026 12:50 PM PT (Sep 24, 2026 03:50 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "5993833c52ae778f3a1d25004cd7564e215bbd09b5ca63d604e6fceb129f494c",
+          "app_sha256": "5a979dbcdd6a976f718cb12e378e24f2abd6219110eda48a8e6a7708b00467bd",
+          "source": "human_logger_crop_ui"
+        },
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.86,
+            "x": 0.12,
+            "y": -0.09
+          },
+          "reason": "",
+          "reviewed_at": "2026-10-07T17:29:36.233181+00:00",
+          "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
           "reviewer_user_id": 1,
           "candidate_sha256": "5993833c52ae778f3a1d25004cd7564e215bbd09b5ca63d604e6fceb129f494c",
           "app_sha256": "5a979dbcdd6a976f718cb12e378e24f2abd6219110eda48a8e6a7708b00467bd",
@@ -27776,8 +27904,8 @@
           "y": 0
         },
         "reason": "",
-        "reviewed_at": "2026-09-24T19:51:11.310775+00:00",
-        "reviewed_at_display": "Sep 24, 2026 12:51 PM PT (Sep 24, 2026 03:51 PM Eastern)",
+        "reviewed_at": "2026-10-07T17:29:37.280963+00:00",
+        "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
         "reviewer_user_id": 1,
         "candidate_sha256": "d5a0b572646e1b43f05e1d72ff2b50d14d13bdec84f2dd3d7323b4f2656b6f67",
         "app_sha256": "9101ca42b792e25424cb08509ff2ebc300a5267bcc1c58a4ffb61fc0600c18eb",
@@ -27798,6 +27926,82 @@
           "reviewer_user_id": 1,
           "candidate_sha256": "d5a0b572646e1b43f05e1d72ff2b50d14d13bdec84f2dd3d7323b4f2656b6f67",
           "app_sha256": "9101ca42b792e25424cb08509ff2ebc300a5267bcc1c58a4ffb61fc0600c18eb",
+          "source": "human_logger_crop_ui"
+        },
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.8,
+            "x": 0.11,
+            "y": 0
+          },
+          "reason": "",
+          "reviewed_at": "2026-10-07T17:29:37.280963+00:00",
+          "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "d5a0b572646e1b43f05e1d72ff2b50d14d13bdec84f2dd3d7323b4f2656b6f67",
+          "app_sha256": "9101ca42b792e25424cb08509ff2ebc300a5267bcc1c58a4ffb61fc0600c18eb",
+          "source": "human_logger_crop_ui"
+        }
+      ]
+    },
+    "013655e475e56a3dcb0364ce": {
+      "status": "approved",
+      "crop": {
+        "fit": "original",
+        "zoom": 0.69,
+        "x": 0.12,
+        "y": -0.05
+      },
+      "reason": "",
+      "review": {
+        "action": "approve",
+        "crop": {
+          "fit": "original",
+          "zoom": 0.69,
+          "x": 0.12,
+          "y": -0.05
+        },
+        "reason": "",
+        "reviewed_at": "2026-10-07T17:29:38.401066+00:00",
+        "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
+        "reviewer_user_id": 1,
+        "candidate_sha256": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+        "app_sha256": "f3f3329ed714811397f8f317b37b88d0f9411940bf255bb34599d5961dfdbc5a",
+        "source": "human_logger_crop_ui"
+      },
+      "history": [
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.69,
+            "x": 0.12,
+            "y": -0.05
+          },
+          "reason": "",
+          "reviewed_at": "2026-10-07T17:28:48.228297+00:00",
+          "reviewed_at_display": "Oct 07, 2026 10:28 AM PT (Oct 07, 2026 01:28 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+          "app_sha256": "f3f3329ed714811397f8f317b37b88d0f9411940bf255bb34599d5961dfdbc5a",
+          "source": "human_logger_crop_ui"
+        },
+        {
+          "action": "approve",
+          "crop": {
+            "fit": "original",
+            "zoom": 0.69,
+            "x": 0.12,
+            "y": -0.05
+          },
+          "reason": "",
+          "reviewed_at": "2026-10-07T17:29:38.401066+00:00",
+          "reviewed_at_display": "Oct 07, 2026 10:29 AM PT (Oct 07, 2026 01:29 PM Eastern)",
+          "reviewer_user_id": 1,
+          "candidate_sha256": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+          "app_sha256": "f3f3329ed714811397f8f317b37b88d0f9411940bf255bb34599d5961dfdbc5a",
           "source": "human_logger_crop_ui"
         }
       ]
@@ -27869,9 +28073,9 @@
       "recorded_at_display": "Sep 20, 2026 04:12 PM PT (Sep 20, 2026 07:12 PM Eastern)"
     }
   ],
-  "total": 487,
+  "total": 488,
   "counts": {
-    "approved": 487,
+    "approved": 488,
     "rejected": 0,
     "pending": 0
   },
@@ -79996,6 +80200,110 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "d5a0b572646e1b43f05e1d72ff2b50d14d13bdec84f2dd3d7323b4f2656b6f67",
         "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 650,
+      "key": "barbell_overhead_press",
+      "movement_name": "Barbell Overhead Press",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "ohp-20261007-650-review-v1",
+      "generation_batch": "Barbell Overhead Press exact source candidate — 2026-10-07",
+      "candidate_id": "013655e475e56a3dcb0364ce",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/013655e475e56a3dcb0364ce/master.png",
+          "sha256": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1875261
+        },
+        "app": {
+          "path": "candidates/013655e475e56a3dcb0364ce/app.png",
+          "sha256": "f3f3329ed714811397f8f317b37b88d0f9411940bf255bb34599d5961dfdbc5a",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 288681
+        },
+        "thumbnail": {
+          "path": "candidates/013655e475e56a3dcb0364ce/thumbnail.png",
+          "sha256": "6d7a1e80d2594ec5329a3fb9cf3380c5ac98bbb4bc28a4b31700208c8f8d68b7",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 39887
+        }
+      },
+      "candidate_asset": "candidates/013655e475e56a3dcb0364ce/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "source": "explicit_owner_chat",
+          "owner_instruction": "approved. give me the link to the crop/position editor",
+          "conversation_id": "01a103b8-444a-75a3-9893-10380cdca0b2",
+          "recorded_by": "codex_at_owner_request",
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "candidate_sha256": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+          "reviewer": "owner_via_chat",
+          "reviewed_at": "2026-10-07T16:18:11.433558+00:00",
+          "reviewed_at_display": "Oct 07, 2026 09:18 AM PT (Oct 07, 2026 12:18 PM Eastern)"
+        }
+      ],
+      "created_at": "2026-10-07T16:17:04.301924+00:00",
+      "created_at_display": "Oct 07, 2026 09:17 AM PT (Oct 07, 2026 12:17 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural.\nAsset type: one square Strength Ledger canonical movement-art master for Barbell Overhead Press, movement ID 650. This is a NEW image; the references are style references, not images to modify.\nInput images: Reference 1 is the immutable approved Incline Dumbbell Bench Press baseline, supplying the exact athlete identity, face, muscular build, dark charcoal sleeveless top, plain black shorts, skin texture and studio photographic language. Reference 2 is the approved Competition Squat, supplying the Core artwork's red calibrated plates, straight polished barbell, footwear construction and floor/material finish. Reference 3 is the approved Competition Bench, supplying coherent bar/sleeve/collar details and the restrained dark studio lighting. Preserve the family visual language; do not reproduce the reference exercises or benches/racks.\n\nPrimary request: create an unmistakable STRICT STANDING BARBELL OVERHEAD PRESS at a controlled overhead lockout. One same male athlete, standing upright on both feet, looking forward with a focused natural expression. Both knees and hips extended; ribcage stacked over pelvis, braced torso, no backward lean, no squat/dip, no leg drive. Feet hip-width, fully grounded. Both arms reach overhead with elbows straight and shoulders naturally elevated; a closed pronated grip just outside shoulder width, thumbs wrapped around the ONE straight steel bar. Hands, wrists and elbows remain anatomically coherent, with wrists stacked under the bar rather than bent severely backward. The athlete's head is naturally between/slightly in front of his upper arms at lockout. The bar is directly above shoulders and midfoot, not far in front of the body.\n\nEquipment: a single mechanically continuous conventional Olympic barbell, balanced with one matching red calibrated plate on each sleeve and matching metal collars. The same bar axis must pass through both plate center holes, sleeves and both grips. Symmetric loading and consistent perspective. Both entire plate stacks, collars and outer sleeve tips visible, never cropped. No disconnected shaft, duplicate implement or phantom fingers. No rack, bench, dumbbells, machine or unnecessary equipment.\n\nStyle/medium: match the reference assets closely: polished high-detail realistic athletic studio photography/render, the identical approved dark-haired athlete, realistic anatomy and subtle skin detail, charcoal tank and black shorts, plain black stable lifting shoes with restrained strap detail and firm soles. Near-black seamless studio with dark textured rubber floor and grounded contact shadows, neutral soft key light and restrained violet rim from the right. The athlete and bar remain sharply readable against the dark background. No colorful neon scene, bright gym, crowd, muscular anatomy overlays, illustration or new character.\n\nComposition/framing: square 1:1 master, full body and entire loaded barbell, clear front three-quarter diagonal view at natural chest-height camera perspective. A clean movement-centered composition matching the Core artwork, athlete close to center, generous safe margins above the overhead plates and under both feet, all bar ends inside the square. Pull the camera back enough to preserve all contact points and equipment without compressing limbs. Show a single controlled moment, not a montage. No exaggerated wide-angle distortion. The movement must remain understandable in a 192px and 80px card.\n\nText: none.\nConstraints: exactly one athlete, two arms, two hands and two feet; identical family model/clothing/studio; an actual strict standing overhead press, correct continuous loaded bar geometry, fully grounded feet, no belt, no logos, no watermarks, no UI, no labels, no borders. Do not modify any reference image.\n\n\nRefinement:\nUse case: precise-object-edit.\nReference 1: immutable approved Strength Ledger athlete/style baseline, for identity and materials only.\nReference 2: the NEW Barbell Overhead Press candidate to edit.\n\nMake ONE composition correction to reference 2: pull the camera back by approximately 8–10%, uniformly reducing the entire athlete and connected loaded barbell together inside the SAME square canvas. Add clear dark-studio headroom ABOVE the top of both overhead red plates, at least 5% of canvas height. Maintain at least 5% margin below both feet and safe margins beyond both sleeve tips. Keep the complete athlete/bar centered and grounded on the same studio floor. No stretching or shortening limbs or changing perspective.\n\nPRESERVE exactly the current strict standing overhead lockout, same man/face/hair, charcoal tank, black shorts/shoes, both grounded feet, extended knees/hips, braced upright torso, arms/hands/grip, ONE continuous straight loaded bar axis, balanced matching red plates, collars/sleeves, black studio, textured floor, neutral key and restrained violet rim. The foreground/floor may extend naturally when camera pulls back. Do not add a rack, belt, people, labels, borders or equipment; no redesigned athlete or outfit. Preserve the realistic family photographic language. The intended change is visibly more safe frame space above the plates, not darker/cropped plates or moving the bar relative to his body.\n",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/ohp-2026-10-07/650/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "bench",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 62,
+      "generation_context": {
+        "owner_instruction": "generate the image for OHP then, ensure the deign language is met",
+        "conversation_id": "01a103b8-444a-75a3-9893-10380cdca0b2",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/d3645cd2a9b0fdc03ca8f03f/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/cf418260405f8affab901404/master.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/ohp-art-2026-10-07/generation-record.json",
+        "review_scope": "Pending human source review followed by independent Logger framing review; preflight is not approval.",
+        "phase": "Strict standing overhead press at controlled lockout"
+      },
+      "review": {
+        "source": "explicit_owner_chat",
+        "owner_instruction": "approved. give me the link to the crop/position editor",
+        "conversation_id": "01a103b8-444a-75a3-9893-10380cdca0b2",
+        "recorded_by": "codex_at_owner_request",
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "candidate_sha256": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+        "reviewer": "owner_via_chat",
+        "reviewed_at": "2026-10-07T16:18:11.433558+00:00",
+        "reviewed_at_display": "Oct 07, 2026 09:18 AM PT (Oct 07, 2026 12:18 PM Eastern)"
       }
     }
   ],
@@ -224268,6 +224576,110 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "d5a0b572646e1b43f05e1d72ff2b50d14d13bdec84f2dd3d7323b4f2656b6f67",
         "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 650,
+      "key": "barbell_overhead_press",
+      "movement_name": "Barbell Overhead Press",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "ohp-20261007-650-review-v1",
+      "generation_batch": "Barbell Overhead Press exact source candidate — 2026-10-07",
+      "candidate_id": "013655e475e56a3dcb0364ce",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/013655e475e56a3dcb0364ce/master.png",
+          "sha256": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1875261
+        },
+        "app": {
+          "path": "candidates/013655e475e56a3dcb0364ce/app.png",
+          "sha256": "f3f3329ed714811397f8f317b37b88d0f9411940bf255bb34599d5961dfdbc5a",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 288681
+        },
+        "thumbnail": {
+          "path": "candidates/013655e475e56a3dcb0364ce/thumbnail.png",
+          "sha256": "6d7a1e80d2594ec5329a3fb9cf3380c5ac98bbb4bc28a4b31700208c8f8d68b7",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 39887
+        }
+      },
+      "candidate_asset": "candidates/013655e475e56a3dcb0364ce/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "source": "explicit_owner_chat",
+          "owner_instruction": "approved. give me the link to the crop/position editor",
+          "conversation_id": "01a103b8-444a-75a3-9893-10380cdca0b2",
+          "recorded_by": "codex_at_owner_request",
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "candidate_sha256": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+          "reviewer": "owner_via_chat",
+          "reviewed_at": "2026-10-07T16:18:11.433558+00:00",
+          "reviewed_at_display": "Oct 07, 2026 09:18 AM PT (Oct 07, 2026 12:18 PM Eastern)"
+        }
+      ],
+      "created_at": "2026-10-07T16:17:04.301924+00:00",
+      "created_at_display": "Oct 07, 2026 09:17 AM PT (Oct 07, 2026 12:17 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural.\nAsset type: one square Strength Ledger canonical movement-art master for Barbell Overhead Press, movement ID 650. This is a NEW image; the references are style references, not images to modify.\nInput images: Reference 1 is the immutable approved Incline Dumbbell Bench Press baseline, supplying the exact athlete identity, face, muscular build, dark charcoal sleeveless top, plain black shorts, skin texture and studio photographic language. Reference 2 is the approved Competition Squat, supplying the Core artwork's red calibrated plates, straight polished barbell, footwear construction and floor/material finish. Reference 3 is the approved Competition Bench, supplying coherent bar/sleeve/collar details and the restrained dark studio lighting. Preserve the family visual language; do not reproduce the reference exercises or benches/racks.\n\nPrimary request: create an unmistakable STRICT STANDING BARBELL OVERHEAD PRESS at a controlled overhead lockout. One same male athlete, standing upright on both feet, looking forward with a focused natural expression. Both knees and hips extended; ribcage stacked over pelvis, braced torso, no backward lean, no squat/dip, no leg drive. Feet hip-width, fully grounded. Both arms reach overhead with elbows straight and shoulders naturally elevated; a closed pronated grip just outside shoulder width, thumbs wrapped around the ONE straight steel bar. Hands, wrists and elbows remain anatomically coherent, with wrists stacked under the bar rather than bent severely backward. The athlete's head is naturally between/slightly in front of his upper arms at lockout. The bar is directly above shoulders and midfoot, not far in front of the body.\n\nEquipment: a single mechanically continuous conventional Olympic barbell, balanced with one matching red calibrated plate on each sleeve and matching metal collars. The same bar axis must pass through both plate center holes, sleeves and both grips. Symmetric loading and consistent perspective. Both entire plate stacks, collars and outer sleeve tips visible, never cropped. No disconnected shaft, duplicate implement or phantom fingers. No rack, bench, dumbbells, machine or unnecessary equipment.\n\nStyle/medium: match the reference assets closely: polished high-detail realistic athletic studio photography/render, the identical approved dark-haired athlete, realistic anatomy and subtle skin detail, charcoal tank and black shorts, plain black stable lifting shoes with restrained strap detail and firm soles. Near-black seamless studio with dark textured rubber floor and grounded contact shadows, neutral soft key light and restrained violet rim from the right. The athlete and bar remain sharply readable against the dark background. No colorful neon scene, bright gym, crowd, muscular anatomy overlays, illustration or new character.\n\nComposition/framing: square 1:1 master, full body and entire loaded barbell, clear front three-quarter diagonal view at natural chest-height camera perspective. A clean movement-centered composition matching the Core artwork, athlete close to center, generous safe margins above the overhead plates and under both feet, all bar ends inside the square. Pull the camera back enough to preserve all contact points and equipment without compressing limbs. Show a single controlled moment, not a montage. No exaggerated wide-angle distortion. The movement must remain understandable in a 192px and 80px card.\n\nText: none.\nConstraints: exactly one athlete, two arms, two hands and two feet; identical family model/clothing/studio; an actual strict standing overhead press, correct continuous loaded bar geometry, fully grounded feet, no belt, no logos, no watermarks, no UI, no labels, no borders. Do not modify any reference image.\n\n\nRefinement:\nUse case: precise-object-edit.\nReference 1: immutable approved Strength Ledger athlete/style baseline, for identity and materials only.\nReference 2: the NEW Barbell Overhead Press candidate to edit.\n\nMake ONE composition correction to reference 2: pull the camera back by approximately 8–10%, uniformly reducing the entire athlete and connected loaded barbell together inside the SAME square canvas. Add clear dark-studio headroom ABOVE the top of both overhead red plates, at least 5% of canvas height. Maintain at least 5% margin below both feet and safe margins beyond both sleeve tips. Keep the complete athlete/bar centered and grounded on the same studio floor. No stretching or shortening limbs or changing perspective.\n\nPRESERVE exactly the current strict standing overhead lockout, same man/face/hair, charcoal tank, black shorts/shoes, both grounded feet, extended knees/hips, braced upright torso, arms/hands/grip, ONE continuous straight loaded bar axis, balanced matching red plates, collars/sleeves, black studio, textured floor, neutral key and restrained violet rim. The foreground/floor may extend naturally when camera pulls back. Do not add a rack, belt, people, labels, borders or equipment; no redesigned athlete or outfit. Preserve the realistic family photographic language. The intended change is visibly more safe frame space above the plates, not darker/cropped plates or moving the bar relative to his body.\n",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/ohp-2026-10-07/650/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "bench",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 62,
+      "generation_context": {
+        "owner_instruction": "generate the image for OHP then, ensure the deign language is met",
+        "conversation_id": "01a103b8-444a-75a3-9893-10380cdca0b2",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/d3645cd2a9b0fdc03ca8f03f/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/cf418260405f8affab901404/master.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/ohp-art-2026-10-07/generation-record.json",
+        "review_scope": "Pending human source review followed by independent Logger framing review; preflight is not approval.",
+        "phase": "Strict standing overhead press at controlled lockout"
+      },
+      "review": {
+        "source": "explicit_owner_chat",
+        "owner_instruction": "approved. give me the link to the crop/position editor",
+        "conversation_id": "01a103b8-444a-75a3-9893-10380cdca0b2",
+        "recorded_by": "codex_at_owner_request",
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "candidate_sha256": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+        "reviewer": "owner_via_chat",
+        "reviewed_at": "2026-10-07T16:18:11.433558+00:00",
+        "reviewed_at_display": "Oct 07, 2026 09:18 AM PT (Oct 07, 2026 12:18 PM Eastern)"
       }
     }
   ]

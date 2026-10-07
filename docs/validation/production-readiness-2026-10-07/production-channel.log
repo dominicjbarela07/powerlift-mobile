@@ -1,0 +1,12 @@
+★ eas-cli@24.11.0 is now available.
+To upgrade, run:
+npm install -g eas-cli
+Proceeding with outdated version.
+
+
+Channel:
+Name    production
+ID      dc665477-b60a-45fb-abe2-bb4e2588a080
+Status  Active
+
+Branches pointed at this channel and their most recent update group:

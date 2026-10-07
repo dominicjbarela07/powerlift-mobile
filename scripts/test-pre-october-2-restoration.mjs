@@ -5,6 +5,9 @@ import {execFileSync} from 'node:child_process';
 import {resolveApprovedExactMovementArtwork} from '../lib/movement-artwork-hero.ts';
 import {canonicalArtworkInputFromDefinition} from '../lib/canonical-movement-art-subject.ts';
 import {sha256,expoHash,protectedDeliveryHashes,assertProtectedArtifactAssets,assertOwnerEvidence} from './testflight-cumulative-integrity.mjs';
+import { applySharedReleaseFix } from './release-holdback-policy.mjs';
+import { approvedArtRuntimeEnabled } from '../lib/approved-art-runtime.ts';
+import { artBundlePolicyFiles, assertArtBundlePolicyProgression } from './approved-art-bundle-policy.mjs';
 
 const root=process.cwd(),read=file=>JSON.parse(fs.readFileSync(file));
 const state=read('config/testflight-release-integrity.json'),scope=state.movementImageryRestoration;
@@ -18,7 +21,22 @@ const sameSource=[
   'config/governed-movement-art-reuse.json','config/governed-core-artwork-reuse.json',
   'artwork-review/runtime-policy.json','components/movement/CanonicalMovementArtwork.tsx',
 ];
-for(const file of sameSource) assert.equal(sha256(fs.readFileSync(file)),sha256(prior(file)),`pre-Oct 2 artwork/resolver/crop source changed: ${file}`);
+for(const file of sameSource) {
+  const current = fs.readFileSync(file), original = prior(file);
+  if ((file === 'lib/approved-art-runtime.ts' || artBundlePolicyFiles.includes(file)) && sha256(current) !== sha256(original)) {
+    // Keep the original restoration pin. The separate owner-requested 3.0
+    // export extension must prove every changed byte and retain old semantics.
+    const progression = state.devSourceProgressions?.find(row => row.path === file && row.before === sha256(original) && row.after === sha256(current));
+    assert.ok(progression, '3.0 art policy requires its exact owner-bound extension receipt');
+    assertOwnerEvidence(root, [progression]);
+    assert.equal(progression.changes.reduce((source, change) => applySharedReleaseFix(source, change), original.toString()), current.toString());
+    if (artBundlePolicyFiles.includes(file)) assertArtBundlePolicyProgression(file, original.toString(), current.toString());
+    assert.equal(approvedArtRuntimeEnabled(false, 'production', '2.0.2'), false);
+    assert.equal(approvedArtRuntimeEnabled(false, 'testflight', '2.1.0'), true);
+    assert.equal(approvedArtRuntimeEnabled(false, 'production3', '3.0.0'), true);
+    assert.equal(approvedArtRuntimeEnabled(false, 'production3', '2.0.2'), false);
+  } else assert.equal(sha256(current),sha256(original),`pre-Oct 2 artwork/resolver/crop source changed: ${file}`);
+}
 const baselinePolicy=JSON.parse(prior('artwork-review/runtime-policy.json'));
 const baselineCatalog=JSON.parse(prior('config/governed-movement-art-taxonomy.json'));
 const mappings=read('artwork-review/review-state.json').canonical_assets;

@@ -1,0 +1,5 @@
+
+> powerlift_mobile@1.0.0 test:ota-native-compatibility
+> node scripts/assert-ota-native-compatibility.mjs
+
+OTA native compatibility PASS — runtime 2.1.0 matches iOS build 28.

@@ -331,6 +331,27 @@
       "plan": "proposed_reuse",
       "artwork_movement_definition_id": 2,
       "rationale": "Same apparatus and basic lift geometry; a still image does not encode tempo or pause duration. Reuse remains subject to source and framing review."
+    },
+    {
+      "movement_definition_id": 650,
+      "key": "barbell_overhead_press",
+      "movement_name": "Barbell Overhead Press",
+      "core_movement_definition_id": 62,
+      "movement_family": "bench",
+      "core_kind": "variant",
+      "plan": "dedicated_variant",
+      "artwork_movement_definition_id": 650,
+      "rationale": "Standing overhead press has its own owner-approved exact image and independent Logger framing; never substitute the Bench parent image."
+    }
+  ],
+  "additional_generation_authorizations": [
+    {
+      "movement_definition_id": 650,
+      "source": "explicit_owner_chat",
+      "instruction": "generate the image for OHP then, ensure the deign language is met",
+      "conversation_id": "01a103b8-444a-75a3-9893-10380cdca0b2",
+      "date": "2026-10-07",
+      "review_required": "Separate source approval then exact-image Logger crop approval; both recorded before DEV integration."
     }
   ],
   "generation_authorization": {
