@@ -1,0 +1,86 @@
+{
+  "passed": true,
+  "source": "84297668",
+  "queries": [
+    {
+      "query": "lat pulldwn",
+      "top_results": [
+        {
+          "id": 20,
+          "name": "Cable Lat Pulldown"
+        },
+        {
+          "id": 15,
+          "name": "Machine Lat Pulldown"
+        },
+        {
+          "id": 165,
+          "name": "Close-Grip Lat Pulldown"
+        },
+        {
+          "id": 179,
+          "name": "Iso-Lateral Lat Pulldown"
+        },
+        {
+          "id": 164,
+          "name": "Neutral-Grip Lat Pulldown"
+        }
+      ]
+    },
+    {
+      "query": "cable pullover",
+      "top_results": [
+        {
+          "id": 170,
+          "name": "Straight-Arm Cable Pulldown"
+        },
+        {
+          "id": 173,
+          "name": "Single-Arm Cable Pullover"
+        }
+      ]
+    },
+    {
+      "query": "leg pres",
+      "top_results": [
+        {
+          "id": 367,
+          "name": "Leg Press"
+        },
+        {
+          "id": 368,
+          "name": "Single-Leg Leg Press"
+        },
+        {
+          "id": 483,
+          "name": "Leg-Press Calf Raise"
+        }
+      ]
+    },
+    {
+      "query": "calf rasie",
+      "top_results": [
+        {
+          "id": 493,
+          "name": "Band Calf Raise"
+        },
+        {
+          "id": 491,
+          "name": "Donkey Calf Raise"
+        },
+        {
+          "id": 488,
+          "name": "Standing Calf Raise"
+        },
+        {
+          "id": 490,
+          "name": "Bent-Knee Calf Raise"
+        },
+        {
+          "id": 484,
+          "name": "Hack-Squat Calf Raise"
+        }
+      ]
+    }
+  ]
+}

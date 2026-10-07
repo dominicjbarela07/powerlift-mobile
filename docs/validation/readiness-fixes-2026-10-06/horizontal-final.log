@@ -1,0 +1,2 @@
+Mobile horizontal-layout audit passed (42 canonical files, 7 sheet contracts, plus all app route roots checked).
+Screen/page roots are edge-to-edge; horizontal spacing is owned by child surfaces.

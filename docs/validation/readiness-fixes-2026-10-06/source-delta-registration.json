@@ -1,0 +1,20 @@
+{
+  "sourceProgressions": 37,
+  "hunks": 93,
+  "loggerDevOnlyHunks": 10,
+  "heldBackPaths": [
+    "app/(tabs)/workout/[workoutId].tsx",
+    "config/governed-movement-art-taxonomy.json",
+    "lib/equipment-flow-subject.ts",
+    "lib/equipment-selection.ts",
+    "scripts/test-equipment-flow-subject.mjs",
+    "scripts/test-shared-movement-programming-context.mjs"
+  ],
+  "protectedFilesChanged": false,
+  "releaseSourceAuthorizationsChanged": false,
+  "removalAuthorizationsChanged": false,
+  "artBundleExtensionFiles": [
+    "lib/canonical-movement-artwork-assets.ts",
+    "lib/equipment-type-artwork.ts"
+  ]
+}

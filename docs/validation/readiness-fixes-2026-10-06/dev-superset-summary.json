@@ -1,0 +1,26 @@
+{
+  "gate": "A",
+  "passed": true,
+  "missingProtectedState": 0,
+  "counts": {
+    "DEV_ONLY": 62,
+    "TESTFLIGHT_ONLY": 0,
+    "EQUIVALENT": 2756,
+    "AUTHORIZED_DIFFERENCE": 509,
+    "UNAUTHORIZED_SUBTRACTION": 0,
+    "AMBIGUOUS_OWNER_DECISION": 195
+  },
+  "dev": {
+    "sha": "ae418892f5f7f94655fbdeb49186e033e68ab29d",
+    "productFingerprint": "fe4575b4ae7e19d74b83af6dfef65f1329d0584a8fc454d782b354ebc9fe6132"
+  },
+  "candidate": {
+    "sha": "57de0daf66a10579a92a1cb983bf0a88ead035fd",
+    "productFingerprint": "238ebc68aa9455a5b2c7c43da19206f8283352b2a3c37a491934582faa98ac4a"
+  },
+  "publicationAuthorized": false,
+  "fullReport": {
+    "path": "/Users/dominic/Documents/Codex/2026-10-03/re/outputs/readiness-fixes-complete-evidence/dev-superset-final.json",
+    "sha256": "6cec63a7c89e269a3acde1a3bf1b592c6c52db5fcd3668c80ea815a6c5f4f1b5"
+  }
+}

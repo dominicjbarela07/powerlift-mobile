@@ -1,0 +1,20 @@
+........                              [100%]
+=============================== warnings summary ===============================
+tests/test_canonical_movement_search.py: 96 warnings
+  /Users/dominic/powerlifting_app_dev/app/services/accessory_movement_platform.py:513: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    decided_at=datetime.utcnow(),
+
+tests/test_canonical_movement_search.py: 96 warnings
+  /Users/dominic/powerlifting_app_dev/app/services/accessory_movement_platform.py:520: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    source.retired_at = source.retired_at or datetime.utcnow()
+
+tests/test_canonical_movement_search.py: 16 warnings
+  /Users/dominic/powerlifting_app_dev/app/services/relationships.py:79: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return datetime.utcnow()
+
+tests/test_canonical_movement_search.py: 73 warnings
+  /Users/dominic/powerlifting_app_dev/venv/lib/python3.12/site-packages/flask_sqlalchemy/query.py:30: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    rv = self.get(ident)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+8 passed, 281 warnings, 35 subtests passed in 16.11s

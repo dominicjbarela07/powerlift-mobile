@@ -1,0 +1,31 @@
+{
+  "certifiedAt": "2026-10-07T03:40:29.044Z",
+  "requestUrl": "http://127.0.0.1:8081",
+  "source": {
+    "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "gitRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "scriptRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "branch": "dev/canonical-mobile",
+    "sha": "0662d2921ea2abfa3ed27ef911ddd4ae7d33b70c",
+    "remoteRef": "origin/dev/canonical-mobile",
+    "remoteSha": "0662d2921ea2abfa3ed27ef911ddd4ae7d33b70c",
+    "clean": false
+  },
+  "listener": {
+    "port": 8081,
+    "processes": [
+      {
+        "pid": 61434,
+        "cwd": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+        "command": "node /Users/dominic/powerlifting_app_dev/powerlift_mobile/node_modules/.bin/expo start --port 8081"
+      }
+    ]
+  },
+  "manifest": {
+    "id": "64e9c9db-cb18-4f6e-a8d4-52984dbd73bb",
+    "runtimeVersion": "2.1.0",
+    "appVersion": "2.1.0",
+    "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "launchAssetUrl": "http://127.0.0.1:8081/node_modules/expo-router/entry.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&transform.reactCompiler=true&unstable_transformProfile=hermes-stable"
+  }
+}

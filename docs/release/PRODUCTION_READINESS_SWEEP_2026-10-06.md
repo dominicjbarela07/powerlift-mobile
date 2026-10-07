@@ -324,3 +324,11 @@ transfer only Education dependencies and its bounded consumer wiring, never
 the unrelated optional checkout. Verify introduction navigation, completion,
 replay and account-scoped persistence in canonical runtime; run its role/state
 suite and type checks. No publication is authorized by this steering.
+
+## Subsequent owner-directed remediation
+
+The owner subsequently requested every identified fix in canonical DEV, with
+non-simulator validation continuing if the Mac locks. The bounded implementation,
+validation results and remaining artwork/native certification gaps are recorded
+in `MOBILE_3_READINESS_FIXES_2026-10-06.md`. This report remains the historical
+audit; its initial source and failed evidence are not retroactively relabeled.

@@ -70,3 +70,23 @@ verified live source/artifact and actual device observations in closeout.
 Respect explicit no-simulator instructions. Shared-backend pushes require the
 source-pinned canonical owner-policy acceptance guard, outside candidate tests.
 Never refresh protection pins merely to pass a candidate.
+
+## Mobile 3 readiness and release evidence
+
+Read `docs/release/MOBILE_3_READINESS_FIXES_2026-10-06.md` for the readiness fixes
+and the remaining human-art/native certification gaps. Explicit Draft, Canceled
+and Archived states outrank date projections; clients never grant execution
+access. Keep the unavailable-Session projection failure contract.
+
+Canonical DEV owns current source-delta receipts. A release must retain the
+original protected files and prove every owner-directed DEV addition with its
+exact before/after patch; filename exemptions and refreshed hashes are invalid.
+Keep the existing Cable backend/catalog holdback until separately reconciled.
+Run the accepted and critical suites, including their deliberate subtraction,
+hidden-source-change and visual-value/root-drift failures.
+
+`production3-preparation` is a separate 3.0.0 native preparation target. Its
+approved-art channel AND runtime switches must agree in the resolver and inline
+asset registries. Audit actual exported bytes independently on each platform;
+source approval alone cannot prove bundling. Preserve Production 2.0.2 and human
+image/crop approvals. This profile grants no build, publish or submit authority.
