@@ -1,0 +1,46 @@
+{
+  "recordedAt": "2026-10-07T00:43:24.469647+00:00",
+  "scope": "DEV only owner review",
+  "sessionId": 1846,
+  "isolatedQAUserId": 80,
+  "actualRuntime": "Canonical DEV Expo Go Metro8081/API5002, iPhone Air",
+  "checksPassed": [
+    "compact rendered Select/Swap and permissions",
+    "canonical equipment selection",
+    "equipment gating/classification",
+    "superset equipment control",
+    "TypeScript"
+  ],
+  "observed": [
+    "Select opens canonical picker",
+    "Watson selection persists and changes control to Swap",
+    "Skip equipment details removes entire equipment area",
+    "Unconfigured Machine Pullover remains with Select for review"
+  ],
+  "globalPreferenceDeviceCheck": "not toggled; route guard regression passed",
+  "setsLogged": 0,
+  "testflightPublished": false,
+  "screenshots": [
+    {
+      "path": "select-first-pass.png",
+      "sha256": "f5fcc6672d3af469e99a5e799364977864e0be933cc0c0a13682d8a7958393a9"
+    },
+    {
+      "path": "selected-swap.png",
+      "sha256": "03b1b5e2cf0911cceb87fcea973e6205f6f17e9f4d300ca6cace16f8f4b56d7a"
+    },
+    {
+      "path": "select-review.png",
+      "sha256": "a32359ae7b106dd09115b6aa1a989232d18047428e14dafd91b61bbd632c0601"
+    },
+    {
+      "path": "opted-out-hidden.png",
+      "sha256": "1c0be625027ea961e93976cf3f0c39a75be785d35bbfe1c74b798b700331654c"
+    }
+  ],
+  "observedSourceHashes": {
+    "components/workout-logger/session-equipment-context.tsx": "ef1a2d15392d17fb1ec90063300c864c939bb0ffe5295634cf4a86ca0db6f767",
+    "scripts/test-logger-compact-actions.mjs": "c4dc3e96f9f706cb2c1b1321f2dfac6b38f71923c18b4f2fb7d3a5a3bd341bcc",
+    "app/(tabs)/workout/[workoutId].tsx": "86156c699fba0f30fca2e296d153e1c4a38e0da356207b953668bec3bb778b29"
+  }
+}

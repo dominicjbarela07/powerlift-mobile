@@ -57,12 +57,28 @@ assert.ok(swap); swap.props.onPress(); assert.equal(swaps, 1);
 assert.equal(text(tree).split('Hammer Strength').length - 1, 1, 'retain manufacturer once with useful configuration');
 assert.ok(text(tree).includes('Plate Loaded'));
 assert.equal(nodes(SessionEquipmentContext({ selected: false, onSwapEquipment() {} })).some(n => n.props.accessibilityLabel === 'Swap equipment'), false,
-  'automatic first-log equipment selection does not need a separate action row');
+  'unselected equipment offers Select rather than Swap in the existing equipment area');
+let selections = 0;
+for (const domain of ['machine', 'cable']) {
+  const unselected = SessionEquipmentContext({ selected: false, domain, onSwapEquipment() { selections++; } });
+  const select = nodes(unselected).find(n => n.props.accessibilityLabel === 'Select equipment');
+  assert.ok(select, `${domain}: unresolved equipment must expose Select`);
+  assert.equal(text(select), 'Select');
+  select.props.onPress();
+  assert.equal(select.props.style({ pressed: false }).some(s => s?.backgroundColor || s?.borderWidth), false,
+    'Select remains a flat action like the approved Swap control');
+}
+assert.equal(selections, 2, 'Select must invoke the canonical picker callback');
+assert.equal(nodes(SessionEquipmentContext({ selected: false })).some(n => n.props.accessibilityRole === 'button'), false,
+  'read-only equipment has no Select control without its permission-bound callback');
 assert.equal(nodes(SessionEquipmentContext({ selected: true })).some(n => n.props.accessibilityLabel === 'Swap equipment'), false);
 const logger = fs.readFileSync('app/(tabs)/workout/[workoutId].tsx', 'utf8');
 const accessory = logger.slice(logger.indexOf('const renderAccessoryMovement'), logger.indexOf('const coreWheelSubmitAction'));
 assert.doesNotMatch(accessory, /auxAction=|accessoryInlineAction/);
 assert.match(accessory, /onSwapEquipment=\{!isCoachAthletePreview && canConfigureMachineEquipment\(it\)/);
+assert.match(accessory, /const hideEquipmentDetails = !askForEquipmentDetails \|\| isUnspecifiedEquipmentIdentity\(currentEquipment\)/);
+assert.match(accessory, /expandedIdentityContext=\{accessoryIsExpanded && machineAccessory && !hideEquipmentDetails \?/,
+  'opt-out/unspecified equipment must hide the entire equipment area, including Select');
 assert.match(accessory, /movementAction=\{!isCoachAthletePreview && swapLabel/);
 assert.match(accessory, /onPress=\{savingItemId === it.id \? undefined : \(\) => openSwapAcc\(it\)\}/);
 assert.match(logger, /onEditPrescription=\{canEditPrescription \? openPrescription/,

@@ -19,13 +19,13 @@ export function SessionEquipmentContext({ selected, manufacturer, name, variant,
       {!selected || variant ? <Text numberOfLines={2} style={s.meta}>{selected
         ? variant
         : domain === 'cable' ? 'Manufacturer and type identify your cable station.'
-          : 'Manufacturer and type keep machine history comparable.'}</Text> : null}
+          : 'Manufacturer + type keep history comparable.'}</Text> : null}
     </View>
-    {selected && onSwapEquipment ? <Pressable accessibilityRole="button" accessibilityLabel="Swap equipment"
-      accessibilityHint="Change the equipment used for this movement" onPress={onSwapEquipment}
+    {onSwapEquipment ? <Pressable accessibilityRole="button" accessibilityLabel={selected ? 'Swap equipment' : 'Select equipment'}
+      accessibilityHint={selected ? 'Change the equipment used for this movement' : 'Choose the equipment used for this movement'} onPress={onSwapEquipment}
       style={({ pressed }) => [s.swap, pressed && s.pressed]}>
-      <Ionicons name="swap-horizontal" size={18} color="#c8a6ff" />
-      <Text style={s.swapLabel}>Swap</Text>
+      <Ionicons name={selected ? 'swap-horizontal' : 'add-outline'} size={18} color="#c8a6ff" />
+      <Text style={s.swapLabel}>{selected ? 'Swap' : 'Select'}</Text>
     </Pressable> : null}
   </View>;
 }
