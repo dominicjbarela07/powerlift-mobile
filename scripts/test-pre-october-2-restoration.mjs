@@ -8,6 +8,7 @@ import {sha256,expoHash,protectedDeliveryHashes,assertProtectedArtifactAssets,as
 import { applySharedReleaseFix } from './release-holdback-policy.mjs';
 import { approvedArtRuntimeEnabled } from '../lib/approved-art-runtime.ts';
 import { artBundlePolicyFiles, assertArtBundlePolicyProgression } from './approved-art-bundle-policy.mjs';
+import { assertExactReleaseProgression, assertReviewedArtwork } from './reviewed-release-progression.mjs';
 
 const root=process.cwd(),read=file=>JSON.parse(fs.readFileSync(file));
 const state=read('config/testflight-release-integrity.json'),scope=state.movementImageryRestoration;
@@ -23,7 +24,9 @@ const sameSource=[
 ];
 for(const file of sameSource) {
   const current = fs.readFileSync(file), original = prior(file);
-  if ((file === 'lib/approved-art-runtime.ts' || artBundlePolicyFiles.includes(file)) && sha256(current) !== sha256(original)) {
+  if (state.reviewedPublication?.sourceProgressions.some(row => row.path === file && row.before === sha256(original) && row.after === sha256(current))) {
+    assertExactReleaseProgression(root, state, file, original, current);
+  } else if ((file === 'lib/approved-art-runtime.ts' || artBundlePolicyFiles.includes(file)) && sha256(current) !== sha256(original)) {
     // Keep the original restoration pin. The separate owner-requested 3.0
     // export extension must prove every changed byte and retain old semantics.
     const progression = state.devSourceProgressions?.find(row => row.path === file && row.before === sha256(original) && row.after === sha256(current));
@@ -38,6 +41,8 @@ for(const file of sameSource) {
   } else assert.equal(sha256(current),sha256(original),`pre-Oct 2 artwork/resolver/crop source changed: ${file}`);
 }
 const baselinePolicy=JSON.parse(prior('artwork-review/runtime-policy.json'));
+if (state.reviewedPublication) assertReviewedArtwork(root, state, read('artwork-review/runtime-policy.json'));
+const effectiveBaselinePolicy = { ...baselinePolicy, approved_exact_artwork: baselinePolicy.approved_exact_artwork.map(row => state.reviewedPublication?.artworkChanges.find(change => change.before?.key === row.key)?.after || row) };
 const baselineCatalog=JSON.parse(prior('config/governed-movement-art-taxonomy.json'));
 const mappings=read('artwork-review/review-state.json').canonical_assets;
 const registry=fs.readFileSync('lib/canonical-movement-artwork-assets.ts','utf8');
@@ -56,7 +61,7 @@ for(const receipt of baselinePolicy.approved_exact_artwork) {
 }
 const resolutions=baselineCatalog.movements.map(definition=>{
   const input=canonicalArtworkInputFromDefinition(definition),before=structuredClone(input);
-  const expected=resolveApprovedExactMovementArtwork(input,true,baselinePolicy);
+  const expected=resolveApprovedExactMovementArtwork(input,true,effectiveBaselinePolicy);
   const current=resolveApprovedExactMovementArtwork(input,true);
   assert.deepEqual(current,expected,`unexpected canonical artwork/fallback: ${definition.id}:${definition.key}`);
   assert.deepEqual(input,before,'artwork must never mutate canonical movement identity');

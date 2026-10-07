@@ -1,0 +1,56 @@
+[
+  {
+    "checkedAt": "2026-10-07T19:53:27.239250+00:00",
+    "status": 200,
+    "health": {
+      "machine_first_baseline_recognized": false,
+      "manufacturers_isolated": true,
+      "migration_revisions": [
+        "f47a92b1c8d0"
+      ],
+      "minimum_delivery_client_version": "2.1.0",
+      "other_is_separate_equipment_context": true,
+      "policy_version": "accessory-exact-reps-equipment-isolated-v3",
+      "pr_comparison_scope": "canonical_movement_exact_equipment",
+      "ready": true,
+      "schema_fingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+      "source_sha": "751a1173b301cb382557c5cbda59e4fdf72633b2"
+    }
+  },
+  {
+    "checkedAt": "2026-10-07T19:53:42.590835+00:00",
+    "status": 200,
+    "health": {
+      "machine_first_baseline_recognized": false,
+      "manufacturers_isolated": true,
+      "migration_revisions": [
+        "f47a92b1c8d0"
+      ],
+      "minimum_delivery_client_version": "2.1.0",
+      "other_is_separate_equipment_context": true,
+      "policy_version": "accessory-exact-reps-equipment-isolated-v3",
+      "pr_comparison_scope": "canonical_movement_exact_equipment",
+      "ready": true,
+      "schema_fingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+      "source_sha": "751a1173b301cb382557c5cbda59e4fdf72633b2"
+    }
+  },
+  {
+    "checkedAt": "2026-10-07T19:53:57.842503+00:00",
+    "status": 200,
+    "health": {
+      "machine_first_baseline_recognized": false,
+      "manufacturers_isolated": true,
+      "migration_revisions": [
+        "f47a92b1c8d0"
+      ],
+      "minimum_delivery_client_version": "2.1.0",
+      "other_is_separate_equipment_context": true,
+      "policy_version": "accessory-exact-reps-equipment-isolated-v3",
+      "pr_comparison_scope": "canonical_movement_exact_equipment",
+      "ready": true,
+      "schema_fingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+      "source_sha": "d4b6a8b22549a9853db71fbbd0485c708471519f"
+    }
+  }
+]

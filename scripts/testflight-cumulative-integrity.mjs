@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { runClientFixContracts } from './owner-directed-client-fix.mjs';
 import { assertLoggerVisualScope } from './owner-directed-logger-visual.mjs';
+import { assertReviewedArtwork, assertReviewedCatalog, assertReviewedPublicationSource } from './reviewed-release-progression.mjs';
 
 export const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 export const expoHash = bytes => crypto.createHash('sha256').update(bytes).digest('base64url');
@@ -179,20 +180,23 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
   assert.ok(protectedState.releaseHistory.length >= 5, 'multi-release historical evidence is required');
   assert.ok(protectedState.currentTestFlight && protectedState.previousTestFlight, 'both live and previous baseline identities are required');
   const files=productFiles(root), fingerprint=fingerprintFiles(files);
+  assertReviewedPublicationSource(root, protectedState, files);
   const delta=compareProtectedFiles(protectedState.protectedFiles,files,[...(protectedState.sourceAuthorizations || []),...sourceRemovals]);
   assert.deepEqual(delta.violations, [], `UNAUTHORIZED PRODUCT DELTA: ${delta.violations.length} protected path(s) changed or disappeared`);
   for(const historical of protectedState.historicalProtectedPaths) {
     assert.ok(files[historical] || (protectedState.historicalRemovalAuthorizations || []).some(receipt => receipt.path === historical && receipt.action === 'REMOVE'), `historical product state disappeared without owner authorization: ${historical}`);
   }
   const runtime=read(root,'artwork-review/runtime-policy.json');
-  for(const prior of protectedState.approvedArtwork) {
+  if (protectedState.reviewedPublication) assertReviewedArtwork(root, protectedState, runtime);
+  else for(const prior of protectedState.approvedArtwork) {
     const current=runtime.approved_exact_artwork.find(r=>r.key===prior.key);
     assert.ok(current, `approved movement mapping disappeared: ${prior.key}`);
     assert.equal(current.movement_definition_id,prior.movement_definition_id, 'artwork must preserve canonical movement identity');
     assert.deepEqual(current,prior, `approved image, crop or presentation changed without owner receipt: ${prior.key}`);
   }
   const catalog=read(root,'config/governed-movement-art-taxonomy.json');
-  assert.deepEqual(catalog.movements.map(r=>[r.id,r.key]).sort((a,b)=>a[0]-b[0] || a[1].localeCompare(b[1])),protectedState.catalogIdentities,
+  if (protectedState.reviewedPublication) assertReviewedCatalog(root, protectedState, catalog);
+  else assert.deepEqual(catalog.movements.map(r=>[r.id,r.key]).sort((a,b)=>a[0]-b[0] || a[1].localeCompare(b[1])),protectedState.catalogIdentities,
     'protected release catalog identity set changed; reconcile destination data and obtain explicit authorization first');
   const app=read(root,'app.json').expo,eas=read(root,'eas.json');
   if(app.extra?.releaseTrack==='testflight') {

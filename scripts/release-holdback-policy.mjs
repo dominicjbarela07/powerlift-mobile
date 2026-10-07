@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 
 /** A release may retain pinned, already-shipped bytes while DEV awaits a
  * separate compatible backend/catalog release. It may not invent product code. */
@@ -23,15 +25,30 @@ export function validateReleaseHoldbacks(holdbacks, candidate, git) {
       if (row.sharedFix) {
         assert.match(row.sharedFix.devSourceCommit, /^[a-f0-9]{40}$/);
         const before = git('show', `${source}:${row.path}`);
-        assert.equal(applySharedReleaseFix(before, row.sharedFix), git('show', `${candidate}:${row.path}`), 'holdback must contain only the exact shared fix on shipped source');
+        assert.equal(applyPublicationProgression(applySharedReleaseFix(before, row.sharedFix), row.publicationProgression), git('show', `${candidate}:${row.path}`), 'holdback must contain only the exact shared fix and owner-authorized publication patch');
       } else {
         assert.equal(git('rev-parse', `${source}:${row.path}`), row.blob, 'holdback must match its shipped provenance');
       }
-      assert.equal(git('rev-parse', `${candidate}:${row.path}`), row.blob, 'holdback must retain exact shipped bytes');
+      if (row.publicationProgression) {
+        const original = row.sharedFix ? applySharedReleaseFix(git('show', `${source}:${row.path}`), row.sharedFix) : git('show', `${source}:${row.path}`);
+        assert.equal(applyPublicationProgression(original, row.publicationProgression), git('show', `${candidate}:${row.path}`), 'publication progression must prove all candidate bytes');
+      } else assert.equal(git('rev-parse', `${candidate}:${row.path}`), row.blob, 'holdback must retain exact shipped bytes');
     }
     paths.add(row.path);
   }
   return paths;
+}
+
+export function applyPublicationProgression(source, progression, root=process.cwd()) {
+  if (!progression) return source;
+  const hash = value => crypto.createHash('sha256').update(value).digest('hex');
+  const evidence = fs.readFileSync(path.join(root, progression.ownerEvidencePath), 'utf8');
+  assert.equal(hash(evidence), progression.ownerEvidenceSha256);
+  assert.ok(progression.ownerInstruction && evidence.includes(progression.ownerInstruction));
+  assert.equal(hash(source), progression.before, 'publication patch must begin at the original held source');
+  const after = progression.changes.reduce((value, change) => applySharedReleaseFix(value, change), source);
+  assert.equal(hash(after), progression.after, 'publication patch must prove its exact endpoint');
+  return after;
 }
 
 export function applySharedReleaseFix(source, fix) {
@@ -55,7 +72,7 @@ export function validateDevReleaseHoldbacks(holdbacks, candidateFiles, devFiles,
     if (!candidateFiles[row.path] || candidateFiles[row.path] === devFiles[row.path]) continue;
     assert.ok(devFiles[row.path], 'deferred feature must remain in canonical DEV');
     assert.ok(row.devSha256 && row.candidateSha256, 'divergent holdbacks require exact DEV and candidate hashes');
-    assert.equal(candidateFiles[row.path], row.candidateSha256, 'holdback candidate changed');
+    assert.equal(candidateFiles[row.path], row.publicationProgression?.candidateSha256 || row.candidateSha256, 'holdback candidate changed');
     assert.equal(devFiles[row.path], row.devSha256, 'holdback DEV changed');
     if (row.sharedFix) {
       const base = devGit('show', `${row.sharedFix.devSourceCommit}:${row.path}`);

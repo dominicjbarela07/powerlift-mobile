@@ -16,11 +16,11 @@ const canonicalRef = argValue('--canonical-dev-ref')
   || process.env.STRENGTH_LEDGER_CANONICAL_DEV_REF
   || `refs/remotes/origin/${manifest.canonicalDevBranch}`;
 const candidateRef = argValue('--candidate-ref') || 'HEAD';
-const git = (...args) => execFileSync('git', args, {
+const git = (...args) => { const output = execFileSync('git', args, {
   cwd: root,
   encoding: 'utf8',
   stdio: ['ignore', 'pipe', 'pipe'],
-}).trim();
+}); return args[0] === 'show' ? output : output.trim(); };
 
 const canonicalSha = git('rev-parse', '--verify', canonicalRef);
 const candidateSha = git('rev-parse', '--verify', candidateRef);
