@@ -1,0 +1,8 @@
+{
+  "servingSourceSha": "751a1173b301cb382557c5cbda59e4fdf72633b2",
+  "path": "app/services/canonical_movement_search.py",
+  "sourceComparisonAvailable": true,
+  "servingSourceFileSha256": "6ddf8605b69879fa75dbd9bdc273e0a80f5301ceacc71e05ff32f5680261421b",
+  "devSourceFileSha256": "61aea32ef97d179ee51cfed7e56c4bf159f1d8b33b3d5ade9fd3deaa8b2cef56",
+  "sameSourceBytes": false
+}

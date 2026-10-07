@@ -1,0 +1,17 @@
+--- serving-app/services/canonical_movement_search.py
++++ canonical-dev-app/services/canonical_movement_search.py
+@@ -347,9 +347,11 @@
+             ((name_match, name_tokens), (best_alias_match, best_alias_tokens), (lexical_match, lexical_tokens)),
+             key=lambda value: (value[0].complete, value[0].coverage, -len(value[1])),
+         )
+-        return MovementSearchRank(
+-            7,
+-            300.0 + _rank_score(typo_match, len(typo_tokens)),
++        # A direct name/alias with a typo outranks broader metadata matches.
++        # Name density keeps the base movement ahead of more specific variants.
++        return MovementSearchRank(
++            3,
++            750.0 + _rank_score(typo_match, len(typo_tokens)),
+             ("bounded typo-tolerant name match",),
+             query_tokens,
+         )

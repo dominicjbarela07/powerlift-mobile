@@ -1,0 +1,14 @@
+{
+  "name": "testflight",
+  "id": "019fdf64-838d-712e-a2ed-92d3ccde9068",
+  "currentPage": [
+    {
+      "branch": "testflight",
+      "message": "\"Compact Logger controls, assisted movement search, conditional history and refreshed pre-Session check-in; preserve earned PR playback\" (20 hours ago by dominicjbarela07)",
+      "runtimeVersion": "2.1.0",
+      "isRollBackToEmbedded": false,
+      "group": "d94afb31-3d19-4265-9040-0c2566c490b3",
+      "platforms": "ios"
+    }
+  ]
+}

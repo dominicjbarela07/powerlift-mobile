@@ -1,0 +1,32 @@
+{
+  "mobile_dev": {
+    "path": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "branch": "dev/canonical-mobile",
+    "sha": "293c5b0a081db06c677bd259f442509fc7f7cc91",
+    "tracked_dirty_paths": 0
+  },
+  "backend_dev": {
+    "path": "/Users/dominic/powerlifting_app_dev",
+    "branch": "dev/canonical-backend",
+    "sha": "35027c051cb22dd9611ee7b3c0cf3ada8eb803f3",
+    "tracked_dirty_paths": 615
+  },
+  "testflight": {
+    "path": "/Users/dominic/powerlifting_app/powerlift_mobile_testflight",
+    "branch": "release/testflight/hot-swap-r56-20261001",
+    "sha": "57de0daf66a10579a92a1cb983bf0a88ead035fd",
+    "tracked_dirty_paths": 0
+  },
+  "production_backend": {
+    "path": "/Users/dominic/powerlifting_app",
+    "branch": "release/testflight-polish-2026-08-09",
+    "sha": "ada0ed1861027b2d2d346794ef9fac2e851821f8",
+    "tracked_dirty_paths": 26
+  },
+  "education_optional": {
+    "path": "/Users/dominic/powerlifting_app_mobile_optional_dev",
+    "branch": "dev/mobile-3-education-20260928",
+    "sha": "0afa7990a87cf43396bc28d322de9fb1b679d5f4",
+    "tracked_dirty_paths": 66
+  }
+}

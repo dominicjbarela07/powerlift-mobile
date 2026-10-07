@@ -1,0 +1,26 @@
+[
+  {
+    "id": "01a0e5d0-6863-77fe-9d28-5fc894376eb6",
+    "createdAt": "2026-09-28T02:20:35.811Z",
+    "group": "0cceb494-ae13-4c9a-931c-b583976707e5",
+    "branch": "production-live-2.0.2",
+    "message": "Production 2.0.2: simplify skipped equipment presentation",
+    "runtimeVersion": "2.0.2",
+    "platform": "ios",
+    "manifestPermalink": "https://u.expo.dev/update/01a0e5d0-6863-77fe-9d28-5fc894376eb6",
+    "isRollBackToEmbedded": false,
+    "gitCommitHash": "3d5816a1b824eff00b9ce605f8d544a1264c6376"
+  },
+  {
+    "id": "01a0e5d0-6863-7819-8f15-1d98982a5af1",
+    "createdAt": "2026-09-28T02:20:35.811Z",
+    "group": "0cceb494-ae13-4c9a-931c-b583976707e5",
+    "branch": "production-live-2.0.2",
+    "message": "Production 2.0.2: simplify skipped equipment presentation",
+    "runtimeVersion": "2.0.2",
+    "platform": "android",
+    "manifestPermalink": "https://u.expo.dev/update/01a0e5d0-6863-7819-8f15-1d98982a5af1",
+    "isRollBackToEmbedded": false,
+    "gitCommitHash": "3d5816a1b824eff00b9ce605f8d544a1264c6376"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "name": "production-live-2.0.2",
+  "id": "01a03109-1bac-7c67-9842-44b97c176fd0",
+  "currentPage": [
+    {
+      "branch": "production-live-2.0.2",
+      "message": "\"Production 2.0.2: simplify skipped equipment presentation\" (1 week ago by dominicjbarela07)",
+      "runtimeVersion": "2.0.2",
+      "isRollBackToEmbedded": false,
+      "group": "0cceb494-ae13-4c9a-931c-b583976707e5",
+      "platforms": "android, ios"
+    }
+  ]
+}

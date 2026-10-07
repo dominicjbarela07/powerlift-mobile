@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-07T18:05:37.928Z",
+  "publicationAuthorized": false,
+  "gates": {},
+  "error": "lib/canonical-movement-artwork-assets.ts: unregistered DEV changes\n+ actual - expected\n\n+ '4d7c1899497dc7f1370bbdad4507f556b6e9327712911edd53bab6d2c4d1d39e'\n- '0803f68afa0103617473a14a13c61fb42816dcb8aca94a4fa20a6773b6e19762'\n"
+}

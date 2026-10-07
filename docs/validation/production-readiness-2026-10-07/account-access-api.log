@@ -1,0 +1,153 @@
+................................................... [ 98%]
+.                                                                        [100%]
+=============================== warnings summary ===============================
+tests/test_account_state_resolver.py: 18 warnings
+  /Users/dominic/powerlifting_app_dev/tests/test_account_state_resolver.py:68: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at=datetime.utcnow(),
+
+tests/test_account_state_resolver.py: 16 warnings
+  /Users/dominic/powerlifting_app_dev/tests/test_account_state_resolver.py:73: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    user.email_verified_at = datetime.utcnow()
+
+tests/test_account_state_resolver.py: 2 warnings
+tests/test_mobile_account_state_contract.py: 10 warnings
+tests/test_mobile_readiness.py: 17 warnings
+  /Users/dominic/powerlifting_app_dev/app/services/relationships.py:79: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return datetime.utcnow()
+
+tests/test_account_state_resolver.py::AccountStateResolverTest::test_unknown_workspace_mode_fails_closed_for_coach_readiness
+  /Users/dominic/powerlifting_app_dev/tests/test_account_state_resolver.py:377: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    email_verified_at=datetime.utcnow(),
+
+tests/test_mobile_account_state_contract.py: 24 warnings
+  /Users/dominic/powerlifting_app_dev/tests/test_mobile_account_state_contract.py:63: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at=datetime.utcnow(),
+
+tests/test_mobile_account_state_contract.py: 24 warnings
+  /Users/dominic/powerlifting_app_dev/tests/test_mobile_account_state_contract.py:64: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    email_verified_at=datetime.utcnow(),
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_linked_athlete_mobile_payload_does_not_receive_coach_or_self_coach_modes
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_mobile_bootstrap_payload_matches_canonical_resolver_for_linked_athlete
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_unverified_invited_athlete_requires_verification_then_can_link
+  /Users/dominic/powerlifting_app_dev/app/blueprints/main.py:4841: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    coach_row = User.query.get(coach_id)
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_mobile_bootstrap_converges_after_email_is_verified_elsewhere
+  /Users/dominic/powerlifting_app_dev/tests/test_mobile_account_state_contract.py:632: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    coach.email_verified_at = datetime.utcnow()
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_owner_only_mobile_self_coach_mode_available_and_switchable
+  /Users/dominic/powerlifting_app_dev/tests/test_mobile_account_state_contract.py:460: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    owner = User.query.get(1)
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_owner_only_mobile_self_coach_mode_available_and_switchable
+  /Users/dominic/powerlifting_app_dev/tests/test_mobile_account_state_contract.py:497: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    self.assertEqual(User.query.get(1).workspace_mode, "team")
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_unverified_invited_athlete_requires_verification_then_can_link
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_unverified_invited_athlete_requires_verification_then_can_link
+  /Users/dominic/powerlifting_app_dev/app/services/email_verification_codes.py:30: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return datetime.utcnow()
+
+tests/test_mobile_account_state_contract.py: 1 warning
+tests/test_mobile_readiness.py: 36 warnings
+  /Users/dominic/powerlifting_app_dev/venv/lib/python3.12/site-packages/flask_sqlalchemy/query.py:30: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    rv = self.get(ident)
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_unverified_invited_athlete_requires_verification_then_can_link
+  /Users/dominic/powerlifting_app_dev/venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3599: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+
+tests/test_mobile_account_state_contract.py: 10 warnings
+tests/test_billing_entitlement_guard.py: 2 warnings
+  /Users/dominic/powerlifting_app_dev/app/models.py:136: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    return User.query.get(int(user_id))
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_unverified_invited_athlete_requires_verification_then_can_link
+  /Users/dominic/powerlifting_app_dev/tests/test_mobile_account_state_contract.py:704: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    self.assertEqual(Athlete.query.get(athlete_id).coach_id, coach_id)
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_upgraded_externally_coached_team_coach_mobile_modes_and_metadata
+  /Users/dominic/powerlifting_app_dev/app/blueprints/main.py:9581: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    recent_start = datetime.utcnow() - timedelta(hours=24)
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_upgraded_externally_coached_team_coach_mobile_modes_and_metadata
+  /Users/dominic/powerlifting_app_dev/app/blueprints/main.py:8825: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "generated_at": f"{datetime.utcnow().isoformat()}Z",
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_upgraded_externally_coached_team_coach_mobile_modes_and_metadata
+  /Users/dominic/powerlifting_app_dev/app/blueprints/athletes.py:4794: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    coach = User.query.get(coach_id)
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_upgraded_externally_coached_team_coach_mobile_modes_and_metadata
+  /Users/dominic/powerlifting_app_dev/app/blueprints/athletes.py:5244: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    .filter((CoachAnnouncement.expires_at.is_(None)) | (CoachAnnouncement.expires_at > datetime.utcnow()))
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_upgraded_externally_coached_team_coach_mobile_modes_and_metadata
+  /Users/dominic/powerlifting_app_dev/app/services/check_ins.py:146: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    athlete = Athlete.query.get(athlete_id)
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_upgraded_externally_coached_team_coach_mobile_modes_and_metadata
+  /Users/dominic/powerlifting_app_dev/app/services/check_ins.py:89: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now_utc = through_utc or datetime.utcnow()
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_upgraded_externally_coached_team_coach_mobile_modes_and_metadata
+  /Users/dominic/powerlifting_app_dev/app/services/check_ins.py:438: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow()
+
+tests/test_mobile_account_state_contract.py::MobileAccountStateContractTest::test_upgraded_externally_coached_team_coach_mobile_modes_and_metadata
+  /Users/dominic/powerlifting_app_dev/app/blueprints/athletes.py:402: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    cutoff = datetime.utcnow() - timedelta(days=7)
+
+tests/test_billing_entitlement_guard.py: 17 warnings
+  /Users/dominic/powerlifting_app_dev/tests/test_billing_entitlement_guard.py:66: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at=datetime.utcnow(),
+
+tests/test_billing_entitlement_guard.py: 17 warnings
+  /Users/dominic/powerlifting_app_dev/tests/test_billing_entitlement_guard.py:67: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    email_verified_at=datetime.utcnow(),
+
+tests/test_mobile_readiness.py: 11 warnings
+  /Users/dominic/powerlifting_app_dev/app/blueprints/workouts.py:13120: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    rs.submitted_at = datetime.utcnow()
+
+tests/test_mobile_readiness.py::MobileReadinessTest::test_begin_is_idempotent_after_readiness
+tests/test_mobile_readiness.py::MobileReadinessTest::test_begin_is_idempotent_after_readiness
+tests/test_mobile_readiness.py::MobileReadinessTest::test_calendar_reuses_same_day_sessionless_readiness_without_new_evidence
+tests/test_mobile_readiness.py::MobileReadinessTest::test_explicit_begin_without_readiness_creates_no_fake_observation
+tests/test_mobile_readiness.py::MobileReadinessTest::test_readiness_save_does_not_begin_until_explicit_lifecycle_request
+tests/test_mobile_readiness.py::MobileReadinessTest::test_readiness_save_does_not_begin_until_explicit_lifecycle_request
+  /Users/dominic/powerlifting_app_dev/app/services/workout_lifecycle.py:13: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return datetime.utcnow()
+
+tests/test_mobile_readiness.py::MobileReadinessTest::test_begin_is_idempotent_after_readiness
+  /Users/dominic/powerlifting_app_dev/tests/test_mobile_readiness.py:376: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    started_at = Workout.query.get(workout.id).started_at
+
+tests/test_mobile_readiness.py::MobileReadinessTest::test_begin_is_idempotent_after_readiness
+  /Users/dominic/powerlifting_app_dev/tests/test_mobile_readiness.py:379: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    self.assertEqual(Workout.query.get(workout.id).started_at, started_at)
+
+tests/test_mobile_readiness.py::MobileReadinessTest::test_calendar_reuses_same_day_sessionless_readiness_without_new_evidence
+tests/test_mobile_readiness.py::MobileReadinessTest::test_daily_readiness_uses_server_resolved_local_training_date
+tests/test_mobile_readiness.py::MobileReadinessTest::test_recovery_day_readiness_upserts_one_sessionless_daily_observation
+tests/test_mobile_readiness.py::MobileReadinessTest::test_recovery_day_readiness_upserts_one_sessionless_daily_observation
+  /Users/dominic/powerlifting_app_dev/app/services/readiness.py:132: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    row.submitted_at = datetime.utcnow()
+
+tests/test_mobile_readiness.py::MobileReadinessTest::test_calendar_reuses_same_day_sessionless_readiness_without_new_evidence
+tests/test_mobile_readiness.py::MobileReadinessTest::test_readiness_save_does_not_begin_until_explicit_lifecycle_request
+  /Users/dominic/powerlifting_app_dev/app/blueprints/athletes.py:731: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    athlete = Athlete.query.get(athlete_id)
+
+tests/test_mobile_readiness.py::MobileReadinessTest::test_confirmed_mobile_cancel_resets_the_workout_attempt
+  /Users/dominic/powerlifting_app_dev/app/services/set_log_persistence.py:150: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    occurred_at=datetime.utcnow(),
+
+tests/test_mobile_readiness.py::MobileReadinessTest::test_confirmed_mobile_cancel_resets_the_workout_attempt
+  /Users/dominic/powerlifting_app_dev/tests/test_mobile_readiness.py:290: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    canceled = Workout.query.get(workout.id)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+52 passed, 240 warnings, 21 subtests passed in 16.58s

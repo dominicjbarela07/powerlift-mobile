@@ -1,0 +1,65 @@
+............................................                                              [100%]
+=============================== warnings summary ===============================
+tests/test_active_session_prescription.py: 36 warnings
+tests/test_active_session_composition.py: 156 warnings
+tests/test_zero_load_edit_set.py: 12 warnings
+tests/test_canonical_movement_search.py: 96 warnings
+  /Users/dominic/powerlifting_app_dev/app/services/accessory_movement_platform.py:513: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    decided_at=datetime.utcnow(),
+
+tests/test_active_session_prescription.py: 36 warnings
+tests/test_active_session_composition.py: 156 warnings
+tests/test_zero_load_edit_set.py: 12 warnings
+tests/test_canonical_movement_search.py: 96 warnings
+  /Users/dominic/powerlifting_app_dev/app/services/accessory_movement_platform.py:520: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    source.retired_at = source.retired_at or datetime.utcnow()
+
+tests/test_active_session_prescription.py: 13 warnings
+tests/test_active_session_composition.py: 27 warnings
+tests/test_zero_load_edit_set.py: 1 warning
+tests/test_canonical_movement_search.py: 16 warnings
+  /Users/dominic/powerlifting_app_dev/app/services/relationships.py:79: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return datetime.utcnow()
+
+tests/test_active_session_prescription.py: 50 warnings
+tests/test_active_session_composition.py: 142 warnings
+tests/test_zero_load_edit_set.py: 15 warnings
+tests/test_canonical_movement_search.py: 73 warnings
+  /Users/dominic/powerlifting_app_dev/venv/lib/python3.12/site-packages/flask_sqlalchemy/query.py:30: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    rv = self.get(ident)
+
+tests/test_active_session_prescription.py::ActivePrescriptionTest::test_core_manual_load_and_legacy_session_contract
+tests/test_active_session_prescription.py::ActivePrescriptionTest::test_core_manual_load_and_legacy_session_contract
+tests/test_active_session_composition.py::ActivePrescriptionTest::test_core_manual_load_and_legacy_session_contract
+tests/test_active_session_composition.py::ActivePrescriptionTest::test_core_manual_load_and_legacy_session_contract
+  /Users/dominic/powerlifting_app_dev/app/services/workout_lifecycle.py:13: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return datetime.utcnow()
+
+tests/test_active_session_prescription.py: 3 warnings
+tests/test_active_session_composition.py: 5 warnings
+tests/test_zero_load_edit_set.py: 6 warnings
+  /Users/dominic/powerlifting_app_dev/app/services/set_log_persistence.py:150: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    occurred_at=datetime.utcnow(),
+
+tests/test_active_session_prescription.py::ActivePrescriptionTest::test_core_manual_load_and_legacy_session_contract
+tests/test_active_session_prescription.py::ActivePrescriptionTest::test_core_manual_load_and_legacy_session_contract
+tests/test_active_session_prescription.py::ActivePrescriptionTest::test_core_manual_load_and_legacy_session_contract
+tests/test_active_session_prescription.py::ActivePrescriptionTest::test_core_manual_load_and_legacy_session_contract
+tests/test_active_session_composition.py::ActivePrescriptionTest::test_core_manual_load_and_legacy_session_contract
+tests/test_active_session_composition.py::ActivePrescriptionTest::test_core_manual_load_and_legacy_session_contract
+tests/test_active_session_composition.py::ActivePrescriptionTest::test_core_manual_load_and_legacy_session_contract
+tests/test_active_session_composition.py::ActivePrescriptionTest::test_core_manual_load_and_legacy_session_contract
+  /Users/dominic/powerlifting_app_dev/app/services/core_accomplishments.py:309: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    event.occurred_at = source_set.created_at or datetime.utcnow() if source_set else datetime.utcnow()
+
+tests/test_active_session_prescription.py::ActivePrescriptionTest::test_identity_fields_invalid_values_and_stale_edits_rejected
+tests/test_active_session_composition.py::ActivePrescriptionTest::test_identity_fields_invalid_values_and_stale_edits_rejected
+  /Users/dominic/powerlifting_app_dev/tests/test_active_session_prescription.py:197: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    w.status = "in_progress"; w.started_at = datetime.utcnow(); self.db.session.commit()
+
+tests/test_zero_load_edit_set.py::ZeroLoadEditSetTest::test_added_load_to_zero_survives_edit_reload_and_noop_without_identity_changes
+  /Users/dominic/powerlifting_app_dev/tests/test_accessory_movement_identity_platform.py:51: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    billing_tier="team", email_verified_at=datetime.utcnow(),
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+44 passed, 966 warnings, 55 subtests passed in 42.36s

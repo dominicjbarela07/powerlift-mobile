@@ -1,0 +1,14 @@
+[
+  {
+    "id": "01a11340-9ccc-7498-a71d-77a367aa6f5f",
+    "createdAt": "2026-10-06T22:06:03.980Z",
+    "group": "d94afb31-3d19-4265-9040-0c2566c490b3",
+    "branch": "testflight",
+    "message": "Compact Logger controls, assisted movement search, conditional history and refreshed pre-Session check-in; preserve earned PR playback",
+    "runtimeVersion": "2.1.0",
+    "platform": "ios",
+    "manifestPermalink": "https://u.expo.dev/update/01a11340-9ccc-7498-a71d-77a367aa6f5f",
+    "isRollBackToEmbedded": false,
+    "gitCommitHash": "59641028e514c3edc957c95de2d4882f2f3bf3e0"
+  }
+]
