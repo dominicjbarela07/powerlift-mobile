@@ -90,3 +90,20 @@ assert.throws(() => {
   assert.equal(h.states[0].introductionComplete, true, 'completion missing');
 }, /completion missing/, 'the original exit loop must fail the protection');
 console.log('Deliberately omitted introduction completion is rejected: PASS');
+
+// Execute the canonical entry handler: discovering prescription editing must
+// retire the Session-edit tip, while denied/in-flight edits cannot mark it used.
+const logger = fs.readFileSync('app/(tabs)/workout/[workoutId].tsx', 'utf8');
+const entry = logger.match(/const openPrescription = \(itemId: number\) => \{[\s\S]*?\n  \};/)?.[0];
+assert.ok(entry, 'canonical prescription entry handler exists');
+for (const [allowed, pending] of [[true, false], [false, false], [true, true]]) {
+  const calls = [];
+  const c = { canEditPrescription: allowed,
+    canonicalSetSubmissionControllerRef: { current: { isInFlight: () => pending } },
+    education: { markLearned: feature => calls.push(['learned', feature]) },
+    setPrescriptionItemId: id => calls.push(['open', id]),
+  };
+  vm.runInNewContext(compile(`${entry}\nopenPrescription(42);`), c);
+  assert.deepEqual(calls, allowed && !pending ? [['learned', 'active-session-edit'], ['open', 42]] : []);
+}
+console.log('Canonical prescription entry retires guidance only when the action is allowed: PASS');

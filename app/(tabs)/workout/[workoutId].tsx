@@ -3095,6 +3095,7 @@ export default function WorkoutViewerScreen() {
       acceptedPersistedSetLogForItem: acceptedSetEvidenceItemIds.has(Number(it.id)),
     });
     if (!swapAction) return;
+    education.markLearned('active-session-edit');
     setSwapError(null);
     setSwapAccItem(it);
     // The programmed/effective identity is context, never a selectable
@@ -8445,6 +8446,7 @@ export default function WorkoutViewerScreen() {
     data.permissions?.is_self_coached, workout.status, isCoachAthletePreview || coachPreviewRequested);
   const openPrescription = (itemId: number) => {
     if (!canEditPrescription || canonicalSetSubmissionControllerRef.current.isInFlight()) return;
+    education.markLearned('active-session-edit');
     setPrescriptionItemId(itemId);
   };
 

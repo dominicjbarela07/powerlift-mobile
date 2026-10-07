@@ -52,3 +52,9 @@ The provider changes presentation and account-scoped guidance state only.
 Adjacent surfaces checked by executable contracts include Settings, Session
 Workspace, Logger, movement history, navigation markers and Coach Workspace.
 Actual Athlete and Coach screen review continues in the broader sweep.
+
+Canonical runtime review also caught a consumer-wiring gap: the older transfer
+marked composition Add/Remove as learned but did not mark the relocated
+prescription edit or Swap action. Both permitted entry points now retire the
+Session-edit hint. The actual prescription entry callback is exercised with
+allowed, denied and in-flight cases; training mutation behavior is unchanged.
