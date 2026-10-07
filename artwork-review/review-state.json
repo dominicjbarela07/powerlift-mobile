@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": 2927,
-  "updated_at": "2026-09-24T19:59:43.103765+00:00",
-  "updated_at_display": "Sep 24, 2026 12:59 PM PT (Sep 24, 2026 03:59 PM Eastern)",
+  "revision": 2929,
+  "updated_at": "2026-10-07T16:18:11.433883+00:00",
+  "updated_at_display": "Oct 07, 2026 09:18 AM PT (Oct 07, 2026 12:18 PM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -144514,6 +144514,110 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "d5a0b572646e1b43f05e1d72ff2b50d14d13bdec84f2dd3d7323b4f2656b6f67",
         "source": "human_review_ui"
+      }
+    },
+    {
+      "movement_definition_id": 650,
+      "key": "barbell_overhead_press",
+      "movement_name": "Barbell Overhead Press",
+      "primary_muscle_group": null,
+      "equipment_type": "barbell",
+      "implement": "barbell",
+      "family": "canonical_core_variants",
+      "generation_id": "ohp-20261007-650-review-v1",
+      "generation_batch": "Barbell Overhead Press exact source candidate — 2026-10-07",
+      "candidate_id": "013655e475e56a3dcb0364ce",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "prior_rejection": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/013655e475e56a3dcb0364ce/master.png",
+          "sha256": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1875261
+        },
+        "app": {
+          "path": "candidates/013655e475e56a3dcb0364ce/app.png",
+          "sha256": "f3f3329ed714811397f8f317b37b88d0f9411940bf255bb34599d5961dfdbc5a",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 288681
+        },
+        "thumbnail": {
+          "path": "candidates/013655e475e56a3dcb0364ce/thumbnail.png",
+          "sha256": "6d7a1e80d2594ec5329a3fb9cf3380c5ac98bbb4bc28a4b31700208c8f8d68b7",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 39887
+        }
+      },
+      "candidate_asset": "candidates/013655e475e56a3dcb0364ce/master.png",
+      "status": "approved",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review_history": [
+        {
+          "source": "explicit_owner_chat",
+          "owner_instruction": "approved. give me the link to the crop/position editor",
+          "conversation_id": "01a103b8-444a-75a3-9893-10380cdca0b2",
+          "recorded_by": "codex_at_owner_request",
+          "action": "approve",
+          "decision": "approved",
+          "reason": "",
+          "tags": [],
+          "candidate_sha256": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+          "reviewer": "owner_via_chat",
+          "reviewed_at": "2026-10-07T16:18:11.433558+00:00",
+          "reviewed_at_display": "Oct 07, 2026 09:18 AM PT (Oct 07, 2026 12:18 PM Eastern)"
+        }
+      ],
+      "created_at": "2026-10-07T16:17:04.301924+00:00",
+      "created_at_display": "Oct 07, 2026 09:17 AM PT (Oct 07, 2026 12:17 PM Eastern)",
+      "generation_prompt": "Use case: photorealistic-natural.\nAsset type: one square Strength Ledger canonical movement-art master for Barbell Overhead Press, movement ID 650. This is a NEW image; the references are style references, not images to modify.\nInput images: Reference 1 is the immutable approved Incline Dumbbell Bench Press baseline, supplying the exact athlete identity, face, muscular build, dark charcoal sleeveless top, plain black shorts, skin texture and studio photographic language. Reference 2 is the approved Competition Squat, supplying the Core artwork's red calibrated plates, straight polished barbell, footwear construction and floor/material finish. Reference 3 is the approved Competition Bench, supplying coherent bar/sleeve/collar details and the restrained dark studio lighting. Preserve the family visual language; do not reproduce the reference exercises or benches/racks.\n\nPrimary request: create an unmistakable STRICT STANDING BARBELL OVERHEAD PRESS at a controlled overhead lockout. One same male athlete, standing upright on both feet, looking forward with a focused natural expression. Both knees and hips extended; ribcage stacked over pelvis, braced torso, no backward lean, no squat/dip, no leg drive. Feet hip-width, fully grounded. Both arms reach overhead with elbows straight and shoulders naturally elevated; a closed pronated grip just outside shoulder width, thumbs wrapped around the ONE straight steel bar. Hands, wrists and elbows remain anatomically coherent, with wrists stacked under the bar rather than bent severely backward. The athlete's head is naturally between/slightly in front of his upper arms at lockout. The bar is directly above shoulders and midfoot, not far in front of the body.\n\nEquipment: a single mechanically continuous conventional Olympic barbell, balanced with one matching red calibrated plate on each sleeve and matching metal collars. The same bar axis must pass through both plate center holes, sleeves and both grips. Symmetric loading and consistent perspective. Both entire plate stacks, collars and outer sleeve tips visible, never cropped. No disconnected shaft, duplicate implement or phantom fingers. No rack, bench, dumbbells, machine or unnecessary equipment.\n\nStyle/medium: match the reference assets closely: polished high-detail realistic athletic studio photography/render, the identical approved dark-haired athlete, realistic anatomy and subtle skin detail, charcoal tank and black shorts, plain black stable lifting shoes with restrained strap detail and firm soles. Near-black seamless studio with dark textured rubber floor and grounded contact shadows, neutral soft key light and restrained violet rim from the right. The athlete and bar remain sharply readable against the dark background. No colorful neon scene, bright gym, crowd, muscular anatomy overlays, illustration or new character.\n\nComposition/framing: square 1:1 master, full body and entire loaded barbell, clear front three-quarter diagonal view at natural chest-height camera perspective. A clean movement-centered composition matching the Core artwork, athlete close to center, generous safe margins above the overhead plates and under both feet, all bar ends inside the square. Pull the camera back enough to preserve all contact points and equipment without compressing limbs. Show a single controlled moment, not a montage. No exaggerated wide-angle distortion. The movement must remain understandable in a 192px and 80px card.\n\nText: none.\nConstraints: exactly one athlete, two arms, two hands and two feet; identical family model/clothing/studio; an actual strict standing overhead press, correct continuous loaded bar geometry, fully grounded feet, no belt, no logos, no watermarks, no UI, no labels, no borders. Do not modify any reference image.\n\n\nRefinement:\nUse case: precise-object-edit.\nReference 1: immutable approved Strength Ledger athlete/style baseline, for identity and materials only.\nReference 2: the NEW Barbell Overhead Press candidate to edit.\n\nMake ONE composition correction to reference 2: pull the camera back by approximately 8–10%, uniformly reducing the entire athlete and connected loaded barbell together inside the SAME square canvas. Add clear dark-studio headroom ABOVE the top of both overhead red plates, at least 5% of canvas height. Maintain at least 5% margin below both feet and safe margins beyond both sleeve tips. Keep the complete athlete/bar centered and grounded on the same studio floor. No stretching or shortening limbs or changing perspective.\n\nPRESERVE exactly the current strict standing overhead lockout, same man/face/hair, charcoal tank, black shorts/shoes, both grounded feet, extended knees/hips, braced upright torso, arms/hands/grip, ONE continuous straight loaded bar axis, balanced matching red plates, collars/sleeves, black studio, textured floor, neutral key and restrained violet rim. The foreground/floor may extend naturally when camera pulls back. Do not add a rack, belt, people, labels, borders or equipment; no redesigned athlete or outfit. Preserve the realistic family photographic language. The intended change is visibly more safe frame space above the plates, not darker/cropped plates or moving the bar relative to his body.\n",
+      "generation_source_asset": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/generation-attempts/ohp-2026-10-07/650/attempt-02.png",
+      "test_only": false,
+      "secondary_muscle_groups": [],
+      "movement_family": "bench",
+      "execution_family": null,
+      "sidedness": "bilateral",
+      "loading_implementation": "free_weight",
+      "load_convention": "total_external_load",
+      "measurement_type": "load_reps",
+      "kind": "core",
+      "core_kind": "variant",
+      "core_movement_definition_id": 62,
+      "generation_context": {
+        "owner_instruction": "generate the image for OHP then, ensure the deign language is met",
+        "conversation_id": "01a103b8-444a-75a3-9893-10380cdca0b2",
+        "reference_paths": "[\"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/existing-33-e05a3bf38fa7/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/d3645cd2a9b0fdc03ca8f03f/master.png\", \"/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review/candidates/cf418260405f8affab901404/master.png\"]",
+        "generation_attempts_record": "/Users/dominic/powerlifting_app_dev/docs/validation/ohp-art-2026-10-07/generation-record.json",
+        "review_scope": "Pending human source review followed by independent Logger framing review; preflight is not approval.",
+        "phase": "Strict standing overhead press at controlled lockout"
+      },
+      "review": {
+        "source": "explicit_owner_chat",
+        "owner_instruction": "approved. give me the link to the crop/position editor",
+        "conversation_id": "01a103b8-444a-75a3-9893-10380cdca0b2",
+        "recorded_by": "codex_at_owner_request",
+        "action": "approve",
+        "decision": "approved",
+        "reason": "",
+        "tags": [],
+        "candidate_sha256": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+        "reviewer": "owner_via_chat",
+        "reviewed_at": "2026-10-07T16:18:11.433558+00:00",
+        "reviewed_at_display": "Oct 07, 2026 09:18 AM PT (Oct 07, 2026 12:18 PM Eastern)"
       }
     }
   ],
