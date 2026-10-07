@@ -1,3 +1,4 @@
+import { educationImage } from '@/lib/mobile-education-images';
 import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
@@ -9,7 +10,7 @@ import { Text } from '@/components/ui/sl-text';
 import { AnalyticalHistoryChart } from '@/components/movement-history/AnalyticalHistoryChart';
 import type { CanonicalHistoryPoint } from '@/lib/canonical-movement-history';
 import { SLFontFamilies } from '@/constants/theme';
-const HERO_ART = require('@/assets/images/mobile-3-education/self-coach-hero-20261001.png');
+const HERO_ART = educationImage('self-coach-hero-20261001.png');
 
 const SCENES = [
   {
@@ -17,21 +18,21 @@ const SCENES = [
     title: 'Build your next Session.',
     instruction: 'Open Programming and create a Session. Add movements, Sets, reps and effort targets. Tap Ready to train to find it in Today.',
     example: 'EXAMPLE · SESSION WORKSPACE',
-    image: require('@/assets/images/mobile-3-education/self-coach-programming-20261006.png'),
+    image: educationImage('self-coach-programming-20261006.png'),
   },
   {
     location: 'ACTIVE SESSION',
     title: 'Adjust the plan as you train.',
     instruction: 'Tap the edit icon beside Prescribed to change Sets, reps or effort. Use Swap beside the title to change the movement.',
     example: 'EXAMPLE · SESSION LOGGER',
-    image: require('@/assets/images/mobile-3-education/self-coach-logger-20261006.png'),
+    image: educationImage('self-coach-logger-20261006.png'),
   },
   {
     location: 'LEDGER → MOVEMENT HISTORY',
     title: 'Review your progress.',
     instruction: 'Open Ledger and choose a movement. Movement History shows your saved Sets and how your performance changes over time.',
     example: 'EXAMPLE · SIX WEEKS OF PROGRESS',
-    image: require('@/assets/images/mobile-3-education/athlete-movement-history-seeded.png'),
+    image: educationImage('athlete-movement-history-seeded.png'),
   },
 ] as const;
 
@@ -150,7 +151,7 @@ export function SelfCoachEducationExperience({
 
 /** Show only the relevant controls from an unchanged, real DEV capture. */
 function EducationCapture({ source, width, from, to, label }: {
-  source: number; width: number; from: number; to: number; label: string;
+  source: ReturnType<typeof educationImage>; width: number; from: number; to: number; label: string;
 }) {
   const asset = Image.resolveAssetSource(source);
   const imageHeight = asset.height * width / asset.width;

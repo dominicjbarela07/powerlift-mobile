@@ -4,6 +4,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { assertRuntimeEvidence, productFiles, fingerprintFiles, sha256 } from './testflight-cumulative-integrity.mjs';
 import { assertProgressionEvidence } from './reviewed-release-progression.mjs';
+import { assertEducationTransport } from './education-image-transport.mjs';
 
 // Reuse actual observed journeys only for this exact reviewed cumulative update.
 // Never relabel retained observations as a fresh simulator run or native certification.
@@ -36,7 +37,8 @@ export function assertReviewedRuntimeContinuation(root, state, fingerprint) {
   const previewRoot = '/Users/dominic/powerlifting_app/powerlift_mobile';
   const changed = execFileSync('git', ['diff', '--name-only', scope.nativeSourceSha, 'HEAD', '--', 'app', 'components', 'lib', 'hooks', 'context', 'contexts', 'constants', 'config', 'assets', 'artwork-review/runtime-policy.json', 'theme.ts'], { cwd: previewRoot, encoding: 'utf8' }).trim().split('\n').filter(Boolean);
   const runtimeChanges = changed.filter(file => !file.startsWith('app/(tabs)/dev-mocks/') && !file.startsWith('config/testflight-release-') && file !== 'config/protected-fix-manifest.json');
-  assert.deepEqual(runtimeChanges, [], 'actual native preview runtime source changed; fresh observations are required');
+  const transport = assertEducationTransport(previewRoot, { sourceCommit: scope.nativeSourceSha });
+  assert.deepEqual(runtimeChanges.slice().sort(), transport.files.slice().sort(), 'actual native preview changed beyond strictly byte-equivalent image transport; fresh observations are required');
   const current = productFiles(root), observed = productFiles(previewRoot);
   for (const file of Object.keys(current)) {
     if (file === 'config/protected-fix-manifest.json') continue;
@@ -47,5 +49,5 @@ export function assertReviewedRuntimeContinuation(root, state, fingerprint) {
     assert.ok(!fs.readFileSync(path.join(root, file), 'utf8').includes('protected-fix-manifest'), 'release metadata became runtime input');
   }
   assert.equal(fingerprintFiles(current), fingerprint);
-  return { mode: 'OWNER_AUTHORIZED_RETAINED_OBSERVATIONS', priorFlows: prior.flows.length, priorObservedAt: prior.completedAt, actualEquivalentNativeSource: native.sourceSHA, liveBackendSource: native.liveBackendSource, freshFullJourneyRun: false, newProductionNativeBinaryCertified: false };
+  return { mode: 'OWNER_AUTHORIZED_RETAINED_OBSERVATIONS', priorFlows: prior.flows.length, priorObservedAt: prior.completedAt, actualEquivalentNativeSource: native.sourceSHA, losslessImageTransport: transport, liveBackendSource: native.liveBackendSource, freshFullJourneyRun: false, newProductionNativeBinaryCertified: false };
 }

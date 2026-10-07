@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['lossless image transport and actual Expo OTA asset capacity', ['scripts/test-education-image-transport.mjs']],
   ['owner-directed retained runtime observations require exact equivalent current native code', ['scripts/test-reviewed-runtime-continuation.mjs']],
   ['reviewed cumulative source and human art/crop progression reject unauthorized changes', ['scripts/test-reviewed-release-progression.mjs']],
   ['unavailable Session lifecycle survives every date and projection', ['scripts/test-unavailable-session-projections.mjs']],

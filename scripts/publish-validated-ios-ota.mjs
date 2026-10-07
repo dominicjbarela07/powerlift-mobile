@@ -7,6 +7,7 @@ import path from 'node:path';
 import { assertProtectedArtifactAssets, protectedDeliveryHashes, sha256 } from './testflight-cumulative-integrity.mjs';
 import { runDevSupersetGate, runPostReleaseGate, bindExportSource } from './verify-testflight-release-integrity.mjs';
 import {assertRegisteredPublicationWorktree,runReleaseWorktreeCloseout} from './worktree-release-closeout.mjs';
+import { assertEducationTransport, assertOtaAssetLimit } from './education-image-transport.mjs';
 // Mandatory authority: backend docs/RELEASE_INVARIANTS.md; Gates A/B/C cannot be bypassed here.
 
 const root = process.cwd();
@@ -119,6 +120,9 @@ const bundlePath = fs.readdirSync(bundleRoot)
   .filter((name) => name.endsWith('.hbc'))
   .map((name) => path.join(bundleRoot, name))[0];
 const localBundle = fs.readFileSync(bundlePath);
+const deliveredCount = assertOtaAssetLimit(JSON.parse(fs.readFileSync(path.join(outputDir, 'metadata.json'))));
+assertEducationTransport(root, { bundle: localBundle });
+console.log(`Lossless image transport PASS: 17 original PNG payloads inside actual bundle; OTA ${deliveredCount}/1000 asset entries.`);
 
 if (prepareOnly) {
   console.log(`Validated OTA export retained at ${outputDir}`);
@@ -213,6 +217,7 @@ if (!localBundle.equals(remoteBundle)) {
 }
 
 const bundleSha256 = crypto.createHash('sha256').update(localBundle).digest('hex');
+assertEducationTransport(root, { bundle: remoteBundle });
 if (branch === 'testflight') {
   const post = runPostReleaseGate({root,published,manifest,candidateSha:devSuperset.candidate.sha,devProductFingerprint:devSuperset.devProductFingerprint,validatedBundleSha256:bundleSha256,servedBundleSha256:sha256(remoteBundle),validatedAssetHashes:exportSource.assetHashes});
   fs.writeFileSync(path.join(outputDir,'release-gate-c.json'),JSON.stringify(post,null,2));
