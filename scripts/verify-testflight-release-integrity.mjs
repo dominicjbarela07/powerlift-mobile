@@ -88,7 +88,12 @@ export function runDevSupersetGate({root=process.cwd(),devRoot=process.env.STREN
   if(requireCleanCandidate) assert.equal(candidate.dirty,false,'Release candidate has dirty/untracked state; create a clean cumulative integration');
   const devFiles=productFiles(devRoot), candidateFiles=productFiles(root);
   const holdbacks=read(devRoot,'config/protected-fix-manifest.json').releaseHoldbacks;
-  const gitAt=directory=>(...args)=>execFileSync('git',args,{cwd:directory,encoding:'utf8',maxBuffer:16*1024*1024}).trim();
+  const gitAt=directory=>(...args)=>{
+    const output=execFileSync('git',args,{cwd:directory,encoding:'utf8',maxBuffer:16*1024*1024});
+    // Source proofs hash exact bytes, including their final newline. Only
+    // command metadata is trimmed; trimming a blob changes its identity.
+    return args[0]==='show'?output:output.trim();
+  };
   const provenHoldbacks=validateDevReleaseHoldbacks(holdbacks,candidateFiles,devFiles,candidate.sha,gitAt(root),gitAt(devRoot));
   assertOwnerEvidence(devRoot, [...(baseline.devSourceProgressions || []), ...(holdbacks?.files || []).map(row=>row.devOnlyProgression).filter(Boolean)]);
   const provenDevProgressions=validateDevSourceProgressions(baseline.devSourceProgressions,candidateFiles,devFiles,root,devRoot);
