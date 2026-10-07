@@ -159931,38 +159931,6 @@
         "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-07-current-testflight.txt",
         "ownerEvidenceSha256": "dcec7fe2ee580e86ccacb103792983058dee0bab6be2dd9a1d32138b130cef4c",
         "reason": "Publish the exact reviewed cumulative source and actual human-approved art/crops; preserve historical pins, compatibility identity and deferred Cable backend boundary.",
-        "path": "lib/equipment-flow-subject.ts",
-        "sourceCommit": "59641028e514c3edc957c95de2d4882f2f3bf3e0",
-        "before": "4a3c931baf7a23df49c79e8b8eae0e415d5cea99365f9f2e73cca9f89da20650",
-        "after": "874fd0e8800b5dcbb961e9c5de65cebfbedd13f1b863242e47d2224da25d6d26",
-        "changes": [
-          {
-            "before": "export function assertEquipmentResponseSubject(subject: EquipmentFlowSubject, response: { usage_movement_definition_id?: number | null }) {\n  if (Number(response.usage_movement_definition_id) !== subject.movementDefinitionId) throw stale();\n}\n\nexport function equipmentFlowVariants(subject: EquipmentFlowSubject) {\n  return MACHINE_EQUIPMENT_TYPES.filter(row => subject.allowedTypes.includes(row.key)).map(row => ({\n    ...row, label: subject.domain === 'cable' ? `${row.label} Cable Station` : row.label,\n  }));\n}\n\nexport function equipmentFlowWrite(subject: EquipmentFlowSubject, manufacturerKey: string, equipmentType: MachineEquipmentType) {\n  if (!manufacturerKey || !subject.allowedTypes.includes(equipmentType)) throw new Error('Choose equipment compatible with this exact movement.');\n  // Existing API contract configures physical equipment only. Never send a\n  // movement_definition_id here: that legacy field accepts a different subject.\n  return { manufacturer_key: manufacturerKey, equipment_type: equipmentType };\n}\n\n",
-            "after": "export function assertEquipmentResponseSubject(subject: EquipmentFlowSubject, response: { usage_movement_definition_id?: number | null }) {\n  if (Number(response.usage_movement_definition_id) !== subject.movementDefinitionId) throw stale();\n}\n\nexport function equipmentFlowVariants(subject: EquipmentFlowSubject) {\n  if (subject.domain === 'cable') return [];\n  return MACHINE_EQUIPMENT_TYPES.filter(row => subject.allowedTypes.includes(row.key)).map(row => ({\n    ...row, label: subject.domain === 'cable' ? `${row.label} Cable Station` : row.label,\n  }));\n}\n\nexport function equipmentFlowWrite(subject: EquipmentFlowSubject, manufacturerKey: string, equipmentType?: MachineEquipmentType) {\n  if (subject.domain === 'cable') {\n    if (!manufacturerKey) throw new Error('Choose a manufacturer.');\n    return { manufacturer_key: manufacturerKey };\n  }\n  if (!manufacturerKey || !equipmentType || !subject.allowedTypes.includes(equipmentType)) throw new Error('Choose equipment compatible with this exact movement.');\n  // Existing API contract configures physical equipment only. Never send a\n  // movement_definition_id here: that legacy field accepts a different subject.\n  return { manufacturer_key: manufacturerKey, equipment_type: equipmentType };\n}\n\n"
-          }
-        ]
-      },
-      {
-        "ownerInstruction": "Okay, forget about the canonical education and guidance. I don't give a fuck. Just, just, okay, update TestFlight to be up to date, please. And then after that, I want you to do a final go no-go against production. Give me a go or no-go to start building, and then I will do the build. You do not have that right to do the build. I will do it and monitor the build.",
-        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-07-current-testflight.txt",
-        "ownerEvidenceSha256": "dcec7fe2ee580e86ccacb103792983058dee0bab6be2dd9a1d32138b130cef4c",
-        "reason": "Publish the exact reviewed cumulative source and actual human-approved art/crops; preserve historical pins, compatibility identity and deferred Cable backend boundary.",
-        "path": "lib/equipment-selection.ts",
-        "sourceCommit": "59641028e514c3edc957c95de2d4882f2f3bf3e0",
-        "before": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84",
-        "after": "7663b3bdaf47d75784aa46345bafb77d401474cb86e45b64e6d91e497086de09",
-        "changes": [
-          {
-            "before": "  if (implementation.endsWith(':plate_loaded') || type === 'plate_loaded_machine') return 'plate_loaded';\n  if (implementation.endsWith(':selectorized') || type === 'selectorized_machine') return 'selectorized';\n  return null;\n}\n\n/** The first selectable canonical equipment ID from this movement's History evidence. */\nexport function mostRecentEquipmentChoice<T extends EquipmentIdentityLike>(\n  rows: readonly T[], allowedTypes: readonly ('plate_loaded' | 'selectorized')[],\n): RecentEquipmentChoice<T> | null {\n  const candidates = rows.flatMap((manufacturer) => Object.values(\n",
-            "after": "  if (implementation.endsWith(':plate_loaded') || type === 'plate_loaded_machine') return 'plate_loaded';\n  if (implementation.endsWith(':selectorized') || type === 'selectorized_machine') return 'selectorized';\n  return null;\n}\n\n/** Cable recency is manufacturer evidence, never a required type selection. */\nexport function mostRecentCableEquipmentChoice<T extends EquipmentIdentityLike>(rows: readonly T[]) {\n  const candidates = rows.flatMap(manufacturer => {\n    const exposure = manufacturer.equipment_context?.last_exposure;\n    if (!exposure || !exposureFromHistoryRecord(exposure)\n        || exposure.equipment?.manufacturer?.id !== manufacturer.manufacturer?.id) return [];\n    return [{ manufacturer, exposure, equipmentType: undefined,\n      equipmentDefinitionId: Number(exposure.equipment?.id) }];\n  });\n  candidates.sort((left, right) => (Date.parse(right.exposure.performed_at || right.exposure.date) || 0)\n    - (Date.parse(left.exposure.performed_at || left.exposure.date) || 0)\n    || right.exposure.workout_id - left.exposure.workout_id);\n  return candidates[0] || null;\n}\n\n/** The first selectable canonical equipment ID from this movement's History evidence. */\nexport function mostRecentEquipmentChoice<T extends EquipmentIdentityLike>(\n  rows: readonly T[], allowedTypes: readonly ('plate_loaded' | 'selectorized')[],\n): RecentEquipmentChoice<T> | null {\n  const candidates = rows.flatMap((manufacturer) => Object.values(\n"
-          }
-        ]
-      },
-      {
-        "ownerInstruction": "Okay, forget about the canonical education and guidance. I don't give a fuck. Just, just, okay, update TestFlight to be up to date, please. And then after that, I want you to do a final go no-go against production. Give me a go or no-go to start building, and then I will do the build. You do not have that right to do the build. I will do it and monitor the build.",
-        "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-07-current-testflight.txt",
-        "ownerEvidenceSha256": "dcec7fe2ee580e86ccacb103792983058dee0bab6be2dd9a1d32138b130cef4c",
-        "reason": "Publish the exact reviewed cumulative source and actual human-approved art/crops; preserve historical pins, compatibility identity and deferred Cable backend boundary.",
         "path": "lib/equipment-type-artwork.ts",
         "sourceCommit": "59641028e514c3edc957c95de2d4882f2f3bf3e0",
         "before": "ca6ed025e79c80badb3111861cfef7c14f55df5806065a0718815a56eb7bce98",
