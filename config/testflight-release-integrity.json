@@ -157580,7 +157580,7 @@
     "README.md": "8c1e55b964384a9cbc4fd535bf88bd67bec95995b404f9de5f5177f2607ede12",
     "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
     "config/release-removal-authorizations.json": "79b7e83d8edc0ee3b52954fdf66cf31d152059d1fa056a60b7018f9b8ef215bb",
-    "scripts/test-dev-testflight-release-gates.mjs": "03f809afbbea98e8b936d312ad790c089535f16c125ae77dd1851fddd0e1a37b",
+    "scripts/test-dev-testflight-release-gates.mjs": "5d1bdcb5689190f274be814784692f24b7ea97dbc084c573154333186d2b753e",
     "scripts/test-protected-testflight-catalog-compatibility.mjs": "94cddbdd75dcc78f35a74d6bd8a6345c21331f42546a88870a5938072fd08c7c",
     "scripts/test-retired-movement-discovery.mjs": "c5d8c2b21df0e6a0d62062ea6516aec801f4e61670230b9fea22fdaa040d87c4",
     "scripts/worktree-release-closeout.mjs": "5817455c380c5e0db9590e37388fdcee8d10afbf6cfd8c143b3ffa93cbb19607",
@@ -157610,7 +157610,11 @@
     "docs/LOGGER_OPTION_E.md": "c114294c9c4842353479be888377c996095c0316d4809e876290fdd13b5d22d4",
     "config/testflight-release-owner-evidence/2026-10-05-machine-pr-manufacturer-isolation.txt": "9871d66a252755c0c8db846115c63f2d7750200d62e3980724920e98975b824c",
     "scripts/reviewed-release-progression.mjs": "81a2d1f41e76551a60a2d01ae90158f14558506a7e73d27d72e217c86ef81ca4",
-    "scripts/test-reviewed-release-progression.mjs": "4491b49ad0d07741f257865f70624b238fdea680e750c6fccfc1067ccdd96cf9"
+    "scripts/test-reviewed-release-progression.mjs": "4491b49ad0d07741f257865f70624b238fdea680e750c6fccfc1067ccdd96cf9",
+    "scripts/test-production3-art-policy.mjs": "3e5c45025c5ffa0d1df046b3e7ff22481c80be9d2bcf3bcb1907432957cfb5d1",
+    "scripts/test-mobile3-visual-policy.mjs": "3ac446c081323630913ca78271167b016c30ca22260608bfcb69802ab6ada016",
+    "scripts/audit-ui-constitution.js": "c14e4631723433c5528131adc17c2f376dbef912a6288cd2575c2a10c460024b",
+    "scripts/audit-transparent-screen-roots.js": "2cb55a6dc2987baa0693dfa6325437c50c1dc1057bd8817fbdadde8defc88518"
   },
   "historicalRemovalAuthorizations": [
     {
