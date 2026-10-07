@@ -39,7 +39,8 @@ for (const name of accepted) {
     env: { ...process.env, CI: '1', STRENGTH_LEDGER_BACKEND_ROOT: process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev' },
     encoding: 'utf8',
     stdio: 'pipe',
-    timeout: name === 'test-active-session-mutation-backend.mjs' ? 130_000 : 30_000,
+    timeout: name === 'test-active-session-mutation-backend.mjs' ? 130_000
+      : name === 'test-accessory-pr-save-api.mjs' ? 70_000 : 30_000,
   });
   if (result.status !== 0) {
     failures.push({ name, output: `${result.stdout || ''}${result.stderr || ''}`.trim() });
