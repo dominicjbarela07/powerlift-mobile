@@ -36,12 +36,28 @@
       "android": {
         "distribution": "store"
       }
+    },
+    "testflight": {
+      "channel": "testflight",
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_BASE": "https://app.strengthledger.fit",
+        "EXPO_PUBLIC_APPROVED_ART_CHANNEL": "testflight"
+      },
+      "ios": {
+        "distribution": "store"
+      }
     }
   },
   "submit": {
     "production": {
       "android": {
         "track": "internal"
+      }
+    },
+    "testflight": {
+      "ios": {
+        "ascAppId": "6756639297"
       }
     }
   }

@@ -8,6 +8,8 @@ const root = process.cwd(), fixture = fs.mkdtempSync(path.join(os.tmpdir(), 'sl-
 try {
   for (const folder of ['app', 'components', 'dev-mocks']) if (fs.existsSync(folder)) fs.cpSync(folder, path.join(fixture, folder), { recursive: true });
   fs.mkdirSync(path.join(fixture, 'scripts'));
+  fs.mkdirSync(path.join(fixture, 'config'));
+  fs.copyFileSync('config/protected-fix-manifest.json', path.join(fixture, 'config/protected-fix-manifest.json'));
   for (const file of ['audit-ui-constitution.js', 'audit-transparent-screen-roots.js', 'ui-constitution-exceptions.json', 'mobile-3-surface-owners.json']) fs.copyFileSync(path.join('scripts', file), path.join(fixture, 'scripts', file));
   fs.symlinkSync(path.join(root, 'node_modules'), path.join(fixture, 'node_modules'), 'dir');
   const run = script => spawnSync(process.execPath, [path.join(fixture, 'scripts', script)], { cwd: fixture, encoding: 'utf8', timeout: 10000, maxBuffer: 4 * 1024 * 1024 });

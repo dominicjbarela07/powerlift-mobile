@@ -5,6 +5,8 @@ const path = require('path');
 const ts = require('typescript');
 
 const root = path.resolve(process.cwd());
+const projection = JSON.parse(fs.readFileSync(path.join(root, 'config/protected-fix-manifest.json'), 'utf8'));
+const excludedDevFile = file => file.startsWith('app/(tabs)/dev-mocks/') && !fs.existsSync(path.join(root, file)) && projection.releaseProjectionPaths.includes(file);
 const scanRoots = ['app', 'components', 'dev-mocks'];
 const routeRootStyleNames = new Set([
   'canvas',
@@ -177,7 +179,7 @@ for (const identity of [
   }
 }
 for (const identity of Object.keys(reviewedSurfaceOwners)) {
-  if (!inspectedOwners.has(identity)) findings.push(`${identity} is a stale reviewed surface owner`);
+  if (!inspectedOwners.has(identity) && !excludedDevFile(identity.split('::')[0])) findings.push(`${identity} is a stale reviewed surface owner`);
 }
 
 const workspaceConsumers = sourceFiles

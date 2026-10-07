@@ -24,7 +24,9 @@ const env = {
   EXPO_PUBLIC_APPROVED_ART_CHANNEL: 'production3',
   EXPO_PUBLIC_ART_RUNTIME_VERSION: '3.0.0',
 };
-assert.equal(config({}).version, original.expo.version, 'normal DEV/TestFlight config remains unchanged');
+const normalEnv = original.expo.extra?.releaseTrack === 'testflight' ? { EXPO_PUBLIC_APPROVED_ART_CHANNEL: 'testflight' } : {};
+assert.equal(config(normalEnv).version, original.expo.version, 'normal DEV/TestFlight config remains unchanged');
+if (original.expo.extra?.releaseTrack === 'testflight') assert.throws(() => config({}), /TESTFLIGHT RELEASE BLOCKED/, 'missing TestFlight inclusion switch still fails closed');
 const next = config(env);
 assert.equal(next.version, '3.0.0'); assert.equal(next.runtimeVersion, '3.0.0');
 assert.equal(next.extra.publicationAuthorized, false);
