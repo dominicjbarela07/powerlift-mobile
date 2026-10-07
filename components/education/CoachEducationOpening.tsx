@@ -1,3 +1,4 @@
+import { educationImage } from '@/lib/mobile-education-images';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -6,22 +7,22 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLFontFamilies } from '@/constants/theme';
-const HERO_ART = require('@/assets/images/mobile-3-education/coach-hero-20261001.png');
+const HERO_ART = educationImage('coach-hero-20261001.png');
 
 const SCENES = [
   {
     title: 'See who needs you.',
-    image: require('@/assets/images/mobile-3-education/coach-home-20261001.png'),
+    image: educationImage('coach-home-20261001.png'),
     focusY: 170,
   },
   {
     title: 'Review the work.',
-    image: require('@/assets/images/mobile-3-education/coach-review-20261001.png'),
+    image: educationImage('coach-review-20261001.png'),
     focusY: 620,
   },
   {
     title: 'Write what comes next.',
-    image: require('@/assets/images/mobile-3-education/coach-programming-20261001.png'),
+    image: educationImage('coach-programming-20261001.png'),
     focusY: 930,
   },
 ] as const;

@@ -1,3 +1,4 @@
+import { educationImage } from '@/lib/mobile-education-images';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,17 +14,17 @@ const HERO_ART = require('@/assets/images/post-session-ledger-concept-v1.png');
 const SCENES = [
   {
     title: 'Last time, every Set.',
-    image: require('@/assets/images/mobile-3-education/athlete-session-20261001.png'),
+    image: educationImage('athlete-session-20261001.png'),
     focusY: 360,
   },
   {
     title: 'Follow the lift over time.',
-    image: require('@/assets/images/mobile-3-education/athlete-history-20261001.png'),
+    image: educationImage('athlete-history-20261001.png'),
     focusY: 1350,
   },
   {
     title: 'See what you’ve earned.',
-    image: require('@/assets/images/mobile-3-education/athlete-ledger-20261001.png'),
+    image: educationImage('athlete-ledger-20261001.png'),
     focusY: 1300,
   },
 ] as const;
