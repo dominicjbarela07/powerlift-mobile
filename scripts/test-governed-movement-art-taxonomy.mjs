@@ -5,6 +5,8 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { normalizeCanonicalMovementArtSubject as subject, resolveCanonicalMovementArtwork as resolve } from '../lib/canonical-movement-artwork.ts';
 import { canonicalArtworkInputForLoggerItem as logger } from '../lib/logger-movement-identity.ts';
 import { resolveApprovedExactMovementArtwork as approved } from '../lib/movement-artwork-hero.ts';
+import { applyPublicationProgression } from './release-holdback-policy.mjs';
+import { assertReviewedCatalog } from './reviewed-release-progression.mjs';
 
 const catalog = JSON.parse(fs.readFileSync('config/governed-movement-art-taxonomy.json', 'utf8')).movements;
 assert.ok(catalog.length > 450, 'test the full governed catalog after reviewed consolidation');
@@ -94,8 +96,12 @@ if (frozenTestFlightRef) {
   assert.equal(released.extra?.releaseTrack, 'testflight');
   assert.equal(candidate.extra?.releaseTrack, 'testflight');
   assert.equal(candidate.version, released.version, 'frozen catalog is limited to the existing TestFlight runtime');
-  assert.equal(fs.readFileSync('config/governed-movement-art-taxonomy.json', 'utf8'),
-    baseline('config/governed-movement-art-taxonomy.json'), 'targeted patch must preserve the published catalog byte-for-byte');
+  const currentCatalog = fs.readFileSync('config/governed-movement-art-taxonomy.json', 'utf8');
+  const progression = JSON.parse(fs.readFileSync('config/protected-fix-manifest.json')).releaseHoldbacks.files.find(row => row.path === 'config/governed-movement-art-taxonomy.json')?.publicationProgression;
+  if (progression) {
+    assert.equal(currentCatalog, applyPublicationProgression(baseline('config/governed-movement-art-taxonomy.json'), progression), 'current directory must equal only the exact owner-bound publication patch');
+    assertReviewedCatalog(process.cwd(), JSON.parse(fs.readFileSync('config/testflight-release-integrity.json')), JSON.parse(currentCatalog));
+  } else assert.equal(currentCatalog, baseline('config/governed-movement-art-taxonomy.json'), 'targeted patch must preserve the published catalog byte-for-byte');
   console.log(`Frozen TestFlight catalog matches published release ${frozenTestFlightRef}`);
 } else if (backend) {
   const result = spawnSync(path.join(backend, 'venv/bin/python'), [path.join(backend, 'scripts/export_movement_art_taxonomy.py'), '--check'], { cwd: backend, encoding: 'utf8', timeout: 20000 });
