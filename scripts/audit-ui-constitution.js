@@ -5,6 +5,8 @@ const path = require('path');
 const crypto = require('crypto');
 
 const root = path.resolve(__dirname, '..');
+const projection = JSON.parse(fs.readFileSync(path.join(root, 'config/protected-fix-manifest.json'), 'utf8'));
+const excludedDevFile = file => file.startsWith('app/(tabs)/dev-mocks/') && !fs.existsSync(path.join(root, file)) && projection.releaseProjectionPaths.includes(file);
 const scanRoots = ['app', 'components'];
 const exceptionRegister = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'ui-constitution-exceptions.json'), 'utf8'),
@@ -73,6 +75,7 @@ for (const row of rows) {
 }
 
 for (const [file, reviewed] of Object.entries(exceptionRegister)) {
+  if (excludedDevFile(file)) continue;
   if (!rows.some((row) => row.file === file)) {
     mismatches.push({
       file,

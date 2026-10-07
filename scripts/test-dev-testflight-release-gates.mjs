@@ -38,7 +38,7 @@ try {
   }
   // Reconciliation governance is excluded from its own product fingerprint,
   // but the positive fixture must carry the canonical owner's exact receipts.
-  for (const file of ['config/testflight-release-integrity.json', ...fs.readdirSync(path.join(devRoot,'config/testflight-release-owner-evidence')).map(name=>`config/testflight-release-owner-evidence/${name}`)]) {
+  for (const file of ['config/testflight-release-integrity.json', 'artwork-review/review-state.json', ...fs.readdirSync(path.join(devRoot,'config/testflight-release-owner-evidence')).map(name=>`config/testflight-release-owner-evidence/${name}`)]) {
     const target=path.join(fixture,file);fs.mkdirSync(path.dirname(target),{recursive:true});
     if (!fs.existsSync(target)) fs.linkSync(path.join(devRoot,file),target);
   }
