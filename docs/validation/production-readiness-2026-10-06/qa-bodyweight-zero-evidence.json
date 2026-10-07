@@ -1,0 +1,17 @@
+{
+  "session_id": 1814,
+  "state": "in_progress",
+  "performed_sets": [
+    {
+      "id": 20554,
+      "actual_weight_kg": 0.0,
+      "actual_reps": 5,
+      "actual_rir": 2.0,
+      "source_revision": 1,
+      "performed_canonical_movement_definition_id": 67,
+      "client_submission_id": "set-7a9ecd90-ff3b-45b8-a089-9762751f28c0",
+      "load_convention_snapshot": "added_bodyweight"
+    }
+  ],
+  "source": "Local canonical mobile API after actual UI Save Changes at zero, then reopening same Set"
+}

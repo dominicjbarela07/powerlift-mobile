@@ -49,6 +49,16 @@ precise green/violet state signals. Preserve art and all canonical mutations.
 The October 5 Option E task explicitly requires actual simulator convergence
 and a second screenshot pass; its publication scope cannot cover other changes.
 
+## Canonical Mobile 3.0 Education
+
+Read `docs/MOBILE_3_EDUCATION_CANONICAL_2026-10-06.md` when changing Education.
+The role-aware provider, lessons, replay controls and contextual tips now live
+in canonical DEV. Keep completion and learned-state scoped to the canonical
+user ID; AuthContext continues to own readiness, access and mobile mode.
+Retain the automatically discovered Education policy and actual-provider
+navigation contracts, including deliberate exit-loop failure testing. Verify
+permitted consumer actions retire their tips without changing mutation guards.
+
 ## Complete-request delivery
 
 Read the canonical constitution's **Complete-request Delivery Law** before work.

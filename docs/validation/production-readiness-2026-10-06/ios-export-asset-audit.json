@@ -1,0 +1,18 @@
+{
+  "source": "d0f0d32d",
+  "exportDirectory": "/Users/dominic/Documents/Codex/2026-10-03/re/outputs/production-readiness-2026-10-06/ios-export",
+  "platform": "ios",
+  "runtimeVersion": "2.1.0",
+  "inclusionChannel": "testflight",
+  "assetEntries": 1014,
+  "uniqueAssetBytes": 1008,
+  "protectedDeliveryAssetHashes": 1038,
+  "establishedAuthorizedProtectedAssetDifferences": 47,
+  "unauthorizedMissingProtectedAssets": 0,
+  "approvedMovementMappings": 489,
+  "approvedMappingAndEquipmentUniqueBytes": 489,
+  "missingApprovedMappedBytes": 0,
+  "unapprovedCandidateMasterLeaks": 0,
+  "bundleSha256": "9cb05cbc804d914f305cc38c1670c62b83bb48ed073a333c1f79b635e240845e",
+  "notPublished": true
+}

@@ -42,19 +42,30 @@ Source-file and canonical-file hashes are recorded in
   project retains completion without forcing another introduction.
 - Canonical screenshots: `08-canonical-education-programming.png` and
   `09-canonical-education-ledger.png` in the same validation directory.
-- Full accepted suite: 266 pass / 3 pre-existing failures. The failures are
-  missing Barbell Overhead Press approval/binding (two contracts) and protected
-  release-source registration for the earlier equipment Select change. These
-  remain production-readiness findings; Education integration is not a release
-  readiness certification.
+- Full accepted suite: 266 pass / 3 failures in the same three contracts that
+  failed before integration. Two concern missing Barbell Overhead Press
+  approval/binding. The release-gate contract stops because the source-bound
+  Logger holdback no longer matches current DEV. Separately, the initial DEV
+  superset audit flags the earlier equipment Select change's unregistered hash.
+  These remain production-readiness findings; Education integration is not a
+  release readiness certification. No protection pins were refreshed to pass.
 
 The provider changes presentation and account-scoped guidance state only.
 Adjacent surfaces checked by executable contracts include Settings, Session
 Workspace, Logger, movement history, navigation markers and Coach Workspace.
-Actual Athlete and Coach screen review continues in the broader sweep.
+Actual canonical Coach and Athlete introductions were also traversed through
+all three lessons and finished at their correct role homes. Athlete Today,
+Training, Program map, Active Session, Calendar and Ledger remain reachable
+after completion. Screenshots `13-coach-education.png` and
+`17-athlete-education.png` retain representative proof. Athlete lessons use
+illustrative captured screens; making that example context explicit is retained
+as a copy-polish finding in the broader sweep.
 
 Canonical runtime review also caught a consumer-wiring gap: the older transfer
 marked composition Add/Remove as learned but did not mark the relocated
 prescription edit or Swap action. Both permitted entry points now retire the
 Session-edit hint. The actual prescription entry callback is exercised with
 allowed, denied and in-flight cases; training mutation behavior is unchanged.
+
+Implementation commits: `3cf99b0b` (canonical integration) and `d0f0d32d`
+(retire the hint at permitted prescription/Swap entry points).

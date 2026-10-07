@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-10-07T01:37:36.456Z",
+  "publicationAuthorized": false,
+  "error": "GATE A BLOCKED: DEV is missing 1 protected item(s): components/workout-logger/session-equipment-context.tsx",
+  "gates": {
+    "A": {
+      "pass": false,
+      "missing": [
+        {
+          "identity": "components/workout-logger/session-equipment-context.tsx",
+          "devState": "69b6b76311aeba7461d7fd44d573de58ca12948d289fe8ee906ee92bb2befd1a",
+          "testflightState": "0d2dda7be85b19017b5d0e88b97ad1f3116cc253d530e0f7b66853483fecc20e",
+          "label": "TESTFLIGHT_ONLY",
+          "requiredReconciliationDirection": "TESTFLIGHT \u2192 DEV"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,42 @@
+
+> powerlift_mobile@1.0.0 audit:transparent-screen-roots
+> node scripts/audit-transparent-screen-roots.js
+
+Transparent screen-root audit failed:
+- app/(tabs)/accessory-catalog-review.tsx::screen paints SLColors.canvas
+- app/(tabs)/create-workout.tsx::screen paints SLColors.canvas
+- app/(tabs)/dev-mocks/anatomy-system.tsx::page paints '#020306'
+- app/(tabs)/dev-mocks/movement-art-hero.tsx::page paints '#000'
+- app/(tabs)/workout/[workoutId].tsx::screen paints SLColors.canvas
+- app/(tabs)/workout/index.tsx::root paints SLColors.canvas
+- app/(tabs)/workout/index.tsx::root paints SLColors.canvas
+- app/coach-athlete-analytics/[athleteId].tsx::screen paints '#000'
+- app/coach-team-brief.tsx::screen paints '#000'
+- app/coach-team-methodology.tsx::screen paints '#030408'
+- app/coach-team-outliers.tsx::screen paints '#000'
+- components/anatomy/GovernedMuscleThumbnail.tsx::root paints '#15111D'
+- components/calendar/AthleteCalendarStoryboardV2.tsx::root paints SLColors.surfaceCanvas
+- components/calendar/TrainingScheduleSheet.tsx::root paints SLColors.canvas
+- components/coach-mobile/CoachActivityHome.tsx::screen paints '#000'
+- components/coach-mobile/CoachAthleteHubV2.tsx::screen paints COACH_V2.black
+- components/coach-mobile/CoachAttentionDetailV2.tsx::screen paints COACH_V2.black
+- components/coach-mobile/CoachCheckInsV2.tsx::screen paints C.canvas
+- components/coach-mobile/CoachHomeV2.tsx::screen paints COACH_V2.black
+- components/coach-mobile/CompletedSessionRecap.tsx::screen paints '#050409'
+- components/coach-mobile/FocusedSessionAuthoring.tsx::root paints SLColors.canvas
+- components/coach-mobile/InlineSessionReorder.tsx::root adds prohibited page-level inset(s): paddingHorizontal
+- components/coach-mobile/SessionEditingWorkspace.tsx::root paints palette.canvas
+- components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx::screen paints '#000'
+- components/education/AthleteEducationOpening.tsx::root paints '#05030A'
+- components/education/CoachEducationOpening.tsx::root paints '#05030A'
+- components/education/SelfCoachEducationOpening.tsx::root paints '#05030A'
+- components/ledger/JourneyExperience.tsx::page paints '#000000'
+- components/ledger/StrengthExperience.tsx::page adds prohibited page-level inset(s): paddingHorizontal
+- components/ledger/index-experience.tsx::page paints '#000000'
+- components/meet-packet/AthleteMeetPacketV2.tsx::screen paints SLColors.canvas
+- components/movement-history/CanonicalMovementHistoryScreen.tsx::screen paints '#020205'
+- components/training-hub/AthleteProgramTimeline.tsx::root paints '#000000'
+- components/training-hub/AthleteTrainingHubExperience.tsx::root paints '#000000'
+- components/training-hub/TrainingHubSessionPreviewSheet.tsx::root paints SLColors.canvasRaised
+- components/workout-logger/movement-card-material.tsx::root paints SLMovementCardMaterial.base
+- components/workout-logger/session-v3-closeout.tsx::screen paints '#08060d'

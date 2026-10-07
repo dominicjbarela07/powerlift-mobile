@@ -1,0 +1,6 @@
+{
+  "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "runtimeVersion": "2.1.0",
+  "launchAssetUrl": "http://127.0.0.1:8081/node_modules/expo-router/entry.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&transform.reactCompiler=true&unstable_transformProfile=hermes-stable",
+  "canonicalSourceCertificate": "blocked by unpublished local HEAD; actual manifest/CWD retained separately"
+}

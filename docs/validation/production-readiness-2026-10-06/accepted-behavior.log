@@ -1,0 +1,349 @@
+
+> powerlift_mobile@1.0.0 test:accepted-behavior-contracts
+> node scripts/test-accepted-behavior-contracts.mjs
+
+[accepted-behavior] PASS — test-accessories-experience-convergence.mjs
+[accepted-behavior] PASS — test-accessory-catalog-review.mjs
+[accepted-behavior] PASS — test-accessory-icon-resolver.mjs
+[accepted-behavior] PASS — test-accessory-identity-picker.mjs
+[accepted-behavior] PASS — test-accessory-logger-prescription.mjs
+[accepted-behavior] PASS — test-accessory-muscle-group.mjs
+[accepted-behavior] PASS — test-accessory-pr-save-api.mjs
+[accepted-behavior] PASS — test-accessory-prescription-editor.mjs
+[accepted-behavior] PASS — test-accessory-rep-max-recognition.mjs
+[accepted-behavior] PASS — test-accessory-setup-replacement.mjs
+[accepted-behavior] PASS — test-accessory-strength-metric-policy.mjs
+[accepted-behavior] PASS — test-accessory-swap-session-gating.mjs
+[accepted-behavior] PASS — test-accessory-trend-axis-mode.mjs
+[accepted-behavior] PASS — test-achievements-storyboard-convergence.mjs
+[accepted-behavior] PASS — test-active-composition-confirmation.mjs
+[accepted-behavior] PASS — test-active-session-composition.mjs
+[accepted-behavior] PASS — test-active-session-hot-swap.mjs
+[accepted-behavior] PASS — test-active-session-mutation-backend.mjs
+[accepted-behavior] PASS — test-active-session-prescription.mjs
+[accepted-behavior] PASS — test-anatomy-consumer-convergence.mjs
+[accepted-behavior] PASS — test-anatomy-system.mjs
+[accepted-behavior] PASS — test-approved-art-consumption.mjs
+[accepted-behavior] PASS — test-approved-art-export.mjs
+[accepted-behavior] PASS — test-approved-artwork-completion.mjs
+[accepted-behavior] PASS — test-assisted-movement-semantics.mjs
+[accepted-behavior] PASS — test-athlete-block-details-v2.mjs
+[accepted-behavior] PASS — test-athlete-calendar-month-summary.mjs
+[accepted-behavior] PASS — test-athlete-calendar-native-stability.mjs
+[accepted-behavior] PASS — test-athlete-calendar-reschedule.mjs
+[accepted-behavior] PASS — test-athlete-calendar-storyboard-v2.mjs
+[accepted-behavior] PASS — test-athlete-calendar-v2.mjs
+[accepted-behavior] PASS — test-athlete-coaching-scratchpad.mjs
+[accepted-behavior] PASS — test-athlete-home-v3.mjs
+[accepted-behavior] PASS — test-athlete-home-week.mjs
+[accepted-behavior] PASS — test-athlete-meet-packet-v2.mjs
+[accepted-behavior] PASS — test-athlete-workspace-v3.mjs
+[accepted-behavior] PASS — test-barbell-loading.mjs
+[accepted-behavior] PASS — test-bodyweight-external-load-semantics.mjs
+[accepted-behavior] PASS — test-bottom-sheet-consumer-convergence.mjs
+[accepted-behavior] PASS — test-bottom-sheet-gestures.mjs
+[accepted-behavior] PASS — test-cable-brand-equipment-api.mjs
+[accepted-behavior] PASS — test-calendar-event-modal.mjs
+[accepted-behavior] PASS — test-calendar-program-context.mjs
+[accepted-behavior] PASS — test-calendar-today-and-today-lifecycle.mjs
+[accepted-behavior] PASS — test-canonical-dev-metro-lineage-policy.mjs
+[accepted-behavior] PASS — test-canonical-equipment-picker.mjs
+[accepted-behavior] PASS — test-canonical-movement-artwork.mjs
+[accepted-behavior] PASS — test-canonical-movement-history-v2.mjs
+[accepted-behavior] PASS — test-canonical-movement-search-contract.mjs
+[accepted-behavior] PASS — test-canonical-post-session-surface.mjs
+[accepted-behavior] PASS — test-chart-fidelity-standard.mjs
+[accepted-behavior] PASS — test-coach-athlete-workspace-entrypoint.mjs
+[accepted-behavior] PASS — test-coach-athlete-workspace-v1.mjs
+[accepted-behavior] PASS — test-coach-calendar-v2.mjs
+[accepted-behavior] PASS — test-coach-check-ins-v2.mjs
+[accepted-behavior] PASS — test-coach-home-activity-first.mjs
+[accepted-behavior] PASS — test-coach-home-coming-up-direct-open.mjs
+[accepted-behavior] PASS — test-coach-home-return-state.mjs
+[accepted-behavior] PASS — test-coach-meet-day-visibility.mjs
+[accepted-behavior] PASS — test-coach-mobile-live.mjs
+[accepted-behavior] PASS — test-coach-more-navigation-sheet.mjs
+[accepted-behavior] PASS — test-coach-performance-summary.mjs
+[accepted-behavior] PASS — test-coach-performance-v2.mjs
+[accepted-behavior] PASS — test-coach-queue-contract.mjs
+[accepted-behavior] PASS — test-coach-queue-swipe-gesture.mjs
+[accepted-behavior] PASS — test-coach-roster-deprecation.mjs
+[accepted-behavior] PASS — test-coach-session-review-cross-tab.mjs
+[accepted-behavior] PASS — test-coach-session-review-scroll-lifecycle.mjs
+[accepted-behavior] PASS — test-coach-session-reviewer-viewport-utilization.mjs
+[accepted-behavior] FAIL — test-complete-movement-library-art.mjs
+[accepted-behavior] PASS — test-completed-session-equipment-correction.mjs
+[accepted-behavior] PASS — test-completed-session-recap.mjs
+[accepted-behavior] PASS — test-completed-set-swipe-tooltip.mjs
+[accepted-behavior] PASS — test-consolidated-crop-approvals.mjs
+[accepted-behavior] PASS — test-copy-week-ux-convergence.mjs
+[accepted-behavior] FAIL — test-core-artwork-coverage.mjs
+[accepted-behavior] PASS — test-core-variants-experience.mjs
+[accepted-behavior] PASS — test-create-session-return-lifecycle.mjs
+[accepted-behavior] PASS — test-data-driven-strength-tiers.mjs
+[accepted-behavior] FAIL — test-dev-testflight-release-gates.mjs
+[accepted-behavior] PASS — test-equipment-flow-subject.mjs
+[accepted-behavior] PASS — test-equipment-gating-regression.mjs
+[accepted-behavior] PASS — test-equipment-type-artwork.mjs
+[accepted-behavior] PASS — test-equipment-usage-semantics.mjs
+[accepted-behavior] PASS — test-evidence-api-integration.mjs
+[accepted-behavior] PASS — test-evidence-read-cache.mjs
+[accepted-behavior] PASS — test-exact-accessory-history.mjs
+[accepted-behavior] PASS — test-expanded-core-card-compaction.mjs
+[accepted-behavior] PASS — test-floating-display-unit-control.mjs
+[accepted-behavior] PASS — test-free-weight-accessory-artwork.mjs
+[accepted-behavior] PASS — test-free-weight-complete-artwork-family.mjs
+[accepted-behavior] PASS — test-free-weight-head-gaze-corrections.mjs
+[accepted-behavior] PASS — test-free-weight-pull-artwork-family.mjs
+[accepted-behavior] PASS — test-free-weight-push-artwork-family.mjs
+[accepted-behavior] PASS — test-fresh-login-canonical-identity.mjs
+[accepted-behavior] PASS — test-global-rest-timer-completion.mjs
+[accepted-behavior] PASS — test-global-weight-unit-toggle.mjs
+[accepted-behavior] PASS — test-governed-accessory-picker-layout.mjs
+[accepted-behavior] PASS — test-governed-movement-art-taxonomy.mjs
+[accepted-behavior] PASS — test-governed-movement-classes.mjs
+[accepted-behavior] PASS — test-home-training-hero.mjs
+[accepted-behavior] PASS — test-human-movement-art-approval.mjs
+[accepted-behavior] PASS — test-icarian-manufacturer.mjs
+[accepted-behavior] PASS — test-immersive-meet-mode-shell.mjs
+[accepted-behavior] PASS — test-individual-movement-artwork-hard-rule.mjs
+[accepted-behavior] PASS — test-initial-hydration-movement-identity.mjs
+[accepted-behavior] PASS — test-journey-historical-reconstruction.mjs
+[accepted-behavior] PASS — test-journey-moments.mjs
+[accepted-behavior] PASS — test-journey-storyboard-convergence.mjs
+[accepted-behavior] PASS — test-journey-unit-propagation.mjs
+[accepted-behavior] PASS — test-keyboard-visibility.mjs
+[accepted-behavior] PASS — test-ledger-achievements-restoration.mjs
+[accepted-behavior] PASS — test-ledger-bodyweight-presentation.mjs
+[accepted-behavior] PASS — test-ledger-clubs-runtime-source.mjs
+[accepted-behavior] PASS — test-ledger-index-cleanup.mjs
+[accepted-behavior] PASS — test-ledger-index-maturity.mjs
+[accepted-behavior] PASS — test-ledger-index-visual-convergence.mjs
+[accepted-behavior] PASS — test-ledger-rewards.mjs
+[accepted-behavior] PASS — test-legacy-strength-trophy-retirement.mjs
+[accepted-behavior] PASS — test-logger-canonical-artwork-subject.mjs
+[accepted-behavior] PASS — test-logger-compact-actions.mjs
+[accepted-behavior] PASS — test-logger-crop-review.mjs
+[accepted-behavior] PASS — test-logger-equipment-recency.mjs
+[accepted-behavior] PASS — test-logger-feedback.mjs
+[accepted-behavior] PASS — test-logger-history-visibility.mjs
+[accepted-behavior] PASS — test-logger-movement-physical-loading.mjs
+[accepted-behavior] PASS — test-logger-option-e.mjs
+[accepted-behavior] PASS — test-logger-prescribed-render-weight.mjs
+[accepted-behavior] PASS — test-logger-reward-loop.mjs
+[accepted-behavior] PASS — test-logger-wheel-picker.mjs
+[accepted-behavior] PASS — test-machine-brand-keyboard-selection.mjs
+[accepted-behavior] PASS — test-major-visible-control-actions.mjs
+[accepted-behavior] PASS — test-major-volume-medallion-assets.mjs
+[accepted-behavior] PASS — test-manufacturer-branding.mjs
+[accepted-behavior] PASS — test-meet-plan-visibility-contract.mjs
+[accepted-behavior] PASS — test-mobile-full-width-enforcement.mjs
+[accepted-behavior] PASS — test-mobile-mode-transition.mjs
+[accepted-behavior] PASS — test-mobile-programming-manager-consolidation.mjs
+[accepted-behavior] PASS — test-mobile-text-layout-contract.mjs
+[accepted-behavior] PASS — test-motion-system.mjs
+[accepted-behavior] PASS — test-movement-art-consumer-convergence.mjs
+[accepted-behavior] PASS — test-movement-art-lifecycle.mjs
+[accepted-behavior] PASS — test-movement-artwork-hero.mjs
+[accepted-behavior] PASS — test-movement-card-material.mjs
+[accepted-behavior] PASS — test-movement-history-launch.mjs
+[accepted-behavior] PASS — test-movement-history-request-race.mjs
+[accepted-behavior] PASS — test-movement-lifecycle-status-layout.mjs
+[accepted-behavior] PASS — test-movement-search-response-lifecycle.mjs
+[accepted-behavior] PASS — test-movement-transition.mjs
+[accepted-behavior] PASS — test-muscle-group-navigation-artwork.mjs
+[accepted-behavior] PASS — test-no-equipment-last-set-draft.mjs
+[accepted-behavior] PASS — test-owner-directed-client-fix.mjs
+[accepted-behavior] PASS — test-owner-directed-logger-visual.mjs
+[accepted-behavior] PASS — test-owner-nonrecurrence-governance.mjs
+[accepted-behavior] PASS — test-password-reset-system-browser.mjs
+[accepted-behavior] PASS — test-plate-stack-render-resolver.mjs
+[accepted-behavior] PASS — test-post-session-ledger-ceremony.mjs
+[accepted-behavior] PASS — test-post-session-overview-visual-convergence.mjs
+[accepted-behavior] PASS — test-post-session-pr-evidence.mjs
+[accepted-behavior] PASS — test-post-session-recap-entry-hotfix.mjs
+[accepted-behavior] PASS — test-post-session-related-history.mjs
+[accepted-behavior] PASS — test-post-session-shell-restoration.mjs
+[accepted-behavior] PASS — test-post-session-times.mjs
+[accepted-behavior] PASS — test-pre-october-2-restoration.mjs
+[accepted-behavior] PASS — test-pre-session-accessory-last-best.mjs
+[accepted-behavior] PASS — test-premium-contextual-header-system.mjs
+[accepted-behavior] PASS — test-production-release-policy.mjs
+[accepted-behavior] PASS — test-program-timeline-v2.mjs
+[accepted-behavior] PASS — test-programming-empty-state-layout.mjs
+[accepted-behavior] PASS — test-programming-hub-program-scoping.mjs
+[accepted-behavior] PASS — test-programming-last-exposure.mjs
+[accepted-behavior] PASS — test-programming-manager-overlay-system.mjs
+[accepted-behavior] PASS — test-programming-session-quick-move.mjs
+[accepted-behavior] PASS — test-programming-session-swipe-hotfix.mjs
+[accepted-behavior] PASS — test-programming-session-workspace-sheet.mjs
+[accepted-behavior] PASS — test-programming-week-copy-indexing.mjs
+[accepted-behavior] PASS — test-programming-workspace-subject.mjs
+[accepted-behavior] PASS — test-protected-testflight-catalog-compatibility.mjs
+[accepted-behavior] PASS — test-readiness-modal.mjs
+[accepted-behavior] PASS — test-readiness-survey-render.mjs
+[accepted-behavior] PASS — test-recent-session-set-history.mjs
+[accepted-behavior] PASS — test-recognition-rest-handoff-race.mjs
+[accepted-behavior] PASS — test-recovery-day-check-in-state.mjs
+[accepted-behavior] PASS — test-release-holdback-policy.mjs
+[accepted-behavior] PASS — test-repeat-last-set.mjs
+[accepted-behavior] PASS — test-rest-timer-audio-isolation.mjs
+[accepted-behavior] PASS — test-rest-timer-expiry-router.mjs
+[accepted-behavior] PASS — test-rest-timer-flow.mjs
+[accepted-behavior] PASS — test-rest-timer-last-used.mjs
+[accepted-behavior] PASS — test-rest-timer-picker-material.mjs
+[accepted-behavior] PASS — test-rest-timer-refinement.mjs
+[accepted-behavior] PASS — test-rest-timer-zero-deadlock.mjs
+[accepted-behavior] PASS — test-retired-movement-discovery.mjs
+[accepted-behavior] PASS — test-self-coached-accessory-swap-v2.mjs
+[accepted-behavior] PASS — test-sequential-group-logger.mjs
+[accepted-behavior] PASS — test-session-actions-sheet.mjs
+[accepted-behavior] PASS — test-session-authoring-recovery.mjs
+[accepted-behavior] PASS — test-session-begin-movement-focus.mjs
+[accepted-behavior] PASS — test-session-completion-prompt.mjs
+[accepted-behavior] PASS — test-session-content-snapshot.mjs
+[accepted-behavior] PASS — test-session-execution-ownership.mjs
+[accepted-behavior] PASS — test-session-exposure-snapshot.mjs
+[accepted-behavior] PASS — test-session-header-progress.mjs
+[accepted-behavior] PASS — test-session-logger-journal.mjs
+[accepted-behavior] PASS — test-session-logger-performance-contract.mjs
+[accepted-behavior] PASS — test-session-logger-request-policy.mjs
+[accepted-behavior] PASS — test-session-logger-resume-contract.mjs
+[accepted-behavior] PASS — test-session-logger-shared-confirmation.mjs
+[accepted-behavior] PASS — test-session-logger-shell-state.mjs
+[accepted-behavior] PASS — test-session-logger-three-zone-header.mjs
+[accepted-behavior] PASS — test-session-note-author.mjs
+[accepted-behavior] PASS — test-session-programmed-set-count.mjs
+[accepted-behavior] PASS — test-session-readiness-start.mjs
+[accepted-behavior] PASS — test-session-recap-plan-compare.mjs
+[accepted-behavior] PASS — test-session-recap-trends.mjs
+[accepted-behavior] PASS — test-session-reorder-long-list.mjs
+[accepted-behavior] PASS — test-session-timing-telemetry.mjs
+[accepted-behavior] PASS — test-session-workspace-accessory-artwork.mjs
+[accepted-behavior] PASS — test-session-workspace-accessory-picker.mjs
+[accepted-behavior] PASS — test-session-workspace-athlete-preview-handoff.mjs
+[accepted-behavior] PASS — test-session-workspace-dirty-reorder.mjs
+[accepted-behavior] PASS — test-session-workspace-draft-state.mjs
+[accepted-behavior] PASS — test-session-workspace-focused-prescriptions.mjs
+[accepted-behavior] PASS — test-session-workspace-layout.mjs
+[accepted-behavior] PASS — test-session-workspace-unit-presentation.mjs
+[accepted-behavior] PASS — test-set-logger-load-default.mjs
+[accepted-behavior] PASS — test-set-submission-lifecycle.mjs
+[accepted-behavior] PASS — test-set-timeline-storyboard.mjs
+[accepted-behavior] PASS — test-setlog-delete-order.mjs
+[accepted-behavior] PASS — test-settings-account-parity.mjs
+[accepted-behavior] PASS — test-shared-movement-programming-context.mjs
+[accepted-behavior] PASS — test-shipping-navigation-parity.mjs
+[accepted-behavior] PASS — test-single-current-movement-id.mjs
+[accepted-behavior] PASS — test-single-current-swap-command.mjs
+[accepted-behavior] PASS — test-smart-warmup-engine.mjs
+[accepted-behavior] PASS — test-strength-achievement-language-convergence.mjs
+[accepted-behavior] PASS — test-strength-overview-navigation-contract.mjs
+[accepted-behavior] PASS — test-strength-progression-experience-convergence.mjs
+[accepted-behavior] PASS — test-strength-semantic-artwork-framing.mjs
+[accepted-behavior] PASS — test-strength-storyboard-convergence.mjs
+[accepted-behavior] PASS — test-strength-tier-certification-app-shell.mjs
+[accepted-behavior] PASS — test-substitution-confirmation-sheet.mjs
+[accepted-behavior] PASS — test-superset-equipment-context.mjs
+[accepted-behavior] PASS — test-superset-equipment-control.mjs
+[accepted-behavior] PASS — test-superset-rounds.mjs
+[accepted-behavior] PASS — test-superset-self-coach-swap-history.mjs
+[accepted-behavior] PASS — test-superset-workspace-convergence.mjs
+[accepted-behavior] PASS — test-swap-equipment-type-filter.mjs
+[accepted-behavior] PASS — test-swap-muscle-thumbnail-framing.mjs
+[accepted-behavior] PASS — test-team-brief-v2.mjs
+[accepted-behavior] PASS — test-testflight-cumulative-integrity.mjs
+[accepted-behavior] PASS — test-testflight-source-parity.mjs
+[accepted-behavior] PASS — test-training-hub-coach-context.mjs
+[accepted-behavior] PASS — test-training-hub-session-labels.mjs
+[accepted-behavior] PASS — test-training-hub-session-preview-sheet.mjs
+[accepted-behavior] PASS — test-training-hub-today-hero.mjs
+[accepted-behavior] PASS — test-training-program-progress.mjs
+[accepted-behavior] PASS — test-training-volume-landmarks.mjs
+[accepted-behavior] PASS — test-transient-recognition-delivery.mjs
+[accepted-behavior] PASS — test-unread-summary-resilience.mjs
+[accepted-behavior] PASS — test-video-review-completion-contract.mjs
+[accepted-behavior] PASS — test-volume-medallion-progression.mjs
+[accepted-behavior] PASS — test-workspace-floating-controls.mjs
+[accepted-behavior] PASS — test-worktree-lifecycle.mjs
+[accepted-behavior] PASS — test-zero-load-edit-api.mjs
+[accepted-behavior] PASS — test-zero-load-edit-set.mjs
+[accepted-behavior] PASS — test-zero-regression-release-law.mjs
+
+test-complete-movement-library-art.mjs
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: barbell_overhead_press: every selectable built-in needs an approved image
+    at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-complete-movement-library-art.mjs:18:10
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: null,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v25.2.1
+
+test-core-artwork-coverage.mjs
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: barbell_overhead_press: explicit numeric-ID assignment required
+    at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-core-artwork-coverage.mjs:27:10
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v25.2.1
+
+test-dev-testflight-release-gates.mjs
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: valid protected DEV snapshot:  fatal: path 'scripts/test-shared-movement-programming-context.mjs' does not exist in 'fcf8191bc77b848da9877aed4ca848589098309e'
+fatal: path 'scripts/test-shared-movement-programming-context.mjs' does not exist in '57de0daf66a10579a92a1cb983bf0a88ead035fd'
+GATE A BLOCKED: DEV is missing 1 protected item(s): components/workout-logger/session-equipment-context.tsx
+
+
+false !== true
+
+    at run (file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-dev-testflight-release-gates.mjs:44:12)
+    at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-dev-testflight-release-gates.mjs:47:3
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.2.1
+file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-accepted-behavior-contracts.mjs:54
+  throw new Error(
+        ^
+
+Error: 3 accepted behavior contract(s) failed. New tests are protected automatically; quarantine requires an explicit reviewed config change.
+    at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-accepted-behavior-contracts.mjs:54:9
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v25.2.1

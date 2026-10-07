@@ -1,0 +1,12 @@
+{
+  "active": 499,
+  "approved": 498,
+  "missingExactArt": [
+    {
+      "id": 650,
+      "key": "barbell_overhead_press",
+      "display_name": "Barbell Overhead Press",
+      "kind": "core"
+    }
+  ]
+}
