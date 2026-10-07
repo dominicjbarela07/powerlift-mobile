@@ -1983,6 +1983,10 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Partial<Record<
     source: require('@/assets/images/movement-artwork/core-variants-v1/sumo_deadlift-app.png'),
     label: 'Athlete performing Sumo Deadlift',
   },
+  barbell_overhead_press: {
+    source: require('@/assets/images/movement-artwork/core-variants-v1/barbell_overhead_press-app.png'),
+    label: 'Athlete performing Barbell Overhead Press',
+  },
   // Archive bytes remain reviewable locally and are removed from release exports.
   ...(__DEV__ ? {
   barbell_row: {

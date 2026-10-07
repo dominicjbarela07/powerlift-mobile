@@ -12,6 +12,7 @@ export const CANONICAL_CORE_ARTWORK_IDENTITIES = {
   623: { key: 'block_pull', family: 'deadlift' },
   627: { key: 'snatch_grip_deadlift', family: 'deadlift' },
   628: { key: 'sumo_deadlift', family: 'deadlift' },
+  650: { key: 'barbell_overhead_press', family: 'bench' },
 } as const;
 
 export type CanonicalCoreArtworkKey =

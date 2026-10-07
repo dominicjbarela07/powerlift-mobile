@@ -124,7 +124,15 @@ reports are preserved under
   critical suites. Physical/native gaps are explicitly unobserved, and the two
   deterministic movement650 failures keep a Production GO blocked.
 
-## Remaining owner decision
+## Historical owner decision — resolved October 7
+
+The OHP source and independent Logger framing were subsequently approved by the
+owner and integrated into canonical DEV. All 499 built-in movements and 31 Core
+movements now pass exact image/crop coverage; TypeScript and human receipt gates
+pass. The original evidence below retains its October 6 results. This resolves
+the movement650 artwork gap; native certification remains unperformed.
+See canonical backend `docs/validation/ohp-art-2026-10-07/README.md` for exact
+approval, hash, identity, preservation and validation receipts.
 
 Barbell Overhead Press650 needs an exact human artwork approval or an explicit
 valid reuse decision. The canonical artwork law in

@@ -208,6 +208,15 @@
       "artwork_movement_definition_id": 628,
       "artwork_key": "sumo_deadlift",
       "reuse_basis": "Exact variant image and Logger framing approved by the owner."
+    },
+    {
+      "movement_definition_id": 650,
+      "key": "barbell_overhead_press",
+      "core_movement_definition_id": 62,
+      "movement_name": "Barbell Overhead Press",
+      "artwork_movement_definition_id": 650,
+      "artwork_key": "barbell_overhead_press",
+      "reuse_basis": "Exact variant image and Logger framing approved by the owner."
     }
   ],
   "awaiting_specific_artwork": []
