@@ -15,7 +15,32 @@ export function assertReviewedRuntimeContinuation(root, state, fingerprint) {
   const ownerText = fs.readFileSync(path.join(root, scope.ownerEvidencePath), 'utf8');
   assert.ok(ownerText.includes('you dont need to recheck screens that you determined were fine btw'), 'retained observations require the explicit owner repeat-check instruction');
   assert.equal(fingerprint, scope.productFingerprint, 'runtime continuation cannot cover another product candidate');
-  assert.equal(scope.priorUpdateId, state.currentTestFlight.id, 'continuation must retain the actual current shipped baseline');
+  if (scope.priorUpdateId !== state.currentTestFlight.id) {
+    // After shipment the baseline advances. Retain the prior observed source only
+    // when the new current update is bound to its actual served artifact and Gate C.
+    assert.equal(scope.priorUpdateId, state.previousTestFlight.id, 'continuation must retain the actual current shipped baseline or its verified publication');
+    const proof = scope.publishedProof;
+    assert.ok(proof, 'advanced baseline requires exact published proof');
+    const receipt = entry => {
+      const bytes = fs.readFileSync(path.resolve(root, entry.path));
+      assert.equal(sha256(bytes), entry.sha256, 'published proof bytes changed');
+      return JSON.parse(bytes);
+    };
+    const gate = receipt(proof.gateC), audit = receipt(proof.assetAudit);
+    assert.equal(gate.gate, 'C'); assert.equal(gate.pass, true);
+    assert.deepEqual(gate.missing, []);
+    assert.equal(gate.currentTestFlight.id, scope.priorUpdateId);
+    assert.equal(gate.candidateProductFingerprint, fingerprint);
+    assert.equal(gate.published.id, state.currentTestFlight.id);
+    assert.equal(gate.published.group, state.currentTestFlight.group);
+    assert.equal(gate.published.gitCommitHash, state.currentTestFlight.gitCommitHash);
+    assert.equal(audit.pass, true); assert.equal(audit.missingOrCorrupt, 0);
+    assert.equal(audit.updateId, gate.published.id);
+    assert.equal(audit.sourceSha, gate.published.gitCommitHash);
+    assert.equal(audit.servedLaunchSha256, gate.published.servedBundleSha256);
+    assert.equal(audit.uniqueServedHashes, audit.expectedUniqueAssets);
+    assert.equal(audit.losslessImageTransport.originalBytesRetained, true);
+  }
   const priorPath = path.resolve(root, scope.priorReceipt.path);
   assert.equal(sha256(fs.readFileSync(priorPath)), scope.priorReceipt.sha256, 'prior runtime receipt changed');
   const prior = JSON.parse(fs.readFileSync(priorPath));
