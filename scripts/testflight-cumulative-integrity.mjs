@@ -270,5 +270,5 @@ if(process.argv[1] && import.meta.url===pathToFileURL(path.resolve(process.argv[
   const value=flag=>{const i=process.argv.indexOf(flag);return i>=0?process.argv[i+1]:undefined;};
   const result=runIntegrityGate({exportDir:value('--export-dir'),runtimeReceipt:value('--runtime-receipt'),requireRuntime:process.argv.includes('--require-runtime'),restorationRuntime:process.argv.includes('--restoration-runtime'),clientFixRuntime:process.argv.includes('--owner-directed-client-fix'),loggerVisualRuntime:process.argv.includes('--owner-directed-logger-visual'),reviewedRuntime:process.argv.includes('--reviewed-cumulative-runtime')});
   const out=value('--output');if(out)fs.writeFileSync(out,JSON.stringify(result,null,2)+'\n');
-  console.log(`[cumulative-testflight] PASS: ${result.baselines} historical releases; unauthorized source subtractions 0; artifact ${result.artifact?'verified':'not yet checked'}; runtime ${result.runtimeVerified?'verified':'not yet checked'}`);
+  console.log(`[cumulative-testflight] PASS: ${result.baselines} historical releases; unauthorized source subtractions 0; artifact ${result.artifact?'verified':'not yet checked'}; runtime ${result.runtimeVerified?'verified':result.retainedRuntime?'owner-authorized retained observations verified':'not yet checked'}`);
 }
