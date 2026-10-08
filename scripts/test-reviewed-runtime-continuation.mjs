@@ -19,4 +19,12 @@ assert.throws(() => assertReviewedRuntimeContinuation(root, obsolete, fingerprin
 const stale = structuredClone(state);
 stale.reviewedRuntimeContinuation.nativeObservedAt = '2026-01-01T00:00:00Z';
 assert.throws(() => assertReviewedRuntimeContinuation(root, stale, fingerprint), /stale/);
-console.log('Owner repeat-check continuation PASS: 32 retained actual journeys and identical observed native runtime; wrong candidate/source/baseline/stale proof rejected; no fresh-run or new-binary claim.');
+if (state.reviewedRuntimeContinuation.publishedProof) {
+  const wrongProof = structuredClone(state);
+  wrongProof.reviewedRuntimeContinuation.publishedProof.gateC.sha256 = 'a'.repeat(64);
+  assert.throws(() => assertReviewedRuntimeContinuation(root, wrongProof, fingerprint), /published proof bytes changed/);
+  const wrongCurrent = structuredClone(state);
+  wrongCurrent.currentTestFlight.gitCommitHash = 'a'.repeat(40);
+  assert.throws(() => assertReviewedRuntimeContinuation(root, wrongCurrent, fingerprint), /AssertionError/);
+}
+console.log('Owner repeat-check continuation PASS: 32 retained actual journeys, byte-equivalent image transport and exact served publication; wrong candidate/source/baseline/stale or altered published proof rejected; no fresh-run or new-binary claim.');
