@@ -1,0 +1,8 @@
+{
+  "pass": true,
+  "channel": "testflight",
+  "runtimeVersion": "2.1.0",
+  "platform": "ios",
+  "serverSelectedUpdate": "01a11d6d-cb22-756a-869e-4f7919bce0c4",
+  "assetEntries": 998
+}

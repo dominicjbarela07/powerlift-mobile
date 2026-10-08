@@ -10,6 +10,7 @@ Use `/Users/dominic/powerlifting_app/powerlift_mobile` and the `production3-prep
 - Update group: `f04dc0b5-d741-4075-a0e7-2705c0293f60`.
 - Actual published source: `02b5e8cae883fc8115b07755484ee12679630265`.
 - Runtime: `2.1.0`, compatible with existing iOS native build 28. No new TestFlight binary was built.
+- An actual native-style update request to the project endpoint with iOS / runtime2.1.0 / channeltestflight selected this exact new update; channel delivery is verified independently of its permalink. Receipt: `config/testflight-release-published-20261008/client-channel.json`.
 - Served launch bundle: `32450e18e6d3cc3da9dc84caa8553257c35f52bdf4707079a0a755922b5eac6c`; 31,927,247 bytes, identical to the validated export.
 - Full served-byte audit: **998 asset entries / 992 unique assets; missing or corrupt: 0**. The launch bundle additionally contains all 17 original introduction PNG payloads, verified byte-for-byte with identical dimensions and unchanged screen layouts/behavior.
 - Expo accepted 999 entries including the launch bundle, below its enforced 1,000-entry limit. The previous 1,016-entry rejection was resolved by lossless image packaging; no imagery was removed, resized, regenerated or replaced for this update.
