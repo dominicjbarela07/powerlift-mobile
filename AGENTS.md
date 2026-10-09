@@ -100,3 +100,14 @@ native runtime receipt before handoff. Verify embedded keychain permissions,
 actual installed candidate bundle and actual native live-backend request; a Metro
 manifest or visible login screen alone is insufficient. Leave owner takeover at
 the requested screen. This is separate from store/device release certification.
+
+## Native upload readiness
+
+Before declaring a native candidate ready, read
+`docs/release/BUILD_ARCHIVE_UPLOAD_RECOVERY_2026-10-08.md`. Run the native upload
+policy and its deliberate failure contracts, inspect the actual EAS archive stage,
+measure the compressed upload, and byte-verify every runtime asset/source input.
+Keep the entire assets tree and runtime approval manifests. Exclude Git history,
+non-runtime review masters and development proof captures only from the upload;
+never delete them. Direct Production 3 configuration enforces the upload policy.
+The owner alone starts and monitors the native build unless explicitly delegated.

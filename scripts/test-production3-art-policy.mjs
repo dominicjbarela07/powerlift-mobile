@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { createRequire } from 'node:module';
 import { approvedArtRuntimeEnabled } from '../lib/approved-art-runtime.ts';
 import { artBundlePolicyFiles, legacyArtBundleCondition, production3ArtBundleCondition, assertArtBundlePolicyProgression } from './approved-art-bundle-policy.mjs';
 
@@ -12,11 +13,14 @@ assert.equal(approvedArtRuntimeEnabled(false, 'production3', '3.0.0'), true);
 assert.equal(approvedArtRuntimeEnabled(false, 'testflight', '2.1.0'), true);
 const source = fs.readFileSync('app.config.js', 'utf8');
 const original = JSON.parse(fs.readFileSync('app.json', 'utf8'));
+const actualRequire = createRequire(import.meta.url);
 function config(env) {
   const module = { exports: {} };
   vm.runInNewContext(source, { module, require: name => {
-    assert.equal(name, './app.json'); return structuredClone(original);
-  }, process: { env } });
+    if (name === './app.json') return structuredClone(original);
+    assert.equal(name, './scripts/native-build-upload-policy.cjs');
+    return actualRequire('./native-build-upload-policy.cjs');
+  }, __dirname: process.cwd(), process: { env } });
   return module.exports.expo;
 }
 const env = {
