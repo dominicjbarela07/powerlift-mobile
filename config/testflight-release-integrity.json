@@ -3,6 +3,24 @@
   "policy": "TestFlight is cumulative. Explicit owner authorization is required for every subtraction and protected modification. Never replace this historical baseline with a regressed export.",
   "incident": "2026-10-02 direct EAS update omitted TestFlight artwork switch; 492 asset entries absent",
   "currentTestFlight": {
+    "id": "01a11e0b-bea2-753f-b8a5-acb0b9554d90",
+    "createdAt": "2026-10-09T00:24:08.610Z",
+    "group": "b3b3b872-3fd3-4433-86df-3b3e521b014f",
+    "message": "Fix first-attempt Set saves with durable connection recovery",
+    "runtimeVersion": "2.1.0",
+    "platform": "ios",
+    "manifestPermalink": "https://u.expo.dev/update/01a11e0b-bea2-753f-b8a5-acb0b9554d90",
+    "gitCommitHash": "b552c708298882f7f095e3adfe393c6c0a6cface",
+    "branch": "testflight",
+    "isRollBackToEmbedded": false,
+    "sourceAvailable": true,
+    "appRevision": 57,
+    "nativeBuildInSource": null,
+    "recoverableRefs": [
+      "refs/archive/testflight-published/01a11e0b-bea2-753f-b8a5-acb0b9554d90"
+    ]
+  },
+  "previousTestFlight": {
     "id": "01a11d6d-cb22-756a-869e-4f7919bce0c4",
     "createdAt": "2026-10-08T21:31:37.122Z",
     "group": "f04dc0b5-d741-4075-a0e7-2705c0293f60",
@@ -20,26 +38,16 @@
       "refs/archive/testflight-published/01a11d6d-cb22-756a-869e-4f7919bce0c4"
     ]
   },
-  "previousTestFlight": {
-    "id": "01a11340-9ccc-7498-a71d-77a367aa6f5f",
-    "createdAt": "2026-10-06T22:06:03.980Z",
-    "group": "d94afb31-3d19-4265-9040-0c2566c490b3",
-    "branch": "testflight",
-    "message": "Compact Logger controls, assisted movement search, conditional history and refreshed pre-Session check-in; preserve earned PR playback",
-    "runtimeVersion": "2.1.0",
-    "platform": "ios",
-    "manifestPermalink": "https://u.expo.dev/update/01a11340-9ccc-7498-a71d-77a367aa6f5f",
-    "isRollBackToEmbedded": false,
-    "gitCommitHash": "59641028e514c3edc957c95de2d4882f2f3bf3e0",
-    "sourceAvailable": true,
-    "appRevision": 56,
-    "nativeBuildInSource": null,
-    "recoverableRefs": [
-      "refs/archive/testflight-published/01a11340-9ccc-7498-a71d-77a367aa6f5f",
-      "origin/release/testflight/hot-swap-r56-20261001"
-    ]
-  },
   "releaseHistory": [
+    {
+      "id": "01a11e0b-bea2-753f-b8a5-acb0b9554d90",
+      "group": "b3b3b872-3fd3-4433-86df-3b3e521b014f",
+      "createdAt": "2026-10-09T00:24:08.610Z",
+      "runtimeVersion": "2.1.0",
+      "appRevision": 57,
+      "gitCommitHash": "b552c708298882f7f095e3adfe393c6c0a6cface",
+      "message": "Fix first-attempt Set saves with durable connection recovery"
+    },
     {
       "id": "01a11d6d-cb22-756a-869e-4f7919bce0c4",
       "group": "f04dc0b5-d741-4075-a0e7-2705c0293f60",
@@ -160861,5 +160869,35 @@
       "scripts/test-zero-load-edit-set.mjs": "6187f4a68b57230b2fb86f3702e2c89d0f704394f1eef200db689f66cec6e250"
     },
     "deploymentRequirement": "Existing canonical edit endpoint; no backend deployment change. Cable brand-only remains unshipped pending server access."
+  },
+  "verifiedSetSaveRecovery": {
+    "updateId": "01a11e0b-bea2-753f-b8a5-acb0b9554d90",
+    "group": "b3b3b872-3fd3-4433-86df-3b3e521b014f",
+    "sourceSha": "b552c708298882f7f095e3adfe393c6c0a6cface",
+    "productFingerprint": "eb0157e764eac8b17b87ebc69d6417e0b88a1a05a165cf014489af131e88227a",
+    "bundleSha256": "9132e51de5f21d0d8d7836c9312b604b0e7fa8185e2041ebd5488974f0d91c12",
+    "publicationVerified": true,
+    "ownerPhoneBehaviorObserved": false,
+    "freshSimulatorRun": false,
+    "acceptedContracts": 276,
+    "criticalAreas": 85,
+    "serverPersistenceAndPrTests": 26,
+    "missingOrCorruptAssets": 0,
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-recovery-20261008/gate-c.json",
+        "sha256": "9786dadd5c72e256da86fc06eec062e194da0290c0d8fa4b2a7f17ac47a87c21"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-recovery-20261008/published-asset-byte-audit.json",
+        "sha256": "d3761e20c52bf7376c5bb4804e9b354be33a60cfb8c16bfc80a499453b523889"
+      },
+      "clientChannel": {
+        "path": "config/testflight-release-recovery-20261008/actual-client-channel-delivery.json",
+        "sha256": "56ff3e14c0e104a168959f17171e194a6ecf594def342b4d359f404febe70d97"
+      }
+    },
+    "worktreeCloseoutComplete": true,
+    "ownerDirectedScope": "canonical-set-save-recovery-20261008"
   }
 }
