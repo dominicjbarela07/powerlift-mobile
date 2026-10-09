@@ -111,3 +111,13 @@ Keep the entire assets tree and runtime approval manifests. Exclude Git history,
 non-runtime review masters and development proof captures only from the upload;
 never delete them. Direct Production 3 configuration enforces the upload policy.
 The owner alone starts and monitors the native build unless explicitly delegated.
+
+## Distribution screenshot delivery
+
+Match the actual App Store Connect upload slot before delivery; a physical device
+diagonal or generally supported resolution does not establish slot acceptance.
+Read `docs/release/APP_STORE_SCREENSHOTS_2026-10-09.md`. Validate every delivered
+PNG with `scripts/verify-distribution-screenshots.py` for its target slot. Retain
+the deliberate rejection of the known 1206 × 2622 / 6.5-inch mismatch. Preserve
+original captures, use the owner-required backend and fictional data, and label
+folders by exact upload slot with pixel dimensions in the file guide.
