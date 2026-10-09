@@ -217,7 +217,7 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
     assert.equal(requireRuntime, true, 'client fix validation must be part of publication');
     assert.equal(restorationRuntime, false, 'distinct owner scopes cannot be combined');
     assertOwnerEvidence(root, [protectedState.ownerDirectedClientFix]);
-    clientFixContracts = runClientFixContracts({root,scope:protectedState.ownerDirectedClientFix,fingerprint,delta,exportDir});
+    clientFixContracts = runClientFixContracts({root,scope:protectedState.ownerDirectedClientFix,fingerprint,delta,exportDir,state:protectedState,files});
   }
   const simulatorProhibited = restorationScope?.simulatorValidation === 'OWNER_PROHIBITED' || Boolean(clientFixContracts);
   if (simulatorProhibited && restorationScope) {
