@@ -1,5 +1,9 @@
 # App Store distribution screenshots — October 9, 2026
 
+Current delivery: six corrected iPhone PNGs at **1284 × 2778** for the owner’s
+actual **6.5-inch upload slot**, plus five unchanged iPad PNGs at **2064 × 2752**.
+See the completed owner-correction section below; the initial package is historical.
+
 ## Owner request and acceptance
 
 Create good distribution screenshots from the current Production mobile UI on a
@@ -14,7 +18,7 @@ Session behavior, equipment isolation and cumulative shipped fixes. No customer
 records may be used. No cloud native build, deployment, submission or App Store
 upload is part of this request. Preserve the owner's simulator and source work.
 
-## Results
+## Initial delivery — superseded for the 6.5-inch upload slot
 
 Completed: six iPhone 17 Pro PNGs at 1206 × 2622 and five iPad Pro 13-inch (M5)
 PNGs at 2064 × 2752. All eleven are native, unmodified, RGB PNGs without alpha.
@@ -108,3 +112,51 @@ is retained in canonical DEV and Production mobile documentation.
 
 Apple screenshot specifications checked October 9, 2026:
 https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications
+
+## Owner correction — required 6.5-inch upload slot
+
+The owner's October 9 App Store Connect screenshot explicitly accepts portrait
+1242 × 2688 or 1284 × 2778 in the visible iPhone 6.5-inch Display slot. The
+initial 1206 × 2622 delivery does not fit that slot. Selecting a generally
+supported device size without matching the actual upload destination was a
+delivery validation failure. Correct the package in this run with native
+1284 × 2778 captures from a separate local simulator. Keep the original Dynamic
+Island set as separately labeled optional captures; preserve the existing iPad
+set. Continue using DEV only and fictional data. No new product changes or
+App Store upload are authorized.
+
+Acceptance: correctly labeled primary 6.5-inch upload folder; every delivered
+iPhone image matches the exact accepted dimensions; iPad images remain intact;
+ZIP and gallery point to the corrected package; retained executable slot
+validation rejects the original mismatched set deliberately. **Correction completed.**
+
+Delivered six new native iPhone 13 Pro Max captures at 1284 × 2778, all passing
+the owner’s exact 6.5-inch upload dimensions. The physical display is 6.7 inches;
+the folder is labeled by the App Store upload slot. The separate original
+Dynamic Island files remain preserved. All five iPad images are byte-identical
+to the original 2064 × 2752 captures. No screenshots were resized or cropped;
+removal of entirely opaque alpha preserved every RGB pixel.
+
+The new phone installed the same hash-verified guarded capture bundle with native
+OTA disabled. It uses only local DEV and the fictional demonstration identity.
+A third current set was saved through the real UI (Curl 40 lb × 12 @ 1 RIR),
+and the corrected logger capture shows its actual rest timer. All six corrected
+iPhone screens were visually inspected. No product source/configuration changed.
+
+Corrected output: `/Users/dominic/Documents/Codex/2026-10-03/re/outputs/distribution-screenshots-corrected-2026-10-09/`.
+Package: `Strength-Ledger-CORRECTED-6.5-inch-and-iPad.zip`.
+Preview: `http://127.0.0.1:8792/index.html`.
+
+All eleven PNGs pass `scripts/verify-distribution-screenshots.py` against their
+exact upload slots. Deliberately checking the original 1206 × 2622 iPhone set
+against the 6.5-inch slot fails with exit 1. The validator also rejects alpha,
+invalid dimensions and corrupt PNG chunks. Python compilation passed. The
+15-entry ZIP contains eleven PNGs and four supporting files; CRC and every
+archived byte were verified. `validation-report.json` and `provenance.json`
+retain the inventory, hashes, failure-test evidence and source/device provenance.
+The corrected preview gallery was visually inspected and left open in Codex.
+
+Permanent protection: agent guidance in both canonical DEV and Production points
+to this incident and requires matching the actual destination slot and running
+the executable inventory check before screenshot delivery. No cloud build,
+deployment, store submission or App Store upload was performed.
