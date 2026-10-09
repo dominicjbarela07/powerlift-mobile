@@ -127,6 +127,7 @@ import {
   isApiRequestError,
   shouldSurfaceRequestFailure,
 } from '@/lib/api-request-policy';
+import { recoverCanonicalSetSave } from '@/lib/canonical-set-save-recovery';
 import {
   createClientEventId,
   createLifecycleTimingEvent,
@@ -2505,7 +2506,14 @@ export default function WorkoutViewerScreen() {
         setSavingItemId(itemId);
         setError(null);
       },
-      request: () => { if (executionScopeRef.current !== ownerAtDispatch) throw new Error('Session ownership changed.'); return request(); },
+      request: () => recoverCanonicalSetSave({
+        clientSubmissionId,
+        request,
+        assertOwner: () => {
+          if (!screenMountedRef.current || executionScopeRef.current !== ownerAtDispatch) throw new Error('Session ownership changed.');
+        },
+        onRecovery: (attempt, failure) => feedbackAnalytics('set_save_transport_recovery', { attempt, failure }),
+      }),
       onAccepted: (json) => {
         if (executionScopeRef.current !== ownerAtDispatch) return null;
         if (!consumeSetResultOnce(attemptKey, clientSubmissionId, json)) {

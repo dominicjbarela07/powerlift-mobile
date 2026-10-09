@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['canonical Set saves recover ambiguous network failures without another tap or duplicate writes', ['scripts/test-canonical-set-save-recovery.mjs']],
   ['lossless image transport and actual Expo OTA asset capacity', ['scripts/test-education-image-transport.mjs']],
   ['owner-directed retained runtime observations require exact equivalent current native code', ['scripts/test-reviewed-runtime-continuation.mjs']],
   ['reviewed cumulative source and human art/crop progression reject unauthorized changes', ['scripts/test-reviewed-release-progression.mjs']],
