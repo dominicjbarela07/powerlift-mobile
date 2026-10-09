@@ -10,6 +10,8 @@ if (process.env.STRENGTH_LEDGER_RELEASE_TARGET === 'production3') {
   expo.version = '3.0.0';
   expo.runtimeVersion = '3.0.0';
   expo.extra = { ...expo.extra, releaseTrack: 'production3', publicationAuthorized: false };
+  // Direct owner-started EAS builds must reject oversized/unsafe upload inputs.
+  require('./scripts/native-build-upload-policy.cjs').assertNativeBuildUploadPolicy(__dirname);
 } else if (process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'production3'
     || process.env.EXPO_PUBLIC_ART_RUNTIME_VERSION === '3.0.0') {
   throw new Error('PRODUCTION 3.0 PREPARATION BLOCKED: a 3.0 artwork switch cannot be applied to a legacy runtime.');

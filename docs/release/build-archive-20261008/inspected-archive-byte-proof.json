@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "conservativeSourceBytes": 1668990991,
+  "files": 3260,
+  "compressedBytes": 1601659126,
+  "verifiedRequiredFiles": 3193,
+  "verifiedAssetFiles": 2249,
+  "missingOrChangedRequiredFiles": 0,
+  "gitAndReviewOutputsIncluded": false
+}

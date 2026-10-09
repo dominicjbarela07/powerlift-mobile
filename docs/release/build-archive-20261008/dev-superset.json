@@ -1,0 +1,17 @@
+{
+  "result": "PASS",
+  "generatedAt": "2026-10-09T02:25:54.474Z",
+  "publicationAuthorized": false,
+  "currentTestFlight": {
+    "id": "01a11e0b-bea2-753f-b8a5-acb0b9554d90",
+    "gitCommitHash": "b552c708298882f7f095e3adfe393c6c0a6cface"
+  },
+  "missingValidTestFlightStateInDev": 0,
+  "candidateProductFingerprint": "eb0157e764eac8b17b87ebc69d6417e0b88a1a05a165cf014489af131e88227a",
+  "devProductFingerprint": "406a725076203dff2e601316be85749154ce70f0e10b51a2a8b7a05a5e246281",
+  "protectedManifestSha256": "0bc36cb081c2c7a0dc9680f8ab767c5ee6a4a96cca7bb8abe7e7021afaffccc1",
+  "fullEvidence": {
+    "path": "/Users/dominic/Documents/Codex/2026-10-03/re/outputs/build-archive-recovery-2026-10-08/dev-superset.json",
+    "sha256": "67c012f0ba0dac8a2e7e43c5457b4efbfdfb8fc49fc64731d06531703ba8f665"
+  }
+}
