@@ -5,6 +5,17 @@ import { productFiles, fingerprintFiles } from './testflight-cumulative-integrit
 const root = '/Users/dominic/powerlifting_app/powerlift_mobile_testflight';
 const state = JSON.parse(fs.readFileSync(`${root}/config/testflight-release-integrity.json`));
 const fingerprint = fingerprintFiles(productFiles(root));
+if (state.ownerDirectedClientFix?.scope === 'canonical-set-save-recovery-20261008') {
+  // A real logic change cannot borrow the earlier byte-equivalent image
+  // transport observations. Its separate exact owner contract scope must run.
+  assert.throws(() => assertReviewedRuntimeContinuation(root, state, fingerprint), /another product candidate/);
+  const relabelled = structuredClone(state);
+  relabelled.reviewedRuntimeContinuation.productFingerprint = fingerprint;
+  assert.throws(() => assertReviewedRuntimeContinuation(root, relabelled, fingerprint), /AssertionError/,
+    'relabeling old runtime proof cannot authorize this new Set mutation');
+  console.log('Owner retained runtime boundary PASS: Set save logic change and relabelled old observations rejected; exact current client-fix contracts required.');
+  process.exit(0);
+}
 const result = assertReviewedRuntimeContinuation(root, state, fingerprint);
 assert.equal(result.priorFlows, 32);
 assert.equal(result.freshFullJourneyRun, false);

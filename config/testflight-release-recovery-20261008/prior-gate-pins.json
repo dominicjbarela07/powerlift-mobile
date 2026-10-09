@@ -11,7 +11,8 @@
     "scripts/test-release-critical-invariants.mjs": "5567127eaa19230bb08c32e6a423e96bf9186655614a32534bff0f3e9708c849",
     "scripts/testflight-cumulative-integrity.mjs": "9c7bfb4ca1d50f08790b5007546927bc10a84e248c15e3fd3794fabbd50ad617",
     "config/protected-fix-manifest.json": "d284544ea1b563c29850808e1aa51efaebcb471ff6044d24d7ba322cec7eab26",
-    "scripts/test-canonical-set-save-recovery.mjs": null
+    "scripts/test-canonical-set-save-recovery.mjs": null,
+    "scripts/test-reviewed-runtime-continuation.mjs": "efbb55f048ecb02b57cca92e618aec135c2edd68a8ec11a08f5938bc38138e04"
   },
   "after": {
     "scripts/owner-directed-client-fix.mjs": "680bec88c5fceb2407ef61cf984a4df8ae548a54f1cb057ebdcb99fe7c0ba325",
@@ -19,7 +20,8 @@
     "scripts/test-release-critical-invariants.mjs": "aa657deeaa1952537ca0afabcbed033be5863c0881fafd421943a1a6162c3f6e",
     "scripts/testflight-cumulative-integrity.mjs": "5afb84cde3a03bfdc06fd5417a25188243589ccbc635f4efd6c1606ed7b1b0a8",
     "config/protected-fix-manifest.json": "7c6955bdf126a1ef12316d25c5b11f93b66a83947bd32b444c5dfb6fc507e6fd",
-    "scripts/test-canonical-set-save-recovery.mjs": "6542eaadd486591968dadb1143768b56b773e7a5542b8b5822d7e5a63261c134"
+    "scripts/test-canonical-set-save-recovery.mjs": "6542eaadd486591968dadb1143768b56b773e7a5542b8b5822d7e5a63261c134",
+    "scripts/test-reviewed-runtime-continuation.mjs": "2f639fb64979a5628fac6f877ba80eb5751ad58d2f4e5693c8a878d88db1ebc8"
   },
   "reason": "Reviewed additive fault-recovery contracts and an exact owner-authorized scope; prior protections and zero-load route remain enforced."
 }
