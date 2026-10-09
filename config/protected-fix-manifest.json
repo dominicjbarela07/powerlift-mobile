@@ -446,7 +446,7 @@
         "path": "app/(tabs)/workout/[workoutId].tsx",
         "sourceCommit": "847d5834f41486bfbf63a5e45e690a514eed0d8a",
         "blob": "e75584aea1b2d69f006cec3c46890bb8433b23da",
-        "devSha256": "5b4f45da4bcd443d6b478f74d004bebec810db78cb3964e53cafdc8dcd6b01ec",
+        "devSha256": "4a02944b421d6356759a8d8bcde79cac11e55eb2fdb90e6d3e8ed0ea8559238d",
         "candidateSha256": "e3d2bfb7652ac3501a47ad1707dbc3acf723e3387f96a9d8ffe4c41e3b6749b8",
         "sharedFix": {
           "devSourceCommit": "7933a887672d398c69894fc8228362634b54625d",
@@ -488,12 +488,12 @@
           ]
         },
         "devOnlyProgression": {
-          "ownerInstruction": "Fix them all, please. Fix them all. Don't assume that you will have the computer open because I'm going to step away so it will lock on its own. Fix them all and then we'll leave it at that for now, please.",
-          "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-06-readiness-fixes.txt",
-          "ownerEvidenceSha256": "f701e344e6b4162601d3afde807624bee4b13e8382b95f79c338b8b31e2c4040",
+          "ownerInstruction": "This is happening every fucking set log and then it works on the second attempt! It\u2019s fucking annoying and I know for a fact it\u2019s fucking bullshit! I WANT IT FIXED AJD OUSHED IN THIS FUCKING RUN!",
+          "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-08-set-save-recovery.txt",
+          "ownerEvidenceSha256": "af0b2aa0fa71dcd2196aa8da1ebdfe8db870e3259ea76d24f66f041e9a15359c",
           "before": "86156c699fba0f30fca2e296d153e1c4a38e0da356207b953668bec3bb778b29",
-          "after": "5b4f45da4bcd443d6b478f74d004bebec810db78cb3964e53cafdc8dcd6b01ec",
-          "reason": "Preserve every identical shipped compact Logger/zero-load/PR-rest patch and pending Cable code; add only canonical Education hints and Draft unavailable explanations/Session Workspace copy from the owner readiness request. This is DEV-only, not publication authorization.",
+          "after": "4a02944b421d6356759a8d8bcde79cac11e55eb2fdb90e6d3e8ed0ea8559238d",
+          "reason": "Exact owner-requested canonical Set save connection recovery. Preserve the complete verified current product, durable Set identity and deferred Cable boundary; add fault injection and bounded recovery without changing permission or equipment policy.",
           "changes": [
             {
               "before": "import { CompletedSessionCorrection } from '@/components/workout-logger/completed-session-correction';\nimport { SessionSetEntryContext } from '@/components/workout-logger/session-set-entry-context';\nimport { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator } from '@/components/workout-logger/session-v3-shell';\nimport { EquipmentHistoryEvidence } from '@/components/workout-logger/equipment-history-evidence';\nimport { SessionHistoryPeek } from '@/components/workout-logger/session-history-peek';\nimport { invalidateEvidenceReads } from '@/lib/evidence-read-cache';\nimport { sessionExecutionCapabilities } from '@/lib/session-logger-lifecycle';\nimport { registerFocusedSession } from '@/lib/session-logger-focus';\nimport { scheduleRestTimerEnd } from '@/lib/rest-timer-notification-scheduling';\nimport { shouldOfferRestAfterAcceptedSet } from '@/lib/set-rest-handoff';\nimport { ApprovedSubstitutionPicker } from '@/components/workout-logger/approved-substitution-picker';\n",
@@ -534,17 +534,25 @@
             {
               "before": "                        {identityPickerManufacturer.manufacturer?.display_name\n                          || 'Other'}\n                      </Text>\n                    </View>\n                    {identityPickerContinuation.kind !== 'evidence_correction' ? <TouchableOpacity\n                      accessibilityRole=\"button\" accessibilityLabel=\"Skip equipment details\"\n                      disabled={identityPickerLoading}\n                      onPress={() => identityPickerItem && void saveUnknownEquipment(identityPickerItem, identityPickerContinuation, false)}\n",
               "after": "                        {identityPickerManufacturer.manufacturer?.display_name\n                          || 'Other'}\n                      </Text>\n                    </View>\n                    {showEquipmentHistoryHint ? <EducationInlineHint feature=\"equipment-history\" title=\"See prior performance for this equipment.\" /> : null}\n                    {identityPickerContinuation.kind !== 'evidence_correction' ? <TouchableOpacity\n                      accessibilityRole=\"button\" accessibilityLabel=\"Skip equipment details\"\n                      disabled={identityPickerLoading}\n                      onPress={() => identityPickerItem && void saveUnknownEquipment(identityPickerItem, identityPickerContinuation, false)}\n"
+            },
+            {
+              "before": "import {\n  criticalMutationFailureMessage,\n  isApiRequestError,\n  shouldSurfaceRequestFailure,\n} from '@/lib/api-request-policy';\nimport {\n  createClientEventId,\n  createLifecycleTimingEvent,\n  createPerformedSetTiming,\n  discardPreparedSessionTiming,\n",
+              "after": "import {\n  criticalMutationFailureMessage,\n  isApiRequestError,\n  shouldSurfaceRequestFailure,\n} from '@/lib/api-request-policy';\nimport { recoverCanonicalSetSave } from '@/lib/canonical-set-save-recovery';\nimport {\n  createClientEventId,\n  createLifecycleTimingEvent,\n  createPerformedSetTiming,\n  discardPreparedSessionTiming,\n"
+            },
+            {
+              "before": "      onStarted: () => {\n        beginFeedbackSubmission(itemId);\n        setSavingItemId(itemId);\n        setError(null);\n      },\n      request: () => { if (executionScopeRef.current !== ownerAtDispatch) throw new Error('Session ownership changed.'); return request(); },\n      onAccepted: (json) => {\n        if (executionScopeRef.current !== ownerAtDispatch) return null;\n        if (!consumeSetResultOnce(attemptKey, clientSubmissionId, json)) {\n          feedbackAnalytics('recognition_replay_suppressed', {\n            set_log_id: Number(json?.set?.id || 0),\n",
+              "after": "      onStarted: () => {\n        beginFeedbackSubmission(itemId);\n        setSavingItemId(itemId);\n        setError(null);\n      },\n      request: () => recoverCanonicalSetSave({\n        clientSubmissionId,\n        request,\n        assertOwner: () => {\n          if (!screenMountedRef.current || executionScopeRef.current !== ownerAtDispatch) throw new Error('Session ownership changed.');\n        },\n        onRecovery: (attempt, failure) => feedbackAnalytics('set_save_transport_recovery', { attempt, failure }),\n      }),\n      onAccepted: (json) => {\n        if (executionScopeRef.current !== ownerAtDispatch) return null;\n        if (!consumeSetResultOnce(attemptKey, clientSubmissionId, json)) {\n          feedbackAnalytics('recognition_replay_suppressed', {\n            set_log_id: Number(json?.set?.id || 0),\n"
             }
           ]
         },
         "publicationProgression": {
-          "ownerInstruction": "Okay, forget about the canonical education and guidance. I don't give a fuck. Just, just, okay, update TestFlight to be up to date, please. And then after that, I want you to do a final go no-go against production. Give me a go or no-go to start building, and then I will do the build. You do not have that right to do the build. I will do it and monitor the build.",
-          "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-07-current-testflight.txt",
-          "ownerEvidenceSha256": "dcec7fe2ee580e86ccacb103792983058dee0bab6be2dd9a1d32138b130cef4c",
-          "reason": "Publish the exact reviewed cumulative source and actual human-approved art/crops; preserve historical pins, compatibility identity and deferred Cable backend boundary.",
+          "ownerInstruction": "This is happening every fucking set log and then it works on the second attempt! It\u2019s fucking annoying and I know for a fact it\u2019s fucking bullshit! I WANT IT FIXED AJD OUSHED IN THIS FUCKING RUN!",
+          "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-08-set-save-recovery.txt",
+          "ownerEvidenceSha256": "af0b2aa0fa71dcd2196aa8da1ebdfe8db870e3259ea76d24f66f041e9a15359c",
+          "reason": "Exact owner-requested canonical Set save connection recovery. Preserve the complete verified current product, durable Set identity and deferred Cable boundary; add fault injection and bounded recovery without changing permission or equipment policy.",
           "before": "e3d2bfb7652ac3501a47ad1707dbc3acf723e3387f96a9d8ffe4c41e3b6749b8",
-          "after": "3431ed1159040ef5b91f1a069f893e8f8213826e38f8e9fdb5461ded5ded6cc0",
-          "candidateSha256": "3431ed1159040ef5b91f1a069f893e8f8213826e38f8e9fdb5461ded5ded6cc0",
+          "after": "67db2fd8729de90011d80512fd0d26d0baa9465e67a3bb9ad2074787ef2dbe6d",
+          "candidateSha256": "67db2fd8729de90011d80512fd0d26d0baa9465e67a3bb9ad2074787ef2dbe6d",
           "changes": [
             {
               "before": "import { createLoggerJournal } from '@/lib/session-logger-journal';\nimport { CompletedSessionCorrection } from '@/components/workout-logger/completed-session-correction';\nimport { SessionSetEntryContext } from '@/components/workout-logger/session-set-entry-context';\nimport { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator } from '@/components/workout-logger/session-v3-shell';\nimport { EquipmentHistoryEvidence } from '@/components/workout-logger/equipment-history-evidence';\nimport { SessionHistoryPeek } from '@/components/workout-logger/session-history-peek';\nimport { invalidateEvidenceReads } from '@/lib/evidence-read-cache';\nimport { sessionExecutionCapabilities } from '@/lib/session-logger-lifecycle';\nimport { registerFocusedSession } from '@/lib/session-logger-focus';\nimport { scheduleRestTimerEnd } from '@/lib/rest-timer-notification-scheduling';\nimport { shouldOfferRestAfterAcceptedSet } from '@/lib/set-rest-handoff';\nimport { ApprovedSubstitutionPicker } from '@/components/workout-logger/approved-substitution-picker';\n\n",
@@ -585,6 +593,14 @@
             {
               "before": "                      <Text style={styles.equipmentVariantManufacturerName}>\n                        {identityPickerManufacturer.manufacturer?.display_name\n                          || 'Other'}\n                      </Text>\n                    </View>\n                    {identityPickerContinuation.kind !== 'evidence_correction' ? <TouchableOpacity\n                      accessibilityRole=\"button\" accessibilityLabel=\"Skip equipment details\"\n                      disabled={identityPickerLoading}\n                      onPress={() => identityPickerItem && void saveUnknownEquipment(identityPickerItem, identityPickerContinuation, false)}\n                      style={styles.identityPickerRow}>\n",
               "after": "                      <Text style={styles.equipmentVariantManufacturerName}>\n                        {identityPickerManufacturer.manufacturer?.display_name\n                          || 'Other'}\n                      </Text>\n                    </View>\n                    {showEquipmentHistoryHint ? <EducationInlineHint feature=\"equipment-history\" title=\"See prior performance for this equipment.\" /> : null}\n                    {identityPickerContinuation.kind !== 'evidence_correction' ? <TouchableOpacity\n                      accessibilityRole=\"button\" accessibilityLabel=\"Skip equipment details\"\n                      disabled={identityPickerLoading}\n                      onPress={() => identityPickerItem && void saveUnknownEquipment(identityPickerItem, identityPickerContinuation, false)}\n                      style={styles.identityPickerRow}>\n"
+            },
+            {
+              "before": "import {\n  criticalMutationFailureMessage,\n  isApiRequestError,\n  shouldSurfaceRequestFailure,\n} from '@/lib/api-request-policy';\nimport {\n  createClientEventId,\n  createLifecycleTimingEvent,\n  createPerformedSetTiming,\n  discardPreparedSessionTiming,\n",
+              "after": "import {\n  criticalMutationFailureMessage,\n  isApiRequestError,\n  shouldSurfaceRequestFailure,\n} from '@/lib/api-request-policy';\nimport { recoverCanonicalSetSave } from '@/lib/canonical-set-save-recovery';\nimport {\n  createClientEventId,\n  createLifecycleTimingEvent,\n  createPerformedSetTiming,\n  discardPreparedSessionTiming,\n"
+            },
+            {
+              "before": "      onStarted: () => {\n        beginFeedbackSubmission(itemId);\n        setSavingItemId(itemId);\n        setError(null);\n      },\n      request: () => { if (executionScopeRef.current !== ownerAtDispatch) throw new Error('Session ownership changed.'); return request(); },\n      onAccepted: (json) => {\n        if (executionScopeRef.current !== ownerAtDispatch) return null;\n        if (!consumeSetResultOnce(attemptKey, clientSubmissionId, json)) {\n          feedbackAnalytics('recognition_replay_suppressed', {\n            set_log_id: Number(json?.set?.id || 0),\n",
+              "after": "      onStarted: () => {\n        beginFeedbackSubmission(itemId);\n        setSavingItemId(itemId);\n        setError(null);\n      },\n      request: () => recoverCanonicalSetSave({\n        clientSubmissionId,\n        request,\n        assertOwner: () => {\n          if (!screenMountedRef.current || executionScopeRef.current !== ownerAtDispatch) throw new Error('Session ownership changed.');\n        },\n        onRecovery: (attempt, failure) => feedbackAnalytics('set_save_transport_recovery', { attempt, failure }),\n      }),\n      onAccepted: (json) => {\n        if (executionScopeRef.current !== ownerAtDispatch) return null;\n        if (!consumeSetResultOnce(attemptKey, clientSubmissionId, json)) {\n          feedbackAnalytics('recognition_replay_suppressed', {\n            set_log_id: Number(json?.set?.id || 0),\n"
             }
           ]
         }

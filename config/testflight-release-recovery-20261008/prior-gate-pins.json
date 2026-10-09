@@ -1,0 +1,25 @@
+{
+  "ownerEvidence": {
+    "ownerInstruction": "This is happening every fucking set log and then it works on the second attempt! It\u2019s fucking annoying and I know for a fact it\u2019s fucking bullshit! I WANT IT FIXED AJD OUSHED IN THIS FUCKING RUN!",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-08-set-save-recovery.txt",
+    "ownerEvidenceSha256": "af0b2aa0fa71dcd2196aa8da1ebdfe8db870e3259ea76d24f66f041e9a15359c",
+    "reason": "Exact owner-requested canonical Set save connection recovery. Preserve the complete verified current product, durable Set identity and deferred Cable boundary; add fault injection and bounded recovery without changing permission or equipment policy."
+  },
+  "before": {
+    "scripts/owner-directed-client-fix.mjs": "fb19f2e2d341125f0ac7173d7c3a1c260b32f738f5db49ebd41d89b433aebe9b",
+    "scripts/test-owner-directed-client-fix.mjs": "87dc8b75fcde81d2f9e22d7f8e85833dfcab4f27662383c939df913e921028ff",
+    "scripts/test-release-critical-invariants.mjs": "5567127eaa19230bb08c32e6a423e96bf9186655614a32534bff0f3e9708c849",
+    "scripts/testflight-cumulative-integrity.mjs": "9c7bfb4ca1d50f08790b5007546927bc10a84e248c15e3fd3794fabbd50ad617",
+    "config/protected-fix-manifest.json": "d284544ea1b563c29850808e1aa51efaebcb471ff6044d24d7ba322cec7eab26",
+    "scripts/test-canonical-set-save-recovery.mjs": null
+  },
+  "after": {
+    "scripts/owner-directed-client-fix.mjs": "680bec88c5fceb2407ef61cf984a4df8ae548a54f1cb057ebdcb99fe7c0ba325",
+    "scripts/test-owner-directed-client-fix.mjs": "2effe70e84dbbfc346e5e74932ff6054eda373899c3b7a82da6b7f01576ab0be",
+    "scripts/test-release-critical-invariants.mjs": "aa657deeaa1952537ca0afabcbed033be5863c0881fafd421943a1a6162c3f6e",
+    "scripts/testflight-cumulative-integrity.mjs": "5afb84cde3a03bfdc06fd5417a25188243589ccbc635f4efd6c1606ed7b1b0a8",
+    "config/protected-fix-manifest.json": "7c6955bdf126a1ef12316d25c5b11f93b66a83947bd32b444c5dfb6fc507e6fd",
+    "scripts/test-canonical-set-save-recovery.mjs": "6542eaadd486591968dadb1143768b56b773e7a5542b8b5822d7e5a63261c134"
+  },
+  "reason": "Reviewed additive fault-recovery contracts and an exact owner-authorized scope; prior protections and zero-load route remain enforced."
+}
