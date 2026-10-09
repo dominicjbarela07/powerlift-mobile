@@ -1,0 +1,39 @@
+{
+  "result": "PASS",
+  "candidateApplicationEquivalence": [
+    {
+      "root": "/Users/dominic/powerlifting_app/powerlift_mobile",
+      "files": 2766,
+      "productFingerprint": "eb0157e764eac8b17b87ebc69d6417e0b88a1a05a165cf014489af131e88227a"
+    },
+    {
+      "root": "/Users/dominic/powerlifting_app/powerlift_mobile_testflight",
+      "files": 2766,
+      "productFingerprint": "eb0157e764eac8b17b87ebc69d6417e0b88a1a05a165cf014489af131e88227a"
+    }
+  ],
+  "nativeConfig": {
+    "version": "3.0.0",
+    "runtimeVersion": "3.0.0",
+    "releaseTrack": "production3",
+    "publicationAuthorized": false,
+    "bundleIdentifier": "com.dominicbarela.strengthcoachui"
+  },
+  "production3Profile": {
+    "channel": "production-3-preparation",
+    "autoIncrement": true,
+    "env": {
+      "STRENGTH_LEDGER_RELEASE_TARGET": "production3",
+      "EXPO_PUBLIC_APPROVED_ART_CHANNEL": "production3",
+      "EXPO_PUBLIC_ART_RUNTIME_VERSION": "3.0.0",
+      "EXPO_PUBLIC_API_BASE": "https://app.strengthledger.fit"
+    },
+    "ios": {
+      "distribution": "store"
+    },
+    "android": {
+      "distribution": "store"
+    }
+  },
+  "nativeBuildStarted": false
+}

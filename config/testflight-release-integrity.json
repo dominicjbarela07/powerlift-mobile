@@ -157607,8 +157607,8 @@
     }
   ],
   "releaseGateFiles": {
-    "AGENTS.md": "a6548c6458f695b98f51b8569d116b1ba09d266b48a743a99d3ea214cabf7b7f",
-    "app.config.js": "063f497ab71e48b2b88cf13af0b8669da2e0458295f9733dfd1f89bc8d5b4861",
+    "AGENTS.md": "e1eb5ce01d1d01e755b3b4defacd7d5b2935b392ababca730e7788a9043c6681",
+    "app.config.js": "77a88d8b7fd4cc1d4932b68e44ddf53f3ace33639ffe4174db15a97acb4bbb93",
     "scripts/testflight-cumulative-integrity.mjs": "5afb84cde3a03bfdc06fd5417a25188243589ccbc635f4efd6c1606ed7b1b0a8",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
     "scripts/publish-validated-ios-ota.mjs": "98b02002cef545ffb906874242605f9da2b2caba3620004db755866408c4a811",
@@ -157618,7 +157618,7 @@
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
     "config/protected-fix-manifest.json": "7c6955bdf126a1ef12316d25c5b11f93b66a83947bd32b444c5dfb6fc507e6fd",
     "scripts/assert-no-dev-artwork-export.mjs": "610934d315a2f34c534e80545d7c8361fbad0110c313c48f3d9642f2c04a7c22",
-    "scripts/test-release-critical-invariants.mjs": "aa657deeaa1952537ca0afabcbed033be5863c0881fafd421943a1a6162c3f6e",
+    "scripts/test-release-critical-invariants.mjs": "7c5df99458cc99e910a03b4f4eecdc01945859b70b0637a1630e144b68025522",
     "scripts/test-release-source-lineage.mjs": "e7850ec385320f620ebc156dfa0dea62934d87114108c0ccf978ad03f53042b6",
     "scripts/release-holdback-policy.mjs": "3ff3d255b82fa2cd583f66da1656217c13ba959cc72fe65eb0dd50d21d4fc148",
     "package.json": "96db5a8e29d0378d109481ee102c60a7dd313b08e998cae622b427212e5da1eb",
@@ -157660,7 +157660,7 @@
     "config/testflight-release-owner-evidence/2026-10-05-machine-pr-manufacturer-isolation.txt": "9871d66a252755c0c8db846115c63f2d7750200d62e3980724920e98975b824c",
     "scripts/reviewed-release-progression.mjs": "81a2d1f41e76551a60a2d01ae90158f14558506a7e73d27d72e217c86ef81ca4",
     "scripts/test-reviewed-release-progression.mjs": "4491b49ad0d07741f257865f70624b238fdea680e750c6fccfc1067ccdd96cf9",
-    "scripts/test-production3-art-policy.mjs": "3e5c45025c5ffa0d1df046b3e7ff22481c80be9d2bcf3bcb1907432957cfb5d1",
+    "scripts/test-production3-art-policy.mjs": "7512e87bbdb29fa458e0a00f92e5bcdf0a9108c0bbaca269daed7e6db40a1d07",
     "scripts/test-mobile3-visual-policy.mjs": "3ac446c081323630913ca78271167b016c30ca22260608bfcb69802ab6ada016",
     "scripts/audit-ui-constitution.js": "c14e4631723433c5528131adc17c2f376dbef912a6288cd2575c2a10c460024b",
     "scripts/audit-transparent-screen-roots.js": "2cb55a6dc2987baa0693dfa6325437c50c1dc1057bd8817fbdadde8defc88518",
@@ -157670,7 +157670,10 @@
     "scripts/education-image-transport.mjs": "68d37ed07669d53b0395fbe7424818a4ddec570acb94cca0d2d49f4008f2a683",
     "scripts/generate-education-image-transport.mjs": "e731bee3e877638bc571a9393b8d671ec2af4c847d6d85cec731e71bbd774844",
     "scripts/test-education-image-transport.mjs": "0591d7396e3300e4f354b20053b819224e1aeb2af0ed0ccd5bc0e88ea3dc39dc",
-    "scripts/test-canonical-set-save-recovery.mjs": "6542eaadd486591968dadb1143768b56b773e7a5542b8b5822d7e5a63261c134"
+    "scripts/test-canonical-set-save-recovery.mjs": "6542eaadd486591968dadb1143768b56b773e7a5542b8b5822d7e5a63261c134",
+    ".easignore": "9f114535d1a3ac801019e14389aaca8710b34c602bf00995effe815c26a50846",
+    "scripts/native-build-upload-policy.cjs": "0886edd1b00f77aa122848cc96176ed22b053f53d5393e87cf9081456ff3ffde",
+    "scripts/test-native-build-upload-policy.mjs": "3016ed47dd9ef99eff2382e2d6dbe2581b38804945f6999c24d55ab9517b40ff"
   },
   "historicalRemovalAuthorizations": [
     {

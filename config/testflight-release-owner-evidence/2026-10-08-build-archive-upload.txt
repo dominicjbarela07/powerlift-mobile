@@ -1,0 +1,11 @@
+Retained owner report, October 8, 2026:
+WTF!
+
+eas build --platform ios --profile production3-preparation
+✔ Compressed project files 2m 56s (8.1 GB)
+Failed to upload the project tarball to EAS Build
+Reason: Project archive is too big. Maximum allowed size is 2.0 GB.
+
+Owner follow-up: Is it due to all the assets?
+
+Existing owner instructions: The owner will start and monitor the build. The agent does not have the right to start it. Preserve approved artwork and cumulative TestFlight fixes; exclude unnecessary upload inputs without deleting original source or evidence.
