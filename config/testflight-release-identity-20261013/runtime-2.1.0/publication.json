@@ -1,0 +1,16 @@
+{
+  "id": "01a13726-69c1-7db2-9f28-5dcaa53a47b6",
+  "createdAt": "2026-10-13T21:23:46.753Z",
+  "group": "4ea6350e-d976-479d-9e10-eb4fa0c2cbbf",
+  "branch": "testflight",
+  "message": "Correct accessory taxonomy/artwork and Copy Week Swap; preserve approved imagery and cumulative fixes",
+  "runtimeVersion": "2.1.0",
+  "platform": "ios",
+  "manifestPermalink": "https://u.expo.dev/update/01a13726-69c1-7db2-9f28-5dcaa53a47b6",
+  "isRollBackToEmbedded": false,
+  "gitCommitHash": "25483f603512a0d9d0d291ffa904e67141622236",
+  "sourceAvailable": true,
+  "recoverableRefs": [
+    "refs/archive/testflight-published/01a13726-69c1-7db2-9f28-5dcaa53a47b6"
+  ]
+}

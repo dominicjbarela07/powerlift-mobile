@@ -1,0 +1,39 @@
+{
+  "scope": "canonical-copied-week-identity-20261013",
+  "productFingerprint": "1e5292ceb1eb7f760eaf28966a20ee9b162462d6cba4c04527aa9d9914c85aef",
+  "completedAt": "2026-10-13T21:09:46.453Z",
+  "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+  "runtimeVerified": false,
+  "contracts": [
+    {
+      "file": "scripts/test-active-session-hot-swap.mjs",
+      "sourceSha256": "4c4fefa45c9db444e66f09c00e86d5a087e8bf7a25946de4bbff25f76a492241",
+      "result": "PASS",
+      "output": "PASS active Session Hot Swap: canonical preflight, X→Y, reload, no-op, independent conflict, lost response, retry, visible error, and duplicate-submit guard\n"
+    },
+    {
+      "file": "scripts/test-active-session-mutation-backend.mjs",
+      "sourceSha256": "61b3ca98945fd76aaacb54b36c4926a88568066c3eb7759c0d08539cebc9da36",
+      "result": "PASS",
+      "output": "PASS active Session mutation backend: Ran 55 tests in 33.899s OK\n"
+    },
+    {
+      "file": "scripts/test-governed-movement-art-taxonomy.mjs",
+      "sourceSha256": "474fd1f0bb9f5b11f6f4b797ee35a178201bae69ff3b9c647a1a0b6cf5f95370",
+      "result": "PASS",
+      "output": "Frozen TestFlight catalog matches published release 02b5e8cae883fc8115b07755484ee12679630265\nGoverned movement art: 499 definitions, 6084 lifecycle contracts; {\"approved_exact\":468,\"anatomy\":0,\"core_art\":31,\"unresolved\":0} PASS\n"
+    },
+    {
+      "file": "scripts/test-private-movement-identity-contract.mjs",
+      "sourceSha256": "7abcd5b6498f7e1b973d9d35dc4ab52b25311058de6fbcea48eeefd6471f8748",
+      "result": "PASS",
+      "output": "PASS private movement identity: 998 initial/current collisions; artwork, equipment, history and title retain the exact server subject without borrowing public art.\n"
+    },
+    {
+      "file": "scripts/test-single-current-movement-id.mjs",
+      "sourceSha256": "ad9b81603d90bb4f4d4b00ec03c79bd3c6a5206a95de22d4ac9273e3bd4d4353",
+      "result": "PASS",
+      "output": "Single current ID: 499 governed definitions; initial/Swap, stale aliases, real Swap, anatomy, equipment, history, immutable evidence PASS.\n"
+    }
+  ]
+}
