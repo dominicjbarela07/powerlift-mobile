@@ -77,8 +77,8 @@ const frozenCatalogRef=JSON.parse(fs.readFileSync(path.join(root,'config/testfli
 const run = (command, commandArgs, options = {}) => execFileSync(command, commandArgs, {
   cwd: root,
   env: { ...process.env, STRENGTH_LEDGER_BACKEND_ROOT: process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev', STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:governedProjection?frozenCatalogRef:undefined,
-    ...(production3ClientFix ? {STRENGTH_LEDGER_RELEASE_TARGET:'production3',EXPO_PUBLIC_ART_RUNTIME_VERSION:'3.0.0'} : {}),
-    EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: production3ClientFix ? 'production3' : branch === 'testflight' ? 'testflight' : 'disabled' },
+    ...(production3ClientFix && !options.contracts ? {STRENGTH_LEDGER_RELEASE_TARGET:'production3',EXPO_PUBLIC_ART_RUNTIME_VERSION:'3.0.0'} : options.contracts ? {STRENGTH_LEDGER_RELEASE_TARGET:undefined,EXPO_PUBLIC_ART_RUNTIME_VERSION:undefined} : {}),
+    EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: production3ClientFix && !options.contracts ? 'production3' : branch === 'testflight' ? 'testflight' : 'disabled' },
   encoding: 'utf8',
   maxBuffer: 64 * 1024 * 1024,
   stdio: options.capture ? ['ignore', 'pipe', 'inherit'] : 'inherit',
@@ -102,8 +102,8 @@ if (governedProjection) {
     }
   }
 }
-run('npm', ['run', 'test:accepted-behavior-contracts']);
-run('npm', ['run', 'test:release-critical-invariants']);
+run('npm', ['run', 'test:accepted-behavior-contracts'], {contracts:true});
+run('npm', ['run', 'test:release-critical-invariants'], {contracts:true});
 run('npx', ['tsc','--noEmit']);
 run(process.execPath, ['scripts/test-testflight-source-parity.mjs', '--release-projection', '.']);
 
