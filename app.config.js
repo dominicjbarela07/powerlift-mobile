@@ -10,6 +10,9 @@ if (process.env.STRENGTH_LEDGER_RELEASE_TARGET === 'production3') {
   expo.version = '3.0.0';
   expo.runtimeVersion = '3.0.0';
   expo.extra = { ...expo.extra, releaseTrack: 'production3', publicationAuthorized: false };
+  // Android 3.0 uses the owner-provided Firebase app; Expo's native plugins
+  // copy its public config and apply Google Services during Android prebuild.
+  expo.android = { ...expo.android, googleServicesFile: './config/android/google-services.json' };
   // Direct owner-started EAS builds must reject oversized/unsafe upload inputs.
   require('./scripts/native-build-upload-policy.cjs').assertNativeBuildUploadPolicy(__dirname);
 } else if (process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'production3'

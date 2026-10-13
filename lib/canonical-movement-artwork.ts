@@ -34,8 +34,8 @@ export function resolveCanonicalMovementArtwork(
   }
   if (!subject.primaryMuscleGroup) return { kind: 'neutral', reason: 'missing_governed_taxonomy' };
   const id = subject.canonicalIdentityId;
-  const active = id ? CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES] : null;
-  const registered = active || (id ? RETIRED_ACCESSORY_ARTWORK_IDENTITIES[id as keyof typeof RETIRED_ACCESSORY_ARTWORK_IDENTITIES] : null);
+  const active = id && !subject.privateDefinition ? CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES] : null;
+  const registered = active || (id && !subject.privateDefinition ? RETIRED_ACCESSORY_ARTWORK_IDENTITIES[id as keyof typeof RETIRED_ACCESSORY_ARTWORK_IDENTITIES] : null);
   // A contradiction stays closed. An absent exact-art key does not erase known taxonomy.
   if ((registered && subject.canonicalKey && subject.canonicalKey !== registered.key)
     || (!registered && id && REGISTERED_ACCESSORY_ARTWORK_KEYS.has(subject.canonicalKey || ''))) {

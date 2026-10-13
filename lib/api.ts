@@ -164,6 +164,7 @@ function mobileAppVersionHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     'X-Strength-Ledger-Platform': Platform.OS,
     'X-Strength-Ledger-Volume-Landmarks': '2',
+    'X-Strength-Ledger-Current-Movement-Contract': '1',
   };
   if (appVersion) headers['X-Strength-Ledger-App-Version'] = String(appVersion);
   if (buildVersion) headers['X-Strength-Ledger-Build'] = String(buildVersion);

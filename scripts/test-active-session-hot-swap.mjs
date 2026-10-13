@@ -69,6 +69,20 @@ await assert.rejects(executeActiveSessionHotSwap(args(independent.request)), err
   error instanceof HotSwapError && error.code === 'independent_change');
 assert.equal(independent.writes, 0);
 
+// Missing identity is not an independently changed movement. In particular,
+// Number(null) === 0 must never become a valid optimistic-concurrency token.
+for (const missing of [null, undefined, 0, -1, '']) {
+  const unresolved = makeServer({ initial: missing });
+  const missingIdentityRequest = async (path, options) => {
+    const response = await unresolved.request(path, options);
+    if (options.method === 'GET') response.json.workout.accessory_groups[0].items[0].movement_definition_id = missing;
+    return response;
+  };
+  await assert.rejects(executeActiveSessionHotSwap(args(missingIdentityRequest)), error =>
+    error instanceof HotSwapError && error.code === 'item_missing');
+  assert.equal(unresolved.writes, 0);
+}
+
 // A same-client accepted write whose response was lost is recovered from the
 // authoritative reload. Retrying does not create a second mutation.
 const lost = makeServer({ lostResponse: true });

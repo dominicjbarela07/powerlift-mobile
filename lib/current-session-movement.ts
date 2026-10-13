@@ -8,8 +8,12 @@ const byKey = new Map(definitions.map(row => [row.key, row]));
 const byCoreId = new Map(definitions.filter(row => row.kind === 'core').map(row => [row.core_movement_definition_id, row]));
 const id = (value: unknown): number | null => (typeof value === 'number' || typeof value === 'string')
   && Number.isInteger(Number(value)) && Number(value) > 0 ? Number(value) : null;
+/** Private server IDs are not allocated by the bundled public catalog. */
+export const isPrivateMovementDefinition = (ref?: Row | null) => ref?.kind === 'custom'
+  && ['coach', 'athlete'].includes(ref?.ownership_scope)
+  && typeof ref?.key === 'string' && Boolean(ref.key.trim());
 const equipmentOnly = (ref?: Row | null) => String(ref?.key || '').startsWith('machine_equipment_')
-  || Boolean(ref?.manufacturer?.id && ref?.implementation_key);
+  || (!isPrivateMovementDefinition(ref) && Boolean(ref?.manufacturer?.id && ref?.implementation_key));
 
 /** Decode the old wire protocol once. These fields never compete in current state. */
 function decodeLegacyMovementId(row: Row): number | null {
@@ -18,7 +22,7 @@ function decodeLegacyMovementId(row: Row): number | null {
   if (new Set(claims).size > 1) return null;
   for (const ref of [row.movement_identity, row.effective_movement_identity, row.performed_canonical_movement_identity]) {
     const known = byId.get(id(ref?.id) || -1);
-    if (known && ref?.key && ref.key !== known.key) return null;
+    if (known && ref?.key && ref.key !== known.key && !isPrivateMovementDefinition(ref)) return null;
   }
   const scalar = id(row.effective_movement_definition_id) || id(row.performed_canonical_movement_definition_id);
   const refs = [row.effective_movement_identity, row.performed_canonical_movement_identity,
@@ -42,16 +46,23 @@ function decodeLegacyMovementId(row: Row): number | null {
 export function normalizeCurrentWorkoutItem<T extends object>(input: T) {
   const row = input as Row;
   const currentId = row.movement_identity_contract === 1 ? id(row.movement_definition_id) : decodeLegacyMovementId(row);
-  const registered = currentId ? byId.get(currentId) : null;
   const refs = [row.movement_identity, row.effective_movement_identity, row.performed_canonical_movement_identity,
     row.performed_movement_identity, row.legacy?.effective_movement_identity];
-  const matching = refs.filter(ref => ref && id(ref.id) === currentId && !equipmentOnly(ref));
+  const currentReference = refs.find(ref => ref && id(ref.id) === currentId && !equipmentOnly(ref));
+  const privateDefinition = isPrivateMovementDefinition(currentReference) ? currentReference : null;
+  const registered = currentId && !privateDefinition ? byId.get(currentId) : null;
+  const matching = refs.filter(ref => ref && id(ref.id) === currentId && !equipmentOnly(ref)
+    && (!currentReference?.key || !ref.key || ref.key === currentReference.key));
   const identity: Row | null = currentId ? { ...registered, ...Object.assign({}, ...matching.reverse()), id: currentId } : null;
   if (identity && registered) {
     for (const [key, value] of Object.entries(registered)) if (identity[key] == null) identity[key] = value;
     identity.key = registered.key; // Canonical ID owns its key, regardless of stale presentation data.
   }
-  const coreId = id(identity?.core_movement_definition_id);
+  if (identity && privateDefinition) {
+    identity.core_movement_definition_id = null;
+    identity.core_kind = null;
+  }
+  const coreId = privateDefinition ? null : id(identity?.core_movement_definition_id);
   const oldCore = [row.core_movement, row.performed_core_movement].find(ref => id(ref?.id) === coreId);
   const core = coreId ? { ...identity, ...oldCore, id: coreId, kind: registered?.core_kind || oldCore?.kind } : null;
   return {

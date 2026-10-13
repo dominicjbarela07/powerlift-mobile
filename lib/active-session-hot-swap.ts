@@ -75,7 +75,7 @@ export async function executeActiveSessionHotSwap(input: {
       throw new HotSwapError('Could not verify this Session. Try again.', 'read_failed');
     }
     const item = currentItem(session, itemId);
-    if (!item || !Number.isInteger(Number(item.movement_definition_id))) {
+    if (!item || !Number.isInteger(Number(item.movement_definition_id)) || Number(item.movement_definition_id) <= 0) {
       throw new HotSwapError('Could not verify this movement. Try again.', 'item_missing');
     }
     if (item.set_logs?.length) {
