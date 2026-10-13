@@ -158039,11 +158039,11 @@
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
-        "sha256": "67e1837b231f2a94a5ad9700ad1042e8f2bcab34396a87603d8dc3b973d0b437"
+        "sha256": "b1eed6055ace0b4890c6a602da4ef7a382e6f68f1f3b61592856da63b16eedd7"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
-        "sha256": "7a3bc11343c5fbc1dddd44f22e430cbcfe0a17a8a8643f403f3fc9b8d9a3153a"
+        "sha256": "a9418ba03c6d9204a7e729a5ee837b23fb8010f6da789d8b7c42770da4d46bb1"
       }
     ]
   },
@@ -161325,5 +161325,20 @@
       "path": "config/testflight-release-identity-20261013/native-channel-delivery.json",
       "sha256": "a70b0d838eae61dd2aafb3cde2a968e1c4316b111b09f43ce813b74b4aa6313b"
     }
-  }
+  },
+  "ownerIncidentDispositions": [
+    {
+      "status": "CLOSED_BY_OWNER",
+      "date": "2026-10-13",
+      "ownerInstruction": "For now you can close that. I'll reopen it if I fucking see the issue again. Can you please go back to the storyboard stuff? Give me the link for that.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-13-owner-close.txt",
+      "ownerEvidenceSha256": "3c8046cda1687010c5b311525fe9a748391fb72a8085abc6a3c7d5569d0635f7",
+      "scope": "October 13 copied-Week / machine accessory identity and false Swap incident",
+      "reopenOnRecurrence": true,
+      "regressionProtectionsRetained": true,
+      "deviceRetestPerformed": false,
+      "historicalLiveRowAuditCompleted": false,
+      "meaning": "Owner-directed incident disposition. Retain measured proof gaps and permanent failure controls; do not relabel unperformed validation as PASS or unknown counts as zero."
+    }
+  ]
 }
