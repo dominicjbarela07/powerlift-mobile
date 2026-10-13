@@ -157684,8 +157684,8 @@
     }
   ],
   "releaseGateFiles": {
-    "AGENTS.md": "e1eb5ce01d1d01e755b3b4defacd7d5b2935b392ababca730e7788a9043c6681",
-    "app.config.js": "77a88d8b7fd4cc1d4932b68e44ddf53f3ace33639ffe4174db15a97acb4bbb93",
+    "AGENTS.md": "d89f18cf4322d3c2bff01962ab42ca50e41e5e4d264034deebdea1dfcdea92c2",
+    "app.config.js": "53dbaa252bd5af0dfad206be4c8dd0f2939b8615cd0b57e80450c45efb30a859",
     "scripts/testflight-cumulative-integrity.mjs": "5afb84cde3a03bfdc06fd5417a25188243589ccbc635f4efd6c1606ed7b1b0a8",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
     "scripts/publish-validated-ios-ota.mjs": "8cfec98de1f1f192f3f3933dc28b9a9aa9f75cf82a331e30af2163711c9a4526",
@@ -157724,7 +157724,7 @@
     "scripts/test-cable-brand-equipment-api.mjs": "71889a55559cfd1dc43a5817b0b1ac8bd0c022498e6c30d46ff161ab71949dbc",
     "docs/CABLE_BRAND_EQUIPMENT.md": "0289f45e3859f993ccce52a2ffca383f484f3899c61224179813a6363c151c21",
     "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt": "69f1ba6ca417408f3e0a5cada3f37bca5fee5f1c26ece4443bec9d855fc8cb9b",
-    "scripts/owner-directed-client-fix.mjs": "4eab2d522a8df90a1c37a3218bb8385bbe8784d5a7620cda0503be93d9f536c9",
+    "scripts/owner-directed-client-fix.mjs": "298f42b177a2af43317a3ae7368287ffbaed8617cd2959628c9123c47050963a",
     "scripts/test-owner-directed-client-fix.mjs": "2effe70e84dbbfc346e5e74932ff6054eda373899c3b7a82da6b7f01576ab0be",
     "scripts/test-zero-load-edit-api.mjs": "a19f2b1b7d6b0ad2335f8e3668657a1a74675ca14d14ba8bf13616b16f3dbc2a",
     "scripts/test-zero-load-edit-set.mjs": "6187f4a68b57230b2fb86f3702e2c89d0f704394f1eef200db689f66cec6e250",
@@ -157754,7 +157754,7 @@
     "scripts/assert-ota-native-compatibility.mjs": "8236db7138e9f28be680575774e75e57f9d17bd159cd3e9892f2b4234c29b9e2",
     "scripts/production3-client-fix-policy.mjs": "a6cb0f4accfea8bc8186b48dcc2df7deb8fabe040c072dd1bf80bfe77469484e",
     "scripts/test-production3-client-fix-policy.mjs": "adae687d7d59d7ddf7c7a9678a509a17adc3f1d4704691e2e458c5f0e4ef42e2",
-    "scripts/test-copied-week-release-scope.mjs": "62bb3dd386d2a7b0c0a5748962097b61e96786718d60100a2c49a891891e701b",
+    "scripts/test-copied-week-release-scope.mjs": "f7d6b1f01fc9da815771b79ad67dc94fd9a030c6152b912e4d74abbe48cd01d6",
     "scripts/test-private-movement-identity-contract.mjs": "7abcd5b6498f7e1b973d9d35dc4ab52b25311058de6fbcea48eeefd6471f8748",
     "scripts/test-active-session-hot-swap.mjs": "4c4fefa45c9db444e66f09c00e86d5a087e8bf7a25946de4bbff25f76a492241",
     "scripts/test-active-session-mutation-backend.mjs": "61b3ca98945fd76aaacb54b36c4926a88568066c3eb7759c0d08539cebc9da36"
@@ -158114,7 +158114,7 @@
     "reason": "Restore correct private machine accessory identity, triceps anatomy and equipment/history; reject false Swap conflicts and unresolved copies. Preserve all shipped fixes, imagery, schema and frozen 2.0.2; require receiver capability before modern wire projection.",
     "scope": "canonical-copied-week-identity-20261013",
     "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
-    "productFingerprint": "e20451233334b30b45312dab864955182fc039135d5e41dae7902f861512da58",
+    "productFingerprint": "1e5292ceb1eb7f760eaf28966a20ee9b162462d6cba4c04527aa9d9914c85aef",
     "baselineUpdateId": "01a11e0b-bea2-753f-b8a5-acb0b9554d90",
     "baselineSourceSha": "b552c708298882f7f095e3adfe393c6c0a6cface",
     "baselineProductFingerprint": "eb0157e764eac8b17b87ebc69d6417e0b88a1a05a165cf014489af131e88227a",
@@ -158129,7 +158129,8 @@
       "lib/api.ts": "a1a8f79820234a02cd2c5e98876141686ee602c82bc9be0505fdbe100f785e8d",
       "lib/canonical-movement-art-subject.ts": "c65bd0c333c1b164da4969548245d2be2dc6925823d4c42564d095345d20eeef",
       "lib/canonical-movement-artwork.ts": "89fca6bbeee46bd39a9060565fa59df7c05da5dbffca282e0f4646d2787b4e58",
-      "lib/current-session-movement.ts": "7a7ea5260df9e3a148900f67e5dbc408801711a21a9580f8cf763a2f56838739"
+      "lib/current-session-movement.ts": "7a7ea5260df9e3a148900f67e5dbc408801711a21a9580f8cf763a2f56838739",
+      "config/android/google-services.json": "0b315eb3fb3be9513a42b1c2140245c0d670909208628db0152fffa35906f994"
     },
     "contracts": {
       "scripts/test-active-session-hot-swap.mjs": "4c4fefa45c9db444e66f09c00e86d5a087e8bf7a25946de4bbff25f76a492241",
@@ -158142,6 +158143,11 @@
     "backendDeploymentReceipt": {
       "path": "config/testflight-release-identity-20261013/backend-deployment.json",
       "sha256": "cb0f7a5af93d03caa1bdba16859c347b1c37bd05b7e1f962c6087d5f4528d3d1"
+    },
+    "preservedAndroidConfig": {
+      "sha256": "0b315eb3fb3be9513a42b1c2140245c0d670909208628db0152fffa35906f994",
+      "sourceCommit": "5ab55c77",
+      "reason": "Preserve owner-provided native Android Firebase configuration already committed in canonical DEV; iOS correction does not publish Android or build native binaries."
     }
   },
   "canonicalZeroLoadEdit": {
@@ -161099,6 +161105,30 @@
           "path": "config/protected-fix-manifest.json",
           "before": "7c6955bdf126a1ef12316d25c5b11f93b66a83947bd32b444c5dfb6fc507e6fd",
           "after": "37f18fcdcfedc8b4343e58d38e90ae623b427835fe8a97f6d0f9677d93ec404c"
+        },
+        {
+          "path": "AGENTS.md",
+          "before": "e1eb5ce01d1d01e755b3b4defacd7d5b2935b392ababca730e7788a9043c6681",
+          "after": "d89f18cf4322d3c2bff01962ab42ca50e41e5e4d264034deebdea1dfcdea92c2",
+          "reason": "Preserve the previously owner-authorized Android 3 configuration and its engineering guidance; keep iOS runtime, native dependency and full cumulative gates unchanged."
+        },
+        {
+          "path": "app.config.js",
+          "before": "77a88d8b7fd4cc1d4932b68e44ddf53f3ace33639ffe4174db15a97acb4bbb93",
+          "after": "53dbaa252bd5af0dfad206be4c8dd0f2939b8615cd0b57e80450c45efb30a859",
+          "reason": "Preserve the previously owner-authorized Android 3 configuration and its engineering guidance; keep iOS runtime, native dependency and full cumulative gates unchanged."
+        },
+        {
+          "path": "scripts/owner-directed-client-fix.mjs",
+          "before": "4eab2d522a8df90a1c37a3218bb8385bbe8784d5a7620cda0503be93d9f536c9",
+          "after": "298f42b177a2af43317a3ae7368287ffbaed8617cd2959628c9123c47050963a",
+          "reason": "Bounded complete cumulative source includes the existing owner-provided Android public Firebase config; no Android OTA or native build is authorized."
+        },
+        {
+          "path": "scripts/test-copied-week-release-scope.mjs",
+          "before": "62bb3dd386d2a7b0c0a5748962097b61e96786718d60100a2c49a891891e701b",
+          "after": "f7d6b1f01fc9da815771b79ad67dc94fd9a030c6152b912e4d74abbe48cd01d6",
+          "reason": "Bounded complete cumulative source includes the existing owner-provided Android public Firebase config; no Android OTA or native build is authorized."
         }
       ]
     }
