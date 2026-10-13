@@ -97,9 +97,14 @@ if (frozenTestFlightRef) {
   assert.equal(candidate.extra?.releaseTrack, 'testflight');
   assert.equal(candidate.version, released.version, 'frozen catalog is limited to the existing TestFlight runtime');
   const currentCatalog = fs.readFileSync('config/governed-movement-art-taxonomy.json', 'utf8');
-  const progression = JSON.parse(fs.readFileSync('config/protected-fix-manifest.json')).releaseHoldbacks.files.find(row => row.path === 'config/governed-movement-art-taxonomy.json')?.publicationProgression;
+  const holdbacks = JSON.parse(fs.readFileSync('config/protected-fix-manifest.json')).releaseHoldbacks;
+  const held = holdbacks.files.find(row => row.path === 'config/governed-movement-art-taxonomy.json');
+  const progression = held?.publicationProgression;
   if (progression) {
-    assert.equal(currentCatalog, applyPublicationProgression(baseline('config/governed-movement-art-taxonomy.json'), progression), 'current directory must equal only the exact owner-bound publication patch');
+    const originalCatalog = execFileSync('git', ['show', `${held.sourceCommit || holdbacks.sourceCommit}:config/governed-movement-art-taxonomy.json`], {encoding:'utf8'});
+    const reviewedCatalog = applyPublicationProgression(originalCatalog, progression);
+    assert.ok([originalCatalog,reviewedCatalog].includes(baseline('config/governed-movement-art-taxonomy.json')), 'frozen published catalog must be the original or the exact reviewed progression');
+    assert.equal(currentCatalog, reviewedCatalog, 'current directory must equal only the exact owner-bound publication patch');
     assertReviewedCatalog(process.cwd(), JSON.parse(fs.readFileSync('config/testflight-release-integrity.json')), JSON.parse(currentCatalog));
   } else assert.equal(currentCatalog, baseline('config/governed-movement-art-taxonomy.json'), 'targeted patch must preserve the published catalog byte-for-byte');
   console.log(`Frozen TestFlight catalog matches published release ${frozenTestFlightRef}`);
