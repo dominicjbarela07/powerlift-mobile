@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import { assertProduction3ClientFix } from './production3-client-fix-policy.mjs';
+const baselines=JSON.parse(fs.readFileSync('config/native-runtime-baselines.json'));
+const proof=JSON.parse(fs.readFileSync('config/testflight-release-identity-20261013/native-build35.json'));
+const input={branch:'production-3-preparation',scope:{scope:'canonical-copied-week-identity-20261013'},
+  baseline:baselines['3.0.0'],proof,packageLockSha256:crypto.createHash('sha256').update(fs.readFileSync('package-lock.json')).digest('hex')};
+assertProduction3ClientFix(input);
+for(const field of ['plugins','newArchEnabled','reactNativeDependencies','expoModules']) assert.deepEqual(baselines['3.0.0'][field],baselines['2.1.0'][field],`3.0 retains the audited ${field} graph`);
+for(const branch of ['production','main','testflight','production-3-unreviewed']) assert.throws(()=>assertProduction3ClientFix({...input,branch}));
+assert.throws(()=>assertProduction3ClientFix({...input,scope:{scope:'unrelated'}}));
+assert.throws(()=>assertProduction3ClientFix({...input,packageLockSha256:'changed'}));
+assert.throws(()=>assertProduction3ClientFix({...input,proof:{...proof,runtimeVersion:'2.0.2'}}));
+assert.throws(()=>assertProduction3ClientFix({...input,baseline:{...input.baseline,easBuildId:'invented'}}));
+const publisher=fs.readFileSync('scripts/publish-validated-ios-ota.mjs','utf8');
+assert.match(publisher,/includes\('production'\) && !production3ClientFix/);
+assert.match(publisher,/assertProduction3ClientFix/);
+assert.match(publisher,/if \(!clientFixRuntime\) throw/);
+assert.match(publisher,/if \(governedProjection\) \{[\s\S]*runPostReleaseGate/);
+console.log('PASS bounded 3.0 client correction: exact owner incident, actual existing native build/source, unchanged module graph, cumulative source/artifact gates; legacy Production, wrong runtime, forged build and changed dependencies reject.');

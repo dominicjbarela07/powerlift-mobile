@@ -8,6 +8,7 @@ import { assertProtectedArtifactAssets, protectedDeliveryHashes, sha256 } from '
 import { runDevSupersetGate, runPostReleaseGate, bindExportSource } from './verify-testflight-release-integrity.mjs';
 import {assertRegisteredPublicationWorktree,runReleaseWorktreeCloseout} from './worktree-release-closeout.mjs';
 import { assertEducationTransport, assertOtaAssetLimit } from './education-image-transport.mjs';
+import { assertProduction3ClientFix } from './production3-client-fix-policy.mjs';
 // Mandatory authority: backend docs/RELEASE_INVARIANTS.md; Gates A/B/C cannot be bypassed here.
 
 const root = process.cwd();
@@ -26,13 +27,30 @@ const restorationRuntime = args.includes('--owner-directed-restoration');
 const clientFixRuntime = args.includes('--owner-directed-client-fix');
 const loggerVisualRuntime = args.includes('--owner-directed-logger-visual');
 const reviewedRuntime = args.includes('--reviewed-cumulative-runtime');
+const production3ClientFix = args.includes('--production3-client-fix');
+const governedProjection = branch === 'testflight' || production3ClientFix;
 const nodeModules = path.join(root, 'node_modules');
 
-if (branch.toLowerCase().includes('production')) {
+if (branch.toLowerCase().includes('production') && !production3ClientFix) {
   throw new Error(
     'Production publication is blocked in the iOS-only publisher. '
     + 'Use scripts/eas-update-production.sh so shared releases target Android + iOS.',
   );
+}
+if (production3ClientFix) {
+  const state = JSON.parse(fs.readFileSync(path.join(root,'config/testflight-release-integrity.json')));
+  const nativeBaselines = JSON.parse(fs.readFileSync(path.join(root,'config/native-runtime-baselines.json')));
+  const nativeProofBytes = fs.readFileSync(path.join(root,'config/testflight-release-identity-20261013/native-build35.json'));
+  if (sha256(nativeProofBytes) !== nativeBaselines['3.0.0']?.sourceProofSha256) throw new Error('3.0 native source proof changed.');
+  const nativeProof = JSON.parse(nativeProofBytes);
+  const sourceConfig = JSON.parse(fs.readFileSync(path.join(root,'app.json'))).expo;
+  if (JSON.stringify(sourceConfig.plugins) !== JSON.stringify(nativeProof.nativePlugins) || sourceConfig.newArchEnabled !== nativeProof.newArchEnabled) throw new Error('3.0 native plugin configuration changed since the actual build source.');
+  const frozenNative = JSON.parse(execFileSync('git',['show',`${state.currentTestFlight.gitCommitHash}:config/native-runtime-baselines.json`],{cwd:root,encoding:'utf8'}));
+  if (JSON.stringify(nativeBaselines['2.1.0']) !== JSON.stringify(frozenNative['2.1.0'])) throw new Error('The existing TestFlight native baseline must remain unchanged.');
+  assertProduction3ClientFix({branch, scope:state.ownerDirectedClientFix,
+    baseline:nativeBaselines['3.0.0'], proof:JSON.parse(nativeProofBytes),
+    packageLockSha256:sha256(fs.readFileSync(path.join(root,'package-lock.json')))});
+  if (!clientFixRuntime) throw new Error('3.0 correction requires the same source-bound owner-directed incident contracts.');
 }
 
 if (!fs.existsSync(nodeModules)) {
@@ -58,14 +76,16 @@ const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'strength-ledger-ios-ota
 const frozenCatalogRef=JSON.parse(fs.readFileSync(path.join(root,'config/testflight-release-integrity.json'),'utf8')).previousTestFlight.gitCommitHash;
 const run = (command, commandArgs, options = {}) => execFileSync(command, commandArgs, {
   cwd: root,
-  env: { ...process.env, STRENGTH_LEDGER_BACKEND_ROOT: process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev', STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:branch==='testflight'?frozenCatalogRef:undefined, EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: branch === 'testflight' ? 'testflight' : 'disabled' },
+  env: { ...process.env, STRENGTH_LEDGER_BACKEND_ROOT: process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev', STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:governedProjection?frozenCatalogRef:undefined,
+    ...(production3ClientFix ? {STRENGTH_LEDGER_RELEASE_TARGET:'production3',EXPO_PUBLIC_ART_RUNTIME_VERSION:'3.0.0'} : {}),
+    EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: production3ClientFix ? 'production3' : branch === 'testflight' ? 'testflight' : 'disabled' },
   encoding: 'utf8',
   maxBuffer: 64 * 1024 * 1024,
   stdio: options.capture ? ['ignore', 'pipe', 'inherit'] : 'inherit',
 });
 
 let devSuperset;
-if (branch === 'testflight') {
+if (governedProjection) {
   if (!prepareOnly) assertRegisteredPublicationWorktree({root});
   if (JSON.parse(fs.readFileSync(path.join(root,'app.json'),'utf8')).expo.extra?.releaseTrack!=='testflight') throw new Error('TestFlight must use its explicit release projection');
   devSuperset = runDevSupersetGate({root,requireCleanCandidate:!prepareOnly});
@@ -96,12 +116,12 @@ run('npx', [
   outputDir,
   '--clear',
 ]);
-const exportSource=branch==='testflight'?bindExportSource(root,outputDir):null;
+const exportSource=governedProjection?bindExportSource(root,outputDir):null;
 run(process.execPath, ['scripts/assert-ota-route-bundle.mjs', outputDir]);
 run(process.execPath, ['scripts/assert-no-dev-artwork-export.mjs', outputDir]);
 run(process.execPath, ['scripts/assert-ota-native-compatibility.mjs']);
-if (branch === 'testflight') run(process.execPath, ['--import','tsx','scripts/test-pre-october-2-restoration.mjs','--export-dir',outputDir,'--output',path.join(outputDir,'release-movement-imagery.json')]);
-if (branch === 'testflight') {
+if (governedProjection) run(process.execPath, ['--import','tsx','scripts/test-pre-october-2-restoration.mjs','--export-dir',outputDir,'--output',path.join(outputDir,'release-movement-imagery.json')]);
+if (governedProjection) {
   const integrityArgs = ['scripts/testflight-cumulative-integrity.mjs', '--export-dir', outputDir];
   if (!prepareOnly) {
     if (!runtimeReceipt && !restorationRuntime && !clientFixRuntime && !reviewedRuntime) throw new Error('TestFlight publication blocked: actual runtime journey receipt or exact owner-directed validation scope is required.');
@@ -129,7 +149,7 @@ if (prepareOnly) {
   process.exit(0);
 }
 
-if (branch === 'testflight') {
+if (governedProjection) {
   const finalPreflight=runDevSupersetGate({root,requireCleanCandidate:true});
   if (!finalPreflight.pass || finalPreflight.candidate.sha!==exportSource.candidateSha || finalPreflight.candidateProductFingerprint!==exportSource.productFingerprint || finalPreflight.devProductFingerprint!==devSuperset.devProductFingerprint) throw new Error('Source changed during validation; release blocked until exact source is reconciled and exported again');
   const baseline=JSON.parse(fs.readFileSync(path.join(root,'config/testflight-release-integrity.json'),'utf8'));
@@ -153,12 +173,22 @@ const publishOutput = run('npx', [
   '--json',
 ], { capture: true });
 const [published] = JSON.parse(publishOutput);
-if (branch === 'testflight' && !published.gitCommitHash) {
+if (governedProjection && !published.gitCommitHash) {
   const details = JSON.parse(run('npx',['eas-cli','update:view',published.group,'--json'],{capture:true}));
   const update = (Array.isArray(details) ? details : details.updates || [details]).find(item=>item.id===published.id);
   if (!update?.gitCommitHash) throw new Error('Published source identity unavailable; release workflow incomplete');
   published.gitCommitHash = update.gitCommitHash;
 }
+if (governedProjection && (published.runtimeVersion !== (production3ClientFix ? '3.0.0' : '2.1.0') || published.platform !== 'ios')) {
+  throw new Error('Published correction has the wrong native runtime or platform.');
+}
+
+const channelDetails = JSON.parse(run('npx', ['eas-cli','channel:view',branch,'--json','--non-interactive'], {capture:true}));
+const channel = channelDetails.currentPage || channelDetails;
+if (channel.isPaused || channel.updateBranches?.length !== 1 || channel.updateBranches[0].name !== branch) {
+  throw new Error('Published correction channel must resolve unambiguously to the validated branch.');
+}
+fs.writeFileSync(path.join(outputDir,'release-channel.json'),JSON.stringify({channel:channel.name,branch:channel.updateBranches[0].name,paused:channel.isPaused,updateId:published.id,runtimeVersion:published.runtimeVersion},null,2));
 
 const manifestResponse = await fetch(published.manifestPermalink, {
   headers: {
@@ -195,10 +225,27 @@ if (!manifest || !extensions) {
   throw new Error('OTA published but its manifest or asset authorization was unreadable.');
 }
 
-if (branch === 'testflight') {
+if (governedProjection) {
   const baseline = JSON.parse(fs.readFileSync(path.join(root, 'config/testflight-release-integrity.json'), 'utf8'));
   assertProtectedArtifactAssets(protectedDeliveryHashes(root,baseline), manifest.assets.map(asset => asset.hash), baseline.assetRemovalAuthorizations);
 }
+
+if (manifest.id !== published.id || manifest.runtimeVersion !== published.runtimeVersion) throw new Error('Served manifest differs from the exact published correction.');
+const verifiedAssets = [];
+let assetCursor = 0;
+await Promise.all(Array.from({length:4}, async () => {
+  while (assetCursor < manifest.assets.length) {
+    const asset = manifest.assets[assetCursor++];
+    const auth = extensions.assetRequestHeaders?.[asset.key]?.authorization;
+    const response = await fetch(asset.url, {headers:auth ? {authorization:auth} : {}});
+    if (!response.ok) throw new Error(`Published asset unavailable: ${asset.key}, HTTP ${response.status}`);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    const hash = crypto.createHash('sha256').update(bytes).digest('base64url');
+    if (hash !== asset.hash) throw new Error(`Published asset bytes differ: ${asset.key}`);
+    verifiedAssets.push({key:asset.key,hash,bytes:bytes.length});
+  }
+}));
+fs.writeFileSync(path.join(outputDir,'release-asset-byte-audit.json'),JSON.stringify({pass:true,updateId:published.id,runtimeVersion:published.runtimeVersion,verified:verifiedAssets.length,missingOrCorrupt:0,assets:verifiedAssets},null,2));
 
 const launchAsset = manifest.launchAsset;
 const authorization = extensions.assetRequestHeaders?.[launchAsset.key]?.authorization;
@@ -218,7 +265,7 @@ if (!localBundle.equals(remoteBundle)) {
 
 const bundleSha256 = crypto.createHash('sha256').update(localBundle).digest('hex');
 assertEducationTransport(root, { bundle: remoteBundle });
-if (branch === 'testflight') {
+if (governedProjection) {
   const post = runPostReleaseGate({root,published,manifest,candidateSha:devSuperset.candidate.sha,devProductFingerprint:devSuperset.devProductFingerprint,validatedBundleSha256:bundleSha256,servedBundleSha256:sha256(remoteBundle),validatedAssetHashes:exportSource.assetHashes});
   fs.writeFileSync(path.join(outputDir,'release-gate-c.json'),JSON.stringify(post,null,2));
   console.log(`Gate C PASS: exact published artifact/source remains contained in DEV; receipt ${outputDir}/release-gate-c.json`);

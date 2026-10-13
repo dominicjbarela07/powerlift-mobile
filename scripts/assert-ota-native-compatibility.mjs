@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root = process.cwd();
 const appConfig = JSON.parse(fs.readFileSync(path.join(root, 'app.json'), 'utf8')).expo;
-const runtime = typeof appConfig.runtimeVersion === 'string'
+const runtime = process.env.STRENGTH_LEDGER_RELEASE_TARGET === 'production3' ? '3.0.0' : typeof appConfig.runtimeVersion === 'string'
   ? appConfig.runtimeVersion
   : appConfig.version;
 const baselines = JSON.parse(

@@ -8,7 +8,7 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'sl-identity-scope-'));
 try {
   const write = (name, value) => { const bytes = JSON.stringify(value); fs.writeFileSync(path.join(root, name), bytes); return {path:name,sha256:hash(bytes)}; };
-  const paths = ['config/protected-fix-manifest.json','lib/active-session-hot-swap.ts','lib/canonical-movement-art-subject.ts','lib/canonical-movement-artwork.ts','lib/current-session-movement.ts'];
+  const paths = ['config/native-runtime-baselines.json','config/protected-fix-manifest.json','lib/active-session-hot-swap.ts', 'lib/api.ts','lib/canonical-movement-art-subject.ts','lib/canonical-movement-artwork.ts','lib/current-session-movement.ts'];
   const baseline = Object.fromEntries([...paths,'assets/approved.png'].map(file=>[file, 'before-'+file]));
   const current = {id:'current-update',gitCommitHash:'current-source'};
   const baselineFingerprint = hash(JSON.stringify(Object.entries(baseline).sort(([a],[b])=>a.localeCompare(b))));
@@ -19,7 +19,7 @@ try {
   const scope = {scope:'canonical-copied-week-identity-20261013',baselineUpdateId:current.id,baselineSourceSha:current.gitCommitHash,
     baselineProductFingerprint:baselineFingerprint,baselineFiles:write('baseline.json',baseline)};
   const check = (candidate=files, s=scope, st=state)=>assertCopiedWeekIdentityBaseline({root,scope:s,state:st,files:candidate});
-  assert.equal(check().length,5);
+  assert.equal(check().length,7);
   assert.throws(()=>check({...files,'assets/approved.png':'replacement'}),/unrelated/);
   assert.throws(()=>check({...files,'lib/unrelated.ts':'new'}),/unrelated/);
   const missing={...files};delete missing['assets/approved.png'];assert.throws(()=>check(missing),/remove/);

@@ -11,7 +11,7 @@ const id = (value: unknown): number | null => (typeof value === 'number' || type
 /** Private server IDs are not allocated by the bundled public catalog. */
 export const isPrivateMovementDefinition = (ref?: Row | null) => ref?.kind === 'custom'
   && ['coach', 'athlete'].includes(ref?.ownership_scope)
-  && String(ref?.key || '').startsWith(`custom_${ref?.ownership_scope}_`);
+  && typeof ref?.key === 'string' && Boolean(ref.key.trim());
 const equipmentOnly = (ref?: Row | null) => String(ref?.key || '').startsWith('machine_equipment_')
   || (!isPrivateMovementDefinition(ref) && Boolean(ref?.manufacturer?.id && ref?.implementation_key));
 
@@ -58,7 +58,11 @@ export function normalizeCurrentWorkoutItem<T extends object>(input: T) {
     for (const [key, value] of Object.entries(registered)) if (identity[key] == null) identity[key] = value;
     identity.key = registered.key; // Canonical ID owns its key, regardless of stale presentation data.
   }
-  const coreId = id(identity?.core_movement_definition_id);
+  if (identity && privateDefinition) {
+    identity.core_movement_definition_id = null;
+    identity.core_kind = null;
+  }
+  const coreId = privateDefinition ? null : id(identity?.core_movement_definition_id);
   const oldCore = [row.core_movement, row.performed_core_movement].find(ref => id(ref?.id) === coreId);
   const core = coreId ? { ...identity, ...oldCore, id: coreId, kind: registered?.core_kind || oldCore?.kind } : null;
   return {

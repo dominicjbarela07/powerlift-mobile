@@ -44,7 +44,7 @@ export function assertCopiedWeekIdentityBaseline({root, scope, state, files}) {
   assert.equal(gate.candidateProductFingerprint, scope.baselineProductFingerprint);
   assert.deepEqual(Object.keys(baseline).filter(file => !files[file]), [], 'identity fix cannot remove product files');
   const changes = Object.entries(files).filter(([file, hash]) => baseline[file] !== hash).map(([path, after]) => ({path, after}));
-  assert.deepEqual(changes.map(row => row.path).sort(), ['config/protected-fix-manifest.json', 'lib/active-session-hot-swap.ts',
+  assert.deepEqual(changes.map(row => row.path).sort(), ['config/native-runtime-baselines.json', 'config/protected-fix-manifest.json', 'lib/active-session-hot-swap.ts', 'lib/api.ts',
     'lib/canonical-movement-art-subject.ts', 'lib/canonical-movement-artwork.ts', 'lib/current-session-movement.ts'], 'identity fix cannot include unrelated product changes');
   return changes;
 }

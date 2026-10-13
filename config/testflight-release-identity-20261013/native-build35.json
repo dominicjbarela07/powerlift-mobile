@@ -1,0 +1,52 @@
+{
+  "id": "22c6739e-8857-4478-a5d8-a2a21523ddb2",
+  "status": "FINISHED",
+  "platform": "IOS",
+  "appVersion": "3.0.0",
+  "appBuildVersion": "35",
+  "runtimeVersion": "3.0.0",
+  "channel": "production-3-preparation",
+  "buildProfile": "production3-preparation",
+  "gitCommitHash": "93cbf4ed9e223c7dae1588995ebb64bfbc46ffd9",
+  "sdkVersion": "54.0.0",
+  "createdAt": "2026-10-09T03:11:53.851Z",
+  "packageLockSha256": "1343e90757f22b5d2f2b6c9f21ca383a587770f3a68d83f0d60f8d1709ecccac",
+  "nativePlugins": [
+    "expo-router",
+    [
+      "expo-splash-screen",
+      {
+        "image": "./assets/images/splash-icon.png",
+        "imageWidth": 200,
+        "resizeMode": "contain",
+        "backgroundColor": "#020205",
+        "dark": {
+          "backgroundColor": "#000000"
+        }
+      }
+    ],
+    "expo-secure-store",
+    [
+      "expo-image-picker",
+      {
+        "photosPermission": "Strength Ledger needs photo library access so you can send progress photos in messages."
+      }
+    ],
+    "expo-video",
+    "expo-font",
+    "expo-web-browser",
+    [
+      "expo-audio",
+      {
+        "microphonePermission": false,
+        "recordAudioAndroid": false
+      }
+    ],
+    "expo-asset"
+  ],
+  "newArchEnabled": true,
+  "nativeGraphProof": "Exact actual EAS build source lockfile and native plugin/config parity; candidate autolinking must match the existing audited module graph.",
+  "ipaDownloaded": false,
+  "ipaDownloadStatus": "Artifact URL returned HTTP 403; no binary inspection claimed.",
+  "newNativeBuildStarted": false
+}
