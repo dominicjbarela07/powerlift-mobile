@@ -1,0 +1,63 @@
+{
+  "sourceSha": "8305117aa29dfcef81761b20d50ac664e94aebdc",
+  "liveVerified": true,
+  "verifiedAt": "2026-10-13T20:55:01.643303+00:00",
+  "health": {
+    "machine_first_baseline_recognized": false,
+    "manufacturers_isolated": true,
+    "migration_revisions": [
+      "f47a92b1c8d0"
+    ],
+    "minimum_delivery_client_version": "2.1.0",
+    "other_is_separate_equipment_context": true,
+    "policy_version": "accessory-exact-reps-equipment-isolated-v3",
+    "pr_comparison_scope": "canonical_movement_exact_equipment",
+    "ready": true,
+    "schema_fingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+    "source_sha": "8305117aa29dfcef81761b20d50ac664e94aebdc"
+  },
+  "gate": {
+    "pass": true,
+    "baselineSha": "91cc0a406a1cd024302b3b20b5ee357273b8b77b",
+    "candidateSha": "8305117aa29dfcef81761b20d50ac664e94aebdc",
+    "candidateTree": "23f2a043af635f11799ca4e7ed8b1a0f5a468ab8",
+    "schemaChanged": false,
+    "modelSha256": "996e4bdb7ce98cab1a24e15814195c9dc2c38fea3aa64e2e9288547022fdc403",
+    "frozenMobileBaselineSha256": "16db350a9bff4a0694d972fdc3801ee6e8a8782605a02fcef70824ed0343a12d",
+    "frozenClients": {
+      "ios": {
+        "source": "a5d56d2205f93ab6b00b3be0ca836d4235b82a57",
+        "update": "01a05051-47f5-7b6a-b930-b59c8d6a9248",
+        "launchAssetSha256": "4c2c1543d3fff0b9dc5a405b8f42bbc284c1c5130c80153138790ddce49079c3",
+        "apiContractSourceSha256": "7748f5c1d8eafa747212414dd4b1bb8d874009a72bc59e53662d27d63cfba405"
+      },
+      "android": {
+        "source": "3d5a38a22b893f67bfed0e7ee3d6e9a2c685ab95",
+        "update": "01a05c7f-48f2-701c-8968-1c619536f57e",
+        "launchAssetSha256": "d6f7b26b91b7c98752c3366e1d92a3184133d162b399bd9a4dc26e18d1b5360b",
+        "apiContractSourceSha256": "7748f5c1d8eafa747212414dd4b1bb8d874009a72bc59e53662d27d63cfba405"
+      }
+    },
+    "legacyResponsesIdentical": {
+      "ios": 104,
+      "android": 104
+    },
+    "legacyBreakingPermissionControlRejected": true,
+    "ownerPolicyAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 3,
+      "probeSha256": "4e80578545338622565a3d8b143cbc8762c2a4dd6cf6a9bc639bc1fbaa8a511b"
+    },
+    "currentSessionIdentityAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 5,
+      "probeSha256": "4d4bf27156b110fb501453f6fc84e4821b1a1ec73c63d25f7b1f2189283ebe16"
+    },
+    "logs": "/Users/dominic/powerlifting_app/.git/release-receipts/8305117aa29d-checks",
+    "liveDeploymentVerified": false
+  },
+  "ownerDeviceCaseObserved": false,
+  "dataMigrationPerformed": false
+}
