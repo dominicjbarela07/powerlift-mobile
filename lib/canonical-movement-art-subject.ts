@@ -1,4 +1,4 @@
-import { normalizeCurrentWorkoutItem } from './current-session-movement';
+import { isPrivateMovementDefinition, normalizeCurrentWorkoutItem } from './current-session-movement';
 import { governedAccessoryArtworkTaxonomy, governedCoreArtworkTaxonomy } from './governed-movement-art-taxonomy';
 import { normalizeWorkoutItemMovementReferences } from './workout-item-movement-references';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, RETIRED_ACCESSORY_ARTWORK_IDENTITIES } from './canonical-accessory-artwork-identities';
@@ -11,6 +11,7 @@ export type MovementArtDefinition = Readonly<{
   id?: number | null;
   key?: string | null;
   kind?: string | null;
+  ownership_scope?: string | null;
   identity_type?: string | null;
   family?: string | null;
   core_family?: string | null;
@@ -100,6 +101,7 @@ export type CanonicalMovementArtSubject = Readonly<{
   reason: MovementArtFailure | null;
   sessionItemId: number | null;
   evidenceId: number | null;
+  privateDefinition?: true;
 }>;
 
 export type MovementArtInput = CanonicalMovementArtworkInput | CanonicalMovementArtSubject;
@@ -250,9 +252,10 @@ export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | 
   }
   if (!identity || equipmentOnly(identity)) return fail('missing_canonical_identity');
   identityId = identityId || positiveId(identity.id);
-  const registeredTaxonomy = governedAccessoryArtworkTaxonomy(identityId);
+  const privateDefinition = isPrivateMovementDefinition(identity);
+  const registeredTaxonomy = privateDefinition ? null : governedAccessoryArtworkTaxonomy(identityId);
   if (registeredTaxonomy && identity.key && identity.key !== registeredTaxonomy.key) return fail('conflicting_canonical_identity');
-  const registered = identityId ? CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[identityId as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES]
+  const registered = identityId && !privateDefinition ? CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[identityId as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES]
     || RETIRED_ACCESSORY_ARTWORK_IDENTITIES[identityId as keyof typeof RETIRED_ACCESSORY_ARTWORK_IDENTITIES] : null;
   const muscles = taxonomy(identity);
   let taxonomySource: CanonicalMovementArtSubject['taxonomySource'] = muscles.primary ? 'identity' : null;
@@ -275,7 +278,7 @@ export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | 
   }
   // A generic row's key does not establish definition identity. Key-only recovery
   // is restricted to explicitly typed definition/measurement/legacy references.
-  const catalog = identityId || source !== 'governed_taxonomy'
+  const catalog = !privateDefinition && (identityId || source !== 'governed_taxonomy')
     ? governedAccessoryArtworkTaxonomy(identityId, identity.key) : null;
   if (catalog) {
     if (!identityId) identityId = catalog.id;
@@ -293,6 +296,7 @@ export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | 
     taxonomySource = 'catalog';
   }
   return { ...base, domain: 'accessory', canonicalIdentityId: identityId, canonicalKey: identity.key || null, taxonomySource,
+    ...(privateDefinition ? { privateDefinition: true as const } : {}),
     performedMovementDefinitionId: ['performed_evidence', 'performed_canonical', 'performed_movement'].includes(source) ? identityId : base.performedMovementDefinitionId,
     family: identity.family || null, primaryMuscleGroup: muscles.primary, secondaryMuscleGroups: muscles.secondary,
     equipmentType: identity.equipment_type || row.measurement?.equipment_type || null, source,
