@@ -9,6 +9,7 @@ const sharedRoot = backendRoot.includes(`${path.sep}.worktrees${path.sep}`)
 const python = path.join(sharedRoot, 'venv', 'bin', 'python');
 assert.ok(fs.existsSync(python), 'the canonical backend test runtime is required');
 const suites = [
+  'tests.test_copied_week_current_identity',
   'tests.test_live_swap_copy_final_composition',
   'tests.test_in_session_accessory_canonical_swap',
   'tests.test_active_session_composition',
