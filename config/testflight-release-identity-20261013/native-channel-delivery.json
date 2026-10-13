@@ -1,0 +1,24 @@
+[
+  {
+    "pass": true,
+    "checkedAt": "2026-10-13T21:25:23.645Z",
+    "nativeUpdateEndpoint": "https://u.expo.dev/7afb1a4b-46b6-4295-b33f-816b05589e81",
+    "channel": "production-3-preparation",
+    "runtimeVersion": "3.0.0",
+    "updateId": "01a1371a-a6a5-7b92-b3ae-57011fef7a3a",
+    "expectedId": "01a1371a-a6a5-7b92-b3ae-57011fef7a3a",
+    "uniqueAssetHashes": 992,
+    "publishedSource": "25483f603512a0d9d0d291ffa904e67141622236"
+  },
+  {
+    "pass": true,
+    "checkedAt": "2026-10-13T21:25:23.725Z",
+    "nativeUpdateEndpoint": "https://u.expo.dev/7afb1a4b-46b6-4295-b33f-816b05589e81",
+    "channel": "testflight",
+    "runtimeVersion": "2.1.0",
+    "updateId": "01a13726-69c1-7db2-9f28-5dcaa53a47b6",
+    "expectedId": "01a13726-69c1-7db2-9f28-5dcaa53a47b6",
+    "uniqueAssetHashes": 992,
+    "publishedSource": "25483f603512a0d9d0d291ffa904e67141622236"
+  }
+]

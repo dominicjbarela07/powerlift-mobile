@@ -1,0 +1,16 @@
+{
+  "id": "01a1371a-a6a5-7b92-b3ae-57011fef7a3a",
+  "createdAt": "2026-10-13T21:10:55.909Z",
+  "group": "6c458849-8674-46ff-b419-77a59b0ae8f2",
+  "branch": "production-3-preparation",
+  "message": "Correct private machine accessory art and copied-week Swap; cumulative 3.0 identity protection",
+  "runtimeVersion": "3.0.0",
+  "platform": "ios",
+  "manifestPermalink": "https://u.expo.dev/update/01a1371a-a6a5-7b92-b3ae-57011fef7a3a",
+  "isRollBackToEmbedded": false,
+  "gitCommitHash": "25483f603512a0d9d0d291ffa904e67141622236",
+  "sourceAvailable": true,
+  "recoverableRefs": [
+    "refs/archive/testflight-published/01a1371a-a6a5-7b92-b3ae-57011fef7a3a"
+  ]
+}
