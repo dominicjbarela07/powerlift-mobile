@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { formatWeightFromKg, normalizeDisplayWeightUnit, type DisplayWeightUnit } from '@/lib/display-units';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import { useAthleteLedgerSubject } from './athlete-ledger-subject';
+import SetVideoPlayerModal from '@/components/SetVideoPlayerModal';
 
 const first = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] : value;
 const ArchiveDetailUnitContext = React.createContext<DisplayWeightUnit>('lb');
@@ -92,29 +93,35 @@ export function ArchiveDetailExperience() {
   const ledgerSubject = useAthleteLedgerSubject();
   const { user } = useAuth();
   const preferredDisplayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
-  const params = useLocalSearchParams<{ itemType?: string; sourceId?: string; collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string; displayUnit?: string }>();
+  const params = useLocalSearchParams<{ itemType?: string; sourceId?: string; collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string; displayUnit?: string; returnTo?: string }>();
   const itemType = first(params.itemType) as ArchiveItemType;
   const sourceId = Number(first(params.sourceId));
   const athleteId = ledgerSubject.athleteId ?? (Number(first(params.athlete_id)) || undefined);
   const [item, setItem] = useState<ArchiveDetailItem | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'unavailable' | 'unauthorized' | 'error'>('loading');
   const [reloadToken, setReloadToken] = useState(0);
+  const [videoOpen, setVideoOpen] = useState(false);
   const { unit: displayUnit, setUnit: setDisplayUnit } = useSurfaceWeightUnit(preferredDisplayUnit, first(params.displayUnit));
 
   useEffect(() => {
+    let active = true;
+    setState('loading');
+    setItem(null);
+    setVideoOpen(false);
     if (!itemType || !Number.isInteger(sourceId)) { setState('unavailable'); return; }
     fetchArchiveDetail(itemType, sourceId, athleteId)
-      .then((payload) => { setItem(payload.item as ArchiveDetailItem); setState('ready'); })
-      .catch((error: Error & { status?: number }) => setState(
+      .then((payload) => { if (active) { setItem(payload.item as ArchiveDetailItem); setState('ready'); } })
+      .catch((error: Error & { status?: number }) => { if (active) setState(
         error.status === 401 || error.status === 403
           ? 'unauthorized'
           : error.status === 404 || error.status === 410
             ? 'unavailable'
             : 'error',
-      ));
-  }, [athleteId, itemType, reloadToken, sourceId]);
+      ); });
+    return () => { active = false; };
+  }, [athleteId, itemType, reloadToken, sourceId, user?.id]);
 
-  const back = () => router.replace({ pathname: ledgerHrefFor('archive') as never, params: { collection: first(params.collection), q: first(params.q), athlete_id: athleteId ? String(athleteId) : undefined, date_from: first(params.date_from), date_to: first(params.date_to), displayUnit, ...ledgerSubject.routeParams } } as never);
+  const back = () => router.replace({ pathname: ledgerHrefFor('archive') as never, params: { collection: first(params.collection), q: first(params.q), athlete_id: athleteId ? String(athleteId) : undefined, date_from: first(params.date_from), date_to: first(params.date_to), displayUnit, returnTo: first(params.returnTo) === 'today' ? 'today' : undefined, ...ledgerSubject.routeParams } } as never);
   const meta = TYPE_META[itemType] || TYPE_META.session;
 
   return <ArchiveDetailUnitContext.Provider value={displayUnit}><View style={styles.page} testID="ledger-archive-detail">
@@ -133,6 +140,12 @@ export function ArchiveDetailExperience() {
         <View style={styles.metaRow}><MetaPill icon="calendar-outline" label={dateLabel(item.occurred_on)} /><MetaPill icon="shield-checkmark-outline" label={recordStatusLabel(item.status)} /></View>
       </View>
 
+      {item.archive_item_type === 'video' ? <Pressable accessibilityRole="button" accessibilityLabel="Play video" onPress={() => setVideoOpen(true)} style={styles.playVideo}>
+        <Ionicons name="play-circle" size={30} color="#70D7D0" />
+        <Text typographyRole="bodyStrong" style={styles.playVideoText}>Play video</Text>
+        <Ionicons name="arrow-forward" size={18} color="#70D7D0" />
+      </Pressable> : null}
+
       {item.invalidation_state && item.invalidation_state !== 'valid' ? <View style={styles.integrity}><Ionicons name="information-circle-outline" size={21} color={SLColors.accentMuted} /><View style={styles.integrityCopy}><Text typographyRole="bodyStrong" style={styles.integrityTitle}>No longer current</Text><Text typographyRole="caption" style={styles.integrityBody}>This entry is kept for history.</Text></View></View> : null}
 
       <DetailSection icon="speedometer-outline" title="Performance" value={item.performance} />
@@ -145,6 +158,7 @@ export function ArchiveDetailExperience() {
       <DetailSection icon="create-outline" title="Athlete reflection" value={item.athlete_reflection} />
       {item.athlete_visible_coach_feedback ? <View style={styles.feedback}><View style={styles.feedbackIcon}><Ionicons name="chatbubble-ellipses-outline" size={21} color="#5ED7CA" /></View><View style={styles.feedbackCopy}><Text typographyRole="shortTechnicalLabel" style={styles.feedbackLabel}>ATHLETE-VISIBLE COACH FEEDBACK</Text><Text typographyRole="body" style={styles.feedbackBody}>{item.athlete_visible_coach_feedback}</Text></View></View> : null}
     </View> : null}
+    <SetVideoPlayerModal visible={videoOpen && state === 'ready' && item?.archive_item_type === 'video'} videoId={item?.archive_item_type === 'video' ? item.source_id : null} allowExport={athleteId == null || athleteId === user?.athlete_id || athleteId === user?.self_athlete_id ? undefined : false} onClose={() => setVideoOpen(false)} />
   </View></ArchiveDetailUnitContext.Provider>;
 }
 
@@ -191,6 +205,8 @@ function setPerformance(item: ArchiveItem, unit: DisplayWeightUnit): string {
 }
 
 const styles = StyleSheet.create({
+  playVideo: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 62, paddingHorizontal: 17, paddingVertical: 12, backgroundColor: '#101B20', borderWidth: 1, borderColor: '#31575E', borderRadius: SLRadius.md },
+  playVideoText: { flex: 1, color: SLColors.textStrong },
   page: { gap: SLSpacing.lg },
   back: { alignSelf: 'flex-start', minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 4, paddingRight: 10 },
   backText: { color: SLColors.textPrimary },

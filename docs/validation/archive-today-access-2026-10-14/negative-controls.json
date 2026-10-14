@@ -1,0 +1,12 @@
+[
+  {
+    "control": "dead-video-entry",
+    "exit": 1,
+    "rejected": true
+  },
+  {
+    "control": "wrong-history-route",
+    "exit": 1,
+    "rejected": true
+  }
+]

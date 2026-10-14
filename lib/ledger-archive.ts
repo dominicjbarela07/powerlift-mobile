@@ -122,6 +122,7 @@ export function archiveDetailHref(
     workspaceAthleteId?: string;
     returnToWorkspace?: string;
     workspaceReturn?: string;
+    returnTo?: 'today';
   } = {},
 ): string {
   return `/(tabs)/ledger/archive/${itemType}/${sourceId}${queryString({
@@ -134,5 +135,6 @@ export function archiveDetailHref(
     workspaceAthleteId: returnState.workspaceAthleteId,
     returnToWorkspace: returnState.returnToWorkspace,
     workspaceReturn: returnState.workspaceReturn,
+    returnTo: returnState.returnTo,
   })}`;
 }
