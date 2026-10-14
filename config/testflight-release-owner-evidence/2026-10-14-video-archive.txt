@@ -1,0 +1,8 @@
+Owner approval and required final addition:
+ok good, let me drill down by movement as well and its god to go
+
+Original delivery boundary, now approved by the follow-up above:
+i want to see the new ui shit in dev simulator first before i signoff to ship. go ahead and ship the archive laoding fix tho in this run. i expect a simulator open for me to test the widgets and entrypoints to the video archive when you are done
+
+Standing owner operational directive:
+if the mac locks on you, just continue any other checks not requiring the sim and push if passing.

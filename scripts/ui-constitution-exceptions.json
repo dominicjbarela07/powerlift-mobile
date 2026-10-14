@@ -780,24 +780,28 @@
     "reviewType": "source-values; observed runtime coverage documented separately"
   },
   "components/ledger/archive-detail.tsx": {
-    "colors": 10,
+    "colors": 14,
     "radius": 5,
     "fontSize": 1,
     "shadow": 0,
-    "literalSha256": "7192827a83e7cbd94df513fb062daf8ac490e5fe76276e995660cb2480ac3119",
-    "reason": "Source-reviewed preservation of existing Ledger chapter, evidence and record hierarchy. Exact values are bound, not merely counted; no new visual approval is asserted. See docs/release/MOBILE_3_READINESS_FIXES_2026-10-06.md.",
-    "reviewedSource": "bccdc7e9 plus bounded owner readiness fixes",
-    "reviewType": "source-values; observed runtime coverage documented separately"
+    "literalSha256": "d836c55f702a9c639ceec3f39834bf664e62f23180d5b67f3d7001c46aa40150",
+    "reason": "Owner-approved October 14 Today/video Archive controls, verified in canonical DEV screenshots; exact colors, type and material values retained. Movement selector uses existing theme tokens.",
+    "reviewedSource": "2026-10-14 owner conditional approval; docs/validation/archive-movement-2026-10-14/",
+    "reviewType": "source-values and observed canonical DEV runtime; no new artwork",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-video-archive.txt",
+    "ownerEvidenceSha256": "7ce55c23100921ac796c285864bbfa50de77a6e6a7e97c8a3a3061414d04eba9"
   },
   "components/ledger/archive-foundation.tsx": {
-    "colors": 8,
+    "colors": 9,
     "radius": 17,
-    "fontSize": 10,
+    "fontSize": 11,
     "shadow": 0,
-    "literalSha256": "8183853f316b54c8398c990357c100c2f51b30ec4041089389c39ff3fa9cd615",
-    "reason": "Source-reviewed preservation of existing Ledger chapter, evidence and record hierarchy. Exact values are bound, not merely counted; no new visual approval is asserted. See docs/release/MOBILE_3_READINESS_FIXES_2026-10-06.md.",
-    "reviewedSource": "bccdc7e9 plus bounded owner readiness fixes",
-    "reviewType": "source-values; observed runtime coverage documented separately"
+    "literalSha256": "dc22a09fff25ca5cabe84c079f0bfe573b4aec0a33dfe6b6d96c3b2e4d22b0f9",
+    "reason": "Owner-approved October 14 Today/video Archive controls, verified in canonical DEV screenshots; exact colors, type and material values retained. Movement selector uses existing theme tokens.",
+    "reviewedSource": "2026-10-14 owner conditional approval; docs/validation/archive-movement-2026-10-14/",
+    "reviewType": "source-values and observed canonical DEV runtime; no new artwork",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-video-archive.txt",
+    "ownerEvidenceSha256": "7ce55c23100921ac796c285864bbfa50de77a6e6a7e97c8a3a3061414d04eba9"
   },
   "components/ledger/experiences.tsx": {
     "colors": 277,
@@ -1388,5 +1392,17 @@
     "reason": "Source-reviewed preservation of canonical Session authoring/execution geometry and hierarchy. Exact values are bound, not merely counted; no new visual approval is asserted. See docs/release/MOBILE_3_READINESS_FIXES_2026-10-06.md.",
     "reviewedSource": "bccdc7e9 plus bounded owner readiness fixes",
     "reviewType": "source-values; observed runtime coverage documented separately"
+  },
+  "components/home/TodayQuickAccess.tsx": {
+    "colors": 7,
+    "radius": 0,
+    "fontSize": 2,
+    "shadow": 0,
+    "literalSha256": "60a5f8d1c637436eebefa08c18771b46c8d38c34e6aefe1ba07003605d92de0d",
+    "reason": "Owner-approved October 14 Today/video Archive controls, verified in canonical DEV screenshots; exact colors, type and material values retained. Movement selector uses existing theme tokens.",
+    "reviewedSource": "2026-10-14 owner conditional approval; docs/validation/archive-movement-2026-10-14/",
+    "reviewType": "source-values and observed canonical DEV runtime; no new artwork",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-video-archive.txt",
+    "ownerEvidenceSha256": "7ce55c23100921ac796c285864bbfa50de77a6e6a7e97c8a3a3061414d04eba9"
   }
 }
