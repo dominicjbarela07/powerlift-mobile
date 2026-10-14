@@ -5,7 +5,7 @@ import { productFiles, fingerprintFiles } from './testflight-cumulative-integrit
 const root = '/Users/dominic/powerlifting_app/powerlift_mobile_testflight';
 const state = JSON.parse(fs.readFileSync(`${root}/config/testflight-release-integrity.json`));
 const fingerprint = fingerprintFiles(productFiles(root));
-if (['canonical-set-save-recovery-20261008','canonical-copied-week-identity-20261013'].includes(state.ownerDirectedClientFix?.scope)) {
+if (['canonical-set-save-recovery-20261008','canonical-copied-week-identity-20261013','athlete-video-archive-access-20261014'].includes(state.ownerDirectedClientFix?.scope)) {
   // A real logic change cannot borrow the earlier byte-equivalent image
   // transport observations. Its separate exact owner contract scope must run.
   assert.throws(() => assertReviewedRuntimeContinuation(root, state, fingerprint), /another product candidate/);

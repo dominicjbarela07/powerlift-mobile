@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {assertArchiveAccessBaseline,assertClientFixScope} from './owner-directed-client-fix.mjs';
+const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'archive-release-scope-'));
+try {
+ const write=(file,data)=>{const bytes=JSON.stringify(data);fs.writeFileSync(path.join(root,file),bytes);return {path:file,sha256:hash(bytes)};};
+ const paths=['app/(tabs)/athlete-dashboard.tsx','components/home/AthleteHomeV3.tsx','components/home/TodayQuickAccess.tsx','components/ledger/VideoMovementPicker.tsx','components/ledger/archive-detail.tsx','components/ledger/archive-foundation.tsx','config/protected-fix-manifest.json','lib/ledger-archive.ts','lib/today-history-routes.ts'];
+ const baseline={'assets/approved.png':'original',...Object.fromEntries(paths.slice(0,2).map(p=>[p,'before']))};
+ const fingerprint=hash(JSON.stringify(Object.entries(baseline).sort(([a],[b])=>a.localeCompare(b))));
+ const current={id:'published-update',gitCommitHash:'published-source'};
+ const proof={gateC:write('gate.json',{pass:true,missing:[],candidateProductFingerprint:fingerprint,published:{...current,servedBundleSha256:'served'}}),assetAudit:write('assets.json',{pass:true,missingOrCorrupt:0,updateId:current.id,servedLaunchSha256:'served'})};
+ const state={currentTestFlight:current,verifiedCopiedWeekIdentity:{publishedProof:proof}};
+ const files={...baseline,...Object.fromEntries(paths.map(p=>[p,'after']))};
+ const instruction='ok good, let me drill down by movement as well and its god to go';
+ const text=instruction+'\nif the mac locks on you, just continue any other checks not requiring the sim and push if passing.';
+ const scope={scope:'athlete-video-archive-access-20261014',baselineUpdateId:current.id,baselineSourceSha:current.gitCommitHash,baselineProductFingerprint:fingerprint,baselineFiles:write('baseline.json',baseline),ownerInstruction:instruction,validation:'OWNER_DIRECTED_CONTRACTS_ONLY',productFingerprint:'candidate',changedProductFiles:Object.fromEntries(paths.map(p=>[p,'after'])),contracts:{'scripts/test-archive-video-movement-api.mjs':'api','scripts/test-today-archive-access.mjs':'ui'}};
+ const run=(f=files,s=scope,st=state)=>assertArchiveAccessBaseline({root,scope:s,state:st,files:f});
+ assert.equal(run().length,9);assertClientFixScope(scope,'candidate',run(),text);
+ assert.throws(()=>run({...files,'assets/approved.png':'replacement'}),/unrelated/);
+ const removed={...files};delete removed['assets/approved.png'];assert.throws(()=>run(removed),/remove/);
+ assert.throws(()=>run(files,{...scope,baselineSourceSha:'fake'}),/published source/);
+ assert.throws(()=>run(files,{...scope,baselineUpdateId:'fake'}),/current update/);
+ assert.throws(()=>run(files,{...scope,baselineFiles:write('fake.json',files)}),/complete verified/);
+ assert.throws(()=>assertClientFixScope(scope,'other',run(),text),/changed product/);
+ assert.throws(()=>assertClientFixScope({...scope,contracts:{}},'candidate',run(),text));
+ assert.throws(()=>assertClientFixScope(scope,'candidate',run(),instruction),/Mac-lock/);
+ assert.throws(()=>assertClientFixScope({...scope,ownerInstruction:'ship everything'},'candidate',run(),'ship everything'));
+} finally {fs.rmSync(root,{recursive:true,force:true});}
+console.log('PASS: Archive release is bound to nine exact authorized files and verified current artifact; missing/replaced art, unrelated source, forged baseline/update/source, changed candidate, missing contracts and false owner authority fail.');

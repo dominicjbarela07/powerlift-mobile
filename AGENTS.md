@@ -1,5 +1,10 @@
 # Strength Ledger Mobile Engineering Guidance
 
+Credential handling: read canonical `../docs/release/GITHUB_KEY_ALERT_2026-10-13.md`
+before provider configuration or secret-alert work. Private sending/admin keys
+never enter Git or mobile bundles. Public Firebase client identifiers require an
+actual provider restriction review before push; a filename is not a safety check.
+
 Read the parent project's `AGENTS.md` and governing architecture before work.
 Before any TestFlight/release operation, read and enforce
 `docs/RELEASE_INVARIANTS.md`, which points to the single canonical constitution.

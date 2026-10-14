@@ -270,6 +270,19 @@
         "scripts/test-active-session-mutation-backend.mjs",
         "scripts/test-copied-week-release-scope.mjs"
       ]
+    },
+    {
+      "id": "athlete-video-archive-access-20261014",
+      "description": "Athlete/self-coach Today history entrypoints and authorized Archive playback; complete movement facets use immutable performed set identity, preserve selected filters on close, reject stale subjects and protect fresh signed media streams.",
+      "acceptedCommits": [
+        "27f151f05979df9ac57b4ecf810e90b1b88a7825",
+        "88c47a06060a40c3518f770105cd0ccf1d2fbf2d"
+      ],
+      "behaviorTests": [
+        "scripts/test-today-archive-access.mjs",
+        "scripts/test-archive-video-movement-api.mjs",
+        "scripts/test-archive-access-release-scope.mjs"
+      ]
     }
   ],
   "releaseHoldbacks": {
