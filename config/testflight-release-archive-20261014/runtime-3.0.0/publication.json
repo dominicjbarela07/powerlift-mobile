@@ -1,0 +1,16 @@
+{
+  "id": "01a13b3d-74ee-7a06-a84d-c1e55d39c98d",
+  "createdAt": "2026-10-14T16:27:25.806Z",
+  "group": "baa7f33b-06ba-4f62-955d-00220077497c",
+  "branch": "production-3-preparation",
+  "message": "Today history shortcuts and playable video Archive with movement drill-down",
+  "runtimeVersion": "3.0.0",
+  "platform": "ios",
+  "manifestPermalink": "https://u.expo.dev/update/01a13b3d-74ee-7a06-a84d-c1e55d39c98d",
+  "isRollBackToEmbedded": false,
+  "gitCommitHash": "c917f7ea25bb2c1b7057b92b816853ffbf25aa27",
+  "sourceAvailable": true,
+  "recoverableRefs": [
+    "refs/archive/testflight-published/01a13b3d-74ee-7a06-a84d-c1e55d39c98d"
+  ]
+}
