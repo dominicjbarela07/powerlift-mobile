@@ -11,6 +11,7 @@ import { FloatingDisplayUnitRegistration, SLCanonicalIcon, SLContextualHeader, S
 import { SLColors, SLFontFamilies, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive, getCoachVideoArchive } from '@/lib/api';
 import SetVideoPlayerModal from '@/components/SetVideoPlayerModal';
+import { VideoMovementPicker } from './VideoMovementPicker';
 import {
   ArchiveRequestError,
   archiveDetailHref,
@@ -22,6 +23,7 @@ import {
   type ArchiveLanding,
   type ArchivePage,
   type ArchiveQuery,
+  type ArchiveVideoMovement,
 } from '@/lib/ledger-archive';
 import { SectionLabel } from './primitives';
 import { useAuth } from '@/context/AuthContext';
@@ -221,6 +223,9 @@ export function ArchiveFoundationExperience() {
   const [error, setError] = useState<ArchiveFailure | null>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [selectedVideoId, setSelectedVideoId] = useState<number | null>(null);
+  const [videoMovements, setVideoMovements] = useState<ArchiveVideoMovement[]>([]);
+  const [videoMovement, setVideoMovement] = useState<ArchiveVideoMovement | null>(null);
+  const [resultCount, setResultCount] = useState<number | undefined>();
   const requestSerial = useRef(0);
   const { unit: displayUnit, setUnit: setDisplayUnit } = useSurfaceWeightUnit(preferredDisplayUnit, first(params.displayUnit));
   const filterCount = activeFilterCount(filters, movementFilter, naturalAlbumFilter);
@@ -231,6 +236,8 @@ export function ArchiveFoundationExperience() {
     setQueryInput(initialQuery);
     setCommittedQuery(initialQuery.trim());
     setSelectedVideoId(null);
+    setVideoMovements([]);
+    setVideoMovement(null);
   }, [initialScope, initialQuery, athleteId]);
 
   useEffect(() => {
@@ -239,6 +246,9 @@ export function ArchiveFoundationExperience() {
     setItems([]);
     setThumbnailUrls({});
     setSelectedVideoId(null);
+    setVideoMovements([]);
+    setVideoMovement(null);
+    setResultCount(undefined);
   }, [athleteId, user?.id]);
 
   useFocusEffect(useCallback(() => {
@@ -275,6 +285,7 @@ export function ArchiveFoundationExperience() {
     date_from: filters.dateFrom.trim() || undefined,
     date_to: filters.dateTo.trim() || undefined,
     movement_id: movementFilter?.id,
+    video_movement: scope === 'media' ? videoMovement?.key : undefined,
     program_id: naturalAlbumFilter?.programId,
     block_id: naturalAlbumFilter?.blockId,
     classification: filters.classification || undefined,
@@ -289,7 +300,7 @@ export function ArchiveFoundationExperience() {
     federation: filters.federation.trim() || undefined,
     weight_class: filters.weightClass.trim() || undefined,
     status: filters.meetStatus || undefined,
-  }), [athleteId, committedQuery, displayUnit, filters, movementFilter, naturalAlbumFilter]);
+  }), [athleteId, committedQuery, displayUnit, filters, movementFilter, naturalAlbumFilter, scope, videoMovement]);
 
   const loadOverview = useCallback(async () => {
     const request = ++requestSerial.current;
@@ -331,6 +342,8 @@ export function ArchiveFoundationExperience() {
       if (serial !== requestSerial.current) return;
       setItems((current) => append ? [...current, ...page.items] : page.items);
       setCursor(page.next_cursor);
+      setResultCount(page.total_count);
+      if (scope === 'media') setVideoMovements(page.movement_facets || []);
     } catch (caught) {
       if (serial !== requestSerial.current) return;
       const failure = archiveFailure(caught);
@@ -394,6 +407,7 @@ export function ArchiveFoundationExperience() {
     setFilters(EMPTY_FILTERS);
     setMovementFilter(null);
     setNaturalAlbumFilter(null);
+    setVideoMovement(null);
   }, []);
 
   const openCollection = useCallback((collection: ArchiveCollection) => {
@@ -474,6 +488,7 @@ export function ArchiveFoundationExperience() {
       setQuery={setQueryInput}
     /> : null}
     {filtersOpen ? <FilterPanel scope={scope} filters={filters} setFilters={setFilters} onClear={resetFilters} /> : null}
+    {scope === 'media' ? <VideoMovementPicker movements={videoMovements} selected={videoMovement} onSelect={setVideoMovement} /> : null}
     {movementFilter ? <View style={styles.activeChips}><ActiveChip label={movementFilter.name} onClear={() => setMovementFilter(null)} /></View> : null}
     {naturalAlbumFilter ? <View style={styles.activeChips}><ActiveChip label={naturalAlbumFilter.label} onClear={goOverview} /></View> : null}
     {!browsingResults && toolsOpen && recentSearches.length ? <SuggestionRail label="Recent searches" values={recentSearches} onPress={submitSearch} /> : null}
@@ -505,7 +520,7 @@ export function ArchiveFoundationExperience() {
     /> : null}
     {!loading && !error && browsingResults ? <ArchiveResults
       collection={scope === 'overview' ? null : scope}
-      count={scope === 'overview' ? items.length : landing?.collection_summaries[scope]}
+      count={scope === 'media' ? resultCount : scope === 'overview' ? items.length : landing?.collection_summaries[scope]}
       items={items}
       onItem={openItem}
       query={committedQuery}
