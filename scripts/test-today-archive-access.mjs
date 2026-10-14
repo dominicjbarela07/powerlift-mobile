@@ -18,7 +18,7 @@ function harness() {
     useEffect(fn,deps){const i=index++;if(!slots[i]||!same(slots[i].deps,deps)){const old=slots[i];slots[i]={deps};effects.push(()=>{old?.cleanup?.();slots[i].cleanup=fn();});}},
   };
   const state={params:{collection:'media',returnTo:'today'},user:{id:82,role:'coach',self_athlete_id:72},subject:{routeParams:{}},routes:[],calls:[],fail:false,
-    page:{ok:true,items:[{archive_item_type:'video',source_id:501,title:'Competition Squat',athlete_id:72}],next_cursor:null}};
+    page:{ok:true,items:[{archive_item_type:'video',source_id:501,title:'Competition Squat',athlete_id:72}],next_cursor:null,total_count:1,movement_facets:[{key:'movement:1',name:'Competition Squat',video_count:30},{key:'movement:2',name:'Competition Bench',video_count:1}]}};
   const theme={SLColors:new Proxy({},{get:()=> '#999'}),SLFontFamilies:{sansSemiBold:'Sans'},SLRadius:{md:12,pill:999},SLSpacing:{lg:20}};
   const api={getAthleteVideoArchive:async()=>({ok:true,json:{ok:true,videos:[]}}),getCoachVideoArchive:async p=>{state.calls.push(['thumbs',p]);return {ok:true,json:{ok:true,videos:[]}};}};
   const archive={ArchiveRequestError:class extends Error{},archiveDetailHref:(type,id,p)=>({type,id,p}),
@@ -36,6 +36,8 @@ function harness() {
     '@/lib/surface-weight-unit':{useSurfaceWeightUnit:()=>({unit:'lb',setUnit:()=>{}})},
     '@/lib/display-units':{normalizeDisplayWeightUnit:()=> 'lb',formatWeightFromKg:v=>String(v)},
     '@/components/SetVideoPlayerModal':'VideoPlayer','@/components/home/TodayQuickAccess':{TodayQuickAccess:'QuickAccess'},
+    './VideoMovementPicker':{VideoMovementPicker:'MovementPicker'},
+    '@/components/sheets/StrengthLedgerBottomSheet':{StrengthLedgerBottomSheet:'Sheet',StrengthLedgerBottomSheetScrollView:'SheetScroll'},
     '@/components/home/HomeTrendPlot':{HomeTrendPlot:'Plot'},'@/components/anatomy/ProgrammingMuscleRegionArt':{ProgrammingMuscleRegionArt:'Anatomy'},'expo-linear-gradient':{LinearGradient:'Gradient'},
     '@/lib/athlete-home-v3':{resolveHomeState:()=> 'rest',distinctNextUpSession:()=>null}};
   function load(file){const m={exports:{}};vm.runInNewContext(ts.transpileModule(fs.readFileSync(path.join(sourceRoot,file),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.React,esModuleInterop:true}}).outputText,{module:m,exports:m.exports,require:k=>{if(k.startsWith('@/assets/'))return k;assert.ok(k in deps,k);return deps[k];},__DEV__:false,console,Map,URLSearchParams});return m.exports;}
@@ -61,6 +63,11 @@ const video=h.state.page.items[0];h.find('ArchiveResults').props.onItem(video);a
 assert.equal(h.find('VideoPlayer').props.videoId,501);assert.equal(h.find('VideoPlayer').props.visible,true);
 assert.equal(h.find('VideoPlayer').props.allowExport,undefined,'server export policy is not overridden');assert.equal(h.state.routes.length,0,'playback stays within collection');
 h.find('VideoPlayer').props.onClose();await h.render();assert.equal(h.find('VideoPlayer').props.visible,false);assert.equal(h.find('ArchiveResults').props.collection,'media');
+assert.equal(h.find('MovementPicker').props.movements.length,2,'movement choices include evidence beyond the visible video page');
+h.find('MovementPicker').props.onSelect(h.state.page.movement_facets[1]);await h.render();
+assert.equal(h.state.calls.at(-1)[1].video_movement,'movement:2');assert.equal(h.find('ArchiveResults').props.collection,'media','movement drill-down stays in videos');
+h.find('ArchiveResults').props.onItem(video);await h.render();h.find('VideoPlayer').props.onClose();await h.render();assert.equal(h.find('MovementPicker').props.selected.key,'movement:2','closing playback retains movement selection');
+h.find('MovementPicker').props.onSelect(null);await h.render();assert.equal(h.state.calls.at(-1)[1].video_movement,undefined,'All movements clears the exact filter');
 h.find('Header').props.onBack();assert.equal(h.state.routes.at(-1),'/(tabs)/athlete-dashboard');
 let resolve;h.state.pending=new Promise(r=>resolve=r);h.state.params={collection:'training'};await h.render();
 h.state.pending=null;h.state.params={collection:'media'};await h.render();resolve({ok:true,items:[{source_id:999}],next_cursor:null});await h.render();
@@ -74,4 +81,9 @@ const detail=h.load('components/ledger/archive-detail.tsx').ArchiveDetailExperie
 const play=h.nodes(h.find('Provider')).find(n=>n.props.accessibilityLabel==='Play video');assert.ok(play);play.props.onPress();await h.render();assert.equal(h.find('VideoPlayer').props.videoId,501);assert.equal(h.find('VideoPlayer').props.visible,true);
 h.find('VideoPlayer').props.onClose();await h.render();assert.equal(h.find('VideoPlayer').props.visible,false);
 h.state.fail=true;h.state.params={...h.state.params,sourceId:'502'};await h.render();assert.equal(h.find('VideoPlayer').props.visible,false);assert.ok(!h.nodes(h.find('Provider')).some(n=>n.props.accessibilityLabel==='Play video'),'403 details offer no playback');
+h=harness();const picker=h.load('components/ledger/VideoMovementPicker.tsx').VideoMovementPicker;
+let picked;await h.render(()=>picker({movements:h.state.page.movement_facets,selected:null,onSelect:m=>picked=m}));
+h.find('Pressable').props.onPress();await h.render();assert.equal(h.find('Sheet').props.visible,true);
+const benchRow=h.nodes(h.find('Fragment')).find(n=>n.props.accessibilityLabel?.startsWith('Competition Bench,'));assert.ok(benchRow);benchRow.props.onPress();await h.render();assert.equal(picked.key,'movement:2');assert.equal(h.find('Sheet').props.visible,false);
+for(const n of h.nodes(h.find('Fragment')).filter(n=>n.type==='Text'&&['By movement','Competition Bench','Competition Squat'].includes(n.children[0])))assert.ok(n.props.style?.color,'sheet titles and movement labels remain legible on the dark surface');
 console.log('PASS: actual Today widgets for athlete/self-coach; all three routes; direct media entry; authorized video IDs; close retains collection; Today/workspace returns; scoped export policy; stale request rejection; direct detail playback; denied detail remains unplayable.');

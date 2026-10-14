@@ -45,7 +45,11 @@ export type ArchivePage = {
   has_more: boolean;
   ordering: string;
   error?: string;
+  movement_facets?: ArchiveVideoMovement[];
+  total_count?: number;
 };
+
+export type ArchiveVideoMovement = { key: string; name: string; video_count: number };
 
 export type ArchiveLanding = {
   ok: boolean;
