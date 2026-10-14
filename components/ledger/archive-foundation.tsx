@@ -2,13 +2,15 @@ import { KeyboardScrollView as ScrollView } from '@/components/keyboard/Keyboard
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { ActivityIndicator, Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { FloatingDisplayUnitRegistration, SLCanonicalIcon, SLContextualHeader, SLTrophy } from '@/components/ui';
 import { SLColors, SLFontFamilies, SLRadius, SLSpacing } from '@/constants/theme';
-import { getAthleteVideoArchive } from '@/lib/api';
+import { getAthleteVideoArchive, getCoachVideoArchive } from '@/lib/api';
+import SetVideoPlayerModal from '@/components/SetVideoPlayerModal';
 import {
   ArchiveRequestError,
   archiveDetailHref,
@@ -82,7 +84,7 @@ const EMPTY_FILTERS: Filters = {
 
 const COLLECTION_META: Record<ArchiveCollection, { label: string; singular: string; icon: keyof typeof Ionicons.glyphMap; tone: string; description: string }> = {
   training: { label: 'Training history', singular: 'training record', icon: 'barbell-outline', tone: '#A98CFF', description: 'Sessions, performed sets, programs, and imported history.' },
-  media: { label: 'Film & review', singular: 'video', icon: 'videocam-outline', tone: '#5ED7CA', description: 'Preserved lift footage and athlete-visible review.' },
+  media: { label: 'My Videos', singular: 'video', icon: 'videocam-outline', tone: '#5ED7CA', description: 'Your uploaded set videos and shared feedback.' },
   competition: { label: 'Competition book', singular: 'meet', icon: 'trophy-outline', tone: '#D4AD62', description: 'Meet records, attempts, totals, and federation context.' },
 };
 
@@ -190,7 +192,7 @@ function activeFilterCount(filters: Filters, movement: { id: number; name: strin
 }
 
 export function ArchiveFoundationExperience() {
-  const params = useLocalSearchParams<{ collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string; classification?: string; displayUnit?: string }>();
+  const params = useLocalSearchParams<{ collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string; classification?: string; displayUnit?: string; returnTo?: string }>();
   const router = useRouter();
   const ledgerSubject = useAthleteLedgerSubject();
   const { user } = useAuth();
@@ -199,6 +201,7 @@ export function ArchiveFoundationExperience() {
   const initialScope: ArchiveScope = COLLECTIONS.includes(requestedCollection as ArchiveCollection) ? requestedCollection! : 'overview';
   const initialQuery = first(params.q) || '';
   const athleteId = ledgerSubject.athleteId ?? (Number(first(params.athlete_id)) || undefined);
+  const recentSearchesKey = `${RECENT_SEARCHES_KEY}:user:${user?.id}:athlete:${athleteId ?? user?.athlete_id ?? user?.self_athlete_id ?? 'self'}`;
   const [scope, setScope] = useState<ArchiveScope>(initialScope);
   const [queryInput, setQueryInput] = useState(initialQuery);
   const [committedQuery, setCommittedQuery] = useState(initialQuery.trim());
@@ -217,15 +220,54 @@ export function ArchiveFoundationExperience() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<ArchiveFailure | null>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [selectedVideoId, setSelectedVideoId] = useState<number | null>(null);
+  const requestSerial = useRef(0);
   const { unit: displayUnit, setUnit: setDisplayUnit } = useSurfaceWeightUnit(preferredDisplayUnit, first(params.displayUnit));
   const filterCount = activeFilterCount(filters, movementFilter, naturalAlbumFilter);
   const browsingResults = scope !== 'overview' || Boolean(committedQuery) || filterCount > 0;
 
   useEffect(() => {
-    AsyncStorage.getItem(RECENT_SEARCHES_KEY)
-      .then((raw) => setRecentSearches(raw ? (JSON.parse(raw) as string[]).slice(0, 5) : []))
-      .catch(() => setRecentSearches([]));
-  }, []);
+    setScope(initialScope);
+    setQueryInput(initialQuery);
+    setCommittedQuery(initialQuery.trim());
+    setSelectedVideoId(null);
+  }, [initialScope, initialQuery, athleteId]);
+
+  useEffect(() => {
+    setLanding(null);
+    setPreviews({ training: null, media: null, competition: null });
+    setItems([]);
+    setThumbnailUrls({});
+    setSelectedVideoId(null);
+  }, [athleteId, user?.id]);
+
+  useFocusEffect(useCallback(() => {
+    let active = true;
+    const ownAthleteId = user?.athlete_id ?? user?.self_athlete_id;
+    const targetAthleteId = athleteId ?? ownAthleteId;
+    const request = user?.role === 'coach' && targetAthleteId
+      ? getCoachVideoArchive({ athlete_id: targetAthleteId, per_page: 100 })
+      : user?.role === 'athlete' && (athleteId == null || athleteId === ownAthleteId)
+        ? getAthleteVideoArchive() : Promise.resolve(null);
+    void request.then((response) => {
+      if (!active) return;
+      const videos: CanonicalVideoPreview[] = response?.ok && response.json?.ok && Array.isArray(response.json.videos) ? response.json.videos : [];
+      setThumbnailUrls(Object.fromEntries(videos.flatMap((video) => (
+        typeof video.id === 'number' && typeof video.thumbnail_url === 'string' && video.thumbnail_url
+          ? [[video.id, video.thumbnail_url] as const] : []
+      ))));
+    }).catch(() => { if (active) setThumbnailUrls({}); });
+    return () => { active = false; };
+  }, [athleteId, user?.id, user?.role, user?.athlete_id, user?.self_athlete_id]));
+
+  useEffect(() => {
+    let active = true;
+    setRecentSearches([]);
+    AsyncStorage.getItem(recentSearchesKey)
+      .then((raw) => { if (active) setRecentSearches(raw ? (JSON.parse(raw) as string[]).slice(0, 5) : []); })
+      .catch(() => { if (active) setRecentSearches([]); });
+    return () => { active = false; };
+  }, [recentSearchesKey]);
 
   const requestFilters = useMemo<ArchiveQuery>(() => ({
     athlete_id: athleteId,
@@ -250,65 +292,64 @@ export function ArchiveFoundationExperience() {
   }), [athleteId, committedQuery, displayUnit, filters, movementFilter, naturalAlbumFilter]);
 
   const loadOverview = useCallback(async () => {
+    const request = ++requestSerial.current;
     setLoading(true);
+    setLoadingMore(false);
     setError(null);
     try {
-      const [[nextLanding, training, media, competition], videoResponse] = await Promise.all([
-        Promise.all([
+      const [nextLanding, training, media, competition] = await Promise.all([
           fetchArchiveLanding({ athlete_id: athleteId }),
           fetchArchiveCollection('training', { athlete_id: athleteId, limit: 12 }),
           fetchArchiveCollection('media', { athlete_id: athleteId, limit: 12 }),
           fetchArchiveCollection('competition', { athlete_id: athleteId, limit: 8 }),
-        ]),
-        athleteId ? Promise.resolve(null) : getAthleteVideoArchive().catch(() => null),
       ]);
+      if (request !== requestSerial.current) return;
       setLanding(nextLanding);
       setPreviews({ training, media, competition });
       setItems([]);
       setCursor(null);
-      const videos = videoResponse?.ok && videoResponse.json?.ok && Array.isArray(videoResponse.json.videos)
-        ? videoResponse.json.videos as CanonicalVideoPreview[]
-        : [];
-      setThumbnailUrls(Object.fromEntries(videos.flatMap((video) => (
-        typeof video.id === 'number' && typeof video.thumbnail_url === 'string' && video.thumbnail_url
-          ? [[video.id, video.thumbnail_url] as const]
-          : []
-      ))));
     } catch (caught) {
+      if (request !== requestSerial.current) return;
       const failure = archiveFailure(caught);
       if (__DEV__) console.warn('[Ledger Archive] overview request failed', failure);
       setError(failure);
     } finally {
-      setLoading(false);
+      if (request === requestSerial.current) setLoading(false);
     }
-  }, [athleteId]);
+  }, [athleteId, user?.id]);
 
   const loadResults = useCallback(async (nextCursor?: string, append = false) => {
+    const serial = ++requestSerial.current;
     if (append) setLoadingMore(true);
-    else setLoading(true);
+    else { setLoading(true); setLoadingMore(false); }
     setError(null);
     try {
       const request = { ...requestFilters, cursor: nextCursor, limit: 24 };
       const page = scope === 'overview'
         ? await searchArchive(request)
         : await fetchArchiveCollection(scope, request);
+      if (serial !== requestSerial.current) return;
       setItems((current) => append ? [...current, ...page.items] : page.items);
       setCursor(page.next_cursor);
     } catch (caught) {
+      if (serial !== requestSerial.current) return;
       const failure = archiveFailure(caught);
       if (__DEV__) console.warn('[Ledger Archive] results request failed', failure);
       setError(failure);
       if (!append) setItems([]);
     } finally {
-      setLoading(false);
-      setLoadingMore(false);
+      if (serial === requestSerial.current) {
+        setLoading(false);
+        setLoadingMore(false);
+      }
     }
-  }, [requestFilters, scope]);
+  }, [requestFilters, scope, user?.id]);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     if (!browsingResults) void loadOverview();
     else void loadResults();
-  }, [browsingResults, loadOverview, loadResults]);
+    return () => { requestSerial.current += 1; };
+  }, [browsingResults, loadOverview, loadResults]));
 
   const allPreviewItems = useMemo(() => [
     ...(landing?.recent || []),
@@ -331,10 +372,10 @@ export function ArchiveFoundationExperience() {
     if (!normalized) return;
     setRecentSearches((current) => {
       const next = [normalized, ...current.filter((entry) => entry.toLowerCase() !== normalized.toLowerCase())].slice(0, 5);
-      void AsyncStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
+      void AsyncStorage.setItem(recentSearchesKey, JSON.stringify(next));
       return next;
     });
-  }, []);
+  }, [recentSearchesKey]);
 
   const submitSearch = useCallback((value = queryInput) => {
     const normalized = value.trim();
@@ -371,6 +412,10 @@ export function ArchiveFoundationExperience() {
   }, [clearSearch]);
 
   const openItem = useCallback((item: ArchiveItem) => {
+    if (item.archive_item_type === 'video') {
+      setSelectedVideoId(item.source_id);
+      return;
+    }
     router.push(archiveDetailHref(item.archive_item_type, item.source_id, {
       collection: scope === 'overview' ? undefined : scope,
       q: committedQuery || undefined,
@@ -381,8 +426,9 @@ export function ArchiveFoundationExperience() {
       workspaceAthleteId: ledgerSubject.routeParams.workspaceAthleteId,
       returnToWorkspace: ledgerSubject.routeParams.returnToWorkspace,
       workspaceReturn: ledgerSubject.routeParams.workspaceReturn,
+      returnTo: first(params.returnTo) === 'today' ? 'today' : undefined,
     }) as never);
-  }, [athleteId, committedQuery, displayUnit, filters.dateFrom, filters.dateTo, ledgerSubject.routeParams, router, scope]);
+  }, [athleteId, committedQuery, displayUnit, filters.dateFrom, filters.dateTo, ledgerSubject.routeParams, params.returnTo, router, scope]);
 
   const chooseMovement = useCallback((movement: { id: number; name: string }) => {
     setScope('training');
@@ -402,13 +448,23 @@ export function ArchiveFoundationExperience() {
     <FloatingDisplayUnitRegistration unit={displayUnit} onChange={setDisplayUnit} testID="ledger-archive-unit-toggle" />
     <SLContextualHeader
       action={{ accessibilityLabel: 'Search and filter Archive', icon: 'search', onPress: () => setToolsOpen((open) => !open) }}
-      backAccessibilityLabel="Back to The Ledger"
+      backAccessibilityLabel={ledgerSubject.returnPath ? 'Back to athlete workspace' : first(params.returnTo) === 'today' ? 'Back to Today' : 'Back to The Ledger'}
       breadcrumb="The Ledger"
-      onBack={() => ledgerSubject.returnPath ? router.navigate(ledgerSubject.returnPath as any) : router.replace('/(tabs)/ledger/home' as any)}
+      onBack={() => ledgerSubject.returnPath ? router.navigate(ledgerSubject.returnPath as any) : router.navigate(first(params.returnTo) === 'today' ? '/(tabs)/athlete-dashboard' as any : '/(tabs)/ledger/home' as any)}
       subtitle="Your training history, kept in context."
       title="Archive"
     />
+    <View style={styles.collectionTabs} accessibilityRole="tablist">
+      {([['overview', 'All'], ['training', 'Training'], ['media', 'Videos'], ['competition', 'Meets']] as const).map(([key, label]) => <Pressable
+        key={key}
+        accessibilityRole="tab"
+        accessibilityState={{ selected: scope === key }}
+        onPress={() => key === 'overview' ? goOverview() : openCollection(key)}
+        style={[styles.collectionTab, scope === key && styles.collectionTabSelected]}
+      ><Text style={[styles.collectionTabText, scope === key && styles.collectionTabTextSelected]}>{label}</Text></Pressable>)}
+    </View>
     {browsingResults || toolsOpen ? <SearchBar
+      placeholder={scope === 'media' ? 'Search your videos' : 'Search Archive'}
       filterCount={filterCount}
       filtersOpen={filtersOpen}
       onClear={clearSearch}
@@ -451,12 +507,17 @@ export function ArchiveFoundationExperience() {
       collection={scope === 'overview' ? null : scope}
       count={scope === 'overview' ? items.length : landing?.collection_summaries[scope]}
       items={items}
-      onBack={goOverview}
       onItem={openItem}
       query={committedQuery}
       thumbnailUrls={thumbnailUrls}
     /> : null}
     {!loading && !error && browsingResults && cursor ? <Pressable disabled={loadingMore} onPress={() => void loadResults(cursor, true)} style={styles.loadMore}>{loadingMore ? <ActivityIndicator color={SLColors.accent} /> : <><Text typographyRole="shortButtonLabel" style={styles.loadMoreText}>Continue through history</Text><Ionicons name="arrow-down" size={16} color={SLColors.accentMuted} /></>}</Pressable> : null}
+    <SetVideoPlayerModal
+      visible={selectedVideoId !== null}
+      videoId={selectedVideoId}
+      allowExport={athleteId == null || athleteId === user?.athlete_id || athleteId === user?.self_athlete_id ? undefined : false}
+      onClose={() => setSelectedVideoId(null)}
+    />
   </View></ArchiveDisplayUnitContext.Provider>;
 }
 
@@ -473,7 +534,8 @@ function ArchiveEvidence({ item }: { item: ArchiveItem }) {
   return <>{itemEvidence(item, unit)}</>;
 }
 
-function SearchBar({ query, setQuery, onSubmit, onClear, filtersOpen, onFilters, filterCount }: {
+function SearchBar({ query, setQuery, onSubmit, onClear, filtersOpen, onFilters, filterCount, placeholder }: {
+  placeholder: string;
   query: string;
   setQuery: (value: string) => void;
   onSubmit: () => void;
@@ -485,7 +547,7 @@ function SearchBar({ query, setQuery, onSubmit, onClear, filtersOpen, onFilters,
   return <View style={styles.searchShell}>
     <View style={styles.searchRow}>
       <Ionicons name="search" size={19} color={SLColors.iconMuted} />
-      <TextInput accessibilityLabel="Search Archive" autoCapitalize="none" onChangeText={setQuery} onSubmitEditing={onSubmit} placeholder="Movement, session, meet, evidence…" placeholderTextColor={SLColors.textMuted} returnKeyType="search" style={styles.searchInput} value={query} />
+      <TextInput accessibilityLabel="Search Archive" autoCapitalize="none" onChangeText={setQuery} onSubmitEditing={onSubmit} placeholder={placeholder} placeholderTextColor={SLColors.textMuted} returnKeyType="search" style={styles.searchInput} value={query} />
       {query ? <Pressable accessibilityLabel="Clear Archive search" onPress={onClear} hitSlop={8}><Ionicons name="close-circle" size={20} color={SLColors.iconMuted} /></Pressable> : null}
       <View style={styles.searchDivider} />
       <Pressable accessibilityLabel="Archive filters" accessibilityState={{ expanded: filtersOpen }} onPress={onFilters} style={[styles.filterTrigger, filtersOpen && styles.filterTriggerActive]}>
@@ -685,11 +747,12 @@ function CompactEvidence({ item, onPress }: { item: ArchiveItem; onPress: () => 
 }
 
 function MediaStage({ item, thumbnailUrl, grid = false }: { item: ArchiveItem; thumbnailUrl?: string; grid?: boolean }) {
+  const reviewLabel = ({ pending: 'Awaiting review', reviewed: 'Reviewed', viewed: 'Viewed', needs_followup: 'Follow-up' } as Record<string, string>)[item.status || ''];
   return <View style={grid ? styles.mediaGridStage : styles.mediaStage}>
-    {thumbnailUrl ? <Image accessibilityIgnoresInvertColors source={{ uri: thumbnailUrl }} resizeMode="cover" style={styles.mediaImage} /> : <View style={styles.mediaUnavailable}><Ionicons name="videocam-outline" size={25} color={SLColors.iconMuted} /><Text typographyRole="caption" style={styles.mediaUnavailableText}>Preview unavailable</Text></View>}
+    {thumbnailUrl ? <Image accessibilityIgnoresInvertColors source={{ uri: thumbnailUrl }} resizeMode="cover" style={styles.mediaImage} /> : null}
     {thumbnailUrl ? <View style={styles.mediaImageScrim} /> : null}
     <View style={grid ? styles.mediaGridPlay : styles.mediaPlay}><Ionicons name="play" size={grid ? 18 : 20} color={SLColors.textStrong} /></View>
-    <Text typographyRole="shortTechnicalLabel" style={grid ? styles.mediaGridBadge : styles.mediaStageLabel}>{item.status || 'preserved'}</Text>
+    {reviewLabel ? <Text typographyRole="shortTechnicalLabel" style={grid ? styles.mediaGridBadge : styles.mediaStageLabel}>{reviewLabel}</Text> : null}
   </View>;
 }
 
@@ -714,10 +777,10 @@ function RediscoveredEvidence({ item, onPress }: { item: ArchiveItem; onPress: (
   return <Pressable onPress={onPress} style={({ pressed }) => [styles.rediscovered, pressed && styles.pressed]}><View style={styles.rediscoveredDate}><Text typographyRole="cardTitle" numberOfLines={0} style={styles.rediscoveredYear}>{yearLabel(item.occurred_on)}</Text><Text typographyRole="shortTechnicalLabel" style={styles.rediscoveredLabel}>ARCHIVE</Text></View><View style={styles.rediscoveredCopy}><Text typographyRole="cardTitle" style={styles.rediscoveredTitle}>{item.title}</Text><Text typographyRole="body" style={styles.rediscoveredBody}><ArchiveEvidence item={item} /></Text><Text typographyRole="caption" style={styles.rediscoveredMeta}>{dateLabel(item.occurred_on)} · {item.provenance_label}</Text></View><Ionicons name="arrow-forward" size={18} color={SLColors.iconMuted} /></Pressable>;
 }
 
-function ArchiveResults({ collection, count, items, query, thumbnailUrls, onBack, onItem }: { collection: ArchiveCollection | null; count?: number; items: ArchiveItem[]; query: string; thumbnailUrls: Record<number, string>; onBack: () => void; onItem: (item: ArchiveItem) => void }) {
+function ArchiveResults({ collection, count, items, query, thumbnailUrls, onItem }: { collection: ArchiveCollection | null; count?: number; items: ArchiveItem[]; query: string; thumbnailUrls: Record<number, string>; onItem: (item: ArchiveItem) => void }) {
   const meta = collection ? COLLECTION_META[collection] : null;
   return <View style={styles.results}>
-    <View style={styles.resultsHeader}><Pressable accessibilityLabel="Back to Archive overview" onPress={onBack} style={styles.resultsBack}><Ionicons name="chevron-back" size={18} color={SLColors.iconPrimary} /></Pressable><View style={styles.resultsHeaderCopy}><Text typographyRole="sectionTitle" style={styles.resultsTitle}>{query ? `“${query}”` : meta?.label || 'All evidence'}</Text><Text typographyRole="caption" style={styles.resultsCaption}>{items.length ? `${count ?? items.length} ${collection ? meta?.singular : 'matching sources'}${(count ?? items.length) === 1 ? '' : 's'}` : 'No matching source evidence'}</Text></View>{meta ? <View style={[styles.resultsIcon, { borderColor: `${meta.tone}55` }]}><SLCanonicalIcon name={meta.icon} size={19} color={meta.tone} trophyTier="bronze" /></View> : null}</View>
+    <View style={styles.resultsHeader}><View style={styles.resultsHeaderCopy}><Text typographyRole="sectionTitle" style={styles.resultsTitle}>{query ? `“${query}”` : meta?.label || 'All evidence'}</Text><Text typographyRole="caption" style={styles.resultsCaption}>{items.length ? `${count ?? items.length} ${collection ? meta?.singular : 'matching sources'}${(count ?? items.length) === 1 ? '' : 's'}` : 'No matching source evidence'}</Text></View>{meta ? <View style={[styles.resultsIcon, { borderColor: `${meta.tone}55` }]}><SLCanonicalIcon name={meta.icon} size={19} color={meta.tone} trophyTier="bronze" /></View> : null}</View>
     {!items.length ? <ArchiveState icon="search-outline" title="Nothing matches yet" body="Clear a filter, widen the date range, or search another movement. The Archive will not invent evidence that is not present." /> : null}
     {items.length && collection === 'media' ? <MediaGrid items={items} thumbnailUrls={thumbnailUrls} onItem={onItem} /> : null}
     {items.length && collection === 'competition' ? <CompetitionList items={items} onItem={onItem} /> : null}
@@ -763,6 +826,11 @@ function groupByType(items: ArchiveItem[]): [string, ArchiveItem[]][] {
 }
 
 const styles = StyleSheet.create({
+  collectionTabs: { flexDirection: 'row', gap: 4, borderBottomWidth: 1, borderColor: SLColors.borderSubtle },
+  collectionTab: { flex: 1, minHeight: 46, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3, paddingVertical: 10, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  collectionTabSelected: { borderBottomColor: '#70D7D0' },
+  collectionTabText: { color: SLColors.textMuted, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 14 },
+  collectionTabTextSelected: { color: SLColors.textStrong },
   page: { gap: SLSpacing.lg, paddingBottom: SLSpacing.xl },
   searchShell: { borderRadius: SLRadius.radiusControl, backgroundColor: SLColors.surfaceInset, borderWidth: 1, borderColor: SLColors.borderDefault, overflow: 'hidden' },
   searchRow: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 14, paddingRight: 7 },

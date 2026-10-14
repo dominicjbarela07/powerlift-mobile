@@ -26,6 +26,7 @@ import {
 import { mergeCanonicalDailyReadiness } from '@/lib/daily-readiness-home';
 import { createLatestRequestManager } from '@/lib/latest-request';
 import { classifyTodayResponse } from '@/lib/today-response';
+import { todayHistoryHref } from '@/lib/today-history-routes';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
 import {
@@ -629,6 +630,11 @@ export default function AthleteDashboard() {
         router.push('/(tabs)/video-archive' as any);
         return;
       }
+      const historyHref = todayHistoryHref(action.route);
+      if (historyHref) {
+        router.push(historyHref as any);
+        return;
+      }
       if (action.route === 'meet') {
         router.push({
           pathname: '/(tabs)/athlete-meet-plan',
@@ -650,10 +656,6 @@ export default function AthleteDashboard() {
       }
       if (action.route === 'calendar' || action.route === 'readiness_history') {
         router.push('/(tabs)/athlete-calendar' as any);
-        return;
-      }
-      if (action.route === 'training_history') {
-        router.push('/(tabs)/workout/session-history' as any);
         return;
       }
       if (action.route === 'ledger_journey') {

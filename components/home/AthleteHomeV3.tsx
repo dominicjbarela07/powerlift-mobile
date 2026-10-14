@@ -12,6 +12,7 @@ import {
 
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { HomeTrendPlot } from '@/components/home/HomeTrendPlot';
+import { TodayQuickAccess } from '@/components/home/TodayQuickAccess';
 import { SLProfileAvatar } from '@/components/ui';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { Text } from '@/components/ui/sl-text';
@@ -85,6 +86,7 @@ export function AthleteHomeV3({ today, isIndividual = false, creatingTodaySessio
       <Greeting today={today} state={state} />
       <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="athlete-home-unit-toggle" />
       <StateHero creatingTodaySession={creatingTodaySession} home={home} onAction={onAction} state={state} today={today} unit={unit} />
+      <TodayQuickAccess onAction={onAction} />
       {supplementaryContent}
       <WeekSection home={home} onAction={onAction} today={today} unit={unit} />
       {nextUp ? <SessionCard eyebrow="NEXT UP" onAction={onAction} session={nextUp} today={today} unit={unit} /> : null}
