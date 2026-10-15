@@ -182,5 +182,10 @@
     "backgroundExpression": "'#08060d'",
     "horizontalInsets": [],
     "reason": "Existing owner-directed 3.0 OLED/evidence surface owns this exact black/near-black canvas and existing insets. No arbitrary new surface color or inset is accepted."
+  },
+  "components/workout-logger/selected-set-video-preview.tsx::screen": {
+    "backgroundExpression": "SLColors.background",
+    "horizontalInsets": [],
+    "reason": "Owner-approved full-screen native local video preview owns its existing theme near-black canvas within a separate native Modal; no page gutter or underlying app surface ownership changes. Screenshot 10 shows playback; 12 shows return to the unchanged Set."
   }
 }
