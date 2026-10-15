@@ -5,6 +5,7 @@ import { AppState, Platform } from 'react-native';
 
 import { API_BASE, fetchJson } from '@/lib/api';
 import { setUpdateBlocker } from '@/lib/updateSafety';
+import { requireUploadedSetVideo } from '@/lib/set-video-upload-status';
 
 export type QueuedVideoUploadStatus =
   | 'pending'
@@ -31,6 +32,8 @@ export type QueuedVideoUploadJob = {
   retryCount: number;
   lastError?: string | null;
   serverAttachmentId?: number | null;
+  uploadedBytes?: number;
+  totalBytes?: number;
   createdAt: string;
   updatedAt: string;
   nextAttemptAt?: string | null;
@@ -240,6 +243,7 @@ async function uploadJobChunked(job: QueuedVideoUploadJob, actualSize: number) {
   if (!uploadId) {
     throw new Error('Chunked upload init did not return an upload id.');
   }
+  await updateJob(job.id, current => ({ ...current, uploadedBytes: 0, totalBytes: actualSize, updatedAt: nowIso() }), job.ownerUserId);
   const chunkSize = Number(init.json.chunk_size || 1024 * 1024);
   const totalChunks = Number(init.json.total_chunks || Math.ceil(actualSize / chunkSize));
 
@@ -256,6 +260,7 @@ async function uploadJobChunked(job: QueuedVideoUploadJob, actualSize: number) {
       index,
       data_base64: dataBase64,
     }, job.ownerUserId);
+    await updateJob(job.id, current => ({ ...current, uploadedBytes: position + length, totalBytes: actualSize, updatedAt: nowIso() }), job.ownerUserId);
   }
 
   let thumbnailBase64 = '';
@@ -418,17 +423,18 @@ export async function processVideoUploadQueue() {
 
     try {
       const video = await uploadJob(job);
+      const attachmentId = requireUploadedSetVideo(video, job.setLogId);
       const updated = await updateJob(job.id, (current) => {
         if (current.status === 'cancelled') return current;
         return {
           ...current,
           status: 'uploaded',
-          serverAttachmentId: video?.id ?? current.serverAttachmentId ?? null,
+          serverAttachmentId: attachmentId,
           lastError: null,
           updatedAt: nowIso(),
           nextAttemptAt: null,
         };
-      });
+      }, job.ownerUserId);
       if (updated) await cleanupJobFiles(updated);
     } catch (err: any) {
       const message = String(err?.message || 'Video upload failed.');

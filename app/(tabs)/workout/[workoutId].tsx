@@ -12,6 +12,8 @@ import { KeyboardScrollView as ScrollView, KeyboardModal as Modal, KeyboardAvoid
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createLoggerJournal } from '@/lib/session-logger-journal';
 import { CompletedSessionCorrection } from '@/components/workout-logger/completed-session-correction';
+import { SetEntryVideo, SessionVideoUploadStatus } from '@/components/workout-logger/set-entry-video';
+import { videoUploadPresentation } from '@/lib/set-video-upload-status';
 import { SessionSetEntryContext } from '@/components/workout-logger/session-set-entry-context';
 import { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator } from '@/components/workout-logger/session-v3-shell';
 import { EquipmentHistoryEvidence } from '@/components/workout-logger/equipment-history-evidence';
@@ -1110,11 +1112,13 @@ async function createSetVideoThumbnail(videoUri: string): Promise<string | null>
 }
 
 type PendingCoreWheelLog = {
+  selectedVideo?: SelectedSetVideo | null;
   kind: CoreWheelKind;
   itemId: number;
   setIndex?: number;
 } | null;
 type CoreWheelState = {
+  selectedVideo?: SelectedSetVideo | null;
   visible: boolean;
   kind: CoreWheelKind;
   itemId: number;
@@ -1144,6 +1148,7 @@ type AccessoryWheelState = {
   selectedVideo?: SelectedSetVideo | null;
 };
 type SupersetRoundLoggerEntry = {
+  selectedVideo?: SelectedSetVideo | null;
   itemId: number;
   title: string;
   prescription: string;
@@ -4246,7 +4251,7 @@ export default function WorkoutViewerScreen() {
     }));
     setPendingAccessoryLogItemId({
       itemId,
-      selectedVideo: null,
+      selectedVideo: wheel.selectedVideo || null,
     });
   };
 
@@ -4741,6 +4746,12 @@ export default function WorkoutViewerScreen() {
           } : current);
           return;
         }
+        for (const entry of parsedEntries) {
+          if (!entry.selectedVideo) continue;
+          const accepted = (json.entries || []).find((result: any) => Number(result.item_id) === entry.itemId);
+          const videoError = await attachSelectedVideoToLoggedSet(accepted?.set?.id, entry.selectedVideo);
+          if (videoError) setError(videoError);
+        }
         parsedEntries.forEach((entry) => {
           rememberAcceptedLoad(entry.itemId, roundIndex, entry.weightKg);
         });
@@ -4974,6 +4985,7 @@ export default function WorkoutViewerScreen() {
     }
 
     setPendingCoreWheelLog({
+      selectedVideo: wheel.selectedVideo || null,
       kind: wheel.kind,
       itemId: wheel.itemId,
       setIndex: wheel.setIndex,
@@ -5593,11 +5605,11 @@ export default function WorkoutViewerScreen() {
     setPendingCoreWheelLog(null);
 
     requestAnimationFrame(() => {
-      if (pending.kind === 'straight') logStraightSet(pending.itemId);
-      else if (pending.kind === 'top') logTopSet(pending.itemId);
-      else if (pending.kind === 'bk') logBackdownSet(pending.itemId);
+      if (pending.kind === 'straight') logStraightSet(pending.itemId, pending.selectedVideo);
+      else if (pending.kind === 'top') logTopSet(pending.itemId, pending.selectedVideo);
+      else if (pending.kind === 'bk') logBackdownSet(pending.itemId, pending.selectedVideo);
       else if (pending.kind === 'fc' && pending.setIndex != null) {
-        logFullCustomSet(pending.itemId, pending.setIndex);
+        logFullCustomSet(pending.itemId, pending.setIndex, pending.selectedVideo);
       }
     });
   }, [pendingCoreWheelLog, straightInputs, topInputs, bkInputs, fcInputs]);
@@ -7019,6 +7031,17 @@ export default function WorkoutViewerScreen() {
     };
   }, [ensureVideoMlConsentChoice, isIndividualUser]);
 
+  const pickVideoForEntry = async (kind: 'core' | 'accessory' | 'superset') => {
+    const owner = executionScopeRef.current;
+    const target = kind === 'core' ? coreWheel : kind === 'accessory' ? accessoryWheel : supersetRoundLogger;
+    if (!target) return;
+    const selectedVideo = await pickSetVideo();
+    if (!selectedVideo || !screenMountedRef.current || owner !== executionScopeRef.current) return;
+    if (kind === 'core') setCoreWheel(current => current === target ? { ...current, selectedVideo } : current);
+    else if (kind === 'accessory') setAccessoryWheel(current => current === target ? { ...current, selectedVideo } : current);
+    else setSupersetRoundLogger(current => current === target ? { ...current, entries: current.entries.map((entry, index) => index === current.activeIndex ? { ...entry, selectedVideo } : entry) } : current);
+  };
+
   const uploadSelectedVideoToSetLog = useCallback(async (
     setLogId: number,
     selectedVideo: SelectedSetVideo,
@@ -7860,7 +7883,7 @@ export default function WorkoutViewerScreen() {
     const uploadState = videoUploadBySetLogId[log.id] || {};
     const hasVideo = !!(log.has_video || log.video_id || log.video?.id);
     const queuedJob = uploadState.job || null;
-    const queuedStatus = queuedVideoStatusLabel(uploadState);
+    const queuedStatus = queuedJob ? videoUploadPresentation(queuedJob).label : queuedVideoStatusLabel(uploadState);
     const status = queuedStatus || videoStatusLabel(log, !!uploadState.uploading, uploadState.error || null);
     const canRetryUpload = !!queuedJob && !!uploadState.error && !uploadState.permanent;
     const disabled = !canManageSetVideo || !!uploadState.uploading || (!!uploadState.queued && !canRetryUpload) || !!(uploadState as any).deleting;
@@ -8285,7 +8308,7 @@ export default function WorkoutViewerScreen() {
     const uploadState = videoUploadBySetLogId[log.id] || {};
     const hasVideo = !!(log.has_video || log.video_id || log.video?.id);
     const queuedJob = uploadState.job || null;
-    const queuedStatus = queuedVideoStatusLabel(uploadState);
+    const queuedStatus = queuedJob ? videoUploadPresentation(queuedJob).label : queuedVideoStatusLabel(uploadState);
     const status = queuedStatus || videoStatusLabel(log, !!uploadState.uploading, uploadState.error || null);
     const canRetryUpload = !!queuedJob && !!uploadState.error && !uploadState.permanent;
     const disabled = !canManageSetVideo || !!uploadState.uploading || (!!uploadState.queued && !canRetryUpload) || !!(uploadState as any).deleting;
@@ -8703,7 +8726,7 @@ export default function WorkoutViewerScreen() {
       weight: nearestWheelValue(accessoryWheel.weightOptions, draft.weight, accessoryWheel.weight),
       reps: nearestWheelValue(accessoryWheel.repsOptions, draft.reps, accessoryWheel.reps),
       rir: nearestWheelValue(accessoryWheel.rirOptions, draft.rir, accessoryWheel.rir),
-      selectedVideo: null,
+      selectedVideo: accessoryWheel.selectedVideo || null,
     };
     setAccessoryWheel(repeatedWheel);
     queueAccessoryWheelLog(repeatedWheel);
@@ -8935,6 +8958,12 @@ export default function WorkoutViewerScreen() {
           />
         )}
         {/* Inline error banner (below header) */}
+        {!isCoachAthletePreview ? <SessionVideoUploadStatus
+          job={Object.values(videoUploadBySetLogId).map(state => state.job).filter((job): job is QueuedVideoUploadJob => !!job && job.workoutId === workout.id && job.status !== 'cancelled').sort((a, b) => Number(a.status === 'uploaded') - Number(b.status === 'uploaded') || b.updatedAt.localeCompare(a.updatedAt))[0]}
+          onView={videoId => setSetVideoPlayer({ visible: true, videoId, initialUrl: null, initialVideo: null })}
+          onRetry={jobId => { void retryVideoUploadJob(jobId); }}
+        /> : null}
+
         {!!error && (
           <View style={styles.errorBanner}>
             <Text style={styles.errorBannerText}>{error}</Text>
@@ -9398,6 +9427,11 @@ export default function WorkoutViewerScreen() {
                 { key: 'rpe', label: 'RPE', value: coreWheel.rpe, options: coreWheel.rpeOptions, accessibilityValue: (value) => `${value} RPE`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, rpe: value } : prev) },
               ]} />
 
+              <SetEntryVideo video={coreWheel.selectedVideo} onPick={() => pickVideoForEntry('core')}
+                onChange={selectedVideo => setCoreWheel(current => current ? { ...current, selectedVideo } : current)}
+                onRemove={() => setCoreWheel(current => current ? { ...current, selectedVideo: null } : current)}
+                allowCoachReview={!isIndividualUser} disabled={feedbackState.submission.status === 'submitting' || !!pendingCoreWheelLog} />
+
               {coreWheelLastLog ? (
                 <TouchableOpacity
                   accessibilityHint="Logs a new set immediately through the standard set logger"
@@ -9493,6 +9527,11 @@ export default function WorkoutViewerScreen() {
                 { key: 'reps', label: 'Reps', value: accessoryWheel.reps, options: accessoryWheel.repsOptions, accessibilityValue: (value) => `${value} reps`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, reps: value } : prev) },
                 { key: 'rir', label: 'RIR', value: accessoryWheel.rir, options: accessoryWheel.rirOptions, accessibilityValue: (value) => `${value} RIR`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, rir: value } : prev) },
               ]} />
+
+              <SetEntryVideo video={accessoryWheel.selectedVideo} onPick={() => pickVideoForEntry('accessory')}
+                onChange={selectedVideo => setAccessoryWheel(current => current ? { ...current, selectedVideo } : current)}
+                onRemove={() => setAccessoryWheel(current => current ? { ...current, selectedVideo: null } : current)}
+                allowCoachReview={!isIndividualUser} disabled={feedbackState.submission.status === 'submitting' || !!pendingAccessoryLogItemId} />
 
               {accessoryWheelLastLog ? (
                 <TouchableOpacity
@@ -9702,6 +9741,11 @@ export default function WorkoutViewerScreen() {
                           { key: 'reps', label: 'Reps', value: activeEntry.reps, options: activeEntry.repsOptions, accessibilityValue: (value) => `${value} reps`, onChange: (value) => updateSupersetRoundEntry(activeEntry.itemId, 'reps', value) },
                           { key: 'rir', label: 'RIR', value: activeEntry.rir, options: activeEntry.rirOptions, accessibilityValue: (value) => `${value} RIR`, onChange: (value) => updateSupersetRoundEntry(activeEntry.itemId, 'rir', value) },
                         ]} />
+
+                        <SetEntryVideo video={activeEntry.selectedVideo} onPick={() => pickVideoForEntry('superset')}
+                          onChange={selectedVideo => setSupersetRoundLogger(current => current ? { ...current, entries: current.entries.map(entry => entry.itemId === activeEntry.itemId ? { ...entry, selectedVideo } : entry) } : current)}
+                          onRemove={() => setSupersetRoundLogger(current => current ? { ...current, entries: current.entries.map(entry => entry.itemId === activeEntry.itemId ? { ...entry, selectedVideo: null } : entry) } : current)}
+                          allowCoachReview={!isIndividualUser} disabled={supersetRoundLogger.saving || supersetRoundTransitioning} />
 
                         {activeEntry.repeatLast ? (
                           <TouchableOpacity

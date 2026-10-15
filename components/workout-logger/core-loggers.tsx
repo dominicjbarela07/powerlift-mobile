@@ -426,8 +426,9 @@ export function CoreMovementLedgerRow({
             <Text style={v3Sets.stage}>{row.timelineLabel || row.label}</Text>
             <SLMotionPressable accessibilityRole="button" disabled={!row.onEdit && !row.onLogSet} onPress={row.onEdit || row.onLogSet} style={v3Sets.copy}>
               <Text style={v3Sets.result}>{row.resultText || setTimelinePrescription({ ...row, prescription: row.prescription?.replace(/^\d+\s*[x×]\s*/i, '') })}</Text>
+              {row.videoStatus && row.videoStatus !== 'No video attached' ? <Text style={[v3Sets.videoStatus, { color: /failed|not uploaded/i.test(row.videoStatus) ? SLColors.danger : /uploading|queued/i.test(row.videoStatus) ? SLColors.accentCyanMuted : SLColors.success }]}>{row.videoStatus}</Text> : null}
             </SLMotionPressable>
-            {row.onVideo ? <SLMotionPressable accessibilityLabel={row.videoLabel || 'Set video'} onPress={row.onVideo} style={v3Sets.video}><Ionicons name="videocam-outline" size={18} color="#aa9bbd" /></SLMotionPressable> : <Text style={[v3Sets.state, row.state === 'completed' && v3Sets.saved]}>{row.state === 'completed' ? 'Saved' : row.state === 'active' ? 'Current' : 'Target'}</Text>}
+            {row.onVideo ? <SLMotionPressable accessibilityRole="button" accessibilityLabel={row.videoLabel || 'Set video'} disabled={row.videoDisabled} onPress={row.onVideo} style={v3Sets.video}><Ionicons name={row.videoLabel === 'View' ? 'play-circle-outline' : 'videocam-outline'} size={18} color={row.videoLabel === 'View' ? SLColors.success : SLColors.accentViolet} /><Text style={v3Sets.videoAction}>{row.videoLabel || 'Video'}</Text></SLMotionPressable> : <Text style={[v3Sets.state, row.state === 'completed' && v3Sets.saved]}>{row.state === 'completed' ? 'Saved' : row.state === 'active' ? 'Current' : 'Target'}</Text>}
           </View>
         </CompletedSetSwipeRow>)}
       </View> : null}
@@ -534,10 +535,12 @@ export function CoreMovementLedgerRow({
 }
 
 const v3Sets = StyleSheet.create({
+  videoStatus: { fontFamily: SLFontFamilies.body, fontSize: 11, marginTop: 3 },
+  videoAction: { color: SLColors.accentViolet, fontFamily: SLFontFamilies.body, fontSize: 10, textAlign: 'center' },
   list: { marginVertical: 13 }, heading: { color: '#f3edf9', fontFamily: SLFontFamilies.sansSemiBold, fontSize: 11, marginBottom: 9 },
   row: { flexDirection: 'row', gap: 7, alignItems: 'center', minHeight: 42, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#39303e' },
   current: { backgroundColor: '#1c1229' }, dot: { color: '#b490ed', width: 17, fontSize: 16 }, stage: { color: '#d8cfdf', fontSize: 11, width: 48 },
-  copy: { flex: 1, justifyContent: 'center', minHeight: 42 }, result: { color: '#e8e0f2', fontSize: 13, lineHeight: 18 }, state: { color: '#b391df', fontSize: 10 }, saved: { color: '#a0e0c1' }, video: { width: 32, minHeight: 40, justifyContent: 'center', alignItems: 'center' },
+  copy: { flex: 1, justifyContent: 'center', minHeight: 42 }, result: { color: '#e8e0f2', fontSize: 13, lineHeight: 18 }, state: { color: '#b391df', fontSize: 10 }, saved: { color: '#a0e0c1' }, video: { width: 56, minHeight: 44, justifyContent: 'center', alignItems: 'center' },
 });
 
 function setTimelinePrescription(row: ActiveMovementDetailRow, compact = false) {
