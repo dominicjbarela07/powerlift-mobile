@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { assertLoggerUnitBaseline, assertClientFixScope } from './owner-directed-client-fix.mjs';
+const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'logger-unit-scope-'));
+try {
+ const write=(file,data)=>{const bytes=JSON.stringify(data);fs.writeFileSync(path.join(root,file),bytes);return {path:file,sha256:sha(bytes)};};
+ const baseline={'assets/approved.png':'original','app/(tabs)/workout/[workoutId].tsx':'prior'};
+ const fp=sha(JSON.stringify(Object.entries(baseline).sort(([a],[b])=>a.localeCompare(b))));
+ const current={id:'verified',gitCommitHash:'same-source'};
+ const proof={gateC:write('gate.json',{pass:true,missing:[],candidateProductFingerprint:fp,published:{...current,servedBundleSha256:'bundle'}}),assetAudit:write('audit.json',{pass:true,missingOrCorrupt:0,updateId:current.id,servedLaunchSha256:'bundle'})};
+ const paths=['app/(tabs)/workout/[workoutId].tsx','components/ui/floating-control-coordinator.tsx','components/workout-logger/session-v3-shell.tsx','config/protected-fix-manifest.json'];
+ const files={...baseline,...Object.fromEntries(paths.map(file=>[file,'after']))};
+ const state={currentTestFlight:current,verifiedSetEntryVideo:{publishedProof:proof}};
+ const ownerInstruction='Sorry, I meant ship it.';
+ const scope={scope:'canonical-logger-floating-unit-20261014',ownerInstruction,validation:'OWNER_DIRECTED_CONTRACTS_ONLY',productFingerprint:'candidate',baselineUpdateId:current.id,baselineSourceSha:current.gitCommitHash,baselineProductFingerprint:fp,baselineFiles:write('baseline.json',baseline),changedProductFiles:Object.fromEntries(paths.map(file=>[file,'after'])),contracts:{'scripts/test-logger-floating-unit.mjs':'hash'}};
+ const changes=assertLoggerUnitBaseline({root,scope,state,files});
+ const ownerText=ownerInstruction+' I said make it fucking bigger. It used to be a floating button. it can be slightly smaller, just as long as its noticible';
+ assertClientFixScope(scope,'candidate',changes,ownerText);
+ for(const invalid of [{...files,'assets/approved.png':'replacement'},{...files,'lib/unrelated.ts':'hidden'}])assert.throws(()=>assertLoggerUnitBaseline({root,scope,state,files:invalid}));
+ const missing={...files};delete missing['assets/approved.png'];assert.throws(()=>assertLoggerUnitBaseline({root,scope,state,files:missing}));
+ assert.throws(()=>assertLoggerUnitBaseline({root,scope:{...scope,baselineSourceSha:'invented'},state,files}));
+ assert.throws(()=>assertLoggerUnitBaseline({root,scope:{...scope,baselineFiles:write('fake.json',{...baseline,'assets/approved.png':'replacement'})},state,files}));
+ assert.throws(()=>assertClientFixScope(scope,'different',changes,ownerText));
+ assert.throws(()=>assertClientFixScope(scope,'candidate',changes,'invented signoff'));
+ assert.throws(()=>assertClientFixScope({...scope,contracts:{}},'candidate',changes,ownerText));
+ console.log('PASS: bounded floating-unit release rejects missing/replaced assets, unrelated changes, forged baseline/source/signoff and missing protection.');
+}finally{fs.rmSync(root,{recursive:true,force:true});}

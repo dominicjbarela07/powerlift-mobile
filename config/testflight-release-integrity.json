@@ -19894,6 +19894,50 @@
       "after": "3b7628caac5188776f993243f2642396eea75c6f319c9685db5653675174e223",
       "sourceCommit": "ed0b75df3cdec8ba71f1cdf4733f70457085fe8c",
       "ownerDirectiveScope": "set-entry-video-preview-20261014"
+    },
+    {
+      "ownerInstruction": "Sorry, I meant ship it.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-logger-unit.txt",
+      "ownerEvidenceSha256": "52365ae8e7457b30fbf22398198288f410603f63518640e08875d8ac44ea6797",
+      "reason": "Owner-approved single floating Logger unit button, final 56-point shell and 18-point label. Preserve all cumulative source, artwork and Set video behavior; reuse exact shared validation across both runtimes.",
+      "path": "app/(tabs)/workout/[workoutId].tsx",
+      "before": "8ba5b86199e291b69755a0dc0a3fd2c7dfcdd83417c41ac257093b9d3acb4bf5",
+      "after": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92",
+      "sourceCommit": "1bb96663f49cc194a971fe288fece50beb17f576",
+      "ownerDirectiveScope": "canonical-logger-floating-unit-20261014"
+    },
+    {
+      "ownerInstruction": "Sorry, I meant ship it.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-logger-unit.txt",
+      "ownerEvidenceSha256": "52365ae8e7457b30fbf22398198288f410603f63518640e08875d8ac44ea6797",
+      "reason": "Owner-approved single floating Logger unit button, final 56-point shell and 18-point label. Preserve all cumulative source, artwork and Set video behavior; reuse exact shared validation across both runtimes.",
+      "path": "components/ui/floating-control-coordinator.tsx",
+      "before": "f8e57249ab1c71dce87bf37e482bd742cb9f4ffeb1805202d7a5c177715ad7b1",
+      "after": "a23a7a8b12d4d681095a45b1a4f8d08d98794e1d3a6a0be95eaf3a2cee735e0b",
+      "sourceCommit": "1bb96663f49cc194a971fe288fece50beb17f576",
+      "ownerDirectiveScope": "canonical-logger-floating-unit-20261014"
+    },
+    {
+      "ownerInstruction": "Sorry, I meant ship it.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-logger-unit.txt",
+      "ownerEvidenceSha256": "52365ae8e7457b30fbf22398198288f410603f63518640e08875d8ac44ea6797",
+      "reason": "Owner-approved single floating Logger unit button, final 56-point shell and 18-point label. Preserve all cumulative source, artwork and Set video behavior; reuse exact shared validation across both runtimes.",
+      "path": "components/workout-logger/session-v3-shell.tsx",
+      "before": "cad4d79c22a6da6485cf05817b10b7b4b0483f3c9108b0396292dbe4cc1df4e8",
+      "after": "8dfd1cf02a6dcf70feea47fa6d8fa9ef86113541528401bc7ae46f51a94d7cce",
+      "sourceCommit": "1bb96663f49cc194a971fe288fece50beb17f576",
+      "ownerDirectiveScope": "canonical-logger-floating-unit-20261014"
+    },
+    {
+      "ownerInstruction": "Sorry, I meant ship it.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-logger-unit.txt",
+      "ownerEvidenceSha256": "52365ae8e7457b30fbf22398198288f410603f63518640e08875d8ac44ea6797",
+      "reason": "Owner-approved single floating Logger unit button, final 56-point shell and 18-point label. Preserve all cumulative source, artwork and Set video behavior; reuse exact shared validation across both runtimes.",
+      "path": "config/protected-fix-manifest.json",
+      "before": "e096935ee1da6c44af82a0ee8651a0803bc692dc5be5827b06e88b2b20cb32a7",
+      "after": "b3cb3bfeda2966b05bbe25b9f1d82673f13f96cd3558c8e8e4bd33497c97cb47",
+      "sourceCommit": "1bb96663f49cc194a971fe288fece50beb17f576",
+      "ownerDirectiveScope": "canonical-logger-floating-unit-20261014"
     }
   ],
   "assetRemovalAuthorizations": [
@@ -157880,7 +157924,7 @@
     "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
     "scripts/test-accepted-behavior-contracts.mjs": "112b5c8ca4d4039cfc0d8d3859924a56843f8d5f83b8c085ad88a06c8863c502",
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
-    "config/protected-fix-manifest.json": "3b7628caac5188776f993243f2642396eea75c6f319c9685db5653675174e223",
+    "config/protected-fix-manifest.json": "b3cb3bfeda2966b05bbe25b9f1d82673f13f96cd3558c8e8e4bd33497c97cb47",
     "scripts/assert-no-dev-artwork-export.mjs": "610934d315a2f34c534e80545d7c8361fbad0110c313c48f3d9642f2c04a7c22",
     "scripts/test-release-critical-invariants.mjs": "7c5df99458cc99e910a03b4f4eecdc01945859b70b0637a1630e144b68025522",
     "scripts/test-release-source-lineage.mjs": "e7850ec385320f620ebc156dfa0dea62934d87114108c0ccf978ad03f53042b6",
@@ -157911,7 +157955,7 @@
     "scripts/test-cable-brand-equipment-api.mjs": "71889a55559cfd1dc43a5817b0b1ac8bd0c022498e6c30d46ff161ab71949dbc",
     "docs/CABLE_BRAND_EQUIPMENT.md": "0289f45e3859f993ccce52a2ffca383f484f3899c61224179813a6363c151c21",
     "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt": "69f1ba6ca417408f3e0a5cada3f37bca5fee5f1c26ece4443bec9d855fc8cb9b",
-    "scripts/owner-directed-client-fix.mjs": "1d30db5ddd8fb0c35c58335d56fde91849c5e11e6092831dc9e0dba2089cf167",
+    "scripts/owner-directed-client-fix.mjs": "9f6aa8fc19ecf0a66bb3f7876342b414f5d338b548deb8271635850d549474c1",
     "scripts/test-owner-directed-client-fix.mjs": "2effe70e84dbbfc346e5e74932ff6054eda373899c3b7a82da6b7f01576ab0be",
     "scripts/test-zero-load-edit-api.mjs": "a19f2b1b7d6b0ad2335f8e3668657a1a74675ca14d14ba8bf13616b16f3dbc2a",
     "scripts/test-zero-load-edit-set.mjs": "6187f4a68b57230b2fb86f3702e2c89d0f704394f1eef200db689f66cec6e250",
@@ -157929,7 +157973,7 @@
     "scripts/audit-ui-constitution.js": "c14e4631723433c5528131adc17c2f376dbef912a6288cd2575c2a10c460024b",
     "scripts/audit-transparent-screen-roots.js": "2cb55a6dc2987baa0693dfa6325437c50c1dc1057bd8817fbdadde8defc88518",
     "scripts/reviewed-runtime-continuation.mjs": "2ae6db43fb13b09592327eb725da8438e687eeaf6fe937bcb72779f6adc006c6",
-    "scripts/test-reviewed-runtime-continuation.mjs": "d5796adf367e2d5cfbaec92539816e0534c7353cd7b3340e789a73f8b864b9d6",
+    "scripts/test-reviewed-runtime-continuation.mjs": "a19244d4164f7094d55219eaa311b07b444592a79899de90d145f4df39101a0d",
     "scripts/test-governed-movement-art-taxonomy.mjs": "474fd1f0bb9f5b11f6f4b797ee35a178201bae69ff3b9c647a1a0b6cf5f95370",
     "scripts/education-image-transport.mjs": "68d37ed07669d53b0395fbe7424818a4ddec570acb94cca0d2d49f4008f2a683",
     "scripts/generate-education-image-transport.mjs": "e731bee3e877638bc571a9393b8d671ec2af4c847d6d85cec731e71bbd774844",
@@ -157939,13 +157983,13 @@
     "scripts/native-build-upload-policy.cjs": "0886edd1b00f77aa122848cc96176ed22b053f53d5393e87cf9081456ff3ffde",
     "scripts/test-native-build-upload-policy.mjs": "3016ed47dd9ef99eff2382e2d6dbe2581b38804945f6999c24d55ab9517b40ff",
     "scripts/assert-ota-native-compatibility.mjs": "8236db7138e9f28be680575774e75e57f9d17bd159cd3e9892f2b4234c29b9e2",
-    "scripts/production3-client-fix-policy.mjs": "fa56b5c1f33df1701daa031412ffa8623f68bb297f39a38ba4453c51756b68ea",
+    "scripts/production3-client-fix-policy.mjs": "d5c23995504722efb24187ee7a366cf76d251676790e9c4e1c238b111e1bbd75",
     "scripts/test-production3-client-fix-policy.mjs": "650ef60e3045aa7cfa6a86223227380fcd3e2e07d7604db6df6e3d87dedc8372",
     "scripts/test-copied-week-release-scope.mjs": "f7d6b1f01fc9da815771b79ad67dc94fd9a030c6152b912e4d74abbe48cd01d6",
     "scripts/test-private-movement-identity-contract.mjs": "7abcd5b6498f7e1b973d9d35dc4ab52b25311058de6fbcea48eeefd6471f8748",
     "scripts/test-active-session-hot-swap.mjs": "4c4fefa45c9db444e66f09c00e86d5a087e8bf7a25946de4bbff25f76a492241",
     "scripts/test-active-session-mutation-backend.mjs": "61b3ca98945fd76aaacb54b36c4926a88568066c3eb7759c0d08539cebc9da36",
-    "scripts/ui-constitution-exceptions.json": "0f5134ba37274b559427b521303e9b9b9d1ce125a634b6c07a5a64bcbedcb226",
+    "scripts/ui-constitution-exceptions.json": "689ebc26cbd4ae6624027ae97c8909cf7abb6853757ffe7c28cbd9fdf7035629",
     "scripts/test-today-archive-access.mjs": "604bc347146b0e504c6a957cf38f18f944da13b226c9d7edffda2214271c94c9",
     "scripts/test-archive-video-movement-api.mjs": "df9b5bf666e3083746e85f84f886cad653fc76a05b5111bf0811b0fefea44f68",
     "scripts/test-archive-access-release-scope.mjs": "7162d1a4715c512cd8f84d43d5af8dcc74134ef7c9edabfa63108536a2ff6d58",
@@ -157956,7 +158000,9 @@
     "scripts/test-selected-set-video-preview.mjs": "515ddb74116593365a1756d98a9d64e24a4a6359d6503ba2e320c11ea8db9397",
     "scripts/test-session-execution-ownership.mjs": "14d05e43292c2c8a758bfe89d1e02bc25696357a0f9f9f1729b361ad5ed05209",
     "scripts/mobile-3-surface-owners.json": "841347e0350979099cfbed2af0b908c6e2bfba6bf4296c8f2091aad1e33e3a6f",
-    "scripts/test-ota-validation-export-lifecycle.mjs": "febdfd36e829d3d677d3f74ae455e39c642a8ffd2425b080ce49d3c3c57cb259"
+    "scripts/test-ota-validation-export-lifecycle.mjs": "febdfd36e829d3d677d3f74ae455e39c642a8ffd2425b080ce49d3c3c57cb259",
+    "scripts/test-logger-floating-unit.mjs": "8d6a4a25193422eb90cb4b76d000322eca8055a8e3634a7dc855edb0ad02a847",
+    "scripts/test-logger-unit-release-scope.mjs": "575f822fb64e27da1e3104a8feb5f4cc40cd6a88086ea6c2981a06914210b373"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -158307,39 +158353,42 @@
     "status": "OPEN_PENDING_DEPLOYMENT_AND_PUBLICATION"
   },
   "ownerDirectedClientFix": {
-    "ownerInstruction": "Good, please ship it. Don't waste time running a fucking full validation for 2.1 if it passes for 3.0, just upload it. Ship it for 3. Fuck. If the validation passes for 3.0, ship it for both 3.0 and 2.1, please.",
-    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-set-entry-video.txt",
-    "ownerEvidenceSha256": "0f65424759b3bec58234f0c8c20f57b3c720400c8a70a507a4b5f654f6683694",
-    "reason": "Owner-approved Set video selection, local preview and confirmed upload feedback; preserve all cumulative product/asset state and reuse only exact matching shared validation inputs.",
-    "scope": "set-entry-video-preview-20261014",
+    "ownerInstruction": "Sorry, I meant ship it.",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-logger-unit.txt",
+    "ownerEvidenceSha256": "52365ae8e7457b30fbf22398198288f410603f63518640e08875d8ac44ea6797",
+    "reason": "Owner-approved single floating Logger unit button, final 56-point shell and 18-point label. Preserve all cumulative source, artwork and Set video behavior; reuse exact shared validation across both runtimes.",
+    "scope": "canonical-logger-floating-unit-20261014",
     "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
-    "productFingerprint": "29aa149352ab21d0a545b264b46a0df2ecf1a989df788ed24fc8bae8fa28a879",
-    "baselineUpdateId": "01a13b42-a947-7985-9770-d74a97215fc9",
-    "baselineSourceSha": "c917f7ea25bb2c1b7057b92b816853ffbf25aa27",
-    "baselineProductFingerprint": "098d4813aeae06fb89fa8e2d8b24e1bc4b244d721fe23872821fb90440987f6f",
+    "productFingerprint": "3b6bef4bb876c83786bef0ba0143d305a219415856f38896d54ad14c36071e7e",
+    "baselineUpdateId": "01a13d2f-e54b-719a-8007-c874adf52e12",
+    "baselineSourceSha": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
+    "baselineProductFingerprint": "29aa149352ab21d0a545b264b46a0df2ecf1a989df788ed24fc8bae8fa28a879",
     "baselineFiles": {
-      "path": "config/testflight-runtime-set-video-20261014/baseline-product.json",
-      "sha256": "9621238d0544ffaf00dc497bf0f18ca0469569e8c8454239cfbd8a5d97824052"
+      "path": "config/testflight-runtime-logger-unit-20261014/baseline-product.json",
+      "sha256": "4187b03feded7bb6a928a1bb7112b2dca16f3ad49d740bec878f140218bb9586"
     },
     "changedProductFiles": {
-      "app/(tabs)/workout/[workoutId].tsx": "28fca0895a24d5d8fffc83da878241960ec96dc3409a0b374ec5587d6bd71b58",
-      "components/workout-logger/core-loggers.tsx": "d157827886a42d52a84c81a1c38b05f504bc03ae9d8df549c8bfe2a453980604",
-      "components/workout-logger/selected-set-video-preview.tsx": "e73138d357ab1853689d5a34b50021f2bd91b580e2e4dc7e2b05bd54ad11ff03",
-      "components/workout-logger/set-entry-video.tsx": "6bc5258844bfbf490689046ee210de1d5ccfa905b7e17e6cedaeb305070f3478",
-      "config/protected-fix-manifest.json": "3b7628caac5188776f993243f2642396eea75c6f319c9685db5653675174e223",
-      "lib/set-video-upload-status.ts": "3ac61a167662cc43f555c6f46771c97f848cec8bcc9685072adcfedfd7f58436",
-      "lib/videoUploadQueue.ts": "b7ece6ccf128c014d8da1ea02bf2df6218d6246db316715f2d709a7404773f6d",
-      "config/bottom-sheet-consumer-inventory.json": "daadbf798a69fb7b443d9b257e5ed73729d6915a72af3ce32d4f75197e3e008b"
+      "app/(tabs)/workout/[workoutId].tsx": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92",
+      "components/ui/floating-control-coordinator.tsx": "a23a7a8b12d4d681095a45b1a4f8d08d98794e1d3a6a0be95eaf3a2cee735e0b",
+      "components/workout-logger/session-v3-shell.tsx": "8dfd1cf02a6dcf70feea47fa6d8fa9ef86113541528401bc7ae46f51a94d7cce",
+      "config/protected-fix-manifest.json": "b3cb3bfeda2966b05bbe25b9f1d82673f13f96cd3558c8e8e4bd33497c97cb47"
     },
     "contracts": {
-      "scripts/test-selected-set-video-preview.mjs": "515ddb74116593365a1756d98a9d64e24a4a6359d6503ba2e320c11ea8db9397",
-      "scripts/test-session-execution-ownership.mjs": "14d05e43292c2c8a758bfe89d1e02bc25696357a0f9f9f1729b361ad5ed05209",
-      "scripts/test-set-entry-video.mjs": "414d94ca8746532c628fc6459188ca17858289e47596b5a847d95bb4aaac97e8"
+      "scripts/test-logger-floating-unit.mjs": "8d6a4a25193422eb90cb4b76d000322eca8055a8e3634a7dc855edb0ad02a847"
     },
-    "publicationComplete": true,
-    "publishedRuntimeVersions": [
-      "3.0.0",
-      "2.1.0"
+    "visualEvidence": [
+      {
+        "path": "docs/validation/logger-unit-control-dev-2026-10-14/05-floating-56-lb.png",
+        "sha256": "6d279bc0777b775dc467c60caaafa196431975b85c6361a45644826eb8ab1359"
+      },
+      {
+        "path": "docs/validation/logger-unit-control-dev-2026-10-14/06-floating-56-kg.png",
+        "sha256": "96380a2f0d7935a5c77ff17ea9e49ec2e069b76009fd6fbec5642137b843240c"
+      },
+      {
+        "path": "docs/validation/logger-unit-control-dev-2026-10-14/07-floating-56-review.png",
+        "sha256": "a8b95707bf1c16ff651d9f62f62eefadea9e7cf3b6da5175e994cb0e7dc2a548"
+      }
     ]
   },
   "canonicalZeroLoadEdit": {
@@ -161680,6 +161729,42 @@
         "path": "config/testflight-release-archive-20261014/backend-deployment.json",
         "sha256": "149afe44501fc1f66f2a349cfedeca6dd1eff4f1c5eb7efcdfc99ac825315e0d"
       }
+    },
+    {
+      "ownerInstruction": "Good, please ship it. Don't waste time running a fucking full validation for 2.1 if it passes for 3.0, just upload it. Ship it for 3. Fuck. If the validation passes for 3.0, ship it for both 3.0 and 2.1, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-set-entry-video.txt",
+      "ownerEvidenceSha256": "0f65424759b3bec58234f0c8c20f57b3c720400c8a70a507a4b5f654f6683694",
+      "reason": "Owner-approved Set video selection, local preview and confirmed upload feedback; preserve all cumulative product/asset state and reuse only exact matching shared validation inputs.",
+      "scope": "set-entry-video-preview-20261014",
+      "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+      "productFingerprint": "29aa149352ab21d0a545b264b46a0df2ecf1a989df788ed24fc8bae8fa28a879",
+      "baselineUpdateId": "01a13b42-a947-7985-9770-d74a97215fc9",
+      "baselineSourceSha": "c917f7ea25bb2c1b7057b92b816853ffbf25aa27",
+      "baselineProductFingerprint": "098d4813aeae06fb89fa8e2d8b24e1bc4b244d721fe23872821fb90440987f6f",
+      "baselineFiles": {
+        "path": "config/testflight-runtime-set-video-20261014/baseline-product.json",
+        "sha256": "9621238d0544ffaf00dc497bf0f18ca0469569e8c8454239cfbd8a5d97824052"
+      },
+      "changedProductFiles": {
+        "app/(tabs)/workout/[workoutId].tsx": "28fca0895a24d5d8fffc83da878241960ec96dc3409a0b374ec5587d6bd71b58",
+        "components/workout-logger/core-loggers.tsx": "d157827886a42d52a84c81a1c38b05f504bc03ae9d8df549c8bfe2a453980604",
+        "components/workout-logger/selected-set-video-preview.tsx": "e73138d357ab1853689d5a34b50021f2bd91b580e2e4dc7e2b05bd54ad11ff03",
+        "components/workout-logger/set-entry-video.tsx": "6bc5258844bfbf490689046ee210de1d5ccfa905b7e17e6cedaeb305070f3478",
+        "config/protected-fix-manifest.json": "3b7628caac5188776f993243f2642396eea75c6f319c9685db5653675174e223",
+        "lib/set-video-upload-status.ts": "3ac61a167662cc43f555c6f46771c97f848cec8bcc9685072adcfedfd7f58436",
+        "lib/videoUploadQueue.ts": "b7ece6ccf128c014d8da1ea02bf2df6218d6246db316715f2d709a7404773f6d",
+        "config/bottom-sheet-consumer-inventory.json": "daadbf798a69fb7b443d9b257e5ed73729d6915a72af3ce32d4f75197e3e008b"
+      },
+      "contracts": {
+        "scripts/test-selected-set-video-preview.mjs": "515ddb74116593365a1756d98a9d64e24a4a6359d6503ba2e320c11ea8db9397",
+        "scripts/test-session-execution-ownership.mjs": "14d05e43292c2c8a758bfe89d1e02bc25696357a0f9f9f1729b361ad5ed05209",
+        "scripts/test-set-entry-video.mjs": "414d94ca8746532c628fc6459188ca17858289e47596b5a847d95bb4aaac97e8"
+      },
+      "publicationComplete": true,
+      "publishedRuntimeVersions": [
+        "3.0.0",
+        "2.1.0"
+      ]
     }
   ],
   "releaseProtectionProgressions": [
@@ -162027,6 +162112,51 @@
         }
       ],
       "review": "Future publisher preserves and rechecks the actual passing shared receipt after Expo export --clear. The real export-block regression reproduces deletion of pre-export proof and rejects changed inputs. This bounded tooling repair changes no shipped runtime code; actual current 2.1 publication reused the identical passing 3.0 result and did not rerun either full suite."
+    },
+    {
+      "ownerInstruction": "Sorry, I meant ship it.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-logger-unit.txt",
+      "ownerEvidenceSha256": "52365ae8e7457b30fbf22398198288f410603f63518640e08875d8ac44ea6797",
+      "reason": "Owner-approved single floating Logger unit button, final 56-point shell and 18-point label. Preserve all cumulative source, artwork and Set video behavior; reuse exact shared validation across both runtimes.",
+      "scope": "canonical-logger-floating-unit-20261014",
+      "files": [
+        {
+          "path": "scripts/owner-directed-client-fix.mjs",
+          "before": "1d30db5ddd8fb0c35c58335d56fde91849c5e11e6092831dc9e0dba2089cf167",
+          "after": "9f6aa8fc19ecf0a66bb3f7876342b414f5d338b548deb8271635850d549474c1"
+        },
+        {
+          "path": "scripts/production3-client-fix-policy.mjs",
+          "before": "fa56b5c1f33df1701daa031412ffa8623f68bb297f39a38ba4453c51756b68ea",
+          "after": "d5c23995504722efb24187ee7a366cf76d251676790e9c4e1c238b111e1bbd75"
+        },
+        {
+          "path": "scripts/test-reviewed-runtime-continuation.mjs",
+          "before": "d5796adf367e2d5cfbaec92539816e0534c7353cd7b3340e789a73f8b864b9d6",
+          "after": "a19244d4164f7094d55219eaa311b07b444592a79899de90d145f4df39101a0d"
+        },
+        {
+          "path": "scripts/test-logger-floating-unit.mjs",
+          "before": null,
+          "after": "8d6a4a25193422eb90cb4b76d000322eca8055a8e3634a7dc855edb0ad02a847"
+        },
+        {
+          "path": "scripts/test-logger-unit-release-scope.mjs",
+          "before": null,
+          "after": "575f822fb64e27da1e3104a8feb5f4cc40cd6a88086ea6c2981a06914210b373"
+        },
+        {
+          "path": "scripts/ui-constitution-exceptions.json",
+          "before": "0f5134ba37274b559427b521303e9b9b9d1ce125a634b6c07a5a64bcbedcb226",
+          "after": "689ebc26cbd4ae6624027ae97c8909cf7abb6853757ffe7c28cbd9fdf7035629"
+        },
+        {
+          "path": "config/protected-fix-manifest.json",
+          "before": "3b7628caac5188776f993243f2642396eea75c6f319c9685db5653675174e223",
+          "after": "b3cb3bfeda2966b05bbe25b9f1d82673f13f96cd3558c8e8e4bd33497c97cb47"
+        }
+      ],
+      "review": "Bounded final floating-unit source/contract/visual registrations only. Deliberate missing-art, hidden-source, forged-baseline/source/signoff and omitted-contract failures reject; earlier scopes and native restrictions remain unchanged."
     }
   ],
   "verifiedCopiedWeekIdentity": {
@@ -162232,6 +162362,22 @@
     }
   },
   "ownerRuntimeTarget": {
+    "ownerInstruction": "Sorry, I meant ship it.",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-logger-unit.txt",
+    "ownerEvidenceSha256": "52365ae8e7457b30fbf22398198288f410603f63518640e08875d8ac44ea6797",
+    "reason": "Owner-approved single floating Logger unit button, final 56-point shell and 18-point label. Preserve all cumulative source, artwork and Set video behavior; reuse exact shared validation across both runtimes.",
+    "runtimeVersions": [
+      "3.0.0",
+      "2.1.0"
+    ],
+    "branches": [
+      "production-3-preparation",
+      "testflight"
+    ],
+    "deliveryStatus": "AUTHORIZED_PENDING_PUBLICATION",
+    "meaning": "Owner signed off the corrected floating button; retain the standing shared-validation dual-runtime instruction."
+  },
+  "previousOwnerRuntimeTarget": {
     "ownerInstruction": "Good, please ship it. Don't waste time running a fucking full validation for 2.1 if it passes for 3.0, just upload it. Ship it for 3. Fuck. If the validation passes for 3.0, ship it for both 3.0 and 2.1, please.",
     "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-set-entry-video.txt",
     "ownerEvidenceSha256": "0f65424759b3bec58234f0c8c20f57b3c720400c8a70a507a4b5f654f6683694",
@@ -162247,17 +162393,6 @@
     "meaning": "Latest explicit owner instruction signs off both targets. Earlier temporary stop is superseded. Full common validation runs once; target-specific export/publication verification remains required.",
     "deliveryStatus": "BOTH_PUBLISHED_VERIFIED",
     "sharedValidationReusedFor2_1": true
-  },
-  "previousOwnerRuntimeTarget": {
-    "runtimeVersion": "3.0.0",
-    "branch": "production-3-preparation",
-    "ownerInstruction": "Dude, fuck 2.1, bro. It fucking\u2014 Jesus Christ, bro. I don\u2019t give a fuck about Testplay 2.1 anymore. Hurry the fuck up. This is taking way too fucking long.",
-    "recordedAt": "2026-10-14T16:37:51.344Z",
-    "runtime2_1FurtherWork": "STOPPED_BY_OWNER",
-    "runtime2_1PublicationAlreadyOccurred": "01a13b42-a947-7985-9770-d74a97215fc9",
-    "runtime2_1ByteAuditComplete": false,
-    "runtime2_1PostPublicationCloseoutComplete": false,
-    "meaning": "3.0 shipment is fully verified. The 2.1 update was published before the owner stopped further 2.1 work; no full 2.1 post-publication audit or closeout is claimed. Retain historical protections and do not target 2.1 again without owner direction."
   },
   "verifiedProduction3SetEntryVideo": {
     "publication": {

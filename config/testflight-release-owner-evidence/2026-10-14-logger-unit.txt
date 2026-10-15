@@ -1,0 +1,10 @@
+Canonical session logger. The pound KG toggle button is too small, bro. It's hard for people to find. Implement it in dev and let me see it on the sim.
+
+I don't like the switch at all, dude. I didn't say fucking change it. I said make it fucking bigger. It's horseshit, dude. It used to be a floating button. What happened to that?
+
+it can be slightly smaller, just as long as its noticible
+
+Sorry, I meant ship it.
+
+Standing dual-runtime delivery instruction:
+Good, please ship it. Don't waste time running a fucking full validation for 2.1 if it passes for 3.0, just upload it. Ship it for 3. Fuck. If the validation passes for 3.0, ship it for both 3.0 and 2.1, please.
