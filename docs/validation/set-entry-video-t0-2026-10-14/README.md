@@ -56,3 +56,48 @@ after correction. No movement artwork, native dependencies or backend code chang
 Observed native runtime coverage is self-coach/iPhone Air. Coached archive/review
 intent and grouped Set association have executable coverage. This is not a claim
 of physical-phone, Android native, or every-role runtime observation.
+
+## Follow-up: selected video preview before submission
+
+The selected thumbnail/play badge and Preview video label open the local clip
+with native playback controls. Change and remove remain separate actions.
+Preview is explicitly Not uploaded yet; Back to set closes/stops playback and
+preserves the selected clip, review intent and Set entries. It has no upload or
+Set mutation dependencies. The shared control covers the same three input
+surfaces; the existing server attachment player is not used for an unsaved clip.
+
+Validation on the follow-up source:
+
+- `node scripts/test-selected-set-video-preview.mjs`: PASS. Actual attachment and
+  preview components; local URI, native controls, close/pause, unchanged clip and
+  review choice, Change/remove, no clip, changed/removed clip, loading/error and
+  system back.
+- `node scripts/test-set-entry-video.mjs`: PASS with the new component dependency.
+- `./node_modules/.bin/tsc --noEmit`: exit 0, no diagnostics.
+- Previously passing unchanged upload queue, submit handlers and ownership
+  evidence above was retained rather than running release suites again.
+
+Actual iPhone Air: tapped Preview video before submitting accessory Set 2,
+observed local playback with native controls/timecode, then Back to set. The
+Session remained at 2/6 saved Sets, the clip remained selected, and the fields
+remained 0 lb × 12 @ 2 RIR. Set 2 was not submitted. DEV backend/runtime stayed
+local; no TestFlight/Production promotion occurred.
+
+Visual weaknesses in the original selected-clip state (08) were no playback
+entrypoint, an inert thumbnail, and no pre-submission player distinguishing a
+local selection from a server-confirmed attachment. The Preview video action,
+44-point play thumbnail and dedicated local-only player correct these. The new
+screenshots were inspected for fit, preserved entries and safe return:
+
+| Proof | Screenshot |
+| --- | --- |
+| Preview entrypoint | 09-preview-entry-first.png |
+| Local selected-clip playback | 10-local-preview-first.png |
+| Second pass native playback controls | 11-local-preview-controls.png |
+| Back to unchanged Set, ready for owner | 12-preview-return-ready.png |
+
+State machine extension: selected draft ↔ local preview, before the existing
+Set-acceptance/upload flow. Adjacent native player lifecycle and sheet navigation
+were exercised; upload/Set persistence, consent and archive/review policy were
+not changed. Native observation remains self-coach/iPhone Air. Owner signoff is
+still pending.
