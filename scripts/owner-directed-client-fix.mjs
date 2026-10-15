@@ -7,11 +7,15 @@ import { execFileSync } from 'node:child_process';
 const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 // Exact source-bound owner validation; never represents visual/device proof.
 export function assertClientFixScope(scope, fingerprint, modifications, ownerText) {
-  assert.ok(['canonical-zero-load-edit-20261005', 'canonical-set-save-recovery-20261008', 'canonical-copied-week-identity-20261013', 'athlete-video-archive-access-20261014', 'set-entry-video-preview-20261014'].includes(scope?.scope), 'unknown owner client-fix scope');
+  assert.ok(['canonical-zero-load-edit-20261005', 'canonical-set-save-recovery-20261008', 'canonical-copied-week-identity-20261013', 'athlete-video-archive-access-20261014', 'set-entry-video-preview-20261014', 'canonical-logger-floating-unit-20261014'].includes(scope?.scope), 'unknown owner client-fix scope');
   assert.equal(scope.productFingerprint, fingerprint, 'client-fix validation cannot cover changed product source');
   assert.equal(scope.validation, 'OWNER_DIRECTED_CONTRACTS_ONLY');
   assert.ok(ownerText.includes(scope.ownerInstruction), 'exact current owner task is required');
-  if (scope.scope === 'set-entry-video-preview-20261014') {
+  if (scope.scope === 'canonical-logger-floating-unit-20261014') {
+    assert.equal(scope.ownerInstruction, 'Sorry, I meant ship it.');
+    assert.ok(ownerText.includes('I said make it fucking bigger') && ownerText.includes('It used to be a floating button'), 'Preserve the owner correction, not the rejected selector');
+    assert.ok(ownerText.includes('it can be slightly smaller, just as long as its noticible'), 'Retain the final size refinement');
+  } else if (scope.scope === 'set-entry-video-preview-20261014') {
     assert.ok(ownerText.includes('Good, please ship it.') && ownerText.includes('ship it for both 3.0 and 2.1'), 'Selected video scope requires the actual owner signoff and both runtime targets');
     assert.ok(ownerText.includes('before I even') && ownerText.includes('submit it'), 'Local preview requires the actual owner request');
   } else if (scope.scope === 'athlete-video-archive-access-20261014') {
@@ -22,7 +26,9 @@ export function assertClientFixScope(scope, fingerprint, modifications, ownerTex
   } else assert.ok(ownerText.includes('You will not do simulator runs. Stop talking about it'), 'validation restriction requires the exact owner instruction');
   assert.deepEqual(modifications.map(row => row.path).sort(), Object.keys(scope.changedProductFiles).sort(), 'client-fix scope cannot include unrelated changes');
   for (const row of modifications) assert.equal(row.after, scope.changedProductFiles[row.path], 'client-fix source changed');
-  assert.deepEqual(Object.keys(scope.contracts).sort(), scope.scope === 'set-entry-video-preview-20261014'
+  assert.deepEqual(Object.keys(scope.contracts).sort(), scope.scope === 'canonical-logger-floating-unit-20261014'
+    ? ['scripts/test-logger-floating-unit.mjs']
+    : scope.scope === 'set-entry-video-preview-20261014'
     ? ['scripts/test-selected-set-video-preview.mjs', 'scripts/test-session-execution-ownership.mjs', 'scripts/test-set-entry-video.mjs']
     : scope.scope === 'athlete-video-archive-access-20261014'
     ? ['scripts/test-archive-video-movement-api.mjs', 'scripts/test-today-archive-access.mjs']
@@ -31,6 +37,31 @@ export function assertClientFixScope(scope, fingerprint, modifications, ownerTex
     : scope.scope === 'canonical-set-save-recovery-20261008'
     ? ['scripts/test-accessory-pr-save-api.mjs', 'scripts/test-canonical-set-save-recovery.mjs', 'scripts/test-session-logger-journal.mjs', 'scripts/test-set-submission-lifecycle.mjs']
     : ['scripts/test-zero-load-edit-api.mjs', 'scripts/test-zero-load-edit-set.mjs']);
+}
+export function assertLoggerUnitBaseline({root, scope, state, files}) {
+  assert.equal(scope.scope, 'canonical-logger-floating-unit-20261014');
+  assert.equal(scope.baselineUpdateId, state.currentTestFlight.id);
+  assert.equal(scope.baselineSourceSha, state.currentTestFlight.gitCommitHash);
+  const read = entry => {
+    const bytes = fs.readFileSync(path.resolve(root, entry.path));
+    assert.equal(sha(bytes), entry.sha256, 'Logger unit baseline proof changed');
+    return JSON.parse(bytes);
+  };
+  const proof = state.verifiedSetEntryVideo.publishedProof;
+  const gate = read(proof.gateC), audit = read(proof.assetAudit);
+  assert.equal(gate.pass, true); assert.deepEqual(gate.missing, []);
+  assert.equal(gate.published.id, scope.baselineUpdateId);
+  assert.equal(gate.published.gitCommitHash, scope.baselineSourceSha);
+  assert.equal(audit.pass, true); assert.equal(audit.missingOrCorrupt, 0);
+  assert.equal(audit.updateId, gate.published.id);
+  assert.equal(audit.servedLaunchSha256, gate.published.servedBundleSha256);
+  const baseline = read(scope.baselineFiles);
+  assert.equal(sha(JSON.stringify(Object.entries(baseline).sort(([a],[b]) => a.localeCompare(b)))), gate.candidateProductFingerprint);
+  assert.equal(gate.candidateProductFingerprint, scope.baselineProductFingerprint);
+  assert.deepEqual(Object.keys(baseline).filter(file => !files[file]), [], 'Logger unit update cannot remove product files');
+  const changes = Object.entries(files).filter(([file,hash]) => baseline[file] !== hash).map(([path,after]) => ({path,after}));
+  assert.deepEqual(changes.map(row => row.path).sort(), ['app/(tabs)/workout/[workoutId].tsx', 'components/ui/floating-control-coordinator.tsx', 'components/workout-logger/session-v3-shell.tsx', 'config/protected-fix-manifest.json'], 'Logger unit update cannot include unrelated product changes');
+  return changes;
 }
 export function assertSelectedVideoBaseline({root, scope, state, files}) {
   assert.equal(scope.scope, 'set-entry-video-preview-20261014');
@@ -140,7 +171,9 @@ export function runClientFixContracts({root, scope, fingerprint, delta, exportDi
   assert.deepEqual(delta.subtractions, [], 'client fix cannot remove existing product files');
   const evidence = fs.readFileSync(path.join(root, scope.ownerEvidencePath));
   assert.equal(sha(evidence), scope.ownerEvidenceSha256);
-  const modifications = scope.scope === 'set-entry-video-preview-20261014'
+  const modifications = scope.scope === 'canonical-logger-floating-unit-20261014'
+    ? assertLoggerUnitBaseline({root, scope, state, files})
+    : scope.scope === 'set-entry-video-preview-20261014'
     ? assertSelectedVideoBaseline({root, scope, state, files})
     : scope.scope === 'athlete-video-archive-access-20261014'
     ? assertArchiveAccessBaseline({root, scope, state, files})
@@ -149,6 +182,13 @@ export function runClientFixContracts({root, scope, fingerprint, delta, exportDi
     : scope.scope === 'canonical-set-save-recovery-20261008'
     ? assertSetSaveRecoveryBaseline({root, scope, state, files}) : delta.modifications;
   assertClientFixScope(scope, fingerprint, modifications, evidence.toString());
+  if (scope.scope === 'canonical-logger-floating-unit-20261014') {
+    assert.equal(scope.visualEvidence.length, 3);
+    for (const entry of scope.visualEvidence) {
+      assert.ok(entry.path.startsWith('docs/validation/logger-unit-control-dev-2026-10-14/'));
+      assert.equal(sha(fs.readFileSync(path.join(root, entry.path))), entry.sha256, 'Reviewed Logger screenshot changed');
+    }
+  }
   if (scope.scope === 'athlete-video-archive-access-20261014') {
     const bytes = fs.readFileSync(path.resolve(root,scope.backendDeploymentReceipt.path));
     assert.equal(sha(bytes),scope.backendDeploymentReceipt.sha256);
