@@ -36,7 +36,10 @@ export function equipmentFlowSubject(item: Item): EquipmentFlowSubject {
       || (family && !['MACHINE', 'CABLE', 'ASSISTED'].includes(family)))) throw stale();
   const domain = optionalMachine ? 'machine' : family === 'CABLE' || equipment === 'cable' ? 'cable'
     : family === 'MACHINE' || ['machine', 'selectorized_machine', 'plate_loaded_machine', 'selectorized', 'plate_loaded', 'smith_machine'].includes(equipment) ? 'machine' : null;
-  if (!domain || (!optionalMachine && (identity.requires_equipment_configuration === false || taxonomy?.requires_equipment_configuration === false))) {
+  // Requiredness does not describe support. Established fixed-equipment
+  // definitions without taxonomy serialize requiredness as false, and optional
+  // setup remains valid. The current movement's physical domain owns support.
+  if (!domain) {
     throw new Error('This movement does not support machine or cable equipment setup. Use Swap to choose a different movement.');
   }
   return Object.freeze({ itemId: item.id, movementDefinitionId: identity.id, movementKey: identity.key,

@@ -1146,8 +1146,13 @@
         "path": "lib/equipment-flow-subject.ts",
         "sourceCommit": "847d5834f41486bfbf63a5e45e690a514eed0d8a",
         "blob": "37ae6097cf3e4122811996d913a2106bf74768a3",
-        "devSha256": "874fd0e8800b5dcbb961e9c5de65cebfbedd13f1b863242e47d2224da25d6d26",
-        "candidateSha256": "4a3c931baf7a23df49c79e8b8eae0e415d5cea99365f9f2e73cca9f89da20650"
+        "devSha256": "79e4bc45607709f22e9ac0b731724f13a4fa87a6bdd9de9f2ce6b18dce24a0c5",
+        "candidateSha256": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
+        "sharedFix": {
+          "devSourceCommit": "3beb386feb68103c751e11931a131cb0d25b7873",
+          "before": "  if (!domain || (!optionalMachine && (identity.requires_equipment_configuration === false || taxonomy?.requires_equipment_configuration === false))) {\n",
+          "after": "  // Requiredness does not describe support. Established fixed-equipment\n  // definitions without taxonomy serialize requiredness as false, and optional\n  // setup remains valid. The current movement's physical domain owns support.\n  if (!domain) {\n"
+        }
       },
       {
         "path": "lib/equipment-selection.ts",
