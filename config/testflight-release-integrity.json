@@ -3,6 +3,22 @@
   "policy": "TestFlight is cumulative. Explicit owner authorization is required for every subtraction and protected modification. Never replace this historical baseline with a regressed export.",
   "incident": "2026-10-02 direct EAS update omitted TestFlight artwork switch; 492 asset entries absent",
   "currentTestFlight": {
+    "id": "01a13d2f-e54b-719a-8007-c874adf52e12",
+    "createdAt": "2026-10-15T01:31:51.499Z",
+    "group": "4286ad03-f8b3-45f9-b940-f4c31bcec18c",
+    "branch": "testflight",
+    "message": "Attach and preview videos during set entry with confirmed upload progress and retry",
+    "runtimeVersion": "2.1.0",
+    "platform": "ios",
+    "manifestPermalink": "https://u.expo.dev/update/01a13d2f-e54b-719a-8007-c874adf52e12",
+    "isRollBackToEmbedded": false,
+    "gitCommitHash": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
+    "sourceAvailable": true,
+    "recoverableRefs": [
+      "refs/archive/testflight-published/01a13d2f-e54b-719a-8007-c874adf52e12"
+    ]
+  },
+  "previousTestFlight": {
     "id": "01a13b42-a947-7985-9770-d74a97215fc9",
     "createdAt": "2026-10-14T16:33:06.887Z",
     "group": "c5955f24-1a82-488e-bd84-ee5011e0d125",
@@ -18,23 +34,23 @@
       "refs/archive/testflight-published/01a13b42-a947-7985-9770-d74a97215fc9"
     ]
   },
-  "previousTestFlight": {
-    "id": "01a13726-69c1-7db2-9f28-5dcaa53a47b6",
-    "createdAt": "2026-10-13T21:23:46.753Z",
-    "group": "4ea6350e-d976-479d-9e10-eb4fa0c2cbbf",
-    "branch": "testflight",
-    "message": "Correct accessory taxonomy/artwork and Copy Week Swap; preserve approved imagery and cumulative fixes",
-    "runtimeVersion": "2.1.0",
-    "platform": "ios",
-    "manifestPermalink": "https://u.expo.dev/update/01a13726-69c1-7db2-9f28-5dcaa53a47b6",
-    "isRollBackToEmbedded": false,
-    "gitCommitHash": "25483f603512a0d9d0d291ffa904e67141622236",
-    "sourceAvailable": true,
-    "recoverableRefs": [
-      "refs/archive/testflight-published/01a13726-69c1-7db2-9f28-5dcaa53a47b6"
-    ]
-  },
   "releaseHistory": [
+    {
+      "id": "01a13d2f-e54b-719a-8007-c874adf52e12",
+      "createdAt": "2026-10-15T01:31:51.499Z",
+      "group": "4286ad03-f8b3-45f9-b940-f4c31bcec18c",
+      "branch": "testflight",
+      "message": "Attach and preview videos during set entry with confirmed upload progress and retry",
+      "runtimeVersion": "2.1.0",
+      "platform": "ios",
+      "manifestPermalink": "https://u.expo.dev/update/01a13d2f-e54b-719a-8007-c874adf52e12",
+      "isRollBackToEmbedded": false,
+      "gitCommitHash": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a13d2f-e54b-719a-8007-c874adf52e12"
+      ]
+    },
     {
       "id": "01a13b42-a947-7985-9770-d74a97215fc9",
       "createdAt": "2026-10-14T16:33:06.887Z",
@@ -157859,7 +157875,7 @@
     "app.config.js": "53dbaa252bd5af0dfad206be4c8dd0f2939b8615cd0b57e80450c45efb30a859",
     "scripts/testflight-cumulative-integrity.mjs": "5afb84cde3a03bfdc06fd5417a25188243589ccbc635f4efd6c1606ed7b1b0a8",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
-    "scripts/publish-validated-ios-ota.mjs": "a323e30b77577f9941e81b0c8c4a787cb4c1a731c26f4cb298c3a5547bf2482c",
+    "scripts/publish-validated-ios-ota.mjs": "f0ba18e8875445c8ff8f080eee5a5a764e361aec2b035b78441ffb0c18fa1ab7",
     "scripts/eas-build-testflight.sh": "946b0857b8b84925906b84547dbb62f1fa05e12ab3771674dd64e359d920e115",
     "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
     "scripts/test-accepted-behavior-contracts.mjs": "112b5c8ca4d4039cfc0d8d3859924a56843f8d5f83b8c085ad88a06c8863c502",
@@ -157939,7 +157955,8 @@
     "scripts/test-set-entry-video.mjs": "414d94ca8746532c628fc6459188ca17858289e47596b5a847d95bb4aaac97e8",
     "scripts/test-selected-set-video-preview.mjs": "515ddb74116593365a1756d98a9d64e24a4a6359d6503ba2e320c11ea8db9397",
     "scripts/test-session-execution-ownership.mjs": "14d05e43292c2c8a758bfe89d1e02bc25696357a0f9f9f1729b361ad5ed05209",
-    "scripts/mobile-3-surface-owners.json": "841347e0350979099cfbed2af0b908c6e2bfba6bf4296c8f2091aad1e33e3a6f"
+    "scripts/mobile-3-surface-owners.json": "841347e0350979099cfbed2af0b908c6e2bfba6bf4296c8f2091aad1e33e3a6f",
+    "scripts/test-ota-validation-export-lifecycle.mjs": "febdfd36e829d3d677d3f74ae455e39c642a8ffd2425b080ce49d3c3c57cb259"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -158318,7 +158335,12 @@
       "scripts/test-selected-set-video-preview.mjs": "515ddb74116593365a1756d98a9d64e24a4a6359d6503ba2e320c11ea8db9397",
       "scripts/test-session-execution-ownership.mjs": "14d05e43292c2c8a758bfe89d1e02bc25696357a0f9f9f1729b361ad5ed05209",
       "scripts/test-set-entry-video.mjs": "414d94ca8746532c628fc6459188ca17858289e47596b5a847d95bb4aaac97e8"
-    }
+    },
+    "publicationComplete": true,
+    "publishedRuntimeVersions": [
+      "3.0.0",
+      "2.1.0"
+    ]
   },
   "canonicalZeroLoadEdit": {
     "status": "SHIPPED",
@@ -161983,6 +162005,28 @@
         }
       ],
       "review": "Registers only the exact already owner-approved video UI values and its full-screen modal canvas, with native screenshots retained. Existing value pins remain intact. The historical runtime test explicitly requires rejecting old/relabelled observations for the new video mutation rather than accepting them. Color/root/inset negative controls remain enabled."
+    },
+    {
+      "ownerInstruction": "Good, please ship it. Don't waste time running a fucking full validation for 2.1 if it passes for 3.0, just upload it. Ship it for 3. Fuck. If the validation passes for 3.0, ship it for both 3.0 and 2.1, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-set-entry-video.txt",
+      "ownerEvidenceSha256": "0f65424759b3bec58234f0c8c20f57b3c720400c8a70a507a4b5f654f6683694",
+      "reason": "Owner-approved Set video selection, local preview and confirmed upload feedback; preserve all cumulative product/asset state and reuse only exact matching shared validation inputs.",
+      "scope": "set-entry-video-preview-20261014",
+      "files": [
+        {
+          "path": "scripts/publish-validated-ios-ota.mjs",
+          "before": "a323e30b77577f9941e81b0c8c4a787cb4c1a731c26f4cb298c3a5547bf2482c",
+          "after": "f0ba18e8875445c8ff8f080eee5a5a764e361aec2b035b78441ffb0c18fa1ab7",
+          "sourceCommit": "0a6d876ecb4b47d738ee9396bb0d6edddf279ccd"
+        },
+        {
+          "path": "scripts/test-ota-validation-export-lifecycle.mjs",
+          "before": null,
+          "after": "febdfd36e829d3d677d3f74ae455e39c642a8ffd2425b080ce49d3c3c57cb259",
+          "sourceCommit": "0a6d876ecb4b47d738ee9396bb0d6edddf279ccd"
+        }
+      ],
+      "review": "Future publisher preserves and rechecks the actual passing shared receipt after Expo export --clear. The real export-block regression reproduces deletion of pre-export proof and rejects changed inputs. This bounded tooling repair changes no shipped runtime code; actual current 2.1 publication reused the identical passing 3.0 result and did not rerun either full suite."
     }
   ],
   "verifiedCopiedWeekIdentity": {
@@ -162200,7 +162244,9 @@
       "production-3-preparation",
       "testflight"
     ],
-    "meaning": "Latest explicit owner instruction signs off both targets. Earlier temporary stop is superseded. Full common validation runs once; target-specific export/publication verification remains required."
+    "meaning": "Latest explicit owner instruction signs off both targets. Earlier temporary stop is superseded. Full common validation runs once; target-specific export/publication verification remains required.",
+    "deliveryStatus": "BOTH_PUBLISHED_VERIFIED",
+    "sharedValidationReusedFor2_1": true
   },
   "previousOwnerRuntimeTarget": {
     "runtimeVersion": "3.0.0",
@@ -162212,5 +162258,141 @@
     "runtime2_1ByteAuditComplete": false,
     "runtime2_1PostPublicationCloseoutComplete": false,
     "meaning": "3.0 shipment is fully verified. The 2.1 update was published before the owner stopped further 2.1 work; no full 2.1 post-publication audit or closeout is claimed. Retain historical protections and do not target 2.1 again without owner direction."
+  },
+  "verifiedProduction3SetEntryVideo": {
+    "publication": {
+      "id": "01a13d2c-8c91-7687-96e3-2ba465674315",
+      "createdAt": "2026-10-15T01:28:12.177Z",
+      "group": "02677ef0-0071-4eeb-bf08-631444042402",
+      "branch": "production-3-preparation",
+      "message": "Attach and preview videos during set entry with confirmed upload progress and retry",
+      "runtimeVersion": "3.0.0",
+      "platform": "ios",
+      "manifestPermalink": "https://u.expo.dev/update/01a13d2c-8c91-7687-96e3-2ba465674315",
+      "isRollBackToEmbedded": false,
+      "gitCommitHash": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a13d2c-8c91-7687-96e3-2ba465674315"
+      ]
+    },
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-set-video-20261014/runtime-3.0.0/gate-c.json",
+        "sha256": "7b6a117c6d5a854de76a163992c32f8ed27a2c746767d7bbf2056f761efd8a04"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-set-video-20261014/runtime-3.0.0/asset-audit.json",
+        "sha256": "fee76de875d8c33037b3d6fb30fda61784d44f2713386145e336585dfb89fc60"
+      },
+      "channel": {
+        "path": "config/testflight-release-set-video-20261014/runtime-3.0.0/channel.json",
+        "sha256": "b38144bc0bc5906644662b37ccb0ec91f3ab320890357769aabf92d8a56f0207"
+      },
+      "exportSource": {
+        "path": "config/testflight-release-set-video-20261014/runtime-3.0.0/export-source.json",
+        "sha256": "f41b23d4d1502d76bb8cc940ff42b78e4fb2c9e926a38ac53e4ba99c1a1dedaa"
+      },
+      "contracts": {
+        "path": "config/testflight-release-set-video-20261014/runtime-3.0.0/contracts.json",
+        "sha256": "9641531b3c54212a96fe1ba0cc63dcb324e0e7e04497a1810b43e5b7f8023b27"
+      },
+      "imagery": {
+        "path": "config/testflight-release-set-video-20261014/runtime-3.0.0/movement-imagery.json",
+        "sha256": "014369c588a278fee7fb2c5062395676f4c16214b16de32e1ee60fefde3a3e1e"
+      },
+      "sharedValidation": {
+        "path": "config/testflight-release-set-video-20261014/runtime-3.0.0/shared-validation.json",
+        "sha256": "02fd63d491e70d5854e8d4779b75adb035fc57a14922aae952af6812c6f7d61b"
+      },
+      "nativeChannelDelivery": {
+        "path": "config/testflight-release-set-video-20261014/runtime-3.0.0/native-channel.json",
+        "sha256": "c839a439c726fd299453a8c5947820eb65d2bbe9e2fdd961fb20423c5f806953"
+      }
+    },
+    "updateId": "01a13d2c-8c91-7687-96e3-2ba465674315",
+    "group": "02677ef0-0071-4eeb-bf08-631444042402",
+    "sourceSha": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
+    "productFingerprint": "29aa149352ab21d0a545b264b46a0df2ecf1a989df788ed24fc8bae8fa28a879",
+    "bundleSha256": "148a3c249eec0cd2bb33297a5369e2f740684a4ed058dc7a6e3b506a453ee867",
+    "publicationVerified": true,
+    "ownerPhoneBehaviorObserved": false,
+    "freshSimulatorRun": true,
+    "simulatorObservationScope": "Actual self-coach DEV iPhone Air: Core and accessory Set input selection, saved Set association, confirmed upload and exact playback; selected local clip preview and unchanged return. No new Production phone behavior claimed.",
+    "nativeBuildStarted": false,
+    "acceptedContracts": 287,
+    "fullSharedValidationReused": false,
+    "missingOrCorruptAssets": 0,
+    "uniqueAssets": 992,
+    "worktreeCloseoutComplete": true,
+    "ownerDirectedScope": "set-entry-video-preview-20261014"
+  },
+  "verifiedSetEntryVideo": {
+    "publication": {
+      "id": "01a13d2f-e54b-719a-8007-c874adf52e12",
+      "createdAt": "2026-10-15T01:31:51.499Z",
+      "group": "4286ad03-f8b3-45f9-b940-f4c31bcec18c",
+      "branch": "testflight",
+      "message": "Attach and preview videos during set entry with confirmed upload progress and retry",
+      "runtimeVersion": "2.1.0",
+      "platform": "ios",
+      "manifestPermalink": "https://u.expo.dev/update/01a13d2f-e54b-719a-8007-c874adf52e12",
+      "isRollBackToEmbedded": false,
+      "gitCommitHash": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a13d2f-e54b-719a-8007-c874adf52e12"
+      ]
+    },
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-set-video-20261014/runtime-2.1.0/gate-c.json",
+        "sha256": "faa00503f6da2f39f8bbe4f19b436077f014526096fa5a83530f9928c30cfa7b"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-set-video-20261014/runtime-2.1.0/asset-audit.json",
+        "sha256": "d255c493bba540d200d17be1e01a0d944312903f9f48c6d04617b32d68a669d8"
+      },
+      "channel": {
+        "path": "config/testflight-release-set-video-20261014/runtime-2.1.0/channel.json",
+        "sha256": "5403a8bcbce5a80fff6ee6d0223d7ca3830c60a00944422fd5248ca381ba733b"
+      },
+      "exportSource": {
+        "path": "config/testflight-release-set-video-20261014/runtime-2.1.0/export-source.json",
+        "sha256": "c3299277389b7c0510294b89a6d6224a5a316520976b955a9dd506d7227176e8"
+      },
+      "contracts": {
+        "path": "config/testflight-release-set-video-20261014/runtime-2.1.0/contracts.json",
+        "sha256": "a9ab7fa29aa98fff378d55e6b23296c83a5ab6bb9d7ab333c4bc6aeaed8ea0a2"
+      },
+      "imagery": {
+        "path": "config/testflight-release-set-video-20261014/runtime-2.1.0/movement-imagery.json",
+        "sha256": "014369c588a278fee7fb2c5062395676f4c16214b16de32e1ee60fefde3a3e1e"
+      },
+      "sharedValidation": {
+        "path": "config/testflight-release-set-video-20261014/runtime-2.1.0/shared-validation.json",
+        "sha256": "02fd63d491e70d5854e8d4779b75adb035fc57a14922aae952af6812c6f7d61b"
+      },
+      "nativeChannelDelivery": {
+        "path": "config/testflight-release-set-video-20261014/runtime-2.1.0/native-channel.json",
+        "sha256": "a63ce04199479635379765e3d2296a1aa734faa9919a165c96a2b307bad1080b"
+      }
+    },
+    "updateId": "01a13d2f-e54b-719a-8007-c874adf52e12",
+    "group": "4286ad03-f8b3-45f9-b940-f4c31bcec18c",
+    "sourceSha": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
+    "productFingerprint": "29aa149352ab21d0a545b264b46a0df2ecf1a989df788ed24fc8bae8fa28a879",
+    "bundleSha256": "4654c5685079611161e07623516ec948c66fe9c1d20d9f5dba41ef7e82e35d08",
+    "publicationVerified": true,
+    "ownerPhoneBehaviorObserved": false,
+    "freshSimulatorRun": true,
+    "simulatorObservationScope": "Actual self-coach DEV iPhone Air: Core and accessory Set input selection, saved Set association, confirmed upload and exact playback; selected local clip preview and unchanged return. No new Production phone behavior claimed.",
+    "nativeBuildStarted": false,
+    "acceptedContracts": 287,
+    "fullSharedValidationReused": true,
+    "missingOrCorruptAssets": 0,
+    "uniqueAssets": 992,
+    "worktreeCloseoutComplete": true,
+    "ownerDirectedScope": "set-entry-video-preview-20261014"
   }
 }

@@ -1,0 +1,27 @@
+{
+  "scope": "set-entry-video-preview-20261014",
+  "productFingerprint": "29aa149352ab21d0a545b264b46a0df2ecf1a989df788ed24fc8bae8fa28a879",
+  "completedAt": "2026-10-15T01:29:59.001Z",
+  "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+  "runtimeVerified": false,
+  "contracts": [
+    {
+      "file": "scripts/test-selected-set-video-preview.mjs",
+      "sourceSha256": "515ddb74116593365a1756d98a9d64e24a4a6359d6503ba2e320c11ea8db9397",
+      "result": "PASS",
+      "output": "PASS: actual selected-clip controls open local playback before submission, preserve clip/review intent, retain change/remove, stop on close, and expose loading/error recovery without upload dependencies.\n"
+    },
+    {
+      "file": "scripts/test-session-execution-ownership.mjs",
+      "sourceSha256": "14d05e43292c2c8a758bfe89d1e02bc25696357a0f9f9f1729b361ad5ed05209",
+      "result": "PASS",
+      "output": "Session execution ownership: timer restart, stable receipt, interrupted owner handoff, queue visibility/retry/cancel PASS\n"
+    },
+    {
+      "file": "scripts/test-set-entry-video.mjs",
+      "sourceSha256": "414d94ca8746532c628fc6459188ca17858289e47596b5a847d95bb4aaac97e8",
+      "result": "PASS",
+      "output": "PASS: real queue confirmation/progress/retry preservation/ownership, four Core handlers, accessory and exact grouped Set association, actual picker/status controls and archive/review intent.\n"
+    }
+  ]
+}

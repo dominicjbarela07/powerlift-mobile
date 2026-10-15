@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "pass": true,
+  "inputs": {
+    "sourceSha": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
+    "productFingerprint": "29aa149352ab21d0a545b264b46a0df2ecf1a989df788ed24fc8bae8fa28a879",
+    "checksFingerprint": "3c5eb219310b4c81f4920aa267320e83fac0acc06c45689980f0778f1e672eb9",
+    "backendFingerprint": "9b0a093c09e0e5f0a52addbf345924ba90a4a761a4d69472d32be6d9bc2e39f2",
+    "nodeVersion": "v25.2.1",
+    "contractEnvironment": "testflight-art; live-api; frozen-catalog; no runtime override"
+  },
+  "checks": [
+    "accepted-contracts",
+    "critical-invariants",
+    "typescript"
+  ],
+  "completedAt": "2026-10-15T01:26:30.791Z",
+  "recoveredFrom": {
+    "reason": "Expo export --clear removed pre-export receipts; reconstruct from actual successful checks, unchanged source and bound export without rerunning validation.",
+    "logPrefixSha256": "61595ff249a2727d9239f287fb15e020cfadf70d6abb5a99f1d56eabf5d42761",
+    "exportSourceSha256": "f41b23d4d1502d76bb8cc940ff42b78e4fb2c9e926a38ac53e4ba99c1a1dedaa"
+  }
+}
