@@ -54,7 +54,7 @@ memory.set(queueKey, JSON.stringify([
   { id: 'legacy', status: 'pending', localFileUri: 'file:legacy' },
 ]));
 const deleted = [];
-const queue = moduleFrom('lib/videoUploadQueue.ts', { '@/lib/execution-actor': actor, '@react-native-async-storage/async-storage': { default: storage }, 'expo-file-system/legacy': { deleteAsync: async uri => deleted.push(uri) }, 'react-native': { AppState: appState, Platform: { OS: 'ios' } }, '@/lib/api': api, '@/lib/updateSafety': { setUpdateBlocker() {} } });
+const queue = moduleFrom('lib/videoUploadQueue.ts', { '@/lib/execution-actor': actor, '@react-native-async-storage/async-storage': { default: storage }, 'expo-file-system/legacy': { deleteAsync: async uri => deleted.push(uri) }, 'react-native': { AppState: appState, Platform: { OS: 'ios' } }, '@/lib/api': api, '@/lib/updateSafety': { setUpdateBlocker() {} }, '@/lib/set-video-upload-status': moduleFrom('lib/set-video-upload-status.ts', {}) });
 assert.equal((await queue.getVideoUploadJobs()).map(job => job.id).join(','), 'b');
 await queue.cancelVideoUploadJob('a');
 await queue.retryVideoUploadJob('a');

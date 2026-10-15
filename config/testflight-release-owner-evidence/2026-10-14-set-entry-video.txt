@@ -1,0 +1,12 @@
+Owner request:
+User feedback: treat this as a tier zero. I want this implemented in dev with it open on mobile for me to sign off, and then once I sign off, it gets promoted.
+Why can’t u upload video when u are inputting the set and also how do I know if the video gets uploaded properly
+
+Owner preview request:
+When I'm uploading a video, user is also requesting to kind of get a preview before I even, like, complete the upload. Not complete the upload, like submit it. You know what I mean?
+
+Owner signoff and delivery authorization:
+Good, please ship it. Don't waste time running a fucking full validation for 2.1 if it passes for 3.0, just upload it. Ship it for 3. Fuck. If the validation passes for 3.0, ship it for both 3.0 and 2.1, please.
+
+Existing efficiency directive:
+You don't need to fucking rerun the same fucking audit twice, bro. It's really fucking annoying. So then what are you fucking doing if everything's published?
