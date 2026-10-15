@@ -9,6 +9,7 @@ import { runDevSupersetGate, runPostReleaseGate, bindExportSource } from './veri
 import {assertRegisteredPublicationWorktree,runReleaseWorktreeCloseout} from './worktree-release-closeout.mjs';
 import { assertEducationTransport, assertOtaAssetLimit } from './education-image-transport.mjs';
 import { assertProduction3ClientFix } from './production3-client-fix-policy.mjs';
+import { sharedValidationInputs, assertSharedValidation, assertReusableAssetAudit } from './shared-ota-validation.mjs';
 // Mandatory authority: backend docs/RELEASE_INVARIANTS.md; Gates A/B/C cannot be bypassed here.
 
 const root = process.cwd();
@@ -28,6 +29,8 @@ const clientFixRuntime = args.includes('--owner-directed-client-fix');
 const loggerVisualRuntime = args.includes('--owner-directed-logger-visual');
 const reviewedRuntime = args.includes('--reviewed-cumulative-runtime');
 const production3ClientFix = args.includes('--production3-client-fix');
+const reuseValidation = valueFor('--reuse-shared-validation');
+const reuseAssets = valueFor('--reuse-published-assets');
 const governedProjection = branch === 'testflight' || production3ClientFix;
 const nodeModules = path.join(root, 'node_modules');
 
@@ -78,7 +81,7 @@ const run = (command, commandArgs, options = {}) => execFileSync(command, comman
   cwd: root,
   env: { ...process.env, STRENGTH_LEDGER_BACKEND_ROOT: process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev', STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:governedProjection?frozenCatalogRef:undefined,
     ...(production3ClientFix && !options.contracts ? {STRENGTH_LEDGER_RELEASE_TARGET:'production3',EXPO_PUBLIC_ART_RUNTIME_VERSION:'3.0.0'} : options.contracts ? {STRENGTH_LEDGER_RELEASE_TARGET:undefined,EXPO_PUBLIC_ART_RUNTIME_VERSION:undefined} : {}),
-    EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: production3ClientFix && !options.contracts ? 'production3' : branch === 'testflight' ? 'testflight' : 'disabled' },
+    EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: options.contracts ? 'testflight' : production3ClientFix ? 'production3' : branch === 'testflight' ? 'testflight' : 'disabled' },
   encoding: 'utf8',
   maxBuffer: 64 * 1024 * 1024,
   stdio: options.capture ? ['ignore', 'pipe', 'inherit'] : 'inherit',
@@ -102,9 +105,19 @@ if (governedProjection) {
     }
   }
 }
-run('npm', ['run', 'test:accepted-behavior-contracts'], {contracts:true});
-run('npm', ['run', 'test:release-critical-invariants'], {contracts:true});
-run('npx', ['tsc','--noEmit']);
+const sharedInputs = sharedValidationInputs(root, process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev');
+let sharedReceipt;
+if (reuseValidation) {
+  sharedReceipt = JSON.parse(fs.readFileSync(reuseValidation));
+  assertSharedValidation(sharedReceipt, sharedInputs);
+  console.log('Shared accepted/critical/TypeScript validation reused: exact source, tests, backend and contract environment match.');
+} else {
+  run('npm', ['run', 'test:accepted-behavior-contracts'], {contracts:true});
+  run('npm', ['run', 'test:release-critical-invariants'], {contracts:true});
+  run('npx', ['tsc','--noEmit']);
+  sharedReceipt = { schemaVersion:1, pass:true, inputs:sharedInputs, checks:['accepted-contracts','critical-invariants','typescript'], completedAt:new Date().toISOString() };
+}
+fs.writeFileSync(path.join(outputDir,'release-shared-validation.json'),JSON.stringify(sharedReceipt,null,2));
 run(process.execPath, ['scripts/test-testflight-source-parity.mjs', '--release-projection', '.']);
 
 run('npx', [
@@ -233,7 +246,14 @@ if (governedProjection) {
 if (manifest.id !== published.id || manifest.runtimeVersion !== published.runtimeVersion) throw new Error('Served manifest differs from the exact published correction.');
 const verifiedAssets = [];
 let assetCursor = 0;
-await Promise.all(Array.from({length:4}, async () => {
+if (reuseAssets) {
+  const auditBytes = fs.readFileSync(reuseAssets);
+  const baseline = JSON.parse(fs.readFileSync(path.join(root,'config/testflight-release-integrity.json')));
+  const pins = Object.values(baseline).flatMap(value => value?.publishedProof?.assetAudit ? [value.publishedProof.assetAudit.sha256] : []);
+  if (!pins.includes(sha256(auditBytes))) throw new Error('Asset reuse requires an exact retained verified publication proof.');
+  verifiedAssets.push(...assertReusableAssetAudit(JSON.parse(auditBytes), manifest.assets));
+  console.log(`Reused verified content-addressed bytes for ${verifiedAssets.length} unchanged asset entries.`);
+} else await Promise.all(Array.from({length:4}, async () => {
   while (assetCursor < manifest.assets.length) {
     const asset = manifest.assets[assetCursor++];
     const auth = extensions.assetRequestHeaders?.[asset.key]?.authorization;
@@ -245,7 +265,7 @@ await Promise.all(Array.from({length:4}, async () => {
     verifiedAssets.push({key:asset.key,hash,bytes:bytes.length});
   }
 }));
-fs.writeFileSync(path.join(outputDir,'release-asset-byte-audit.json'),JSON.stringify({pass:true,updateId:published.id,runtimeVersion:published.runtimeVersion,verified:verifiedAssets.length,missingOrCorrupt:0,assets:verifiedAssets},null,2));
+fs.writeFileSync(path.join(outputDir,'release-asset-byte-audit.json'),JSON.stringify({pass:true,updateId:published.id,runtimeVersion:published.runtimeVersion,verified:verifiedAssets.length,missingOrCorrupt:0,assets:verifiedAssets,...(reuseAssets?{reusedFrom:{path:reuseAssets,sha256:sha256(fs.readFileSync(reuseAssets))}}:{})},null,2));
 
 const launchAsset = manifest.launchAsset;
 const authorization = extensions.assetRequestHeaders?.[launchAsset.key]?.authorization;

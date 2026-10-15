@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { assertSharedValidation, assertReusableAssetAudit } from './shared-ota-validation.mjs';
+const inputs = { sourceSha: 'exact', productFingerprint: 'product', checksFingerprint: 'tests', backendFingerprint: 'backend', nodeVersion: process.version, contractEnvironment: 'same' };
+const receipt = { schemaVersion: 1, pass: true, inputs, checks: ['accepted-contracts', 'critical-invariants', 'typescript'], completedAt: new Date().toISOString() };
+assertSharedValidation(receipt, inputs);
+for (const field of Object.keys(inputs)) assert.throws(() => assertSharedValidation(receipt, { ...inputs, [field]: 'changed' }));
+assert.throws(() => assertSharedValidation({ ...receipt, pass: false }, inputs));
+assert.throws(() => assertSharedValidation({ ...receipt, checks: ['typescript'] }, inputs));
+assert.throws(() => assertSharedValidation({ ...receipt, completedAt: '2000-01-01' }, inputs));
+const audit = { pass: true, updateId: 'published', verified: 2, missingOrCorrupt: 0, assets: [{ hash: 'a', bytes: 12 }, { hash: 'b', bytes: 34 }] };
+assert.deepEqual(assertReusableAssetAudit(audit, [{ key: 'new-key', hash: 'a' }, { key: 'b', hash: 'b' }, { key: 'duplicate', hash: 'a' }]).map(row => row.bytes), [12, 34, 12]);
+for (const patch of [{ pass: false }, { verified: 1 }, { missingOrCorrupt: 1 }, { assets: [{ hash: 'a', bytes: 0 }, { hash: 'b', bytes: 34 }] }]) assert.throws(() => assertReusableAssetAudit({ ...audit, ...patch }, audit.assets));
+assert.throws(() => assertReusableAssetAudit(audit, [{ hash: 'a' }]));
+assert.throws(() => assertReusableAssetAudit(audit, [...audit.assets, { hash: 'new' }]));
+console.log('PASS: shared validation rejects changed source/tests/backend/environment, failed/stale proof; asset reuse rejects missing, new or corrupt content while retaining duplicate deliveries.');

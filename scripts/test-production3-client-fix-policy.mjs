@@ -8,6 +8,7 @@ const input={branch:'production-3-preparation',scope:{scope:'canonical-copied-we
   baseline:baselines['3.0.0'],proof,packageLockSha256:crypto.createHash('sha256').update(fs.readFileSync('package-lock.json')).digest('hex')};
 assertProduction3ClientFix(input);
 assertProduction3ClientFix({...input,scope:{scope:'athlete-video-archive-access-20261014'}});
+assertProduction3ClientFix({...input,scope:{scope:'set-entry-video-preview-20261014'}});
 for(const field of ['plugins','newArchEnabled','reactNativeDependencies','expoModules']) assert.deepEqual(baselines['3.0.0'][field],baselines['2.1.0'][field],`3.0 retains the audited ${field} graph`);
 for(const branch of ['production','main','testflight','production-3-unreviewed']) assert.throws(()=>assertProduction3ClientFix({...input,branch}));
 assert.throws(()=>assertProduction3ClientFix({...input,scope:{scope:'unrelated'}}));

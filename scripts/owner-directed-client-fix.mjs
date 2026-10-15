@@ -7,11 +7,14 @@ import { execFileSync } from 'node:child_process';
 const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 // Exact source-bound owner validation; never represents visual/device proof.
 export function assertClientFixScope(scope, fingerprint, modifications, ownerText) {
-  assert.ok(['canonical-zero-load-edit-20261005', 'canonical-set-save-recovery-20261008', 'canonical-copied-week-identity-20261013', 'athlete-video-archive-access-20261014'].includes(scope?.scope), 'unknown owner client-fix scope');
+  assert.ok(['canonical-zero-load-edit-20261005', 'canonical-set-save-recovery-20261008', 'canonical-copied-week-identity-20261013', 'athlete-video-archive-access-20261014', 'set-entry-video-preview-20261014'].includes(scope?.scope), 'unknown owner client-fix scope');
   assert.equal(scope.productFingerprint, fingerprint, 'client-fix validation cannot cover changed product source');
   assert.equal(scope.validation, 'OWNER_DIRECTED_CONTRACTS_ONLY');
   assert.ok(ownerText.includes(scope.ownerInstruction), 'exact current owner task is required');
-  if (scope.scope === 'athlete-video-archive-access-20261014') {
+  if (scope.scope === 'set-entry-video-preview-20261014') {
+    assert.ok(ownerText.includes('Good, please ship it.') && ownerText.includes('ship it for both 3.0 and 2.1'), 'Selected video scope requires the actual owner signoff and both runtime targets');
+    assert.ok(ownerText.includes('before I even') && ownerText.includes('submit it'), 'Local preview requires the actual owner request');
+  } else if (scope.scope === 'athlete-video-archive-access-20261014') {
     assert.equal(scope.ownerInstruction, 'ok good, let me drill down by movement as well and its god to go');
     assert.ok(ownerText.includes('if the mac locks on you, just continue any other checks not requiring the sim and push if passing.'), 'Mac-lock continuation requires the actual owner instruction');
   } else if (scope.scope === 'canonical-copied-week-identity-20261013') {
@@ -19,13 +22,39 @@ export function assertClientFixScope(scope, fingerprint, modifications, ownerTex
   } else assert.ok(ownerText.includes('You will not do simulator runs. Stop talking about it'), 'validation restriction requires the exact owner instruction');
   assert.deepEqual(modifications.map(row => row.path).sort(), Object.keys(scope.changedProductFiles).sort(), 'client-fix scope cannot include unrelated changes');
   for (const row of modifications) assert.equal(row.after, scope.changedProductFiles[row.path], 'client-fix source changed');
-  assert.deepEqual(Object.keys(scope.contracts).sort(), scope.scope === 'athlete-video-archive-access-20261014'
+  assert.deepEqual(Object.keys(scope.contracts).sort(), scope.scope === 'set-entry-video-preview-20261014'
+    ? ['scripts/test-selected-set-video-preview.mjs', 'scripts/test-session-execution-ownership.mjs', 'scripts/test-set-entry-video.mjs']
+    : scope.scope === 'athlete-video-archive-access-20261014'
     ? ['scripts/test-archive-video-movement-api.mjs', 'scripts/test-today-archive-access.mjs']
     : scope.scope === 'canonical-copied-week-identity-20261013'
     ? ['scripts/test-active-session-hot-swap.mjs', 'scripts/test-active-session-mutation-backend.mjs', 'scripts/test-governed-movement-art-taxonomy.mjs', 'scripts/test-private-movement-identity-contract.mjs', 'scripts/test-single-current-movement-id.mjs']
     : scope.scope === 'canonical-set-save-recovery-20261008'
     ? ['scripts/test-accessory-pr-save-api.mjs', 'scripts/test-canonical-set-save-recovery.mjs', 'scripts/test-session-logger-journal.mjs', 'scripts/test-set-submission-lifecycle.mjs']
     : ['scripts/test-zero-load-edit-api.mjs', 'scripts/test-zero-load-edit-set.mjs']);
+}
+export function assertSelectedVideoBaseline({root, scope, state, files}) {
+  assert.equal(scope.scope, 'set-entry-video-preview-20261014');
+  assert.equal(scope.baselineUpdateId, state.currentTestFlight.id);
+  assert.equal(scope.baselineSourceSha, state.currentTestFlight.gitCommitHash);
+  const readProof = entry => {
+    const bytes = fs.readFileSync(path.resolve(root, entry.path));
+    assert.equal(sha(bytes), entry.sha256, 'Video baseline proof changed');
+    return JSON.parse(bytes);
+  };
+  const proof = state.verifiedProduction3VideoArchiveAccess.publishedProof;
+  const gate = readProof(proof.gateC), audit = readProof(proof.assetAudit);
+  assert.equal(gate.pass, true); assert.deepEqual(gate.missing, []);
+  assert.equal(gate.published.gitCommitHash, scope.baselineSourceSha, 'Both runtime baselines must retain the same verified cumulative product source');
+  assert.equal(audit.pass, true); assert.equal(audit.missingOrCorrupt, 0);
+  assert.equal(audit.updateId, gate.published.id);
+  assert.equal(audit.servedLaunchSha256, gate.published.servedBundleSha256);
+  const baseline = readProof(scope.baselineFiles);
+  assert.equal(sha(JSON.stringify(Object.entries(baseline).sort(([a],[b]) => a.localeCompare(b)))), gate.candidateProductFingerprint);
+  assert.equal(gate.candidateProductFingerprint, scope.baselineProductFingerprint);
+  assert.deepEqual(Object.keys(baseline).filter(file => !files[file]), [], 'Set video additions cannot remove prior product files');
+  const changes = Object.entries(files).filter(([file,hash]) => baseline[file] !== hash).map(([path,after]) => ({path,after}));
+  assert.deepEqual(changes.map(row => row.path).sort(), ['app/(tabs)/workout/[workoutId].tsx', 'components/workout-logger/core-loggers.tsx', 'components/workout-logger/selected-set-video-preview.tsx', 'components/workout-logger/set-entry-video.tsx', 'config/protected-fix-manifest.json', 'lib/set-video-upload-status.ts', 'lib/videoUploadQueue.ts'], 'Set video scope cannot include unrelated product changes');
+  return changes;
 }
 export function assertArchiveAccessBaseline({root, scope, state, files}) {
   assert.equal(scope.scope, 'athlete-video-archive-access-20261014');
@@ -111,7 +140,9 @@ export function runClientFixContracts({root, scope, fingerprint, delta, exportDi
   assert.deepEqual(delta.subtractions, [], 'client fix cannot remove existing product files');
   const evidence = fs.readFileSync(path.join(root, scope.ownerEvidencePath));
   assert.equal(sha(evidence), scope.ownerEvidenceSha256);
-  const modifications = scope.scope === 'athlete-video-archive-access-20261014'
+  const modifications = scope.scope === 'set-entry-video-preview-20261014'
+    ? assertSelectedVideoBaseline({root, scope, state, files})
+    : scope.scope === 'athlete-video-archive-access-20261014'
     ? assertArchiveAccessBaseline({root, scope, state, files})
     : scope.scope === 'canonical-copied-week-identity-20261013'
     ? assertCopiedWeekIdentityBaseline({root, scope, state, files})
