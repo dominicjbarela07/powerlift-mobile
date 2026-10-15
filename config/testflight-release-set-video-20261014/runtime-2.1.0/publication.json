@@ -1,0 +1,16 @@
+{
+  "id": "01a13d2f-e54b-719a-8007-c874adf52e12",
+  "createdAt": "2026-10-15T01:31:51.499Z",
+  "group": "4286ad03-f8b3-45f9-b940-f4c31bcec18c",
+  "branch": "testflight",
+  "message": "Attach and preview videos during set entry with confirmed upload progress and retry",
+  "runtimeVersion": "2.1.0",
+  "platform": "ios",
+  "manifestPermalink": "https://u.expo.dev/update/01a13d2f-e54b-719a-8007-c874adf52e12",
+  "isRollBackToEmbedded": false,
+  "gitCommitHash": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
+  "sourceAvailable": true,
+  "recoverableRefs": [
+    "refs/archive/testflight-published/01a13d2f-e54b-719a-8007-c874adf52e12"
+  ]
+}

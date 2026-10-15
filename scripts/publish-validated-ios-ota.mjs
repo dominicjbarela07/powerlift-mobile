@@ -129,6 +129,9 @@ run('npx', [
   outputDir,
   '--clear',
 ]);
+// Expo clears its output directory, including receipts written before export.
+assertSharedValidation(sharedReceipt, sharedValidationInputs(root, process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev'));
+fs.writeFileSync(path.join(outputDir,'release-shared-validation.json'),JSON.stringify(sharedReceipt,null,2));
 const exportSource=governedProjection?bindExportSource(root,outputDir):null;
 run(process.execPath, ['scripts/assert-ota-route-bundle.mjs', outputDir]);
 run(process.execPath, ['scripts/assert-no-dev-artwork-export.mjs', outputDir]);

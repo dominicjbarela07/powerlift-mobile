@@ -43,6 +43,8 @@ const CoordinatorContext = createContext<CoordinatorValue | null>(null);
 export const SL_FLOATING_CONTROL = {
   size: SL_TAB_ROW_CONTROL.shellHeight,
   itemSize: SL_TAB_ROW_CONTROL.itemSize,
+  largeSize: 56,
+  largeItemSize: 48,
   rightInset: SLLayout.screenGutter,
   gap: SLSpacing.sm,
   tabBarBottomInset: SLSpacing.xs,
@@ -151,6 +153,7 @@ export function FloatingUtilityButton({
   label,
   onPress,
   selected = false,
+  size = 'standard',
   testID,
   wide = false,
 }: {
@@ -161,12 +164,13 @@ export function FloatingUtilityButton({
   label?: string;
   onPress: () => unknown | Promise<unknown>;
   selected?: boolean;
+  size?: 'standard' | 'large';
   testID?: string;
   wide?: boolean;
 }) {
   const foreground = selected ? SL_TAB_ROW_CONTROL.selectedColor : SLColors.textStrong;
   return (
-    <SLTabRowControlShell style={[styles.utilityShell, wide && styles.utilityShellWide]}>
+    <SLTabRowControlShell style={[styles.utilityShell, size === 'large' && styles.utilityShellLarge, wide && styles.utilityShellWide]}>
       <SLMotionPressable
         accessibilityHint={accessibilityHint}
         accessibilityLabel={accessibilityLabel}
@@ -176,7 +180,7 @@ export function FloatingUtilityButton({
         hitSlop={SL_TAB_ROW_CONTROL.hitSlop}
         onPress={onPress}
         pressScale={SLMotion.prominentPressScale}
-        style={[styles.utilityAction, wide && styles.utilityActionWide]}
+        style={[styles.utilityAction, size === 'large' && styles.utilityActionLarge, wide && styles.utilityActionWide]}
         testID={testID}
       >
         {selected ? (
@@ -185,7 +189,7 @@ export function FloatingUtilityButton({
             end={{ x: 1, y: 1 }}
             pointerEvents="none"
             start={{ x: 0, y: 0 }}
-            style={styles.utilitySelectedLens}
+            style={[styles.utilitySelectedLens, size === 'large' && styles.utilitySelectedLensLarge]}
           />
         ) : null}
         {icon ? (
@@ -200,7 +204,7 @@ export function FloatingUtilityButton({
           <Text
             maxFontSizeMultiplier={1.25}
             numberOfLines={1}
-            style={[styles.utilityLabel, wide && styles.utilityLabelWide, selected && styles.utilityLabelSelected]}
+            style={[styles.utilityLabel, size === 'large' && styles.utilityLabelLarge, wide && styles.utilityLabelWide, selected && styles.utilityLabelSelected]}
           >
             {label}
           </Text>
@@ -317,6 +321,10 @@ const styles = StyleSheet.create({
     minWidth: SL_FLOATING_CONTROL.size,
     width: 'auto',
   },
+  utilityShellLarge: {
+    height: SL_FLOATING_CONTROL.largeSize,
+    width: SL_FLOATING_CONTROL.largeSize,
+  },
   utilityAction: {
     alignItems: 'center',
     borderRadius: SL_TAB_ROW_CONTROL.itemRadius,
@@ -330,6 +338,11 @@ const styles = StyleSheet.create({
     minWidth: SL_TAB_ROW_CONTROL.itemSize,
     paddingHorizontal: SLSpacing.md,
     width: 'auto',
+  },
+  utilityActionLarge: {
+    height: SL_FLOATING_CONTROL.largeItemSize,
+    width: SL_FLOATING_CONTROL.largeItemSize,
+    borderRadius: SL_FLOATING_CONTROL.largeItemSize / 2,
   },
   utilitySelectedLens: {
     borderColor: SL_TAB_ROW_CONTROL.indicatorBorderColor,
@@ -345,6 +358,15 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 20,
     textTransform: 'lowercase',
+  },
+  utilitySelectedLensLarge: {
+    height: SL_FLOATING_CONTROL.largeItemSize - 2,
+    width: SL_FLOATING_CONTROL.largeItemSize - 2,
+    borderRadius: (SL_FLOATING_CONTROL.largeItemSize - 2) / 2,
+  },
+  utilityLabelLarge: {
+    fontSize: 18,
+    lineHeight: 24,
   },
   utilityLabelWide: {
     textTransform: 'none',

@@ -1,6 +1,8 @@
 # Set-entry video — DEV review, October 14, 2026
 
-Status: implemented in canonical DEV; owner signoff pending. Not published.
+Current status: owner-approved and published/verified on iOS 3.0.0 and 2.1.0.
+The DEV review notes below retain the initial handoff history; shipment is recorded
+at the end of this document.
 
 The canonical Set input now accepts a selected clip. A clip uploads only after
 its Set is accepted, so it attaches to the correct persisted SetLog. Selected,
@@ -101,3 +103,42 @@ Set-acceptance/upload flow. Adjacent native player lifecycle and sheet navigatio
 were exercised; upload/Set persistence, consent and archive/review policy were
 not changed. Native observation remains self-coach/iPhone Air. Owner signoff is
 still pending.
+
+## Approved shipment
+
+Owner: “Good, please ship it. Don't waste time running a fucking full validation
+for 2.1 if it passes for 3.0, just upload it. Ship it for 3. Fuck. If the validation
+passes for 3.0, ship it for both 3.0 and 2.1, please.”
+
+- 3.0.0: update `01a13d2c-8c91-7687-96e3-2ba465674315`, group
+  `02677ef0-0071-4eeb-bf08-631444042402`.
+- 2.1.0: update `01a13d2f-e54b-719a-8007-c874adf52e12`, group
+  `4286ad03-f8b3-45f9-b940-f4c31bcec18c`.
+- Exact shared published source: `afacf93e9fc72d2657767757edf25bc0f5a32b53`.
+- Both served bundles equal their inspected runtime-specific exports; both native
+  channel requests select the exact new update. Gate C and durable-worktree
+  closeout passed for each; published product state missing from DEV: zero.
+- Final accepted contracts: 287/287; critical release checks and TypeScript pass.
+  2.1 reused the exact passing shared receipt: neither full suite ran on 2.1.
+  Target-specific native compatibility, exports and publication checks ran.
+- The unchanged 998 asset entries / 992 unique hashes reused retained verified
+  content-addressed bytes; no second full asset download. Missing/corrupt: zero.
+
+Initial release checks caught missing exact style registrations and an older
+runtime-proof test that did not recognize the new mutation scope. The approved
+values and native modal owner were registered, and the test now rejects old or
+relabelled observations for this scope. Actual color/root/inset negative controls
+passed; no runtime product code was changed to suppress a failure.
+
+Expo export --clear deleted a pre-export validation receipt. The actual passing
+result was retained from successful output, unchanged source/test/backend inputs
+and the bound export; 2.1 reused it. The publisher now rechecks and writes the
+receipt after export. Its actual export-block regression reproduces the original
+deletion and rejects changed inputs. This post-publication tooling repair changes
+no shipped runtime code and required only its focused regression.
+
+Portable source/artifact/channel/contract/imagery/shared-validation proofs are in
+`config/testflight-release-set-video-20261014/`. No native build or backend
+deployment was started. The live server's existing completion response fields
+were checked against its serving source `6e3973fb17293bc37155cfbc74a5ac27c5578519`.
+No new owner-phone behavior was observed or claimed.

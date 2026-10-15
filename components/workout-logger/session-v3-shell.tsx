@@ -6,6 +6,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text } from '@/components/ui/sl-text';
+import { FloatingControlStack, FloatingUtilityButton, SL_FLOATING_CONTROL } from '@/components/ui/floating-control-coordinator';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import type { CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
 import { SLFontFamilies } from '@/constants/theme';
@@ -41,13 +42,24 @@ export function SessionV3Footer({ bottom, label, disabled, onPress, secondary, o
   onSecondary: () => void; unit: string; onUnit: () => void;
   rest?: ActiveRestTimer | null; onRest: () => void; onSkip: () => void; onAddRest: () => void; onRestSecond?: (seconds: number) => void;
 }) {
-  return <View style={[s.footer, { paddingBottom: Math.max(bottom, 12) }]}>
+  const [footerHeight, setFooterHeight] = React.useState(0);
+  return <><View onLayout={({ nativeEvent }) => setFooterHeight(nativeEvent.layout.height)} style={[s.footer, { paddingBottom: Math.max(bottom, 12) }]}>
     {rest ? <View style={s.rest}><Pressable accessibilityRole="button" accessibilityLabel="Adjust rest timer" onPress={onRest}><RestTimerClockText timer={rest} ring style={s.restTime} onSecond={onRestSecond} /></Pressable><Pressable accessibilityRole="button" accessibilityLabel="Add 30 seconds to rest timer" onPress={onAddRest} style={({ pressed }) => [s.smallAction, s.restAddAction, pressed && s.dim]}><Text style={s.restAddText}>+30 sec</Text></Pressable><Pressable accessibilityRole="button" accessibilityLabel="Skip active rest timer" onPress={onSkip} style={({ pressed }) => [s.smallAction, s.skipAction, pressed && s.dim]}><Text style={s.skipText}>Skip</Text></Pressable></View> : null}
-    <View style={s.footerTools}>{secondary ? <Pressable accessibilityRole="button" onPress={onSecondary} style={s.secondary}><Text style={s.subtitle}>{secondary} <Text style={s.cyan}>⌃</Text></Text></Pressable> : <View style={s.copy} />}<Pressable accessibilityRole="button" accessibilityLabel={`Display units ${unit}`} onPress={onUnit} style={s.unit}><Text style={s.subtitle}>{unit}</Text></Pressable></View>
+    <View style={s.footerTools}>
+      {secondary ? <Pressable accessibilityRole="button" onPress={onSecondary} style={s.secondary}><Text style={s.subtitle}>{secondary} <Text style={s.cyan}>⌃</Text></Text></Pressable> : <View style={s.copy} />}
+    </View>
     <Pressable accessibilityRole="button" disabled={disabled} accessibilityState={{ disabled: !!disabled }} onPress={onPress} style={({ pressed }) => [s.primary, (pressed || disabled) && s.dim]}>
       <LinearGradient colors={['#9862e8', '#6232c2']} style={s.primaryFill}><Text style={s.primaryText}>{label}</Text></LinearGradient>
     </Pressable>
-  </View>;
+  </View>
+    {footerHeight > 0 ? <FloatingControlStack context="screen" style={{ bottom: footerHeight + SL_FLOATING_CONTROL.gap }}>
+      <FloatingUtilityButton
+        accessibilityHint="Changes only the weights shown in this Session."
+        accessibilityLabel={`Display unit ${unit}. Switch to ${unit === 'kg' ? 'lb' : 'kg'}`}
+        label={unit} size="large" onPress={onUnit} testID="session-logger-unit-toggle"
+      />
+    </FloatingControlStack> : null}
+  </>;
 }
 
 export type SessionNavigatorRow = { key: string; title: string; summary: string; complete: boolean; selected: boolean; artwork?: CanonicalMovementArtworkInput | null };
@@ -68,7 +80,8 @@ const s = StyleSheet.create({
   hero: { paddingTop: 12 }, heroRow: { flexDirection: 'row', minHeight: 124, alignItems: 'center' }, heroCopy: { flex: 1, zIndex: 1 }, heroArt: { marginRight: -8 },
   eyebrow: { color: '#b395e6', fontFamily: SLFontFamilies.sansBold, fontSize: 10, letterSpacing: 1.4 }, title: { color: '#f6f1fc', fontSize: 30, lineHeight: 35, fontFamily: SLFontFamilies.sansBold, marginVertical: 10 }, focus: { color: '#c9bfd7', fontSize: 14, lineHeight: 21 },
   stats: { borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#2e2637', flexDirection: 'row', gap: 35, paddingVertical: 8 }, number: { fontSize: 25, color: '#f0eaf8', fontFamily: SLFontFamilies.sansBold }, note: { borderLeftWidth: 2, borderLeftColor: '#a77fe3', paddingLeft: 11, marginVertical: 13 }, noteText: { color: '#d1c7df', fontSize: 13, lineHeight: 19, marginTop: 6 },
-  footer: { paddingHorizontal: 20, paddingTop: 3, backgroundColor: '#000000', borderTopWidth: 1, borderTopColor: '#271f30' }, footerTools: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 38 }, secondary: { minHeight: 38, justifyContent: 'center', flex: 1 }, unit: { width: 40, height: 32, borderWidth: 1, borderColor: '#45354f', borderRadius: 16, justifyContent: 'center', alignItems: 'center' }, primary: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: '#a47be5' }, primaryFill: { minHeight: 52, justifyContent: 'center', alignItems: 'center', padding: 12 }, primaryText: { color: '#fff', fontSize: 17, fontFamily: SLFontFamilies.sansBold }, dim: { opacity: 0.5 },
+  footer: { paddingHorizontal: 20, paddingTop: 3, backgroundColor: '#000000', borderTopWidth: 1, borderTopColor: '#271f30' }, footerTools: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 38 }, secondary: { minHeight: 38, justifyContent: 'center', flex: 1 },
+  primary: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: '#a47be5' }, primaryFill: { minHeight: 52, justifyContent: 'center', alignItems: 'center', padding: 12 }, primaryText: { color: '#fff', fontSize: 17, fontFamily: SLFontFamilies.sansBold }, dim: { opacity: 0.5 },
   rest: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 8, marginTop: 8, backgroundColor: '#080b0e', borderWidth: 1, borderColor: '#2d3d45', borderRadius: 16 }, restTime: { fontSize: 27, lineHeight: 34, fontVariant: ['tabular-nums'], color: '#ffffff', fontFamily: SLFontFamilies.sansSemiBold }, smallAction: { minHeight: 44, minWidth: 60, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center' }, skipAction: { borderWidth: 1, borderColor: '#303035', borderRadius: 12, backgroundColor: '#121215' }, skipText: { color: '#c2bdca', fontSize: 13 }, restAddAction: { flex: 1, minWidth: 0 }, restAddText: { color: '#18e0e7', fontSize: 15, fontFamily: SLFontFamilies.sansSemiBold },
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: '#0009' }, sheet: { maxHeight: '80%', backgroundColor: '#0f0c16', borderTopLeftRadius: 26, borderTopRightRadius: 26, borderWidth: 1, borderColor: '#41314e', padding: 18 }, navigatorRow: { flexDirection: 'row', alignItems: 'center', gap: 10, borderBottomWidth: 1, borderBottomColor: '#312638', paddingVertical: 16 }, selected: { backgroundColor: '#22182e' },
 });
