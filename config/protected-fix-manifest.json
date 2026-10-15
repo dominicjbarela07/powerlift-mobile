@@ -1152,6 +1152,17 @@
           "devSourceCommit": "3beb386feb68103c751e11931a131cb0d25b7873",
           "before": "  if (!domain || (!optionalMachine && (identity.requires_equipment_configuration === false || taxonomy?.requires_equipment_configuration === false))) {\n",
           "after": "  // Requiredness does not describe support. Established fixed-equipment\n  // definitions without taxonomy serialize requiredness as false, and optional\n  // setup remains valid. The current movement's physical domain owns support.\n  if (!domain) {\n"
+        },
+        "publicationProgression": {
+          "ownerInstruction": "RHIA NWWSA RO BE fixed first!!!! this is a production 3.0 occurance!",
+          "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-equipment-eligibility.txt",
+          "ownerEvidenceSha256": "11fbf1572fe5c72c0c90f8fea560dc31a1a175ad475cdf13379fd3c32e7c34bc",
+          "reason": "Fix Production Cable Row equipment rejection before shipping the already-approved 56-point floating unit control. Requiredness does not revoke fixed-equipment support. Preserve exact current IDs, immutable Sets, manufacturer isolation, all shipped fixes/assets and the existing cable release boundary.",
+          "before": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
+          "after": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
+          "candidateSha256": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
+          "changes": [],
+          "meaning": "The exact shared eligibility patch proves every changed byte; no additional publication-only source change is made. Retain the existing typed release boundary."
         }
       },
       {
