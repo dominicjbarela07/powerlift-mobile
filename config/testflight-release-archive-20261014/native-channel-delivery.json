@@ -1,0 +1,13 @@
+[
+  {
+    "pass": true,
+    "checkedAt": "2026-10-14T16:37:10.193Z",
+    "nativeUpdateEndpoint": "https://u.expo.dev/7afb1a4b-46b6-4295-b33f-816b05589e81",
+    "channel": "production-3-preparation",
+    "runtimeVersion": "3.0.0",
+    "updateId": "01a13b3d-74ee-7a06-a84d-c1e55d39c98d",
+    "uniqueAssetHashes": 992,
+    "publishedSource": "c917f7ea25bb2c1b7057b92b816853ffbf25aa27",
+    "exportDir": "/var/folders/lb/2j2b2zcj37bfw9d3f137tjc80000gn/T/strength-ledger-ios-ota-iiUtge"
+  }
+]

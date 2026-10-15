@@ -1,0 +1,21 @@
+{
+  "scope": "athlete-video-archive-access-20261014",
+  "productFingerprint": "098d4813aeae06fb89fa8e2d8b24e1bc4b244d721fe23872821fb90440987f6f",
+  "completedAt": "2026-10-14T16:26:26.981Z",
+  "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+  "runtimeVerified": false,
+  "contracts": [
+    {
+      "file": "scripts/test-archive-video-movement-api.mjs",
+      "sourceSha256": "df9b5bf666e3083746e85f84f886cad653fc76a05b5111bf0811b0fefea44f68",
+      "result": "PASS",
+      "output": "PASS: 14 independent Archive cases include complete movement facets, immutable performed membership, cursor/subject/privacy controls and fresh signed native video/thumbnail streams.\n"
+    },
+    {
+      "file": "scripts/test-today-archive-access.mjs",
+      "sourceSha256": "604bc347146b0e504c6a957cf38f18f944da13b226c9d7edffda2214271c94c9",
+      "result": "PASS",
+      "output": "PASS: actual Today widgets for athlete/self-coach; all three routes; direct media entry; authorized video IDs; close retains collection; Today/workspace returns; scoped export policy; stale request rejection; direct detail playback; denied detail remains unplayable.\n"
+    }
+  ]
+}
