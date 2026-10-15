@@ -89,8 +89,7 @@ import {
   LoggerSheetHeader,
 } from '@/components/workout-logger/logger-primitives';
 import {
-  FloatingControlStack,
-  FloatingUtilityButton,
+  SL_FLOATING_CONTROL,
 } from '@/components/ui/floating-control-coordinator';
 import { LoggerWheelPicker } from '@/components/workout-logger/logger-wheel-picker';
 import { SubstitutionConfirmationSheet } from '@/components/workout-logger/substitution-confirmation-sheet';
@@ -8871,7 +8870,7 @@ export default function WorkoutViewerScreen() {
         refreshing={refreshing}
         onRefresh={onRefresh}
         contentContainerStyle={{
-          paddingBottom: 24,
+          paddingBottom: SL_FLOATING_CONTROL.largeSize + SL_FLOATING_CONTROL.gap,
           paddingHorizontal: 20,
           flexGrow: 1,
         }}
