@@ -408,6 +408,12 @@
       "index": 0,
       "presentation": "legacy-bottom-sheet",
       "reason": "shared adapter plus explicit top drag region"
+    },
+    {
+      "file": "components/workout-logger/selected-set-video-preview.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen local clip preview before Set submission; native playback controls, explicit return, no bottom-sheet drag surface"
     }
   ],
   "inlineBottomPanels": [

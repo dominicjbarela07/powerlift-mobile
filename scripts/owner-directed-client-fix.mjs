@@ -53,7 +53,7 @@ export function assertSelectedVideoBaseline({root, scope, state, files}) {
   assert.equal(gate.candidateProductFingerprint, scope.baselineProductFingerprint);
   assert.deepEqual(Object.keys(baseline).filter(file => !files[file]), [], 'Set video additions cannot remove prior product files');
   const changes = Object.entries(files).filter(([file,hash]) => baseline[file] !== hash).map(([path,after]) => ({path,after}));
-  assert.deepEqual(changes.map(row => row.path).sort(), ['app/(tabs)/workout/[workoutId].tsx', 'components/workout-logger/core-loggers.tsx', 'components/workout-logger/selected-set-video-preview.tsx', 'components/workout-logger/set-entry-video.tsx', 'config/protected-fix-manifest.json', 'lib/set-video-upload-status.ts', 'lib/videoUploadQueue.ts'], 'Set video scope cannot include unrelated product changes');
+  assert.deepEqual(changes.map(row => row.path).sort(), ['app/(tabs)/workout/[workoutId].tsx', 'components/workout-logger/core-loggers.tsx', 'components/workout-logger/selected-set-video-preview.tsx', 'components/workout-logger/set-entry-video.tsx', 'config/bottom-sheet-consumer-inventory.json', 'config/protected-fix-manifest.json', 'lib/set-video-upload-status.ts', 'lib/videoUploadQueue.ts'], 'Set video scope cannot include unrelated product changes');
   return changes;
 }
 export function assertArchiveAccessBaseline({root, scope, state, files}) {
