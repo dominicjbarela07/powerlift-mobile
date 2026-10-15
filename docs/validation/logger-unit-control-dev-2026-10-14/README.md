@@ -23,6 +23,18 @@ Final TypeScript and existing floating-display-unit contracts passed. Existing
 numeric conversion evidence below remains applicable: conversion code and the
 logger handler did not change. DEV only, awaiting owner signoff.
 
+### Subsequent owner signoff and cumulative publication
+
+Owner: “Sorry, I meant ship it.” The owner then required the Production Cable
+Row equipment rejection fixed before publication. The approved button and that
+shared eligibility correction shipped together from source
+`96ab72ac9287339141444a9154451bdf20d1f601`: 3.0 update
+`01a13d79-7e86-7d2f-8035-61142ba1be61`, 2.1 update
+`01a13d7c-5437-7dd9-8a0c-070c77844d9f`. Exact native channel/bundle, all assets,
+DEV containment and durable worktree closeout passed. 292 accepted contracts,
+86 critical product areas and TypeScript passed once; 2.1 reused that proof.
+The earlier DEV-only status above is historical. No segmented selector shipped.
+
 ## Rejected first attempt — retained history
 
 Owner requested a larger, easier-to-find lb/kg toggle in canonical DEV and a
