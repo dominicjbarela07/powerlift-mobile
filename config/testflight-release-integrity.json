@@ -157913,7 +157913,7 @@
     "scripts/audit-ui-constitution.js": "c14e4631723433c5528131adc17c2f376dbef912a6288cd2575c2a10c460024b",
     "scripts/audit-transparent-screen-roots.js": "2cb55a6dc2987baa0693dfa6325437c50c1dc1057bd8817fbdadde8defc88518",
     "scripts/reviewed-runtime-continuation.mjs": "2ae6db43fb13b09592327eb725da8438e687eeaf6fe937bcb72779f6adc006c6",
-    "scripts/test-reviewed-runtime-continuation.mjs": "23e62961ecf3fb7b1766e0f7fed7736dcda7ae70c8ffc1973985f712e61b3ad1",
+    "scripts/test-reviewed-runtime-continuation.mjs": "d5796adf367e2d5cfbaec92539816e0534c7353cd7b3340e789a73f8b864b9d6",
     "scripts/test-governed-movement-art-taxonomy.mjs": "474fd1f0bb9f5b11f6f4b797ee35a178201bae69ff3b9c647a1a0b6cf5f95370",
     "scripts/education-image-transport.mjs": "68d37ed07669d53b0395fbe7424818a4ddec570acb94cca0d2d49f4008f2a683",
     "scripts/generate-education-image-transport.mjs": "e731bee3e877638bc571a9393b8d671ec2af4c847d6d85cec731e71bbd774844",
@@ -157929,7 +157929,7 @@
     "scripts/test-private-movement-identity-contract.mjs": "7abcd5b6498f7e1b973d9d35dc4ab52b25311058de6fbcea48eeefd6471f8748",
     "scripts/test-active-session-hot-swap.mjs": "4c4fefa45c9db444e66f09c00e86d5a087e8bf7a25946de4bbff25f76a492241",
     "scripts/test-active-session-mutation-backend.mjs": "61b3ca98945fd76aaacb54b36c4926a88568066c3eb7759c0d08539cebc9da36",
-    "scripts/ui-constitution-exceptions.json": "56ef7ed682a6fea76ac32b8892b8d88a1010fb4653982355f5d179755dc64ac4",
+    "scripts/ui-constitution-exceptions.json": "0f5134ba37274b559427b521303e9b9b9d1ce125a634b6c07a5a64bcbedcb226",
     "scripts/test-today-archive-access.mjs": "604bc347146b0e504c6a957cf38f18f944da13b226c9d7edffda2214271c94c9",
     "scripts/test-archive-video-movement-api.mjs": "df9b5bf666e3083746e85f84f886cad653fc76a05b5111bf0811b0fefea44f68",
     "scripts/test-archive-access-release-scope.mjs": "7162d1a4715c512cd8f84d43d5af8dcc74134ef7c9edabfa63108536a2ff6d58",
@@ -157938,7 +157938,8 @@
     "scripts/test-selected-video-release-scope.mjs": "85bb60af4db3e6553fc6526cae67fdb832004c257760e51a3ce7f38b7670bc96",
     "scripts/test-set-entry-video.mjs": "414d94ca8746532c628fc6459188ca17858289e47596b5a847d95bb4aaac97e8",
     "scripts/test-selected-set-video-preview.mjs": "515ddb74116593365a1756d98a9d64e24a4a6359d6503ba2e320c11ea8db9397",
-    "scripts/test-session-execution-ownership.mjs": "14d05e43292c2c8a758bfe89d1e02bc25696357a0f9f9f1729b361ad5ed05209"
+    "scripts/test-session-execution-ownership.mjs": "14d05e43292c2c8a758bfe89d1e02bc25696357a0f9f9f1729b361ad5ed05209",
+    "scripts/mobile-3-surface-owners.json": "841347e0350979099cfbed2af0b908c6e2bfba6bf4296c8f2091aad1e33e3a6f"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -161954,6 +161955,34 @@
         }
       ],
       "review": "Exact protected fix manifest addition and held Logger progression already reviewed and committed: retains all 26 existing fixes, adds video tests, preserves original held Cable source and both prior source proofs; adds only the approved video delta to each."
+    },
+    {
+      "ownerInstruction": "Good, please ship it. Don't waste time running a fucking full validation for 2.1 if it passes for 3.0, just upload it. Ship it for 3. Fuck. If the validation passes for 3.0, ship it for both 3.0 and 2.1, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-set-entry-video.txt",
+      "ownerEvidenceSha256": "0f65424759b3bec58234f0c8c20f57b3c720400c8a70a507a4b5f654f6683694",
+      "reason": "Owner-approved Set video selection, local preview and confirmed upload feedback; preserve all cumulative product/asset state and reuse only exact matching shared validation inputs.",
+      "scope": "set-entry-video-preview-20261014",
+      "files": [
+        {
+          "path": "scripts/ui-constitution-exceptions.json",
+          "before": "56ef7ed682a6fea76ac32b8892b8d88a1010fb4653982355f5d179755dc64ac4",
+          "after": "0f5134ba37274b559427b521303e9b9b9d1ce125a634b6c07a5a64bcbedcb226",
+          "sourceCommit": "82177a824145720b15f728d8f38fe04608b24bee"
+        },
+        {
+          "path": "scripts/mobile-3-surface-owners.json",
+          "before": null,
+          "after": "841347e0350979099cfbed2af0b908c6e2bfba6bf4296c8f2091aad1e33e3a6f",
+          "sourceCommit": "82177a824145720b15f728d8f38fe04608b24bee"
+        },
+        {
+          "path": "scripts/test-reviewed-runtime-continuation.mjs",
+          "before": "23e62961ecf3fb7b1766e0f7fed7736dcda7ae70c8ffc1973985f712e61b3ad1",
+          "after": "d5796adf367e2d5cfbaec92539816e0534c7353cd7b3340e789a73f8b864b9d6",
+          "sourceCommit": "82177a824145720b15f728d8f38fe04608b24bee"
+        }
+      ],
+      "review": "Registers only the exact already owner-approved video UI values and its full-screen modal canvas, with native screenshots retained. Existing value pins remain intact. The historical runtime test explicitly requires rejecting old/relabelled observations for the new video mutation rather than accepting them. Color/root/inset negative controls remain enabled."
     }
   ],
   "verifiedCopiedWeekIdentity": {
