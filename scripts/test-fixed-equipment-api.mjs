@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {spawnSync} from 'node:child_process';
+const backend=process.env.STRENGTH_LEDGER_BACKEND_ROOT||'/Users/dominic/powerlifting_app_dev';
+const test='tests/test_fixed_equipment_eligibility.py';
+assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(backend,test))).digest('hex'),'f0f6db9473d5e585fc0f0213c34bcba6e4f630a0c55247615b796f613b74cb7a','Exact equipment API regression changed');
+const result=spawnSync(path.join(backend,'venv/bin/python'),['-m','unittest','tests.test_fixed_equipment_eligibility'],{cwd:backend,encoding:'utf8',timeout:25000,env:{...process.env,VIDEO_STORAGE_BACKEND:'local',STORAGE_BACKEND:'local'}});
+assert.equal(result.status,0,result.stdout+'\n'+result.stderr);
+assert.match(result.stderr,/Ran 1 test/);
+console.log('PASS: nine false-requiredness equipment contexts on 3.0 and 2.1; actual manufacturer GET, equipment PUT and first Set persistence preserve canonical movement and accepted load/reps.');

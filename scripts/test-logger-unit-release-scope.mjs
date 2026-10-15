@@ -27,5 +27,11 @@ try {
  assert.throws(()=>assertClientFixScope(scope,'different',changes,ownerText));
  assert.throws(()=>assertClientFixScope(scope,'candidate',changes,'invented signoff'));
  assert.throws(()=>assertClientFixScope({...scope,contracts:{}},'candidate',changes,ownerText));
+ const fixedFiles={...files,'lib/equipment-flow-subject.ts':'fixed-domain-guard'};
+ const fixedScope={...scope,scope:'canonical-fixed-equipment-eligibility-20261014',ownerInstruction:'RHIA NWWSA RO BE fixed first!!!! this is a production 3.0 occurance!',changedProductFiles:{...scope.changedProductFiles,'lib/equipment-flow-subject.ts':'fixed-domain-guard'},contracts:Object.fromEntries(['scripts/test-fixed-equipment-api.mjs','scripts/test-fixed-equipment-eligibility.mjs','scripts/test-logger-floating-unit.mjs'].map(file=>[file,'hash']))};
+ const fixedChanges=assertLoggerUnitBaseline({root,scope:fixedScope,state,files:fixedFiles});
+ assertClientFixScope(fixedScope,'candidate',fixedChanges,ownerText+' '+fixedScope.ownerInstruction);
+ assert.throws(()=>assertLoggerUnitBaseline({root,scope:fixedScope,state,files:{...fixedFiles,'lib/unrelated.ts':'hidden'}}));
+ assert.throws(()=>assertClientFixScope({...fixedScope,contracts:scope.contracts},'candidate',fixedChanges,ownerText+' '+fixedScope.ownerInstruction));
  console.log('PASS: bounded floating-unit release rejects missing/replaced assets, unrelated changes, forged baseline/source/signoff and missing protection.');
 }finally{fs.rmSync(root,{recursive:true,force:true});}

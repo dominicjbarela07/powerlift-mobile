@@ -1,0 +1,3771 @@
+[
+  {
+    "key": "cable_row",
+    "equipment_type": "cable",
+    "execution_family": null,
+    "requires_equipment_configuration": false,
+    "material_parameters": {}
+  },
+  {
+    "key": "selectorized_machine_row",
+    "equipment_type": "selectorized_machine",
+    "execution_family": null,
+    "requires_equipment_configuration": false,
+    "material_parameters": {}
+  },
+  {
+    "key": "plate_loaded_machine_row",
+    "equipment_type": "plate_loaded_machine",
+    "execution_family": null,
+    "requires_equipment_configuration": false,
+    "material_parameters": {}
+  },
+  {
+    "key": "machine_lat_pulldown_broad",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "prime_lat_pulldown",
+    "equipment_type": "machine",
+    "execution_family": null,
+    "requires_equipment_configuration": false,
+    "material_parameters": {}
+  },
+  {
+    "key": "hammer_strength_lat_pulldown",
+    "equipment_type": "machine",
+    "execution_family": null,
+    "requires_equipment_configuration": false,
+    "material_parameters": {}
+  },
+  {
+    "key": "life_fitness_lat_pulldown",
+    "equipment_type": "machine",
+    "execution_family": null,
+    "requires_equipment_configuration": false,
+    "material_parameters": {}
+  },
+  {
+    "key": "panatta_lat_pulldown",
+    "equipment_type": "machine",
+    "execution_family": null,
+    "requires_equipment_configuration": false,
+    "material_parameters": {}
+  },
+  {
+    "key": "cable_lat_pulldown_unknown",
+    "equipment_type": "cable",
+    "execution_family": null,
+    "requires_equipment_configuration": false,
+    "material_parameters": {}
+  },
+  {
+    "key": "unknown_machine_lat_pulldown",
+    "equipment_type": "machine",
+    "execution_family": null,
+    "requires_equipment_configuration": false,
+    "material_parameters": {}
+  },
+  {
+    "key": "accessory_machine_chest_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_incline_machine_chest_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_decline_machine_chest_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_chest_flye",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_pec_deck",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_converging_chest_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_iso_lateral_chest_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_machine_chest_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_smith_machine_bench_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_incline_smith_machine_bench_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_decline_smith_machine_bench_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_standing_cable_chest_press",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_chest_press",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_chest_flye",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_low_to_high_cable_flye",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_high_to_low_cable_flye",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_mid_cable_flye",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_flye",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_squeeze_press",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "chest",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_shoulder_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "front_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "side_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_iso_lateral_shoulder_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "front_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "side_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_smith_machine_shoulder_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "front_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "side_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_front_raise",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "front_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "side_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_front_raise",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "front_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "side_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_front_raise",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "front_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "side_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_shoulder_press",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "front_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "side_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_shoulder_press",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "front_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "side_delts",
+          "triceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_lateral_raise",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "side_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_lateral_raise",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "side_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_lean_away_cable_lateral_raise",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "side_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_behind_the_back_cable_lateral_raise",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "side_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cuffed_cable_lateral_raise",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "side_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_y_raise",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "side_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_dual_cable_y_raise",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "side_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_upright_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "side_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "front_delts",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_lateral_raise",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "side_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_y_raise",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "side_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_reverse_pec_deck",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_reverse_flye",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_rear_delt_row_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_chest_supported_rear_delt_machine_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_reverse_flye",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_reverse_flye",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cross_body_cable_rear_delt_flye",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_rear_delt_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_high_cable_rear_delt_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_face_pull",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_rope_face_pull",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_rope_face_pull_with_external_rotation",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back",
+          "traps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_archer_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": "Rear-delt-biased cable identity; exact equipment is selected when performed.",
+        "primary_muscle_group": "rear_delts",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back",
+          "lats"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_wide_grip_lat_pulldown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_neutral_grip_lat_pulldown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_close_grip_lat_pulldown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_supinated_grip_lat_pulldown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_lat_pulldown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_half_kneeling_single_arm_lat_pulldown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_kneeling_cable_lat_pulldown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_straight_arm_cable_pulldown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_rope_straight_arm_pulldown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_pullover",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_pullover",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_lat_prayer",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_low_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_elbow_tucked_cable_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cross_bench_cable_pulldown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_pullover",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_iso_lateral_lat_pulldown",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_iso_lateral_low_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_low_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_machine_low_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "lats",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "biceps",
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_seated_cable_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_wide_grip_seated_cable_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_neutral_grip_seated_cable_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_seated_cable_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_high_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_rope_cable_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_chest_supported_cable_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_standing_cable_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_scapular_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_chest_supported_machine_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_plate_loaded_high_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_iso_lateral_high_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_machine_high_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_t_bar_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_mid_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_plate_loaded_seated_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_chest_supported_high_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_wide_elbow_machine_row",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "lats",
+          "rear_delts",
+          "biceps"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_high_row",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": "Explicit upper-back-biased unilateral high-row identity; exact equipment is selected when performed.",
+        "primary_muscle_group": "upper_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "rear_delts",
+          "lats"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_shrug",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "traps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_smith_machine_shrug",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "traps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_kelso_shrug",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "traps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_shrug",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "traps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_shrug",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "traps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_kelso_shrug",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "traps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "upper_back"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_rope_cable_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_bayesian_cable_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_bayesian_cable_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_preacher_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_preacher_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_high_cable_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_dual_high_cable_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_hercules_cable_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_hammer_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_behind_the_back_cable_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_preacher_curl",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_machine_preacher_curl",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_plate_loaded_biceps_curl",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "biceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "forearms"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_triceps_pressdown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_rope_triceps_pressdown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_straight_bar_triceps_pressdown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_v_bar_triceps_pressdown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_reverse_grip_triceps_pressdown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_pressdown",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_overhead_triceps_extension",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_rope_overhead_triceps_extension",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_overhead_triceps_extension",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_cross_body_cable_triceps_extension",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_skull_crusher",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_kickback",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_triceps_extension",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "chest"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_dip",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "triceps",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "chest"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_wrist_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "forearms",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_reverse_wrist_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "forearms",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_pronation",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "forearms",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_supination",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "forearms",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_leg_extension",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "quads",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_leg_leg_extension",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "quads",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_leg_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "quads",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_leg_leg_press",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "quads",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_hack_squat",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "quads",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_pendulum_squat",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "quads",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_belt_squat",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "quads",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_v_squat",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "quads",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_split_squat",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "quads",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_sissy_squat",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "quads",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_smith_machine_squat",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "quads",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_smith_machine_split_squat",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "quads",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes",
+          "adductors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_seated_leg_curl",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "hamstrings",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_lying_leg_curl",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "hamstrings",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_standing_single_leg_curl",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "hamstrings",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_kneeling_leg_curl",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "hamstrings",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_leg_seated_leg_curl",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "hamstrings",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_leg_lying_leg_curl",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "hamstrings",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_glute_ham_raise",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "hamstrings",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_leg_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "hamstrings",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_standing_cable_leg_curl",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "hamstrings",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_romanian_deadlift",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "hamstrings",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_leg_cable_romanian_deadlift",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "hamstrings",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_hip_thrust",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "glutes",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_glute_bridge",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "glutes",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_glute_drive_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "glutes",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_machine_glute_kickback",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "glutes",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_reverse_hyperextension",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "glutes",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_smith_machine_hip_thrust",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "glutes",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_glute_kickback",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "glutes",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_standing_cable_hip_extension",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "glutes",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_pull_through",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "glutes",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_step_back_lunge",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "glutes",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_hip_thrust",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "glutes",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_adductor_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "adductors",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_leg_adductor_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "adductors",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_standing_cable_hip_adduction",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "adductors",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_side_lying_cable_hip_adduction",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "adductors",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_hip_abductor_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "abductors",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_standing_hip_abductor_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "abductors",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_standing_cable_hip_abduction",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "abductors",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_side_lying_cable_hip_abduction",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "abductors",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_standing_calf_raise_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "calves",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_seated_calf_raise_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "calves",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_leg_press_calf_raise",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "calves",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_hack_squat_calf_raise",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "calves",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_smith_machine_calf_raise",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "calves",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_single_leg_calf_raise_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "calves",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_tibialis_raise_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "calves",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_crunch",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "abs",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hip_flexors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_kneeling_cable_crunch",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "abs",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hip_flexors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_standing_cable_crunch",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "abs",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hip_flexors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_reverse_crunch",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "abs",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hip_flexors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_abdominal_crunch_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "abs",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hip_flexors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_rotary_ab_crunch_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "abs",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hip_flexors"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_pallof_press",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "obliques",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "abs"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_half_kneeling_pallof_press",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "obliques",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "abs"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_wood_chop",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "obliques",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "abs"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_high_to_low_cable_chop",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "obliques",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "abs"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_low_to_high_cable_chop",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "obliques",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "abs"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_side_bend",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "obliques",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "abs"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_lift",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "obliques",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "abs"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_lumbar_extension_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "lower_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings",
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_reverse_hyperextension_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "lower_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings",
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_good_morning",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lower_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings",
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_pull_through_back_extension",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "lower_back",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "hamstrings",
+          "glutes"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_cable_serratus_punch",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "serratus",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "chest"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_single_arm_cable_serratus_punch",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "serratus",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "chest"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_standing_cable_hip_flexion",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "hip_flexors",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "abs"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_supine_cable_hip_flexion",
+    "equipment_type": "cable",
+    "execution_family": "CABLE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "CABLE",
+        "notes": null,
+        "primary_muscle_group": "hip_flexors",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": [
+          "abs"
+        ]
+      }
+    }
+  },
+  {
+    "key": "accessory_hip_flexion_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "hip_flexors",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_neck_flexion_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "neck",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_neck_extension_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "neck",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  },
+  {
+    "key": "accessory_four_way_neck_machine",
+    "equipment_type": "machine",
+    "execution_family": "MACHINE",
+    "requires_equipment_configuration": true,
+    "material_parameters": {
+      "accessory_taxonomy": {
+        "catalog_version": 3,
+        "execution_family": "MACHINE",
+        "notes": null,
+        "primary_muscle_group": "neck",
+        "requires_equipment_configuration": true,
+        "secondary_muscle_groups": []
+      }
+    }
+  }
+]
