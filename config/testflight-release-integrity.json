@@ -157864,7 +157864,7 @@
     "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
     "scripts/test-accepted-behavior-contracts.mjs": "112b5c8ca4d4039cfc0d8d3859924a56843f8d5f83b8c085ad88a06c8863c502",
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
-    "config/protected-fix-manifest.json": "36ba4e4ac98a9d0013824e51772086c78fb84cbebb8fb494273fb1277d894a65",
+    "config/protected-fix-manifest.json": "3b7628caac5188776f993243f2642396eea75c6f319c9685db5653675174e223",
     "scripts/assert-no-dev-artwork-export.mjs": "610934d315a2f34c534e80545d7c8361fbad0110c313c48f3d9642f2c04a7c22",
     "scripts/test-release-critical-invariants.mjs": "7c5df99458cc99e910a03b4f4eecdc01945859b70b0637a1630e144b68025522",
     "scripts/test-release-source-lineage.mjs": "e7850ec385320f620ebc156dfa0dea62934d87114108c0ccf978ad03f53042b6",
@@ -161938,6 +161938,22 @@
         }
       ],
       "review": "The signed-off local preview is classified as a full-screen native playback modal in the existing exhaustive consumer inventory; exact scope adds only that required consumer metadata. All existing modal/sheet classifications are preserved."
+    },
+    {
+      "ownerInstruction": "Good, please ship it. Don't waste time running a fucking full validation for 2.1 if it passes for 3.0, just upload it. Ship it for 3. Fuck. If the validation passes for 3.0, ship it for both 3.0 and 2.1, please.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-set-entry-video.txt",
+      "ownerEvidenceSha256": "0f65424759b3bec58234f0c8c20f57b3c720400c8a70a507a4b5f654f6683694",
+      "reason": "Owner-approved Set video selection, local preview and confirmed upload feedback; preserve all cumulative product/asset state and reuse only exact matching shared validation inputs.",
+      "scope": "set-entry-video-preview-20261014",
+      "files": [
+        {
+          "path": "config/protected-fix-manifest.json",
+          "before": "36ba4e4ac98a9d0013824e51772086c78fb84cbebb8fb494273fb1277d894a65",
+          "after": "3b7628caac5188776f993243f2642396eea75c6f319c9685db5653675174e223",
+          "sourceCommit": "ed0b75df3cdec8ba71f1cdf4733f70457085fe8c"
+        }
+      ],
+      "review": "Exact protected fix manifest addition and held Logger progression already reviewed and committed: retains all 26 existing fixes, adds video tests, preserves original held Cable source and both prior source proofs; adds only the approved video delta to each."
     }
   ],
   "verifiedCopiedWeekIdentity": {
