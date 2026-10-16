@@ -1,0 +1,27 @@
+{
+  "scope": "canonical-fixed-equipment-eligibility-20261014",
+  "productFingerprint": "2b8fefa9d67dcc1434c14de44b9aa81a800cad43a509ab613f49b59d4741ffb9",
+  "completedAt": "2026-10-15T02:51:13.180Z",
+  "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+  "runtimeVerified": false,
+  "contracts": [
+    {
+      "file": "scripts/test-fixed-equipment-api.mjs",
+      "sourceSha256": "f200089895d6a2cdb429a1e7213035fffdc1a54625685407f3b21eb3b955183d",
+      "result": "PASS",
+      "output": "PASS: nine false-requiredness equipment contexts on 3.0 and 2.1; actual manufacturer GET, equipment PUT and first Set persistence preserve canonical movement and accepted load/reps.\n"
+    },
+    {
+      "file": "scripts/test-fixed-equipment-eligibility.mjs",
+      "sourceSha256": "fffea2710fb0b31e0efe4406fd486d867c5ec86fe6ca4be8c0fd8293a497a00f",
+      "result": "PASS",
+      "output": "PASS: 212 actual Production-serializer fixed-equipment payloads and actual Logger open handler, nine false-requiredness reproductions, preserved IDs/Sets, optional requiredness, portable and stale-identity rejection; fixture SHA256 a4368fe74ca93c2e859c888e7e72eefe55f21644097e9dcee5d165a660dc7ba4\n"
+    },
+    {
+      "file": "scripts/test-logger-floating-unit.mjs",
+      "sourceSha256": "8d6a4a25193422eb90cb4b76d000322eca8055a8e3634a7dc855edb0ad02a847",
+      "result": "PASS",
+      "output": "PASS: actual floating Logger component, single toggle callback, measured rest clearance, original utility defaults and canonical numeric conversion.\n"
+    }
+  ]
+}

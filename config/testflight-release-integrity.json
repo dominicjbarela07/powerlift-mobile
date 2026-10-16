@@ -3,6 +3,22 @@
   "policy": "TestFlight is cumulative. Explicit owner authorization is required for every subtraction and protected modification. Never replace this historical baseline with a regressed export.",
   "incident": "2026-10-02 direct EAS update omitted TestFlight artwork switch; 492 asset entries absent",
   "currentTestFlight": {
+    "id": "01a13d7c-5437-7dd9-8a0c-070c77844d9f",
+    "createdAt": "2026-10-15T02:55:20.631Z",
+    "group": "e4ef0439-2a6d-45a4-945f-200f769be731",
+    "branch": "testflight",
+    "message": "Fix cable and machine equipment selection; restore the larger floating unit button",
+    "runtimeVersion": "2.1.0",
+    "platform": "ios",
+    "manifestPermalink": "https://u.expo.dev/update/01a13d7c-5437-7dd9-8a0c-070c77844d9f",
+    "isRollBackToEmbedded": false,
+    "gitCommitHash": "96ab72ac9287339141444a9154451bdf20d1f601",
+    "sourceAvailable": true,
+    "recoverableRefs": [
+      "refs/archive/testflight-published/01a13d7c-5437-7dd9-8a0c-070c77844d9f"
+    ]
+  },
+  "previousTestFlight": {
     "id": "01a13d2f-e54b-719a-8007-c874adf52e12",
     "createdAt": "2026-10-15T01:31:51.499Z",
     "group": "4286ad03-f8b3-45f9-b940-f4c31bcec18c",
@@ -16,22 +32,6 @@
     "sourceAvailable": true,
     "recoverableRefs": [
       "refs/archive/testflight-published/01a13d2f-e54b-719a-8007-c874adf52e12"
-    ]
-  },
-  "previousTestFlight": {
-    "id": "01a13b42-a947-7985-9770-d74a97215fc9",
-    "createdAt": "2026-10-14T16:33:06.887Z",
-    "group": "c5955f24-1a82-488e-bd84-ee5011e0d125",
-    "branch": "testflight",
-    "message": "Today history shortcuts and playable video Archive with movement drill-down",
-    "runtimeVersion": "2.1.0",
-    "platform": "ios",
-    "manifestPermalink": "https://u.expo.dev/update/01a13b42-a947-7985-9770-d74a97215fc9",
-    "isRollBackToEmbedded": false,
-    "gitCommitHash": "c917f7ea25bb2c1b7057b92b816853ffbf25aa27",
-    "sourceAvailable": true,
-    "recoverableRefs": [
-      "refs/archive/testflight-published/01a13b42-a947-7985-9770-d74a97215fc9"
     ]
   },
   "releaseHistory": [
@@ -619,10 +619,10 @@
     }
   ],
   "protectedFiles": {
-    "app/(tabs)/_layout.tsx": "062d106776c27405ab53f29ff7bf8e05efe35ffcfe19ed10c17ccf39469c12e4",
+    "app/(tabs)/_layout.tsx": "15e40d26a74bf0aa01cae85fe03c2b7482ac7ccaec161d65bc47da824b77fa87",
     "app/(tabs)/accessory-catalog-review.tsx": "9755d9c9bc813d04f8d506c5f76357f31bf789dccad32a086bb09e147ac736c0",
     "app/(tabs)/athlete-calendar.tsx": "d81d6ccdce2f79faff040be3c5a2a61751f7c85dc9600db416b5e671b3051106",
-    "app/(tabs)/athlete-dashboard.tsx": "f951a40d8c8ee32c9c2c14d31fa1decf376c991fa888c62eb1a1fbc84e983aa9",
+    "app/(tabs)/athlete-dashboard.tsx": "c2660b6e4931d9fdccee1089f2c8aeb1e7d9a2aadbc51a94e82d953af16ccca1",
     "app/(tabs)/athlete-meet-plan.tsx": "09f5412f21edfefec68b9e4285e7932c643936d10092f3f67cd48bae12338362",
     "app/(tabs)/athlete-progression.tsx": "62febc4f675233e12bb177b64f08d3874d0563acad8a79e91ff9e384c338f419",
     "app/(tabs)/check-in/[submissionId].tsx": "e18e309cc71d6b51585560d1b6a5a9754674316898cbb461fd6a249840c819b3",
@@ -671,27 +671,27 @@
     "app/(tabs)/ledger/variant-family/[family].tsx": "d16e5e0cef9ed3a97fa237c741fd2a7c9a61bec83256acb31f34a7184755ffce",
     "app/(tabs)/ledger/variants.tsx": "2c6ad2f37b1d656c49235e61f4ea09dd0c0b43aa70dc011d40dde2321c5de7d2",
     "app/(tabs)/link-coach.tsx": "5a14fdc09ff83057a8b1170ee2ac0657d7dccfffddf1ec032dea3538acc9e6b6",
-    "app/(tabs)/messages/[threadId].tsx": "6bb949e45813a0278560ec1607d9d921fca71f0b00f9be43ad96b37fe0d28627",
+    "app/(tabs)/messages/[threadId].tsx": "a18ec4c6add05c0560a3ada1006e4e128419253a6576e4995da12323351849dc",
     "app/(tabs)/messages/announcements.tsx": "4f87bb92ec0b16e2566df7b7db90434049d23a6bc18b896ba259a155c93e33cb",
     "app/(tabs)/messages/index.tsx": "1682752d4f61955bb921cb8ed55a72bcfe729ca564dc81abddc007f4ba24ce8b",
     "app/(tabs)/reflection.tsx": "bfc60f01dda537a8cc685f9d42865d8f33c8e7de9fd1e79fedd63aa4fd36e501",
     "app/(tabs)/session-surveys.tsx": "2b7d75092dcd3c50849998df2a359238b44586e3a21dcfcb7ba22dbed7efddc8",
-    "app/(tabs)/settings.tsx": "73455ca0b69df18fced363d979aeb21817273c9a50666a991c71420153be6d4f",
+    "app/(tabs)/settings.tsx": "eac9de8b00433a783300f80e83b66dc1beb0058b22526dbc65cafb38ba65577f",
     "app/(tabs)/training-focus.tsx": "b963c9fdca23bbdd010b5ed30c5d82da41ab7d9e3aa18fa14c858678dd14c3be",
     "app/(tabs)/video-archive.tsx": "5037059db00f5e47e3aad72a42998d83930e2c7cf4c1bc5f3fa23fea4ebec6bc",
-    "app/(tabs)/workout/[workoutId].tsx": "8ba5b86199e291b69755a0dc0a3fd2c7dfcdd83417c41ac257093b9d3acb4bf5",
+    "app/(tabs)/workout/[workoutId].tsx": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92",
     "app/(tabs)/workout/block-details.tsx": "5e694c30297fa9aee51b79f1584f0e407620c2470277fd87e429349698bca7c3",
     "app/(tabs)/workout/create-program.tsx": "76b2a7ff08ea58a6a9690808f1c1ded42bd99b23001e6b2c903f72ccc23489aa",
     "app/(tabs)/workout/index.tsx": "56f91b81aa3f404d8e4cb7a8e574b45823486ad15ba1648fd45247c619d3fb83",
     "app/(tabs)/workout/movement-history.tsx": "9ffe2eec0a7e7748f0785d1c221a896aff6be2e590b4d60ac842189abe21e8e1",
     "app/(tabs)/workout/program-timeline.tsx": "70357520bcd2d8c548c82174ff80b508ba711194c0689369d30f4671010262d5",
     "app/(tabs)/workout/session-history.tsx": "fc1d68794e7c9af8033acceddcb68607433254295f99b96403065aade9b2f9b3",
-    "app/(tabs)/workout/session-workspace/[workoutId].tsx": "f776815f2178e8c1884c34b0b27ff3dcfb6e39d8d1d596e4857b2c58b9cd24e9",
+    "app/(tabs)/workout/session-workspace/[workoutId].tsx": "d8e6bdc06f2ee5bf042618a6a2cdd1dc114e6d84af2a764daf86a1c119ac04b6",
     "app/(tabs)/workouts.tsx": "4d1ac5fd199615b152997dad2409362bd53b2a0413f006853e15c8585aa0fe56",
-    "app/_layout.tsx": "dacc3b837ee9158c69815c67b4f16d3e783e174911cce04c7b245baa893f8f3f",
-    "app/coach-athlete-analytics/[athleteId].tsx": "173617b54b166bfc13db87340efea8e6993582783947f7a79af1dfd3fd1fc720",
-    "app/coach-team-brief.tsx": "4e64198056d9c002af893ba1594a50f64810a50200010c9e6545e3f95ec21ca0",
-    "app/coach-team-methodology.tsx": "a9923907c111e33db4c489a0cd8037c836439fb4abff08809497309250d384e2",
+    "app/_layout.tsx": "b50461be74491168a7a7826822b8df871032f7dc913f1526e01a296856ba4af2",
+    "app/coach-athlete-analytics/[athleteId].tsx": "1d84948e3f36f59ee47062c678f7bac9f432007b409841e8a5d7e275972a82b5",
+    "app/coach-team-brief.tsx": "5bc4a3c1603f117363afae8cc45d318b97500cb593ffadae79d8f3e5fc239e70",
+    "app/coach-team-methodology.tsx": "f243ffbb0d571ede21ef3637cc5292adc2ba75d217086534b70d7ea6d9c65e2d",
     "app/coach-team-outliers.tsx": "2f809f4515d5686b339c66aae3b15e7a7104acdd884e19e19158c55f30435308",
     "app/dev-session-recap-certification.tsx": "b02af0d3b44930aa8ef3d7c9a3722391db962c33471324b54c3eef200c5b920e",
     "app/dev-strength-tier-certification.tsx": "a1f864a925d0dcbabd8ff47482fcfc6039bb96bdbecd79a589eeb7f9b9cb806d",
@@ -731,43 +731,49 @@
     "components/coach-mobile/ProgrammingLastExposure.tsx": "36744cca8d0bcd29e74c5da6259088f7a13e0264c01f26de2ed7fec0c202e190",
     "components/coach-mobile/ProgrammingReuseLibrary.tsx": "4ecae8a393aaabfa003d3479dd237c496ccb0e154bc7a401c6106c71d029ce02",
     "components/coach-mobile/ProgrammingSessionMoveModal.tsx": "066a9ed043c3547f458e60938493ce55c10f0471cedc50f0f99abfd6e5df6e44",
-    "components/coach-mobile/SessionEditingWorkspace.tsx": "7b4dc9c2135d4f6fbca12045bd7c0361a46111094cbf6957e6de01a93a17a17b",
-    "components/coach-mobile/athlete-workspace/CoachAthleteBrief.tsx": "5d749f37ac2239f8bbd4fd02ec70de4be04193f520e75abe274a0bdf16a2e09c",
-    "components/coach-mobile/athlete-workspace/CoachAthleteContext.tsx": "174323f09a550e7130d6a7af6d99039652724c675c9e53f9efba4b7889e5f60c",
-    "components/coach-mobile/athlete-workspace/CoachAthleteEvidence.tsx": "6cb656a6b5486866ace34520eb42ff4de9e8037e4395e3ce5c09ebc953da9e83",
-    "components/coach-mobile/athlete-workspace/CoachAthleteMessages.tsx": "20760ed3a5846586f1978797216cba5a20537924242de2b6ad676e488c016dd1",
-    "components/coach-mobile/athlete-workspace/CoachAthleteNotes.tsx": "dcc743aa6f0d0378a1604c5051e76cd46e686fccaa5401905dc1ec3f35b72b58",
+    "components/coach-mobile/SessionEditingWorkspace.tsx": "bc2bfc6aafe4d71d8fa3a8ca6824df28e4b144f2661e96bd320337f7356fe120",
+    "components/coach-mobile/athlete-workspace/CoachAthleteBrief.tsx": "d62de01b68e8a20beb30bd771c6eec40409cabf6e750471f07a8d512d1539cf0",
+    "components/coach-mobile/athlete-workspace/CoachAthleteContext.tsx": "1a0516ff6d5143255e970c1af85a90110ed10c7acf5b0fc0b030419682320f49",
+    "components/coach-mobile/athlete-workspace/CoachAthleteEvidence.tsx": "095f65cb079207367e4c104bfd5cb3b1a635c9192d7b80e8b52e0227d220761f",
+    "components/coach-mobile/athlete-workspace/CoachAthleteMessages.tsx": "26ade75e10dc7879b6a532b88a330d4f3b6ac611c78497e0926a0ff34f78500a",
+    "components/coach-mobile/athlete-workspace/CoachAthleteNotes.tsx": "2142b1a94d331bf14d93d515f091b8eb34f401d8acd7e6d254c25787ec6e3eaa",
     "components/coach-mobile/athlete-workspace/CoachAthletePerformance.tsx": "de045ac4233765ecca8ee120e69d9b6cfc5fd413d6cf279f6f1318078eb66ba6",
-    "components/coach-mobile/athlete-workspace/CoachAthleteReviews.tsx": "b4a270b932d39287ee473fac888c9ab479b8dbaa117e2262f29e04975acbb956",
+    "components/coach-mobile/athlete-workspace/CoachAthleteReviews.tsx": "563ce7df825e2a5d144644d8f3f016db14d0c2c0d8cc865f9e1e8bf6760a6180",
     "components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceContext.tsx": "83f1fb27d65a7d6f723d070cd986ddfc9509a9ab86bee2bf03768f5af64e4762",
-    "components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx": "0a2c7bb6f863fe57786e6fbf16b03ae8b0003b76048c0d2ee41f15a2d9eef1a7",
-    "components/coach-mobile/athlete-workspace/PerformanceVisuals.tsx": "a6cfb66cd2bdc2ce176b17a862dc9964d2b4a77181179ad80e14120c8d0730b5",
+    "components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx": "df5fed6070a76b2c77b800c6b5380089eb86fd0ecb6be9b387e5e4380755af8c",
+    "components/coach-mobile/athlete-workspace/PerformanceVisuals.tsx": "c659da6310a991d355754933d994861e098f566017dc742174903d5ef216b375",
     "components/coach-mobile/athlete-workspace/useCoachPerformance.ts": "3ca8543f73d07cce0a0fe1d967390b5bf9883278de7c70beffadd3bca899b35d",
     "components/coach-mobile/coach-material-layer.tsx": "3d799a0b2912d4ebdec485fce1ef487a775ad56e20d72679829254d594640139",
     "components/coach-mobile/coach-mobile-v2-ui.tsx": "5d65e518f5cd4f51e0474609300ee206809348933cc3263227073f9418259a94",
     "components/core-accomplishments.tsx": "750f42df6c039e61a2a483bbe4ceeb326ddefb7326795c7839dbb2eb8acd0fb3",
+    "components/education/AthleteEducationOpening.tsx": "a1a806d5bc7b7998e07ccecdcea89c8a9c5843771c975e4584a95b28ed90f422",
+    "components/education/CoachEducationOpening.tsx": "856b93202d4badb4011b67db58ee8386c2eea03b95a7c7b91b2f2e0f4e0696f3",
+    "components/education/MobileEducationRolePreview.tsx": "15e485a264dc8bf2b7011b3fc7226f65e789ae864c58e4b3c7b7c74a331f314d",
+    "components/education/SelfCoachEducationOpening.tsx": "62944eb1098b93440444f17e84da0340eaf7fc50965a63ac0e65a491e4c52853",
     "components/external-link.tsx": "2838582e2dc21877652b710d4aee5f4ba5a795b17fcf63bd7ac9c25a749c8c26",
     "components/gestures/SwipeActionRow.tsx": "13b1120c8981f4963a15ed4ec225cc91d51f61aed87845ee0c3d6e8288336d52",
     "components/haptic-tab.tsx": "eeb1860d6e4edb647e1ebeb116ff81393ec50e2d721560c1fe2d686716a518f8",
-    "components/home/AthleteHomeV3.tsx": "599cba63e9447eef1fbfad94b30d1e27d1cedd67e20ebcb3e5f2faf04d085ddc",
+    "components/home/AthleteHomeV3.tsx": "cbf903e4eef2aaf00545e498ebcd92e54e0c175da09ae4410fc3233ea60bd134",
     "components/home/HomeTrendPlot.tsx": "75410f398eb87cc9167a9b79862f614fa7d46a0c24944931c14fe126556926ff",
     "components/home/TodayHomeExperience.tsx": "a8a9c85dd2e3c5de039270648cc0e55bf7335f3d3577b6d114e365d13b855d1a",
+    "components/home/TodayQuickAccess.tsx": "4b3df5ba116ffdd74c04aaf91879f9f87dc2fe395810d474b09b06800352f6ba",
     "components/keyboard/KeyboardComposer.tsx": "69493756d518b7125779330ebf1893e4df0ee6e7007aa159aad5e34a989ff3d6",
     "components/keyboard/KeyboardSurface.tsx": "8be8583a3d1fc4f3991f873430603b930e8c2af2b7f2c3dfbabb7f800d9fa074",
     "components/keyboard/keyboard-state.ts": "21f285cff8d825292d1080c78b9ea27ba79e8d36661a86fbef1807ea04a7bff6",
     "components/ledger/AccessoriesExperience.tsx": "ea2e291eaf2a0e860cdf675f6b21bf1edd819d85dd20c1ab14c6f17b8b29272f",
-    "components/ledger/AchievementsExperience.tsx": "42dd5b64de37c5f6e71aba317cc48c0f126435af692f4fe3634bdd9edd974fc7",
+    "components/ledger/AchievementsExperience.tsx": "d4dcbaa552c9d9a86c27744a390575833f05e6f22047f0a05653e85920949f68",
     "components/ledger/CompetitiveStandingCard.tsx": "27dfd72e30975a3698d4956a90d50e50847cbb417c4775a12df027b794ce8590",
     "components/ledger/JourneyExperience.tsx": "3087bbf83aec13e5b9da7b4498c393052acb5c4a6f2f4119ad870166b512566a",
-    "components/ledger/StrengthExperience.tsx": "830f3f4922a18d492f5164e9509c302d693c6c6c04949e2dfb2f8fb4fffdda6f",
+    "components/ledger/StrengthExperience.tsx": "f9594d8221d89e0ce7e4951e287b4b6e139682d2b2aa1395af64101e831382c7",
     "components/ledger/StrengthProgressionStory.tsx": "545608c0ff48e99c8f6ffc93d32c08fc8cce1a03be1b36222992083baf5d2cbf",
     "components/ledger/StrengthSemanticArtwork.tsx": "dd5abfe4938f4f69e2b39686131355dff597aa50c468ad0eb8dfb86844bc0062",
     "components/ledger/VariantsExperience.tsx": "8232b46834005fd1d081aa4bffca917877dee8e38b1a7e976ed1aa1853b0ca28",
-    "components/ledger/archive-detail.tsx": "c073cdbf02135a46a5c741275d988678423e3d2074fcf14e9a19a367c989f909",
-    "components/ledger/archive-foundation.tsx": "d87c3be65e1fd987e75e6568bca03a72b0842b16776dc612822ef925223b0098",
+    "components/ledger/VideoMovementPicker.tsx": "98cabb9d6d167622c06204a54d54605cad2b040cb08311e746c8ec46d5482468",
+    "components/ledger/archive-detail.tsx": "ef24115f8638c9289811f93f0bd0c57e37be02bc20ba9ec3af1f8282cfc6f408",
+    "components/ledger/archive-foundation.tsx": "5df9e1f06843a31328b4954beee4bb7aab11a577eff8c1f7138fc1c652bd5fbf",
     "components/ledger/athlete-ledger-subject.tsx": "9ecf25d97702e6f846c9929a2bbe0fcf4f3a19e2e8e1ff56b23e0458afada432",
     "components/ledger/experiences.tsx": "f2a83e6bd59b40c684f0a09353a6fffa01ba15ae979129a0ef1c4dcd2f18fc43",
-    "components/ledger/exploration-experiences.tsx": "76f6622dc67d12cb756e3c0838a948619643d9b96d5941130e4211cf426f205c",
+    "components/ledger/exploration-experiences.tsx": "e22692ce4706d5b45336fd5bbebf5dcfdee7f4c452bdd9121d0ab27635230cf1",
     "components/ledger/index-experience.tsx": "8c19d8d22f4f271ba842ecf39eda54f821e4d361aa5d8b42d97e78db3d129791",
     "components/ledger/index-maturity.ts": "560817f7b31679a24998c3a9a635af528acd30c7945bc84b2f69df969c3a957b",
     "components/ledger/journey-live-events.ts": "90b12f3bfb0237ab80d2295541c8ed4b623b81a1f45755ca929a1dc6e8ab63be",
@@ -781,15 +787,16 @@
     "components/meet-packet/AthleteMeetPacketV2.tsx": "77586f06555c8ab8b4cfd0fc28d60d5be49e14156ee3b707231de08db23bd24f",
     "components/movement/CanonicalMovementArtwork.tsx": "e7aa0d4733244b4a78d0e9cab975207434467e7c29418c2b127990730a558eca",
     "components/movement/CanonicalMuscleGroupArtwork.tsx": "ca2db1ffa6751248c6c865027c7b86fea35072fba287ccf6b1a61a721da65ee1",
-    "components/movement/GovernedAccessoryPickerModal.tsx": "be6e15e91fee31c6bc82d426977fb0a7c3b40d57e797dd7025ef978f1aa0d587",
+    "components/movement/GovernedAccessoryPickerModal.tsx": "059001c072588c63899fe883325b2d3279d2d9b098f6aabef94cf68e74068bc7",
     "components/movement/MovementArtworkHero.tsx": "30d78dd0c42ad7f0299c704c1fd172de59566c1dcebc3762c0471fdc8c95c1eb",
+    "components/movement/MovementSearchField.tsx": "027237493aa96f3f50c139caeef3e7343313acbd17b05d7ba7409684dac64eef",
     "components/movement-history/AnalyticalHistoryChart.tsx": "8cab0619fb56fdeb401eb8412dccd14dab6b5b73e82be05427351e471fb87004",
-    "components/movement-history/CanonicalMovementHistoryScreen.tsx": "96369842e3d40a381ecc7ba7eb6bae0de886628fe46418129da2560e3c878194",
-    "components/navigation/CoachMoreNavigationSheet.tsx": "08c9a4d1b5394b27f7ba7ee670c1fb46dddb571ed6e879eb52033fc3fd1db3b5",
+    "components/movement-history/CanonicalMovementHistoryScreen.tsx": "63e6afe020374eb1f237a5369b0ec1848d061db3419138340b0000127e8123d1",
+    "components/navigation/CoachMoreNavigationSheet.tsx": "7e82cd76f3c7b3286658f70c4042cb236a599f54dd0fd952d03ef1d3cc73d180",
     "components/navigation/MeetModeHeader.tsx": "9ca30da7d84e53a755587da7ee5c7147a6abdd66e101642d455427b686104bbe",
     "components/navigation/StrengthLedgerAppHeader.tsx": "6c4ac233411541119da865d004c4739f30592d6f9efdbbcabc32d57d35c50b75",
     "components/navigation/floating-navigation-motion.ts": "6da59be8ceba9941d41695e2728a56c48a26fbe6d23e84cc5b69c0d263f00ae9",
-    "components/navigation/sl-tab-row-control.tsx": "7a225e64ade729d128467ba0734f1eade89b405e0b721d6187135e6ee277b5c9",
+    "components/navigation/sl-tab-row-control.tsx": "7293ddd1b23785a1491d951a9413d6a357c5b4c81e0fd2d0c917e8e851f4e0f9",
     "components/parallax-scroll-view.tsx": "37857f0334e989274920465789c9665327ffaba2688292c26dd484db7d95feb9",
     "components/refresh-screen.tsx": "f633dad2d779e5c7928672b78202e2601dd070b9f0ea31760e82b33ae2d994e5",
     "components/rest-timer-completion-presenter.tsx": "c9772531ad12a9d5196bf54b0818d2895139fa5f9c76e40418b2369e7930cc6f",
@@ -800,15 +807,15 @@
     "components/themed-text.tsx": "fa66960e17e5170d3eb7a419360e3ed5576f00474883fc92f71453cfc707cfc4",
     "components/themed-view.tsx": "b95ec1df30abf73d26593db2b6e6280af33b39f3f3b6d960765e99fb6f6843c8",
     "components/training-hub/AthleteBlockDetailsSheet.tsx": "c647b94167545f662a72ba1fc09cb34f22732dedbef200c9ffe9551e8ff15031",
-    "components/training-hub/AthleteProgramTimeline.tsx": "b3248c876d3e86b1428b0338ee55bacda650cc97bb0e4866f1f8a8335f737c02",
+    "components/training-hub/AthleteProgramTimeline.tsx": "acde9413c4167ae1056b4b7d79c42af41a21222fce5f165c5820a1e590bd21ce",
     "components/training-hub/AthleteTrainingHubExperience.tsx": "82386c9eb343259f910af425b500f8b4a90577a29a5492826c212e28eaca2a26",
-    "components/training-hub/TrainingHubSessionPreviewSheet.tsx": "ed1d055af8d50312ce09efb179d74b58077a79a7eb78362e7436f6b30b73167f",
+    "components/training-hub/TrainingHubSessionPreviewSheet.tsx": "bae0cebedd18228b5dc02dac6d7634da297506f2e44884a23c3630c9b5f01395",
     "components/training-hub/training-hub-material-surface.tsx": "cb2a4e5ebf34959bd34eaba5fb894c6a0e2650312d79d36be37890ab0859cf99",
     "components/ui/coach-action-grid.tsx": "c8b5436367c0f5f634b29481d86d33372f7e90e1bf5e0731b64899e30cc6ac05",
     "components/ui/coach-metric-strip.tsx": "6bade05af65c5e61ab5005302e2513e4f58752336ec85304075320cfcd26cfac",
     "components/ui/coach-queue-card.tsx": "62ed408553d1a8678f44da61856916ae4d28180d07492eab9e8ac7f5de723573",
     "components/ui/collapsible.tsx": "fad0bc916953836c2c60052a76cb7416a38ddb34b94dac9518614d48e7f0d13e",
-    "components/ui/floating-control-coordinator.tsx": "f8e57249ab1c71dce87bf37e482bd742cb9f4ffeb1805202d7a5c177715ad7b1",
+    "components/ui/floating-control-coordinator.tsx": "a23a7a8b12d4d681095a45b1a4f8d08d98794e1d3a6a0be95eaf3a2cee735e0b",
     "components/ui/icon-symbol.ios.tsx": "c4e56fc2c481f0964d06ff0c9dda51eeba1ca7f6f554336dfdceb4a75c80eb2c",
     "components/ui/icon-symbol.tsx": "5cf33b25a381429479bb5f56e744111bcd8b81f99969e9cb56e14988293e338f",
     "components/ui/index.ts": "e6013753c8e36166ed5d3eca12bcd4166cc02196c9d3a09eb6c72000888ba97c",
@@ -846,7 +853,7 @@
     "components/workout-logger/canonical-record-recognition.tsx": "72921c095578572da44e94463a701afeb19cc8f5f69ade5e58e570a9cba057c6",
     "components/workout-logger/compact-set-timeline.tsx": "72c2bad4ae08a942fca74dafc9dbc1e4743dc1058bd41036380da50fb522ee0e",
     "components/workout-logger/completed-session-correction.tsx": "979a25100d425f2e3a2b8d823b0f82c6cf17ed91e359963898d1225f9df395c5",
-    "components/workout-logger/core-loggers.tsx": "0a0fab12fbf307b9aaadabef7370073275eba249d22993c36d7f193d1850d2a0",
+    "components/workout-logger/core-loggers.tsx": "d157827886a42d52a84c81a1c38b05f504bc03ae9d8df549c8bfe2a453980604",
     "components/workout-logger/core-variant-badge.tsx": "c77825a168e9ef2b0df6eb3c1440bd65096fa3f72dd705fcd5b6dcb4e1e7f10e",
     "components/workout-logger/equipment-history-evidence.tsx": "923f872704142cb3103a20c43615c09e91ff7256e3a7b96f7dcb3a1418074ff6",
     "components/workout-logger/equipment-type-choice.tsx": "10f63b37c7fc7345c28ebf6b8166d8d55ff61ecd9bd943d7a26ccb6c7d7f9470",
@@ -861,17 +868,19 @@
     "components/workout-logger/movement-lifecycle-status-label.tsx": "ea1500af4baf6aca2147e1ea2b59cc1b559c76d2da0dca09fee4be894f31ebc4",
     "components/workout-logger/post-session-ledger-ceremony.tsx": "f0e765b561399ba9fa1d617193d55e7db54345630515c92a6ad065eeeb286b10",
     "components/workout-logger/post-session-surfaces.tsx": "b866c0049d7b721d80a5a365ddd3ef61d6fce862d5e5dc46169f0a70eb630dc7",
-    "components/workout-logger/readiness-modal.tsx": "f140bf0265aa48b432a0c34690570f7905792b6fda9307677a44b8767e0e0916",
+    "components/workout-logger/readiness-modal.tsx": "20a764f2178217d3e81f5570a52dc588530437d328f5f340907b596433161b95",
     "components/workout-logger/rest-timer-focus.tsx": "e99ba7cfe18679de13477ab97b2f5726e33901f3a2a9ab712138a1e24b3afb33",
+    "components/workout-logger/selected-set-video-preview.tsx": "e73138d357ab1853689d5a34b50021f2bd91b580e2e4dc7e2b05bd54ad11ff03",
     "components/workout-logger/session-actions-sheet.tsx": "d15d30332f766649edf552909ef03df747671a55bda1527ecd085626c971038b",
     "components/workout-logger/session-clock-text.tsx": "f54292cfd19e9910fc26ea51c18fd8d54da2a1588fd5d8b04d4e09b766dbf714",
-    "components/workout-logger/session-equipment-context.tsx": "d858184a5bfcd310b3a52f35b0af46e3c9f6743822fcd9670aa48b0540f62005",
-    "components/workout-logger/session-history-peek.tsx": "3ebc70337b69b0538c8c770e77cea8c13674cd49db56a2f73c1c2a4cf7606bda",
+    "components/workout-logger/session-equipment-context.tsx": "69b6b76311aeba7461d7fd44d573de58ca12948d289fe8ee906ee92bb2befd1a",
+    "components/workout-logger/session-history-peek.tsx": "b277848a9d79994f0189b278df41342b150fcc96b97f59581fff15be7b9772d5",
     "components/workout-logger/session-set-entry-context.tsx": "78c92c5ae76399c85c3936030a4928fa0b637da966f80bc86717cf85f0ecd656",
     "components/workout-logger/session-shell.tsx": "3ef07945a53ed17062f043fe917eae17b1f4f0d07434697cb3e5f057452d55af",
-    "components/workout-logger/session-v3-closeout.tsx": "df076d03ebb82eaa4d9faf2147980f26a4678690aa9ab3b36ce98c6e93ae030b",
-    "components/workout-logger/session-v3-movement.tsx": "e52f7fd1917ae4e2f2a942c6672c78395ee46086522ac14ca3d10022ddb14884",
-    "components/workout-logger/session-v3-shell.tsx": "cad4d79c22a6da6485cf05817b10b7b4b0483f3c9108b0396292dbe4cc1df4e8",
+    "components/workout-logger/session-v3-closeout.tsx": "c4025d8347e1b08403be1f8d6e968143318dba9554657331c7f4c3821ee42985",
+    "components/workout-logger/session-v3-movement.tsx": "2089540d01bef36f925e28faac57275d4a3433213d7762ac73d26a968bd3d3f0",
+    "components/workout-logger/session-v3-shell.tsx": "8dfd1cf02a6dcf70feea47fa6d8fa9ef86113541528401bc7ae46f51a94d7cce",
+    "components/workout-logger/set-entry-video.tsx": "6bc5258844bfbf490689046ee210de1d5ccfa905b7e17e6cedaeb305070f3478",
     "components/workout-logger/smart-warmup-sheet.tsx": "d038aa82810edacbb3d2274c8ce44272b5967f083c105ed306fdda215fbc08cb",
     "components/workout-logger/stage5-impact-summary.tsx": "5a9fa7946dfdc997a5d5d056ffe031a0b0421306a51ed9c8eff3ee2eca66c28c",
     "components/workout-logger/substitution-confirmation-sheet.tsx": "e183ce2a4bdbdacb31a62ac910b630131016c79a1bfe9deb533a5801d7ea423c",
@@ -885,14 +894,14 @@
     "lib/accessory-muscle-region-assets.ts": "21263320fddd2d183b3016885dd7950c9f5b14fd6438f4fd908cdefbae89e2c7",
     "lib/accessory-swap-eligibility.ts": "885fcc9f2fca5fb890f454abde7a62dfe16f5cd719d192274b93695596852cf7",
     "lib/active-session-composition.ts": "0db7e524f7e8a0b8db040244c4b3670bb7f9a8458b30c12cf7467447888f023e",
-    "lib/active-session-hot-swap.ts": "4846bec0ca11aae93902a14fc1d8dadb8fc4ee3cb0e06dfb2cd9d6a6e2270eb9",
+    "lib/active-session-hot-swap.ts": "0eccabcc910ec5b8999a1ad46bf0f0da776ba64c8275f7897aa6f55271749ecd",
     "lib/active-session-prescription.ts": "d6751f05481afe6baf482e79108cf5703b4dc4e90f9bbbd2eebcfff82d229c93",
     "lib/anatomy-framing.ts": "17ea601507ecd00a20f0069ce3d9e89ef7120b92d0a74835b1c5a57e2f3b0c11",
     "lib/anatomy-system.ts": "bbd4c91949de43a2aadf33ab357bbe80af78028f652c1b23e5c9ddfe6b0ae8db",
     "lib/api-base.ts": "332da47842ab7301a03e74d4d08e7765742dd12402dc8f1b5a57106e195bd3ac",
     "lib/api-request-policy.ts": "852a25e8b23bf5487187bedcde49a3210e0da0670a954b41cc351d50c84dce74",
-    "lib/api.ts": "94847cee61019616c2e036d0ec37feca3d3e7acc71f3afe4d47ac8dccaea77bc",
-    "lib/approved-art-runtime.ts": "abd25da48bfdffc712e8caecbfa36e8f61ac03e0624656a1a78ee0aaa6210a65",
+    "lib/api.ts": "a1a8f79820234a02cd2c5e98876141686ee602c82bc9be0505fdbe100f785e8d",
+    "lib/approved-art-runtime.ts": "aac9ad70ff37389341171e10f75931a0f584fd6f5db281c4359b47b58474ccdc",
     "lib/athlete-calendar-grid.ts": "0bb0d9b823398cb5611de5c17b710edcea38b6fcd302556c293b891e13f2c975",
     "lib/athlete-calendar-lens.ts": "d9420e0596651b716b11f856f1e562d20a5f756872e21ed76bd935af8b59370e",
     "lib/athlete-calendar-month-summary.ts": "cbb46c62238d8f1f729503c5e33450b80d7ba2b291c36d2479d56ed5d3a9babc",
@@ -923,13 +932,14 @@
     "lib/calendar-training-structure.ts": "873f11784df73aeb6ba7f4a4d2bfc8f1a23d1ff11e6542f039a4921d317c30b5",
     "lib/canonical-accessory-artwork-identities.ts": "031396194957035455111504c55636501d508bf087403f03a9805e750c3fb710",
     "lib/canonical-accessory-discovery.ts": "c35375ab38a120fa4ffb552cfea6542f604c14d2ed84d157c155a732da598af3",
-    "lib/canonical-core-artwork-identities.ts": "8ccaa4fd7b80e6239fd301a0f987583e86f4f37c1213e7f5594b90f9c26fcc08",
-    "lib/canonical-movement-art-subject.ts": "abc4b8d165766536773ef9df50d6e934d958a77aad26153c507165af4a13d660",
-    "lib/canonical-movement-artwork-assets.ts": "33b654638af49fa13bbccd7ae9751af830fef4e80affcddfba8c508049431964",
-    "lib/canonical-movement-artwork.ts": "b4d53d0a6dbf499a5362b8639e0e3b682d972049981ca4a2d21ef11e37535bd6",
+    "lib/canonical-core-artwork-identities.ts": "80703a0fa6c7ca720936a9a74e6acb9f97a8424a5992dcbefac7c723e458a5dd",
+    "lib/canonical-movement-art-subject.ts": "c65bd0c333c1b164da4969548245d2be2dc6925823d4c42564d095345d20eeef",
+    "lib/canonical-movement-artwork-assets.ts": "4d7c1899497dc7f1370bbdad4507f556b6e9327712911edd53bab6d2c4d1d39e",
+    "lib/canonical-movement-artwork.ts": "89fca6bbeee46bd39a9060565fa59df7c05da5dbffca282e0f4646d2787b4e58",
     "lib/canonical-movement-history-contract.ts": "1ea98af80fb76c09f44717b8cde7574408cb9b267423f168893c23f1b133057e",
     "lib/canonical-movement-history.ts": "2e2d91fcd42dcbe731a5a7f665fcc6f5cd2a8828da017e2920ea6008ff609507",
-    "lib/canonical-movement-search.ts": "aa639bdf256fd34af5de3a02a22abb192c3978be6656777fe67d756dc91e5c44",
+    "lib/canonical-movement-search.ts": "8e634457914366a52eceab164af750c2decca849c0343e559a922697129a72e3",
+    "lib/canonical-set-save-recovery.ts": "1c2e4dffd504762ea2427c7157a81e22d62dc33ac0d64b2c000c2b70f22d5d45",
     "lib/chart-fidelity.ts": "810a624cfde22d7e35945f22940cbb1aa2d9db34c551a225ce78a6d63c968cf7",
     "lib/checkoutBrowser.ts": "8e1807bf0c83139ef91a5bfe4bf0d2c907982c6936c498adba646292cff51e31",
     "lib/coach-calendar.ts": "2737b85e0b11c9a3df445fc18b2c99e2e6bab0eba807fe67fd46350c13fba366",
@@ -950,14 +960,14 @@
     "lib/core-logger-header.ts": "222b7707b5d86460b4dee8f7cc37ea9c58357d4073e4e9fd99e6465aa0851525",
     "lib/core-logger-hero.ts": "56e639a8ef280b87c1a8702379443e5b172eda3bec263767ce2e585885990271",
     "lib/core-logger-timeline.ts": "5946733bda5460265654ae85b4d9435804dd0d400a17b0464e7079110973fbf3",
-    "lib/current-session-movement.ts": "1e35381d7defc2f0abac8f6501ad46a88d7622b4a791030200baa9305ea15dc0",
+    "lib/current-session-movement.ts": "7a7ea5260df9e3a148900f67e5dbc408801711a21a9580f8cf763a2f56838739",
     "lib/daily-readiness-home.ts": "07df2d35a96679fb62004638b9988d1c5720aee682f4d2893da1ccfeab29bcf1",
     "lib/deadline-display-clock.ts": "f39a7cb8ed3b07a19a64d2149d905a0675477cfc1fdd64e216307f54c693f329",
     "lib/display-units.ts": "2826f0e4ae02e47b9485ee04cf71f34d83756c49bb8acf454a2e2f135cf157a4",
-    "lib/equipment-flow-subject.ts": "4a3c931baf7a23df49c79e8b8eae0e415d5cea99365f9f2e73cca9f89da20650",
+    "lib/equipment-flow-subject.ts": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
     "lib/equipment-presentation.ts": "b86546ae996a45634c05bf4eff4fe81048534df9040cbc3ebd9358eb8e7d1c04",
     "lib/equipment-selection.ts": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84",
-    "lib/equipment-type-artwork.ts": "ca6ed025e79c80badb3111861cfef7c14f55df5806065a0718815a56eb7bce98",
+    "lib/equipment-type-artwork.ts": "cdf3263e5fc7b7ffa8d8968b44906a2d1a6854f58a0503d96c2dcde1d68ce192",
     "lib/evidence-read-cache.ts": "77248fac8e2d53b11291231bc06f833934354c268cceec5b147b1bb718658c7a",
     "lib/exact-accessory-history.ts": "68371d24e208afd35a0055068272f7ccf0ddb0cee83e4c94960feb5dd3852477",
     "lib/execution-actor.ts": "fe841353ad5a5ad9bbb1c670c475ce60d1adf1688f2abeecc557a6757544736a",
@@ -968,7 +978,7 @@
     "lib/journey-weight-presentation.ts": "6e5c0615041ba0e4d9025d85abc0856b8b7b9617f3e472d9d11895d61ed4a647",
     "lib/keyboard-layout.ts": "be4232de803030c9268f2eb4dc0455841cf18a6f5d141eabbf374fceb146c5bb",
     "lib/latest-request.ts": "2a66b24f5dbde3b234030ffff6e2b8b33b7959730e7a578738cb327e9879b47e",
-    "lib/ledger-archive.ts": "7308889934a8e0db00109c31556a839b71e6072f6f7a5a5d2e08e79b8d80c35b",
+    "lib/ledger-archive.ts": "88327751438e26cc1e1ba7f6791ed1a95c749b8d0c14fc3075bbccfaceba0985",
     "lib/ledger-bodyweight-presentation.ts": "f0b10155d906cf03f7bdc59dc6363a707bf26715c0f16f094af1bf810d097fb7",
     "lib/ledger-data.ts": "09ca828c797d50d537ec65e292646dd3a995beb026ce8f15214dc163cfc3eb53",
     "lib/ledger-exploration.ts": "5f08fd85e14abbf4c94e420f44b0cb6ee18dedeaea4c2d45e57eaf1fc353ce80",
@@ -1001,6 +1011,9 @@
     "lib/meet-mode-navigation.ts": "67aa9a1a26784012cd4eb6911edd9476d094c6534513989cbc12006feeaee5e2",
     "lib/messagingAttachments.ts": "71d8f1c65d913faab260f32dc8e8dd64bba3c1036a05c034cf5b10d9ff532fba",
     "lib/milestones-layout.ts": "b53a7fccb2d5ef1aa349d21e2d88d571e1ef31028ff347bad3d51a994065d2f1",
+    "lib/mobile-education-image-data.js": "8747d543f6898ca2d4b52570e7512f29db001e9b67c2cc5bcfb64c29b06328ac",
+    "lib/mobile-education-images.ts": "1b0562b0584204c18990f92a502d66833937ac88c0d37d098818bc7cae8586f6",
+    "lib/mobile-education.ts": "4992bc712a5be736f8e5946463aafa7402aa8051e464e14b0b5c5485bb43ab0b",
     "lib/mobile-text-layout-core.ts": "58afb0c34583c43ee099eadf1e620d01cf46842974e5d0566557868c615ecd95",
     "lib/mobileMovementNames.ts": "c033db34fbd71ac01d97bcc5241f83a928923651762bdd2b87d139325967e57a",
     "lib/mobileViewMode.ts": "df824132ae6c8a992d00527d3d20ee1f0ea2e07e3f613085a5b1c0eee1d677f7",
@@ -1024,7 +1037,7 @@
     "lib/prescription-wheel-options.ts": "d97d52a6246c7a3b7fce463ddbe13a020833794a8678555e11935db1ba7da312",
     "lib/profile-photo.ts": "06597ac8e1bc0dd632854d8fb683c5566538fd0dcb4c6e73e1573d2590b7a33d",
     "lib/program-timeline-navigation.ts": "fab83bed12f7a9dd88e212aac6118a89354de9ee02bb2b186250313bb9e5b753",
-    "lib/program-timeline.ts": "3b31d085a0d6a1995b7d33be3b1ec2a46f34fa5c4cd8b7efa30fd8747ddf4fb7",
+    "lib/program-timeline.ts": "bc3c50ea4c0e06955a58155e3dfc0e096b375b1395de86aede073d2f9843b5ff",
     "lib/programming-program-scope.ts": "afb6d89fe7aa20024b38d55c94cf05b84848c2053efe46407a4c415d0adc15dd",
     "lib/programming-session-deep-open.ts": "996fcd86ef5e25cd1d65393a22f9ad11570ec92ab851e94596658e12bf92115e",
     "lib/programming-session-move.ts": "fe9550368e01fba82412d5ac3a92dcad77b340709c7b048e0da1b755ee69329e",
@@ -1045,6 +1058,7 @@
     "lib/rest-timer-notification-scheduling.ts": "f29d689dd038b61530ae1df7d3212e6abfc498707c98b0047febbfb822ff0984",
     "lib/rest-timer-preference-core.ts": "5d0aaf36e35df9680f5d3e1bb98d86e3b8955177d62bdef0677747790e1f5512",
     "lib/rest-timer-preference.ts": "50cfa780f33d715e28f5d3ba267f56f2032451bed52eb049a29f30aa4921bd22",
+    "lib/rest-timer-progress.ts": "f6e385f18fb321eb4b284e6e12b99fc7f246ca1ae89eb248e89322fb2248a6bf",
     "lib/rest-timer-signal.ts": "aef9b31b572abfd6286b2060ce2c4ad90628da881f87ff10d907117c3a1f4ee6",
     "lib/rest-timer-storage.ts": "fb45e60c0747686d47062edbfd2cbce4c229a939b465a853c3068d8fa5bfcb3b",
     "lib/retired-movement-discovery.ts": "925600fa5e224193a737ed5e64435b554853d10ef8be2003c1adc2e3966b2aa9",
@@ -1052,6 +1066,7 @@
     "lib/sequential-group-transition.ts": "78977b5e6e1c661ff99bb7d505f6b11bb3f10736889b62dd04813b8b22aff1e9",
     "lib/session-authoring-command.ts": "e810eeba19b664e379f51c5b74a182efa4d074ec40b9380f096ba9d30648101e",
     "lib/session-authoring-journal.ts": "bc05da4b9b90a68df2d15d9f1c424f38e4e3eb864c9b119782e9646be4920c6a",
+    "lib/session-availability.ts": "41c1e683f24f1a200438a0b19dceb0cf7550896204184f70494c2d85a406d952",
     "lib/session-content-snapshot.ts": "c06a2473379ea37a3b02a4990508381314077cef8cde1b99d4eba9019eab0e80",
     "lib/session-duration-estimator.ts": "24e88960e9b23224589913edf3dc258b8e04da4026f25bafc8ffee617140ffff",
     "lib/session-duration.ts": "2d7cd6b9c32ceda99099a6b6becc1eea842e7319f8e0317cf51a99b7ba453ae3",
@@ -1079,6 +1094,7 @@
     "lib/set-log-delete-order.ts": "bba8added354ce41e85e4b823543d8a6fcbd7b69dd91b7abde44c691fd1fbfe4",
     "lib/set-logger-load-default.ts": "063a28f794e92c694d968b706c8fe64325f9662748b701e81b43a39568ba7f17",
     "lib/set-rest-handoff.ts": "f184b1962a17abddd37afb709ca080a1daa7678145ae333cf40c4cfcd76e7020",
+    "lib/set-video-upload-status.ts": "3ac61a167662cc43f555c6f46771c97f848cec8bcc9685072adcfedfd7f58436",
     "lib/settings-account-parity.ts": "87ca208fcfe2b378a2b2602d67f0a5edb1d3f5a7818cced225a39100cc75fb0e",
     "lib/shipping-navigation.ts": "247c5e198d60baf4f0883263c4c61272cd730dca3262c529f0b841922dfc7d7e",
     "lib/smart-warmup.ts": "9c7fcd6e623311305ca3e2633f2566cdfdd2a5c700fb179a38ac8ab55c2da3fb",
@@ -1091,32 +1107,40 @@
     "lib/swap-movement-options.ts": "8355d6b8d01f08cbef167bfd3cba946d018f4f5346dfba36271a5d1c566b2057",
     "lib/swipe-action-gesture.ts": "4a0bc0da2787015d9fa98e91320cfe5cffc62ed50a9cad22bdb22f9724b287fe",
     "lib/team-brief-highlights.ts": "e95355828c016ee4bf78d944e1e3ed1515869b7cdd3c872dc92379e833cb4238",
+    "lib/today-history-routes.ts": "8b19f22891f44ee06f49d134b529cec3eacc7f90b6f2e888ca0f04d074adb2f0",
     "lib/today-response.ts": "43e7200c430c8fcc4f35f36d6cb2a631d4c84d55ebd926ecbc8eb505a364a36d",
-    "lib/training-hub-session-labels.ts": "9248d569d58f4aa2a961a6adc064ea32eafe8c385e24fd10b31d806814eb8bd2",
+    "lib/training-hub-session-labels.ts": "fb7086b39b181328748e7f88fb40914e9ccf58404253a64bc653d667244e99c9",
     "lib/training-hub-session-preview.ts": "058f60e8817696ad9a33d19ba6515a5e5b6bfab40cfa337e9727f1778eb4df24",
     "lib/training-program-progress.ts": "fb2e215a284e5f40721a47bde23932a3e24d2f86f3f4befea7d1f4b545795fe9",
     "lib/trophy-assets.ts": "432dc05ead5432d2321bb06c2da1ae08a1d952c24ab85af6b5293c013bc65e2d",
     "lib/updateSafety.ts": "688611e1d26d0ecfcec4fe7db781e878d2964c2d2aaa2a504657ba47ad96afce",
+    "lib/use-movement-history-availability.ts": "fc653fd001eeaf814b185429df216955a2c4dbec4b351404274723c0c87f4284",
     "lib/use-session-exposure.ts": "d97654d6c36c5b35f0d75eaac6cf0a1830f9b6ed75553b8c49cb15c818628a9a",
-    "lib/videoUploadQueue.ts": "673a1d4d4d39bb43311984cd231523c8477ceb5186284ebb82ff91b48d4e1195",
+    "lib/videoUploadQueue.ts": "b7ece6ccf128c014d8da1ea02bf2df6218d6246db316715f2d709a7404773f6d",
     "lib/volume-achievement-assets.ts": "b5507172956aea8476985920a74005c5f7ef01a9eaeacc6dcbf8f7124e7a8354",
     "lib/volume-achievements.ts": "dd1422f1469682a8f4750f081a4d966dfc1b8ba221436eda252d867425543ed7",
     "lib/workout-item-movement-references.ts": "c1884077bee39e9c1221f3486dfd1c753e872bd095b858ed4253a396ef83af4a",
     "hooks/use-color-scheme.ts": "33beb965500ae5fdfe5c8699805a6be94c8c126a751fbe2ed7bcae87df394882",
     "hooks/use-color-scheme.web.ts": "84f19b5c1a8e941ab9868d2e83f6e61db11d3d9bf4fa91fac979bcd0fdc8019b",
     "hooks/use-theme-color.ts": "49ec7d86e952e315f8172e7994a879d3c63023f2955f667fedba6ab5c89c1710",
+    "context/AuthContext.tsx": "18aa6c1fa073a1852ef2ddfc861f75f67c09a0b9e87c4847116c39ed8a8e741f",
+    "context/MobileEducationContext.tsx": "d86fa554ec272d97d696e7a87e032fcbfbf5a881ec680c4af339a87124922c50",
     "constants/movement-card-material.ts": "77cfb9f48577eaf605dc034c2930425f14c356913e520539c35fb7a85cc0381c",
     "constants/theme.ts": "bfb2c62c9edc3351794a57d16f9975aec1525f429b64a6fca2b465913956a91e",
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
-    "config/bottom-sheet-consumer-inventory.json": "45b2b756712da3467629e81f72ba7a594206cb23484781e72a1231866e4b68ff",
-    "config/governed-core-artwork-reuse.json": "cd8622b02f09278a61bbe964f62a06730cc9f68197da302365ae7cfa7dd0c972",
+    "config/android/google-services.json": "0b315eb3fb3be9513a42b1c2140245c0d670909208628db0152fffa35906f994",
+    "config/bottom-sheet-consumer-inventory.json": "daadbf798a69fb7b443d9b257e5ed73729d6915a72af3ce32d4f75197e3e008b",
+    "config/education-image-transport.json": "e75f7882f5462d80060158ab7e539387717733c5a4d98ff8a8a84270a3d00a7f",
+    "config/governed-core-artwork-reuse.json": "db9e90f4334de79994c3120684d28319085258177936ca6cc3666a2f676a75f6",
     "config/governed-movement-art-reuse.json": "bade896d65fad8e974da704739f008ef0dd34962e30c18dffeffab0586244419",
-    "config/governed-movement-art-taxonomy.json": "96829b44057e3fbb88f3be921ca11999742b4a42c7565938c9feef3e6f08cae9",
+    "config/governed-movement-art-taxonomy.json": "4cecf895c2035b1a65b1ec2d36b8b4ff1c37b39ea1110c92def256b4a51a3aaf",
     "config/governed-movement-retirements.json": "1bf94984791b33b5960e5167d661c27920660fed9b5716ea2ff4175a650cd6c1",
     "config/movement-art-consumers.json": "a94b6411d7553af49b873573f12cb66cb147569b46581e136d7c47fed63be153",
-    "config/native-runtime-baselines.json": "4937b8fb0085440e25180ad6fdbfa252465741997b249b8e932d4d6f98d535ef",
+    "config/native-runtime-baselines.json": "586d42ec19d13a1910ead7e8cf9e55d9b5c93118044d7c75d5682308dc743003",
     "config/production-mobile-baseline.json": "16db350a9bff4a0694d972fdc3801ee6e8a8782605a02fcef70824ed0343a12d",
-    "config/protected-fix-manifest.json": "e096935ee1da6c44af82a0ee8651a0803bc692dc5be5827b06e88b2b20cb32a7",
+    "config/protected-fix-manifest.json": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491",
+    "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
+    "config/release-removal-authorizations.json": "79b7e83d8edc0ee3b52954fdf66cf31d152059d1fa056a60b7018f9b8ef215bb",
     "assets/audio/rest-completion-beep.wav": "fc3fb1b293a86fd6bebcc5e422601866062b5b15c7060fa1aa95a66b3dfea05e",
     "assets/catalog/accessory-catalog-review.json": "b23d0f3f60c78cc4a6ad33470d4a7a20baf78c38dec277bfa2d4b1a1667066b5",
     "assets/fonts/Exo2-Bold.ttf": "36c27d1c5a90430d7a788e07c22f35c0aa21e35829b7ae2ce6db27124046401f",
@@ -1481,6 +1505,23 @@
     "assets/images/milestone-renders/plate-club-material-v2/squat-675.png": "49a61b4e2be1b82aa3d3facc20bc7136ed5a90f48b2acaf992e00b24f947a145",
     "assets/images/milestone-renders/plate-club-material-v2/squat-725.png": "22031bface2161a5c9e8370e92169a1b1924163a725e7abc3ee3ed4e545affd1",
     "assets/images/milestone-renders/plate-club-material-v2/squat-95.png": "fdd51a707f39ffe2904fc9e627adc35e1b01170a295259ed8a0a5f1d8e28d456",
+    "assets/images/mobile-3-education/athlete-history-20261001.png": "800d5f5d674f39325f5edd48e44d174f321e2e51a80cc34387964815cd319fbf",
+    "assets/images/mobile-3-education/athlete-ledger-20261001.png": "c887a22163d38f85743c27d71c88cce5e3ea76a3311a89376bbc7c14c0365f1d",
+    "assets/images/mobile-3-education/athlete-ledger-seeded.png": "efa96bed45638e6cc2a826c749493f1888620c3385e958559ec62fe60e4940bf",
+    "assets/images/mobile-3-education/athlete-movement-history-seeded.png": "1ff5c0d6c7cf21f748eedc0d70fdaecc1cdd16f1f5bc1a991311da1b2efec658",
+    "assets/images/mobile-3-education/athlete-session-20261001.png": "b9b4a94e058984f44196ac707266c8962fba8ad9d83f83d6c16fbed2c0a8f10a",
+    "assets/images/mobile-3-education/athlete-session-live-seeded.png": "7870e0e5663bb012c1d8d212e55e5e2e56bdd43d76be7a56752df36967605b26",
+    "assets/images/mobile-3-education/coach-brief.png": "9780719d11bf8a04f4afd8572700763c17ccc25ff39079d6ae237c11bcebd7db",
+    "assets/images/mobile-3-education/coach-hero-20261001.png": "a792cfc256eb21d7e5882f0375236c03aa0487009b7be462022ab0dc5acdd05e",
+    "assets/images/mobile-3-education/coach-home-20261001.png": "6753a69101678e19acffc4286c327c317ddf09e1ae2fc39a28f4aca9f207d4a1",
+    "assets/images/mobile-3-education/coach-programming-20261001.png": "aaa18eb7fc21fb763f75f75ca084521334a14da3d8647084cc82de89f36470e1",
+    "assets/images/mobile-3-education/coach-programming.png": "410e8abb277f1945b283c85c195fc15937f84d5d2f5aa47469a4d02e5890968d",
+    "assets/images/mobile-3-education/coach-review-20261001.png": "ac10d056c6d10a03b99efb446797896ce1cc191cc09dbdd61351550a5a1cd9ac",
+    "assets/images/mobile-3-education/self-coach-hero-20261001.png": "4d87b686730fbe25c9bf0968ef06d88b936b6421e4d635846893a6b19ac9dc37",
+    "assets/images/mobile-3-education/self-coach-logger-20261006.png": "c74773f76eb8107e889820260b789314418f3464d4e9ffe1c2fd0ccea8576c8f",
+    "assets/images/mobile-3-education/self-coach-programming-20261006.png": "5413f9cc5ee619538dc3fb49a4ba1b991da38ab12088dfd420a0d46c42e085fe",
+    "assets/images/mobile-3-education/self-ledger.png": "93e7ce340086617d4bb27e69ebdb83b925cb81c6f27fc6b2385fdd6721c3ec20",
+    "assets/images/mobile-3-education/self-session.png": "41f5389d6a40e758b86ad5307da8eb55b100066c8e4310681d74939c5ce7ab87",
     "assets/images/movement-artwork/approved-completion-v1/accessory_assisted_dip-v1-master.png": "a4ef5a331017e47e72b75651ec1fd538b3beb95dcf810f8848129e486029c28c",
     "assets/images/movement-artwork/approved-completion-v1/accessory_assisted_dip-v1-thumb.png": "410fb03aefd24c41830aa336618568af9477d9de8474124392e3042c4c8611c1",
     "assets/images/movement-artwork/approved-completion-v1/accessory_assisted_dip-v1.png": "b8f230a19e7255462e4b45c41f106387668f743bb7d2a9a3db4fdafb5856b512",
@@ -2219,6 +2260,9 @@
     "assets/images/movement-artwork/core-sbd-v1/competition_squat-app.png": "2c2439f2c2b90aaaafa137aff4b1328d8c2ec3a182a501c24180a66912bbbed6",
     "assets/images/movement-artwork/core-sbd-v1/competition_squat-master.png": "3749fadc1b747db90d249d4903bb069112ec32bf570bb096511fb8fcddcea894",
     "assets/images/movement-artwork/core-sbd-v1/competition_squat-thumbnail.png": "a74a2bcad5da1270f964d990c5182651bbf55413085117bb8f2219587d9bcad7",
+    "assets/images/movement-artwork/core-variants-v1/barbell_overhead_press-app.png": "f3f3329ed714811397f8f317b37b88d0f9411940bf255bb34599d5961dfdbc5a",
+    "assets/images/movement-artwork/core-variants-v1/barbell_overhead_press-master.png": "9efd7be860bfd89090a122cf8e20d9a6bf413d75c6bfe208d4cf945fa663b8aa",
+    "assets/images/movement-artwork/core-variants-v1/barbell_overhead_press-thumbnail.png": "6d7a1e80d2594ec5329a3fb9cf3380c5ac98bbb4bc28a4b31700208c8f8d68b7",
     "assets/images/movement-artwork/core-variants-v1/block_pull-app.png": "1eac91df53c0d64f37fa0a7311320c11186c3f3acbf50114893ef20c88119852",
     "assets/images/movement-artwork/core-variants-v1/block_pull-master.png": "87a47e793d5c39a33198613b5bb41bae5f16164e8f7f2d97abe2f091efa619a9",
     "assets/images/movement-artwork/core-variants-v1/block_pull-thumbnail.png": "33d6004ed88423e88c68a089fe68545537b3b15cae87b17d62403526dc5ba978",
@@ -3346,12 +3390,8 @@
     "assets/images/warmup-configuration/bars/bar-custom-competition.png": "688346cbe893a496dd34bcd32ec5a00de2170840c64bd85d20b05908d6811082",
     "assets/images/warmup-configuration/bars/bar-custom-custom-collars.png": "56797752d71259dfb01a0e676be6f856485a914687bb819d608ef81acd8de04f",
     "assets/images/warmup-configuration/bars/bar-custom-none.png": "ea953c97c9ea2da7d0aa462b28f5ac9810dbdacfa4e58f971a064e1dae2dee86",
-    "artwork-review/runtime-policy.json": "d1e5cd931e47517f7e183a4c00f29683f8374789a261d5d0311910b5b8c82eef",
-    "context/AuthContext.tsx": "8757cfa9927e409ec1a1bebd07c6d4e2ddf6eebffbf0770a9c279e9aab4127db",
     "theme.ts": "464bd011e82bd22096607e4dbe4507a68fd68a0e063e58c41d68bb9294e9805c",
-    "config/protected-testflight-catalog.json": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
-    "config/release-removal-authorizations.json": "79b7e83d8edc0ee3b52954fdf66cf31d152059d1fa056a60b7018f9b8ef215bb",
-    "lib/rest-timer-progress.ts": "f6e385f18fb321eb4b284e6e12b99fc7f246ca1ae89eb248e89322fb2248a6bf"
+    "artwork-review/runtime-policy.json": "8467bae20de4e8a9aac05bcd53f04048fd11d4c83add0cc3201f0621a29b7c30"
   },
   "historicalProtectedPaths": [
     "app/(tabs)/_layout.tsx",
@@ -20003,6 +20043,45 @@
       "before": "e096935ee1da6c44af82a0ee8651a0803bc692dc5be5827b06e88b2b20cb32a7",
       "after": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491",
       "ownerDirectiveScope": "canonical-fixed-equipment-eligibility-20261014"
+    },
+    {
+      "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-16-mobile-loading.txt",
+      "ownerEvidenceSha256": "319ebc174fef607564b65a17c67fc4c12897ea8cce29c1c1b0fce1f5877b1832",
+      "reason": "Bound owner-reported Ledger, Program Manager, Calendar and Session loading across both runtimes; preserve cumulative assets/fixes, exact current movement IDs, all equipment and authorization scopes. Actual cold APIs and warm hook/route lifecycles are failure-tested; no native build or redesign.",
+      "path": "app/(tabs)/athlete-calendar.tsx",
+      "before": "d81d6ccdce2f79faff040be3c5a2a61751f7c85dc9600db416b5e671b3051106",
+      "after": "cfa2c604801017e51f35ed0edad3958c414a61876f1f7b6922f3bcba774e9877",
+      "ownerDirectiveScope": "mobile-navigation-loading-20261016",
+      "actualPublishedBefore": "d81d6ccdce2f79faff040be3c5a2a61751f7c85dc9600db416b5e671b3051106",
+      "actualPublishedSource": "96ab72ac9287339141444a9154451bdf20d1f601",
+      "exactDeltaProof": "config/testflight-runtime-navigation-20261016/baseline-product.json"
+    },
+    {
+      "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-16-mobile-loading.txt",
+      "ownerEvidenceSha256": "319ebc174fef607564b65a17c67fc4c12897ea8cce29c1c1b0fce1f5877b1832",
+      "reason": "Bound owner-reported Ledger, Program Manager, Calendar and Session loading across both runtimes; preserve cumulative assets/fixes, exact current movement IDs, all equipment and authorization scopes. Actual cold APIs and warm hook/route lifecycles are failure-tested; no native build or redesign.",
+      "path": "components/ledger/use-ledger-live-data.ts",
+      "before": "ffdd29b07d205fe60f5a3dee1e295388c0313c939ed95e75d9bd05c122f5459d",
+      "after": "1b611a12f1e0be1fe9f008fd31a9103924485b0deb2894e24c68c49b982d9dcb",
+      "ownerDirectiveScope": "mobile-navigation-loading-20261016",
+      "actualPublishedBefore": "ffdd29b07d205fe60f5a3dee1e295388c0313c939ed95e75d9bd05c122f5459d",
+      "actualPublishedSource": "96ab72ac9287339141444a9154451bdf20d1f601",
+      "exactDeltaProof": "config/testflight-runtime-navigation-20261016/baseline-product.json"
+    },
+    {
+      "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-16-mobile-loading.txt",
+      "ownerEvidenceSha256": "319ebc174fef607564b65a17c67fc4c12897ea8cce29c1c1b0fce1f5877b1832",
+      "reason": "Bound owner-reported Ledger, Program Manager, Calendar and Session loading across both runtimes; preserve cumulative assets/fixes, exact current movement IDs, all equipment and authorization scopes. Actual cold APIs and warm hook/route lifecycles are failure-tested; no native build or redesign.",
+      "path": "lib/calendar-range-pagination.ts",
+      "before": "1057c1a280d82b3fdbe8fa663e631d7263c4e3da8b46ecd15dc7e5353168af9e",
+      "after": "b99609f67b6ed4d5921be0eb7524e3123c3e12eff11700e218404782f0a970c1",
+      "ownerDirectiveScope": "mobile-navigation-loading-20261016",
+      "actualPublishedBefore": "1057c1a280d82b3fdbe8fa663e631d7263c4e3da8b46ecd15dc7e5353168af9e",
+      "actualPublishedSource": "96ab72ac9287339141444a9154451bdf20d1f601",
+      "exactDeltaProof": "config/testflight-runtime-navigation-20261016/baseline-product.json"
     }
   ],
   "assetRemovalAuthorizations": [
@@ -158309,7 +158388,7 @@
       "reason": "Retained exact source-bound pre-existing Cable backend holdback; Option E does not modify these bytes. Both lanes retain shipped zero-load editor fix."
     }
   ],
-  "releaseConstitutionSha256": "dc834fe990880c0ff1d4cb9fbb25978e7bd919e2e7c5886d3d4ef29d7f78ddfa",
+  "releaseConstitutionSha256": "3a0f5f831f0e6243507010dd1af9cc141668057a4b74bf8e63d848e22af5b857",
   "protectedCatalogSnapshotSha256": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
   "catalogCompatibilityAuthorization": {
     "ownerInstruction": "Everything else deterministic:\nFIX IT.",
@@ -158333,17 +158412,21 @@
     "canonicalFiles": [
       {
         "path": "AGENTS.md",
-        "sha256": "fb474290c91ac1517179a797be965c0b75fdfaac81c883e3b9ab8a2af6bc8b53"
+        "sha256": "e41e408f39628c06a54477eb512a75c39bd3f6b9170bc6f5a2a54b71c7b1a2a9"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
-        "sha256": "b1eed6055ace0b4890c6a602da4ef7a382e6f68f1f3b61592856da63b16eedd7"
+        "sha256": "ba772103a185da3e691c2c1b3c25fdce9e3a2a1fef6def3e7a37f52b4e595e89"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
-        "sha256": "a9418ba03c6d9204a7e729a5ee837b23fb8010f6da789d8b7c42770da4d46bb1"
+        "sha256": "7aea357cddde0bba3a0c28a033c46a171bafe1b62999ebb3e16b0bec9807f85c"
       }
-    ]
+    ],
+    "reviewedCanonicalContinuation": {
+      "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
+      "reason": "Retain existing independent web closeout/governance bytes unchanged while appending the exact mobile loading incident. Read/hash verification still applies to every canonical record; no unrelated product or web source is promoted."
+    }
   },
   "movementImageryRestoration": {
     "scope": "pre-20261002-imagery-with-accessory-pr-celebration",
@@ -158420,46 +158503,35 @@
     "status": "OPEN_PENDING_DEPLOYMENT_AND_PUBLICATION"
   },
   "ownerDirectedClientFix": {
-    "ownerInstruction": "RHIA NWWSA RO BE fixed first!!!! this is a production 3.0 occurance!",
-    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-equipment-eligibility.txt",
-    "ownerEvidenceSha256": "11fbf1572fe5c72c0c90f8fea560dc31a1a175ad475cdf13379fd3c32e7c34bc",
-    "reason": "Fix Production Cable Row equipment rejection before shipping the already-approved 56-point floating unit control. Requiredness does not revoke fixed-equipment support. Preserve exact current IDs, immutable Sets, manufacturer isolation, all shipped fixes/assets and the existing cable release boundary.",
-    "scope": "canonical-fixed-equipment-eligibility-20261014",
+    "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-16-mobile-loading.txt",
+    "ownerEvidenceSha256": "319ebc174fef607564b65a17c67fc4c12897ea8cce29c1c1b0fce1f5877b1832",
+    "reason": "Bound owner-reported Ledger, Program Manager, Calendar and Session loading across both runtimes; preserve cumulative assets/fixes, exact current movement IDs, all equipment and authorization scopes. Actual cold APIs and warm hook/route lifecycles are failure-tested; no native build or redesign.",
+    "scope": "mobile-navigation-loading-20261016",
     "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
-    "productFingerprint": "2b8fefa9d67dcc1434c14de44b9aa81a800cad43a509ab613f49b59d4741ffb9",
-    "baselineUpdateId": "01a13d2f-e54b-719a-8007-c874adf52e12",
-    "baselineSourceSha": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
-    "baselineProductFingerprint": "29aa149352ab21d0a545b264b46a0df2ecf1a989df788ed24fc8bae8fa28a879",
+    "productFingerprint": "07a0d50a4b8483e0be0dc88c7c8f8237f1c35e95de00be6acbce677cac7f0d3f",
+    "baselineUpdateId": "01a13d7c-5437-7dd9-8a0c-070c77844d9f",
+    "baselineSourceSha": "96ab72ac9287339141444a9154451bdf20d1f601",
+    "baselineProductFingerprint": "2b8fefa9d67dcc1434c14de44b9aa81a800cad43a509ab613f49b59d4741ffb9",
     "baselineFiles": {
-      "path": "config/testflight-runtime-logger-unit-20261014/baseline-product.json",
-      "sha256": "4187b03feded7bb6a928a1bb7112b2dca16f3ad49d740bec878f140218bb9586"
+      "path": "config/testflight-runtime-navigation-20261016/baseline-product.json",
+      "sha256": "8289baf325ed0a02676c804ff00e781580dfcfe7e96fa4f13b406c09045887c2"
     },
     "changedProductFiles": {
-      "app/(tabs)/workout/[workoutId].tsx": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92",
-      "components/ui/floating-control-coordinator.tsx": "a23a7a8b12d4d681095a45b1a4f8d08d98794e1d3a6a0be95eaf3a2cee735e0b",
-      "components/workout-logger/session-v3-shell.tsx": "8dfd1cf02a6dcf70feea47fa6d8fa9ef86113541528401bc7ae46f51a94d7cce",
-      "lib/equipment-flow-subject.ts": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
-      "config/protected-fix-manifest.json": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491"
+      "app/(tabs)/athlete-calendar.tsx": "cfa2c604801017e51f35ed0edad3958c414a61876f1f7b6922f3bcba774e9877",
+      "components/ledger/use-ledger-live-data.ts": "1b611a12f1e0be1fe9f008fd31a9103924485b0deb2894e24c68c49b982d9dcb",
+      "lib/calendar-range-pagination.ts": "b99609f67b6ed4d5921be0eb7524e3123c3e12eff11700e218404782f0a970c1"
     },
     "contracts": {
-      "scripts/test-fixed-equipment-api.mjs": "f200089895d6a2cdb429a1e7213035fffdc1a54625685407f3b21eb3b955183d",
-      "scripts/test-fixed-equipment-eligibility.mjs": "fffea2710fb0b31e0efe4406fd486d867c5ec86fe6ca4be8c0fd8293a497a00f",
-      "scripts/test-logger-floating-unit.mjs": "8d6a4a25193422eb90cb4b76d000322eca8055a8e3634a7dc855edb0ad02a847"
+      "scripts/test-calendar-navigation-cache.mjs": "dcbe080889afca8085a1fa0044e2c5da15f9f2b7ab66431c0b61c6016a3eb8df",
+      "scripts/test-evidence-read-cache.mjs": "bb545273a6e938ad22b0e0e254fa43e1fb98fcce34384b6f895971c7b39ddab9",
+      "scripts/test-mobile-navigation-loading.mjs": "ca3640ee4b9f2716bfeb0d73a9c083a3a26e66e8ebb88b9167f89a311229a7aa"
     },
-    "visualEvidence": [
-      {
-        "path": "docs/validation/logger-unit-control-dev-2026-10-14/05-floating-56-lb.png",
-        "sha256": "6d279bc0777b775dc467c60caaafa196431975b85c6361a45644826eb8ab1359"
-      },
-      {
-        "path": "docs/validation/logger-unit-control-dev-2026-10-14/06-floating-56-kg.png",
-        "sha256": "96380a2f0d7935a5c77ff17ea9e49ec2e069b76009fd6fbec5642137b843240c"
-      },
-      {
-        "path": "docs/validation/logger-unit-control-dev-2026-10-14/07-floating-56-review.png",
-        "sha256": "a8b95707bf1c16ff651d9f62f62eefadea9e7cf3b6da5175e994cb0e7dc2a548"
-      }
-    ]
+    "backendSourceSha": "406d88a8e1734de4560bbd8396dfad747321a996",
+    "backendDeploymentReceipt": {
+      "path": "config/testflight-release-navigation-20261016/backend-deployment.json",
+      "sha256": "4e6e36a24490626bdcf214c8f6f62ab4325c2077096d94d705b8a63938574eb3"
+    }
   },
   "canonicalZeroLoadEdit": {
     "status": "SHIPPED",
@@ -162055,6 +162127,53 @@
           "sha256": "a8b95707bf1c16ff651d9f62f62eefadea9e7cf3b6da5175e994cb0e7dc2a548"
         }
       ]
+    },
+    {
+      "ownerInstruction": "RHIA NWWSA RO BE fixed first!!!! this is a production 3.0 occurance!",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-equipment-eligibility.txt",
+      "ownerEvidenceSha256": "11fbf1572fe5c72c0c90f8fea560dc31a1a175ad475cdf13379fd3c32e7c34bc",
+      "reason": "Fix Production Cable Row equipment rejection before shipping the already-approved 56-point floating unit control. Requiredness does not revoke fixed-equipment support. Preserve exact current IDs, immutable Sets, manufacturer isolation, all shipped fixes/assets and the existing cable release boundary.",
+      "scope": "canonical-fixed-equipment-eligibility-20261014",
+      "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+      "productFingerprint": "2b8fefa9d67dcc1434c14de44b9aa81a800cad43a509ab613f49b59d4741ffb9",
+      "baselineUpdateId": "01a13d2f-e54b-719a-8007-c874adf52e12",
+      "baselineSourceSha": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
+      "baselineProductFingerprint": "29aa149352ab21d0a545b264b46a0df2ecf1a989df788ed24fc8bae8fa28a879",
+      "baselineFiles": {
+        "path": "config/testflight-runtime-logger-unit-20261014/baseline-product.json",
+        "sha256": "4187b03feded7bb6a928a1bb7112b2dca16f3ad49d740bec878f140218bb9586"
+      },
+      "changedProductFiles": {
+        "app/(tabs)/workout/[workoutId].tsx": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92",
+        "components/ui/floating-control-coordinator.tsx": "a23a7a8b12d4d681095a45b1a4f8d08d98794e1d3a6a0be95eaf3a2cee735e0b",
+        "components/workout-logger/session-v3-shell.tsx": "8dfd1cf02a6dcf70feea47fa6d8fa9ef86113541528401bc7ae46f51a94d7cce",
+        "lib/equipment-flow-subject.ts": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
+        "config/protected-fix-manifest.json": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491"
+      },
+      "contracts": {
+        "scripts/test-fixed-equipment-api.mjs": "f200089895d6a2cdb429a1e7213035fffdc1a54625685407f3b21eb3b955183d",
+        "scripts/test-fixed-equipment-eligibility.mjs": "fffea2710fb0b31e0efe4406fd486d867c5ec86fe6ca4be8c0fd8293a497a00f",
+        "scripts/test-logger-floating-unit.mjs": "8d6a4a25193422eb90cb4b76d000322eca8055a8e3634a7dc855edb0ad02a847"
+      },
+      "visualEvidence": [
+        {
+          "path": "docs/validation/logger-unit-control-dev-2026-10-14/05-floating-56-lb.png",
+          "sha256": "6d279bc0777b775dc467c60caaafa196431975b85c6361a45644826eb8ab1359"
+        },
+        {
+          "path": "docs/validation/logger-unit-control-dev-2026-10-14/06-floating-56-kg.png",
+          "sha256": "96380a2f0d7935a5c77ff17ea9e49ec2e069b76009fd6fbec5642137b843240c"
+        },
+        {
+          "path": "docs/validation/logger-unit-control-dev-2026-10-14/07-floating-56-review.png",
+          "sha256": "a8b95707bf1c16ff651d9f62f62eefadea9e7cf3b6da5175e994cb0e7dc2a548"
+        }
+      ],
+      "publicationComplete": true,
+      "publishedRuntimeVersions": [
+        "3.0.0",
+        "2.1.0"
+      ]
     }
   ],
   "releaseProtectionProgressions": [
@@ -162507,6 +162626,46 @@
         }
       ],
       "review": "Explicit exact post-shared-fix checkpoint retains the existing held library bytes plus the one proven eligibility patch. No publication-only source change; the shared-patch validation and final candidate-byte equality remain enforced."
+    },
+    {
+      "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-16-mobile-loading.txt",
+      "ownerEvidenceSha256": "319ebc174fef607564b65a17c67fc4c12897ea8cce29c1c1b0fce1f5877b1832",
+      "reason": "Bound owner-reported Ledger, Program Manager, Calendar and Session loading across both runtimes; preserve cumulative assets/fixes, exact current movement IDs, all equipment and authorization scopes. Actual cold APIs and warm hook/route lifecycles are failure-tested; no native build or redesign.",
+      "scope": "mobile-navigation-loading-20261016",
+      "files": [
+        {
+          "path": "scripts/test-mobile-navigation-loading.mjs",
+          "before": null,
+          "after": "ca3640ee4b9f2716bfeb0d73a9c083a3a26e66e8ebb88b9167f89a311229a7aa"
+        },
+        {
+          "path": "scripts/test-calendar-navigation-cache.mjs",
+          "before": null,
+          "after": "dcbe080889afca8085a1fa0044e2c5da15f9f2b7ab66431c0b61c6016a3eb8df"
+        },
+        {
+          "path": "scripts/owner-directed-client-fix.mjs",
+          "before": "b670b2d9b5e4759d8ca0f457235f5cc79d9cfd78543eab009ff1809ad1c2090a",
+          "after": "eb2d419963c4977e5a610323d3d0b7cb16f0920a3a516e4d5d953ff8cb0c5f87"
+        },
+        {
+          "path": "scripts/production3-client-fix-policy.mjs",
+          "before": "9c0406234cf9ab0af987e1b874b334841422d10ea623ba19f14b00cb1a17d6b0",
+          "after": "10662a646157ac692b12ae5a3323049a54600dbf543906fd0f68c5edcf2669e1"
+        },
+        {
+          "path": "scripts/test-release-critical-invariants.mjs",
+          "before": "7c5df99458cc99e910a03b4f4eecdc01945859b70b0637a1630e144b68025522",
+          "after": "227c94f9982df783457ada9e4eaf20045201c643835922fabd75ded4e53c4608"
+        },
+        {
+          "path": "scripts/test-owner-directed-client-fix.mjs",
+          "before": "2effe70e84dbbfc346e5e74932ff6054eda373899c3b7a82da6b7f01576ab0be",
+          "after": "78fc780bd4295ff47d8dc8ce9b73dfd9ed950d561de82701fcd2d3d35e156df0"
+        }
+      ],
+      "review": "Exact owner navigation scope and actual hook/route/latency checks added. Existing baselines, source/asset gates, native compatibility and independent backend acceptance remain enforced. Original old-code controls fail; no gate is waived."
     }
   ],
   "verifiedCopiedWeekIdentity": {
@@ -162724,8 +162883,9 @@
       "production-3-preparation",
       "testflight"
     ],
-    "deliveryStatus": "AUTHORIZED_PENDING_PUBLICATION",
-    "meaning": "P0 fixed-equipment eligibility correction takes priority; carry approved floating control and every cumulative fix. Validate shared source once and verify each exact published runtime."
+    "deliveryStatus": "BOTH_PUBLISHED_VERIFIED",
+    "meaning": "P0 fixed-equipment eligibility correction takes priority; carry approved floating control and every cumulative fix. Validate shared source once and verify each exact published runtime.",
+    "sharedValidationReusedFor2_1": true
   },
   "previousOwnerRuntimeTarget": {
     "ownerInstruction": "Sorry, I meant ship it.",
@@ -162878,5 +163038,157 @@
     "uniqueAssets": 992,
     "worktreeCloseoutComplete": true,
     "ownerDirectedScope": "set-entry-video-preview-20261014"
-  }
+  },
+  "verifiedProduction3EquipmentEligibility": {
+    "publication": {
+      "id": "01a13d79-7e86-7d2f-8035-61142ba1be61",
+      "createdAt": "2026-10-15T02:52:14.854Z",
+      "group": "3808fcbb-1e7d-4bc8-87ae-32e580a39f04",
+      "branch": "production-3-preparation",
+      "message": "Fix cable and machine equipment selection; restore the larger floating unit button",
+      "runtimeVersion": "3.0.0",
+      "platform": "ios",
+      "manifestPermalink": "https://u.expo.dev/update/01a13d79-7e86-7d2f-8035-61142ba1be61",
+      "isRollBackToEmbedded": false,
+      "gitCommitHash": "96ab72ac9287339141444a9154451bdf20d1f601",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a13d79-7e86-7d2f-8035-61142ba1be61"
+      ]
+    },
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-equipment-20261014/runtime-3.0.0/gate-c.json",
+        "sha256": "531f5f8a806637fb7f15aa4fc18b4fe1587211bc5059015f45ce2a7a84cb9dac"
+      },
+      "channel": {
+        "path": "config/testflight-release-equipment-20261014/runtime-3.0.0/channel.json",
+        "sha256": "eafa96a278c119339d3a7270b0111ca77ae487557ad58f1d6a93032d7a18ab4b"
+      },
+      "exportSource": {
+        "path": "config/testflight-release-equipment-20261014/runtime-3.0.0/export-source.json",
+        "sha256": "36a39771b5c806cb78a99e37532adbbf22b4c8b8df0a92424b0d782d908fb6f4"
+      },
+      "contracts": {
+        "path": "config/testflight-release-equipment-20261014/runtime-3.0.0/contracts.json",
+        "sha256": "b4feaa733184fa18726dc56079f03c184cc1b9a6435581e7a868b7c713cc6b07"
+      },
+      "imagery": {
+        "path": "config/testflight-release-equipment-20261014/runtime-3.0.0/movement-imagery.json",
+        "sha256": "014369c588a278fee7fb2c5062395676f4c16214b16de32e1ee60fefde3a3e1e"
+      },
+      "sharedValidation": {
+        "path": "config/testflight-release-equipment-20261014/runtime-3.0.0/shared-validation.json",
+        "sha256": "a82a0ac0c24c908684cab767cb0d1340c7f772ccd7769a5d4621f752bbdc89b9"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-equipment-20261014/runtime-3.0.0/asset-audit.json",
+        "sha256": "013a5e058331b160ff0d1ac8883954113c3f2fd5d2b4b829d467ec0eb09fc43a"
+      },
+      "nativeChannelDelivery": {
+        "path": "config/testflight-release-equipment-20261014/runtime-3.0.0/native-channel.json",
+        "sha256": "55389be823796e5e6fa6ae3e2c5258be568a5e33c3321117b2ba6ea286c69d07"
+      }
+    },
+    "updateId": "01a13d79-7e86-7d2f-8035-61142ba1be61",
+    "group": "3808fcbb-1e7d-4bc8-87ae-32e580a39f04",
+    "sourceSha": "96ab72ac9287339141444a9154451bdf20d1f601",
+    "productFingerprint": "2b8fefa9d67dcc1434c14de44b9aa81a800cad43a509ab613f49b59d4741ffb9",
+    "bundleSha256": "ba6ed9135a8388ba1904f3dabe0e008d834b5e62ce518275517fb1b1c5285f35",
+    "publicationVerified": true,
+    "ownerPhoneBehaviorObserved": false,
+    "freshSimulatorRun": false,
+    "simulatorObservationScope": "Reuse actual signed-off DEV iPhone Air floating control screenshots 05\u201307. Equipment fix exercised actual Logger handler on 212 Production-serializer payloads and 18 actual isolated API persistence cases; no new owner-phone or simulator equipment observation claimed.",
+    "nativeBuildStarted": false,
+    "acceptedContracts": 292,
+    "fullSharedValidationReused": false,
+    "missingOrCorruptAssets": 0,
+    "uniqueAssets": 992,
+    "worktreeCloseoutComplete": true,
+    "ownerDirectedScope": "canonical-fixed-equipment-eligibility-20261014"
+  },
+  "verifiedEquipmentEligibility": {
+    "publication": {
+      "id": "01a13d7c-5437-7dd9-8a0c-070c77844d9f",
+      "createdAt": "2026-10-15T02:55:20.631Z",
+      "group": "e4ef0439-2a6d-45a4-945f-200f769be731",
+      "branch": "testflight",
+      "message": "Fix cable and machine equipment selection; restore the larger floating unit button",
+      "runtimeVersion": "2.1.0",
+      "platform": "ios",
+      "manifestPermalink": "https://u.expo.dev/update/01a13d7c-5437-7dd9-8a0c-070c77844d9f",
+      "isRollBackToEmbedded": false,
+      "gitCommitHash": "96ab72ac9287339141444a9154451bdf20d1f601",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a13d7c-5437-7dd9-8a0c-070c77844d9f"
+      ]
+    },
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-equipment-20261014/runtime-2.1.0/gate-c.json",
+        "sha256": "143290fc08edc16e43a5230b2ef676a8a14a2c00ca884c7fbc877d2cb58c5db5"
+      },
+      "channel": {
+        "path": "config/testflight-release-equipment-20261014/runtime-2.1.0/channel.json",
+        "sha256": "85e7135b9fc998e20b872857fa726962dbed13c4faa9532a3989c9e909984a7f"
+      },
+      "exportSource": {
+        "path": "config/testflight-release-equipment-20261014/runtime-2.1.0/export-source.json",
+        "sha256": "5a2ef660e5c83d7c17689e8ae7947b732f564a721152dd355f942ce8ec3b4ad8"
+      },
+      "contracts": {
+        "path": "config/testflight-release-equipment-20261014/runtime-2.1.0/contracts.json",
+        "sha256": "d6e7df5ba7ff7cfe6264037f11d5564d40f2dabd577f79a614e1aa5bde3f8d88"
+      },
+      "imagery": {
+        "path": "config/testflight-release-equipment-20261014/runtime-2.1.0/movement-imagery.json",
+        "sha256": "014369c588a278fee7fb2c5062395676f4c16214b16de32e1ee60fefde3a3e1e"
+      },
+      "sharedValidation": {
+        "path": "config/testflight-release-equipment-20261014/runtime-2.1.0/shared-validation.json",
+        "sha256": "a82a0ac0c24c908684cab767cb0d1340c7f772ccd7769a5d4621f752bbdc89b9"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-equipment-20261014/runtime-2.1.0/asset-audit.json",
+        "sha256": "154f9c81c2ab557f6cf67d12a1c75301fddb9b49976f155222e6b3c49d6713f6"
+      },
+      "nativeChannelDelivery": {
+        "path": "config/testflight-release-equipment-20261014/runtime-2.1.0/native-channel.json",
+        "sha256": "11bba25fc9452e07e7875ac42d15a01a37808c57038822306e2b71cd7640e007"
+      }
+    },
+    "updateId": "01a13d7c-5437-7dd9-8a0c-070c77844d9f",
+    "group": "e4ef0439-2a6d-45a4-945f-200f769be731",
+    "sourceSha": "96ab72ac9287339141444a9154451bdf20d1f601",
+    "productFingerprint": "2b8fefa9d67dcc1434c14de44b9aa81a800cad43a509ab613f49b59d4741ffb9",
+    "bundleSha256": "f53f42c408af57aa97296844025b1ad21f212b569d64fb7ec5877fb2e8dbe871",
+    "publicationVerified": true,
+    "ownerPhoneBehaviorObserved": false,
+    "freshSimulatorRun": false,
+    "simulatorObservationScope": "Reuse actual signed-off DEV iPhone Air floating control screenshots 05\u201307. Equipment fix exercised actual Logger handler on 212 Production-serializer payloads and 18 actual isolated API persistence cases; no new owner-phone or simulator equipment observation claimed.",
+    "nativeBuildStarted": false,
+    "acceptedContracts": 292,
+    "fullSharedValidationReused": true,
+    "missingOrCorruptAssets": 0,
+    "uniqueAssets": 992,
+    "worktreeCloseoutComplete": true,
+    "ownerDirectedScope": "canonical-fixed-equipment-eligibility-20261014"
+  },
+  "releaseConstitutionReviews": [
+    {
+      "before": "dc834fe990880c0ff1d4cb9fbb25978e7bd919e2e7c5886d3d4ef29d7f78ddfa",
+      "after": "3a0f5f831f0e6243507010dd1af9cc141668057a4b74bf8e63d848e22af5b857",
+      "sourceCommits": [
+        "4efcb359d039b7bdfe72f180a53eb62c376a0d8b",
+        "6bc14b7ff430b39851650d72fbd982dce63dfb9b"
+      ],
+      "review": "Retain the previously owner-authorized canonical rep-chain law and mandatory bounded Today read/latency checks. These additive protections were reviewed; no release, asset, identity, legacy or authorization law is waived. Current navigation gate extends their consumer coverage.",
+      "evidence": [
+        "docs/release/REP_CHAIN_RECOGNITION_2026-10-15.md",
+        "docs/release/TODAY_LOADING_REPORT_2026-10-15.md",
+        "docs/release/MOBILE_LOADING_PERFORMANCE_2026-10-16.md"
+      ]
+    }
+  ]
 }

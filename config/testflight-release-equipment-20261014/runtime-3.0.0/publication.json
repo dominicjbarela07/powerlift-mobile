@@ -1,0 +1,16 @@
+{
+  "id": "01a13d79-7e86-7d2f-8035-61142ba1be61",
+  "createdAt": "2026-10-15T02:52:14.854Z",
+  "group": "3808fcbb-1e7d-4bc8-87ae-32e580a39f04",
+  "branch": "production-3-preparation",
+  "message": "Fix cable and machine equipment selection; restore the larger floating unit button",
+  "runtimeVersion": "3.0.0",
+  "platform": "ios",
+  "manifestPermalink": "https://u.expo.dev/update/01a13d79-7e86-7d2f-8035-61142ba1be61",
+  "isRollBackToEmbedded": false,
+  "gitCommitHash": "96ab72ac9287339141444a9154451bdf20d1f601",
+  "sourceAvailable": true,
+  "recoverableRefs": [
+    "refs/archive/testflight-published/01a13d79-7e86-7d2f-8035-61142ba1be61"
+  ]
+}
