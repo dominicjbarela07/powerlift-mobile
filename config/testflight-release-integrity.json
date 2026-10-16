@@ -158070,7 +158070,7 @@
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
     "config/protected-fix-manifest.json": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491",
     "scripts/assert-no-dev-artwork-export.mjs": "610934d315a2f34c534e80545d7c8361fbad0110c313c48f3d9642f2c04a7c22",
-    "scripts/test-release-critical-invariants.mjs": "7c5df99458cc99e910a03b4f4eecdc01945859b70b0637a1630e144b68025522",
+    "scripts/test-release-critical-invariants.mjs": "227c94f9982df783457ada9e4eaf20045201c643835922fabd75ded4e53c4608",
     "scripts/test-release-source-lineage.mjs": "e7850ec385320f620ebc156dfa0dea62934d87114108c0ccf978ad03f53042b6",
     "scripts/release-holdback-policy.mjs": "3ff3d255b82fa2cd583f66da1656217c13ba959cc72fe65eb0dd50d21d4fc148",
     "package.json": "96db5a8e29d0378d109481ee102c60a7dd313b08e998cae622b427212e5da1eb",
@@ -158099,8 +158099,8 @@
     "scripts/test-cable-brand-equipment-api.mjs": "71889a55559cfd1dc43a5817b0b1ac8bd0c022498e6c30d46ff161ab71949dbc",
     "docs/CABLE_BRAND_EQUIPMENT.md": "0289f45e3859f993ccce52a2ffca383f484f3899c61224179813a6363c151c21",
     "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt": "69f1ba6ca417408f3e0a5cada3f37bca5fee5f1c26ece4443bec9d855fc8cb9b",
-    "scripts/owner-directed-client-fix.mjs": "b670b2d9b5e4759d8ca0f457235f5cc79d9cfd78543eab009ff1809ad1c2090a",
-    "scripts/test-owner-directed-client-fix.mjs": "2effe70e84dbbfc346e5e74932ff6054eda373899c3b7a82da6b7f01576ab0be",
+    "scripts/owner-directed-client-fix.mjs": "eb2d419963c4977e5a610323d3d0b7cb16f0920a3a516e4d5d953ff8cb0c5f87",
+    "scripts/test-owner-directed-client-fix.mjs": "78fc780bd4295ff47d8dc8ce9b73dfd9ed950d561de82701fcd2d3d35e156df0",
     "scripts/test-zero-load-edit-api.mjs": "a19f2b1b7d6b0ad2335f8e3668657a1a74675ca14d14ba8bf13616b16f3dbc2a",
     "scripts/test-zero-load-edit-set.mjs": "6187f4a68b57230b2fb86f3702e2c89d0f704394f1eef200db689f66cec6e250",
     "scripts/owner-directed-logger-visual.mjs": "1fcd60749eaae44f0e3a463b5439c979775c00443af47499eda5b22af0b7dba7",
@@ -158127,7 +158127,7 @@
     "scripts/native-build-upload-policy.cjs": "0886edd1b00f77aa122848cc96176ed22b053f53d5393e87cf9081456ff3ffde",
     "scripts/test-native-build-upload-policy.mjs": "3016ed47dd9ef99eff2382e2d6dbe2581b38804945f6999c24d55ab9517b40ff",
     "scripts/assert-ota-native-compatibility.mjs": "8236db7138e9f28be680575774e75e57f9d17bd159cd3e9892f2b4234c29b9e2",
-    "scripts/production3-client-fix-policy.mjs": "9c0406234cf9ab0af987e1b874b334841422d10ea623ba19f14b00cb1a17d6b0",
+    "scripts/production3-client-fix-policy.mjs": "10662a646157ac692b12ae5a3323049a54600dbf543906fd0f68c5edcf2669e1",
     "scripts/test-production3-client-fix-policy.mjs": "650ef60e3045aa7cfa6a86223227380fcd3e2e07d7604db6df6e3d87dedc8372",
     "scripts/test-copied-week-release-scope.mjs": "f7d6b1f01fc9da815771b79ad67dc94fd9a030c6152b912e4d74abbe48cd01d6",
     "scripts/test-private-movement-identity-contract.mjs": "7abcd5b6498f7e1b973d9d35dc4ab52b25311058de6fbcea48eeefd6471f8748",
@@ -158148,7 +158148,9 @@
     "scripts/test-logger-floating-unit.mjs": "8d6a4a25193422eb90cb4b76d000322eca8055a8e3634a7dc855edb0ad02a847",
     "scripts/test-logger-unit-release-scope.mjs": "4ce21741b1722195110f788a483c9056392fe768e6bd5811e8c4214e139d93b2",
     "scripts/test-fixed-equipment-eligibility.mjs": "fffea2710fb0b31e0efe4406fd486d867c5ec86fe6ca4be8c0fd8293a497a00f",
-    "scripts/test-fixed-equipment-api.mjs": "f200089895d6a2cdb429a1e7213035fffdc1a54625685407f3b21eb3b955183d"
+    "scripts/test-fixed-equipment-api.mjs": "f200089895d6a2cdb429a1e7213035fffdc1a54625685407f3b21eb3b955183d",
+    "scripts/test-mobile-navigation-loading.mjs": "ca3640ee4b9f2716bfeb0d73a9c083a3a26e66e8ebb88b9167f89a311229a7aa",
+    "scripts/test-calendar-navigation-cache.mjs": "dcbe080889afca8085a1fa0044e2c5da15f9f2b7ab66431c0b61c6016a3eb8df"
   },
   "historicalRemovalAuthorizations": [
     {
