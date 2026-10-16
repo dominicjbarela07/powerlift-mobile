@@ -1,0 +1,16 @@
+{
+  "id": "01a14565-7f85-70bb-9b12-bb2a365dfd8e",
+  "createdAt": "2026-10-16T15:47:22.117Z",
+  "group": "80b8f17a-6ba5-4f80-81f1-3ba05aa52767",
+  "branch": "production-3-preparation",
+  "message": "Improve Ledger, Calendar, Program Manager and Session loading; preserve fresh scoped history",
+  "runtimeVersion": "3.0.0",
+  "platform": "ios",
+  "manifestPermalink": "https://u.expo.dev/update/01a14565-7f85-70bb-9b12-bb2a365dfd8e",
+  "isRollBackToEmbedded": false,
+  "gitCommitHash": "7e66c78cf8c6667c00695a3e144bf09007ce7540",
+  "sourceAvailable": true,
+  "recoverableRefs": [
+    "refs/archive/testflight-published/01a14565-7f85-70bb-9b12-bb2a365dfd8e"
+  ]
+}

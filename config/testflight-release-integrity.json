@@ -3,6 +3,22 @@
   "policy": "TestFlight is cumulative. Explicit owner authorization is required for every subtraction and protected modification. Never replace this historical baseline with a regressed export.",
   "incident": "2026-10-02 direct EAS update omitted TestFlight artwork switch; 492 asset entries absent",
   "currentTestFlight": {
+    "id": "01a14568-2c5a-7b92-980b-624a178a396b",
+    "createdAt": "2026-10-16T15:50:17.434Z",
+    "group": "42b69b3b-ef03-4d3f-a3b3-84b79b543a8c",
+    "branch": "testflight",
+    "message": "Improve Ledger, Calendar, Program Manager and Session loading; preserve fresh scoped history",
+    "runtimeVersion": "2.1.0",
+    "platform": "ios",
+    "manifestPermalink": "https://u.expo.dev/update/01a14568-2c5a-7b92-980b-624a178a396b",
+    "isRollBackToEmbedded": false,
+    "gitCommitHash": "7e66c78cf8c6667c00695a3e144bf09007ce7540",
+    "sourceAvailable": true,
+    "recoverableRefs": [
+      "refs/archive/testflight-published/01a14568-2c5a-7b92-980b-624a178a396b"
+    ]
+  },
+  "previousTestFlight": {
     "id": "01a13d7c-5437-7dd9-8a0c-070c77844d9f",
     "createdAt": "2026-10-15T02:55:20.631Z",
     "group": "e4ef0439-2a6d-45a4-945f-200f769be731",
@@ -16,22 +32,6 @@
     "sourceAvailable": true,
     "recoverableRefs": [
       "refs/archive/testflight-published/01a13d7c-5437-7dd9-8a0c-070c77844d9f"
-    ]
-  },
-  "previousTestFlight": {
-    "id": "01a13d2f-e54b-719a-8007-c874adf52e12",
-    "createdAt": "2026-10-15T01:31:51.499Z",
-    "group": "4286ad03-f8b3-45f9-b940-f4c31bcec18c",
-    "branch": "testflight",
-    "message": "Attach and preview videos during set entry with confirmed upload progress and retry",
-    "runtimeVersion": "2.1.0",
-    "platform": "ios",
-    "manifestPermalink": "https://u.expo.dev/update/01a13d2f-e54b-719a-8007-c874adf52e12",
-    "isRollBackToEmbedded": false,
-    "gitCommitHash": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
-    "sourceAvailable": true,
-    "recoverableRefs": [
-      "refs/archive/testflight-published/01a13d2f-e54b-719a-8007-c874adf52e12"
     ]
   },
   "releaseHistory": [
@@ -616,12 +616,28 @@
       "appRevision": 56,
       "gitCommitHash": "cf1cf5bcc8dfbec16aff5ae1cdf15c3c74eb1957",
       "message": "Fix Accessory PR weight selection and preserve visible rep-max recognition"
+    },
+    {
+      "id": "01a13d7c-5437-7dd9-8a0c-070c77844d9f",
+      "createdAt": "2026-10-15T02:55:20.631Z",
+      "group": "e4ef0439-2a6d-45a4-945f-200f769be731",
+      "branch": "testflight",
+      "message": "Fix cable and machine equipment selection; restore the larger floating unit button",
+      "runtimeVersion": "2.1.0",
+      "platform": "ios",
+      "manifestPermalink": "https://u.expo.dev/update/01a13d7c-5437-7dd9-8a0c-070c77844d9f",
+      "isRollBackToEmbedded": false,
+      "gitCommitHash": "96ab72ac9287339141444a9154451bdf20d1f601",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a13d7c-5437-7dd9-8a0c-070c77844d9f"
+      ]
     }
   ],
   "protectedFiles": {
     "app/(tabs)/_layout.tsx": "15e40d26a74bf0aa01cae85fe03c2b7482ac7ccaec161d65bc47da824b77fa87",
     "app/(tabs)/accessory-catalog-review.tsx": "9755d9c9bc813d04f8d506c5f76357f31bf789dccad32a086bb09e147ac736c0",
-    "app/(tabs)/athlete-calendar.tsx": "d81d6ccdce2f79faff040be3c5a2a61751f7c85dc9600db416b5e671b3051106",
+    "app/(tabs)/athlete-calendar.tsx": "cfa2c604801017e51f35ed0edad3958c414a61876f1f7b6922f3bcba774e9877",
     "app/(tabs)/athlete-dashboard.tsx": "c2660b6e4931d9fdccee1089f2c8aeb1e7d9a2aadbc51a94e82d953af16ccca1",
     "app/(tabs)/athlete-meet-plan.tsx": "09f5412f21edfefec68b9e4285e7932c643936d10092f3f67cd48bae12338362",
     "app/(tabs)/athlete-progression.tsx": "62febc4f675233e12bb177b64f08d3874d0563acad8a79e91ff9e384c338f419",
@@ -782,7 +798,7 @@
     "components/ledger/primitives.tsx": "f2628ee5ed3c07e98412b4bf52313e47b51bee7a224ab0a86d85998dc956e59c",
     "components/ledger/route-screen.tsx": "035e1a50b576b1c6eb5b5daf8d2926864f56409f02a40eee90df1db7b109b345",
     "components/ledger/routing.ts": "a2b4e15a2b6dccbb0f1297688e73cb40c673f01b41255fe17915967179cf3ff2",
-    "components/ledger/use-ledger-live-data.ts": "ffdd29b07d205fe60f5a3dee1e295388c0313c939ed95e75d9bd05c122f5459d",
+    "components/ledger/use-ledger-live-data.ts": "1b611a12f1e0be1fe9f008fd31a9103924485b0deb2894e24c68c49b982d9dcb",
     "components/ledger/use-ledger-resource.ts": "75b785bc11fa714f7fdfc538d1280f9090e53e3f8f056db8a3062b546290deeb",
     "components/meet-packet/AthleteMeetPacketV2.tsx": "77586f06555c8ab8b4cfd0fc28d60d5be49e14156ee3b707231de08db23bd24f",
     "components/movement/CanonicalMovementArtwork.tsx": "e7aa0d4733244b4a78d0e9cab975207434467e7c29418c2b127990730a558eca",
@@ -926,7 +942,7 @@
     "lib/calculated-weight-format.js": "1ef97a6a7deda17b8ce57f358d384b8815ee501e0488b6d5c940a1bb6e2dcf77",
     "lib/calendar-event-form.ts": "53ed6c6c3a9cfbb4993d95661aeff2190942db543af1a9afea9ee32926b6aa8d",
     "lib/calendar-presentation.ts": "9f9ca23e21aa56558b91e42a157ccd75fa166a2789346aca119e847cd404535f",
-    "lib/calendar-range-pagination.ts": "1057c1a280d82b3fdbe8fa663e631d7263c4e3da8b46ecd15dc7e5353168af9e",
+    "lib/calendar-range-pagination.ts": "b99609f67b6ed4d5921be0eb7524e3123c3e12eff11700e218404782f0a970c1",
     "lib/calendar-session-status.ts": "b89ba2acc3ddfcb77022bc8638c96eef45bd9267bbe46fe1dece49bc49956ec5",
     "lib/calendar-today.ts": "da4f5d437add7f87fc456c04fb641da44fb8d3ddb78e74bb21d2d5e523e14ead",
     "lib/calendar-training-structure.ts": "873f11784df73aeb6ba7f4a4d2bfc8f1a23d1ff11e6542f039a4921d317c30b5",
@@ -158418,11 +158434,11 @@
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
-        "sha256": "ba772103a185da3e691c2c1b3c25fdce9e3a2a1fef6def3e7a37f52b4e595e89"
+        "sha256": "d76060e58fef3f87241879b6dcbcba1bea3f2ba3ecb5cb191fbb26c8dc92bcb2"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
-        "sha256": "7aea357cddde0bba3a0c28a033c46a171bafe1b62999ebb3e16b0bec9807f85c"
+        "sha256": "f6d6b6a570b161da39f3947a87d1bacf27f20c3f355b1ffa1b1ce2bab8e99428"
       }
     ],
     "reviewedCanonicalContinuation": {
@@ -158533,7 +158549,12 @@
     "backendDeploymentReceipt": {
       "path": "config/testflight-release-navigation-20261016/backend-deployment.json",
       "sha256": "4e6e36a24490626bdcf214c8f6f62ab4325c2077096d94d705b8a63938574eb3"
-    }
+    },
+    "publicationComplete": true,
+    "publishedRuntimeVersions": [
+      "3.0.0",
+      "2.1.0"
+    ]
   },
   "canonicalZeroLoadEdit": {
     "status": "SHIPPED",
@@ -163202,5 +163223,141 @@
         "docs/release/MOBILE_LOADING_PERFORMANCE_2026-10-16.md"
       ]
     }
-  ]
+  ],
+  "verifiedProduction3NavigationLoading": {
+    "publication": {
+      "id": "01a14565-7f85-70bb-9b12-bb2a365dfd8e",
+      "createdAt": "2026-10-16T15:47:22.117Z",
+      "group": "80b8f17a-6ba5-4f80-81f1-3ba05aa52767",
+      "branch": "production-3-preparation",
+      "message": "Improve Ledger, Calendar, Program Manager and Session loading; preserve fresh scoped history",
+      "runtimeVersion": "3.0.0",
+      "platform": "ios",
+      "manifestPermalink": "https://u.expo.dev/update/01a14565-7f85-70bb-9b12-bb2a365dfd8e",
+      "isRollBackToEmbedded": false,
+      "gitCommitHash": "7e66c78cf8c6667c00695a3e144bf09007ce7540",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a14565-7f85-70bb-9b12-bb2a365dfd8e"
+      ]
+    },
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-navigation-20261016/runtime-3.0.0/gate-c.json",
+        "sha256": "f343feb434e97f5e9922b8d5cf9f74eb93353b7a6d25b63977d6902e2523823b"
+      },
+      "channel": {
+        "path": "config/testflight-release-navigation-20261016/runtime-3.0.0/channel.json",
+        "sha256": "17b4708a32b1c86fa6f1cc669d8bdf6ba1f49199b48b93c23b5a80ed8727071f"
+      },
+      "exportSource": {
+        "path": "config/testflight-release-navigation-20261016/runtime-3.0.0/export-source.json",
+        "sha256": "857ed4f9d5b3038a11fe603df62a9d935bf063fb931b0125a4a7708b157daede"
+      },
+      "contracts": {
+        "path": "config/testflight-release-navigation-20261016/runtime-3.0.0/contracts.json",
+        "sha256": "b54c764c91785fd794aa2612e0046b5468944eec3a2a6f2876d02f4fc92d13b7"
+      },
+      "imagery": {
+        "path": "config/testflight-release-navigation-20261016/runtime-3.0.0/movement-imagery.json",
+        "sha256": "014369c588a278fee7fb2c5062395676f4c16214b16de32e1ee60fefde3a3e1e"
+      },
+      "sharedValidation": {
+        "path": "config/testflight-release-navigation-20261016/runtime-3.0.0/shared-validation.json",
+        "sha256": "81c63709d04be5844b8b51599d226b85bf41f9f6c5befd60e117a80da7bcebbd"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-navigation-20261016/runtime-3.0.0/asset-audit.json",
+        "sha256": "3f071977751de4fc2f6d3be225a9b4ee8f1fa6ea87f950620fb3ec3c31a029c0"
+      },
+      "nativeChannelDelivery": {
+        "path": "config/testflight-release-navigation-20261016/runtime-3.0.0/native-channel.json",
+        "sha256": "6456b2fa33fb1c7d148366052305ae3c05393f1e07f097880bd73c0900c4bfc2"
+      }
+    },
+    "updateId": "01a14565-7f85-70bb-9b12-bb2a365dfd8e",
+    "group": "80b8f17a-6ba5-4f80-81f1-3ba05aa52767",
+    "sourceSha": "7e66c78cf8c6667c00695a3e144bf09007ce7540",
+    "productFingerprint": "07a0d50a4b8483e0be0dc88c7c8f8237f1c35e95de00be6acbce677cac7f0d3f",
+    "bundleSha256": "39d49143965ad952855d4cff73a700b59cdb659045887732084df97b257ddfef",
+    "publicationVerified": true,
+    "ownerPhoneBehaviorObserved": false,
+    "freshSimulatorRun": false,
+    "simulatorObservationScope": "No simulator or owner-phone timing observation claimed. The actual Ledger hook and Calendar route passed controlled loading/freshness/denial lifecycles; real backend API queries and latency budgets passed on populated long-history fixtures for both runtime headers.",
+    "nativeBuildStarted": false,
+    "acceptedContracts": 294,
+    "fullSharedValidationReused": false,
+    "missingOrCorruptAssets": 0,
+    "uniqueAssets": 992,
+    "worktreeCloseoutComplete": true,
+    "ownerDirectedScope": "mobile-navigation-loading-20261016"
+  },
+  "verifiedNavigationLoading": {
+    "publication": {
+      "id": "01a14568-2c5a-7b92-980b-624a178a396b",
+      "createdAt": "2026-10-16T15:50:17.434Z",
+      "group": "42b69b3b-ef03-4d3f-a3b3-84b79b543a8c",
+      "branch": "testflight",
+      "message": "Improve Ledger, Calendar, Program Manager and Session loading; preserve fresh scoped history",
+      "runtimeVersion": "2.1.0",
+      "platform": "ios",
+      "manifestPermalink": "https://u.expo.dev/update/01a14568-2c5a-7b92-980b-624a178a396b",
+      "isRollBackToEmbedded": false,
+      "gitCommitHash": "7e66c78cf8c6667c00695a3e144bf09007ce7540",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a14568-2c5a-7b92-980b-624a178a396b"
+      ]
+    },
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-navigation-20261016/runtime-2.1.0/gate-c.json",
+        "sha256": "4d11682077f1b772e4997bbe255df4bd749a1b3dd3ce6b3b5d1352a3689585ad"
+      },
+      "channel": {
+        "path": "config/testflight-release-navigation-20261016/runtime-2.1.0/channel.json",
+        "sha256": "2f8117dbdc9bd320fb80f5e8585efa474463233bc00d172689cf091ac4892351"
+      },
+      "exportSource": {
+        "path": "config/testflight-release-navigation-20261016/runtime-2.1.0/export-source.json",
+        "sha256": "3b3391127524a50920bf84ee2e16fb8074cef86d810aebc4c14a1febac31689a"
+      },
+      "contracts": {
+        "path": "config/testflight-release-navigation-20261016/runtime-2.1.0/contracts.json",
+        "sha256": "46705b688ac009b7a38bd2719fa9fd8da56d601ba7ef8217c473ab9f3474b536"
+      },
+      "imagery": {
+        "path": "config/testflight-release-navigation-20261016/runtime-2.1.0/movement-imagery.json",
+        "sha256": "014369c588a278fee7fb2c5062395676f4c16214b16de32e1ee60fefde3a3e1e"
+      },
+      "sharedValidation": {
+        "path": "config/testflight-release-navigation-20261016/runtime-2.1.0/shared-validation.json",
+        "sha256": "81c63709d04be5844b8b51599d226b85bf41f9f6c5befd60e117a80da7bcebbd"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-navigation-20261016/runtime-2.1.0/asset-audit.json",
+        "sha256": "1af0a3ab497fa461cbce2a66765997a1d2cbbfa84a4a4784a757644e3d017067"
+      },
+      "nativeChannelDelivery": {
+        "path": "config/testflight-release-navigation-20261016/runtime-2.1.0/native-channel.json",
+        "sha256": "b488ff68f10cef4daa0c12ffa8e20d1409768347ec883b73591968eb15135f15"
+      }
+    },
+    "updateId": "01a14568-2c5a-7b92-980b-624a178a396b",
+    "group": "42b69b3b-ef03-4d3f-a3b3-84b79b543a8c",
+    "sourceSha": "7e66c78cf8c6667c00695a3e144bf09007ce7540",
+    "productFingerprint": "07a0d50a4b8483e0be0dc88c7c8f8237f1c35e95de00be6acbce677cac7f0d3f",
+    "bundleSha256": "672954814b9532fd7976c2d1146555a97aaf65c50d7eb0f977bb2ce998e1ef31",
+    "publicationVerified": true,
+    "ownerPhoneBehaviorObserved": false,
+    "freshSimulatorRun": false,
+    "simulatorObservationScope": "No simulator or owner-phone timing observation claimed. The actual Ledger hook and Calendar route passed controlled loading/freshness/denial lifecycles; real backend API queries and latency budgets passed on populated long-history fixtures for both runtime headers.",
+    "nativeBuildStarted": false,
+    "acceptedContracts": 294,
+    "fullSharedValidationReused": true,
+    "missingOrCorruptAssets": 0,
+    "uniqueAssets": 992,
+    "worktreeCloseoutComplete": true,
+    "ownerDirectedScope": "mobile-navigation-loading-20261016"
+  }
 }
