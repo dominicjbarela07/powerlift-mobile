@@ -158406,7 +158406,7 @@
       "reason": "Retained exact source-bound pre-existing Cable backend holdback; Option E does not modify these bytes. Both lanes retain shipped zero-load editor fix."
     }
   ],
-  "releaseConstitutionSha256": "3a0f5f831f0e6243507010dd1af9cc141668057a4b74bf8e63d848e22af5b857",
+  "releaseConstitutionSha256": "f52b9c6fa501acebba1e604bc83b59aefee679932307256e764941046c59906a",
   "protectedCatalogSnapshotSha256": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
   "catalogCompatibilityAuthorization": {
     "ownerInstruction": "Everything else deterministic:\nFIX IT.",
@@ -158434,16 +158434,16 @@
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
-        "sha256": "d76060e58fef3f87241879b6dcbcba1bea3f2ba3ecb5cb191fbb26c8dc92bcb2"
+        "sha256": "292ce96dfb9f2d82f7738e1d1656f07e8fadbe3138caf77fe64ecb173a99be1f"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
-        "sha256": "f6d6b6a570b161da39f3947a87d1bacf27f20c3f355b1ffa1b1ce2bab8e99428"
+        "sha256": "e09ba215cf0b2489b819e4fd733653cfcbc8864b9c257a082a3fd159a1b5f055"
       }
     ],
     "reviewedCanonicalContinuation": {
-      "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
-      "reason": "Retain existing independent web closeout/governance bytes unchanged while appending the exact mobile loading incident. Read/hash verification still applies to every canonical record; no unrelated product or web source is promoted."
+      "ownerInstruction": "still took over 15 seconds to open \"The Ledger\" on Mobile! fuckig figure it out!!",
+      "reason": "Reopen the falsely closed loading incident using actual owner server logs; retain previous closure historically, add independent diverse/cursor/concurrent guards and verified backend-only delivery. Preserve all unrelated web incident records and guidance. No phone timing claim."
     }
   },
   "movementImageryRestoration": {
@@ -163221,6 +163221,18 @@
         "docs/release/REP_CHAIN_RECOGNITION_2026-10-15.md",
         "docs/release/TODAY_LOADING_REPORT_2026-10-15.md",
         "docs/release/MOBILE_LOADING_PERFORMANCE_2026-10-16.md"
+      ]
+    },
+    {
+      "before": "3a0f5f831f0e6243507010dd1af9cc141668057a4b74bf8e63d848e22af5b857",
+      "after": "f52b9c6fa501acebba1e604bc83b59aefee679932307256e764941046c59906a",
+      "sourceCommits": [
+        "1c19d7d5f1164abd3144014329cd5a2174392c3c",
+        "bd4d221a6cb893103244cbbaf05b066d04764147"
+      ],
+      "review": "Add full-catalog/diverse-history, filtered-window, complete-pagination and concurrent Ledger/Today/Calendar acceptance after the owner reported the prior fix still exceeded 15 seconds. Preserve every existing release, asset, identity, equipment, auth and legacy rule. Incident stays OPEN until actual affected phone timings are observed.",
+      "evidence": [
+        "docs/release/MOBILE_LOADING_RECURRENCE_2026-10-16.md"
       ]
     }
   ],
