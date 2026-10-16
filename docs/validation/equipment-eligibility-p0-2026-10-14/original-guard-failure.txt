@@ -1,0 +1,12 @@
+/Users/dominic/powerlifting_app_dev/powerlift_mobile/lib/equipment-flow-subject.ts:40
+    throw new Error('This movement does not support machine or cable equipment setup. Use Swap to choose a different movement.');
+          ^
+
+Error: This movement does not support machine or cable equipment setup. Use Swap to choose a different movement.
+    at equipmentFlowSubject (/Users/dominic/powerlifting_app_dev/powerlift_mobile/lib/equipment-flow-subject.ts:40:11)
+    at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-fixed-equipment-eligibility.mjs:32:55
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v25.2.1
