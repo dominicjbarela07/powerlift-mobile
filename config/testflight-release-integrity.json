@@ -158088,7 +158088,7 @@
     "scripts/worktree-lifecycle.mjs": "f8e9f5cb04a8fc62cd478018685347dab4b893cc94e1b61e6cf557e877e9e3b3",
     "scripts/test-worktree-lifecycle.mjs": "33eb5b43bdcdb439c49113cbc3ba91e4cf5ffe7ec0cd37fcf80adac9f0b8884a",
     "scripts/owner-nonrecurrence-governance.mjs": "2dff59853028ab3c3a48d235aeb0aaa4bc22d20408b253ba0f4e1ff5bbecfc5f",
-    "scripts/test-owner-nonrecurrence-governance.mjs": "7f0cd46e05f69c286dc276a8e95c472456f3a9723261f9030e3d89bd6d00ff13",
+    "scripts/test-owner-nonrecurrence-governance.mjs": "2d2153431dcec404bc1ed374b357821488584ae13044b81123069f2a962d015b",
     "scripts/test-pre-october-2-restoration.mjs": "281e7d29b8d968443fc43f9685f8ae40f878215b03b115bf85a152efe3bfde87",
     "scripts/test-accessory-pr-save-api.mjs": "74eb45ef6fe63d36735bf319aa070fd46857787e55519b34e32b65507d5b75c3",
     "config/testflight-release-pre-20261002-manifest.json": "df2f4499175efecfc33f76d8f469eb5c6ca1c2db1be590637f3043abd8ae08a0",
@@ -158117,7 +158117,7 @@
     "scripts/audit-ui-constitution.js": "c14e4631723433c5528131adc17c2f376dbef912a6288cd2575c2a10c460024b",
     "scripts/audit-transparent-screen-roots.js": "2cb55a6dc2987baa0693dfa6325437c50c1dc1057bd8817fbdadde8defc88518",
     "scripts/reviewed-runtime-continuation.mjs": "2ae6db43fb13b09592327eb725da8438e687eeaf6fe937bcb72779f6adc006c6",
-    "scripts/test-reviewed-runtime-continuation.mjs": "7992fea93e18ca4ca6eedca42c29bfa4ff3425b00802bb318ba25567b971805e",
+    "scripts/test-reviewed-runtime-continuation.mjs": "5458a92dd2a9cd51bcab708b3b3b21a67d3fa86da9b17d475be1630fbf8663c6",
     "scripts/test-governed-movement-art-taxonomy.mjs": "474fd1f0bb9f5b11f6f4b797ee35a178201bae69ff3b9c647a1a0b6cf5f95370",
     "scripts/education-image-transport.mjs": "68d37ed07669d53b0395fbe7424818a4ddec570acb94cca0d2d49f4008f2a683",
     "scripts/generate-education-image-transport.mjs": "e731bee3e877638bc571a9393b8d671ec2af4c847d6d85cec731e71bbd774844",
@@ -162665,6 +162665,16 @@
           "path": "scripts/test-owner-directed-client-fix.mjs",
           "before": "2effe70e84dbbfc346e5e74932ff6054eda373899c3b7a82da6b7f01576ab0be",
           "after": "78fc780bd4295ff47d8dc8ce9b73dfd9ed950d561de82701fcd2d3d35e156df0"
+        },
+        {
+          "path": "scripts/test-reviewed-runtime-continuation.mjs",
+          "before": "7992fea93e18ca4ca6eedca42c29bfa4ff3425b00802bb318ba25567b971805e",
+          "after": "5458a92dd2a9cd51bcab708b3b3b21a67d3fa86da9b17d475be1630fbf8663c6"
+        },
+        {
+          "path": "scripts/test-owner-nonrecurrence-governance.mjs",
+          "before": "7f0cd46e05f69c286dc276a8e95c472456f3a9723261f9030e3d89bd6d00ff13",
+          "after": "2d2153431dcec404bc1ed374b357821488584ae13044b81123069f2a962d015b"
         }
       ],
       "review": "Exact owner navigation scope and actual hook/route/latency checks added. Existing baselines, source/asset gates, native compatibility and independent backend acceptance remain enforced. Original old-code controls fail; no gate is waived."
