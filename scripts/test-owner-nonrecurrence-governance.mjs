@@ -44,11 +44,18 @@ try {
   // Required existing document evidence remains read-only.
   for (const name of fs.readdirSync(path.join(backendRoot,'docs')))
     if (!fs.existsSync(path.join(fixture,'docs',name))) fs.symlinkSync(path.join(backendRoot,'docs',name),path.join(fixture,'docs',name));
-  for (const name of ['app','scripts','tests','powerlift_mobile']) fs.symlinkSync(path.join(backendRoot,name),path.join(fixture,name));
+  const referencedRoots = new Set(['app','scripts','tests','powerlift_mobile',
+    ...original.incidents.flatMap(incident => [
+      ...incident.protections, ...incident.negativeTests, ...incident.evidence,
+      incident.ownerDesignationEvidence,
+    ]).map(relative => relative.split('/')[0])]);
+  for (const name of referencedRoots) if (!fs.existsSync(path.join(fixture,name)))
+    fs.symlinkSync(path.join(backendRoot,name),path.join(fixture,name));
   const run = () => spawnSync(process.execPath,['scripts/owner-nonrecurrence-governance.mjs'],{
     cwd:root,env:{...process.env,STRENGTH_LEDGER_BACKEND_ROOT:fixture},encoding:'utf8',timeout:10000,
   });
-  assert.equal(run().status,0,'Valid retained governance must pass');
+  const valid = run();
+  assert.equal(valid.status,0,`Valid retained governance must pass: ${valid.stderr}`);
   for (const name of ['OWNER_NON_RECURRENCE_INCIDENTS.md','OWNER_NON_RECURRENCE_INCIDENTS.json']) {
     const file = path.join(fixture,'docs',name);const bytes=fs.readFileSync(file);fs.unlinkSync(file);
     const result=run();assert.equal(result.status,1);assert.match(result.stderr,/GOVERNANCE BLOCKED/);
