@@ -56,9 +56,9 @@ export function canonicalCalendarRangeForMonth(month: Date): CalendarRange {
 
 export function createCalendarRangeRequestManager<T>(
   fetchRange: (range: CalendarRange, signal: AbortSignal) => Promise<T>,
-  { cacheScope = '' }: { cacheScope?: string } = {},
+  { cacheScope = '', maxAgeMs = Infinity, now = Date.now }: { cacheScope?: string; maxAgeMs?: number; now?: () => number } = {},
 ) {
-  const cache = new Map<string, T>();
+  const cache = new Map<string, { value: T; expires: number }>();
   const inflight = new Map<string, InflightRequest<T>>();
 
   const cancelExcept = (key: string) => {
@@ -84,14 +84,16 @@ export function createCalendarRangeRequestManager<T>(
         inflight.delete(key);
       }
 
-      if (!options.force && cache.has(key)) {
-        return { key, source: 'cache', value: cache.get(key)! };
+      const retained = cache.get(key);
+      if (!options.force && retained && retained.expires > now()) {
+        return { key, source: 'cache', value: retained.value };
       }
+      if (retained) cache.delete(key);
 
       const controller = new AbortController();
       const promise = fetchRange(range, controller.signal)
         .then((value) => {
-          if (!controller.signal.aborted) cache.set(key, value);
+          if (!controller.signal.aborted) cache.set(key, { value, expires: now() + maxAgeMs });
           return value;
         })
         .finally(() => {
@@ -112,7 +114,8 @@ export function createCalendarRangeRequestManager<T>(
     },
 
     hasCached(range: CalendarRange) {
-      return cache.has(calendarRangeKey(range, cacheScope));
+      const retained = cache.get(calendarRangeKey(range, cacheScope));
+      return Boolean(retained && retained.expires > now());
     },
 
     inflightCount() {

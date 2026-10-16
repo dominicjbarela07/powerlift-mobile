@@ -25,6 +25,7 @@ import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLTypography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson, getDeviceTimezone } from '@/lib/api';
+import { evidenceReadCache } from '@/lib/evidence-read-cache';
 import {
   canSelfCoachRescheduleSessions,
   isAthleteCalendarDropTargetValid,
@@ -134,10 +135,10 @@ function makeCalendarRequestManager(cacheScope: string) {
       headers: { 'Cache-Control': 'no-cache' },
     });
     if (!response.ok || response.json?.ok !== true) {
-      throw new Error(response.json?.error || 'Calendar could not load.');
+      throw Object.assign(new Error(response.json?.error || 'Calendar could not load.'), { status: response.status });
     }
     return response.json.athlete_calendar || {};
-  }, { cacheScope });
+  }, { cacheScope, maxAgeMs: 10_000 });
 }
 
 export default function AthleteCalendarScreen() {
@@ -198,6 +199,8 @@ export default function AthleteCalendarScreen() {
   const dayDetailAbortRef = useRef<AbortController | null>(null);
   const dayDetailRequestRef = useRef(0);
   const visiblePayload = payloadOwnerScope === calendarIdentityScope ? payload : null;
+  const retainedRangeRef = useRef({ scope: payloadOwnerScope, start: loadedRangeStart, end: loadedRangeEnd, hasData: Boolean(visiblePayload) });
+  retainedRangeRef.current = { scope: payloadOwnerScope, start: loadedRangeStart, end: loadedRangeEnd, hasData: Boolean(visiblePayload) };
   const preferredUnits = user?.preferred_units;
   const canRescheduleSessions = canSelfCoachRescheduleSessions({
     canEditProgramming: visiblePayload?.can_edit_programming,
@@ -233,6 +236,12 @@ export default function AthleteCalendarScreen() {
     } catch (caught: any) {
       if (isAbortError(caught)) return;
       if (requestScopeRef.current !== requestScope) return;
+      if (caught?.status === 401 || caught?.status === 403) {
+        setPayload(null);
+        requestManagerRef.current!.clear();
+        dayDetailCacheRef.current.clear();
+        setDayDetail(null);
+      }
       setError(caught?.message || 'Calendar could not load.');
     } finally {
       if (requestScopeRef.current === requestScope) {
@@ -246,6 +255,11 @@ export default function AthleteCalendarScreen() {
   }, [calendarIdentityScope, rangeEnd, rangeStart]);
 
   useEffect(() => () => requestManagerRef.current?.cancelAll(), []);
+  useEffect(() => evidenceReadCache.onInvalidation(() => {
+    requestManagerRef.current?.cancelAll();
+    requestManagerRef.current?.clear();
+    dayDetailCacheRef.current.clear();
+  }), []);
 
   const loadDayDetail = useCallback(async (date: string, force = false) => {
     if (!force) {
@@ -322,7 +336,15 @@ export default function AthleteCalendarScreen() {
     return () => subscription.remove();
   }, []);
 
-  useFocusEffect(useCallback(() => { void load(true, false); }, [load]));
+  useFocusEffect(useCallback(() => {
+    const retained = retainedRangeRef.current;
+    const canRefreshInPlace = retained.hasData && retained.scope === calendarIdentityScope
+      && retained.start != null && retained.end != null
+      && retained.start <= rangeStart && retained.end >= rangeEnd;
+    // Reuse the same authorized range briefly; expired reads refresh in place.
+    // Mutations, foreground entry and manual refresh always discard this cache.
+    void load(false, canRefreshInPlace);
+  }, [calendarIdentityScope, load, rangeEnd, rangeStart]));
 
   useEffect(() => {
     let previousState = AppState.currentState;

@@ -76,7 +76,9 @@ export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiv
       setLoadedKey(key);
       return;
     }
-    setLoading(true);
+    // Refresh the same authorized evidence in place; identity/revision changes
+    // still hide retained data until the fresh request completes.
+    setLoading(loadedKey !== key);
     setError(null);
     setErrorKind(null);
     try {
@@ -139,7 +141,7 @@ export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiv
     } finally {
       if (active()) { receivedAt.current = Date.now(); setLoading(false); }
     }
-  }, [allowPartial, athleteId, fixture, key, ledgerSubject.valid, projection, range]);
+  }, [allowPartial, athleteId, fixture, key, ledgerSubject.valid, loadedKey, projection, range]);
 
   useEffect(() => {
     if (focused && (loadedKey !== key || Date.now() - receivedAt.current >= 10_000)) void reload(false);

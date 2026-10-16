@@ -1,0 +1,118 @@
+{
+  "sourceSha": "406d88a8e1734de4560bbd8396dfad747321a996",
+  "liveVerified": true,
+  "verifiedAt": "2026-10-16T15:33:03.252289+00:00",
+  "gate": {
+    "pass": true,
+    "baselineSha": "c1826f0c94c43c52af918fbecda1eb916ed9a2fd",
+    "candidateSha": "406d88a8e1734de4560bbd8396dfad747321a996",
+    "candidateTree": "13631849d4cd5089d4ae957c5160c02c2c2e4610",
+    "schemaChanged": false,
+    "modelSha256": "996e4bdb7ce98cab1a24e15814195c9dc2c38fea3aa64e2e9288547022fdc403",
+    "frozenMobileBaselineSha256": "16db350a9bff4a0694d972fdc3801ee6e8a8782605a02fcef70824ed0343a12d",
+    "frozenClients": {
+      "ios": {
+        "source": "a5d56d2205f93ab6b00b3be0ca836d4235b82a57",
+        "update": "01a05051-47f5-7b6a-b930-b59c8d6a9248",
+        "launchAssetSha256": "4c2c1543d3fff0b9dc5a405b8f42bbc284c1c5130c80153138790ddce49079c3",
+        "apiContractSourceSha256": "7748f5c1d8eafa747212414dd4b1bb8d874009a72bc59e53662d27d63cfba405"
+      },
+      "android": {
+        "source": "3d5a38a22b893f67bfed0e7ee3d6e9a2c685ab95",
+        "update": "01a05c7f-48f2-701c-8968-1c619536f57e",
+        "launchAssetSha256": "d6f7b26b91b7c98752c3366e1d92a3184133d162b399bd9a4dc26e18d1b5360b",
+        "apiContractSourceSha256": "7748f5c1d8eafa747212414dd4b1bb8d874009a72bc59e53662d27d63cfba405"
+      }
+    },
+    "legacyResponsesIdentical": {
+      "ios": 104,
+      "android": 104
+    },
+    "legacyBreakingPermissionControlRejected": true,
+    "ownerPolicyAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 3,
+      "probeSha256": "4e80578545338622565a3d8b143cbc8762c2a4dd6cf6a9bc639bc1fbaa8a511b"
+    },
+    "currentSessionIdentityAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 5,
+      "probeSha256": "4d4bf27156b110fb501453f6fc84e4821b1a1ec73c63d25f7b1f2189283ebe16"
+    },
+    "logs": "/Users/dominic/powerlifting_app/.git/release-receipts/406d88a8e173-checks",
+    "liveDeploymentVerified": false,
+    "archiveAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 14,
+      "probeSha256": "37759cc5e069f5116aa2d1282e370f74b00bd1a1ab90517780cb29099f6d3899",
+      "fixtureSha256": "39b116accbc970aac47d448bd1ae51dae278e94a6c6d2adc33673f1f4dc3ad79"
+    },
+    "repChainAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 8,
+      "probeSha256": "4c0d74abcb3ec4fb5468a1564b1a03f05319670d6ef14c46e75d03b4f8a65286",
+      "fixtureSha256": "a78d2c8812a3b12104324936afd3b3b5e347a1aabae9d000d35abce2ed3e69d0"
+    },
+    "todayLoadingAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 2,
+      "probeSha256": "99d7db842631d8beca04a7bdace0027a34ce2362143a067f06e479832349f7a6",
+      "fixtureSha256": "fd444ee8d19b09515ea80f9e9aa30bc2a871a4770a068f7c750783fe7cec827c"
+    },
+    "navigationLoadingAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 3,
+      "probeSha256": "cb206e60d252a45a4499a54845b3e36690cc9caccdbba923132a278e09345513",
+      "fixtureSha256": "67189433bc204a9988ff21bc3c5313af5668cd88e516072156c1bc4b018d9cd2"
+    }
+  },
+  "runtimeHealth": [
+    {
+      "runtime": "3.0.0",
+      "health": {
+        "lower_rep_thresholds_derived_from_performed_sets": true,
+        "machine_first_baseline_recognized": false,
+        "manufacturers_isolated": true,
+        "migration_revisions": [
+          "f47a92b1c8d0"
+        ],
+        "minimum_delivery_client_version": "2.1.0",
+        "other_is_separate_equipment_context": true,
+        "policy_version": "accessory-rep-chain-equipment-isolated-v4",
+        "pr_comparison_scope": "canonical_movement_exact_equipment",
+        "ready": true,
+        "rep_threshold_policy": "at-least-completed-reps-canonical-kg-v1",
+        "schema_fingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+        "source_sha": "406d88a8e1734de4560bbd8396dfad747321a996",
+        "synthetic_lower_rep_recognitions": false
+      }
+    },
+    {
+      "runtime": "2.1.0",
+      "health": {
+        "lower_rep_thresholds_derived_from_performed_sets": true,
+        "machine_first_baseline_recognized": false,
+        "manufacturers_isolated": true,
+        "migration_revisions": [
+          "f47a92b1c8d0"
+        ],
+        "minimum_delivery_client_version": "2.1.0",
+        "other_is_separate_equipment_context": true,
+        "policy_version": "accessory-rep-chain-equipment-isolated-v4",
+        "pr_comparison_scope": "canonical_movement_exact_equipment",
+        "ready": true,
+        "rep_threshold_policy": "at-least-completed-reps-canonical-kg-v1",
+        "schema_fingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+        "source_sha": "406d88a8e1734de4560bbd8396dfad747321a996",
+        "synthetic_lower_rep_recognitions": false
+      }
+    }
+  ],
+  "noLiveUserDataMutated": true
+}

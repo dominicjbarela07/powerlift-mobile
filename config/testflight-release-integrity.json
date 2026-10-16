@@ -20043,6 +20043,45 @@
       "before": "e096935ee1da6c44af82a0ee8651a0803bc692dc5be5827b06e88b2b20cb32a7",
       "after": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491",
       "ownerDirectiveScope": "canonical-fixed-equipment-eligibility-20261014"
+    },
+    {
+      "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-16-mobile-loading.txt",
+      "ownerEvidenceSha256": "319ebc174fef607564b65a17c67fc4c12897ea8cce29c1c1b0fce1f5877b1832",
+      "reason": "Bound owner-reported Ledger, Program Manager, Calendar and Session loading across both runtimes; preserve cumulative assets/fixes, exact current movement IDs, all equipment and authorization scopes. Actual cold APIs and warm hook/route lifecycles are failure-tested; no native build or redesign.",
+      "path": "app/(tabs)/athlete-calendar.tsx",
+      "before": "d81d6ccdce2f79faff040be3c5a2a61751f7c85dc9600db416b5e671b3051106",
+      "after": "cfa2c604801017e51f35ed0edad3958c414a61876f1f7b6922f3bcba774e9877",
+      "ownerDirectiveScope": "mobile-navigation-loading-20261016",
+      "actualPublishedBefore": "d81d6ccdce2f79faff040be3c5a2a61751f7c85dc9600db416b5e671b3051106",
+      "actualPublishedSource": "96ab72ac9287339141444a9154451bdf20d1f601",
+      "exactDeltaProof": "config/testflight-runtime-navigation-20261016/baseline-product.json"
+    },
+    {
+      "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-16-mobile-loading.txt",
+      "ownerEvidenceSha256": "319ebc174fef607564b65a17c67fc4c12897ea8cce29c1c1b0fce1f5877b1832",
+      "reason": "Bound owner-reported Ledger, Program Manager, Calendar and Session loading across both runtimes; preserve cumulative assets/fixes, exact current movement IDs, all equipment and authorization scopes. Actual cold APIs and warm hook/route lifecycles are failure-tested; no native build or redesign.",
+      "path": "components/ledger/use-ledger-live-data.ts",
+      "before": "ffdd29b07d205fe60f5a3dee1e295388c0313c939ed95e75d9bd05c122f5459d",
+      "after": "1b611a12f1e0be1fe9f008fd31a9103924485b0deb2894e24c68c49b982d9dcb",
+      "ownerDirectiveScope": "mobile-navigation-loading-20261016",
+      "actualPublishedBefore": "ffdd29b07d205fe60f5a3dee1e295388c0313c939ed95e75d9bd05c122f5459d",
+      "actualPublishedSource": "96ab72ac9287339141444a9154451bdf20d1f601",
+      "exactDeltaProof": "config/testflight-runtime-navigation-20261016/baseline-product.json"
+    },
+    {
+      "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-16-mobile-loading.txt",
+      "ownerEvidenceSha256": "319ebc174fef607564b65a17c67fc4c12897ea8cce29c1c1b0fce1f5877b1832",
+      "reason": "Bound owner-reported Ledger, Program Manager, Calendar and Session loading across both runtimes; preserve cumulative assets/fixes, exact current movement IDs, all equipment and authorization scopes. Actual cold APIs and warm hook/route lifecycles are failure-tested; no native build or redesign.",
+      "path": "lib/calendar-range-pagination.ts",
+      "before": "1057c1a280d82b3fdbe8fa663e631d7263c4e3da8b46ecd15dc7e5353168af9e",
+      "after": "b99609f67b6ed4d5921be0eb7524e3123c3e12eff11700e218404782f0a970c1",
+      "ownerDirectiveScope": "mobile-navigation-loading-20261016",
+      "actualPublishedBefore": "1057c1a280d82b3fdbe8fa663e631d7263c4e3da8b46ecd15dc7e5353168af9e",
+      "actualPublishedSource": "96ab72ac9287339141444a9154451bdf20d1f601",
+      "exactDeltaProof": "config/testflight-runtime-navigation-20261016/baseline-product.json"
     }
   ],
   "assetRemovalAuthorizations": [
@@ -158349,7 +158388,7 @@
       "reason": "Retained exact source-bound pre-existing Cable backend holdback; Option E does not modify these bytes. Both lanes retain shipped zero-load editor fix."
     }
   ],
-  "releaseConstitutionSha256": "dc834fe990880c0ff1d4cb9fbb25978e7bd919e2e7c5886d3d4ef29d7f78ddfa",
+  "releaseConstitutionSha256": "3a0f5f831f0e6243507010dd1af9cc141668057a4b74bf8e63d848e22af5b857",
   "protectedCatalogSnapshotSha256": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
   "catalogCompatibilityAuthorization": {
     "ownerInstruction": "Everything else deterministic:\nFIX IT.",
@@ -158373,17 +158412,21 @@
     "canonicalFiles": [
       {
         "path": "AGENTS.md",
-        "sha256": "fb474290c91ac1517179a797be965c0b75fdfaac81c883e3b9ab8a2af6bc8b53"
+        "sha256": "e41e408f39628c06a54477eb512a75c39bd3f6b9170bc6f5a2a54b71c7b1a2a9"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
-        "sha256": "b1eed6055ace0b4890c6a602da4ef7a382e6f68f1f3b61592856da63b16eedd7"
+        "sha256": "ba772103a185da3e691c2c1b3c25fdce9e3a2a1fef6def3e7a37f52b4e595e89"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
-        "sha256": "a9418ba03c6d9204a7e729a5ee837b23fb8010f6da789d8b7c42770da4d46bb1"
+        "sha256": "7aea357cddde0bba3a0c28a033c46a171bafe1b62999ebb3e16b0bec9807f85c"
       }
-    ]
+    ],
+    "reviewedCanonicalContinuation": {
+      "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
+      "reason": "Retain existing independent web closeout/governance bytes unchanged while appending the exact mobile loading incident. Read/hash verification still applies to every canonical record; no unrelated product or web source is promoted."
+    }
   },
   "movementImageryRestoration": {
     "scope": "pre-20261002-imagery-with-accessory-pr-celebration",
@@ -158460,51 +158503,35 @@
     "status": "OPEN_PENDING_DEPLOYMENT_AND_PUBLICATION"
   },
   "ownerDirectedClientFix": {
-    "ownerInstruction": "RHIA NWWSA RO BE fixed first!!!! this is a production 3.0 occurance!",
-    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-equipment-eligibility.txt",
-    "ownerEvidenceSha256": "11fbf1572fe5c72c0c90f8fea560dc31a1a175ad475cdf13379fd3c32e7c34bc",
-    "reason": "Fix Production Cable Row equipment rejection before shipping the already-approved 56-point floating unit control. Requiredness does not revoke fixed-equipment support. Preserve exact current IDs, immutable Sets, manufacturer isolation, all shipped fixes/assets and the existing cable release boundary.",
-    "scope": "canonical-fixed-equipment-eligibility-20261014",
+    "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-16-mobile-loading.txt",
+    "ownerEvidenceSha256": "319ebc174fef607564b65a17c67fc4c12897ea8cce29c1c1b0fce1f5877b1832",
+    "reason": "Bound owner-reported Ledger, Program Manager, Calendar and Session loading across both runtimes; preserve cumulative assets/fixes, exact current movement IDs, all equipment and authorization scopes. Actual cold APIs and warm hook/route lifecycles are failure-tested; no native build or redesign.",
+    "scope": "mobile-navigation-loading-20261016",
     "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
-    "productFingerprint": "2b8fefa9d67dcc1434c14de44b9aa81a800cad43a509ab613f49b59d4741ffb9",
-    "baselineUpdateId": "01a13d2f-e54b-719a-8007-c874adf52e12",
-    "baselineSourceSha": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
-    "baselineProductFingerprint": "29aa149352ab21d0a545b264b46a0df2ecf1a989df788ed24fc8bae8fa28a879",
+    "productFingerprint": "07a0d50a4b8483e0be0dc88c7c8f8237f1c35e95de00be6acbce677cac7f0d3f",
+    "baselineUpdateId": "01a13d7c-5437-7dd9-8a0c-070c77844d9f",
+    "baselineSourceSha": "96ab72ac9287339141444a9154451bdf20d1f601",
+    "baselineProductFingerprint": "2b8fefa9d67dcc1434c14de44b9aa81a800cad43a509ab613f49b59d4741ffb9",
     "baselineFiles": {
-      "path": "config/testflight-runtime-logger-unit-20261014/baseline-product.json",
-      "sha256": "4187b03feded7bb6a928a1bb7112b2dca16f3ad49d740bec878f140218bb9586"
+      "path": "config/testflight-runtime-navigation-20261016/baseline-product.json",
+      "sha256": "8289baf325ed0a02676c804ff00e781580dfcfe7e96fa4f13b406c09045887c2"
     },
     "changedProductFiles": {
-      "app/(tabs)/workout/[workoutId].tsx": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92",
-      "components/ui/floating-control-coordinator.tsx": "a23a7a8b12d4d681095a45b1a4f8d08d98794e1d3a6a0be95eaf3a2cee735e0b",
-      "components/workout-logger/session-v3-shell.tsx": "8dfd1cf02a6dcf70feea47fa6d8fa9ef86113541528401bc7ae46f51a94d7cce",
-      "lib/equipment-flow-subject.ts": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
-      "config/protected-fix-manifest.json": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491"
+      "app/(tabs)/athlete-calendar.tsx": "cfa2c604801017e51f35ed0edad3958c414a61876f1f7b6922f3bcba774e9877",
+      "components/ledger/use-ledger-live-data.ts": "1b611a12f1e0be1fe9f008fd31a9103924485b0deb2894e24c68c49b982d9dcb",
+      "lib/calendar-range-pagination.ts": "b99609f67b6ed4d5921be0eb7524e3123c3e12eff11700e218404782f0a970c1"
     },
     "contracts": {
-      "scripts/test-fixed-equipment-api.mjs": "f200089895d6a2cdb429a1e7213035fffdc1a54625685407f3b21eb3b955183d",
-      "scripts/test-fixed-equipment-eligibility.mjs": "fffea2710fb0b31e0efe4406fd486d867c5ec86fe6ca4be8c0fd8293a497a00f",
-      "scripts/test-logger-floating-unit.mjs": "8d6a4a25193422eb90cb4b76d000322eca8055a8e3634a7dc855edb0ad02a847"
+      "scripts/test-calendar-navigation-cache.mjs": "dcbe080889afca8085a1fa0044e2c5da15f9f2b7ab66431c0b61c6016a3eb8df",
+      "scripts/test-evidence-read-cache.mjs": "bb545273a6e938ad22b0e0e254fa43e1fb98fcce34384b6f895971c7b39ddab9",
+      "scripts/test-mobile-navigation-loading.mjs": "ca3640ee4b9f2716bfeb0d73a9c083a3a26e66e8ebb88b9167f89a311229a7aa"
     },
-    "visualEvidence": [
-      {
-        "path": "docs/validation/logger-unit-control-dev-2026-10-14/05-floating-56-lb.png",
-        "sha256": "6d279bc0777b775dc467c60caaafa196431975b85c6361a45644826eb8ab1359"
-      },
-      {
-        "path": "docs/validation/logger-unit-control-dev-2026-10-14/06-floating-56-kg.png",
-        "sha256": "96380a2f0d7935a5c77ff17ea9e49ec2e069b76009fd6fbec5642137b843240c"
-      },
-      {
-        "path": "docs/validation/logger-unit-control-dev-2026-10-14/07-floating-56-review.png",
-        "sha256": "a8b95707bf1c16ff651d9f62f62eefadea9e7cf3b6da5175e994cb0e7dc2a548"
-      }
-    ],
-    "publicationComplete": true,
-    "publishedRuntimeVersions": [
-      "3.0.0",
-      "2.1.0"
-    ]
+    "backendSourceSha": "406d88a8e1734de4560bbd8396dfad747321a996",
+    "backendDeploymentReceipt": {
+      "path": "config/testflight-release-navigation-20261016/backend-deployment.json",
+      "sha256": "4e6e36a24490626bdcf214c8f6f62ab4325c2077096d94d705b8a63938574eb3"
+    }
   },
   "canonicalZeroLoadEdit": {
     "status": "SHIPPED",
@@ -162100,6 +162127,53 @@
           "sha256": "a8b95707bf1c16ff651d9f62f62eefadea9e7cf3b6da5175e994cb0e7dc2a548"
         }
       ]
+    },
+    {
+      "ownerInstruction": "RHIA NWWSA RO BE fixed first!!!! this is a production 3.0 occurance!",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-14-equipment-eligibility.txt",
+      "ownerEvidenceSha256": "11fbf1572fe5c72c0c90f8fea560dc31a1a175ad475cdf13379fd3c32e7c34bc",
+      "reason": "Fix Production Cable Row equipment rejection before shipping the already-approved 56-point floating unit control. Requiredness does not revoke fixed-equipment support. Preserve exact current IDs, immutable Sets, manufacturer isolation, all shipped fixes/assets and the existing cable release boundary.",
+      "scope": "canonical-fixed-equipment-eligibility-20261014",
+      "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+      "productFingerprint": "2b8fefa9d67dcc1434c14de44b9aa81a800cad43a509ab613f49b59d4741ffb9",
+      "baselineUpdateId": "01a13d2f-e54b-719a-8007-c874adf52e12",
+      "baselineSourceSha": "afacf93e9fc72d2657767757edf25bc0f5a32b53",
+      "baselineProductFingerprint": "29aa149352ab21d0a545b264b46a0df2ecf1a989df788ed24fc8bae8fa28a879",
+      "baselineFiles": {
+        "path": "config/testflight-runtime-logger-unit-20261014/baseline-product.json",
+        "sha256": "4187b03feded7bb6a928a1bb7112b2dca16f3ad49d740bec878f140218bb9586"
+      },
+      "changedProductFiles": {
+        "app/(tabs)/workout/[workoutId].tsx": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92",
+        "components/ui/floating-control-coordinator.tsx": "a23a7a8b12d4d681095a45b1a4f8d08d98794e1d3a6a0be95eaf3a2cee735e0b",
+        "components/workout-logger/session-v3-shell.tsx": "8dfd1cf02a6dcf70feea47fa6d8fa9ef86113541528401bc7ae46f51a94d7cce",
+        "lib/equipment-flow-subject.ts": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
+        "config/protected-fix-manifest.json": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491"
+      },
+      "contracts": {
+        "scripts/test-fixed-equipment-api.mjs": "f200089895d6a2cdb429a1e7213035fffdc1a54625685407f3b21eb3b955183d",
+        "scripts/test-fixed-equipment-eligibility.mjs": "fffea2710fb0b31e0efe4406fd486d867c5ec86fe6ca4be8c0fd8293a497a00f",
+        "scripts/test-logger-floating-unit.mjs": "8d6a4a25193422eb90cb4b76d000322eca8055a8e3634a7dc855edb0ad02a847"
+      },
+      "visualEvidence": [
+        {
+          "path": "docs/validation/logger-unit-control-dev-2026-10-14/05-floating-56-lb.png",
+          "sha256": "6d279bc0777b775dc467c60caaafa196431975b85c6361a45644826eb8ab1359"
+        },
+        {
+          "path": "docs/validation/logger-unit-control-dev-2026-10-14/06-floating-56-kg.png",
+          "sha256": "96380a2f0d7935a5c77ff17ea9e49ec2e069b76009fd6fbec5642137b843240c"
+        },
+        {
+          "path": "docs/validation/logger-unit-control-dev-2026-10-14/07-floating-56-review.png",
+          "sha256": "a8b95707bf1c16ff651d9f62f62eefadea9e7cf3b6da5175e994cb0e7dc2a548"
+        }
+      ],
+      "publicationComplete": true,
+      "publishedRuntimeVersions": [
+        "3.0.0",
+        "2.1.0"
+      ]
     }
   ],
   "releaseProtectionProgressions": [
@@ -162552,6 +162626,46 @@
         }
       ],
       "review": "Explicit exact post-shared-fix checkpoint retains the existing held library bytes plus the one proven eligibility patch. No publication-only source change; the shared-patch validation and final candidate-byte equality remain enforced."
+    },
+    {
+      "ownerInstruction": "Loading speeds are pretty fucking abysmal, man.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-16-mobile-loading.txt",
+      "ownerEvidenceSha256": "319ebc174fef607564b65a17c67fc4c12897ea8cce29c1c1b0fce1f5877b1832",
+      "reason": "Bound owner-reported Ledger, Program Manager, Calendar and Session loading across both runtimes; preserve cumulative assets/fixes, exact current movement IDs, all equipment and authorization scopes. Actual cold APIs and warm hook/route lifecycles are failure-tested; no native build or redesign.",
+      "scope": "mobile-navigation-loading-20261016",
+      "files": [
+        {
+          "path": "scripts/test-mobile-navigation-loading.mjs",
+          "before": null,
+          "after": "ca3640ee4b9f2716bfeb0d73a9c083a3a26e66e8ebb88b9167f89a311229a7aa"
+        },
+        {
+          "path": "scripts/test-calendar-navigation-cache.mjs",
+          "before": null,
+          "after": "dcbe080889afca8085a1fa0044e2c5da15f9f2b7ab66431c0b61c6016a3eb8df"
+        },
+        {
+          "path": "scripts/owner-directed-client-fix.mjs",
+          "before": "b670b2d9b5e4759d8ca0f457235f5cc79d9cfd78543eab009ff1809ad1c2090a",
+          "after": "eb2d419963c4977e5a610323d3d0b7cb16f0920a3a516e4d5d953ff8cb0c5f87"
+        },
+        {
+          "path": "scripts/production3-client-fix-policy.mjs",
+          "before": "9c0406234cf9ab0af987e1b874b334841422d10ea623ba19f14b00cb1a17d6b0",
+          "after": "10662a646157ac692b12ae5a3323049a54600dbf543906fd0f68c5edcf2669e1"
+        },
+        {
+          "path": "scripts/test-release-critical-invariants.mjs",
+          "before": "7c5df99458cc99e910a03b4f4eecdc01945859b70b0637a1630e144b68025522",
+          "after": "227c94f9982df783457ada9e4eaf20045201c643835922fabd75ded4e53c4608"
+        },
+        {
+          "path": "scripts/test-owner-directed-client-fix.mjs",
+          "before": "2effe70e84dbbfc346e5e74932ff6054eda373899c3b7a82da6b7f01576ab0be",
+          "after": "78fc780bd4295ff47d8dc8ce9b73dfd9ed950d561de82701fcd2d3d35e156df0"
+        }
+      ],
+      "review": "Exact owner navigation scope and actual hook/route/latency checks added. Existing baselines, source/asset gates, native compatibility and independent backend acceptance remain enforced. Original old-code controls fail; no gate is waived."
     }
   ],
   "verifiedCopiedWeekIdentity": {
@@ -163060,5 +163174,21 @@
     "uniqueAssets": 992,
     "worktreeCloseoutComplete": true,
     "ownerDirectedScope": "canonical-fixed-equipment-eligibility-20261014"
-  }
+  },
+  "releaseConstitutionReviews": [
+    {
+      "before": "dc834fe990880c0ff1d4cb9fbb25978e7bd919e2e7c5886d3d4ef29d7f78ddfa",
+      "after": "3a0f5f831f0e6243507010dd1af9cc141668057a4b74bf8e63d848e22af5b857",
+      "sourceCommits": [
+        "4efcb359d039b7bdfe72f180a53eb62c376a0d8b",
+        "6bc14b7ff430b39851650d72fbd982dce63dfb9b"
+      ],
+      "review": "Retain the previously owner-authorized canonical rep-chain law and mandatory bounded Today read/latency checks. These additive protections were reviewed; no release, asset, identity, legacy or authorization law is waived. Current navigation gate extends their consumer coverage.",
+      "evidence": [
+        "docs/release/REP_CHAIN_RECOGNITION_2026-10-15.md",
+        "docs/release/TODAY_LOADING_REPORT_2026-10-15.md",
+        "docs/release/MOBILE_LOADING_PERFORMANCE_2026-10-16.md"
+      ]
+    }
+  ]
 }
