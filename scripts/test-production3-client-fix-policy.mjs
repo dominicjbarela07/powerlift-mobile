@@ -7,6 +7,7 @@ const proof=JSON.parse(fs.readFileSync('config/testflight-release-identity-20261
 const input={branch:'production-3-preparation',scope:{scope:'canonical-copied-week-identity-20261013'},
   baseline:baselines['3.0.0'],proof,packageLockSha256:crypto.createHash('sha256').update(fs.readFileSync('package-lock.json')).digest('hex')};
 assertProduction3ClientFix(input);
+assertProduction3ClientFix({...input,scope:{scope:'weekly-training-report-20261017'}});
 assertProduction3ClientFix({...input,scope:{scope:'athlete-video-archive-access-20261014'}});
 assertProduction3ClientFix({...input,scope:{scope:'set-entry-video-preview-20261014'}});
 for(const field of ['plugins','newArchEnabled','reactNativeDependencies','expoModules']) assert.deepEqual(baselines['3.0.0'][field],baselines['2.1.0'][field],`3.0 retains the audited ${field} graph`);
