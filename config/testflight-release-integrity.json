@@ -158117,7 +158117,7 @@
     "scripts/publish-validated-ios-ota.mjs": "232d5442b155d60ee6587fbc35160d1dfedf7e3121f929e3499189270d86996f",
     "scripts/eas-build-testflight.sh": "946b0857b8b84925906b84547dbb62f1fa05e12ab3771674dd64e359d920e115",
     "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
-    "scripts/test-accepted-behavior-contracts.mjs": "c07f9a49d8255765373bd1f11c1759f6768e28269b510952fd0d8a151cbb36aa",
+    "scripts/test-accepted-behavior-contracts.mjs": "975d474b4a2cda87a207bf4cc09f70e18893f768d5612f76ed87ffaf4c10ca77",
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
     "config/protected-fix-manifest.json": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491",
     "scripts/assert-no-dev-artwork-export.mjs": "610934d315a2f34c534e80545d7c8361fbad0110c313c48f3d9642f2c04a7c22",
@@ -163033,6 +163033,21 @@
         }
       ],
       "review": "Keep Git/DEV/worktree ownership tests on the real canonical repository, while API/backend contracts execute inside immutable inputs. Explicit root selection is failure-tested: API tests cannot fall back to changing web inputs; governance retains the real Git authority. All original tests remain mandatory."
+    },
+    {
+      "scope": "weekly-training-report-20261017",
+      "ownerInstruction": "So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-17-weekly-report-3.txt",
+      "ownerEvidenceSha256": "aea56977ac52102f2a5f390677b7f96aabd0092ea6a0d8e55a36c1a680b71974",
+      "reason": "Owner corrected the installed TestFlight runtime to 3.0 build 35 and explicitly authorized the same approved weekly report on that runtime. Publish identical validated product source; preserve both runtime baselines, all assets and exact native graph.",
+      "files": [
+        {
+          "path": "scripts/test-accepted-behavior-contracts.mjs",
+          "before": "c07f9a49d8255765373bd1f11c1759f6768e28269b510952fd0d8a151cbb36aa",
+          "after": "975d474b4a2cda87a207bf4cc09f70e18893f768d5612f76ed87ffaf4c10ca77"
+        }
+      ],
+      "review": "Preserve executable shebang and use the existing accepted-contract loop variable for its explicit backend-root selection; no contract is removed or altered."
     }
   ],
   "verifiedCopiedWeekIdentity": {
