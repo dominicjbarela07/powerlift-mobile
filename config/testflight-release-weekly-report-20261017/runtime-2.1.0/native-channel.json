@@ -1,0 +1,10 @@
+{
+  "pass": true,
+  "channel": "testflight",
+  "runtimeVersion": "2.1.0",
+  "updateId": "01a14b44-a307-74ef-8ba6-1f688e989bd7",
+  "createdAt": "2026-10-17T19:09:11.815Z",
+  "request": "native Expo SDK channel/runtime headers",
+  "liveBackendSourceSha": "6f6b51ec2dd642d063e4c27276bb5432f3dbe923",
+  "actualPhoneAppliedUpdateObserved": false
+}

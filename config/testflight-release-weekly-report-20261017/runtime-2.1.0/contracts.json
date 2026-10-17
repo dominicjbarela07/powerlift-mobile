@@ -1,0 +1,21 @@
+{
+  "scope": "weekly-training-report-20261017",
+  "productFingerprint": "0f4fcf6f9cf541934305343aadabb50feafe74cc75208804d382c71fbde965de",
+  "completedAt": "2026-10-17T19:08:09.963Z",
+  "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+  "runtimeVerified": false,
+  "contracts": [
+    {
+      "file": "scripts/test-training-week-report.mjs",
+      "sourceSha256": "3a79999259fa315a0c23433c11a01710979251121425ca8dc5aed89286883117",
+      "result": "PASS",
+      "output": "PASS: calendar weeks/month-year boundaries; actual route cold/account/obsolete/denied handling; private PDF write/share/cancel cleanup; Calendar entrypoint.\n"
+    },
+    {
+      "file": "scripts/test-weekly-report-release-scope.mjs",
+      "sourceSha256": "673fdf1733cac3d10c30cb1a491034b8059a83da83005cc90cc3207dbdc52d8c",
+      "result": "PASS",
+      "output": "PASS: weekly report scope retains exact published baseline; rejects removed/replaced art, unrelated code, forged source/baseline/signoff and missing contracts.\n"
+    }
+  ]
+}
