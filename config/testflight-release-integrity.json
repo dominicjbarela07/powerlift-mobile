@@ -158195,7 +158195,7 @@
     "scripts/test-selected-set-video-preview.mjs": "515ddb74116593365a1756d98a9d64e24a4a6359d6503ba2e320c11ea8db9397",
     "scripts/test-session-execution-ownership.mjs": "14d05e43292c2c8a758bfe89d1e02bc25696357a0f9f9f1729b361ad5ed05209",
     "scripts/mobile-3-surface-owners.json": "f0eb8093297a14041cbada8c26b88080ddc580ab90ba10072b0b23174e586bfb",
-    "scripts/test-ota-validation-export-lifecycle.mjs": "febdfd36e829d3d677d3f74ae455e39c642a8ffd2425b080ce49d3c3c57cb259",
+    "scripts/test-ota-validation-export-lifecycle.mjs": "fc2bc188aa167686e2a22d5a1f1d95b7be2dabd8e3f3eb194350c50fe779dee8",
     "scripts/test-logger-floating-unit.mjs": "8d6a4a25193422eb90cb4b76d000322eca8055a8e3634a7dc855edb0ad02a847",
     "scripts/test-logger-unit-release-scope.mjs": "4ce21741b1722195110f788a483c9056392fe768e6bd5811e8c4214e139d93b2",
     "scripts/test-fixed-equipment-eligibility.mjs": "fffea2710fb0b31e0efe4406fd486d867c5ec86fe6ca4be8c0fd8293a497a00f",
@@ -158205,7 +158205,7 @@
     "scripts/weekly-report-release-scope.mjs": "882321987fa30edcb67cf5d03502acf695bc65bc30580f710752bc1091435a84",
     "scripts/test-weekly-report-release-scope.mjs": "f32e3df25b3f1f1d209049326124e2ae2245b2e678513afb4456a35a2570f31b",
     "scripts/test-training-week-report.mjs": "3a79999259fa315a0c23433c11a01710979251121425ca8dc5aed89286883117",
-    "scripts/backend-contract-snapshot.mjs": "f27074456273b6b78018444fa51f021c58494a5781c99245d62b134a7958f8c3",
+    "scripts/backend-contract-snapshot.mjs": "01a1400006e53fabe236b6cb8fe6a0619964c58f97acf6ba283139361692681f",
     "scripts/test-backend-contract-snapshot.mjs": "8eae2b65e0fee8223d34186ffde790e88a33c3b42a4337a82b88fdc094c73d39"
   },
   "historicalRemovalAuthorizations": [
@@ -162978,6 +162978,26 @@
         }
       ],
       "review": "Independent Team Coach web presentation edits twice invalidated an otherwise passing mobile release after export. Optional immutable contract-input copies now bind the exact tested files; canonical DEV stays authoritative for Gate A/C and Python/catalog/server inputs must match before/after publication. Actual copied input mutation, canonical Python/catalog change and stale source all fail. Tests execute inside the immutable copy; unrelated web files are never published or modified."
+    },
+    {
+      "scope": "weekly-training-report-20261017",
+      "ownerInstruction": "So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-17-weekly-report-3.txt",
+      "ownerEvidenceSha256": "aea56977ac52102f2a5f390677b7f96aabd0092ea6a0d8e55a36c1a680b71974",
+      "reason": "Owner corrected the installed TestFlight runtime to 3.0 build 35 and explicitly authorized the same approved weekly report on that runtime. Publish identical validated product source; preserve both runtime baselines, all assets and exact native graph.",
+      "files": [
+        {
+          "path": "scripts/backend-contract-snapshot.mjs",
+          "before": "f27074456273b6b78018444fa51f021c58494a5781c99245d62b134a7958f8c3",
+          "after": "01a1400006e53fabe236b6cb8fe6a0619964c58f97acf6ba283139361692681f"
+        },
+        {
+          "path": "scripts/test-ota-validation-export-lifecycle.mjs",
+          "before": "febdfd36e829d3d677d3f74ae455e39c642a8ffd2425b080ce49d3c3c57cb259",
+          "after": "fc2bc188aa167686e2a22d5a1f1d95b7be2dabd8e3f3eb194350c50fe779dee8"
+        }
+      ],
+      "review": "Complete the immutable-input test context with canonical mobile governance references and update the actual exporter-block VM fixture for its explicit snapshot variables. The existing lost-receipt and changed-source negative cases remain; no test is removed or quarantined."
     }
   ],
   "verifiedCopiedWeekIdentity": {

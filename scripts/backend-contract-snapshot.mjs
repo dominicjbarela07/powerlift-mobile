@@ -44,6 +44,7 @@ export function createBackendContractSnapshot(canonicalRoot, parent=os.tmpdir())
   for(const name of ['app','migrations','tests','scripts','docs','config'])if(fs.existsSync(path.join(canonicalRoot,name)))copy(path.join(canonicalRoot,name),path.join(root,name));
   for(const name of ['wsgi.py','requirements.txt','AGENTS.md','README.md','package.json'])if(fs.existsSync(path.join(canonicalRoot,name)))fs.copyFileSync(path.join(canonicalRoot,name),path.join(root,name));
   if(fs.existsSync(path.join(canonicalRoot,'venv')))fs.symlinkSync(path.join(canonicalRoot,'venv'),path.join(root,'venv'),'dir');
+  if(fs.existsSync(path.join(canonicalRoot,'powerlift_mobile')))fs.symlinkSync(path.join(canonicalRoot,'powerlift_mobile'),path.join(root,'powerlift_mobile'),'dir');
   const proof={root,canonicalRoot,files,capturedAt:new Date().toISOString(),purpose:'Immutable contract-test inputs while independent web presentation work continues; canonical DEV remains source authority.'};
   assert.deepEqual(backendInputFiles(root),files,'Source changed during snapshot capture; retry capture');
   assertBackendContractSnapshot(proof,canonicalRoot);
