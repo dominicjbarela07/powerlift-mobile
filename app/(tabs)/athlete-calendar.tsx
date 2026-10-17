@@ -706,6 +706,7 @@ export default function AthleteCalendarScreen() {
         onRefresh={() => void load(true, true)}
         onRetryLoadMore={() => void loadMore()}
         onToday={goToday}
+        onShareWeek={() => router.push({ pathname: "/(tabs)/training-week-report", params: { weekOf: selectedDate } } as any)}
         navigationRevision={navigationRevision}
         paginationError={paginationError}
         refreshing={refreshing}

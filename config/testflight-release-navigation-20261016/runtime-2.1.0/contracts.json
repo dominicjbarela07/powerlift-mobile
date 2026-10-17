@@ -1,0 +1,27 @@
+{
+  "scope": "mobile-navigation-loading-20261016",
+  "productFingerprint": "07a0d50a4b8483e0be0dc88c7c8f8237f1c35e95de00be6acbce677cac7f0d3f",
+  "completedAt": "2026-10-16T15:49:21.815Z",
+  "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+  "runtimeVerified": false,
+  "contracts": [
+    {
+      "file": "scripts/test-calendar-navigation-cache.mjs",
+      "sourceSha256": "dcbe080889afca8085a1fa0044e2c5da15f9f2b7ab66431c0b61c6016a3eb8df",
+      "result": "PASS",
+      "output": "PASS: Calendar opt-in freshness, explicit refresh, mutation clearing, subject isolation, in-flight deduplication and rejected obsolete/denied reads.\n"
+    },
+    {
+      "file": "scripts/test-evidence-read-cache.mjs",
+      "sourceSha256": "bb545273a6e938ad22b0e0e254fa43e1fb98fcce34384b6f895971c7b39ddab9",
+      "result": "PASS",
+      "output": "PASS: in-flight dedupe, freshness, account/athlete/period isolation, mutation race, rejection, read allowlist\n"
+    },
+    {
+      "file": "scripts/test-mobile-navigation-loading.mjs",
+      "sourceSha256": "ca3640ee4b9f2716bfeb0d73a9c083a3a26e66e8ebb88b9167f89a311229a7aa",
+      "result": "PASS",
+      "output": "PASS: actual Ledger hook and Calendar route; cold/warm/expiry, concurrent reads, mutation, account switch, obsolete responses, foreground/manual freshness and authorization denial.\n"
+    }
+  ]
+}

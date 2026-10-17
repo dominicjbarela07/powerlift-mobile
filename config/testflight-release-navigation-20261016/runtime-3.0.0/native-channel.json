@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "platform": "ios",
+  "runtimeVersion": "3.0.0",
+  "channel": "production-3-preparation",
+  "updateId": "01a14565-7f85-70bb-9b12-bb2a365dfd8e",
+  "group": "80b8f17a-6ba5-4f80-81f1-3ba05aa52767",
+  "sourceSha": "7e66c78cf8c6667c00695a3e144bf09007ce7540",
+  "bundleSha256": "39d49143965ad952855d4cff73a700b59cdb659045887732084df97b257ddfef",
+  "channelResolvesExactPublishedArtifact": true
+}

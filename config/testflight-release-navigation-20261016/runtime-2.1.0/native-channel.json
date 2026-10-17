@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "platform": "ios",
+  "runtimeVersion": "2.1.0",
+  "channel": "testflight",
+  "updateId": "01a14568-2c5a-7b92-980b-624a178a396b",
+  "group": "42b69b3b-ef03-4d3f-a3b3-84b79b543a8c",
+  "sourceSha": "7e66c78cf8c6667c00695a3e144bf09007ce7540",
+  "bundleSha256": "672954814b9532fd7976c2d1146555a97aaf65c50d7eb0f977bb2ce998e1ef31",
+  "channelResolvesExactPublishedArtifact": true
+}
