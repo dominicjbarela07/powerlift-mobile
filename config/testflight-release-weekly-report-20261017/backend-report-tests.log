@@ -1,0 +1,9 @@
+./Users/dominic/anaconda3/lib/python3.11/site-packages/fontTools/misc/py23.py:11: DeprecationWarning: The py23 module has been deprecated and will be removed in a future release. Please update your code.
+  warnings.warn(
+....[2026-10-17 14:51:57,505] WARNING in security: [SECURITY_REJECTION] status=403 guard=response_403 reason=You can only share your own training week. context={'path': '/athletes/mobile/training-week-report', 'method': 'GET', 'endpoint': 'athletes.mobile_training_week_report', 'blueprint': 'athletes', 'remote_addr': '127.0.0.1', 'host': 'localhost', 'origin': None, 'referer': None, 'user_agent': 'Werkzeug/3.1.4', 'auth_header_present': True, 'current_user_authenticated': True, 'mobile_token_user_id': 2, 'mobile_token_user_role': 'coach', 'is_mobile_api': True}
+[2026-10-17 14:51:57,506] WARNING in security: [SECURITY_REJECTION] status=401 guard=athletes.mobile_auth_required reason=missing or invalid bearer token context={'path': '/athletes/mobile/training-week-report', 'method': 'GET', 'endpoint': 'athletes.mobile_training_week_report', 'blueprint': 'athletes', 'remote_addr': '127.0.0.1', 'host': 'localhost', 'origin': None, 'referer': None, 'user_agent': 'Werkzeug/3.1.4', 'auth_header_present': False, 'current_user_authenticated': True, 'mobile_token_user_id': None, 'mobile_token_user_role': None, 'is_mobile_api': True}
+......
+----------------------------------------------------------------------
+Ran 11 tests in 13.658s
+
+OK
