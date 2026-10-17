@@ -158585,9 +158585,10 @@
       "path": "config/testflight-release-weekly-report-20261017/backend-deployment.json",
       "sha256": "ef3cacd77efa6092cbeece8b5b78706462a3b2c2a0e7a1265988159b663c6fae"
     },
-    "publicationComplete": false,
+    "publicationComplete": true,
     "publishedRuntimeVersions": [
-      "2.1.0"
+      "2.1.0",
+      "3.0.0"
     ],
     "verifiedWeeklyReportContinuation": true
   },
@@ -163785,5 +163786,75 @@
     "ownerPhoneUpdateApplicationObserved": false,
     "nativeBuildStarted": false,
     "production3PublicationPerformed": false
+  },
+  "verifiedProduction3WeeklyTrainingReport": {
+    "publication": {
+      "id": "01a14b68-3680-729d-a7e6-c78340b852b1",
+      "group": "1b188066-16b5-4a09-a0bb-c02892570c7b",
+      "createdAt": "2026-10-17T19:48:03.328Z",
+      "branch": "production-3-preparation",
+      "runtimeVersion": "3.0.0",
+      "platform": "ios",
+      "gitCommitHash": "8b309300416d8c5f155b8406c0074e5e4abded8d",
+      "message": "Weekly training report: branded PDF with individual Set rows, previous exposures and private sharing",
+      "manifestPermalink": "https://u.expo.dev/update/01a14b68-3680-729d-a7e6-c78340b852b1",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a14b68-3680-729d-a7e6-c78340b852b1"
+      ]
+    },
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-weekly-report-20261017/runtime-3.0.0/gate-c.json",
+        "sha256": "3e752e5115f0dbd82fb619a77030fda19068460f73ebc40ff961c35f3bf6c814"
+      },
+      "channel": {
+        "path": "config/testflight-release-weekly-report-20261017/runtime-3.0.0/channel.json",
+        "sha256": "1318120ac24566e492793dbf519693142e8871abffea5bb7b7b482ec79676edb"
+      },
+      "exportSource": {
+        "path": "config/testflight-release-weekly-report-20261017/runtime-3.0.0/export-source.json",
+        "sha256": "d853d6e133d66eddb7f9473a96c7d6a2755c6f00c44e6309895b34b2deaff090"
+      },
+      "contracts": {
+        "path": "config/testflight-release-weekly-report-20261017/runtime-3.0.0/contracts.json",
+        "sha256": "34dc3034b8cef715f975cf783b989de3bc26d44448fb44c615abf1af16022095"
+      },
+      "imagery": {
+        "path": "config/testflight-release-weekly-report-20261017/runtime-3.0.0/movement-imagery.json",
+        "sha256": "014369c588a278fee7fb2c5062395676f4c16214b16de32e1ee60fefde3a3e1e"
+      },
+      "sharedValidation": {
+        "path": "config/testflight-release-weekly-report-20261017/runtime-3.0.0/shared-validation.json",
+        "sha256": "6c32e9162c20e9f2e28f451503d2462a7b535827b89c2c0679e63460ab79570a"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-weekly-report-20261017/runtime-3.0.0/asset-audit.json",
+        "sha256": "6341e1afa61b6df4718e6aec28ddfde7722183d140a8a9e7a2e468a0989247ba"
+      },
+      "nativeChannelDelivery": {
+        "path": "config/testflight-release-weekly-report-20261017/runtime-3.0.0/native-channel.json",
+        "sha256": "b51dbfe2ee1f665f09425591389db266aa423257773a2d24bb8f54c23c127840"
+      },
+      "backendContractSnapshot": {
+        "path": "config/testflight-release-weekly-report-20261017/runtime-3.0.0/backend-contract-snapshot.json",
+        "sha256": "2fe9e3d9343b5ffb579b201d1322a3fa39376cd5563c6a3b137d9a6b57a20345"
+      }
+    },
+    "sourceSha": "8b309300416d8c5f155b8406c0074e5e4abded8d",
+    "productFingerprint": "0f4fcf6f9cf541934305343aadabb50feafe74cc75208804d382c71fbde965de",
+    "bundleSha256": "85d6813eefd8510812946d99c809aee2219e20b57beb8781ba6ebe87fc0bb32c",
+    "publicationVerified": true,
+    "acceptedContracts": 297,
+    "criticalProductAreas": 88,
+    "bundledAssetEntries": 998,
+    "uniqueAssets": 992,
+    "missingOrCorruptAssets": 0,
+    "publishedProductMissingFromDev": 0,
+    "worktreeCloseoutComplete": true,
+    "iosBuild": "35",
+    "ownerPhoneUpdateApplicationObserved": false,
+    "nativeBuildStarted": false,
+    "priorBackendPdfAndAssetEvidenceReused": true
   }
 }

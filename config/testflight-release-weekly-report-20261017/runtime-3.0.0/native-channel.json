@@ -1,0 +1,10 @@
+{
+  "pass": true,
+  "channel": "production-3-preparation",
+  "runtimeVersion": "3.0.0",
+  "iosBuild": "35",
+  "updateId": "01a14b68-3680-729d-a7e6-c78340b852b1",
+  "createdAt": "2026-10-17T19:48:03.328Z",
+  "request": "native Expo SDK channel/runtime headers",
+  "actualOwnerPhoneApplicationObserved": false
+}
