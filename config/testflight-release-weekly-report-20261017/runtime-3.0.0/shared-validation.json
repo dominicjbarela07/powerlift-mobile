@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "pass": true,
+  "inputs": {
+    "sourceSha": "8b309300416d8c5f155b8406c0074e5e4abded8d",
+    "productFingerprint": "0f4fcf6f9cf541934305343aadabb50feafe74cc75208804d382c71fbde965de",
+    "checksFingerprint": "4094edf2aacf845ef07f7d2cd1fc0a96f2e2eaeac095b8e68533e7d14d2b9fa5",
+    "backendFingerprint": "d9864b0a949d3f71fdbfa3a44457fef16b04c41a63a4b80716f227136b8ba461",
+    "nodeVersion": "v25.2.1",
+    "contractEnvironment": "testflight-art; live-api; frozen-catalog; no runtime override"
+  },
+  "checks": [
+    "accepted-contracts",
+    "critical-invariants",
+    "typescript"
+  ],
+  "completedAt": "2026-10-17T19:46:04.240Z"
+}
