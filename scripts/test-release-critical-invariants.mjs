@@ -1,3 +1,4 @@
+import {backendRootForContract} from './backend-contract-snapshot.mjs';
 import { spawnSync } from 'node:child_process';
 
 const areas = [
@@ -102,7 +103,7 @@ for (const [area, scripts] of areas) {
   for (const script of scripts) {
     const result = spawnSync(process.execPath, ['--import', 'tsx', script], {
       cwd: process.cwd(),
-      env: { ...process.env, STRENGTH_LEDGER_BACKEND_ROOT: process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev' },
+      env: { ...process.env, STRENGTH_LEDGER_BACKEND_ROOT: backendRootForContract(script) },
       encoding: 'utf8',
       stdio: 'pipe',
     });

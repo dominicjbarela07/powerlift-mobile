@@ -158114,14 +158114,14 @@
     "app.config.js": "53dbaa252bd5af0dfad206be4c8dd0f2939b8615cd0b57e80450c45efb30a859",
     "scripts/testflight-cumulative-integrity.mjs": "5afb84cde3a03bfdc06fd5417a25188243589ccbc635f4efd6c1606ed7b1b0a8",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
-    "scripts/publish-validated-ios-ota.mjs": "97ad32e0a6b062f1d024fd0710742699672582e80fb3c4c8d6bdc149c64c4d78",
+    "scripts/publish-validated-ios-ota.mjs": "232d5442b155d60ee6587fbc35160d1dfedf7e3121f929e3499189270d86996f",
     "scripts/eas-build-testflight.sh": "946b0857b8b84925906b84547dbb62f1fa05e12ab3771674dd64e359d920e115",
     "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
-    "scripts/test-accepted-behavior-contracts.mjs": "112b5c8ca4d4039cfc0d8d3859924a56843f8d5f83b8c085ad88a06c8863c502",
+    "scripts/test-accepted-behavior-contracts.mjs": "975d474b4a2cda87a207bf4cc09f70e18893f768d5612f76ed87ffaf4c10ca77",
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
     "config/protected-fix-manifest.json": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491",
     "scripts/assert-no-dev-artwork-export.mjs": "610934d315a2f34c534e80545d7c8361fbad0110c313c48f3d9642f2c04a7c22",
-    "scripts/test-release-critical-invariants.mjs": "2aefed729bbce339243a9561543495bdf6ee01a8da1de44663150250c4f5dcd4",
+    "scripts/test-release-critical-invariants.mjs": "ae204c6b14c0ffc42ae0764a95873d1ca7bd412f351fe8a7f14eb161f7ce7d17",
     "scripts/test-release-source-lineage.mjs": "e7850ec385320f620ebc156dfa0dea62934d87114108c0ccf978ad03f53042b6",
     "scripts/release-holdback-policy.mjs": "3ff3d255b82fa2cd583f66da1656217c13ba959cc72fe65eb0dd50d21d4fc148",
     "package.json": "96db5a8e29d0378d109481ee102c60a7dd313b08e998cae622b427212e5da1eb",
@@ -158195,7 +158195,7 @@
     "scripts/test-selected-set-video-preview.mjs": "515ddb74116593365a1756d98a9d64e24a4a6359d6503ba2e320c11ea8db9397",
     "scripts/test-session-execution-ownership.mjs": "14d05e43292c2c8a758bfe89d1e02bc25696357a0f9f9f1729b361ad5ed05209",
     "scripts/mobile-3-surface-owners.json": "f0eb8093297a14041cbada8c26b88080ddc580ab90ba10072b0b23174e586bfb",
-    "scripts/test-ota-validation-export-lifecycle.mjs": "febdfd36e829d3d677d3f74ae455e39c642a8ffd2425b080ce49d3c3c57cb259",
+    "scripts/test-ota-validation-export-lifecycle.mjs": "fc2bc188aa167686e2a22d5a1f1d95b7be2dabd8e3f3eb194350c50fe779dee8",
     "scripts/test-logger-floating-unit.mjs": "8d6a4a25193422eb90cb4b76d000322eca8055a8e3634a7dc855edb0ad02a847",
     "scripts/test-logger-unit-release-scope.mjs": "4ce21741b1722195110f788a483c9056392fe768e6bd5811e8c4214e139d93b2",
     "scripts/test-fixed-equipment-eligibility.mjs": "fffea2710fb0b31e0efe4406fd486d867c5ec86fe6ca4be8c0fd8293a497a00f",
@@ -158205,8 +158205,8 @@
     "scripts/weekly-report-release-scope.mjs": "882321987fa30edcb67cf5d03502acf695bc65bc30580f710752bc1091435a84",
     "scripts/test-weekly-report-release-scope.mjs": "f32e3df25b3f1f1d209049326124e2ae2245b2e678513afb4456a35a2570f31b",
     "scripts/test-training-week-report.mjs": "3a79999259fa315a0c23433c11a01710979251121425ca8dc5aed89286883117",
-    "scripts/backend-contract-snapshot.mjs": "f27074456273b6b78018444fa51f021c58494a5781c99245d62b134a7958f8c3",
-    "scripts/test-backend-contract-snapshot.mjs": "8eae2b65e0fee8223d34186ffde790e88a33c3b42a4337a82b88fdc094c73d39"
+    "scripts/backend-contract-snapshot.mjs": "25b645038c521d6fbbbd108f0188782b83fd699f8f91c0c2cac680f1a90c5f9a",
+    "scripts/test-backend-contract-snapshot.mjs": "4bf1c3e553430853b92ad77a8dd473009266414c15c5629dab6ab47177e6d0ca"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -162978,6 +162978,76 @@
         }
       ],
       "review": "Independent Team Coach web presentation edits twice invalidated an otherwise passing mobile release after export. Optional immutable contract-input copies now bind the exact tested files; canonical DEV stays authoritative for Gate A/C and Python/catalog/server inputs must match before/after publication. Actual copied input mutation, canonical Python/catalog change and stale source all fail. Tests execute inside the immutable copy; unrelated web files are never published or modified."
+    },
+    {
+      "scope": "weekly-training-report-20261017",
+      "ownerInstruction": "So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-17-weekly-report-3.txt",
+      "ownerEvidenceSha256": "aea56977ac52102f2a5f390677b7f96aabd0092ea6a0d8e55a36c1a680b71974",
+      "reason": "Owner corrected the installed TestFlight runtime to 3.0 build 35 and explicitly authorized the same approved weekly report on that runtime. Publish identical validated product source; preserve both runtime baselines, all assets and exact native graph.",
+      "files": [
+        {
+          "path": "scripts/backend-contract-snapshot.mjs",
+          "before": "f27074456273b6b78018444fa51f021c58494a5781c99245d62b134a7958f8c3",
+          "after": "01a1400006e53fabe236b6cb8fe6a0619964c58f97acf6ba283139361692681f"
+        },
+        {
+          "path": "scripts/test-ota-validation-export-lifecycle.mjs",
+          "before": "febdfd36e829d3d677d3f74ae455e39c642a8ffd2425b080ce49d3c3c57cb259",
+          "after": "fc2bc188aa167686e2a22d5a1f1d95b7be2dabd8e3f3eb194350c50fe779dee8"
+        }
+      ],
+      "review": "Complete the immutable-input test context with canonical mobile governance references and update the actual exporter-block VM fixture for its explicit snapshot variables. The existing lost-receipt and changed-source negative cases remain; no test is removed or quarantined."
+    },
+    {
+      "scope": "weekly-training-report-20261017",
+      "ownerInstruction": "So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-17-weekly-report-3.txt",
+      "ownerEvidenceSha256": "aea56977ac52102f2a5f390677b7f96aabd0092ea6a0d8e55a36c1a680b71974",
+      "reason": "Owner corrected the installed TestFlight runtime to 3.0 build 35 and explicitly authorized the same approved weekly report on that runtime. Publish identical validated product source; preserve both runtime baselines, all assets and exact native graph.",
+      "files": [
+        {
+          "path": "scripts/backend-contract-snapshot.mjs",
+          "before": "01a1400006e53fabe236b6cb8fe6a0619964c58f97acf6ba283139361692681f",
+          "after": "25b645038c521d6fbbbd108f0188782b83fd699f8f91c0c2cac680f1a90c5f9a"
+        },
+        {
+          "path": "scripts/test-backend-contract-snapshot.mjs",
+          "before": "8eae2b65e0fee8223d34186ffde790e88a33c3b42a4337a82b88fdc094c73d39",
+          "after": "4bf1c3e553430853b92ad77a8dd473009266414c15c5629dab6ab47177e6d0ca"
+        },
+        {
+          "path": "scripts/publish-validated-ios-ota.mjs",
+          "before": "97ad32e0a6b062f1d024fd0710742699672582e80fb3c4c8d6bdc149c64c4d78",
+          "after": "232d5442b155d60ee6587fbc35160d1dfedf7e3121f929e3499189270d86996f"
+        },
+        {
+          "path": "scripts/test-accepted-behavior-contracts.mjs",
+          "before": "112b5c8ca4d4039cfc0d8d3859924a56843f8d5f83b8c085ad88a06c8863c502",
+          "after": "c07f9a49d8255765373bd1f11c1759f6768e28269b510952fd0d8a151cbb36aa"
+        },
+        {
+          "path": "scripts/test-release-critical-invariants.mjs",
+          "before": "2aefed729bbce339243a9561543495bdf6ee01a8da1de44663150250c4f5dcd4",
+          "after": "ae204c6b14c0ffc42ae0764a95873d1ca7bd412f351fe8a7f14eb161f7ce7d17"
+        }
+      ],
+      "review": "Keep Git/DEV/worktree ownership tests on the real canonical repository, while API/backend contracts execute inside immutable inputs. Explicit root selection is failure-tested: API tests cannot fall back to changing web inputs; governance retains the real Git authority. All original tests remain mandatory."
+    },
+    {
+      "scope": "weekly-training-report-20261017",
+      "ownerInstruction": "So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-17-weekly-report-3.txt",
+      "ownerEvidenceSha256": "aea56977ac52102f2a5f390677b7f96aabd0092ea6a0d8e55a36c1a680b71974",
+      "reason": "Owner corrected the installed TestFlight runtime to 3.0 build 35 and explicitly authorized the same approved weekly report on that runtime. Publish identical validated product source; preserve both runtime baselines, all assets and exact native graph.",
+      "files": [
+        {
+          "path": "scripts/test-accepted-behavior-contracts.mjs",
+          "before": "c07f9a49d8255765373bd1f11c1759f6768e28269b510952fd0d8a151cbb36aa",
+          "after": "975d474b4a2cda87a207bf4cc09f70e18893f768d5612f76ed87ffaf4c10ca77"
+        }
+      ],
+      "review": "Preserve executable shebang and use the existing accepted-contract loop variable for its explicit backend-root selection; no contract is removed or altered."
     }
   ],
   "verifiedCopiedWeekIdentity": {

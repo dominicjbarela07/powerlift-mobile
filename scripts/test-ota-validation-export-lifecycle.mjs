@@ -16,6 +16,7 @@ const sharedReceipt = { schemaVersion:1, pass:true, inputs, checks:['accepted-co
 const file = path.join(outputDir, 'release-shared-validation.json');
 const runBlock = (code, nextInputs = inputs) => vm.runInNewContext(code, {
   fs, path, root:'fixture', outputDir, sharedReceipt, process:{env:{}},
+  contractSnapshot:null, canonicalBackendRoot:'fixture', contractBackendRoot:'fixture',
   sharedValidationInputs:() => nextInputs, assertSharedValidation,
   run:(_command,args) => {
     assert.ok(args.includes('export') && args.includes('--clear'));

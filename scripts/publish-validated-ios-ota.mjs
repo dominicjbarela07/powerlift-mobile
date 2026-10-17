@@ -83,7 +83,7 @@ const contractBackendRoot=contractSnapshot?.root || canonicalBackendRoot;
 const frozenCatalogRef=JSON.parse(fs.readFileSync(path.join(root,'config/testflight-release-integrity.json'),'utf8')).previousTestFlight.gitCommitHash;
 const run = (command, commandArgs, options = {}) => execFileSync(command, commandArgs, {
   cwd: root,
-  env: { ...process.env, STRENGTH_LEDGER_BACKEND_ROOT: options.contracts ? contractBackendRoot : canonicalBackendRoot, STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:governedProjection?frozenCatalogRef:undefined,
+  env: { ...process.env, STRENGTH_LEDGER_CANONICAL_BACKEND_ROOT: canonicalBackendRoot, STRENGTH_LEDGER_BACKEND_ROOT: options.contracts ? contractBackendRoot : canonicalBackendRoot, STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:governedProjection?frozenCatalogRef:undefined,
     ...(production3ClientFix && !options.contracts ? {STRENGTH_LEDGER_RELEASE_TARGET:'production3',EXPO_PUBLIC_ART_RUNTIME_VERSION:'3.0.0'} : options.contracts ? {STRENGTH_LEDGER_RELEASE_TARGET:undefined,EXPO_PUBLIC_ART_RUNTIME_VERSION:undefined} : {}),
     EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: options.contracts ? 'testflight' : production3ClientFix ? 'production3' : branch === 'testflight' ? 'testflight' : 'disabled' },
   encoding: 'utf8',

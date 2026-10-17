@@ -4,6 +4,11 @@ import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
 const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+export function backendRootForContract(script, environment=process.env) {
+  const governance=new Set(['test-dev-testflight-release-gates.mjs','test-owner-nonrecurrence-governance.mjs','test-worktree-lifecycle.mjs']);
+  return (governance.has(path.basename(script)) ? environment.STRENGTH_LEDGER_CANONICAL_BACKEND_ROOT : null)
+    || environment.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev';
+}
 export function backendInputFiles(root) {
   const files = {};
   function visit(dir) {
@@ -44,6 +49,7 @@ export function createBackendContractSnapshot(canonicalRoot, parent=os.tmpdir())
   for(const name of ['app','migrations','tests','scripts','docs','config'])if(fs.existsSync(path.join(canonicalRoot,name)))copy(path.join(canonicalRoot,name),path.join(root,name));
   for(const name of ['wsgi.py','requirements.txt','AGENTS.md','README.md','package.json'])if(fs.existsSync(path.join(canonicalRoot,name)))fs.copyFileSync(path.join(canonicalRoot,name),path.join(root,name));
   if(fs.existsSync(path.join(canonicalRoot,'venv')))fs.symlinkSync(path.join(canonicalRoot,'venv'),path.join(root,'venv'),'dir');
+  if(fs.existsSync(path.join(canonicalRoot,'powerlift_mobile')))fs.symlinkSync(path.join(canonicalRoot,'powerlift_mobile'),path.join(root,'powerlift_mobile'),'dir');
   const proof={root,canonicalRoot,files,capturedAt:new Date().toISOString(),purpose:'Immutable contract-test inputs while independent web presentation work continues; canonical DEV remains source authority.'};
   assert.deepEqual(backendInputFiles(root),files,'Source changed during snapshot capture; retry capture');
   assertBackendContractSnapshot(proof,canonicalRoot);
