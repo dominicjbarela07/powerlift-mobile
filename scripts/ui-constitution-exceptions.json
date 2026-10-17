@@ -362,12 +362,12 @@
   "components/calendar/AthleteCalendarStoryboardV2.tsx": {
     "colors": 33,
     "radius": 16,
-    "fontSize": 22,
+    "fontSize": 23,
     "shadow": 5,
-    "literalSha256": "f97f3b15095b4619c444b489de865975568d6e17160a14736d0872d98398d952",
-    "reason": "Source-reviewed preservation of existing account, communication and training surface geometry. Exact values are bound, not merely counted; no new visual approval is asserted. See docs/release/MOBILE_3_READINESS_FIXES_2026-10-06.md.",
-    "reviewedSource": "bccdc7e9 plus bounded owner readiness fixes",
-    "reviewType": "source-values; observed runtime coverage documented separately"
+    "literalSha256": "c3c487dee2c5e4e5e511095096ba28bcf5c7135bdb4f83f5bd8916d509e4fb03",
+    "reason": "Exact owner-reviewed dark weekly report and Calendar sharing entrypoint. Existing approved dimensions and theme tokens are retained; this registers the observed values without changing the signed-off UI. All future drift still fails the actual CLI.",
+    "reviewedSource": "c68c889a; actual DEV dark-overview-pass2 and dark-expanded-pass2 screenshots",
+    "reviewType": "owner signoff: send it to testflight please... 2.1"
   },
   "components/calendar/CalendarEventSheet.tsx": {
     "colors": 0,
@@ -1029,7 +1029,7 @@
     "fontSize": 2,
     "shadow": 0,
     "literalSha256": "01dfbfd5b286b2f2f97c61ccf5114395df5628abcd678a3a3ae0342e5b655ce1",
-    "reason": "Owner-approved restoration of the single floating unit button, slightly smaller final 56-point shell and 18-point label; retain original toggle and canonical material. Screenshots 05\u201307 and exact owner ship instruction are retained. All other utility instances preserve the original values.",
+    "reason": "Owner-approved restoration of the single floating unit button, slightly smaller final 56-point shell and 18-point label; retain original toggle and canonical material. Screenshots 05–07 and exact owner ship instruction are retained. All other utility instances preserve the original values.",
     "reviewedSource": "1bb96663 owner-approved floating-button correction",
     "reviewType": "actual DEV simulator inspection and explicit owner signoff"
   },
@@ -1149,7 +1149,7 @@
     "fontSize": 18,
     "shadow": 8,
     "literalSha256": "e4f849671b50c48ed2f9c0a2ba73eba39fe5077425fa7b15753fdd4560e77596",
-    "reason": "Exact owner-approved Set video input/preview and saved-row upload feedback: compact type hierarchy, a 44-point play thumbnail and native video black frame. Preserve every inherited core-row value; reject any future value/count change. Actual DEV screenshots 01\u201312 and the owner signoff are retained in set-entry-video-t0-2026-10-14 evidence.",
+    "reason": "Exact owner-approved Set video input/preview and saved-row upload feedback: compact type hierarchy, a 44-point play thumbnail and native video black frame. Preserve every inherited core-row value; reject any future value/count change. Actual DEV screenshots 01–12 and the owner signoff are retained in set-entry-video-t0-2026-10-14 evidence.",
     "reviewedSource": "865ba7fb and bdbda139; explicit owner Good, please ship it signoff",
     "reviewType": "explicit owner signoff after actual iPhone Air input, preview, return and upload/playback"
   },
@@ -1359,7 +1359,7 @@
     "fontSize": 12,
     "shadow": 0,
     "literalSha256": "f2c0f2462227f8b1cdc1764c05c025191fc49b5f494b2eacbd6b624055c4889f",
-    "reason": "Owner-approved restoration of the single floating unit button, slightly smaller final 56-point shell and 18-point label; retain original toggle and canonical material. Screenshots 05\u201307 and exact owner ship instruction are retained. All other utility instances preserve the original values.",
+    "reason": "Owner-approved restoration of the single floating unit button, slightly smaller final 56-point shell and 18-point label; retain original toggle and canonical material. Screenshots 05–07 and exact owner ship instruction are retained. All other utility instances preserve the original values.",
     "reviewedSource": "1bb96663 owner-approved floating-button correction",
     "reviewType": "actual DEV simulator inspection and explicit owner signoff"
   },
@@ -1411,7 +1411,7 @@
     "fontSize": 4,
     "shadow": 0,
     "literalSha256": "d1d67ffe36b025e259e9e9757eca8da70c56fcbe3a870dd7c71b84a0d157cfec",
-    "reason": "Exact owner-approved Set video input/preview and saved-row upload feedback: compact type hierarchy, a 44-point play thumbnail and native video black frame. Preserve every inherited core-row value; reject any future value/count change. Actual DEV screenshots 01\u201312 and the owner signoff are retained in set-entry-video-t0-2026-10-14 evidence.",
+    "reason": "Exact owner-approved Set video input/preview and saved-row upload feedback: compact type hierarchy, a 44-point play thumbnail and native video black frame. Preserve every inherited core-row value; reject any future value/count change. Actual DEV screenshots 01–12 and the owner signoff are retained in set-entry-video-t0-2026-10-14 evidence.",
     "reviewedSource": "865ba7fb and bdbda139; explicit owner Good, please ship it signoff",
     "reviewType": "explicit owner signoff after actual iPhone Air input, preview, return and upload/playback"
   },
@@ -1421,8 +1421,18 @@
     "fontSize": 5,
     "shadow": 0,
     "literalSha256": "4e4a5fb1506ae0b18694516f10bd651697ef2b2ee20b176dfe9f2ccfa5f16057",
-    "reason": "Exact owner-approved Set video input/preview and saved-row upload feedback: compact type hierarchy, a 44-point play thumbnail and native video black frame. Preserve every inherited core-row value; reject any future value/count change. Actual DEV screenshots 01\u201312 and the owner signoff are retained in set-entry-video-t0-2026-10-14 evidence.",
+    "reason": "Exact owner-approved Set video input/preview and saved-row upload feedback: compact type hierarchy, a 44-point play thumbnail and native video black frame. Preserve every inherited core-row value; reject any future value/count change. Actual DEV screenshots 01–12 and the owner signoff are retained in set-entry-video-t0-2026-10-14 evidence.",
     "reviewedSource": "865ba7fb and bdbda139; explicit owner Good, please ship it signoff",
     "reviewType": "explicit owner signoff after actual iPhone Air input, preview, return and upload/playback"
+  },
+  "app/(tabs)/training-week-report.tsx": {
+    "colors": 1,
+    "radius": 4,
+    "fontSize": 22,
+    "shadow": 0,
+    "literalSha256": "770455217f280d5c3d4f5eaebcc6116400e026e001987384ab75969a87b6bb84",
+    "reason": "Exact owner-reviewed dark weekly report and Calendar sharing entrypoint. Existing approved dimensions and theme tokens are retained; this registers the observed values without changing the signed-off UI. All future drift still fails the actual CLI.",
+    "reviewedSource": "c68c889a; actual DEV dark-overview-pass2 and dark-expanded-pass2 screenshots",
+    "reviewType": "owner signoff: send it to testflight please... 2.1"
   }
 }
