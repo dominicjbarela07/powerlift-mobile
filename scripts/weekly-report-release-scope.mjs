@@ -14,7 +14,9 @@ export function assertWeeklyReportBaseline({root, scope, state, files}) {
     assert.equal(sha(bytes), entry.sha256, 'Weekly report baseline proof changed');
     return JSON.parse(bytes);
   };
-  const proof = state.verifiedNavigationLoading.publishedProof;
+  const continuation = scope.verifiedWeeklyReportContinuation === true;
+  if (continuation) assert.equal(scope.ownerInstruction, "So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0.");
+  const proof = continuation ? state.verifiedWeeklyTrainingReport.publishedProof : state.verifiedNavigationLoading.publishedProof;
   const gate = read(proof.gateC), audit = read(proof.assetAudit);
   assert.equal(gate.pass, true); assert.deepEqual(gate.missing, []);
   assert.equal(gate.published.id, scope.baselineUpdateId);
@@ -27,7 +29,7 @@ export function assertWeeklyReportBaseline({root, scope, state, files}) {
   assert.equal(gate.candidateProductFingerprint, scope.baselineProductFingerprint);
   assert.deepEqual(Object.keys(baseline).filter(file => !files[file]), [], 'Weekly report cannot remove published files');
   const changes = Object.entries(files).filter(([file,hash]) => baseline[file] !== hash).map(([path,after]) => ({path,after}));
-  assert.deepEqual(changes.map(row => row.path).sort(), [...weeklyReportPaths].sort(), 'Weekly report cannot include unrelated changes');
+  assert.deepEqual(changes.map(row => row.path).sort(), continuation ? [] : [...weeklyReportPaths].sort(), 'Weekly report cannot include unrelated changes');
   return changes;
 }
 export function assertWeeklyReportDeployment({root, scope}) {

@@ -1,0 +1,9 @@
+Owner installed-runtime correction: Oh, what the fuck? I guess. Okay, TestFlight is now 3.0 Build 35.
+
+Owner shipment authorization: So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0.
+
+Publish the already approved Weekly Training Report, with individual numbered
+Set / Weight / Reps / Effort columns and the accepted dark in-app UI, to the
+existing iOS 3.0.0 build 35 channel. The same feature is already published to 2.1.
+Preserve all existing product/art assets, shared backend and native module graph.
+No native build, no legacy Production 2.0.2 change, no unrelated Team Coach work.

@@ -158150,7 +158150,7 @@
     "scripts/test-cable-brand-equipment-api.mjs": "71889a55559cfd1dc43a5817b0b1ac8bd0c022498e6c30d46ff161ab71949dbc",
     "docs/CABLE_BRAND_EQUIPMENT.md": "0289f45e3859f993ccce52a2ffca383f484f3899c61224179813a6363c151c21",
     "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt": "69f1ba6ca417408f3e0a5cada3f37bca5fee5f1c26ece4443bec9d855fc8cb9b",
-    "scripts/owner-directed-client-fix.mjs": "fe0412bb18bc1664a592a40dcaccb2b0a9f650d6bb4325b4ea112aba7bcd6e9a",
+    "scripts/owner-directed-client-fix.mjs": "5f25bedc6d11a78e8cc2b9c783ce9d6401cc96abf4f062cbe53c426c364b0eea",
     "scripts/test-owner-directed-client-fix.mjs": "78fc780bd4295ff47d8dc8ce9b73dfd9ed950d561de82701fcd2d3d35e156df0",
     "scripts/test-zero-load-edit-api.mjs": "a19f2b1b7d6b0ad2335f8e3668657a1a74675ca14d14ba8bf13616b16f3dbc2a",
     "scripts/test-zero-load-edit-set.mjs": "6187f4a68b57230b2fb86f3702e2c89d0f704394f1eef200db689f66cec6e250",
@@ -158178,8 +158178,8 @@
     "scripts/native-build-upload-policy.cjs": "0886edd1b00f77aa122848cc96176ed22b053f53d5393e87cf9081456ff3ffde",
     "scripts/test-native-build-upload-policy.mjs": "3016ed47dd9ef99eff2382e2d6dbe2581b38804945f6999c24d55ab9517b40ff",
     "scripts/assert-ota-native-compatibility.mjs": "8236db7138e9f28be680575774e75e57f9d17bd159cd3e9892f2b4234c29b9e2",
-    "scripts/production3-client-fix-policy.mjs": "10662a646157ac692b12ae5a3323049a54600dbf543906fd0f68c5edcf2669e1",
-    "scripts/test-production3-client-fix-policy.mjs": "650ef60e3045aa7cfa6a86223227380fcd3e2e07d7604db6df6e3d87dedc8372",
+    "scripts/production3-client-fix-policy.mjs": "ef8a29857daa7e9394fc4f6c331a34706532ac65e540c0c34c9b5fd2cc8687fc",
+    "scripts/test-production3-client-fix-policy.mjs": "b2dcd77c3e5de96a32e95344960d55116e86243dcd07c29df798fec837da26e0",
     "scripts/test-copied-week-release-scope.mjs": "f7d6b1f01fc9da815771b79ad67dc94fd9a030c6152b912e4d74abbe48cd01d6",
     "scripts/test-private-movement-identity-contract.mjs": "7abcd5b6498f7e1b973d9d35dc4ab52b25311058de6fbcea48eeefd6471f8748",
     "scripts/test-active-session-hot-swap.mjs": "4c4fefa45c9db444e66f09c00e86d5a087e8bf7a25946de4bbff25f76a492241",
@@ -158202,8 +158202,8 @@
     "scripts/test-fixed-equipment-api.mjs": "f200089895d6a2cdb429a1e7213035fffdc1a54625685407f3b21eb3b955183d",
     "scripts/test-mobile-navigation-loading.mjs": "ca3640ee4b9f2716bfeb0d73a9c083a3a26e66e8ebb88b9167f89a311229a7aa",
     "scripts/test-calendar-navigation-cache.mjs": "dcbe080889afca8085a1fa0044e2c5da15f9f2b7ab66431c0b61c6016a3eb8df",
-    "scripts/weekly-report-release-scope.mjs": "29cff2182c617a20e4068a082a00504470635258202030e23f7bf226bbd7cb46",
-    "scripts/test-weekly-report-release-scope.mjs": "673fdf1733cac3d10c30cb1a491034b8059a83da83005cc90cc3207dbdc52d8c",
+    "scripts/weekly-report-release-scope.mjs": "882321987fa30edcb67cf5d03502acf695bc65bc30580f710752bc1091435a84",
+    "scripts/test-weekly-report-release-scope.mjs": "f32e3df25b3f1f1d209049326124e2ae2245b2e678513afb4456a35a2570f31b",
     "scripts/test-training-week-report.mjs": "3a79999259fa315a0c23433c11a01710979251121425ca8dc5aed89286883117"
   },
   "historicalRemovalAuthorizations": [
@@ -158559,40 +158559,35 @@
     "status": "OPEN_PENDING_DEPLOYMENT_AND_PUBLICATION"
   },
   "ownerDirectedClientFix": {
-    "ownerInstruction": "send it to testflight please... 2.1",
-    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-17-weekly-report.txt",
-    "ownerEvidenceSha256": "71e446c56af14d5568b160157a6256b1cddb5472a938f22b8f2954e16ac810a5",
-    "reason": "Publish the owner-approved weekly training report and numbered Set PDF only to TestFlight 2.1, retaining all prior assets, canonical movement/equipment comparisons and existing access rules.",
+    "ownerInstruction": "So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0.",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-17-weekly-report-3.txt",
+    "ownerEvidenceSha256": "aea56977ac52102f2a5f390677b7f96aabd0092ea6a0d8e55a36c1a680b71974",
+    "reason": "Owner corrected the installed TestFlight runtime to 3.0 build 35 and explicitly authorized the same approved weekly report on that runtime. Publish identical validated product source; preserve both runtime baselines, all assets and exact native graph.",
     "scope": "weekly-training-report-20261017",
     "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
     "productFingerprint": "0f4fcf6f9cf541934305343aadabb50feafe74cc75208804d382c71fbde965de",
-    "baselineUpdateId": "01a14568-2c5a-7b92-980b-624a178a396b",
-    "baselineSourceSha": "7e66c78cf8c6667c00695a3e144bf09007ce7540",
-    "baselineProductFingerprint": "07a0d50a4b8483e0be0dc88c7c8f8237f1c35e95de00be6acbce677cac7f0d3f",
+    "baselineUpdateId": "01a14b44-a307-74ef-8ba6-1f688e989bd7",
+    "baselineSourceSha": "11ddd238f9446d7780c51a32fe7855c2a92ccc2f",
+    "baselineProductFingerprint": "0f4fcf6f9cf541934305343aadabb50feafe74cc75208804d382c71fbde965de",
     "baselineFiles": {
-      "path": "config/testflight-runtime-weekly-report-20261017/baseline-product.json",
-      "sha256": "d6033bbde97fc133cd6c44b385efe7743628c505cfdc6626e13a640100b399c0"
+      "path": "config/testflight-runtime-weekly-report-20261017/verified-2.1-product.json",
+      "sha256": "f8a94bc68d9135678c6bf2a2d255bfc4041f4d4ad5db2224725c606dd72e8315"
     },
-    "changedProductFiles": {
-      "app/(tabs)/_layout.tsx": "92aeafa56879b9bb929ce1fe62cba39efe0a0abf2e2d981e4488dc15e4db8853",
-      "app/(tabs)/athlete-calendar.tsx": "0bf2229bf0c1d2aeacafb2b340706d07e22949c38874b4f490db3443cb0fbbd8",
-      "app/(tabs)/training-week-report.tsx": "a9e27e959934f1e9680077dab32d1570eaf4dc744bdb77930c86623c74dbece4",
-      "components/calendar/AthleteCalendarStoryboardV2.tsx": "086533e848e0539b589c385e981158fe08528e0d8b9059bcbccf7ed89f9c10d8",
-      "lib/training-week-report.ts": "e166ef3f53fad2aa8df5ebaff8f448852a4773b4eebaaf1250a94dbeeea0cbc8"
-    },
+    "changedProductFiles": {},
     "contracts": {
       "scripts/test-training-week-report.mjs": "3a79999259fa315a0c23433c11a01710979251121425ca8dc5aed89286883117",
-      "scripts/test-weekly-report-release-scope.mjs": "673fdf1733cac3d10c30cb1a491034b8059a83da83005cc90cc3207dbdc52d8c"
+      "scripts/test-weekly-report-release-scope.mjs": "f32e3df25b3f1f1d209049326124e2ae2245b2e678513afb4456a35a2570f31b"
     },
     "backendSourceSha": "6f6b51ec2dd642d063e4c27276bb5432f3dbe923",
     "backendDeploymentReceipt": {
       "path": "config/testflight-release-weekly-report-20261017/backend-deployment.json",
       "sha256": "ef3cacd77efa6092cbeece8b5b78706462a3b2c2a0e7a1265988159b663c6fae"
     },
-    "publicationComplete": true,
+    "publicationComplete": false,
     "publishedRuntimeVersions": [
       "2.1.0"
-    ]
+    ],
+    "verifiedWeeklyReportContinuation": true
   },
   "canonicalZeroLoadEdit": {
     "status": "SHIPPED",
@@ -162323,6 +162318,42 @@
         "3.0.0",
         "2.1.0"
       ]
+    },
+    {
+      "ownerInstruction": "send it to testflight please... 2.1",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-17-weekly-report.txt",
+      "ownerEvidenceSha256": "71e446c56af14d5568b160157a6256b1cddb5472a938f22b8f2954e16ac810a5",
+      "reason": "Publish the owner-approved weekly training report and numbered Set PDF only to TestFlight 2.1, retaining all prior assets, canonical movement/equipment comparisons and existing access rules.",
+      "scope": "weekly-training-report-20261017",
+      "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+      "productFingerprint": "0f4fcf6f9cf541934305343aadabb50feafe74cc75208804d382c71fbde965de",
+      "baselineUpdateId": "01a14568-2c5a-7b92-980b-624a178a396b",
+      "baselineSourceSha": "7e66c78cf8c6667c00695a3e144bf09007ce7540",
+      "baselineProductFingerprint": "07a0d50a4b8483e0be0dc88c7c8f8237f1c35e95de00be6acbce677cac7f0d3f",
+      "baselineFiles": {
+        "path": "config/testflight-runtime-weekly-report-20261017/baseline-product.json",
+        "sha256": "d6033bbde97fc133cd6c44b385efe7743628c505cfdc6626e13a640100b399c0"
+      },
+      "changedProductFiles": {
+        "app/(tabs)/_layout.tsx": "92aeafa56879b9bb929ce1fe62cba39efe0a0abf2e2d981e4488dc15e4db8853",
+        "app/(tabs)/athlete-calendar.tsx": "0bf2229bf0c1d2aeacafb2b340706d07e22949c38874b4f490db3443cb0fbbd8",
+        "app/(tabs)/training-week-report.tsx": "a9e27e959934f1e9680077dab32d1570eaf4dc744bdb77930c86623c74dbece4",
+        "components/calendar/AthleteCalendarStoryboardV2.tsx": "086533e848e0539b589c385e981158fe08528e0d8b9059bcbccf7ed89f9c10d8",
+        "lib/training-week-report.ts": "e166ef3f53fad2aa8df5ebaff8f448852a4773b4eebaaf1250a94dbeeea0cbc8"
+      },
+      "contracts": {
+        "scripts/test-training-week-report.mjs": "3a79999259fa315a0c23433c11a01710979251121425ca8dc5aed89286883117",
+        "scripts/test-weekly-report-release-scope.mjs": "673fdf1733cac3d10c30cb1a491034b8059a83da83005cc90cc3207dbdc52d8c"
+      },
+      "backendSourceSha": "6f6b51ec2dd642d063e4c27276bb5432f3dbe923",
+      "backendDeploymentReceipt": {
+        "path": "config/testflight-release-weekly-report-20261017/backend-deployment.json",
+        "sha256": "ef3cacd77efa6092cbeece8b5b78706462a3b2c2a0e7a1265988159b663c6fae"
+      },
+      "publicationComplete": true,
+      "publishedRuntimeVersions": [
+        "2.1.0"
+      ]
     }
   ],
   "releaseProtectionProgressions": [
@@ -162885,6 +162916,41 @@
         }
       ],
       "review": "No UI source or approved visual value changes. The gate caught omitted registration for this new owner-reviewed surface; actual drift negative controls remain enforced."
+    },
+    {
+      "ownerInstruction": "So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-17-weekly-report-3.txt",
+      "ownerEvidenceSha256": "aea56977ac52102f2a5f390677b7f96aabd0092ea6a0d8e55a36c1a680b71974",
+      "reason": "Owner corrected the installed TestFlight runtime to 3.0 build 35 and explicitly authorized the same approved weekly report on that runtime. Publish identical validated product source; preserve both runtime baselines, all assets and exact native graph.",
+      "scope": "weekly-training-report-20261017",
+      "files": [
+        {
+          "path": "scripts/production3-client-fix-policy.mjs",
+          "before": "10662a646157ac692b12ae5a3323049a54600dbf543906fd0f68c5edcf2669e1",
+          "after": "ef8a29857daa7e9394fc4f6c331a34706532ac65e540c0c34c9b5fd2cc8687fc"
+        },
+        {
+          "path": "scripts/test-production3-client-fix-policy.mjs",
+          "before": "650ef60e3045aa7cfa6a86223227380fcd3e2e07d7604db6df6e3d87dedc8372",
+          "after": "b2dcd77c3e5de96a32e95344960d55116e86243dcd07c29df798fec837da26e0"
+        },
+        {
+          "path": "scripts/owner-directed-client-fix.mjs",
+          "before": "fe0412bb18bc1664a592a40dcaccb2b0a9f650d6bb4325b4ea112aba7bcd6e9a",
+          "after": "5f25bedc6d11a78e8cc2b9c783ce9d6401cc96abf4f062cbe53c426c364b0eea"
+        },
+        {
+          "path": "scripts/weekly-report-release-scope.mjs",
+          "before": "29cff2182c617a20e4068a082a00504470635258202030e23f7bf226bbd7cb46",
+          "after": "882321987fa30edcb67cf5d03502acf695bc65bc30580f710752bc1091435a84"
+        },
+        {
+          "path": "scripts/test-weekly-report-release-scope.mjs",
+          "before": "673fdf1733cac3d10c30cb1a491034b8059a83da83005cc90cc3207dbdc52d8c",
+          "after": "f32e3df25b3f1f1d209049326124e2ae2245b2e678513afb4456a35a2570f31b"
+        }
+      ],
+      "review": "Permit the explicitly authorized existing native 3.0 build and an exact already-published weekly-report continuation. Continuation rejects every product change, forged baseline/source or absent owner correction. Existing 2.1-only instruction cannot authorize this mode. All cumulative source/artifact/native gates retained."
     }
   ],
   "verifiedCopiedWeekIdentity": {

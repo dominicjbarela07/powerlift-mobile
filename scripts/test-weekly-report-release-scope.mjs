@@ -26,5 +26,15 @@ try {
   assert.throws(()=>assertClientFixScope(scope,'stale',check(),owner));
   assert.throws(()=>assertClientFixScope(scope,'candidate',check(),'invented signoff'));
   assert.throws(()=>assertClientFixScope({...scope,contracts:{}},'candidate',check(),owner));
+  const currentFiles = {...files};
+  const currentFingerprint = sha(JSON.stringify(Object.entries(currentFiles).sort(([a],[b]) => a.localeCompare(b))));
+  const continuationProof = {gateC:write('weekly-gate.json',{pass:true,missing:[],candidateProductFingerprint:currentFingerprint,published:{...current,servedBundleSha256:'weekly-bundle'}}),assetAudit:write('weekly-audit.json',{pass:true,missingOrCorrupt:0,updateId:current.id,servedLaunchSha256:'weekly-bundle'})};
+  const nextScope = {...scope,verifiedWeeklyReportContinuation:true,ownerInstruction: "So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0.",changedProductFiles:{},baselineProductFingerprint:currentFingerprint,baselineFiles:write('weekly-baseline.json',currentFiles)};
+  const nextState = {...state,verifiedWeeklyTrainingReport:{publishedProof:continuationProof}};
+  const next = (candidate=currentFiles,override=nextScope) => assertWeeklyReportBaseline({root,scope:override,state:nextState,files:candidate});
+  assert.deepEqual(next(),[]);
+  assertClientFixScope(nextScope,'candidate',next(),nextScope.ownerInstruction+' Weekly Training Report Set / Weight / Reps / Effort');
+  assert.throws(()=>next({...currentFiles,'lib/training-week-report.ts':'changed'}));
+  assert.throws(()=>next(currentFiles,{...nextScope,ownerInstruction:scope.ownerInstruction}));
   console.log('PASS: weekly report scope retains exact published baseline; rejects removed/replaced art, unrelated code, forged source/baseline/signoff and missing contracts.');
 } finally {fs.rmSync(root,{recursive:true,force:true});}

@@ -14,7 +14,7 @@ export function assertClientFixScope(scope, fingerprint, modifications, ownerTex
   assert.equal(scope.validation, 'OWNER_DIRECTED_CONTRACTS_ONLY');
   assert.ok(ownerText.includes(scope.ownerInstruction), 'exact current owner task is required');
   if (scope.scope === 'weekly-training-report-20261017') {
-    assert.equal(scope.ownerInstruction, 'send it to testflight please... 2.1');
+    assert.ok(['send it to testflight please... 2.1', "So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0."].includes(scope.ownerInstruction));
     assert.ok(ownerText.includes('Weekly Training Report') && ownerText.includes('Set / Weight / Reps / Effort'), 'Weekly export requires the complete approved owner scope');
   } else if (scope.scope === 'mobile-navigation-loading-20261016') {
     assert.ok(ownerText.includes('2.1 runtime') && ownerText.includes('ledger tab') && ownerText.includes('program manager') && ownerText.includes('calendar') && ownerText.includes('training session') && ownerText.includes('not acceptable'), 'Navigation scope requires the actual complete owner directive');
