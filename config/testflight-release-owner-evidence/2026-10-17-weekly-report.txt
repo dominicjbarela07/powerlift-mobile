@@ -1,0 +1,13 @@
+Owner instruction: send it to testflight please... 2.1
+
+Approved feature: Weekly Training Report. Athlete-owned completed training week,
+real Strength Ledger image branding, actual athlete avatar, weekday/date and
+Duration per Session. Individual numbered Set / Weight / Reps / Effort rows in
+the PDF; retain every saved Set. Preserve the accepted dark in-app Session list.
+Govern exact canonical movement and equipment context; never pool manufacturers.
+Native PDF sharing, safe private file cleanup and own-account access.
+
+Original owner direction: Dev first, and then I want to play with it before we
+ship to 2.1 TestFlight.
+Latest owner direction authorizes final approved feature on TestFlight 2.1 only.
+No 3.0 publication or native build. Preserve unrelated Team Coach web work.
