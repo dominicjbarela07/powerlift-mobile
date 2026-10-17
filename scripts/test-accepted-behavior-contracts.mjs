@@ -1,3 +1,4 @@
+import {backendRootForContract} from './backend-contract-snapshot.mjs';
 #!/usr/bin/env node
 
 import assert from 'node:assert/strict';
@@ -36,7 +37,7 @@ const failures = [];
 for (const name of accepted) {
   const result = spawnSync(process.execPath, ['--import', 'tsx', path.join('scripts', name)], {
     cwd: root,
-    env: { ...process.env, CI: '1', STRENGTH_LEDGER_BACKEND_ROOT: process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev' },
+    env: { ...process.env, CI: '1', STRENGTH_LEDGER_BACKEND_ROOT: backendRootForContract(script) },
     encoding: 'utf8',
     stdio: 'pipe',
     timeout: name === 'test-active-session-mutation-backend.mjs' ? 130_000

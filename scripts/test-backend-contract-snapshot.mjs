@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {createBackendContractSnapshot,assertBackendContractSnapshot} from './backend-contract-snapshot.mjs';
+import {createBackendContractSnapshot,assertBackendContractSnapshot,backendRootForContract} from './backend-contract-snapshot.mjs';
+const environment={STRENGTH_LEDGER_CANONICAL_BACKEND_ROOT:'canonical',STRENGTH_LEDGER_BACKEND_ROOT:'frozen'};
+for(const file of ['test-dev-testflight-release-gates.mjs','test-owner-nonrecurrence-governance.mjs','test-worktree-lifecycle.mjs']) assert.equal(backendRootForContract(file,environment),'canonical');
+assert.equal(backendRootForContract('scripts/test-active-session-mutation-backend.mjs',environment),'frozen');
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'contract-snapshot-test-'));
 let proof;
 try {

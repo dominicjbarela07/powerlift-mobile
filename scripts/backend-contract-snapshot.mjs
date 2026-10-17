@@ -4,6 +4,11 @@ import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
 const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+export function backendRootForContract(script, environment=process.env) {
+  const governance=new Set(['test-dev-testflight-release-gates.mjs','test-owner-nonrecurrence-governance.mjs','test-worktree-lifecycle.mjs']);
+  return (governance.has(path.basename(script)) ? environment.STRENGTH_LEDGER_CANONICAL_BACKEND_ROOT : null)
+    || environment.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev';
+}
 export function backendInputFiles(root) {
   const files = {};
   function visit(dir) {
