@@ -1,0 +1,15 @@
+{
+  "id": "01a14b44-a307-74ef-8ba6-1f688e989bd7",
+  "group": "cc4ed7c9-5390-4620-88e9-2225c1bbb90d",
+  "createdAt": "2026-10-17T19:09:11.815Z",
+  "branch": "testflight",
+  "runtimeVersion": "2.1.0",
+  "platform": "ios",
+  "gitCommitHash": "11ddd238f9446d7780c51a32fe7855c2a92ccc2f",
+  "message": "Weekly training report: branded PDF with individual Set rows, previous exposures and private sharing",
+  "manifestPermalink": "https://u.expo.dev/update/01a14b44-a307-74ef-8ba6-1f688e989bd7",
+  "sourceAvailable": true,
+  "recoverableRefs": [
+    "refs/archive/testflight-published/01a14b44-a307-74ef-8ba6-1f688e989bd7"
+  ]
+}
