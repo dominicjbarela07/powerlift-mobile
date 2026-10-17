@@ -187,5 +187,10 @@
     "backgroundExpression": "SLColors.background",
     "horizontalInsets": [],
     "reason": "Owner-approved full-screen native local video preview owns its existing theme near-black canvas within a separate native Modal; no page gutter or underlying app surface ownership changes. Screenshot 10 shows playback; 12 shows return to the unchanged Set."
+  },
+  "app/(tabs)/training-week-report.tsx::root": {
+    "backgroundExpression": "SLColors.background",
+    "horizontalInsets": [],
+    "reason": "The owner-approved dark native weekly report owns this exact theme-token canvas. No PDF paper imitation or page-level horizontal inset is permitted."
   }
 }
