@@ -158114,7 +158114,7 @@
     "app.config.js": "53dbaa252bd5af0dfad206be4c8dd0f2939b8615cd0b57e80450c45efb30a859",
     "scripts/testflight-cumulative-integrity.mjs": "5afb84cde3a03bfdc06fd5417a25188243589ccbc635f4efd6c1606ed7b1b0a8",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
-    "scripts/publish-validated-ios-ota.mjs": "f0ba18e8875445c8ff8f080eee5a5a764e361aec2b035b78441ffb0c18fa1ab7",
+    "scripts/publish-validated-ios-ota.mjs": "97ad32e0a6b062f1d024fd0710742699672582e80fb3c4c8d6bdc149c64c4d78",
     "scripts/eas-build-testflight.sh": "946b0857b8b84925906b84547dbb62f1fa05e12ab3771674dd64e359d920e115",
     "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
     "scripts/test-accepted-behavior-contracts.mjs": "112b5c8ca4d4039cfc0d8d3859924a56843f8d5f83b8c085ad88a06c8863c502",
@@ -158204,7 +158204,9 @@
     "scripts/test-calendar-navigation-cache.mjs": "dcbe080889afca8085a1fa0044e2c5da15f9f2b7ab66431c0b61c6016a3eb8df",
     "scripts/weekly-report-release-scope.mjs": "882321987fa30edcb67cf5d03502acf695bc65bc30580f710752bc1091435a84",
     "scripts/test-weekly-report-release-scope.mjs": "f32e3df25b3f1f1d209049326124e2ae2245b2e678513afb4456a35a2570f31b",
-    "scripts/test-training-week-report.mjs": "3a79999259fa315a0c23433c11a01710979251121425ca8dc5aed89286883117"
+    "scripts/test-training-week-report.mjs": "3a79999259fa315a0c23433c11a01710979251121425ca8dc5aed89286883117",
+    "scripts/backend-contract-snapshot.mjs": "f27074456273b6b78018444fa51f021c58494a5781c99245d62b134a7958f8c3",
+    "scripts/test-backend-contract-snapshot.mjs": "8eae2b65e0fee8223d34186ffde790e88a33c3b42a4337a82b88fdc094c73d39"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -162951,6 +162953,31 @@
         }
       ],
       "review": "Permit the explicitly authorized existing native 3.0 build and an exact already-published weekly-report continuation. Continuation rejects every product change, forged baseline/source or absent owner correction. Existing 2.1-only instruction cannot authorize this mode. All cumulative source/artifact/native gates retained."
+    },
+    {
+      "scope": "weekly-training-report-20261017",
+      "ownerInstruction": "So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-17-weekly-report-3.txt",
+      "ownerEvidenceSha256": "aea56977ac52102f2a5f390677b7f96aabd0092ea6a0d8e55a36c1a680b71974",
+      "reason": "Owner corrected the installed TestFlight runtime to 3.0 build 35 and explicitly authorized the same approved weekly report on that runtime. Publish identical validated product source; preserve both runtime baselines, all assets and exact native graph.",
+      "files": [
+        {
+          "path": "scripts/backend-contract-snapshot.mjs",
+          "before": null,
+          "after": "f27074456273b6b78018444fa51f021c58494a5781c99245d62b134a7958f8c3"
+        },
+        {
+          "path": "scripts/test-backend-contract-snapshot.mjs",
+          "before": null,
+          "after": "8eae2b65e0fee8223d34186ffde790e88a33c3b42a4337a82b88fdc094c73d39"
+        },
+        {
+          "path": "scripts/publish-validated-ios-ota.mjs",
+          "before": "f0ba18e8875445c8ff8f080eee5a5a764e361aec2b035b78441ffb0c18fa1ab7",
+          "after": "97ad32e0a6b062f1d024fd0710742699672582e80fb3c4c8d6bdc149c64c4d78"
+        }
+      ],
+      "review": "Independent Team Coach web presentation edits twice invalidated an otherwise passing mobile release after export. Optional immutable contract-input copies now bind the exact tested files; canonical DEV stays authoritative for Gate A/C and Python/catalog/server inputs must match before/after publication. Actual copied input mutation, canonical Python/catalog change and stale source all fail. Tests execute inside the immutable copy; unrelated web files are never published or modified."
     }
   ],
   "verifiedCopiedWeekIdentity": {

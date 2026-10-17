@@ -10,6 +10,7 @@ import {assertRegisteredPublicationWorktree,runReleaseWorktreeCloseout} from './
 import { assertEducationTransport, assertOtaAssetLimit } from './education-image-transport.mjs';
 import { assertProduction3ClientFix } from './production3-client-fix-policy.mjs';
 import { sharedValidationInputs, assertSharedValidation, assertReusableAssetAudit } from './shared-ota-validation.mjs';
+import {createBackendContractSnapshot,assertBackendContractSnapshot} from './backend-contract-snapshot.mjs';
 // Mandatory authority: backend docs/RELEASE_INVARIANTS.md; Gates A/B/C cannot be bypassed here.
 
 const root = process.cwd();
@@ -76,10 +77,13 @@ if (!apiBase) {
 }
 
 const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'strength-ledger-ios-ota-'));
+const canonicalBackendRoot=process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev';
+const contractSnapshot=args.includes('--freeze-backend-contracts') ? createBackendContractSnapshot(canonicalBackendRoot) : null;
+const contractBackendRoot=contractSnapshot?.root || canonicalBackendRoot;
 const frozenCatalogRef=JSON.parse(fs.readFileSync(path.join(root,'config/testflight-release-integrity.json'),'utf8')).previousTestFlight.gitCommitHash;
 const run = (command, commandArgs, options = {}) => execFileSync(command, commandArgs, {
   cwd: root,
-  env: { ...process.env, STRENGTH_LEDGER_BACKEND_ROOT: process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev', STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:governedProjection?frozenCatalogRef:undefined,
+  env: { ...process.env, STRENGTH_LEDGER_BACKEND_ROOT: options.contracts ? contractBackendRoot : canonicalBackendRoot, STRENGTH_LEDGER_FROZEN_TESTFLIGHT_CATALOG_REF:governedProjection?frozenCatalogRef:undefined,
     ...(production3ClientFix && !options.contracts ? {STRENGTH_LEDGER_RELEASE_TARGET:'production3',EXPO_PUBLIC_ART_RUNTIME_VERSION:'3.0.0'} : options.contracts ? {STRENGTH_LEDGER_RELEASE_TARGET:undefined,EXPO_PUBLIC_ART_RUNTIME_VERSION:undefined} : {}),
     EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: options.contracts ? 'testflight' : production3ClientFix ? 'production3' : branch === 'testflight' ? 'testflight' : 'disabled' },
   encoding: 'utf8',
@@ -105,7 +109,7 @@ if (governedProjection) {
     }
   }
 }
-const sharedInputs = sharedValidationInputs(root, process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev');
+const sharedInputs = sharedValidationInputs(root, contractBackendRoot);
 let sharedReceipt;
 if (reuseValidation) {
   sharedReceipt = JSON.parse(fs.readFileSync(reuseValidation));
@@ -130,7 +134,8 @@ run('npx', [
   '--clear',
 ]);
 // Expo clears its output directory, including receipts written before export.
-assertSharedValidation(sharedReceipt, sharedValidationInputs(root, process.env.STRENGTH_LEDGER_BACKEND_ROOT || '/Users/dominic/powerlifting_app_dev'));
+if(contractSnapshot) assertBackendContractSnapshot(contractSnapshot,canonicalBackendRoot);
+assertSharedValidation(sharedReceipt, sharedValidationInputs(root, contractBackendRoot));
 fs.writeFileSync(path.join(outputDir,'release-shared-validation.json'),JSON.stringify(sharedReceipt,null,2));
 const exportSource=governedProjection?bindExportSource(root,outputDir):null;
 run(process.execPath, ['scripts/assert-ota-route-bundle.mjs', outputDir]);
@@ -165,6 +170,7 @@ if (prepareOnly) {
   process.exit(0);
 }
 
+if(contractSnapshot) assertBackendContractSnapshot(contractSnapshot,canonicalBackendRoot);
 if (governedProjection) {
   const finalPreflight=runDevSupersetGate({root,requireCleanCandidate:true});
   if (!finalPreflight.pass || finalPreflight.candidate.sha!==exportSource.candidateSha || finalPreflight.candidateProductFingerprint!==exportSource.productFingerprint || finalPreflight.devProductFingerprint!==devSuperset.devProductFingerprint) throw new Error('Source changed during validation; release blocked until exact source is reconciled and exported again');
@@ -286,6 +292,10 @@ if (!localBundle.equals(remoteBundle)) {
   );
 }
 
+if(contractSnapshot) {
+  assertBackendContractSnapshot(contractSnapshot,canonicalBackendRoot);
+  fs.writeFileSync(path.join(outputDir,'release-backend-contract-snapshot.json'),JSON.stringify(contractSnapshot,null,2)+'\n');
+}
 const bundleSha256 = crypto.createHash('sha256').update(localBundle).digest('hex');
 assertEducationTransport(root, { bundle: remoteBundle });
 if (governedProjection) {
@@ -300,3 +310,5 @@ console.log(
   `OTA publish verified — group ${published.group}, update ${published.id}, ` +
   `${remoteBundle.length} byte route-complete launch bundle, SHA-256 ${bundleSha256}.`,
 );
+
+if(contractSnapshot) fs.rmSync(contractSnapshot.root,{recursive:true,force:true});
