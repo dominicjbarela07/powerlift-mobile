@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {assertWeeklyReportBaseline, weeklyReportPaths} from './weekly-report-release-scope.mjs';
+import {assertClientFixScope} from './owner-directed-client-fix.mjs';
+const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'weekly-report-scope-'));
+try {
+  const write = (file,value) => {const bytes=JSON.stringify(value);fs.writeFileSync(path.join(root,file),bytes);return {path:file,sha256:sha(bytes)};};
+  const baseline = {'assets/approved.png':'approved','app/(tabs)/_layout.tsx':'old'};
+  const fingerprint = sha(JSON.stringify(Object.entries(baseline).sort(([a],[b]) => a.localeCompare(b))));
+  const current = {id:'actual-current',gitCommitHash:'actual-source'};
+  const proof = {gateC:write('gate.json',{pass:true,missing:[],candidateProductFingerprint:fingerprint,published:{...current,servedBundleSha256:'bundle'}}),assetAudit:write('audit.json',{pass:true,missingOrCorrupt:0,updateId:current.id,servedLaunchSha256:'bundle'})};
+  const files = {...baseline,...Object.fromEntries(weeklyReportPaths.map(file => [file,'approved-report']))};
+  const scope = {scope:'weekly-training-report-20261017',baselineUpdateId:current.id,baselineSourceSha:current.gitCommitHash,baselineProductFingerprint:fingerprint,baselineFiles:write('baseline.json',baseline),productFingerprint:'candidate',validation:'OWNER_DIRECTED_CONTRACTS_ONLY',ownerInstruction:'send it to testflight please... 2.1',changedProductFiles:Object.fromEntries(weeklyReportPaths.map(file=>[file,'approved-report'])),contracts:{'scripts/test-training-week-report.mjs':'route','scripts/test-weekly-report-release-scope.mjs':'scope'}};
+  const state = {currentTestFlight:current,verifiedNavigationLoading:{publishedProof:proof}};
+  const check = (candidate=files,candidateScope=scope) => assertWeeklyReportBaseline({root,scope:candidateScope,state,files:candidate});
+  const owner = scope.ownerInstruction+'\nWeekly Training Report\nSet / Weight / Reps / Effort';
+  assertClientFixScope(scope,'candidate',check(),owner);
+  for(const invalid of [{...files,'assets/approved.png':'replaced'},{...files,'lib/unrelated.ts':'hidden'}]) assert.throws(()=>check(invalid));
+  const missing={...files};delete missing['assets/approved.png'];assert.throws(()=>check(missing));
+  assert.throws(()=>check(files,{...scope,baselineUpdateId:'forged'}));
+  assert.throws(()=>check(files,{...scope,baselineFiles:write('fake.json',{...baseline,'assets/approved.png':'replaced'})}));
+  assert.throws(()=>assertClientFixScope(scope,'stale',check(),owner));
+  assert.throws(()=>assertClientFixScope(scope,'candidate',check(),'invented signoff'));
+  assert.throws(()=>assertClientFixScope({...scope,contracts:{}},'candidate',check(),owner));
+  console.log('PASS: weekly report scope retains exact published baseline; rejects removed/replaced art, unrelated code, forged source/baseline/signoff and missing contracts.');
+} finally {fs.rmSync(root,{recursive:true,force:true});}

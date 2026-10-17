@@ -165,6 +165,7 @@ function FilteredTabBar({
   if (focusedSession) return null;
   if (isImmersiveMeetMode) return null;
   if (normalizedPathname.startsWith('/coach-athlete/')) return null;
+  if (normalizedPathname.startsWith('/training-week-report')) return null;
   if (normalizedPathname.startsWith('/ledger') && focusedParams.returnToWorkspace === '1') return null;
   if (focusedParams.returnToWorkspace === '1'
     && ['/coach-session-review', '/coach-video-review', '/check-ins'].includes(normalizedPathname)) return null;
@@ -345,6 +346,7 @@ export default function TabsLayout() {
     const isAthleteFacingPath =
       pathname.includes('/athlete-dashboard') ||
       pathname.includes('/athlete-calendar') ||
+      pathname.includes('/training-week-report') ||
       pathname.includes('/athlete-progression') ||
       pathname.includes('/reflection') ||
       pathname.includes('/coach-reviews') ||
@@ -609,6 +611,7 @@ export default function TabsLayout() {
           }}
         />
 
+        <Tabs.Screen name="training-week-report" options={{ href: null, title: 'Weekly training report' }} />
         <Tabs.Screen
           name="athlete-calendar"
           options={{

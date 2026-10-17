@@ -60,6 +60,7 @@ type Props = {
   onAction: (action: AthleteCalendarAction) => void;
   onMonthChange: (month: Date) => void;
   onToday: () => string | void;
+  onShareWeek?: () => void;
   canManagePersonalEvents?: boolean;
   canRescheduleSessions?: boolean;
   onMoveSession?: (session: AthleteCalendarSession, date: string) => void;
@@ -105,6 +106,7 @@ export function AthleteCalendarStoryboardV2({
   onRetryLoadMore,
   onSelectedDateChange,
   onToday,
+  onShareWeek,
   paginationError,
   refreshing = false,
   rescheduleBusy = false,
@@ -380,6 +382,8 @@ export function AthleteCalendarStoryboardV2({
           {canManagePersonalEvents ? <UtilityButton icon="add" label="Add personal item" onPress={() => onAction({ type: 'add-event', date: selectedDate })} /> : null}
         </View>
       </View>
+
+      {onShareWeek ? <Pressable accessibilityRole="button" accessibilityLabel="Share training week" onPress={onShareWeek} style={styles.weekReportAction}><Ionicons name="document-text-outline" color={SLColors.accentMuted} size={17} /><Text style={styles.weekReportLabel}>Share training week</Text><Ionicons name="chevron-forward" color={SLColors.accentMuted} size={14} /></Pressable> : null}
 
       {searchOpen ? (
         <View style={styles.searchSurface}>
@@ -1139,6 +1143,8 @@ const styles = StyleSheet.create({
   timeHeaderCopy: { flex: 1, minWidth: 0, paddingVertical: 2 },
   monthTitle: { fontSize: 17, lineHeight: 19, letterSpacing: 0.8, color: SLColors.textStrong, fontFamily: SLFontFamilies.display },
   monthContext: { fontSize: 9, lineHeight: 12, letterSpacing: 0.45, color: SLColors.accentMuted, fontFamily: SLFontFamilies.technical, marginTop: 2 },
+  weekReportAction: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, paddingHorizontal: 23, paddingBottom: 8 },
+  weekReportLabel: { color: SLColors.accentMuted, fontSize: 13, fontWeight: '500' },
   headerActions: { flexDirection: 'row', gap: 7, marginLeft: 8 },
   utilityButton: { width: 39, height: 39, borderRadius: SLRadius.control, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceInset, alignItems: 'center', justifyContent: 'center' },
   utilityBadge: { position: 'absolute', right: -3, top: -4, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: SLColors.accentViolet, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
