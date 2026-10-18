@@ -46,6 +46,11 @@ assert.deepEqual(plain(hydrate([back]).coreOrder), [11], 'an orphan is not silen
 assert.deepEqual(plain(hydrate([top, { ...back, variant: 'STRAIGHT' }]).coreOrder), [10], 'an explicitly linked historical Straight backdown is still owned by its Top');
 const linkedStraight = hydrate([top, { ...back, variant: 'STRAIGHT' }]);
 assert.deepEqual(plain(model.buildSessionWorkspaceSavePlan(linkedStraight, linkedStraight, 'kg')).coreOrder, [10, 11], 'historical linked Straight work is included in authoring order even though nested in presentation');
+for (const scheme of ['STRAIGHT', 'FULL_CUSTOM']) {
+  const converted = model.cloneSessionWorkspaceDraft(linkedStraight);
+  converted.movements[10].scheme = scheme;
+  assert.deepEqual(plain(model.buildSessionWorkspaceSavePlan(converted, linkedStraight, 'kg')).coreOrder, [10], 'scheme conversion omits a child the server will remove');
+}
 assert.deepEqual(plain(hydrate([top, back, { ...back, id: 13 }]).coreOrder), [10, 13], 'additional programmed children are not silently discarded');
 
 const oldJournal = { ...copied, coreOrder: [10, 11] };
