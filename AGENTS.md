@@ -1,5 +1,13 @@
 # Strength Ledger Mobile Engineering Guidance
 
+## Active mobile runtime — owner correction, October 18, 2026
+
+The owner declared: “2.1 is obsolete now. please stop tending to it”. Target
+3.0 going forward. Do not prepare, validate or publish companion 2.1 releases
+unless the owner explicitly reopens that runtime. Preserve historical evidence
+and existing frozen-client protections; retirement does not authorize deletion
+or channel remapping. Read `docs/release/MOBILE_RUNTIME_TARGET_2026-10-18.md`.
+
 Credential handling: read canonical `../docs/release/GITHUB_KEY_ALERT_2026-10-13.md`
 before provider configuration or secret-alert work. Private sending/admin keys
 never enter Git or mobile bundles. Public Firebase client identifiers require an

@@ -1,0 +1,17 @@
+{
+  "pass": true,
+  "requestHeaders": {
+    "expo-platform": "ios",
+    "expo-runtime-version": "3.0.0",
+    "expo-channel-name": "production-3-preparation",
+    "expo-protocol-version": "1",
+    "accept": "multipart/mixed, application/expo+json, application/json"
+  },
+  "id": "01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
+  "runtimeVersion": "3.0.0",
+  "createdAt": "2026-10-18T14:04:32.980Z",
+  "assetEntries": 998,
+  "uniqueAssets": 992,
+  "launchAssetHash": "IzdrnpV37KI3YHQPrUfvkDA1Lcmx2EN5zA1I1CbmH48",
+  "verifiedAt": "2026-10-18T14:06:04.023Z"
+}

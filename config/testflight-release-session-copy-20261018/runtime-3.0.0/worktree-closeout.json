@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-18T14:05:29.689345+00:00",
+  "worktreeUsed": "/Users/dominic/powerlifting_app/powerlift_mobile_testflight",
+  "head": "8eb09f3a88e28a4980a1e59f6d3166889286882c",
+  "pass": true,
+  "errors": [],
+  "uniqueValidWorkRemaining": 0,
+  "accountedProductDifferences": [
+    {
+      "path": "app.json",
+      "sourceSha256": "43d0bdecd87b275da74ec7099c933e1496d209d44dd341ea29bf23bee673e9ce",
+      "canonicalSha256": "87e4fec5363704839e0371d5fa9e4596a44a8642c976e8b7cdaae403f98049e6",
+      "testflightSha256": "43d0bdecd87b275da74ec7099c933e1496d209d44dd341ea29bf23bee673e9ce",
+      "untracked": false,
+      "committedSha256": "43d0bdecd87b275da74ec7099c933e1496d209d44dd341ea29bf23bee673e9ce"
+    },
+    {
+      "path": "app/(tabs)/workout/[workoutId].tsx",
+      "sourceSha256": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92",
+      "canonicalSha256": "0bc5588fd92a9e767f4c44264f863542f756c2902543fea848b8fd2aa4ca91c1",
+      "testflightSha256": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92",
+      "untracked": false,
+      "committedSha256": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92"
+    },
+    {
+      "path": "lib/equipment-flow-subject.ts",
+      "sourceSha256": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
+      "canonicalSha256": "79e4bc45607709f22e9ac0b731724f13a4fa87a6bdd9de9f2ce6b18dce24a0c5",
+      "testflightSha256": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
+      "untracked": false,
+      "committedSha256": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373"
+    },
+    {
+      "path": "lib/equipment-selection.ts",
+      "sourceSha256": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84",
+      "canonicalSha256": "7663b3bdaf47d75784aa46345bafb77d401474cb86e45b64e6d91e497086de09",
+      "testflightSha256": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84",
+      "untracked": false,
+      "committedSha256": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84"
+    },
+    {
+      "path": "scripts/test-equipment-flow-subject.mjs",
+      "sourceSha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d",
+      "canonicalSha256": "8d06579e7de123fdd29d3bd7d0cbd1b30300fce54504632157fb8c3b78658ffd",
+      "testflightSha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d",
+      "untracked": false,
+      "committedSha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d"
+    }
+  ],
+  "backPropagatedToCanonicalDev": true,
+  "publishedTestflightMinusDev": [],
+  "published": {
+    "id": "01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
+    "group": "911a8c05-4d71-4d17-90b5-9afb528a686a",
+    "gitCommitHash": "8eb09f3a88e28a4980a1e59f6d3166889286882c",
+    "manifestId": "01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
+    "servedBundleSha256": "23376b9e9577eca23760740fad47ef9030352dc9b1d84379cc0d48d426e61f8f"
+  },
+  "otherActiveWorktreeAssessments": {
+    "/Users/dominic/powerlifting_app_mobile_optional_dev": {
+      "status": "NOT_REQUIRED",
+      "canonicalSha": "82e1b7f9158b4d563d4a0c1c6f6a77f9b5f0ee70",
+      "sourceFingerprint": "f3e0379672ffd499cd2e473346499cc9123bad04533cc03a562a958e4539f593",
+      "reason": "Independent unfinished optional-equipment worktree is not a source or destination for this Session copy grouping hotfix. Its product content is unchanged since its prior recorded assessment. Canonical DEV retains the complete new fix; preserve unique unfinished work and merge current canonical state before any future promotion."
+    },
+    "/Users/dominic/powerlifting_app_prod_mobile_optional_equipment": {
+      "status": "NOT_REQUIRED",
+      "canonicalSha": "82e1b7f9158b4d563d4a0c1c6f6a77f9b5f0ee70",
+      "sourceFingerprint": "d70c6a8615e829767cac1864887dc0ec7d0043c018885ac9596f7f4ee5a72d6c",
+      "reason": "Independent unfinished optional-equipment worktree is not a source or destination for this Session copy grouping hotfix. Its product content is unchanged since its prior recorded assessment. Canonical DEV retains the complete new fix; preserve unique unfinished work and merge current canonical state before any future promotion."
+    }
+  },
+  "tempWorktreeRemoved": "NOT_APPLICABLE_DURABLE_RELEASE_CHECKOUT",
+  "workflowComplete": true
+}

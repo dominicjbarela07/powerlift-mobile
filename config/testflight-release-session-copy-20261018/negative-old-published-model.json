@@ -1,0 +1,17 @@
+{
+  "scope": "session-copy-backdown-20261018",
+  "proofKind": "negative",
+  "result": "PASS",
+  "gateExitStatus": 1,
+  "baselineSource": "8b309300416d8c5f155b8406c0074e5e4abded8d",
+  "baselineFileSha256": "bc2bfc6aafe4d71d8fa3a8ca6824df28e4b144f2661e96bd320337f7356fe120",
+  "observedCondition": "Original published draft constructor nests the linked Backdown and independently includes it in root module order.",
+  "expectedVisibleModuleIds": [
+    10
+  ],
+  "actualVisibleModuleIds": [
+    10,
+    11
+  ],
+  "assertion": "copied Top/Backdown must be one module\n+ actual - expected\n\n  [\n    10,\n+   11\n  ]\n"
+}
