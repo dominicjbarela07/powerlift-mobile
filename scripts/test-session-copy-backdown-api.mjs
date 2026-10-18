@@ -6,4 +6,4 @@ const output = execFileSync(path.join(backend, 'venv/bin/python'), [
   '-m', 'unittest', 'tests.test_mobile_session_copy_backdowns.MobileSessionCopyBackdownsTest', '-q',
 ], { cwd: backend, env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' }, encoding: 'utf8', timeout: 25000, stdio: ['ignore', 'pipe', 'pipe'] });
 assert.doesNotMatch(output, /FAILED/);
-console.log('PASS: real HTTP Session Copy To, Reuse, saved template and Week Copy preserve the exact Top/Backdown graph and independent Straight work on both mobile contracts.');
+console.log('PASS: real HTTP Copy To, Reuse, template and Week Copy preserve exact Top/Backdown graphs; atomic edit/save/reorder retains child IDs for BK and historical linked Straight work on both mobile contracts.');
