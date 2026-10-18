@@ -6,14 +6,18 @@ import { execFileSync } from 'node:child_process';
 
 const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 import { assertWeeklyReportBaseline, assertWeeklyReportDeployment } from './weekly-report-release-scope.mjs';
+import { assertSessionCopyBackdownBaseline } from './session-copy-backdown-release-scope.mjs';
 
 // Exact source-bound owner validation; never represents visual/device proof.
 export function assertClientFixScope(scope, fingerprint, modifications, ownerText) {
-  assert.ok(['weekly-training-report-20261017', 'canonical-zero-load-edit-20261005', 'canonical-set-save-recovery-20261008', 'canonical-copied-week-identity-20261013', 'athlete-video-archive-access-20261014', 'set-entry-video-preview-20261014', 'canonical-logger-floating-unit-20261014', 'canonical-fixed-equipment-eligibility-20261014', 'mobile-navigation-loading-20261016'].includes(scope?.scope), 'unknown owner client-fix scope');
+  assert.ok(['session-copy-backdown-20261018', 'weekly-training-report-20261017', 'canonical-zero-load-edit-20261005', 'canonical-set-save-recovery-20261008', 'canonical-copied-week-identity-20261013', 'athlete-video-archive-access-20261014', 'set-entry-video-preview-20261014', 'canonical-logger-floating-unit-20261014', 'canonical-fixed-equipment-eligibility-20261014', 'mobile-navigation-loading-20261016'].includes(scope?.scope), 'unknown owner client-fix scope');
   assert.equal(scope.productFingerprint, fingerprint, 'client-fix validation cannot cover changed product source');
   assert.equal(scope.validation, 'OWNER_DIRECTED_CONTRACTS_ONLY');
   assert.ok(ownerText.includes(scope.ownerInstruction), 'exact current owner task is required');
-  if (scope.scope === 'weekly-training-report-20261017') {
+  if (scope.scope === 'session-copy-backdown-20261018') {
+    assert.equal(scope.ownerInstruction, 'Please fix it, validate it, and push the hotfix.');
+    assert.ok(ownerText.includes('mobile session builder') && ownerText.includes('1x1') && ownerText.includes('3x5') && ownerText.includes('extra straight set'), 'Session copy requires the complete actual owner report');
+  } else if (scope.scope === 'weekly-training-report-20261017') {
     assert.ok(['send it to testflight please... 2.1', "So I guess TestFlight is now just whatever the production is. That's fine. Fucking upload a 3.0."].includes(scope.ownerInstruction));
     assert.ok(ownerText.includes('Weekly Training Report') && ownerText.includes('Set / Weight / Reps / Effort'), 'Weekly export requires the complete approved owner scope');
   } else if (scope.scope === 'mobile-navigation-loading-20261016') {
@@ -33,7 +37,9 @@ export function assertClientFixScope(scope, fingerprint, modifications, ownerTex
   } else assert.ok(ownerText.includes('You will not do simulator runs. Stop talking about it'), 'validation restriction requires the exact owner instruction');
   assert.deepEqual(modifications.map(row => row.path).sort(), Object.keys(scope.changedProductFiles).sort(), 'client-fix scope cannot include unrelated changes');
   for (const row of modifications) assert.equal(row.after, scope.changedProductFiles[row.path], 'client-fix source changed');
-  assert.deepEqual(Object.keys(scope.contracts).sort(), scope.scope === 'weekly-training-report-20261017'
+  assert.deepEqual(Object.keys(scope.contracts).sort(), scope.scope === 'session-copy-backdown-20261018'
+    ? ['scripts/test-session-copy-backdown-api.mjs', 'scripts/test-session-copy-backdown-release-scope.mjs', 'scripts/test-session-workspace-top-backdown-copy.mjs']
+    : scope.scope === 'weekly-training-report-20261017'
     ? ['scripts/test-training-week-report.mjs', 'scripts/test-weekly-report-release-scope.mjs']
     : scope.scope === 'mobile-navigation-loading-20261016'
     ? ['scripts/test-calendar-navigation-cache.mjs','scripts/test-evidence-read-cache.mjs','scripts/test-mobile-navigation-loading.mjs']
@@ -211,7 +217,9 @@ export function runClientFixContracts({root, scope, fingerprint, delta, exportDi
   assert.deepEqual(delta.subtractions, [], 'client fix cannot remove existing product files');
   const evidence = fs.readFileSync(path.join(root, scope.ownerEvidencePath));
   assert.equal(sha(evidence), scope.ownerEvidenceSha256);
-  const modifications = scope.scope === 'weekly-training-report-20261017'
+  const modifications = scope.scope === 'session-copy-backdown-20261018'
+    ? assertSessionCopyBackdownBaseline({root, scope, state, files})
+    : scope.scope === 'weekly-training-report-20261017'
     ? assertWeeklyReportBaseline({root, scope, state, files})
     : scope.scope === 'mobile-navigation-loading-20261016'
     ? assertNavigationBaseline({root, scope, state, files})
