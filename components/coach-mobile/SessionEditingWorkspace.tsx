@@ -2598,7 +2598,8 @@ function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted
     // child IDs. This also preserves explicitly linked historical STRAIGHT
     // backdowns on servers whose automatic order expansion recognizes BK only.
     coreOrder: current.coreOrder.flatMap((id) => {
-      const child = linkedSessionBackdown(current.items[id], Object.values(current.items));
+      const child = current.movements[id]?.scheme === 'TOP_BACKDOWN'
+        ? linkedSessionBackdown(current.items[id], Object.values(current.items)) : null;
       return child && !current.coreOrder.includes(child.id) ? [id, child.id] : [id];
     }),
     accessoryOrder: [...current.accessoryOrder],
