@@ -2594,7 +2594,13 @@ function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted
     movementUpdates,
     movementCreates,
     deletedMovementIds: persistedIds.filter((id) => id > 0 && !currentIds.includes(id)),
-    coreOrder: [...current.coreOrder],
+    // Presentation owns root modules; the authoring command retains physical
+    // child IDs. This also preserves explicitly linked historical STRAIGHT
+    // backdowns on servers whose automatic order expansion recognizes BK only.
+    coreOrder: current.coreOrder.flatMap((id) => {
+      const child = linkedSessionBackdown(current.items[id], Object.values(current.items));
+      return child && !current.coreOrder.includes(child.id) ? [id, child.id] : [id];
+    }),
     accessoryOrder: [...current.accessoryOrder],
     orderChanged: JSON.stringify(current.coreOrder) !== JSON.stringify(persisted.coreOrder)
       || JSON.stringify(current.accessoryOrder) !== JSON.stringify(persisted.accessoryOrder),

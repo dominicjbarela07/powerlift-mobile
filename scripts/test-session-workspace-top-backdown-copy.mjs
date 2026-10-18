@@ -25,6 +25,7 @@ let plan = plain(model.buildSessionWorkspaceSavePlan(copied, copied, 'kg'));
 assert.deepEqual(plan.movementCreates, []);
 assert.deepEqual(plan.movementUpdates, []);
 assert.deepEqual(plan.deletedMovementIds, [], 'nesting is never a data deletion');
+assert.deepEqual(plan.coreOrder, [10, 11], 'save transport retains the complete physical parent/child inventory');
 const edited = model.cloneSessionWorkspaceDraft(copied);
 edited.movements[10].backdownReps = '6';
 plan = plain(model.buildSessionWorkspaceSavePlan(edited, copied, 'kg'));
@@ -43,6 +44,8 @@ assert.deepEqual(plain(reversed.coreOrder), [12, 10], 'parent links, not adjacen
 assert.deepEqual(plain(hydrate([{ ...top, id: 20 }, { ...back, id: 21, parent_item_id: 20 }, top, back]).coreOrder), [20, 10]);
 assert.deepEqual(plain(hydrate([back]).coreOrder), [11], 'an orphan is not silently hidden');
 assert.deepEqual(plain(hydrate([top, { ...back, variant: 'STRAIGHT' }]).coreOrder), [10], 'an explicitly linked historical Straight backdown is still owned by its Top');
+const linkedStraight = hydrate([top, { ...back, variant: 'STRAIGHT' }]);
+assert.deepEqual(plain(model.buildSessionWorkspaceSavePlan(linkedStraight, linkedStraight, 'kg')).coreOrder, [10, 11], 'historical linked Straight work is included in authoring order even though nested in presentation');
 assert.deepEqual(plain(hydrate([top, back, { ...back, id: 13 }]).coreOrder), [10, 13], 'additional programmed children are not silently discarded');
 
 const oldJournal = { ...copied, coreOrder: [10, 11] };
