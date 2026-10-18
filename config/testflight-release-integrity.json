@@ -158594,7 +158594,12 @@
       "scripts/test-session-workspace-top-backdown-copy.mjs": "d7b519be8b31d78762b3cd0f5c8a52670ebac7241b9851dceff483cb7783af86",
       "scripts/test-session-copy-backdown-api.mjs": "a1dfd76229fa4c9cca7584328d3b69150d87f895c75728d6c5becb583981aa76",
       "scripts/test-session-copy-backdown-release-scope.mjs": "dea5a9d4ecc62358eeb451bf428b7e6591d1c2518232f9a6b5ce27afb93cf175"
-    }
+    },
+    "publicationComplete": true,
+    "publishedRuntimeVersions": [
+      "3.0.0"
+    ],
+    "obsoleteCompanionRuntime": "2.1.0"
   },
   "canonicalZeroLoadEdit": {
     "status": "SHIPPED",
@@ -163938,5 +163943,89 @@
     "ownerPhoneUpdateApplicationObserved": false,
     "nativeBuildStarted": false,
     "priorBackendPdfAndAssetEvidenceReused": true
+  },
+  "verifiedProduction3SessionCopyBackdown": {
+    "publication": {
+      "id": "01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
+      "group": "911a8c05-4d71-4d17-90b5-9afb528a686a",
+      "createdAt": "2026-10-18T14:04:32.980Z",
+      "branch": "production-3-preparation",
+      "runtimeVersion": "3.0.0",
+      "platform": "ios",
+      "gitCommitHash": "8eb09f3a88e28a4980a1e59f6d3166889286882c",
+      "message": "Hotfix: copied Top and Backdown work stays one Session builder module",
+      "manifestPermalink": "https://u.expo.dev/update/01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a14f54-1554-7bbd-af9c-bfdd7a18e95f"
+      ]
+    },
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-session-copy-20261018/runtime-3.0.0/gate-c.json",
+        "sha256": "49b9316477e61f919afbbc47ccf541fbfd4f9a51778cf222d210340ca2b5c2a3"
+      },
+      "exportSource": {
+        "path": "config/testflight-release-session-copy-20261018/runtime-3.0.0/export-source.json",
+        "sha256": "d2e872c0fc084ccd10baa95f670da89bbcf20746f5d1d024a740c5ae9f48bcd1"
+      },
+      "contracts": {
+        "path": "config/testflight-release-session-copy-20261018/runtime-3.0.0/contracts.json",
+        "sha256": "e5cbae058142719576abd2e67c526c35496dbbcf656c3aaeaf99d357ac7d6451"
+      },
+      "sharedValidation": {
+        "path": "config/testflight-release-session-copy-20261018/runtime-3.0.0/shared-validation.json",
+        "sha256": "e21e435b478685d797cc8c7efd4999107c8467cbfa9a9be20ee4d76b9ee88a6a"
+      },
+      "movementImagery": {
+        "path": "config/testflight-release-session-copy-20261018/runtime-3.0.0/movement-imagery.json",
+        "sha256": "014369c588a278fee7fb2c5062395676f4c16214b16de32e1ee60fefde3a3e1e"
+      },
+      "channel": {
+        "path": "config/testflight-release-session-copy-20261018/runtime-3.0.0/channel.json",
+        "sha256": "469fda6556a9d142b51ff2f6fa236b17f0214b83660fa9af2ae5996e4e05c37f"
+      },
+      "worktreeCloseout": {
+        "path": "config/testflight-release-session-copy-20261018/runtime-3.0.0/worktree-closeout.json",
+        "sha256": "9979f45fdc2ac8fa78259f63e1fd231286d2b38019d1fc62e9abc53282c35a19"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-session-copy-20261018/runtime-3.0.0/asset-audit.json",
+        "sha256": "be7bf79667c4648e6be313063a65a7056d821a7cc939a0aa6752211fa4d9619f"
+      }
+    }
+  },
+  "activeMobileRuntime": {
+    "runtimeVersion": "3.0.0",
+    "iosBuild": "35",
+    "branch": "production-3-preparation",
+    "ownerInstruction": "2.1 is obsolete now. please stop tending to it",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-18-runtime-2.1-retired.txt",
+    "ownerEvidenceSha256": "7271c62c39c700be547e32549d3c359c507936d9e40cc58b63fa4c88b8110207",
+    "latestVerifiedPublication": {
+      "id": "01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
+      "group": "911a8c05-4d71-4d17-90b5-9afb528a686a",
+      "createdAt": "2026-10-18T14:04:32.980Z",
+      "branch": "production-3-preparation",
+      "runtimeVersion": "3.0.0",
+      "platform": "ios",
+      "gitCommitHash": "8eb09f3a88e28a4980a1e59f6d3166889286882c",
+      "message": "Hotfix: copied Top and Backdown work stays one Session builder module",
+      "manifestPermalink": "https://u.expo.dev/update/01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a14f54-1554-7bbd-af9c-bfdd7a18e95f"
+      ]
+    }
+  },
+  "retiredMobileRuntimes": {
+    "2.1.0": {
+      "retiredAt": "2026-10-18T14:07:07.973Z",
+      "ownerInstruction": "2.1 is obsolete now. please stop tending to it",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-18-runtime-2.1-retired.txt",
+      "ownerEvidenceSha256": "7271c62c39c700be547e32549d3c359c507936d9e40cc58b63fa4c88b8110207",
+      "publicationAttempt": "STOPPED_BY_OWNER_DURING_LOCAL_PREPARATION",
+      "historicalEvidencePreserved": true
+    }
   }
 }

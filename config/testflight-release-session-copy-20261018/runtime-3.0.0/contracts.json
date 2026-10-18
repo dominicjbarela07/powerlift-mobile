@@ -1,0 +1,27 @@
+{
+  "scope": "session-copy-backdown-20261018",
+  "productFingerprint": "0ad8a8e2e581f9acdfabf41e5aec8857656ed744daa4f11c630332bcccb6a507",
+  "completedAt": "2026-10-18T14:03:37.358Z",
+  "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+  "runtimeVerified": false,
+  "contracts": [
+    {
+      "file": "scripts/test-session-workspace-top-backdown-copy.mjs",
+      "sourceSha256": "d7b519be8b31d78762b3cd0f5c8a52670ebac7241b9851dceff483cb7783af86",
+      "result": "PASS",
+      "output": "PASS: Top/Backdown copy hydration, exact set totals, edit/save/reload, independent Straight blocks, multiple pairs, order, journal recovery and parent removal\n"
+    },
+    {
+      "file": "scripts/test-session-copy-backdown-api.mjs",
+      "sourceSha256": "a1dfd76229fa4c9cca7584328d3b69150d87f895c75728d6c5becb583981aa76",
+      "result": "PASS",
+      "output": "PASS: real HTTP Copy To, Reuse, template and Week Copy preserve exact Top/Backdown graphs; atomic edit/save/reorder retains child IDs for BK and historical linked Straight work on both mobile contracts.\n"
+    },
+    {
+      "file": "scripts/test-session-copy-backdown-release-scope.mjs",
+      "sourceSha256": "dea5a9d4ecc62358eeb451bf428b7e6591d1c2518232f9a6b5ce27afb93cf175",
+      "result": "PASS",
+      "output": "PASS: Session copy hotfix retains exact verified 3.0 baseline; missing artwork, replacement assets, hidden source, fabricated baseline and unrelated changes deliberately rejected.\n"
+    }
+  ]
+}
