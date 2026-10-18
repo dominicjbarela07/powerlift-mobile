@@ -392,7 +392,7 @@ export function SessionEditingWorkspace(props: Props) {
     void readAuthoringJournal<Recovery>(props.journalIdentity, props.journalScope).then((recovery) => {
       if (!active || !recovery || recovery.draft.athleteId !== athleteId || recovery.storageUnit !== draftStorageUnit) return;
       setPersistedSession(recovery.base);
-      setSessionDraft(recovery.draft);
+      setSessionDraft(cloneSessionWorkspaceDraft(recovery.draft));
       baseVersionRef.current = recovery.baseVersion;
       setSelectedId(recovery.selectedId);
       setJournalMessage(recovery.baseVersion === props.authoringVersion ? 'Restored your local changes.' : 'Restored local changes. The saved Session has changed; review before saving.');
@@ -2389,6 +2389,25 @@ function ensureCoreVariantManualLoad(draft: CoachMovementDraft, _displayUnit: Co
   return draft;
 }
 
+function linkedSessionBackdown(item: SessionMovementItem, items: SessionMovementItem[]) {
+  if (String(item.variant || '').toUpperCase() !== 'TOP') return null;
+  return items.filter((candidate) => candidate.parent_item_id === item.id
+    && ['BK', 'STRAIGHT'].includes(String(candidate.variant || '').toUpperCase()))
+    .sort((a, b) => a.id - b.id)[0] || null;
+}
+
+function sessionWorkspaceCoreOrder(items: Record<number, SessionMovementItem>, order: number[]) {
+  // The wire inventory includes physical Backdown rows. Their parent already
+  // owns that prescription in the editor; it must not become a second module.
+  // Keep the rows themselves for identity, reconciliation and parent removal.
+  const coreItems = Object.values(items);
+  const nestedIds = new Set(coreItems.flatMap((item) => {
+    const child = linkedSessionBackdown(item, coreItems);
+    return child ? [child.id] : [];
+  }));
+  return order.filter((id) => !nestedIds.has(id));
+}
+
 function createSessionWorkspaceDraft({ title, athleteId, scheduledDate, storageUnit, notes, coreItems, accessoryItems }: {
   title: string;
   athleteId?: number | null;
@@ -2406,9 +2425,7 @@ function createSessionWorkspaceDraft({ title, athleteId, scheduledDate, storageU
     ...accessoryItems.map((item) => [item.id, 'accessory'] as const),
   ]);
   const movements = Object.fromEntries(allItems.map((item) => {
-    const linkedBackdown = String(item.variant || '').toUpperCase() === 'TOP'
-      ? allItems.find((candidate) => candidate.parent_item_id === item.id) || null
-      : null;
+    const linkedBackdown = linkedSessionBackdown(item, coreItems);
     const movement = ensureCoreVariantManualLoad(movementDraftFromItem(item, storageUnit, linkedBackdown), storageUnit);
     return [item.id, accessoryIds.has(item.id)
       ? { ...movement, targetLowLb: '', targetHighLb: '' }
@@ -2422,7 +2439,7 @@ function createSessionWorkspaceDraft({ title, athleteId, scheduledDate, storageU
     items,
     kinds,
     movements,
-    coreOrder: coreItems.map((item) => item.id),
+    coreOrder: sessionWorkspaceCoreOrder(Object.fromEntries(coreItems.map((item) => [item.id, item])), coreItems.map((item) => item.id)),
     accessoryOrder: accessoryItems.map((item) => item.id),
   };
 }
@@ -2436,7 +2453,7 @@ function cloneSessionWorkspaceDraft(draft: SessionWorkspaceDraft): SessionWorksp
       ...movement,
       plannedSets: movement.plannedSets.map((row) => ({ ...row })),
     }])),
-    coreOrder: [...draft.coreOrder],
+    coreOrder: sessionWorkspaceCoreOrder(draft.items, draft.coreOrder),
     accessoryOrder: [...draft.accessoryOrder],
   };
 }
@@ -2499,6 +2516,7 @@ function reconcileSessionWorkspaceDraft(local: SessionWorkspaceDraft, base: Sess
     const preferred = localChanged ? mine : latest;
     draft[key] = [...new Set([...preferred, ...latest, ...mine])].filter((id) => Boolean(draft.items[id]) && draft.kinds[id] === (key === 'coreOrder' ? 'core' : 'accessory'));
   }
+  draft.coreOrder = sessionWorkspaceCoreOrder(draft.items, draft.coreOrder);
   return { draft, conflicts };
 }
 

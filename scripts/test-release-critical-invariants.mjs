@@ -2,6 +2,7 @@ import {backendRootForContract} from './backend-contract-snapshot.mjs';
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['copied Core Top/Backdown modules preserve one grouped prescription', ['scripts/test-session-workspace-top-backdown-copy.mjs', 'scripts/test-session-copy-backdown-api.mjs', 'scripts/test-session-copy-backdown-release-scope.mjs']],
   ['athlete-owned weekly report preserves saved evidence and exact release scope', ['scripts/test-training-week-report.mjs','scripts/test-weekly-report-release-scope.mjs']],
   ['navigation loading retains authorized data and enforces bounded refresh freshness', ['scripts/test-mobile-navigation-loading.mjs','scripts/test-calendar-navigation-cache.mjs','scripts/test-evidence-read-cache.mjs']],
   ['native uploads preserve all runtime assets/source and reject oversized Git/review payloads', ['scripts/test-native-build-upload-policy.mjs']],
