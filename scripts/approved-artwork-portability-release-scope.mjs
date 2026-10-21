@@ -4,6 +4,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 export const portableArtworkPaths = [
+  'config/protected-fix-manifest.json',
   'lib/canonical-movement-art-subject.ts', 'lib/canonical-movement-artwork.ts',
   'lib/current-session-movement.ts', 'lib/governed-movement-art-taxonomy.ts', 'lib/movement-artwork-hero.ts',
 ].sort();
