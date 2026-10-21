@@ -2,6 +2,7 @@ import { approvedArtRuntimeEnabled } from './approved-art-runtime';
 import policyJson from '@/artwork-review/runtime-policy.json';
 import artworkReuse from '@/config/governed-movement-art-reuse.json';
 import coreArtworkReuse from '@/config/governed-core-artwork-reuse.json';
+import { governedAccessoryArtworkTaxonomy } from './governed-movement-art-taxonomy';
 import { DEFAULT_FOCAL, thumbnailGeometry, type Presentation, type LoggerCrop } from './movement-artwork-geometry.mjs';
 export { movementHeroGeometry } from './movement-artwork-geometry.mjs';
 import { normalizeCanonicalMovementArtSubject, resolveCanonicalMovementArtwork, type CanonicalMovementArtworkInput, type MovementArtInput, type CanonicalMovementArtworkKey } from './canonical-movement-artwork';
@@ -37,10 +38,11 @@ export function resolveApprovedExactMovementArtwork(
 ): ApprovedExactArtwork | null {
   if (!dev) return null;
   const subject = normalizeCanonicalMovementArtSubject(movement);
+  if (subject.privateDefinition) return null;
   const shared = !subject.reason && sharedArtwork.find(row => subject.canonicalKey === row.key
-    && (subject.domain === 'core'
+    && (subject.globalArtworkKey === row.key || (subject.domain === 'core'
       ? subject.canonicalIdentityId === row.core_movement_definition_id
-      : subject.canonicalIdentityId === row.movement_definition_id));
+      : subject.canonicalIdentityId === row.movement_definition_id)));
   if (shared) {
     if (approvals.denied_keys.includes(shared.artwork_key)) return null;
     // Reuse only the original exact, hash-bound human receipt. An identity
@@ -48,15 +50,21 @@ export function resolveApprovedExactMovementArtwork(
     const receipt = approvals.approved_exact_artwork?.find(row => row.key === shared.artwork_key
       && row.movement_definition_id === shared.artwork_movement_definition_id);
     if (!receipt?.candidate_id || !/^[a-f0-9]{64}$/.test(receipt.app_sha256)) return null;
-    return { ...receipt, movement_definition_id: shared.movement_definition_id } as ApprovedExactArtwork;
+    const movementId = subject.globalArtworkKey
+      ? subject.domain === 'core' ? subject.movementDefinitionId : subject.canonicalIdentityId
+      : shared.movement_definition_id;
+    if (!movementId) return null;
+    return { ...receipt, movement_definition_id: movementId } as ApprovedExactArtwork;
   }
   const identity = resolveCanonicalMovementArtwork(movement);
   if (identity.kind !== 'accessory' || !identity.artworkKey) return null;
   if (approvals.denied_keys.includes(identity.artworkKey)) return null;
+  const artworkIdentityId = subject.globalArtworkKey
+    ? governedAccessoryArtworkTaxonomy(null, subject.globalArtworkKey)?.id : identity.canonicalIdentityId;
   const receipt = approvals.approved_exact_artwork?.find(row => row.key === identity.artworkKey
-    && row.movement_definition_id === identity.canonicalIdentityId);
+    && row.movement_definition_id === artworkIdentityId);
   if (!receipt?.candidate_id || !/^[a-f0-9]{64}$/.test(receipt.app_sha256)) return null;
-  return receipt as ApprovedExactArtwork;
+  return { ...receipt, movement_definition_id: identity.canonicalIdentityId } as ApprovedExactArtwork;
 }
 
 export function hasApprovedExactMovementArtwork(movement?: CanonicalMovementArtworkInput | null) {

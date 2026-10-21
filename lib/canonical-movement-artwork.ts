@@ -3,6 +3,7 @@ import { normalizeCanonicalMovementArtSubject, type MovementArtInput, type Movem
 import { isMovementArtworkReviewDenied } from '@/lib/movement-art-review-policy';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, RETIRED_ACCESSORY_ARTWORK_IDENTITIES, REGISTERED_ACCESSORY_ARTWORK_KEYS, type CanonicalAccessoryArtworkKey } from './canonical-accessory-artwork-identities';
 import type { CanonicalCoreArtworkKey } from './canonical-core-artwork-identities';
+import { governedAccessoryArtworkTaxonomy } from './governed-movement-art-taxonomy';
 
 export type CanonicalMovementArtworkKey = CanonicalAccessoryArtworkKey | CanonicalCoreArtworkKey;
 
@@ -34,7 +35,9 @@ export function resolveCanonicalMovementArtwork(
   }
   if (!subject.primaryMuscleGroup) return { kind: 'neutral', reason: 'missing_governed_taxonomy' };
   const id = subject.canonicalIdentityId;
-  const active = id && !subject.privateDefinition ? CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES] : null;
+  const artworkId = subject.globalArtworkKey
+    ? governedAccessoryArtworkTaxonomy(null, subject.globalArtworkKey)?.id : id;
+  const active = artworkId && !subject.privateDefinition ? CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[artworkId as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES] : null;
   const registered = active || (id && !subject.privateDefinition ? RETIRED_ACCESSORY_ARTWORK_IDENTITIES[id as keyof typeof RETIRED_ACCESSORY_ARTWORK_IDENTITIES] : null);
   // A contradiction stays closed. An absent exact-art key does not erase known taxonomy.
   if ((registered && subject.canonicalKey && subject.canonicalKey !== registered.key)

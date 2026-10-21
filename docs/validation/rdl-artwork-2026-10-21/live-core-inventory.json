@@ -1,0 +1,188 @@
+[
+  {
+    "id": 693,
+    "key": "barbell_overhead_press",
+    "kind": "core",
+    "core_movement_definition_id": 29
+  },
+  {
+    "id": 674,
+    "key": "block_pull",
+    "kind": "core",
+    "core_movement_definition_id": 22
+  },
+  {
+    "id": 671,
+    "key": "board_press_2_board",
+    "kind": "core",
+    "core_movement_definition_id": 19
+  },
+  {
+    "id": 667,
+    "key": "close_grip_bench",
+    "kind": "core",
+    "core_movement_definition_id": 15
+  },
+  {
+    "id": 2,
+    "key": "competition_bench",
+    "kind": "core",
+    "core_movement_definition_id": 2
+  },
+  {
+    "id": 3,
+    "key": "competition_deadlift",
+    "kind": "core",
+    "core_movement_definition_id": 3
+  },
+  {
+    "id": 1,
+    "key": "competition_squat",
+    "kind": "core",
+    "core_movement_definition_id": 1
+  },
+  {
+    "id": 680,
+    "key": "conventional_deadlift",
+    "kind": "core",
+    "core_movement_definition_id": 28
+  },
+  {
+    "id": 673,
+    "key": "deficit_deadlift",
+    "kind": "core",
+    "core_movement_definition_id": 21
+  },
+  {
+    "id": 659,
+    "key": "front_squat",
+    "kind": "core",
+    "core_movement_definition_id": 7
+  },
+  {
+    "id": 663,
+    "key": "hatfield_squat",
+    "kind": "core",
+    "core_movement_definition_id": 11
+  },
+  {
+    "id": 661,
+    "key": "high_bar_squat",
+    "kind": "core",
+    "core_movement_definition_id": 9
+  },
+  {
+    "id": 665,
+    "key": "larsen_press",
+    "kind": "core",
+    "core_movement_definition_id": 13
+  },
+  {
+    "id": 662,
+    "key": "low_bar_squat",
+    "kind": "core",
+    "core_movement_definition_id": 10
+  },
+  {
+    "id": 664,
+    "key": "pause_bench_press",
+    "kind": "core",
+    "core_movement_definition_id": 12
+  },
+  {
+    "id": 672,
+    "key": "pause_deadlift",
+    "kind": "core",
+    "core_movement_definition_id": 20
+  },
+  {
+    "id": 656,
+    "key": "pause_squat",
+    "kind": "core",
+    "core_movement_definition_id": 4
+  },
+  {
+    "id": 669,
+    "key": "pin_press",
+    "kind": "core",
+    "core_movement_definition_id": 17
+  },
+  {
+    "id": 658,
+    "key": "pin_squat",
+    "kind": "core",
+    "core_movement_definition_id": 6
+  },
+  {
+    "id": 676,
+    "key": "romanian_deadlift",
+    "kind": "core",
+    "core_movement_definition_id": 24
+  },
+  {
+    "id": 660,
+    "key": "safety_bar_squat",
+    "kind": "core",
+    "core_movement_definition_id": 8
+  },
+  {
+    "id": 678,
+    "key": "snatch_grip_deadlift",
+    "kind": "core",
+    "core_movement_definition_id": 26
+  },
+  {
+    "id": 666,
+    "key": "spoto_press",
+    "kind": "core",
+    "core_movement_definition_id": 14
+  },
+  {
+    "id": 677,
+    "key": "stiff_leg_deadlift",
+    "kind": "core",
+    "core_movement_definition_id": 25
+  },
+  {
+    "id": 679,
+    "key": "sumo_deadlift",
+    "kind": "core",
+    "core_movement_definition_id": 27
+  },
+  {
+    "id": 670,
+    "key": "tempo_bench_3_0_3",
+    "kind": "core",
+    "core_movement_definition_id": 18
+  },
+  {
+    "id": 675,
+    "key": "tempo_deadlift_3_0_3",
+    "kind": "core",
+    "core_movement_definition_id": 23
+  },
+  {
+    "id": 657,
+    "key": "tempo_squat_3_0_3",
+    "kind": "core",
+    "core_movement_definition_id": 5
+  },
+  {
+    "id": 681,
+    "key": "three_count_pause_squat",
+    "kind": "core",
+    "core_movement_definition_id": 37
+  },
+  {
+    "id": 682,
+    "key": "two_count_pause_bench",
+    "kind": "core",
+    "core_movement_definition_id": 38
+  },
+  {
+    "id": 668,
+    "key": "wide_grip_bench",
+    "kind": "core",
+    "core_movement_definition_id": 16
+  }
+]

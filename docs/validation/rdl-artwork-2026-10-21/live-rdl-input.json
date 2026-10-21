@@ -1,0 +1,23 @@
+{
+  "movement_identity_contract": 1,
+  "movement_definition_id": 676,
+  "movement_identity": {
+    "id": 676,
+    "key": "romanian_deadlift",
+    "kind": "core",
+    "ownership_scope": "global",
+    "family": "deadlift",
+    "core_movement_definition_id": 24,
+    "primary_muscle_group": "hamstrings",
+    "secondary_muscle_groups": [
+      "glutes",
+      "lower_back"
+    ]
+  },
+  "core_movement": {
+    "id": 24,
+    "key": "romanian_deadlift",
+    "kind": "variant",
+    "family": "deadlift"
+  }
+}
