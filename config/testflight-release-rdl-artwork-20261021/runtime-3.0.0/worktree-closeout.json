@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-21T16:56:26.839772+00:00",
+  "worktreeUsed": "/Users/dominic/powerlifting_app/powerlift_mobile_testflight",
+  "head": "b4c88feb1f5af133c1fafba77c578a4b39dd28c6",
+  "pass": true,
+  "errors": [],
+  "uniqueValidWorkRemaining": 0,
+  "accountedProductDifferences": [
+    {
+      "path": "app.json",
+      "sourceSha256": "43d0bdecd87b275da74ec7099c933e1496d209d44dd341ea29bf23bee673e9ce",
+      "canonicalSha256": "87e4fec5363704839e0371d5fa9e4596a44a8642c976e8b7cdaae403f98049e6",
+      "testflightSha256": "43d0bdecd87b275da74ec7099c933e1496d209d44dd341ea29bf23bee673e9ce",
+      "untracked": false,
+      "committedSha256": "43d0bdecd87b275da74ec7099c933e1496d209d44dd341ea29bf23bee673e9ce"
+    },
+    {
+      "path": "app/(tabs)/workout/[workoutId].tsx",
+      "sourceSha256": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92",
+      "canonicalSha256": "0bc5588fd92a9e767f4c44264f863542f756c2902543fea848b8fd2aa4ca91c1",
+      "testflightSha256": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92",
+      "untracked": false,
+      "committedSha256": "c52aa62aaf97933cac6fb706f083aa2dcd798acd2741bb22abb609d9b3d57a92"
+    },
+    {
+      "path": "components/home/AthleteHomeV3.tsx",
+      "sourceSha256": "cbf903e4eef2aaf00545e498ebcd92e54e0c175da09ae4410fc3233ea60bd134",
+      "canonicalSha256": "8bf674dfca6976030e0f4e1d34adf52e6194415eb7e8932f893c151756fae090",
+      "testflightSha256": "cbf903e4eef2aaf00545e498ebcd92e54e0c175da09ae4410fc3233ea60bd134",
+      "untracked": false,
+      "committedSha256": "cbf903e4eef2aaf00545e498ebcd92e54e0c175da09ae4410fc3233ea60bd134"
+    },
+    {
+      "path": "lib/equipment-flow-subject.ts",
+      "sourceSha256": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
+      "canonicalSha256": "79e4bc45607709f22e9ac0b731724f13a4fa87a6bdd9de9f2ce6b18dce24a0c5",
+      "testflightSha256": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373",
+      "untracked": false,
+      "committedSha256": "fb1ff686367dc6caccfba2aa9c84c7a0989efe1c952ff6331b40458297603373"
+    },
+    {
+      "path": "lib/equipment-selection.ts",
+      "sourceSha256": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84",
+      "canonicalSha256": "7663b3bdaf47d75784aa46345bafb77d401474cb86e45b64e6d91e497086de09",
+      "testflightSha256": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84",
+      "untracked": false,
+      "committedSha256": "c8aa04b174e82e2a0dd87568078d5a0d5e5baa84484799a735d21554fe162a84"
+    },
+    {
+      "path": "scripts/test-athlete-home-v3.mjs",
+      "sourceSha256": "e8110e9402b8421ca56b5b4604e558f36752bc79edcea006b360fb19881e3d1d",
+      "canonicalSha256": "6cfded16623c5efa7e90115799ec2d4d2e6fae4f26d107d1678f1aa78067c09f",
+      "testflightSha256": "e8110e9402b8421ca56b5b4604e558f36752bc79edcea006b360fb19881e3d1d",
+      "untracked": false,
+      "committedSha256": "e8110e9402b8421ca56b5b4604e558f36752bc79edcea006b360fb19881e3d1d"
+    },
+    {
+      "path": "scripts/test-equipment-flow-subject.mjs",
+      "sourceSha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d",
+      "canonicalSha256": "8d06579e7de123fdd29d3bd7d0cbd1b30300fce54504632157fb8c3b78658ffd",
+      "testflightSha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d",
+      "untracked": false,
+      "committedSha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d"
+    }
+  ],
+  "backPropagatedToCanonicalDev": true,
+  "publishedTestflightMinusDev": [],
+  "published": {
+    "id": "01a15f63-abf8-74ce-bd3b-a6b537d7c5ea",
+    "group": "6ef2d4dd-6502-4be2-a162-35207b11201b",
+    "gitCommitHash": "b4c88feb1f5af133c1fafba77c578a4b39dd28c6",
+    "manifestId": "01a15f63-abf8-74ce-bd3b-a6b537d7c5ea",
+    "servedBundleSha256": "fa05e11a36474ae30e0339f7d6e76346d77c8dfb5236381ca3475cc0e8a8d98c"
+  },
+  "otherActiveWorktreeAssessments": {
+    "/Users/dominic/powerlifting_app_mobile_optional_dev": {
+      "status": "NOT_REQUIRED",
+      "canonicalSha": "264a358e3f52b065c59b5f84dbc55d836563587c",
+      "sourceFingerprint": "f3e0379672ffd499cd2e473346499cc9123bad04533cc03a562a958e4539f593",
+      "reason": "Independent unfinished optional-equipment work is not a source or destination of this cumulative 3.0 approved-artwork hotfix. Preserve its unique work. Canonical DEV owns the complete portable artwork fix; its next promotion must integrate canonical source and pass the new global-ID/collision guard before release."
+    },
+    "/Users/dominic/powerlifting_app_prod_mobile_optional_equipment": {
+      "status": "NOT_REQUIRED",
+      "canonicalSha": "264a358e3f52b065c59b5f84dbc55d836563587c",
+      "sourceFingerprint": "d70c6a8615e829767cac1864887dc0ec7d0043c018885ac9596f7f4ee5a72d6c",
+      "reason": "Independent unfinished optional-equipment work is not a source or destination of this cumulative 3.0 approved-artwork hotfix. Preserve its unique work. Canonical DEV owns the complete portable artwork fix; its next promotion must integrate canonical source and pass the new global-ID/collision guard before release."
+    }
+  },
+  "tempWorktreeRemoved": "NOT_APPLICABLE_DURABLE_RELEASE_CHECKOUT",
+  "workflowComplete": true
+}
