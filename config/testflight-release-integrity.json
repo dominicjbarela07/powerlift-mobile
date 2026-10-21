@@ -158194,7 +158194,7 @@
     "scripts/eas-update-testflight.sh": "f05595e0795f680e9074932974586f60fe49901c23556827c5756f0bfa0b9e30",
     "scripts/test-accepted-behavior-contracts.mjs": "975d474b4a2cda87a207bf4cc09f70e18893f768d5612f76ed87ffaf4c10ca77",
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
-    "config/protected-fix-manifest.json": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491",
+    "config/protected-fix-manifest.json": "bbb672bb69acc23281d2f0e5b9a43447770a26dad4b982f48d67cf54c7d7ab18",
     "scripts/assert-no-dev-artwork-export.mjs": "610934d315a2f34c534e80545d7c8361fbad0110c313c48f3d9642f2c04a7c22",
     "scripts/test-release-critical-invariants.mjs": "8e55a43f3787a5fb9dcaa8002a832e944b765fb8ab87ed9a70bb250410ef3738",
     "scripts/test-release-source-lineage.mjs": "e7850ec385320f620ebc156dfa0dea62934d87114108c0ccf978ad03f53042b6",
@@ -164252,6 +164252,15 @@
         "sha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d",
         "reason": "Preserve the existing release holdback and its exact shipped guard. The newer canonical DEV Cable test remains outside this artwork-only release."
       }
+    },
+    {
+      "path": "config/protected-fix-manifest.json",
+      "before": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491",
+      "after": "bbb672bb69acc23281d2f0e5b9a43447770a26dad4b982f48d67cf54c7d7ab18",
+      "ownerInstruction": "Find what the fuck is going on, fix it, and deploy the fix.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-21-rdl-artwork.txt",
+      "ownerEvidenceSha256": "83c005be5f603cfce3c33aab90d1b75cae956759ec365eb5ddadf7d2481aee7d",
+      "review": "Exact JSON comparison proves the only manifest delta is one original-source Today UI holdback with both source hashes. All previous protected fixes and six release holdbacks are identical."
     }
   ]
 }
