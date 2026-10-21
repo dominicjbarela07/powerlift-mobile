@@ -127,6 +127,10 @@ export type SessionMovementItem = {
   backdown_reps?: number | null;
   movement_identity?: {
     id?: number | null;
+    key?: string | null;
+    kind?: string | null;
+    family?: string | null;
+    core_movement_definition_id?: number | null;
     display_name?: string | null;
     primary_muscle_group?: string | null;
     secondary_muscle_groups?: string[] | null;

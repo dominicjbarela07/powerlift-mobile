@@ -6,6 +6,7 @@ export type GovernedCoreChoice = {
   lift: string;
   core_movement_kind: 'competition' | 'variant';
   core_movement_family: string;
+  core_movement_key?: string;
   movement_definition_id?: number | null;
 };
 
@@ -39,6 +40,7 @@ export function governedCoreChoices(groups: { movements?: unknown[] }[]): Govern
         core_movement_kind: kind,
         core_movement_family: family,
         movement_definition_id: Number(row.movement_definition_id) || null,
+        ...(typeof row.core_movement_key === 'string' ? { core_movement_key: row.core_movement_key } : {}),
       });
     }
   }

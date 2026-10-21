@@ -9,7 +9,7 @@ import { normalizeCanonicalMovementArtSubject, resolveCanonicalMovementArtwork, 
 
 export type ApprovedExactArtwork = Readonly<{
   key: CanonicalMovementArtworkKey;
-  movement_definition_id: number;
+  movement_definition_id?: number;
   candidate_id: string;
   app_sha256: string;
 }>;
@@ -51,9 +51,11 @@ export function resolveApprovedExactMovementArtwork(
       && row.movement_definition_id === shared.artwork_movement_definition_id);
     if (!receipt?.candidate_id || !/^[a-f0-9]{64}$/.test(receipt.app_sha256)) return null;
     const movementId = subject.globalArtworkKey
-      ? subject.domain === 'core' ? subject.movementDefinitionId : subject.canonicalIdentityId
+      ? subject.domain === 'core' ? subject.movementDefinitionId ?? undefined : subject.canonicalIdentityId ?? undefined
       : shared.movement_definition_id;
-    if (!movementId) return null;
+    // Core-only history has a real Core ID but no physical definition ID. Do
+    // not manufacture the DEV foreign key merely to describe presentation.
+    if (!movementId && !subject.globalArtworkKey) return null;
     return { ...receipt, movement_definition_id: movementId } as ApprovedExactArtwork;
   }
   const identity = resolveCanonicalMovementArtwork(movement);
