@@ -1,0 +1,9 @@
+Owner message, October 21, 2026:
+
+What the fuck is going on here? Why am I— why are we missing my fucking image asset for RDL? How are we— how is that screwed up? That is unacceptable, dude. I've— we are beyond past fucking having issues with fucking assets. Dude, come on. Why does that need to be different? Find what the fuck is going on, fix it, and deploy the fix. I'm tired of this shit.
+
+Attached owner screenshots show Romanian Deadlift (RDL) with a Core Variant
+badge and missing exact movement image in mobile Session Preview and its
+movement drill-down. This text authorizes restoration of the original approved
+image and repair of the technical failure class, not artwork replacement,
+taxonomy changes, native builds or unrelated unpublished UI changes.

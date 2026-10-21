@@ -1,0 +1,6 @@
+Owner message, October 18, 2026:
+
+Hey dude, on off days, we're supposed to be able to, like athletes and self-coaches should be able to fucking submit a check-in. Like the pre- like the fucking pre-session survey. They should submit a survey, like if they want, with their body weight and readiness. Where did that go? It's not on the Today page for athletes. I had to go to the calendar, click on today's date to find it. But that was even, my user isn't able to fucking find it. They click on the day and it says Add Personal Item. I guess for them it's a session. Um, just make it more obvious on Today, on the main Today landing page for when it's a rest day, say, Hey, do you want to submit a fucking your pre-session, like you want to submit your readiness survey? Just make it like a slight nudge.
+
+The implementation remains in canonical DEV for the existing UI review flow.
+It is not included in the separately authorized RDL artwork hotfix.

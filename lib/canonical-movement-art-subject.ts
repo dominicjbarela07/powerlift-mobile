@@ -1,5 +1,5 @@
-import { isPrivateMovementDefinition, normalizeCurrentWorkoutItem } from './current-session-movement';
-import { governedAccessoryArtworkTaxonomy, governedCoreArtworkTaxonomy } from './governed-movement-art-taxonomy';
+import { isGlobalMovementDefinition, isPrivateMovementDefinition, normalizeCurrentWorkoutItem } from './current-session-movement';
+import { governedAccessoryArtworkTaxonomy, governedCoreArtworkTaxonomy, governedGlobalArtworkTaxonomy } from './governed-movement-art-taxonomy';
 import { normalizeWorkoutItemMovementReferences } from './workout-item-movement-references';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, RETIRED_ACCESSORY_ARTWORK_IDENTITIES } from './canonical-accessory-artwork-identities';
 import { focusedAccessoryMuscleRegionKey, type FocusedAccessoryMuscleRegionKey } from './accessory-muscle-group';
@@ -102,6 +102,8 @@ export type CanonicalMovementArtSubject = Readonly<{
   sessionItemId: number | null;
   evidenceId: number | null;
   privateDefinition?: true;
+  /** Proven global catalog key for presentation; numeric identity stays server-owned. */
+  globalArtworkKey?: string;
 }>;
 
 export type MovementArtInput = CanonicalMovementArtworkInput | CanonicalMovementArtSubject;
@@ -172,10 +174,17 @@ export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | 
   const isCore = Boolean(core || row.core_movement_id || row.core_family || row.core_kind
     || row.identity_type === 'core' || ['core', 'variant'].includes(token(row.kind)));
   if (isCore) {
+    const definitionId = base.performedMovementDefinitionId || base.effectiveMovementDefinitionId || base.movementDefinitionId;
+    const reference = [row.performed_canonical_movement_identity, row.effective_movement_identity, row.movement_identity]
+      .find(ref => ref && positiveId(ref.id) === definitionId);
+    const globalDefinition = governedGlobalArtworkTaxonomy(reference);
+    if (globalDefinition && ((core?.key && core.key !== globalDefinition.key)
+      || (core?.family && core.family !== globalDefinition.family))) return fail('conflicting_canonical_identity');
     const id = positiveId(core?.id || row.core_movement_id || row.measurement?.canonical_identity_id);
     const registeredCore = governedCoreArtworkTaxonomy(id, core?.key || row.measurement?.canonical_identity_key || row.key);
     const family = coreFamily(core?.family || row.core_family || row.family) || coreFamily(registeredCore?.family) || liftFamily(row.lift) || null;
     return { ...base, domain: 'core', canonicalIdentityId: id,
+      ...(globalDefinition ? { globalArtworkKey: globalDefinition.key } : {}),
       canonicalKey: core?.key || row.measurement?.canonical_identity_key || row.key || registeredCore?.key || null,
       family, coreFamily: family, coreVariant: token(core?.kind || row.core_kind || registeredCore?.core_kind || row.kind) === 'variant' || token(row.variant) === 'vr',
       source: row.performed_core_movement ? 'performed_canonical' : row.measurement ? 'measurement' : 'definition',
@@ -253,10 +262,13 @@ export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | 
   if (!identity || equipmentOnly(identity)) return fail('missing_canonical_identity');
   identityId = identityId || positiveId(identity.id);
   const privateDefinition = isPrivateMovementDefinition(identity);
-  const registeredTaxonomy = privateDefinition ? null : governedAccessoryArtworkTaxonomy(identityId);
+  const globalDefinition = governedGlobalArtworkTaxonomy(identity);
+  const registeredTaxonomy = privateDefinition ? null : globalDefinition
+    || (isGlobalMovementDefinition(identity) ? null : governedAccessoryArtworkTaxonomy(identityId));
   if (registeredTaxonomy && identity.key && identity.key !== registeredTaxonomy.key) return fail('conflicting_canonical_identity');
-  const registered = identityId && !privateDefinition ? CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[identityId as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES]
-    || RETIRED_ACCESSORY_ARTWORK_IDENTITIES[identityId as keyof typeof RETIRED_ACCESSORY_ARTWORK_IDENTITIES] : null;
+  const artworkIdentityId = globalDefinition?.id || identityId;
+  const registered = artworkIdentityId && !privateDefinition ? CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[artworkIdentityId as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES]
+    || RETIRED_ACCESSORY_ARTWORK_IDENTITIES[artworkIdentityId as keyof typeof RETIRED_ACCESSORY_ARTWORK_IDENTITIES] : null;
   const muscles = taxonomy(identity);
   let taxonomySource: CanonicalMovementArtSubject['taxonomySource'] = muscles.primary ? 'identity' : null;
   // Enrich only references to this exact subject. A thin preferred reference
@@ -279,7 +291,7 @@ export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | 
   // A generic row's key does not establish definition identity. Key-only recovery
   // is restricted to explicitly typed definition/measurement/legacy references.
   const catalog = !privateDefinition && (identityId || source !== 'governed_taxonomy')
-    ? governedAccessoryArtworkTaxonomy(identityId, identity.key) : null;
+    ? globalDefinition || governedAccessoryArtworkTaxonomy(identityId, identity.key) : null;
   if (catalog) {
     if (!identityId) identityId = catalog.id;
     if (!muscles.primary) {
@@ -296,6 +308,7 @@ export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | 
     taxonomySource = 'catalog';
   }
   return { ...base, domain: 'accessory', canonicalIdentityId: identityId, canonicalKey: identity.key || null, taxonomySource,
+    ...(globalDefinition ? { globalArtworkKey: globalDefinition.key } : {}),
     ...(privateDefinition ? { privateDefinition: true as const } : {}),
     performedMovementDefinitionId: ['performed_evidence', 'performed_canonical', 'performed_movement'].includes(source) ? identityId : base.performedMovementDefinitionId,
     family: identity.family || null, primaryMuscleGroup: muscles.primary, secondaryMuscleGroups: muscles.secondary,
