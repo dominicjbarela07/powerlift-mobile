@@ -1183,7 +1183,9 @@
         "path": "components/home/AthleteHomeV3.tsx",
         "sourceCommit": "8eb09f3a88e28a4980a1e59f6d3166889286882c",
         "blob": "0f9fbcfce7b5d5772933399f805d7435a5186297",
-        "reason": "Preserve the current published Today UI while the separately requested rest-day readiness entry awaits owner visual signoff in DEV."
+        "reason": "Preserve the current published Today UI while the separately requested rest-day readiness entry awaits owner visual signoff in DEV.",
+        "devSha256": "8bf674dfca6976030e0f4e1d34adf52e6194415eb7e8932f893c151756fae090",
+        "candidateSha256": "cbf903e4eef2aaf00545e498ebcd92e54e0c175da09ae4410fc3233ea60bd134"
       }
     ]
   }
