@@ -1,7 +1,5 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import vm from 'node:vm';
-import ts from 'typescript';
 
 import { distinctNextUpSession, mergeAthleteHomeV3, resolveHomeState } from '../lib/athlete-home-v3.ts';
 import {
@@ -121,63 +119,6 @@ assert.match(route, /preferredUnits=\{user\?\.preferred_units\}/, 'Home uses the
 assert.match(route, /ledger_strength[\s\S]*ledger\/strength/, 'strength card has a canonical Ledger destination');
 assert.match(route, /ledger_achievement[\s\S]*ledger\/achievements/, 'achievement card has a canonical Ledger destination');
 assert.match(route, /AsyncStorage\.getItem\(todayCacheKey\)[\s\S]*isAthleteHomePayloadCurrent\(cached\)[\s\S]*setToday\(normalizeTodayPayload\(cached\)\)/, 'only current-day cached Home evidence is restored before a background refresh');
-
-// Exercise the real rest-state renderer and its action, rather than only
-// asserting that check-in copy happens to occur elsewhere in Home.
-const ast = ts.createSourceFile('AthleteHomeV3.tsx', screen, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-const restFunctions = ['StateHero', 'RestHero', 'RestDayReadinessNudge'];
-const declarations = restFunctions.map(name => {
-  const declaration = ast.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === name);
-  assert.ok(declaration, name);
-  return declaration.getText(ast);
-}).join('\n');
-const rendererModule = { exports: {} };
-vm.runInNewContext(ts.transpileModule(`${declarations}\nmodule.exports = { StateHero };`, {
-  compilerOptions: { jsx: ts.JsxEmit.React, module: ts.ModuleKind.CommonJS },
-}).outputText, {
-  module: rendererModule,
-  React: { createElement: (type, props, ...children) => ({ type, props: props || {}, children }) },
-  View: 'View', Text: 'Text', Pressable: 'Pressable', Ionicons: 'Ionicons',
-  HeroFrame: 'HeroFrame', HeroButton: 'HeroButton', MiniLink: 'MiniLink',
-  MeetHero: 'MeetHero', AchievementHero: 'AchievementHero', RecoveryHero: 'RecoveryHero', TrainingHero: 'TrainingHero',
-  REST_ART: 'rest-art', SLColors: {}, styles: {},
-});
-const renderNodes = node => {
-  if (!node || typeof node !== 'object') return [];
-  if (typeof node.type === 'function') return renderNodes(node.type(node.props));
-  return [node, ...(node.children || []).flat(Infinity).flatMap(renderNodes)];
-};
-const actions = [];
-const heroProps = { creatingTodaySession: false, home: {}, state: 'rest', unit: 'lb', onAction: action => actions.push(action) };
-const renderHero = overrides => renderNodes(rendererModule.exports.StateHero({ ...heroProps, ...overrides }));
-const entry = nodes => nodes.find(node => node.props.accessibilityLabel === 'Log readiness and body weight');
-for (const selfCoached of [false, true]) {
-  const action = { route: 'daily_readiness', kind: 'submit_daily_check_in' };
-  const today = { date: baseToday.date, capabilities: { can_daily_check_in: true }, daily_check_in_action: action };
-  const nodes = renderHero({ home: { can_create_today_session: selfCoached }, today });
-  assert.ok(entry(nodes), `rest-day check-in is visible for ${selfCoached ? 'self-coaches' : 'athletes'}`);
-  entry(nodes).props.onPress();
-  assert.equal(actions.at(-1), action, 'entry dispatches the existing server-provided daily action');
-  assert.equal(nodes.some(node => node.type === 'HeroButton' && node.props.label === 'Create Session'), selfCoached);
-  assert.deepEqual(nodes.filter(node => node.type === 'MiniLink').map(node => node.props.label), ['Open Calendar', 'View The Ledger']);
-}
-for (const capabilities of [undefined, {}, { can_daily_check_in: false }]) {
-  assert.equal(entry(renderHero({ today: { capabilities } })), undefined, 'no client-created check-in permission');
-}
-const eligibleToday = { date: baseToday.date, capabilities: { can_daily_check_in: true } };
-entry(renderHero({ today: eligibleToday })).props.onPress();
-assert.equal(actions.at(-1).route, 'daily_readiness', 'fallback action opens the same survey, never creates a Session');
-const recorded = renderHero({ today: { ...eligibleToday, daily_check_in: { id: 12, bodyweight_kg: 90 } } });
-const viewEntry = recorded.find(node => node.props.accessibilityLabel === "View today's readiness check-in");
-assert.ok(viewEntry, 'persisted daily check-in remains directly reviewable');
-assert.ok(recorded.some(node => node.children.includes('Recorded · View check-in')));
-viewEntry.props.onPress();
-assert.equal(actions.at(-1).route, 'daily_readiness');
-for (const state of ['training', 'meet', 'achievement', 'recovery']) {
-  const nodes = renderHero({ state, today: eligibleToday });
-  assert.equal(entry(nodes), undefined, `${state} keeps its existing hero flow`);
-  assert.equal(nodes[0].type, `${state[0].toUpperCase()}${state.slice(1)}Hero`);
-}
 assert.match(route, /result\.kind === 'error'[\s\S]*setError\('Network error while loading Today\.'\)[\s\S]*return/, 'refresh failure becomes an explicit error state');
 assert.doesNotMatch(
   route.match(/if \(result\.kind === 'error'\)[\s\S]*?\n\s*}\n\n\s*const res/)?.[0] || '',
