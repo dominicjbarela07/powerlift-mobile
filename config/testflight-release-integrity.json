@@ -158167,7 +158167,7 @@
     }
   ],
   "releaseGateFiles": {
-    "AGENTS.md": "af4faadd6522f42b2c93288b3c6fae3615751bd52246787feda29838919ba147",
+    "AGENTS.md": "a964e5c30b518ca49b7ea55977d454af0e5ea12a0e9e1e9d16a8636c8cc7fefe",
     "app.config.js": "53dbaa252bd5af0dfad206be4c8dd0f2939b8615cd0b57e80450c45efb30a859",
     "scripts/testflight-cumulative-integrity.mjs": "5afb84cde3a03bfdc06fd5417a25188243589ccbc635f4efd6c1606ed7b1b0a8",
     "scripts/test-testflight-cumulative-integrity.mjs": "d64d141d4dcdc6c726c5ae85c2f107b78b4780c35220e1b0236be0f5256e2a76",
@@ -158178,7 +158178,7 @@
     "config/accepted-behavior-contract-quarantine.json": "da3ee876e0448c639c00a42f5f631484623e5a969655623f5e58772d8349f34a",
     "config/protected-fix-manifest.json": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491",
     "scripts/assert-no-dev-artwork-export.mjs": "610934d315a2f34c534e80545d7c8361fbad0110c313c48f3d9642f2c04a7c22",
-    "scripts/test-release-critical-invariants.mjs": "cb3d7b8ddd0eb72a0f807faedb1973dc97d63acab6bc007b80f7555b650c1ce1",
+    "scripts/test-release-critical-invariants.mjs": "8e55a43f3787a5fb9dcaa8002a832e944b765fb8ab87ed9a70bb250410ef3738",
     "scripts/test-release-source-lineage.mjs": "e7850ec385320f620ebc156dfa0dea62934d87114108c0ccf978ad03f53042b6",
     "scripts/release-holdback-policy.mjs": "3ff3d255b82fa2cd583f66da1656217c13ba959cc72fe65eb0dd50d21d4fc148",
     "package.json": "96db5a8e29d0378d109481ee102c60a7dd313b08e998cae622b427212e5da1eb",
@@ -158207,7 +158207,7 @@
     "scripts/test-cable-brand-equipment-api.mjs": "71889a55559cfd1dc43a5817b0b1ac8bd0c022498e6c30d46ff161ab71949dbc",
     "docs/CABLE_BRAND_EQUIPMENT.md": "0289f45e3859f993ccce52a2ffca383f484f3899c61224179813a6363c151c21",
     "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt": "69f1ba6ca417408f3e0a5cada3f37bca5fee5f1c26ece4443bec9d855fc8cb9b",
-    "scripts/owner-directed-client-fix.mjs": "b1b6f4f996df6befd75cd9eb5afcc7917b325f2abd76b8bec8bc4c776b08e978",
+    "scripts/owner-directed-client-fix.mjs": "a32c747233127181a7aebe83238c053e38c2b145c67f4ca2ae7318bed285ea3a",
     "scripts/test-owner-directed-client-fix.mjs": "78fc780bd4295ff47d8dc8ce9b73dfd9ed950d561de82701fcd2d3d35e156df0",
     "scripts/test-zero-load-edit-api.mjs": "a19f2b1b7d6b0ad2335f8e3668657a1a74675ca14d14ba8bf13616b16f3dbc2a",
     "scripts/test-zero-load-edit-set.mjs": "6187f4a68b57230b2fb86f3702e2c89d0f704394f1eef200db689f66cec6e250",
@@ -158235,7 +158235,7 @@
     "scripts/native-build-upload-policy.cjs": "0886edd1b00f77aa122848cc96176ed22b053f53d5393e87cf9081456ff3ffde",
     "scripts/test-native-build-upload-policy.mjs": "3016ed47dd9ef99eff2382e2d6dbe2581b38804945f6999c24d55ab9517b40ff",
     "scripts/assert-ota-native-compatibility.mjs": "8236db7138e9f28be680575774e75e57f9d17bd159cd3e9892f2b4234c29b9e2",
-    "scripts/production3-client-fix-policy.mjs": "2489dde1827313c7cbca31685dbed7ae0c2c638be7acf62f9dfad55fb8025f5e",
+    "scripts/production3-client-fix-policy.mjs": "12ed6608a83b2bde21b6ba4fa6c444b4465d3d6f5ddbae5888a56abf6988ffb6",
     "scripts/test-production3-client-fix-policy.mjs": "b2dcd77c3e5de96a32e95344960d55116e86243dcd07c29df798fec837da26e0",
     "scripts/test-copied-week-release-scope.mjs": "f7d6b1f01fc9da815771b79ad67dc94fd9a030c6152b912e4d74abbe48cd01d6",
     "scripts/test-private-movement-identity-contract.mjs": "7abcd5b6498f7e1b973d9d35dc4ab52b25311058de6fbcea48eeefd6471f8748",
@@ -158263,7 +158263,12 @@
     "scripts/test-weekly-report-release-scope.mjs": "f32e3df25b3f1f1d209049326124e2ae2245b2e678513afb4456a35a2570f31b",
     "scripts/test-training-week-report.mjs": "3a79999259fa315a0c23433c11a01710979251121425ca8dc5aed89286883117",
     "scripts/backend-contract-snapshot.mjs": "25b645038c521d6fbbbd108f0188782b83fd699f8f91c0c2cac680f1a90c5f9a",
-    "scripts/test-backend-contract-snapshot.mjs": "4bf1c3e553430853b92ad77a8dd473009266414c15c5629dab6ab47177e6d0ca"
+    "scripts/test-backend-contract-snapshot.mjs": "4bf1c3e553430853b92ad77a8dd473009266414c15c5629dab6ab47177e6d0ca",
+    "scripts/approved-artwork-portability-release-scope.mjs": "d80104e5dc379c19c9814737fbdf58f536a4c8843b16f28b89ee5de919352636",
+    "scripts/test-approved-artwork-portability.mjs": "975e2a1cef08fda9735aa1251490c1b3c8cc219b983a00a7ef92f9cc0b3e88da",
+    "scripts/test-approved-artwork-portability-release-scope.mjs": "f09b2c6ae0e0655154268daa049bcf7a27b671cb487bff3e3706d5923be7d51c",
+    "docs/validation/rdl-artwork-2026-10-21/live-rdl-input.json": "8e54a1c49288f0d87569869f954f5870c3b3877703c1dcf047ebc115b423606b",
+    "docs/validation/rdl-artwork-2026-10-21/live-core-inventory.json": "c074bb7f30b7fcdad2508f631c76ddc97c8d1a90f4a2e8bf1db84f76f35fd14f"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -164174,5 +164179,52 @@
       "publicationAttempt": "STOPPED_BY_OWNER_DURING_LOCAL_PREPARATION",
       "historicalEvidencePreserved": true
     }
-  }
+  },
+  "releaseGateReviews": [
+    {
+      "ownerInstruction": "Find what the fuck is going on, fix it, and deploy the fix.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-21-rdl-artwork.txt",
+      "ownerEvidenceSha256": "83c005be5f603cfce3c33aab90d1b75cae956759ec365eb5ddadf7d2481aee7d",
+      "baselineSource": "124a9ac8624ee4380aedf629b20aae2ffc916eab",
+      "changes": [
+        {
+          "path": "AGENTS.md",
+          "before": "af4faadd6522f42b2c93288b3c6fae3615751bd52246787feda29838919ba147",
+          "after": "a964e5c30b518ca49b7ea55977d454af0e5ea12a0e9e1e9d16a8636c8cc7fefe",
+          "alreadyInProtected3Baseline": true,
+          "review": "Retain exact owner-directed 3.0-only retirement guidance; no release law removed."
+        },
+        {
+          "path": "scripts/test-release-critical-invariants.mjs",
+          "before": "cb3d7b8ddd0eb72a0f807faedb1973dc97d63acab6bc007b80f7555b650c1ce1",
+          "after": "8e55a43f3787a5fb9dcaa8002a832e944b765fb8ab87ed9a70bb250410ef3738",
+          "alreadyInProtected3Baseline": false,
+          "review": "Extend the existing scope-bound publisher with exact owner RDL evidence, the five-file cumulative baseline and executable portability/negative controls. Preserve all old scopes and protections."
+        },
+        {
+          "path": "scripts/owner-directed-client-fix.mjs",
+          "before": "b1b6f4f996df6befd75cd9eb5afcc7917b325f2abd76b8bec8bc4c776b08e978",
+          "after": "a32c747233127181a7aebe83238c053e38c2b145c67f4ca2ae7318bed285ea3a",
+          "alreadyInProtected3Baseline": false,
+          "review": "Extend the existing scope-bound publisher with exact owner RDL evidence, the five-file cumulative baseline and executable portability/negative controls. Preserve all old scopes and protections."
+        },
+        {
+          "path": "scripts/production3-client-fix-policy.mjs",
+          "before": "2489dde1827313c7cbca31685dbed7ae0c2c638be7acf62f9dfad55fb8025f5e",
+          "after": "12ed6608a83b2bde21b6ba4fa6c444b4465d3d6f5ddbae5888a56abf6988ffb6",
+          "alreadyInProtected3Baseline": false,
+          "review": "Extend the existing scope-bound publisher with exact owner RDL evidence, the five-file cumulative baseline and executable portability/negative controls. Preserve all old scopes and protections."
+        }
+      ],
+      "addedRequiredGuards": [
+        "scripts/test-approved-artwork-portability.mjs",
+        "scripts/test-approved-artwork-portability-release-scope.mjs"
+      ],
+      "retainedExistingCableGuard": {
+        "path": "scripts/test-equipment-flow-subject.mjs",
+        "sha256": "78d7f2ea2cdc1eecd936d96d9ec023780ccc6c5fda69f893dbf533d68e13e96d",
+        "reason": "Preserve the existing release holdback and its exact shipped guard. The newer canonical DEV Cable test remains outside this artwork-only release."
+      }
+    }
+  ]
 }
