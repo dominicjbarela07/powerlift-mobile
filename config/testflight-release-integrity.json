@@ -158503,7 +158503,7 @@
       "reason": "Retained exact source-bound pre-existing Cable backend holdback; Option E does not modify these bytes. Both lanes retain shipped zero-load editor fix."
     }
   ],
-  "releaseConstitutionSha256": "f52b9c6fa501acebba1e604bc83b59aefee679932307256e764941046c59906a",
+  "releaseConstitutionSha256": "7b6c693d9f41a1ee29311f44e491286bc04758f8c980f1111010fd5ebfe48873",
   "protectedCatalogSnapshotSha256": "d1505823d448ffdfa7b79ab577c339ef0ec44f29cb5212838e0fbb3f48dfc123",
   "catalogCompatibilityAuthorization": {
     "ownerInstruction": "Everything else deterministic:\nFIX IT.",
@@ -163808,6 +163808,15 @@
       "review": "Add full-catalog/diverse-history, filtered-window, complete-pagination and concurrent Ledger/Today/Calendar acceptance after the owner reported the prior fix still exceeded 15 seconds. Preserve every existing release, asset, identity, equipment, auth and legacy rule. Incident stays OPEN until actual affected phone timings are observed.",
       "evidence": [
         "docs/release/MOBILE_LOADING_RECURRENCE_2026-10-16.md"
+      ]
+    },
+    {
+      "before": "f52b9c6fa501acebba1e604bc83b59aefee679932307256e764941046c59906a",
+      "after": "7b6c693d9f41a1ee29311f44e491286bc04758f8c980f1111010fd5ebfe48873",
+      "review": "Reviewed the additive October 18 web-performance acceptance law: source-bound cold/warm and pointer-through-paint budgets, representative histories/cache checks, preserved owner access/art/history rules and no false automatic-hook claim. Every pre-existing mobile, artifact, identity, approval, authorization and legacy law is retained; the artwork-only OTA does not change web surfaces.",
+      "evidence": [
+        "docs/release/WEB_PERFORMANCE_PASS_2026-10-18.md",
+        "docs/release/RDL_APPROVED_ART_RESTORATION_2026-10-21.md"
       ]
     }
   ],
