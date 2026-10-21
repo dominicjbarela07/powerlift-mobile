@@ -7,6 +7,11 @@ export const portableArtworkPaths = [
   'config/protected-fix-manifest.json',
   'lib/canonical-movement-art-subject.ts', 'lib/canonical-movement-artwork.ts',
   'lib/current-session-movement.ts', 'lib/governed-movement-art-taxonomy.ts', 'lib/movement-artwork-hero.ts',
+  'lib/logger-movement-identity.ts', 'lib/governed-movement-classes.ts',
+  'components/ledger/VariantsExperience.tsx',
+  'components/coach-mobile/SessionEditingWorkspace.tsx',
+  'components/coach-mobile/athlete-workspace/CoachAthletePerformance.tsx',
+  'app/(tabs)/workout/session-workspace/[workoutId].tsx',
 ].sort();
 export function assertPortableArtworkBaseline({ root, scope, state, files }) {
   assert.equal(scope.scope, 'approved-artwork-portability-20261021');

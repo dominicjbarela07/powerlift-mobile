@@ -1,0 +1,23 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: pause_squat: actual Core-only consumer must retain approved artwork
++ actual - expected
+
++ undefined
+- 'competition_squat'
+
+    at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-approved-artwork-portability.mjs:113:14
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: 'competition_squat',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.2.1

@@ -34,6 +34,18 @@ export function governedGlobalArtworkTaxonomy(reference?: {
     && (!reference.family || reference.family === registered.family) ? registered : null;
 }
 
+/** A named CoreMovementDefinition reference is already a global typed catalog
+ * boundary. Its immutable key, family and competition/variant kind must agree.
+ */
+export function governedCoreArtworkReference(reference?: {
+  id?: number | null; key?: string | null; family?: string | null; kind?: string | null;
+} | null) {
+  if (!reference?.key || !Number.isInteger(reference.id) || Number(reference.id) <= 0) return null;
+  const registered = publicByKey.get(reference.key);
+  return registered?.kind === 'core' && 'core_kind' in registered && reference.family === registered.family
+    && reference.kind === registered.core_kind ? registered : null;
+}
+
 export function governedAccessoryArtworkTaxonomy(id: number | null, key?: string | null) {
   const registered = id ? byId.get(id) : key ? byKey.get(key) : undefined;
   // Unknown or contradictory typed references never borrow another movement.

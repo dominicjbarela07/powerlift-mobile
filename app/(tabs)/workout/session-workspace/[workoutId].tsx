@@ -116,6 +116,10 @@ type WorkoutItem = {
   planned_sets?: PlannedSet[];
   movement_identity?: {
     id?: number | null;
+    key?: string | null;
+    kind?: string | null;
+    family?: string | null;
+    core_movement_definition_id?: number | null;
     display_name?: string | null;
     primary_muscle_group?: string | null;
     secondary_muscle_groups?: string[] | null;
@@ -239,6 +243,8 @@ type MovementPreset = {
   search_match?: MovementSearchMatch | null;
   id?: number | null;
   core_movement_id?: number | null;
+  core_movement_key?: string | null;
+  movement_definition_id?: number | null;
   name?: string | null;
   display_name?: string | null;
   lift?: string | null;
@@ -781,11 +787,16 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
     if (trainingLiftEditor.mode === 'add' && addCoreCompletionRef.current) {
       const id = nextDraftMovementIdRef.current--;
       const targetMultiplier = workspaceDisplayUnit === 'lb' ? KG_PER_LB : 1;
+      const selectedCore = governedCoreChoices(movementGroups).find(row => row.id === setup.coreMovementId);
       addCoreCompletionRef.current({
         id,
         movement: setup.movement,
+        movement_definition_id: selectedCore?.movement_definition_id,
+        movement_identity: selectedCore?.movement_definition_id && selectedCore.core_movement_key ? { id: selectedCore.movement_definition_id, key: selectedCore.core_movement_key, kind: 'core', ownership_scope: 'global', family: selectedCore.core_movement_family, core_movement_definition_id: selectedCore.id } : null,
         core_movement: setup.coreMovementId ? {
           id: setup.coreMovementId,
+          key: selectedCore?.core_movement_key,
+          family: selectedCore?.core_movement_family,
           display_name: setup.movement,
           kind: 'variant',
         } : null,
@@ -1449,7 +1460,9 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
           if (!preset.coreMovementId || !preset.coreKind) return;
           addMovementCompletionRef.current?.({
             id: nextDraftMovementIdRef.current--, movement: preset.name,
-            core_movement: preset.coreMovementId ? { id: preset.coreMovementId, display_name: preset.name, kind: preset.coreKind } : null,
+            movement_definition_id: preset.movementDefinitionId,
+            movement_identity: preset.movementDefinitionId && preset.coreMovementKey ? { id: preset.movementDefinitionId, key: preset.coreMovementKey, kind: 'core', ownership_scope: 'global', family: preset.coreFamily, core_movement_definition_id: preset.coreMovementId } : null,
+            core_movement: preset.coreMovementId ? { id: preset.coreMovementId, key: preset.coreMovementKey, family: preset.coreFamily, display_name: preset.name, kind: preset.coreKind } : null,
             lift: preset.lift, designation: 'PRIMARY', variant: 'STRAIGHT', mode: 'RPE', sets: 3, reps: 5,
             rpe_target: preset.lift === 'VR' ? null : 7, planned_sets: [],
           }, 'core');
@@ -2596,8 +2609,8 @@ function AccessoryEditorModal({
                       {activeClass !== 'accessory' ? <View>
                         {activeClass === 'variant' ? ['squat', 'bench', 'deadlift'].map((family) => {
                           const rows = matchingCore.filter((row) => row.core_movement_family === family);
-                          return rows.length ? <View key={family}><Text style={styles.accessoryPickerSectionLabel}>{coreFamilyLabel(family)}</Text>{rows.map((row) => <Pressable key={row.id} accessibilityRole="button" accessibilityLabel={`Select ${row.display_name}`} onPress={() => onSelectCore?.(row, { key: 'core_variants', name: 'Core Variants' })} style={styles.movementClassResult}><CanonicalMovementArtwork surface="session-workspace-core-search" movement={{ core_movement: { id: row.id, family: row.core_movement_family, kind: row.core_movement_kind }, lift: row.lift, kind: 'core' }} size={44} /><View style={{ flex: 1 }}><Text style={styles.movementClassResultName}>{row.display_name}</Text><Text style={styles.movementClassResultMeta}>{coreFamilyLabel(family)} variant</Text></View><Ionicons name="add" size={21} color={colors.violet} /></Pressable>)}</View> : null;
-                        }) : matchingCore.map((row) => <Pressable key={row.id} accessibilityRole="button" accessibilityLabel={`Select ${row.display_name}`} onPress={() => onSelectCore?.(row, { key: 'competition_lifts', name: 'Competition Lifts' })} style={styles.movementClassResult}><CanonicalMovementArtwork surface="session-workspace-core-search" movement={{ core_movement: { id: row.id, family: row.core_movement_family, kind: row.core_movement_kind }, lift: row.lift, kind: 'core' }} size={44} /><View style={{ flex: 1 }}><Text style={styles.movementClassResultName}>{row.display_name}</Text><Text style={styles.movementClassResultMeta}>Competition lift</Text></View><Ionicons name="add" size={21} color={colors.violet} /></Pressable>)}
+                          return rows.length ? <View key={family}><Text style={styles.accessoryPickerSectionLabel}>{coreFamilyLabel(family)}</Text>{rows.map((row) => <Pressable key={row.id} accessibilityRole="button" accessibilityLabel={`Select ${row.display_name}`} onPress={() => onSelectCore?.(row, { key: 'core_variants', name: 'Core Variants' })} style={styles.movementClassResult}><CanonicalMovementArtwork surface="session-workspace-core-search" movement={{ core_movement: { id: row.id, key: row.core_movement_key, family: row.core_movement_family, kind: row.core_movement_kind }, lift: row.lift, kind: 'core' }} size={44} /><View style={{ flex: 1 }}><Text style={styles.movementClassResultName}>{row.display_name}</Text><Text style={styles.movementClassResultMeta}>{coreFamilyLabel(family)} variant</Text></View><Ionicons name="add" size={21} color={colors.violet} /></Pressable>)}</View> : null;
+                        }) : matchingCore.map((row) => <Pressable key={row.id} accessibilityRole="button" accessibilityLabel={`Select ${row.display_name}`} onPress={() => onSelectCore?.(row, { key: 'competition_lifts', name: 'Competition Lifts' })} style={styles.movementClassResult}><CanonicalMovementArtwork surface="session-workspace-core-search" movement={{ core_movement: { id: row.id, key: row.core_movement_key, family: row.core_movement_family, kind: row.core_movement_kind }, lift: row.lift, kind: 'core' }} size={44} /><View style={{ flex: 1 }}><Text style={styles.movementClassResultName}>{row.display_name}</Text><Text style={styles.movementClassResultMeta}>Competition lift</Text></View><Ionicons name="add" size={21} color={colors.violet} /></Pressable>)}
                         {coreLoading ? <View style={styles.trainingLiftLoadingRow}><ActivityIndicator color={colors.violet} /><Text style={styles.trainingLiftMuted}>Loading governed movements...</Text></View> : null}
                         {!coreLoading && !matchingCore.length ? <Text style={styles.trainingLiftMuted}>{movementQuery.trim() ? 'No matching movements in this class.' : 'No governed movements are available.'}</Text> : null}
                       </View> : resultList}
@@ -3633,6 +3646,8 @@ function movementPresetFromValue(value: MovementPreset | string | null | undefin
   return {
     name,
     coreMovementId: Number(preset?.core_movement_id || preset?.id) || null,
+    coreMovementKey: preset?.core_movement_key || null,
+    movementDefinitionId: Number(preset?.movement_definition_id) || null,
     coreFamily: preset?.core_movement_family || preset?.family || null,
     coreKind: preset?.core_movement_kind || null,
     lift: String(preset?.lift || (group?.key === 'competition_lifts'

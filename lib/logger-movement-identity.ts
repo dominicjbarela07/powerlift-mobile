@@ -114,6 +114,13 @@ export function resolveLoggerMovementIdentity(
 export function canonicalArtworkInputForLoggerItem(
   item: CanonicalMovementArtworkInput & { id?: number | null },
 ): CanonicalMovementArtSubject {
+  if (item.movement_identity_contract !== 1 && !item.is_substituted
+    && !item.movement_definition_id && !item.effective_movement_definition_id
+    && !item.performed_canonical_movement_definition_id && !item.movement_identity
+    && !item.effective_movement_identity && !item.performed_canonical_movement_identity
+    && item.core_movement?.key) {
+    return normalizeCanonicalMovementArtSubject({ core_movement: item.core_movement, kind: 'core', item_id: item.item_id || item.id });
+  }
   const current = normalizeCurrentWorkoutItem(item);
   return normalizeCanonicalMovementArtSubject({
     item_id: item.item_id || item.id,

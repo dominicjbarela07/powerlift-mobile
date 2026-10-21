@@ -1,5 +1,5 @@
 import { isGlobalMovementDefinition, isPrivateMovementDefinition, normalizeCurrentWorkoutItem } from './current-session-movement';
-import { governedAccessoryArtworkTaxonomy, governedCoreArtworkTaxonomy, governedGlobalArtworkTaxonomy } from './governed-movement-art-taxonomy';
+import { governedAccessoryArtworkTaxonomy, governedCoreArtworkTaxonomy, governedCoreArtworkReference, governedGlobalArtworkTaxonomy } from './governed-movement-art-taxonomy';
 import { normalizeWorkoutItemMovementReferences } from './workout-item-movement-references';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, RETIRED_ACCESSORY_ARTWORK_IDENTITIES } from './canonical-accessory-artwork-identities';
 import { focusedAccessoryMuscleRegionKey, type FocusedAccessoryMuscleRegionKey } from './accessory-muscle-group';
@@ -177,7 +177,12 @@ export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | 
     const definitionId = base.performedMovementDefinitionId || base.effectiveMovementDefinitionId || base.movementDefinitionId;
     const reference = [row.performed_canonical_movement_identity, row.effective_movement_identity, row.movement_identity]
       .find(ref => ref && positiveId(ref.id) === definitionId);
-    const globalDefinition = governedGlobalArtworkTaxonomy(reference);
+    if (isPrivateMovementDefinition(reference)) return { ...fail('conflicting_canonical_identity'), privateDefinition: true };
+    const globalDefinition = governedGlobalArtworkTaxonomy(reference)
+      || (!reference ? governedCoreArtworkReference(core || {
+        id: row.core_movement_id, key: row.key, family: row.core_family || row.family,
+        kind: row.core_kind || row.kind,
+      }) : null);
     if (globalDefinition && ((core?.key && core.key !== globalDefinition.key)
       || (core?.family && core.family !== globalDefinition.family))) return fail('conflicting_canonical_identity');
     const id = positiveId(core?.id || row.core_movement_id || row.measurement?.canonical_identity_id);

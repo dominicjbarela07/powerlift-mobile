@@ -94,9 +94,10 @@ function useVariantStory(athleteId?: number) {
   return { story, loading, error: error instanceof Error ? error.message : error ? 'Core Variant evidence could not be loaded.' : null, load };
 }
 
-function variantArtwork(movement: Pick<CoreVariantMovement, 'core_movement_id' | 'family'>) {
+function variantArtwork(movement: Pick<CoreVariantMovement, 'core_movement_id' | 'family' | 'key'>) {
   return {
     core_movement_id: movement.core_movement_id,
+    key: movement.key,
     identity_type: 'core',
     kind: 'variant',
     core_kind: 'variant',

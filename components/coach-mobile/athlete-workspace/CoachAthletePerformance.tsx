@@ -152,7 +152,7 @@ export function CoachAthletePerformance() {
             {model.variantPreview.map((movement) => {
               const p = movement.latest_progression!;
               return <Pressable key={movement.core_movement_id} accessibilityRole="button" accessibilityLabel={`Open ${movement.name} variant evidence`} onPress={() => open(`variant/${movement.core_movement_id}`)} style={({ pressed }) => [s.movementRow, pressed && v.pressed]}>
-                <CanonicalMovementArtwork surface="CoachAthletePerformance" movement={{ core_movement_id: movement.core_movement_id, core_movement: { id: movement.core_movement_id, family: movement.family, kind: 'variant' } }} size={54} /><View style={v.flex}><Text style={v.rowTitle}>{movement.name}</Text><Text style={s.progressText}>{performanceTaskChange(p.prior, p.current, unit)}</Text><Text style={v.meta}>{movement.parent_lift_label} variant · {periodDate(p.occurred_on)}</Text></View><Ionicons name="chevron-forward" size={15} color={INK.muted} />
+                <CanonicalMovementArtwork surface="CoachAthletePerformance" movement={{ core_movement_id: movement.core_movement_id, core_movement: { id: movement.core_movement_id, key: movement.key, family: movement.family, kind: 'variant' } }} size={54} /><View style={v.flex}><Text style={v.rowTitle}>{movement.name}</Text><Text style={s.progressText}>{performanceTaskChange(p.prior, p.current, unit)}</Text><Text style={v.meta}>{movement.parent_lift_label} variant · {periodDate(p.occurred_on)}</Text></View><Ionicons name="chevron-forward" size={15} color={INK.muted} />
               </Pressable>;
             })}
             <EvidenceLink quiet title="Open Core Variants" onPress={() => open('variants')} />
