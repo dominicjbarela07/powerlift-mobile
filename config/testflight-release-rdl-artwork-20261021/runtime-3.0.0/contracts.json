@@ -1,0 +1,39 @@
+{
+  "scope": "approved-artwork-portability-20261021",
+  "productFingerprint": "8a8d80123f62f52cd0d9be059db06fd94aca67c6e2b55780ec4e1bf709a08857",
+  "completedAt": "2026-10-21T16:54:32.578Z",
+  "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+  "runtimeVerified": false,
+  "contracts": [
+    {
+      "file": "scripts/test-approved-artwork-portability.mjs",
+      "sourceSha256": "9a24ebf840108b2c4f0f5ff2e787db030d78bfb390ef210ba5d43ecc16936715",
+      "result": "PASS",
+      "output": "PASS: {\"pass\":true,\"approved_definitions\":499,\"relocated\":499,\"numeric_collisions\":499,\"actual_production_core_definitions\":31,\"original_rdl_image_sha256\":\"b40bd7faf76a792a368b59765ef5662ac35a1a012ac609a4c5e233b484033b14\",\"actual_core_only_consumers\":31,\"executed_jsx_artwork_adapters\":3,\"dropped_consumer_key_failure_tested\":true,\"private_impersonation_rejected\":true,\"deny_and_missing_approval_rejected\":true}\n"
+    },
+    {
+      "file": "scripts/test-approved-artwork-portability-release-scope.mjs",
+      "sourceSha256": "f09b2c6ae0e0655154268daa049bcf7a27b671cb487bff3e3706d5923be7d51c",
+      "result": "PASS",
+      "output": "PASS: Approved artwork restoration retains exact verified 3.0 baseline; missing artwork, replacement assets, hidden source, fabricated baseline and unrelated changes deliberately rejected.\n"
+    },
+    {
+      "file": "scripts/test-private-movement-identity-contract.mjs",
+      "sourceSha256": "7abcd5b6498f7e1b973d9d35dc4ab52b25311058de6fbcea48eeefd6471f8748",
+      "result": "PASS",
+      "output": "PASS private movement identity: 998 initial/current collisions; artwork, equipment, history and title retain the exact server subject without borrowing public art.\n"
+    },
+    {
+      "file": "scripts/test-single-current-movement-id.mjs",
+      "sourceSha256": "ad9b81603d90bb4f4d4b00ec03c79bd3c6a5206a95de22d4ac9273e3bd4d4353",
+      "result": "PASS",
+      "output": "Single current ID: 499 governed definitions; initial/Swap, stale aliases, real Swap, anatomy, equipment, history, immutable evidence PASS.\n"
+    },
+    {
+      "file": "scripts/test-shared-movement-programming-context.mjs",
+      "sourceSha256": "2b05f97a6a6f32987a0106b5712e6ec73733405e5aea8c3b88654a7c47d90586",
+      "result": "PASS",
+      "output": "Seven shared identities: separate Core/accessory tools, one history, original hash-bound artwork approvals PASS.\n"
+    }
+  ]
+}

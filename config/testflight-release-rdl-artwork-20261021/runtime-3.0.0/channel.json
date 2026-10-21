@@ -1,0 +1,23 @@
+{
+  "pass": true,
+  "requestHeaders": {
+    "accept": "multipart/mixed",
+    "expo-platform": "ios",
+    "expo-protocol-version": "1",
+    "expo-runtime-version": "3.0.0",
+    "expo-channel-name": "production-3-preparation"
+  },
+  "id": "01a15f63-abf8-74ce-bd3b-a6b537d7c5ea",
+  "runtimeVersion": "3.0.0",
+  "createdAt": "2026-10-21T16:55:30.040Z",
+  "assetEntries": 998,
+  "uniqueAssets": 992,
+  "launchAssetHash": "-gXhGjZHSuMOAzn31udjRtd8jftSNjgco0dcwOio2Yw",
+  "originalRdlAsset": {
+    "key": "7a4c403b92a587ca30b744213652535c",
+    "sha256": "b40bd7faf76a792a368b59765ef5662ac35a1a012ac609a4c5e233b484033b14",
+    "bytes": 314780,
+    "verifiedFromActualChannel": true
+  },
+  "verifiedAt": "2026-10-21T16:56:28.400Z"
+}
