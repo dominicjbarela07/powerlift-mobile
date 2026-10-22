@@ -1324,6 +1324,12 @@
         "reason": "Pair the exact published Today test with its held published UI. The new rest-day readiness actual-renderer tests remain in canonical DEV until owner visual signoff; all shipped Today protections remain enforced.",
         "devSha256": "6cfded16623c5efa7e90115799ec2d4d2e6fae4f26d107d1678f1aa78067c09f",
         "candidateSha256": "e8110e9402b8421ca56b5b4604e558f36752bc79edcea006b360fb19881e3d1d"
+      },
+      {
+        "path": "components/workout-logger/session-follow-through.tsx",
+        "sourceCommit": "b4c88feb1f5af133c1fafba77c578a4b39dd28c6",
+        "blob": null,
+        "reason": "Already-authorized DEV-only coaching follow-through is not part of the video engine release; preserve its actual source in DEV and its absence from the last published 3.0 baseline."
       }
     ]
   }
