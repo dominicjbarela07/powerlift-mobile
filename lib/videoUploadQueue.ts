@@ -26,6 +26,7 @@ export type QueuedVideoUploadJob = {
   filename: string;
   mimeType: string;
   fileSizeBytes?: number | null;
+  fileMd5?: string | null;
   videoAngle?: string | null;
   submitForReview?: boolean;
   uploadIntent?: string | null;
@@ -37,6 +38,9 @@ export type QueuedVideoUploadJob = {
   createdAt: string;
   updatedAt: string;
   nextAttemptAt?: string | null;
+  uploadSessionId?: string | null;
+  cancelRequested?: boolean;
+  phase?: 'transferring' | 'processing';
 };
 
 type EnqueueVideoUploadInput = {
@@ -62,6 +66,21 @@ let processing = false;
 let started = false;
 let interval: ReturnType<typeof setInterval> | null = null;
 let appStateSubscription: { remove?: () => void } | null = null;
+let mutationTail: Promise<unknown> = Promise.resolve();
+let activeJobId: string | null = null;
+let processingDone: Promise<void> = Promise.resolve();
+let finishProcessing: (() => void) | null = null;
+let activeTransfer: ReturnType<typeof FileSystem.createUploadTask> | null = null;
+
+function mutateJobs<T>(mutation: (jobs: QueuedVideoUploadJob[]) => { jobs: QueuedVideoUploadJob[]; result: T }): Promise<T> {
+  const operation = mutationTail.then(async () => {
+    const changed = mutation(await loadJobs());
+    await saveJobs(changed.jobs);
+    return changed.result;
+  });
+  mutationTail = operation.catch(() => {});
+  return operation;
+}
 
 function nowIso() {
   return new Date().toISOString();
@@ -138,13 +157,10 @@ async function copyThumbnailIntoQueue(uri?: string | null) {
 }
 
 async function loadJobs(): Promise<QueuedVideoUploadJob[]> {
-  try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+  const raw = await AsyncStorage.getItem(STORAGE_KEY);
+  const parsed = raw ? JSON.parse(raw) : [];
+  if (!Array.isArray(parsed)) throw new Error('Saved video queue could not be read. Your local clips have been preserved.');
+  return parsed;
 }
 
 async function saveJobs(jobs: QueuedVideoUploadJob[]) {
@@ -163,19 +179,23 @@ function notify(jobs?: QueuedVideoUploadJob[]) {
 }
 
 async function updateJob(id: string, updater: (job: QueuedVideoUploadJob) => QueuedVideoUploadJob, requiredOwner?: string | null) {
-  const jobs = await loadJobs();
-  const target = jobs.find(job => job.id === id);
-  if (requiredOwner !== undefined && (!executionActorOwns(requiredOwner) || target?.ownerUserId !== requiredOwner)) return null;
-  const next = jobs.map((job) => (job.id === id ? updater(job) : job));
-  await saveJobs(next);
-  return next.find((job) => job.id === id) || null;
+  return mutateJobs(jobs => {
+    const target = jobs.find(job => job.id === id);
+    if (requiredOwner !== undefined && (!executionActorOwns(requiredOwner) || target?.ownerUserId !== requiredOwner)) return { jobs, result: null };
+    const next = jobs.map(job => {
+      if (job.id !== id) return job;
+      const changed = updater(job);
+      return (job.status === 'cancelled' || job.status === 'uploaded') && changed.status !== job.status ? job : changed;
+    });
+    return { jobs: next, result: next.find(job => job.id === id) || null };
+  });
 }
 
 function statusFromFailure(status: number, message: string): QueuedVideoUploadStatus {
   if (/video file required/i.test(message)) {
     return 'failed_retryable';
   }
-  if (status === 400 || status === 401 || status === 403 || status === 404 || status === 413 || /unsupported|too large|forbidden|not available/i.test(message)) {
+  if (status === 400 || status === 403 || status === 410 || status === 413 || status === 422 || /unsupported|too large|forbidden/i.test(message)) {
     return 'failed_permanent';
   }
   return 'failed_retryable';
@@ -184,6 +204,88 @@ function statusFromFailure(status: number, message: string): QueuedVideoUploadSt
 async function ownedVideoFetch(ownerUserId: string | undefined, path: string, options: Parameters<typeof fetchJson>[1]) {
   if (!executionActorOwns(ownerUserId)) throw new Error('This upload belongs to another account.');
   return fetchJson(path, options);
+}
+
+async function assertJobActive(job: QueuedVideoUploadJob) {
+  if (!executionActorOwns(job.ownerUserId)) throw new Error('This upload belongs to another account.');
+  const current = (await loadJobs()).find(item => item.id === job.id);
+  if (!current || current.cancelRequested || current.status === 'cancelled') throw Object.assign(new Error('Upload cancellation requested.'), { cancelled: true });
+}
+
+async function uploadJobBinary(job: QueuedVideoUploadJob, size: number) {
+  if (Platform.OS === 'web' || typeof FileSystem.createUploadTask !== 'function') return null;
+  const base = `${API_BASE}/video-review/mobile`;
+  const init = await ownedVideoFetch(job.ownerUserId, `${base}/set-logs/${job.setLogId}/video/uploads`, {
+    method: 'POST', auth: true, body: { client_upload_id: job.id, filename: job.filename,
+      content_type: job.mimeType, size, video_angle: job.videoAngle || 'unknown',
+      client_md5: job.fileMd5 || undefined,
+      submit_for_review: submitForReviewValue(job), upload_intent: uploadIntentForJob(job) } as any,
+  });
+  if ((init.status === 404 || init.status === 405) && !job.uploadSessionId) return null; // Older server only.
+  if (!init.ok || !init.json?.upload) throw Object.assign(new Error(init.json?.error || 'Could not prepare video upload.'), { httpStatus: init.status });
+  let session = init.json.upload;
+  await updateJob(job.id, current => ({ ...current, uploadSessionId: session.id, updatedAt: nowIso() }), job.ownerUserId);
+  if (session.status === 'completed') return { video: session.video };
+  if (session.status === 'rejected') throw Object.assign(new Error(session.error || 'This clip could not be prepared.'), { permanent: true });
+  if (session.status === 'cancelled') throw Object.assign(new Error('This upload was cancelled.'), { permanent: true });
+  const endpoint = `${base}/video-uploads/${session.id}`;
+  if (session.status === 'processing' || session.status === 'validating') return { processing: true };
+  const partSize = Number(session.part_size);
+  const totalParts = Number(session.total_parts);
+  if (!Number.isSafeInteger(partSize) || partSize < 128 * 1024 || partSize > 16 * 1024 * 1024 ||
+      !Number.isSafeInteger(totalParts) || totalParts !== Math.ceil(size / partSize)) throw new Error('Invalid video transfer manifest.');
+  const acknowledged = new Set<number>((session.completed_parts || []).filter((part: any) => Number.isInteger(part.index) &&
+    part.index >= 0 && part.index < totalParts && part.size === Math.min(partSize, size - part.index * partSize)).map((part: any) => part.index));
+  let sent = [...acknowledged].reduce((sum, index) => sum + Math.min(partSize, size - index * partSize), 0);
+  await updateJob(job.id, current => ({ ...current, phase: 'transferring', uploadedBytes: sent, totalBytes: size }), job.ownerUserId);
+  for (let index = 0; index < totalParts; index++) {
+    if (acknowledged.has(index)) continue;
+    await assertJobActive(job);
+    const length = Math.min(partSize, size - index * partSize);
+    const partUri = `${queueDir()}/${job.id}-part-${index}.bin`;
+    // Native file-backed URLSession transfer. Base64 is only a bounded disk slice,
+    // never sent over the network; original video bytes are PUT directly.
+    const bytes = await FileSystem.readAsStringAsync(job.localFileUri, { encoding: FileSystem.EncodingType.Base64,
+      position: index * partSize, length } as any);
+    await FileSystem.writeAsStringAsync(partUri, bytes, { encoding: FileSystem.EncodingType.Base64 });
+    try {
+      await assertJobActive(job);
+      const grant = await ownedVideoFetch(job.ownerUserId, `${endpoint}/parts/${index}`, { method: 'POST', auth: true });
+      if (!grant.ok || !grant.json?.url) throw Object.assign(new Error(grant.json?.error || 'Could not resume video transfer.'), { httpStatus: grant.status });
+      const target = String(grant.json.url);
+      // Grants must use HTTPS, except the same-origin local development server.
+      if (!target.startsWith('https://') && !target.startsWith(`${API_BASE}/`)) throw new Error('Invalid video transfer destination.');
+      let progressAt = 0;
+      activeTransfer = FileSystem.createUploadTask(target, partUri, {
+        httpMethod: 'PUT', uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+        sessionType: FileSystem.FileSystemSessionType.BACKGROUND, headers: grant.json.headers || {},
+      }, progress => {
+        if (Date.now() - progressAt < 300) return;
+        progressAt = Date.now();
+        void updateJob(job.id, current => ({ ...current, uploadedBytes: Math.min(size, sent + progress.totalBytesSent), totalBytes: size }), job.ownerUserId).catch(() => {});
+      });
+      const result = await activeTransfer.uploadAsync();
+      if (!result || result.status < 200 || result.status >= 300) {
+        // A cloud UploadPart capability can expire while iOS suspends the app.
+        // Retry obtains a new grant through the actor-authorized API. A 403 from
+        // that API remains permanent; object-storage expiry is not revocation.
+        const refreshCloudGrant = result?.status === 403 && !target.startsWith(`${API_BASE}/`);
+        throw Object.assign(new Error('Video transfer was interrupted. It will resume from saved parts.'),
+          { httpStatus: refreshCloudGrant ? 503 : result?.status });
+      }
+      sent += length;
+      await updateJob(job.id, current => ({ ...current, uploadedBytes: sent, totalBytes: size, updatedAt: nowIso() }), job.ownerUserId);
+    } finally {
+      activeTransfer = null;
+      await FileSystem.deleteAsync(partUri, { idempotent: true }).catch(() => {});
+    }
+  }
+  await assertJobActive(job);
+  const complete = await ownedVideoFetch(job.ownerUserId, `${endpoint}/complete`, { method: 'POST', auth: true,
+    timeoutMs: UPLOAD_TIMEOUT_MS, body: {} as any });
+  if (!complete.ok) throw Object.assign(new Error(complete.json?.error || 'Video confirmation was interrupted.'), { httpStatus: complete.status });
+  if (complete.json?.video) return { video: complete.json.video };
+  return { processing: true };
 }
 
 async function uploadChunkWithRetry(setLogId: number, payload: any, ownerUserId?: string) {
@@ -248,6 +350,7 @@ async function uploadJobChunked(job: QueuedVideoUploadJob, actualSize: number) {
   const totalChunks = Number(init.json.total_chunks || Math.ceil(actualSize / chunkSize));
 
   for (let index = 0; index < totalChunks; index += 1) {
+    await assertJobActive(job);
     const position = index * chunkSize;
     const length = Math.min(chunkSize, actualSize - position);
     const dataBase64 = await FileSystem.readAsStringAsync(job.localFileUri, {
@@ -341,18 +444,24 @@ async function uploadJobLegacyDirectMultipartForWebOnly(job: QueuedVideoUploadJo
 }
 
 async function uploadJob(job: QueuedVideoUploadJob) {
-  const info = await FileSystem.getInfoAsync(job.localFileUri, { size: true } as any);
+  const info = await FileSystem.getInfoAsync(job.localFileUri, { md5: !job.fileMd5 });
   if (!info.exists) {
     throw Object.assign(new Error('Local video file is no longer available.'), { permanent: true });
   }
   const actualSize = Number((info as any)?.size || job.fileSizeBytes || 0);
+  if (!job.fileMd5 && (info as any).md5) {
+    job = { ...job, fileMd5: (info as any).md5 };
+    await updateJob(job.id, current => ({ ...current, fileMd5: job.fileMd5 }), job.ownerUserId);
+  }
+  const binary = await uploadJobBinary(job, actualSize);
+  if (binary) return binary;
   if (shouldUseChunkedUpload(job, actualSize)) {
     if (!actualSize || actualSize <= 0) {
       throw Object.assign(new Error('Local video file size is unavailable.'), { permanent: true });
     }
-    return uploadJobChunked(job, actualSize);
+    return { video: await uploadJobChunked(job, actualSize) };
   }
-  return uploadJobLegacyDirectMultipartForWebOnly(job);
+  return { video: await uploadJobLegacyDirectMultipartForWebOnly(job) };
 }
 
 async function cleanupJobFiles(job: QueuedVideoUploadJob) {
@@ -397,8 +506,7 @@ export async function enqueueVideoUpload(input: EnqueueVideoUploadInput): Promis
     updatedAt: createdAt,
     nextAttemptAt: createdAt,
   };
-  const jobs = await loadJobs();
-  await saveJobs([job, ...jobs]);
+  await mutateJobs(jobs => ({ jobs: [job, ...jobs], result: job }));
   void processVideoUploadQueue();
   return job;
 }
@@ -406,6 +514,7 @@ export async function enqueueVideoUpload(input: EnqueueVideoUploadInput): Promis
 export async function processVideoUploadQueue() {
   if (processing || !currentExecutionActor()) return;
   processing = true;
+  processingDone = new Promise(resolve => { finishProcessing = resolve; });
   setUpdateBlocker('video_upload', true);
   try {
     const jobs = await loadJobs();
@@ -413,6 +522,7 @@ export async function processVideoUploadQueue() {
       .filter((candidate) => executionActorOwns(candidate.ownerUserId) && !isTerminal(candidate.status))
       .find((candidate) => candidate.status === 'pending' || (candidate.status === 'failed_retryable' && isDue(candidate)) || (candidate.status === 'uploading' && isDue(candidate)));
     if (!job) return;
+    activeJobId = job.id;
 
     await updateJob(job.id, (current) => ({
       ...current,
@@ -422,8 +532,19 @@ export async function processVideoUploadQueue() {
     }));
 
     try {
-      const video = await uploadJob(job);
-      const attachmentId = requireUploadedSetVideo(video, job.setLogId);
+      let result;
+      if (job.phase === 'processing' && job.uploadSessionId) {
+        const status = await ownedVideoFetch(job.ownerUserId, `${API_BASE}/video-review/mobile/video-uploads/${job.uploadSessionId}`, { method: 'GET', auth: true });
+        if (!status.ok) throw Object.assign(new Error(status.json?.error || 'Could not confirm video preparation.'), { httpStatus: status.status });
+        if (status.json?.upload?.status === 'rejected' || status.json?.upload?.status === 'cancelled') throw Object.assign(new Error(status.json.upload.error || 'Video preparation did not complete.'), { permanent: true });
+        result = status.json?.upload?.status === 'completed' ? { video: status.json.upload.video } : { processing: true };
+      } else result = await uploadJob(job);
+      if (result.processing) {
+        await updateJob(job.id, current => ({ ...current, status: 'uploading', phase: 'processing',
+          nextAttemptAt: new Date(Date.now() + 5000).toISOString(), updatedAt: nowIso() }), job.ownerUserId);
+        return;
+      }
+      const attachmentId = requireUploadedSetVideo(result.video, job.setLogId);
       const updated = await updateJob(job.id, (current) => {
         if (current.status === 'cancelled') return current;
         return {
@@ -450,14 +571,19 @@ export async function processVideoUploadQueue() {
           updatedAt: nowIso(),
           nextAttemptAt: permanent ? null : new Date(Date.now() + backoffMs(retryCount)).toISOString(),
         };
-      });
+      }, job.ownerUserId);
     }
   } finally {
     processing = false;
+    activeJobId = null;
+    finishProcessing?.();
+    finishProcessing = null;
     setUpdateBlocker('video_upload', false);
-    const remaining = (await loadJobs()).some((job) => executionActorOwns(job.ownerUserId) && !isTerminal(job.status) && isDue(job));
-    if (remaining) {
-      setTimeout(() => void processVideoUploadQueue(), 1000);
+    const jobs = await loadJobs();
+    const waiting = jobs.filter(job => executionActorOwns(job.ownerUserId) && !isTerminal(job.status) && !job.cancelRequested);
+    if (waiting.length) {
+      const next = Math.min(...waiting.map(job => job.nextAttemptAt ? new Date(job.nextAttemptAt).getTime() : Date.now()));
+      setTimeout(() => void processVideoUploadQueue(), Math.min(30000, Math.max(1000, next - Date.now())));
     }
   }
 }
@@ -465,7 +591,8 @@ export async function processVideoUploadQueue() {
 export function startVideoUploadQueue() {
   if (started) return;
   started = true;
-  void processVideoUploadQueue();
+  void mutateJobs(jobs => ({ jobs: jobs.map(job => executionActorOwns(job.ownerUserId) && job.status === 'uploading'
+    ? { ...job, status: 'pending', nextAttemptAt: nowIso() } : job), result: null })).then(() => processVideoUploadQueue());
   interval = setInterval(() => void processVideoUploadQueue(), 30 * 1000);
   appStateSubscription = AppState.addEventListener('change', (state) => {
     if (state === 'active') void processVideoUploadQueue();
@@ -479,6 +606,7 @@ export async function retryVideoUploadJob(jobId: string) {
     ...job,
     status: 'pending',
     retryCount: 0,
+    cancelRequested: false,
     lastError: null,
     updatedAt: nowIso(),
     nextAttemptAt: nowIso(),
@@ -489,6 +617,24 @@ export async function retryVideoUploadJob(jobId: string) {
 export async function cancelVideoUploadJob(jobId: string) {
   const owner = currentExecutionActor();
   if (!owner) return;
+  let requested = await updateJob(jobId, current => ({ ...current, cancelRequested: true }), owner);
+  if (!requested || requested.status === 'uploaded') return;
+  if (!requested.uploadSessionId && activeJobId === jobId) {
+    await processingDone;
+    requested = (await loadJobs()).find(job => job.id === jobId) || null;
+    if (!requested || requested.status === 'uploaded') return;
+  }
+  if (activeJobId === jobId && requested.uploadSessionId) await activeTransfer?.cancelAsync();
+  if (requested.uploadSessionId) {
+    const result = await ownedVideoFetch(owner, `${API_BASE}/video-review/mobile/video-uploads/${requested.uploadSessionId}/cancel`, { method: 'POST', auth: true });
+    if (!result.ok) throw new Error(result.json?.error || 'Cancellation could not be confirmed. Your video is preserved.');
+    if (result.json?.upload?.status === 'completed') {
+      const attachmentId = requireUploadedSetVideo(result.json.upload.video, requested.setLogId);
+      const done = await updateJob(jobId, current => ({ ...current, status: 'uploaded', serverAttachmentId: attachmentId, cancelRequested: false }), owner);
+      if (done) await cleanupJobFiles(done);
+      return;
+    }
+  }
   const job = await updateJob(jobId, (current) => ({
     ...current,
     status: 'cancelled',
@@ -520,4 +666,4 @@ export function stopVideoUploadQueue() {
 
 export const stopVideoUploadQueueForTests = stopVideoUploadQueue;
 
-subscribeExecutionActor(() => { notify(); if (started) void processVideoUploadQueue(); });
+subscribeExecutionActor(() => { void activeTransfer?.cancelAsync(); notify(); if (started) void processVideoUploadQueue(); });
