@@ -20307,6 +20307,33 @@
       "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-21-rdl-artwork.txt",
       "ownerEvidenceSha256": "83c005be5f603cfce3c33aab90d1b75cae956759ec365eb5ddadf7d2481aee7d",
       "reason": "Preserve stable typed Production movement keys at approved-art consumers and resolve original receipts without substituting DEV numeric identity. Type-only DTO extensions retain current server identity in drafts."
+    },
+    {
+      "ownerInstruction": "Once it's that and safe and validated, please push it. I want it released.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-22-video-engine.txt",
+      "ownerEvidenceSha256": "79957093ee43947bebe2f1ea36cb28d84d90390fdf6b5377cb7fa985c0ddf391",
+      "reason": "Ship validated uploads, playback recovery, verified downloads and accepted Baked Overlay 2 on the existing 3.0 native dependencies. Exact four-file cumulative product delta; preserve all artwork and other owner state.",
+      "path": "components/SetVideoPlayerModal.tsx",
+      "before": "adaac40c600ac3e9b7b6c017f4994828b766b0804ac510f0b68e5e8b5e0385a4",
+      "after": "d7b9f80f4e08052d0fffd28f4f5fdeb6391e34ce2dd2c2e54a58fda7c29082e0"
+    },
+    {
+      "ownerInstruction": "Once it's that and safe and validated, please push it. I want it released.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-22-video-engine.txt",
+      "ownerEvidenceSha256": "79957093ee43947bebe2f1ea36cb28d84d90390fdf6b5377cb7fa985c0ddf391",
+      "reason": "Ship validated uploads, playback recovery, verified downloads and accepted Baked Overlay 2 on the existing 3.0 native dependencies. Exact four-file cumulative product delta; preserve all artwork and other owner state.",
+      "path": "lib/set-video-upload-status.ts",
+      "before": "3ac61a167662cc43f555c6f46771c97f848cec8bcc9685072adcfedfd7f58436",
+      "after": "451c7fa15f5e588243ac9cda53891627f5ca36a3287fc3bea3d50711ffb64937"
+    },
+    {
+      "ownerInstruction": "Once it's that and safe and validated, please push it. I want it released.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-22-video-engine.txt",
+      "ownerEvidenceSha256": "79957093ee43947bebe2f1ea36cb28d84d90390fdf6b5377cb7fa985c0ddf391",
+      "reason": "Ship validated uploads, playback recovery, verified downloads and accepted Baked Overlay 2 on the existing 3.0 native dependencies. Exact four-file cumulative product delta; preserve all artwork and other owner state.",
+      "path": "lib/videoUploadQueue.ts",
+      "before": "b7ece6ccf128c014d8da1ea02bf2df6218d6246db316715f2d709a7404773f6d",
+      "after": "921747991d3916968df740558ae418d5bac25c16021f2a50ae89e4dac55adfe4"
     }
   ],
   "assetRemovalAuthorizations": [
@@ -158324,7 +158351,7 @@
     "scripts/test-cable-brand-equipment-api.mjs": "71889a55559cfd1dc43a5817b0b1ac8bd0c022498e6c30d46ff161ab71949dbc",
     "docs/CABLE_BRAND_EQUIPMENT.md": "0289f45e3859f993ccce52a2ffca383f484f3899c61224179813a6363c151c21",
     "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt": "69f1ba6ca417408f3e0a5cada3f37bca5fee5f1c26ece4443bec9d855fc8cb9b",
-    "scripts/owner-directed-client-fix.mjs": "a32c747233127181a7aebe83238c053e38c2b145c67f4ca2ae7318bed285ea3a",
+    "scripts/owner-directed-client-fix.mjs": "d62b8b1b98e046a92a9689007a515c7069714c7e752a9650262a6abc6981ebd7",
     "scripts/test-owner-directed-client-fix.mjs": "78fc780bd4295ff47d8dc8ce9b73dfd9ed950d561de82701fcd2d3d35e156df0",
     "scripts/test-zero-load-edit-api.mjs": "a19f2b1b7d6b0ad2335f8e3668657a1a74675ca14d14ba8bf13616b16f3dbc2a",
     "scripts/test-zero-load-edit-set.mjs": "6187f4a68b57230b2fb86f3702e2c89d0f704394f1eef200db689f66cec6e250",
@@ -158342,7 +158369,7 @@
     "scripts/audit-ui-constitution.js": "c14e4631723433c5528131adc17c2f376dbef912a6288cd2575c2a10c460024b",
     "scripts/audit-transparent-screen-roots.js": "2cb55a6dc2987baa0693dfa6325437c50c1dc1057bd8817fbdadde8defc88518",
     "scripts/reviewed-runtime-continuation.mjs": "2ae6db43fb13b09592327eb725da8438e687eeaf6fe937bcb72779f6adc006c6",
-    "scripts/test-reviewed-runtime-continuation.mjs": "92c558b11ab98dd26f13925f71b42e5ac19440bf999a44d6839a68a1436cc2f5",
+    "scripts/test-reviewed-runtime-continuation.mjs": "122dfa13477566dd61dbe9291dad1ce012793387fef3cd721bef4fa30be5ddd9",
     "scripts/test-governed-movement-art-taxonomy.mjs": "474fd1f0bb9f5b11f6f4b797ee35a178201bae69ff3b9c647a1a0b6cf5f95370",
     "scripts/education-image-transport.mjs": "68d37ed07669d53b0395fbe7424818a4ddec570acb94cca0d2d49f4008f2a683",
     "scripts/generate-education-image-transport.mjs": "e731bee3e877638bc571a9393b8d671ec2af4c847d6d85cec731e71bbd774844",
@@ -158352,7 +158379,7 @@
     "scripts/native-build-upload-policy.cjs": "0886edd1b00f77aa122848cc96176ed22b053f53d5393e87cf9081456ff3ffde",
     "scripts/test-native-build-upload-policy.mjs": "3016ed47dd9ef99eff2382e2d6dbe2581b38804945f6999c24d55ab9517b40ff",
     "scripts/assert-ota-native-compatibility.mjs": "8236db7138e9f28be680575774e75e57f9d17bd159cd3e9892f2b4234c29b9e2",
-    "scripts/production3-client-fix-policy.mjs": "12ed6608a83b2bde21b6ba4fa6c444b4465d3d6f5ddbae5888a56abf6988ffb6",
+    "scripts/production3-client-fix-policy.mjs": "a2bab458c81e58bce673fda80027e2ef7ddc3508aac68165312ee2bde9124105",
     "scripts/test-production3-client-fix-policy.mjs": "b2dcd77c3e5de96a32e95344960d55116e86243dcd07c29df798fec837da26e0",
     "scripts/test-copied-week-release-scope.mjs": "f7d6b1f01fc9da815771b79ad67dc94fd9a030c6152b912e4d74abbe48cd01d6",
     "scripts/test-private-movement-identity-contract.mjs": "7abcd5b6498f7e1b973d9d35dc4ab52b25311058de6fbcea48eeefd6471f8748",
@@ -158385,7 +158412,9 @@
     "scripts/test-approved-artwork-portability.mjs": "9a24ebf840108b2c4f0f5ff2e787db030d78bfb390ef210ba5d43ecc16936715",
     "scripts/test-approved-artwork-portability-release-scope.mjs": "f09b2c6ae0e0655154268daa049bcf7a27b671cb487bff3e3706d5923be7d51c",
     "docs/validation/rdl-artwork-2026-10-21/live-rdl-input.json": "8e54a1c49288f0d87569869f954f5870c3b3877703c1dcf047ebc115b423606b",
-    "docs/validation/rdl-artwork-2026-10-21/live-core-inventory.json": "c074bb7f30b7fcdad2508f631c76ddc97c8d1a90f4a2e8bf1db84f76f35fd14f"
+    "docs/validation/rdl-artwork-2026-10-21/live-core-inventory.json": "c074bb7f30b7fcdad2508f631c76ddc97c8d1a90f4a2e8bf1db84f76f35fd14f",
+    "scripts/video-engine-release-scope.mjs": "c4c7bbd418c88c2e2298996215e35bf70cda73a3e497c3e540bef41f128085e7",
+    "scripts/test-video-engine-release-scope.mjs": "1e4d0a165719e190f9a02c638a3781acdce45adaea6a5555826b28339e1a8e63"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -158788,41 +158817,34 @@
     "status": "OPEN_PENDING_DEPLOYMENT_AND_PUBLICATION"
   },
   "ownerDirectedClientFix": {
-    "ownerInstruction": "Find what the fuck is going on, fix it, and deploy the fix.",
-    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-21-rdl-artwork.txt",
-    "ownerEvidenceSha256": "83c005be5f603cfce3c33aab90d1b75cae956759ec365eb5ddadf7d2481aee7d",
-    "reason": "Restore original approved exact artwork for canonical global movement references across Production and DEV numeric sequences; preserve server identity, human approval, crop, denials and all cumulative product state.",
-    "scope": "approved-artwork-portability-20261021",
+    "ownerInstruction": "Once it's that and safe and validated, please push it. I want it released.",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-22-video-engine.txt",
+    "ownerEvidenceSha256": "79957093ee43947bebe2f1ea36cb28d84d90390fdf6b5377cb7fa985c0ddf391",
+    "reason": "Ship validated uploads, playback recovery, verified downloads and accepted Baked Overlay 2 on the existing 3.0 native dependencies. Exact four-file cumulative product delta; preserve all artwork and other owner state.",
+    "scope": "video-engine-20261022",
     "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
-    "productFingerprint": "8a8d80123f62f52cd0d9be059db06fd94aca67c6e2b55780ec4e1bf709a08857",
-    "baselineUpdateId": "01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
-    "baselineSourceSha": "8eb09f3a88e28a4980a1e59f6d3166889286882c",
-    "baselineProductFingerprint": "0ad8a8e2e581f9acdfabf41e5aec8857656ed744daa4f11c630332bcccb6a507",
+    "productFingerprint": "228adb77f66c289c23f5b609042e23d9c7051220747845e879ac026c08e4e20f",
+    "baselineUpdateId": "01a15f63-abf8-74ce-bd3b-a6b537d7c5ea",
+    "baselineSourceSha": "b4c88feb1f5af133c1fafba77c578a4b39dd28c6",
+    "baselineProductFingerprint": "8a8d80123f62f52cd0d9be059db06fd94aca67c6e2b55780ec4e1bf709a08857",
     "baselineFiles": {
-      "path": "config/testflight-release-rdl-artwork-20261021/baseline-product.json",
-      "sha256": "a41bf05c7c4d44b29462ccfe43af284b0f81add6dd269486dcc4e39880b77dbf"
+      "path": "config/testflight-release-video-engine-20261022/baseline-product.json",
+      "sha256": "5d184c17af3368fa6b4e1124d53f5a21f73216387a3060b2c5229539cd5e1334"
     },
     "changedProductFiles": {
-      "app/(tabs)/workout/session-workspace/[workoutId].tsx": "0dfb6f2783bb0df220384b94724421204afc3f630f42f1606ddb4c2ab00e77a5",
-      "components/coach-mobile/SessionEditingWorkspace.tsx": "d2747381c24a9ab6e11fd06ef18243a628ddc696bcd839ac70d66719adf96349",
-      "components/coach-mobile/athlete-workspace/CoachAthletePerformance.tsx": "119767eac0d502f48aa21f891894b7cec915ff13ad18dc3bfe5374c75fd0f324",
-      "components/ledger/VariantsExperience.tsx": "77c81597d8bc4a17d588b3ea45081e1888edc9e6147c26a5defec63aa1ff8a18",
-      "config/protected-fix-manifest.json": "e94075dd473aeb4bfbcaa5dd9d51ab139bc3b336caadd485d6b7864fdf3ed900",
-      "lib/canonical-movement-art-subject.ts": "dd8ec5b4c98c4c61972e3b564c4f7e21e62ef847b9153f4077352a7b922915f6",
-      "lib/canonical-movement-artwork.ts": "08e68f25f9ddfac3a3090fd77236ab23464fb8c21702c78d348e83a88c569ec9",
-      "lib/current-session-movement.ts": "42ce296d13f3efbcc0db4d496f84f8ec8e09ef6ebeaccd074086228453f9272d",
-      "lib/governed-movement-art-taxonomy.ts": "0e0fb6ee19c82158decd71daa9483c4ab235a65557b812128c9b964aa4c15190",
-      "lib/governed-movement-classes.ts": "717583c0d550ea941160cb68b667547a778f5ccf5c6897e306a02d93b13d1eec",
-      "lib/logger-movement-identity.ts": "ebae66d69c164c3691a14aa7aef25f98ce7bf0b01ff9db8d1abddea52cba5a37",
-      "lib/movement-artwork-hero.ts": "55e62e3f0795c9b33f1506fd83ea4d8afec3dbf009ac2a9f5336ea6cfb6e67ed"
+      "components/SetVideoPlayerModal.tsx": "d7b9f80f4e08052d0fffd28f4f5fdeb6391e34ce2dd2c2e54a58fda7c29082e0",
+      "lib/set-video-upload-status.ts": "451c7fa15f5e588243ac9cda53891627f5ca36a3287fc3bea3d50711ffb64937",
+      "lib/videoArtifactCache.ts": "1333a662b10a5c45a22ef8e2781e29058a59549d1d7c74976a5818c89978d339",
+      "lib/videoUploadQueue.ts": "921747991d3916968df740558ae418d5bac25c16021f2a50ae89e4dac55adfe4"
     },
     "contracts": {
-      "scripts/test-approved-artwork-portability.mjs": "9a24ebf840108b2c4f0f5ff2e787db030d78bfb390ef210ba5d43ecc16936715",
-      "scripts/test-approved-artwork-portability-release-scope.mjs": "f09b2c6ae0e0655154268daa049bcf7a27b671cb487bff3e3706d5923be7d51c",
-      "scripts/test-private-movement-identity-contract.mjs": "7abcd5b6498f7e1b973d9d35dc4ab52b25311058de6fbcea48eeefd6471f8748",
-      "scripts/test-single-current-movement-id.mjs": "ad9b81603d90bb4f4d4b00ec03c79bd3c6a5206a95de22d4ac9273e3bd4d4353",
-      "scripts/test-shared-movement-programming-context.mjs": "2b05f97a6a6f32987a0106b5712e6ec73733405e5aea8c3b88654a7c47d90586"
-    }
+      "scripts/test-video-artifact-cache.mjs": "d7eaeae35f3445b0b8e84a04f1507bb627d2cb552179b8122eb6aee47a9e14c5",
+      "scripts/test-video-engine-failure-controls.mjs": "b7b9d97add2a25b6a37d1d2e24670a4e958e5ede24be55d7463b6e6d231598fe",
+      "scripts/test-video-engine-queue.mjs": "849610fefdd0e8a83f8b3bd55f33289b826913c349c7c7dde4cd28e69f1f3858",
+      "scripts/test-video-engine-release-scope.mjs": "1e4d0a165719e190f9a02c638a3781acdce45adaea6a5555826b28339e1a8e63",
+      "scripts/test-video-player-recovery.mjs": "302e986777daf7d7d23807045299c1c432b9e83463775df19832eec11d9b5de8"
+    },
+    "backendSourceSha": "ed4652e95801a87f5e45e1efad703b16072f12a0"
   },
   "canonicalZeroLoadEdit": {
     "status": "SHIPPED",
@@ -162817,6 +162839,43 @@
         "3.0.0"
       ],
       "obsoleteCompanionRuntime": "2.1.0"
+    },
+    {
+      "ownerInstruction": "Find what the fuck is going on, fix it, and deploy the fix.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-21-rdl-artwork.txt",
+      "ownerEvidenceSha256": "83c005be5f603cfce3c33aab90d1b75cae956759ec365eb5ddadf7d2481aee7d",
+      "reason": "Restore original approved exact artwork for canonical global movement references across Production and DEV numeric sequences; preserve server identity, human approval, crop, denials and all cumulative product state.",
+      "scope": "approved-artwork-portability-20261021",
+      "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+      "productFingerprint": "8a8d80123f62f52cd0d9be059db06fd94aca67c6e2b55780ec4e1bf709a08857",
+      "baselineUpdateId": "01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
+      "baselineSourceSha": "8eb09f3a88e28a4980a1e59f6d3166889286882c",
+      "baselineProductFingerprint": "0ad8a8e2e581f9acdfabf41e5aec8857656ed744daa4f11c630332bcccb6a507",
+      "baselineFiles": {
+        "path": "config/testflight-release-rdl-artwork-20261021/baseline-product.json",
+        "sha256": "a41bf05c7c4d44b29462ccfe43af284b0f81add6dd269486dcc4e39880b77dbf"
+      },
+      "changedProductFiles": {
+        "app/(tabs)/workout/session-workspace/[workoutId].tsx": "0dfb6f2783bb0df220384b94724421204afc3f630f42f1606ddb4c2ab00e77a5",
+        "components/coach-mobile/SessionEditingWorkspace.tsx": "d2747381c24a9ab6e11fd06ef18243a628ddc696bcd839ac70d66719adf96349",
+        "components/coach-mobile/athlete-workspace/CoachAthletePerformance.tsx": "119767eac0d502f48aa21f891894b7cec915ff13ad18dc3bfe5374c75fd0f324",
+        "components/ledger/VariantsExperience.tsx": "77c81597d8bc4a17d588b3ea45081e1888edc9e6147c26a5defec63aa1ff8a18",
+        "config/protected-fix-manifest.json": "e94075dd473aeb4bfbcaa5dd9d51ab139bc3b336caadd485d6b7864fdf3ed900",
+        "lib/canonical-movement-art-subject.ts": "dd8ec5b4c98c4c61972e3b564c4f7e21e62ef847b9153f4077352a7b922915f6",
+        "lib/canonical-movement-artwork.ts": "08e68f25f9ddfac3a3090fd77236ab23464fb8c21702c78d348e83a88c569ec9",
+        "lib/current-session-movement.ts": "42ce296d13f3efbcc0db4d496f84f8ec8e09ef6ebeaccd074086228453f9272d",
+        "lib/governed-movement-art-taxonomy.ts": "0e0fb6ee19c82158decd71daa9483c4ab235a65557b812128c9b964aa4c15190",
+        "lib/governed-movement-classes.ts": "717583c0d550ea941160cb68b667547a778f5ccf5c6897e306a02d93b13d1eec",
+        "lib/logger-movement-identity.ts": "ebae66d69c164c3691a14aa7aef25f98ce7bf0b01ff9db8d1abddea52cba5a37",
+        "lib/movement-artwork-hero.ts": "55e62e3f0795c9b33f1506fd83ea4d8afec3dbf009ac2a9f5336ea6cfb6e67ed"
+      },
+      "contracts": {
+        "scripts/test-approved-artwork-portability.mjs": "9a24ebf840108b2c4f0f5ff2e787db030d78bfb390ef210ba5d43ecc16936715",
+        "scripts/test-approved-artwork-portability-release-scope.mjs": "f09b2c6ae0e0655154268daa049bcf7a27b671cb487bff3e3706d5923be7d51c",
+        "scripts/test-private-movement-identity-contract.mjs": "7abcd5b6498f7e1b973d9d35dc4ab52b25311058de6fbcea48eeefd6471f8748",
+        "scripts/test-single-current-movement-id.mjs": "ad9b81603d90bb4f4d4b00ec03c79bd3c6a5206a95de22d4ac9273e3bd4d4353",
+        "scripts/test-shared-movement-programming-context.mjs": "2b05f97a6a6f32987a0106b5712e6ec73733405e5aea8c3b88654a7c47d90586"
+      }
     }
   ],
   "releaseProtectionProgressions": [
@@ -163539,6 +163598,41 @@
         }
       ],
       "review": "Add one exact owner-authorized scope and source-bound negative controls. Retain every prior scope, native check and release protection. Add real Top/Backdown regressions to the critical suite; no existing contract is removed."
+    },
+    {
+      "ownerInstruction": "Once it's that and safe and validated, please push it. I want it released.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-22-video-engine.txt",
+      "ownerEvidenceSha256": "79957093ee43947bebe2f1ea36cb28d84d90390fdf6b5377cb7fa985c0ddf391",
+      "reason": "Ship validated uploads, playback recovery, verified downloads and accepted Baked Overlay 2 on the existing 3.0 native dependencies. Exact four-file cumulative product delta; preserve all artwork and other owner state.",
+      "scope": "video-engine-20261022",
+      "review": "Add exact four-file video scope bound to the actual 3.0 published baseline and verified matching backend/worker/schema/cloud; retain every existing scope and all checks. Deliberate hidden-source, art replacement/removal, fabricated baseline, stale worker/schema/source and wrong fingerprint failures retained. These contracts do not represent device certification.",
+      "files": [
+        {
+          "path": "scripts/owner-directed-client-fix.mjs",
+          "before": "a32c747233127181a7aebe83238c053e38c2b145c67f4ca2ae7318bed285ea3a",
+          "after": "d62b8b1b98e046a92a9689007a515c7069714c7e752a9650262a6abc6981ebd7"
+        },
+        {
+          "path": "scripts/production3-client-fix-policy.mjs",
+          "before": "12ed6608a83b2bde21b6ba4fa6c444b4465d3d6f5ddbae5888a56abf6988ffb6",
+          "after": "a2bab458c81e58bce673fda80027e2ef7ddc3508aac68165312ee2bde9124105"
+        },
+        {
+          "path": "scripts/test-reviewed-runtime-continuation.mjs",
+          "before": "92c558b11ab98dd26f13925f71b42e5ac19440bf999a44d6839a68a1436cc2f5",
+          "after": "122dfa13477566dd61dbe9291dad1ce012793387fef3cd721bef4fa30be5ddd9"
+        },
+        {
+          "path": "scripts/video-engine-release-scope.mjs",
+          "before": null,
+          "after": "c4c7bbd418c88c2e2298996215e35bf70cda73a3e497c3e540bef41f128085e7"
+        },
+        {
+          "path": "scripts/test-video-engine-release-scope.mjs",
+          "before": null,
+          "after": "1e4d0a165719e190f9a02c638a3781acdce45adaea6a5555826b28339e1a8e63"
+        }
+      ]
     }
   ],
   "verifiedCopiedWeekIdentity": {

@@ -19,13 +19,14 @@ export function requireUploadedSetVideo(video: any, setLogId: number): number {
 }
 
 export function videoUploadPresentation(job: {
-  status: string; serverAttachmentId?: number | null; uploadedBytes?: number; totalBytes?: number;
+  status: string; serverAttachmentId?: number | null; uploadedBytes?: number; totalBytes?: number; phase?: string;
 }) {
   if (job.status === 'uploaded' && Number(job.serverAttachmentId) > 0) return { label: 'Video uploaded', tone: 'success' as const, action: 'View' };
   if (job.status === 'failed_retryable' || job.status === 'failed_permanent' || job.status === 'uploaded') {
     return { label: 'Video not uploaded · Set saved', tone: 'error' as const, action: job.status === 'failed_retryable' ? 'Retry' : null };
   }
   if (job.status === 'uploading') {
+    if (job.phase === 'processing') return { label: 'Preparing video · Set saved', tone: 'pending' as const, action: null };
     const percent = job.totalBytes ? Math.min(99, Math.floor((job.uploadedBytes || 0) * 100 / job.totalBytes)) : null;
     return { label: percent == null ? 'Uploading video…' : `Uploading video · ${percent}%`, tone: 'pending' as const, action: null };
   }

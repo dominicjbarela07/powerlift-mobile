@@ -13,6 +13,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "test:video-upload-policy": "node scripts/assert-video-upload-policy.js",
+    "test:video-engine": "node scripts/test-video-engine-queue.mjs && node scripts/test-video-artifact-cache.mjs && node scripts/test-video-player-recovery.mjs && node scripts/test-video-engine-failure-controls.mjs",
     "test:review-hub-canonical": "node scripts/test-review-hub-canonical-parity.mjs",
     "test:video-review-completion": "node --import tsx scripts/test-video-review-completion-contract.mjs",
     "test:coach-session-reviewer-v3": "node scripts/test-review-hub-canonical-parity.mjs && node scripts/test-coach-session-reviewer-viewport-utilization.mjs",
