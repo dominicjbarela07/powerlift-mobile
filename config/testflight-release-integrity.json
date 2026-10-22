@@ -158844,7 +158844,11 @@
       "scripts/test-video-engine-release-scope.mjs": "1e4d0a165719e190f9a02c638a3781acdce45adaea6a5555826b28339e1a8e63",
       "scripts/test-video-player-recovery.mjs": "302e986777daf7d7d23807045299c1c432b9e83463775df19832eec11d9b5de8"
     },
-    "backendSourceSha": "ed4652e95801a87f5e45e1efad703b16072f12a0"
+    "backendSourceSha": "09f5a289f3243c103589d9ed522d80d68a4bc9cd",
+    "backendDeploymentReceipt": {
+      "path": "config/testflight-release-video-engine-20261022/backend-deployment.json",
+      "sha256": "4eb9061f75e2b1a1cd3ec805e7f8eac7c1c13b72d3dbe83f5b405cd264d1b690"
+    }
   },
   "canonicalZeroLoadEdit": {
     "status": "SHIPPED",
