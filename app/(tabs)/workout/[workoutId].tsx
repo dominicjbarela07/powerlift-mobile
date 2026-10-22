@@ -15,6 +15,7 @@ import { CompletedSessionCorrection } from '@/components/workout-logger/complete
 import { SetEntryVideo, SessionVideoUploadStatus } from '@/components/workout-logger/set-entry-video';
 import { videoUploadPresentation } from '@/lib/set-video-upload-status';
 import { SessionSetEntryContext } from '@/components/workout-logger/session-set-entry-context';
+import { SessionFollowThrough } from '@/components/workout-logger/session-follow-through';
 import { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator } from '@/components/workout-logger/session-v3-shell';
 import { EquipmentHistoryEvidence } from '@/components/workout-logger/equipment-history-evidence';
 import { EducationInlineHint, useEducationHint, useMobileEducation } from '@/context/MobileEducationContext';
@@ -8984,6 +8985,7 @@ export default function WorkoutViewerScreen() {
           styles={styles}
         />
 
+        {!isFinishedSession && !isCoachAthletePreview && workoutId ? <SessionFollowThrough workoutId={Number(workoutId)} focusedItemId={focusedMovementKey && /^(core|acc):/.test(focusedMovementKey) ? Number(focusedMovementKey.split(':')[1]) : null} /> : null}
         {!focusedMovementKey ? <Text style={[styles.preSessionPlanTitle, { marginTop: 12, marginBottom: 4 }]}>{isFinishedSession ? 'Completed Work' : 'Session Plan'}</Text> : null}
         {/* Core lifts as peer movement ledger rows. */}
         <View style={[
