@@ -164594,20 +164594,55 @@
     "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-18-runtime-2.1-retired.txt",
     "ownerEvidenceSha256": "7271c62c39c700be547e32549d3c359c507936d9e40cc58b63fa4c88b8110207",
     "latestVerifiedPublication": {
-      "id": "01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
-      "group": "911a8c05-4d71-4d17-90b5-9afb528a686a",
-      "createdAt": "2026-10-18T14:04:32.980Z",
-      "branch": "production-3-preparation",
+      "id": "01a165cb-666a-75fd-8fdb-1031304d6435",
+      "group": "73c081da-2489-4989-8a36-f0aae7ac3bbc",
+      "gitCommitHash": "e70522d8c493491b6dd88e37d19630160650bcde",
+      "createdAt": "2026-10-22T22:46:31.274Z",
       "runtimeVersion": "3.0.0",
       "platform": "ios",
-      "gitCommitHash": "8eb09f3a88e28a4980a1e59f6d3166889286882c",
-      "message": "Hotfix: copied Top and Backdown work stays one Session builder module",
-      "manifestPermalink": "https://u.expo.dev/update/01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
+      "message": "Video engine: resumable uploads, reliable playback and downloads, Baked Overlay 2",
+      "manifestPermalink": "https://u.expo.dev/update/01a165cb-666a-75fd-8fdb-1031304d6435",
+      "branch": "production-3-preparation",
       "sourceAvailable": true,
       "recoverableRefs": [
-        "refs/archive/testflight-published/01a14f54-1554-7bbd-af9c-bfdd7a18e95f"
-      ]
-    }
+        "refs/archive/testflight-published/01a165cb-666a-75fd-8fdb-1031304d6435"
+      ],
+      "servedBundleSha256": "0476f2ad7a165f49652673e009de3546fcbea12f6cd466c31240ec81a7c79dc8"
+    },
+    "previousVerifiedPublications": [
+      {
+        "id": "01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
+        "group": "911a8c05-4d71-4d17-90b5-9afb528a686a",
+        "createdAt": "2026-10-18T14:04:32.980Z",
+        "branch": "production-3-preparation",
+        "runtimeVersion": "3.0.0",
+        "platform": "ios",
+        "gitCommitHash": "8eb09f3a88e28a4980a1e59f6d3166889286882c",
+        "message": "Hotfix: copied Top and Backdown work stays one Session builder module",
+        "manifestPermalink": "https://u.expo.dev/update/01a14f54-1554-7bbd-af9c-bfdd7a18e95f",
+        "sourceAvailable": true,
+        "recoverableRefs": [
+          "refs/archive/testflight-published/01a14f54-1554-7bbd-af9c-bfdd7a18e95f"
+        ]
+      },
+      {
+        "id": "01a15f63-abf8-74ce-bd3b-a6b537d7c5ea",
+        "group": "6ef2d4dd-6502-4be2-a162-35207b11201b",
+        "gitCommitHash": "b4c88feb1f5af133c1fafba77c578a4b39dd28c6",
+        "manifestId": "01a15f63-abf8-74ce-bd3b-a6b537d7c5ea",
+        "servedBundleSha256": "fa05e11a36474ae30e0339f7d6e76346d77c8dfb5236381ca3475cc0e8a8d98c",
+        "sourceAvailable": true,
+        "recoverableRefs": [
+          "refs/archive/testflight-published/01a15f63-abf8-74ce-bd3b-a6b537d7c5ea"
+        ],
+        "createdAt": "2026-10-21T16:55:30.040Z",
+        "branch": "production-3-preparation",
+        "runtimeVersion": "3.0.0",
+        "platform": "ios",
+        "message": "Restore approved RDL and movement artwork across Production catalog IDs",
+        "manifestPermalink": "https://u.expo.dev/update/01a15f63-abf8-74ce-bd3b-a6b537d7c5ea"
+      }
+    ]
   },
   "retiredMobileRuntimes": {
     "2.1.0": {
@@ -164892,5 +164927,68 @@
         }
       ]
     }
-  ]
+  ],
+  "verifiedProduction3VideoEngine": {
+    "publication": {
+      "id": "01a165cb-666a-75fd-8fdb-1031304d6435",
+      "group": "73c081da-2489-4989-8a36-f0aae7ac3bbc",
+      "gitCommitHash": "e70522d8c493491b6dd88e37d19630160650bcde",
+      "createdAt": "2026-10-22T22:46:31.274Z",
+      "runtimeVersion": "3.0.0",
+      "platform": "ios",
+      "message": "Video engine: resumable uploads, reliable playback and downloads, Baked Overlay 2",
+      "manifestPermalink": "https://u.expo.dev/update/01a165cb-666a-75fd-8fdb-1031304d6435",
+      "branch": "production-3-preparation",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a165cb-666a-75fd-8fdb-1031304d6435"
+      ],
+      "servedBundleSha256": "0476f2ad7a165f49652673e009de3546fcbea12f6cd466c31240ec81a7c79dc8"
+    },
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-video-engine-20261022/runtime-3.0.0/gate-c.json",
+        "sha256": "836c1285edf31a33ca858ef723ef47150cdfb698aa273b113a9724176dc4ca97"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-video-engine-20261022/runtime-3.0.0/asset-audit.json",
+        "sha256": "f77e06383c788fe4894e03132a755048a336bb07439272727e1b4665df89dacc"
+      },
+      "exportSource": {
+        "path": "config/testflight-release-video-engine-20261022/runtime-3.0.0/export-source.json",
+        "sha256": "40cf7792bda335e97479feaeff6cf86875484d2afdffea0028e116f87fc69c9a"
+      },
+      "contracts": {
+        "path": "config/testflight-release-video-engine-20261022/runtime-3.0.0/contracts.json",
+        "sha256": "8ed5f749568fc6d46c82232f2a8f094cbf869dfaf1666c3475090d2a4bdf05cb"
+      },
+      "sharedValidation": {
+        "path": "config/testflight-release-video-engine-20261022/runtime-3.0.0/shared-validation.json",
+        "sha256": "d953a73d03b9d209e850f8c66960a881238edf9bc4ff5c6933d24e052a8a9817"
+      },
+      "movementImagery": {
+        "path": "config/testflight-release-video-engine-20261022/runtime-3.0.0/movement-imagery.json",
+        "sha256": "014369c588a278fee7fb2c5062395676f4c16214b16de32e1ee60fefde3a3e1e"
+      },
+      "channel": {
+        "path": "config/testflight-release-video-engine-20261022/runtime-3.0.0/channel.json",
+        "sha256": "8cd504932002e9bf104489a4e46f71490ecf81ac5f5a10de9f64d49c9341f4c0"
+      },
+      "worktreeCloseout": {
+        "path": "config/testflight-release-video-engine-20261022/runtime-3.0.0/worktree-closeout.json",
+        "sha256": "0c5db1c0d284564f9e0228e4c1b9720380f26018b11b140c2a0fb14bd3aaae1a"
+      }
+    },
+    "backendSourceSha": "09f5a289f3243c103589d9ed522d80d68a4bc9cd",
+    "backendDeploymentReceipt": {
+      "path": "config/testflight-release-video-engine-20261022/backend-deployment.json",
+      "sha256": "4eb9061f75e2b1a1cd3ec805e7f8eac7c1c13b72d3dbe83f5b405cd264d1b690"
+    },
+    "acceptedContracts": 308,
+    "criticalProductAreas": 90,
+    "typescript": true,
+    "nativeBinaryChanged": false,
+    "physicalPhoneForceQuitCertified": false,
+    "productFingerprint": "e3fe8c9f586e1d65321f2bc94271d10969ab84a5ba224ac8c7c65f19cc95d9a5"
+  }
 }
