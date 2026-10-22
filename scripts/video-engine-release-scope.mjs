@@ -42,9 +42,17 @@ export function assertVideoEngineDeployment(deployment, expectedSha, live) {
   assert.equal(live.source_sha, expectedSha, 'matching video backend must be live before mobile publication');
   assert.equal(live.ready, true);
 }
-export function verifyVideoEngineDeployment({root, scope}) {
+export function assertActiveVideoBaseline(remote, publication) {
+  assert.equal(remote.name, 'production-3-preparation', 'video baseline must come from active 3.0 branch');
+  const latest=remote.currentPage.find(update=>update.platforms.includes('ios'));
+  assert.equal(latest?.group,publication.group,'active 3.0 changed; reconcile the actual current product before publishing');
+  assert.equal(latest?.runtimeVersion,'3.0.0');
+}
+export function verifyVideoEngineDeployment({root, scope, state}) {
   const bytes = fs.readFileSync(path.resolve(root, scope.backendDeploymentReceipt.path));
   assert.equal(sha(bytes), scope.backendDeploymentReceipt.sha256, 'video deployment proof changed');
   const live = JSON.parse(execFileSync('/usr/bin/curl', ['--fail','--silent','--show-error','--max-time','20','https://app.strengthledger.fit/health/recognition'], {encoding:'utf8'}));
   assertVideoEngineDeployment(JSON.parse(bytes), scope.backendSourceSha, live);
+  const remote=JSON.parse(execFileSync('npx',['eas-cli','update:list','--branch','production-3-preparation','--limit','5','--json','--non-interactive'],{cwd:root,encoding:'utf8'}));
+  assertActiveVideoBaseline(remote,state.verifiedProduction3ApprovedArtworkPortability.publication);
 }

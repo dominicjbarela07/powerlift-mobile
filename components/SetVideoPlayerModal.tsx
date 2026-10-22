@@ -702,7 +702,7 @@ export default function SetVideoPlayerModal({
     };
   }, [exportRequestStartSeconds, exportTrimDragging, showExportTrimTool, video?.thumbnail_url, videoUrl]);
 
-  const canStartExport = readyDownloadUnits.length > 1 && !exporting;
+  const canStartExport = readyDownloadUnits.length > 0 && !exporting;
   const resetExportJob = useCallback(() => {
     setExportUrl(null);
     setExportJobId(null);
@@ -1295,7 +1295,7 @@ export default function SetVideoPlayerModal({
                   ) : (
                     <TouchableOpacity style={[styles.exportActionButton, styles.exportActionButtonPrimary, !downloadFailed && !canStartExport && styles.exportActionButtonDisabled]} onPress={() => downloadFailed ? void retryExportPreparation() : setExportUnitChoiceOpen(true)} disabled={exporting || (!downloadFailed && !canStartExport)}>
                       <Text style={[styles.exportActionText, styles.exportActionTextPrimary]}>
-                        {readyDownloadUnits.length > 1 ? 'Choose Unit' : downloadFailed ? 'Retry preparation' : 'Preparing download'}
+                        {readyDownloadUnits.length > 0 ? 'Choose Unit' : downloadFailed ? 'Retry preparation' : 'Preparing download'}
                       </Text>
                     </TouchableOpacity>
                   )}

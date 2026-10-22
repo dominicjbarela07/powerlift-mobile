@@ -1,0 +1,25 @@
+{
+  "reason": "Retain exact original source bytes as non-runtime text; historical proofs must not enter the TypeScript runtime graph.",
+  "renames": [
+    {
+      "before": "config/testflight-release-video-engine-20261022/before-components__SetVideoPlayerModal.tsx",
+      "after": "config/testflight-release-video-engine-20261022/before-components__SetVideoPlayerModal.tsx.source.txt",
+      "sha256": "adaac40c600ac3e9b7b6c017f4994828b766b0804ac510f0b68e5e8b5e0385a4"
+    },
+    {
+      "before": "config/testflight-release-video-engine-20261022/before-lib__videoArtifactCache.ts",
+      "after": "config/testflight-release-video-engine-20261022/before-lib__videoArtifactCache.ts.source.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "before": "config/testflight-release-video-engine-20261022/before-lib__videoUploadQueue.ts",
+      "after": "config/testflight-release-video-engine-20261022/before-lib__videoUploadQueue.ts.source.txt",
+      "sha256": "b7ece6ccf128c014d8da1ea02bf2df6218d6246db316715f2d709a7404773f6d"
+    },
+    {
+      "before": "config/testflight-release-video-engine-20261022/before-lib__set-video-upload-status.ts",
+      "after": "config/testflight-release-video-engine-20261022/before-lib__set-video-upload-status.ts.source.txt",
+      "sha256": "3ac61a167662cc43f555c6f46771c97f848cec8bcc9685072adcfedfd7f58436"
+    }
+  ]
+}

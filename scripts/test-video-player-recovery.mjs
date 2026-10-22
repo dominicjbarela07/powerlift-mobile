@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
-const source = fs.readFileSync('components/SetVideoPlayerModal.tsx','utf8');
+let source = fs.readFileSync('components/SetVideoPlayerModal.tsx','utf8');
+if(process.env.VIDEO_PLAYER_TEST_MUTATION==='require-both-exports') source=source.replaceAll('readyDownloadUnits.length > 0','readyDownloadUnits.length > 1');
 const start = source.indexOf('  const refreshVideoUrl = useCallback(');
 const end = source.indexOf('\n  const requestKey',start);
 assert.ok(start > 0 && end > start);
@@ -51,3 +52,23 @@ for(let i=0;i<5;i++)vm.runInNewContext(effect,{visible:true,playbackError:'expir
   refreshVideoUrl:()=>refreshes++,setTimeout:fn=>{fn();return 0},clearTimeout(){}});
 assert.equal(refreshes,2,'automatic recovery is bounded; manual retry remains explicit');
 console.log('PASS: actual asynchronous URL handler rejects stale/closed responses, preserves playhead through retries, enforces revoked access and bounds automatic recovery.');
+
+// Render and click the actual download action and its actual availability
+// expression. One failed/preparing unit cannot block a ready artifact.
+const availability = source.match(/  const canStartExport = [^;]+;/)?.[0];
+const buttonStart=source.indexOf('<TouchableOpacity style={[styles.exportActionButton, styles.exportActionButtonPrimary, !downloadFailed');
+const buttonEnd=source.indexOf('</TouchableOpacity>',buttonStart)+'</TouchableOpacity>'.length;
+assert.ok(availability && buttonStart>0 && buttonEnd>buttonStart);
+const actionCode=ts.transpileModule(availability+'\n('+source.slice(buttonStart,buttonEnd)+');',
+  {compilerOptions:{target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.React},fileName:'action.tsx'}).outputText;
+for(const readyDownloadUnits of [[],['kg'],['lbs'],['kg','lbs']]) {
+  let choices=0;
+  const action=vm.runInNewContext(actionCode,{readyDownloadUnits,exporting:false,downloadFailed:false,
+    styles:{},TouchableOpacity:'button',Text:'text',React:{createElement:(type,props,...children)=>({type,props,children})},
+    retryExportPreparation:()=>assert.fail('ready downloads must not retry rendering'),setExportUnitChoiceOpen:()=>choices++});
+  if(readyDownloadUnits.length){
+    assert.equal(Boolean(action.props.disabled),false,'one ready unit stays downloadable while the other prepares or fails');
+    assert.equal(action.children[0].children.join(''),'Choose Unit');action.props.onPress();assert.equal(choices,1);
+  }else assert.equal(Boolean(action.props.disabled),true,'processing with no ready artifact remains disabled');
+}
+console.log('PASS: actual download button enables either ready unit independently, opens the unit chooser, and disables only with no ready artifact.');

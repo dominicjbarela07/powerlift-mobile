@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { assertVideoEngineBaseline, assertVideoEngineDeployment, videoEnginePaths } from './video-engine-release-scope.mjs';
+import { assertVideoEngineBaseline, assertVideoEngineDeployment, assertActiveVideoBaseline, videoEnginePaths } from './video-engine-release-scope.mjs';
 import { assertClientFixScope } from './owner-directed-client-fix.mjs';
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'sl-video-scope-'));
@@ -32,6 +32,11 @@ try {
   assert.throws(()=>assertClientFixScope(scope,'candidate',modifications,ownerInstruction),/complete video/);
   const deployed={sourceSha:'backend',liveVerified:true,gate:{pass:true},worker:{sourceSha:'backend',liveVerified:true},schemaRevision:'f3e5a7b9c1d3',cloud:{passed:true,syntheticCleanupVerified:true}},live={source_sha:'backend',ready:true};
   assertVideoEngineDeployment(deployed,'backend',live);
+  const remote={name:'production-3-preparation',currentPage:[{platforms:'ios',group:'actual-group',runtimeVersion:'3.0.0'}]};
+  assertActiveVideoBaseline(remote,{group:'actual-group'});
+  assert.throws(()=>assertActiveVideoBaseline({...remote,name:'testflight'},{group:'actual-group'}));
+  assert.throws(()=>assertActiveVideoBaseline(remote,{group:'stale-group'}),/active 3.0 changed/);
+  assert.throws(()=>assertActiveVideoBaseline({...remote,currentPage:[]},{group:'actual-group'}));
   for(const mutate of [d=>d.worker.sourceSha='stale',d=>d.worker.liveVerified=false,d=>d.schemaRevision='old',d=>d.gate.pass=false,d=>d.cloud.passed=false,d=>d.cloud.syntheticCleanupVerified=false]){const bad=structuredClone(deployed);mutate(bad);assert.throws(()=>assertVideoEngineDeployment(bad,'backend',live));}
   assert.throws(()=>assertVideoEngineDeployment(deployed,'backend',{...live,source_sha:'stale'}));
 }finally{fs.rmSync(root,{recursive:true,force:true});}
