@@ -9,3 +9,8 @@ const probe = spawnSync(process.execPath, ['scripts/test-video-engine-queue.mjs'
 assert.equal(probe.status, 1, 'unsafe queue must fail the actual behavioral suite');
 assert.match(probe.stderr, /concurrent queue mutations cannot lose either intent/);
 console.log('PASS: removing persistence serialization is rejected by the actual concurrent-enqueue test.');
+
+const blockedReady = spawnSync(process.execPath,['scripts/test-video-player-recovery.mjs'],{encoding:'utf8',env:{...process.env,VIDEO_PLAYER_TEST_MUTATION:'require-both-exports'}});
+assert.equal(blockedReady.status,1,'requiring both unit variants must fail the actual rendered action test');
+assert.match(blockedReady.stderr,/one ready unit stays downloadable/);
+console.log('PASS: restoring the both-unit block is rejected by the actual rendered download button and click contract.');

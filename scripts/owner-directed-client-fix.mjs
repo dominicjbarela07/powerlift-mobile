@@ -296,7 +296,7 @@ export function runClientFixContracts({root, scope, fingerprint, delta, exportDi
     assert.equal(live.source_sha, scope.backendSourceSha, 'identity correction must be live before its mobile publication');
     assert.equal(live.ready, true);
   }
-  if (scope.scope === 'video-engine-20261022') verifyVideoEngineDeployment({root, scope});
+  if (scope.scope === 'video-engine-20261022') verifyVideoEngineDeployment({root, scope, state});
   if (scope.scope === 'weekly-training-report-20261017') assertWeeklyReportDeployment({root, scope});
   const results = [];
   for (const [file, expected] of Object.entries(scope.contracts)) {

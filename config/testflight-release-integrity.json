@@ -20343,6 +20343,15 @@
       "path": "config/protected-fix-manifest.json",
       "before": "8510769a05f4cba38a5a67e48579425b7f68a46b258cf0e6c7b5bec09bbb3491",
       "after": "7cdfd7b8b10af0a2968c0b18693bdedd3d0220df671f42494ee0d78b7bd7a5db"
+    },
+    {
+      "ownerInstruction": "Once it's that and safe and validated, please push it. I want it released.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-22-video-engine.txt",
+      "ownerEvidenceSha256": "79957093ee43947bebe2f1ea36cb28d84d90390fdf6b5377cb7fa985c0ddf391",
+      "path": "components/SetVideoPlayerModal.tsx",
+      "before": "adaac40c600ac3e9b7b6c017f4994828b766b0804ac510f0b68e5e8b5e0385a4",
+      "after": "d023fd0f163cda21059e8ee2f16ae0a6f9d997e4df36738ec707f093080477bd",
+      "reason": "Complete video reliability scope including independently ready KG/LB selection. Preserve original source and exact two-line final readiness patch; actual rendered button and click contract rejects restoring the block."
     }
   ],
   "assetRemovalAuthorizations": [
@@ -158360,7 +158369,7 @@
     "scripts/test-cable-brand-equipment-api.mjs": "71889a55559cfd1dc43a5817b0b1ac8bd0c022498e6c30d46ff161ab71949dbc",
     "docs/CABLE_BRAND_EQUIPMENT.md": "0289f45e3859f993ccce52a2ffca383f484f3899c61224179813a6363c151c21",
     "config/testflight-release-owner-evidence/2026-10-05-cable-brand-only.txt": "69f1ba6ca417408f3e0a5cada3f37bca5fee5f1c26ece4443bec9d855fc8cb9b",
-    "scripts/owner-directed-client-fix.mjs": "d62b8b1b98e046a92a9689007a515c7069714c7e752a9650262a6abc6981ebd7",
+    "scripts/owner-directed-client-fix.mjs": "005691aa3e8be162b89007861e56ce592be44b59f642cedfb5dc45263f3b04ff",
     "scripts/test-owner-directed-client-fix.mjs": "78fc780bd4295ff47d8dc8ce9b73dfd9ed950d561de82701fcd2d3d35e156df0",
     "scripts/test-zero-load-edit-api.mjs": "a19f2b1b7d6b0ad2335f8e3668657a1a74675ca14d14ba8bf13616b16f3dbc2a",
     "scripts/test-zero-load-edit-set.mjs": "6187f4a68b57230b2fb86f3702e2c89d0f704394f1eef200db689f66cec6e250",
@@ -158422,8 +158431,8 @@
     "scripts/test-approved-artwork-portability-release-scope.mjs": "f09b2c6ae0e0655154268daa049bcf7a27b671cb487bff3e3706d5923be7d51c",
     "docs/validation/rdl-artwork-2026-10-21/live-rdl-input.json": "8e54a1c49288f0d87569869f954f5870c3b3877703c1dcf047ebc115b423606b",
     "docs/validation/rdl-artwork-2026-10-21/live-core-inventory.json": "c074bb7f30b7fcdad2508f631c76ddc97c8d1a90f4a2e8bf1db84f76f35fd14f",
-    "scripts/video-engine-release-scope.mjs": "66d6a21ab3232b10e025360dc6e290d325fa67bc3fd8aacaa8b1a17ecd8089dd",
-    "scripts/test-video-engine-release-scope.mjs": "1e4d0a165719e190f9a02c638a3781acdce45adaea6a5555826b28339e1a8e63"
+    "scripts/video-engine-release-scope.mjs": "7eb83591c23d2e6956157bfc5b8b77d029303b22901cd3c88658f12944db2550",
+    "scripts/test-video-engine-release-scope.mjs": "95dcced20b42b319533346bd40b64659674e6cb8a16b87246f7bbcd43887b4bd"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -158829,10 +158838,10 @@
     "ownerInstruction": "Once it's that and safe and validated, please push it. I want it released.",
     "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-22-video-engine.txt",
     "ownerEvidenceSha256": "79957093ee43947bebe2f1ea36cb28d84d90390fdf6b5377cb7fa985c0ddf391",
-    "reason": "Ship validated uploads, playback recovery, verified downloads and accepted Baked Overlay 2 on the existing 3.0 native dependencies. Exact four-file cumulative product delta; preserve all artwork and other owner state. Include the exact holdback-accounting metadata for preserving the existing unpublished coaching UI; no coaching behavior is published.",
+    "reason": "Ship validated uploads, playback recovery, verified downloads and accepted Baked Overlay 2 on the existing 3.0 native dependencies. Exact four-file cumulative product delta; preserve all artwork and other owner state. Include the exact holdback-accounting metadata for preserving the existing unpublished coaching UI; no coaching behavior is published. A single ready KG or LB artifact remains selectable when its peer is preparing or has failed; actual rendered-button and click regression plus deliberate both-unit-block mutation are permanent.",
     "scope": "video-engine-20261022",
     "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
-    "productFingerprint": "26a63be4eb0bce1d31a87eef726be6a721356ac6206e7dbed28860e8b6311da7",
+    "productFingerprint": "e3fe8c9f586e1d65321f2bc94271d10969ab84a5ba224ac8c7c65f19cc95d9a5",
     "baselineUpdateId": "01a15f63-abf8-74ce-bd3b-a6b537d7c5ea",
     "baselineSourceSha": "b4c88feb1f5af133c1fafba77c578a4b39dd28c6",
     "baselineProductFingerprint": "8a8d80123f62f52cd0d9be059db06fd94aca67c6e2b55780ec4e1bf709a08857",
@@ -158841,7 +158850,7 @@
       "sha256": "5d184c17af3368fa6b4e1124d53f5a21f73216387a3060b2c5229539cd5e1334"
     },
     "changedProductFiles": {
-      "components/SetVideoPlayerModal.tsx": "d7b9f80f4e08052d0fffd28f4f5fdeb6391e34ce2dd2c2e54a58fda7c29082e0",
+      "components/SetVideoPlayerModal.tsx": "d023fd0f163cda21059e8ee2f16ae0a6f9d997e4df36738ec707f093080477bd",
       "lib/set-video-upload-status.ts": "451c7fa15f5e588243ac9cda53891627f5ca36a3287fc3bea3d50711ffb64937",
       "lib/videoArtifactCache.ts": "1333a662b10a5c45a22ef8e2781e29058a59549d1d7c74976a5818c89978d339",
       "lib/videoUploadQueue.ts": "921747991d3916968df740558ae418d5bac25c16021f2a50ae89e4dac55adfe4",
@@ -158849,10 +158858,10 @@
     },
     "contracts": {
       "scripts/test-video-artifact-cache.mjs": "d7eaeae35f3445b0b8e84a04f1507bb627d2cb552179b8122eb6aee47a9e14c5",
-      "scripts/test-video-engine-failure-controls.mjs": "b7b9d97add2a25b6a37d1d2e24670a4e958e5ede24be55d7463b6e6d231598fe",
+      "scripts/test-video-engine-failure-controls.mjs": "c3355710b99ee80a4ea72f477f589911a5c171741c93d99ace29851ea014ff4b",
       "scripts/test-video-engine-queue.mjs": "849610fefdd0e8a83f8b3bd55f33289b826913c349c7c7dde4cd28e69f1f3858",
-      "scripts/test-video-engine-release-scope.mjs": "1e4d0a165719e190f9a02c638a3781acdce45adaea6a5555826b28339e1a8e63",
-      "scripts/test-video-player-recovery.mjs": "302e986777daf7d7d23807045299c1c432b9e83463775df19832eec11d9b5de8"
+      "scripts/test-video-engine-release-scope.mjs": "95dcced20b42b319533346bd40b64659674e6cb8a16b87246f7bbcd43887b4bd",
+      "scripts/test-video-player-recovery.mjs": "7d2ad1a91fa990b19a830c92b332a8132d5c5e4b62dd43b966b4d9506e656804"
     },
     "backendSourceSha": "09f5a289f3243c103589d9ed522d80d68a4bc9cd",
     "backendDeploymentReceipt": {
@@ -162917,6 +162926,41 @@
         "scripts/test-single-current-movement-id.mjs": "ad9b81603d90bb4f4d4b00ec03c79bd3c6a5206a95de22d4ac9273e3bd4d4353",
         "scripts/test-shared-movement-programming-context.mjs": "2b05f97a6a6f32987a0106b5712e6ec73733405e5aea8c3b88654a7c47d90586"
       }
+    },
+    {
+      "ownerInstruction": "Once it's that and safe and validated, please push it. I want it released.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-22-video-engine.txt",
+      "ownerEvidenceSha256": "79957093ee43947bebe2f1ea36cb28d84d90390fdf6b5377cb7fa985c0ddf391",
+      "reason": "Ship validated uploads, playback recovery, verified downloads and accepted Baked Overlay 2 on the existing 3.0 native dependencies. Exact four-file cumulative product delta; preserve all artwork and other owner state. Include the exact holdback-accounting metadata for preserving the existing unpublished coaching UI; no coaching behavior is published.",
+      "scope": "video-engine-20261022",
+      "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+      "productFingerprint": "26a63be4eb0bce1d31a87eef726be6a721356ac6206e7dbed28860e8b6311da7",
+      "baselineUpdateId": "01a15f63-abf8-74ce-bd3b-a6b537d7c5ea",
+      "baselineSourceSha": "b4c88feb1f5af133c1fafba77c578a4b39dd28c6",
+      "baselineProductFingerprint": "8a8d80123f62f52cd0d9be059db06fd94aca67c6e2b55780ec4e1bf709a08857",
+      "baselineFiles": {
+        "path": "config/testflight-release-video-engine-20261022/baseline-product.json",
+        "sha256": "5d184c17af3368fa6b4e1124d53f5a21f73216387a3060b2c5229539cd5e1334"
+      },
+      "changedProductFiles": {
+        "components/SetVideoPlayerModal.tsx": "d7b9f80f4e08052d0fffd28f4f5fdeb6391e34ce2dd2c2e54a58fda7c29082e0",
+        "lib/set-video-upload-status.ts": "451c7fa15f5e588243ac9cda53891627f5ca36a3287fc3bea3d50711ffb64937",
+        "lib/videoArtifactCache.ts": "1333a662b10a5c45a22ef8e2781e29058a59549d1d7c74976a5818c89978d339",
+        "lib/videoUploadQueue.ts": "921747991d3916968df740558ae418d5bac25c16021f2a50ae89e4dac55adfe4",
+        "config/protected-fix-manifest.json": "7cdfd7b8b10af0a2968c0b18693bdedd3d0220df671f42494ee0d78b7bd7a5db"
+      },
+      "contracts": {
+        "scripts/test-video-artifact-cache.mjs": "d7eaeae35f3445b0b8e84a04f1507bb627d2cb552179b8122eb6aee47a9e14c5",
+        "scripts/test-video-engine-failure-controls.mjs": "b7b9d97add2a25b6a37d1d2e24670a4e958e5ede24be55d7463b6e6d231598fe",
+        "scripts/test-video-engine-queue.mjs": "849610fefdd0e8a83f8b3bd55f33289b826913c349c7c7dde4cd28e69f1f3858",
+        "scripts/test-video-engine-release-scope.mjs": "1e4d0a165719e190f9a02c638a3781acdce45adaea6a5555826b28339e1a8e63",
+        "scripts/test-video-player-recovery.mjs": "302e986777daf7d7d23807045299c1c432b9e83463775df19832eec11d9b5de8"
+      },
+      "backendSourceSha": "09f5a289f3243c103589d9ed522d80d68a4bc9cd",
+      "backendDeploymentReceipt": {
+        "path": "config/testflight-release-video-engine-20261022/backend-deployment.json",
+        "sha256": "4eb9061f75e2b1a1cd3ec805e7f8eac7c1c13b72d3dbe83f5b405cd264d1b690"
+      }
     }
   ],
   "releaseProtectionProgressions": [
@@ -164704,6 +164748,33 @@
       "before": "96db5a8e29d0378d109481ee102c60a7dd313b08e998cae622b427212e5da1eb",
       "after": "ee2c0a8bd23d534101ab1f082ab5575dd3aab3729a370765d0cfc121a5c382a7",
       "review": "Exact published JSON equality except one added test:video-engine script invoking the four actual queue/cache/player/failure-control suites. Every dependency and every existing script is unchanged; accepted and critical suites remain mandatory."
+    },
+    {
+      "ownerInstruction": "Once it's that and safe and validated, please push it. I want it released.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-22-video-engine.txt",
+      "ownerEvidenceSha256": "79957093ee43947bebe2f1ea36cb28d84d90390fdf6b5377cb7fa985c0ddf391",
+      "path": "scripts/video-engine-release-scope.mjs",
+      "before": "66d6a21ab3232b10e025360dc6e290d325fa67bc3fd8aacaa8b1a17ecd8089dd",
+      "after": "7eb83591c23d2e6956157bfc5b8b77d029303b22901cd3c88658f12944db2550",
+      "review": "Retain every existing baseline/permission/art/source failure control. Extend video scope to recheck the actual active 3.0 group immediately before publication; a stale or wrong branch deliberately rejects. Preserve all four video source paths plus exact metadata, deployed matching worker/schema/cloud checks and current-source contracts. Independent single-unit readiness has an actual rendered-action regression and deliberate old-block failure."
+    },
+    {
+      "ownerInstruction": "Once it's that and safe and validated, please push it. I want it released.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-22-video-engine.txt",
+      "ownerEvidenceSha256": "79957093ee43947bebe2f1ea36cb28d84d90390fdf6b5377cb7fa985c0ddf391",
+      "path": "scripts/owner-directed-client-fix.mjs",
+      "before": "d62b8b1b98e046a92a9689007a515c7069714c7e752a9650262a6abc6981ebd7",
+      "after": "005691aa3e8be162b89007861e56ce592be44b59f642cedfb5dc45263f3b04ff",
+      "review": "Retain every existing baseline/permission/art/source failure control. Extend video scope to recheck the actual active 3.0 group immediately before publication; a stale or wrong branch deliberately rejects. Preserve all four video source paths plus exact metadata, deployed matching worker/schema/cloud checks and current-source contracts. Independent single-unit readiness has an actual rendered-action regression and deliberate old-block failure."
+    },
+    {
+      "ownerInstruction": "Once it's that and safe and validated, please push it. I want it released.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-22-video-engine.txt",
+      "ownerEvidenceSha256": "79957093ee43947bebe2f1ea36cb28d84d90390fdf6b5377cb7fa985c0ddf391",
+      "path": "scripts/test-video-engine-release-scope.mjs",
+      "before": "1e4d0a165719e190f9a02c638a3781acdce45adaea6a5555826b28339e1a8e63",
+      "after": "95dcced20b42b319533346bd40b64659674e6cb8a16b87246f7bbcd43887b4bd",
+      "review": "Retain every existing baseline/permission/art/source failure control. Extend video scope to recheck the actual active 3.0 group immediately before publication; a stale or wrong branch deliberately rejects. Preserve all four video source paths plus exact metadata, deployed matching worker/schema/cloud checks and current-source contracts. Independent single-unit readiness has an actual rendered-action regression and deliberate old-block failure."
     }
   ],
   "verifiedProduction3ApprovedArtworkPortability": {
