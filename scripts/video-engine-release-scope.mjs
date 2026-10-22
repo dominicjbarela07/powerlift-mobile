@@ -4,7 +4,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
-export const videoEnginePaths = ['components/SetVideoPlayerModal.tsx','lib/set-video-upload-status.ts','lib/videoArtifactCache.ts','lib/videoUploadQueue.ts'].sort();
+export const videoEnginePaths = ['config/protected-fix-manifest.json','components/SetVideoPlayerModal.tsx','lib/set-video-upload-status.ts','lib/videoArtifactCache.ts','lib/videoUploadQueue.ts'].sort();
 export function assertVideoEngineBaseline({root, scope, state, files}) {
   assert.equal(scope.scope, 'video-engine-20261022');
   const previous = state.verifiedProduction3ApprovedArtworkPortability;
