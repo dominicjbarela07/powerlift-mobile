@@ -1,0 +1,39 @@
+{
+  "scope": "video-engine-20261022",
+  "productFingerprint": "e3fe8c9f586e1d65321f2bc94271d10969ab84a5ba224ac8c7c65f19cc95d9a5",
+  "completedAt": "2026-10-22T22:45:28.242Z",
+  "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+  "runtimeVerified": false,
+  "contracts": [
+    {
+      "file": "scripts/test-video-artifact-cache.mjs",
+      "sourceSha256": "d7eaeae35f3445b0b8e84a04f1507bb627d2cb552179b8122eb6aee47a9e14c5",
+      "result": "PASS",
+      "output": "PASS: native background download, progress, account isolation, deduplication, checksum/size verification, reuse and failed-artifact cleanup.\n"
+    },
+    {
+      "file": "scripts/test-video-engine-failure-controls.mjs",
+      "sourceSha256": "c3355710b99ee80a4ea72f477f589911a5c171741c93d99ace29851ea014ff4b",
+      "result": "PASS",
+      "output": "PASS: removing persistence serialization is rejected by the actual concurrent-enqueue test.\nPASS: restoring the both-unit block is rejected by the actual rendered download button and click contract.\n"
+    },
+    {
+      "file": "scripts/test-video-engine-queue.mjs",
+      "sourceSha256": "849610fefdd0e8a83f8b3bd55f33289b826913c349c7c7dde4cd28e69f1f3858",
+      "result": "PASS",
+      "output": "PASS: transactional persistence, actual negotiated binary/background options, acknowledged resume, durable processing/receipt, cancel/complete race, corruption preservation and account isolation.\n"
+    },
+    {
+      "file": "scripts/test-video-engine-release-scope.mjs",
+      "sourceSha256": "95dcced20b42b319533346bd40b64659674e6cb8a16b87246f7bbcd43887b4bd",
+      "result": "PASS",
+      "output": "PASS: video release requires exact latest 3.0 baseline, four bounded video files, existing artwork, complete owner instruction, deployed matching worker/schema/cloud and live backend; deliberate substitutions rejected.\n"
+    },
+    {
+      "file": "scripts/test-video-player-recovery.mjs",
+      "sourceSha256": "7d2ad1a91fa990b19a830c92b332a8132d5c5e4b62dd43b966b4d9506e656804",
+      "result": "PASS",
+      "output": "PASS: actual asynchronous URL handler rejects stale/closed responses, preserves playhead through retries, enforces revoked access and bounds automatic recovery.\nPASS: actual download button enables either ready unit independently, opens the unit chooser, and disables only with no ready artifact.\n"
+    }
+  ]
+}

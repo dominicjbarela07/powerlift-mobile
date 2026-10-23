@@ -437,6 +437,8 @@ function RootStack() {
       <Stack screenLayout={({ children }) => <KeyboardViewport independent>{children}</KeyboardViewport>} screenOptions={{ contentStyle: styles.transparentScene }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="verify-email" options={{ headerShown: false }} />
+        <Stack.Screen name="billing-return" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="dev-strength-tier-certification" options={{ animation: 'none', headerShown: false }} />
         <Stack.Screen

@@ -20,11 +20,12 @@ import {
   PRODUCTION_API_BASE,
   deleteAccountRequest,
   fetchJson,
+  startMobileBillingCheckout,
   getDeviceTimezone,
   setManualTimezonePreference,
 } from '@/lib/api';
 import type { MobileViewMode } from '@/lib/mobileViewMode';
-import { openRecoverableCheckoutBrowser } from '@/lib/checkoutBrowser';
+import { openRecoverableCheckoutBrowser, waitForBlockingUiToDismiss } from '@/lib/checkoutBrowser';
 import { ACCESSORY_REVIEW_CATALOG, canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';
 import {
   convertDisplayWeightValue,
@@ -1245,7 +1246,10 @@ export default function SettingsScreen() {
         setUpgradeBetaCode('');
         setUpgradeSubmitting(false);
         try {
-          await openRecoverableCheckoutBrowser(json.checkout_url);
+          const checkout = await startMobileBillingCheckout();
+          if (!checkout.ok || !checkout.json?.checkout_url) throw new Error('Checkout is still being prepared.');
+          await waitForBlockingUiToDismiss();
+          await openRecoverableCheckoutBrowser(checkout.json.checkout_url);
         } catch {
           Alert.alert(
             'Stripe Checkout could not be opened',

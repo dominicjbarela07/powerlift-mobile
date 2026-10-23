@@ -1,3 +1,5 @@
+import { onboardingMessage } from '@/lib/onboarding-message';
+import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
@@ -244,7 +246,7 @@ export default function PendingCoachInviteScreen() {
             <ThemedText variant="h1" numberOfLines={2} style={styles.title}>Pending coach invite</ThemedText>
             <ThemedText style={styles.heroLead}>You’re all set.</ThemedText>
             <ThemedText style={styles.body}>
-              Your account has been created successfully. Once your coach sends an invitation, it will appear below and you’ll immediately gain access to your training.
+              Your account is saved. When your coach sends an invitation, review and accept it here to connect your training.
             </ThemedText>
 
             <View style={styles.actionRow}>
@@ -281,7 +283,7 @@ export default function PendingCoachInviteScreen() {
           ) : error ? (
             <View style={styles.panel}>
               <Ionicons name="alert-circle-outline" size={22} color={SLColors.danger} />
-              <ThemedText style={styles.errorText}>{error}</ThemedText>
+              <ThemedText style={styles.errorText}>{onboardingMessage(error)}</ThemedText>
             </View>
           ) : state.alreadyLinked ? (
             <View style={styles.panel}>
@@ -355,6 +357,7 @@ export default function PendingCoachInviteScreen() {
               </ThemedText>
             </View>
           )}
+          <OnboardingSupport step="invite" />
         </ScrollView>
       </ThemedView>
     </SafeAreaView>

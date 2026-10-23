@@ -1,6 +1,10 @@
+import { onboardingMessage } from '@/lib/onboarding-message';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress';
+import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 // app/index.tsx
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Linking, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, View, ScrollView } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
 import { useFocusEffect } from '@react-navigation/native';
 import { Redirect, useRouter } from 'expo-router';
@@ -9,6 +13,7 @@ import {
   cancelPendingTeamCoachUpgrade,
   devSimulateStripeActivation,
   startMobileBillingCheckout,
+  checkMobileBillingStatus,
 } from '@/lib/api';
 import { openRecoverableCheckoutBrowser } from '@/lib/checkoutBrowser';
 import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
@@ -29,6 +34,7 @@ function AccountAccessGate({
   const [simulating, setSimulating] = useState(false);
   const [activating, setActivating] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [terms, setTerms] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const activationRequired =
     user?.account_state === 'ACTIVATION_REQUIRED' ||
@@ -46,6 +52,8 @@ function AccountAccessGate({
       if (showMessage) setChecking(true);
       if (showMessage) setError(null);
       try {
+        const billing = await checkMobileBillingStatus();
+        if (billing.ok && billing.json?.billing_terms) setTerms(billing.json.billing_terms);
         const refreshed = await refreshAccountState();
         const stillActivationRequired =
           refreshed?.account_state === 'ACTIVATION_REQUIRED' ||
@@ -56,7 +64,7 @@ function AccountAccessGate({
           return;
         }
         if (showMessage) {
-          setError('Still waiting for activation to complete.');
+          setError('Your account is saved. If you finished checkout, Stripe may still be confirming it. Check again shortly; you do not need to enter your card again.');
         }
       } catch (err: any) {
         if (showMessage) {
@@ -144,14 +152,14 @@ function AccountAccessGate({
         await refreshActivationState();
         return;
       }
-      const checkoutUrl = payload.checkout_url || actionUrl;
+      const checkoutUrl = payload.checkout_url;
       if (!checkoutUrl) {
         setError('Could not start activation. Please try again.');
         return;
       }
-      const browserResult = await openRecoverableCheckoutBrowser(checkoutUrl);
+      await openRecoverableCheckoutBrowser(checkoutUrl);
       setActivating(false);
-      await refreshActivationState({ showMessage: browserResult.type !== 'opened' });
+      await refreshActivationState({ showMessage: true });
     } catch (err: any) {
       console.warn('Could not start activation', err);
       setError(err?.message || 'Could not start activation. Please try again.');
@@ -191,15 +199,6 @@ function AccountAccessGate({
     );
   };
 
-  const openFallbackAction = async () => {
-    if (!actionUrl) return;
-    try {
-      await Linking.openURL(actionUrl);
-    } catch (err) {
-      console.warn('Could not open account action URL', err);
-    }
-  };
-
   const simulateActivation = async () => {
     setSimulating(true);
     setError(null);
@@ -219,41 +218,39 @@ function AccountAccessGate({
   };
 
   return (
-    <View style={styles.gateScreen}>
+    <SafeAreaView style={styles.gateScreen}>
+    <ScrollView contentContainerStyle={styles.gateContent}>
       <Image
         source={require('@/assets/images/16:9.png')}
         style={styles.gateLogo}
         resizeMode="contain"
       />
       <View style={styles.gatePanel}>
-        <Text style={styles.gateEyebrow}>Account Setup</Text>
-        <Text style={styles.gateTitle}>{title}</Text>
-        <Text style={styles.gateBody}>{body}</Text>
-        {error ? <Text style={styles.gateError}>{error}</Text> : null}
+        <OnboardingProgress step={3} />
+        <Text style={styles.gateEyebrow}>Your workspace is saved</Text>
+        <Text style={styles.gateTitle}>{terms?.recovery_required ? 'Finish your membership setup' : title}</Text>
+        <Text style={styles.gateBody}>{terms?.recovery_required ? 'Your existing membership needs a payment update. Continue securely with Stripe to resolve it.' : body}</Text>
+        <View style={{ padding: 14, borderRadius: 10, backgroundColor: SLColors.surfaceCanvas, gap: 6 }}>
+          <Text style={{ color: SLColors.textStrong, fontSize: 16, fontWeight: '600' }}>{terms?.recovery_required ? 'Continue your existing membership' : terms ? `${terms.trial_days > 0 ? `${terms.trial_days} days free, then ` : ''}${terms.price_label}` : 'Review your trial and price with Stripe'}</Text>
+          <Text style={{ color: SLColors.textMuted, fontSize: 12, lineHeight: 18 }}>{terms?.recovery_required ? 'Resolve payment without creating another subscription.' : 'Card required. Review the price and trial terms before confirming. Cancel before the trial ends to avoid a charge.'}</Text>
+        </View>
+        {error ? <Text style={styles.gateError}>{onboardingMessage(error)}</Text> : null}
         <Pressable
-          style={[styles.gatePrimary, (showDevSimulation ? simulating : activating) && styles.disabledButton]}
-          onPress={showDevSimulation ? simulateActivation : openActivation}
-          disabled={showDevSimulation ? simulating : activating}
+          style={[styles.gatePrimary, activating && styles.disabledButton]}
+          onPress={openActivation}
+          disabled={activating}
         >
           {simulating || activating ? (
             <ActivityIndicator color={SLColors.white} />
           ) : (
             <Text style={styles.gatePrimaryText}>
-              {showDevSimulation ? 'Dev: Simulate Stripe Activation' : actionLabel}
+              {actionLabel}
             </Text>
           )}
-        </Pressable>
-        <Pressable style={styles.gateOutline} onPress={() => router.push('/(tabs)/settings')}>
-          <Text style={styles.gateOutlineText}>Settings</Text>
         </Pressable>
         {pendingTeamCoach ? (
           <Pressable style={styles.gateOutline} onPress={cancelTeamCoachUpgrade} disabled={activating}>
             <Text style={styles.gateOutlineText}>Cancel Team Coach upgrade</Text>
-          </Pressable>
-        ) : null}
-        {showDevSimulation && actionUrl ? (
-          <Pressable style={styles.gateOutline} onPress={openFallbackAction} disabled={simulating}>
-            <Text style={styles.gateOutlineText}>Open activation URL</Text>
           </Pressable>
         ) : null}
         <Pressable
@@ -261,13 +258,18 @@ function AccountAccessGate({
           onPress={() => refreshActivationState({ showMessage: true })}
           disabled={checking}
         >
-          <Text style={styles.gateOutlineText}>Check again</Text>
+          <Text style={styles.gateOutlineText}>I finished checkout · Check status</Text>
         </Pressable>
+        <Text style={styles.gateBody}>Your card details are entered securely with Stripe. You can close checkout and return here to continue.</Text>
+        <OnboardingSupport step="checkout" />
+        {showDevSimulation ? <Pressable style={styles.gateSecondary} onPress={simulateActivation} disabled={simulating}><Text style={styles.gateSecondaryText}>{simulating ? 'Simulating…' : 'DEV · Simulate Stripe activation'}</Text></Pressable> : null}
+        <Pressable style={styles.gateSecondary} onPress={() => router.push('/(tabs)/settings')}><Text style={styles.gateSecondaryText}>Account settings</Text></Pressable>
         <Pressable style={styles.gateSecondary} onPress={logout}>
           <Text style={styles.gateSecondaryText}>Log out</Text>
         </Pressable>
       </View>
-    </View>
+    </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -295,13 +297,13 @@ export default function IndexGate() {
   ) {
     return (
       <AccountAccessGate
-        title={isIndividual ? 'Activate Individual' : 'Activate Team Coach'}
+        title={user.is_individual_workspace ? 'Start your Individual trial' : 'Start your Team Coach trial'}
         body={
           isIndividual
-            ? 'Activate Stripe membership before entering your Individual workspace.'
-            : 'Complete Team Coach membership activation before entering coach tools.'
+            ? 'Your account and email are ready. One secure checkout opens your training workspace.'
+            : 'Your account and email are ready. Complete secure checkout to open your coaching workspace.'
         }
-        actionLabel={isIndividual ? 'Open Individual activation' : 'Open Team Coach activation'}
+        actionLabel="Continue to secure checkout"
         actionUrl={user.billing_url}
       />
     );
@@ -332,27 +334,28 @@ export default function IndexGate() {
 const styles = StyleSheet.create({
   gateScreen: {
     flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: SLColors.surfaceCanvas,
   },
+  gateContent: { flexGrow: 1, justifyContent: 'center', padding: 24, paddingVertical: 32, width: '100%', maxWidth: 580, alignSelf: 'center' },
   gateLogo: {
     alignSelf: 'center',
     width: 230,
     height: 54,
-    marginBottom: 34,
+    marginBottom: 20,
   },
   gatePanel: {
     gap: 14,
-    paddingVertical: 22,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(222, 198, 166, 0.10)',
+    padding: 22,
+    borderRadius: 18,
+    backgroundColor: SLColors.surfaceInset,
+    borderWidth: 1,
+    borderColor: SLColors.borderDefault,
   },
   gateEyebrow: {
     fontFamily: SLTypography.utilityLabel.fontFamily,
     fontSize: SLTypography.micro.fontSize,
     fontWeight: SLTypography.utilityLabel.fontWeight,
-    color: SLColors.warning,
+    color: SLColors.accentViolet,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
@@ -376,8 +379,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.32)',
-    backgroundColor: 'rgba(124, 58, 237, 0.58)',
+    borderColor: SLColors.accentViolet,
+    backgroundColor: SLColors.accentVioletSoft,
   },
   gatePrimaryText: {
     fontFamily: SLTypography.buttonLabel.fontFamily,
