@@ -299,7 +299,7 @@ export default function VerifyEmailScreen() {
                 <SLButton label="Wrong email address?" variant="ghost" onPress={() => setCorrecting(!correcting)} />
                 {correcting && <View style={{ gap: 12 }}>
                   <Text style={styles.body}>Correct your email. Your account stays the same; we will send a new code.</Text>
-                  <TextInput accessibilityLabel="Correct email" autoCapitalize="none" keyboardType="email-address" autoComplete="email" value={newEmail} onChangeText={setNewEmail} placeholder="Your correct email" placeholderTextColor={SLColors.textMuted} style={{ minHeight: 48, padding: 12, borderRadius: 10, borderWidth: 1, borderColor: SLColors.borderDefault, color: SLColors.textStrong }} />
+                  <TextInput accessibilityLabel="Correct email" autoCapitalize="none" keyboardType="email-address" autoComplete="email" value={newEmail} onChangeText={setNewEmail} placeholder="Your correct email" placeholderTextColor={SLColors.textMuted} style={{ minHeight: 48, padding: 12, borderRadius: SLRadius.radiusControl, borderWidth: 1, borderColor: SLColors.borderDefault, color: SLColors.textStrong }} />
                   <SLButton label="Update email and send code" variant="secondary" loading={savingEmail} onPress={changeEmail} disabled={!newEmail.includes('@') || savingEmail} />
                 </View>}
               </> : null}
@@ -329,7 +329,7 @@ export default function VerifyEmailScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: SLColors.surfaceCanvas,
+    backgroundColor: 'transparent',
   },
   flex: {
     flex: 1,
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     padding: 22,
     borderWidth: 1,
     borderColor: SLColors.borderDefault,
-    borderRadius: 18,
+    borderRadius: SLRadius.radiusCard,
     backgroundColor: SLColors.surfaceInset,
   },
   eyebrow: {
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: SLTypography.commandTitle.fontFamily,
-    fontSize: 27,
+    fontSize: SLTypography.title.fontSize,
     lineHeight: 33,
     fontWeight: SLTypography.commandTitle.fontWeight,
     color: SLColors.textStrong,
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
     minHeight: 44, alignItems: 'center', justifyContent: 'center',
   },
   devButtonText: {
-    color: SLColors.textMuted, fontSize: 12,
+    color: SLColors.textMuted, fontSize: SLTypography.micro.fontSize,
   },
   disabledButton: {
     opacity: SLOpacity.disabled,

@@ -659,7 +659,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: SLColors.surfaceCanvas,
+    backgroundColor: 'transparent',
   },
   safeArea: {
     flex: 1,
@@ -709,7 +709,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: SLColors.borderSubtle,
-    borderRadius: 18,
+    borderRadius: SLRadius.radiusCard,
     backgroundColor: SLColors.surfaceInset,
   },
   emailDivider: {

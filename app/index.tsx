@@ -4,7 +4,8 @@ import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress';
 import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 // app/index.tsx
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, View, ScrollView } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, View } from 'react-native';
+import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Text } from '@/components/ui/sl-text';
 import { useFocusEffect } from '@react-navigation/native';
 import { Redirect, useRouter } from 'expo-router';
@@ -230,9 +231,9 @@ function AccountAccessGate({
         <Text style={styles.gateEyebrow}>Your workspace is saved</Text>
         <Text style={styles.gateTitle}>{terms?.recovery_required ? 'Finish your membership setup' : title}</Text>
         <Text style={styles.gateBody}>{terms?.recovery_required ? 'Your existing membership needs a payment update. Continue securely with Stripe to resolve it.' : body}</Text>
-        <View style={{ padding: 14, borderRadius: 10, backgroundColor: SLColors.surfaceCanvas, gap: 6 }}>
-          <Text style={{ color: SLColors.textStrong, fontSize: 16, fontWeight: '600' }}>{terms?.recovery_required ? 'Continue your existing membership' : terms ? `${terms.trial_days > 0 ? `${terms.trial_days} days free, then ` : ''}${terms.price_label}` : 'Review your trial and price with Stripe'}</Text>
-          <Text style={{ color: SLColors.textMuted, fontSize: 12, lineHeight: 18 }}>{terms?.recovery_required ? 'Resolve payment without creating another subscription.' : 'Card required. Review the price and trial terms before confirming. Cancel before the trial ends to avoid a charge.'}</Text>
+        <View style={{ padding: 14, borderRadius: SLRadius.radiusControl, backgroundColor: SLColors.surfaceCanvas, gap: 6 }}>
+          <Text style={{ color: SLColors.textStrong, fontSize: SLTypography.rowTitle.fontSize, fontWeight: '600' }}>{terms?.recovery_required ? 'Continue your existing membership' : terms ? `${terms.trial_days > 0 ? `${terms.trial_days} days free, then ` : ''}${terms.price_label}` : 'Review your trial and price with Stripe'}</Text>
+          <Text style={{ color: SLColors.textMuted, fontSize: SLTypography.micro.fontSize, lineHeight: 18 }}>{terms?.recovery_required ? 'Resolve payment without creating another subscription.' : 'Card required. Review the price and trial terms before confirming. Cancel before the trial ends to avoid a charge.'}</Text>
         </View>
         {error ? <Text style={styles.gateError}>{onboardingMessage(error)}</Text> : null}
         <Pressable
@@ -334,7 +335,7 @@ export default function IndexGate() {
 const styles = StyleSheet.create({
   gateScreen: {
     flex: 1,
-    backgroundColor: SLColors.surfaceCanvas,
+    backgroundColor: 'transparent',
   },
   gateContent: { flexGrow: 1, justifyContent: 'center', padding: 24, paddingVertical: 32, width: '100%', maxWidth: 580, alignSelf: 'center' },
   gateLogo: {
@@ -346,7 +347,7 @@ const styles = StyleSheet.create({
   gatePanel: {
     gap: 14,
     padding: 22,
-    borderRadius: 18,
+    borderRadius: SLRadius.radiusCard,
     backgroundColor: SLColors.surfaceInset,
     borderWidth: 1,
     borderColor: SLColors.borderDefault,
