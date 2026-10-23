@@ -1,0 +1,226 @@
+{
+  "sourceSha": "95bc0855ddabc22da25930d411a1684b140ec5c5",
+  "liveVerified": true,
+  "gate": {
+    "pass": true,
+    "baselineSha": "72ce0e38b3c1b7840ac16306dee675775263fdba",
+    "candidateSha": "95bc0855ddabc22da25930d411a1684b140ec5c5",
+    "candidateTree": "14ed2c6fed3b52bc1cd662e7354a7860957e3843",
+    "schemaChanged": false,
+    "modelSha256": "c0054211a5e9466b20fc855109420cb72f2aa7c3cca1945117d6a641467a3f3e",
+    "frozenMobileBaselineSha256": "16db350a9bff4a0694d972fdc3801ee6e8a8782605a02fcef70824ed0343a12d",
+    "frozenClients": {
+      "ios": {
+        "source": "a5d56d2205f93ab6b00b3be0ca836d4235b82a57",
+        "update": "01a05051-47f5-7b6a-b930-b59c8d6a9248",
+        "launchAssetSha256": "4c2c1543d3fff0b9dc5a405b8f42bbc284c1c5130c80153138790ddce49079c3",
+        "apiContractSourceSha256": "7748f5c1d8eafa747212414dd4b1bb8d874009a72bc59e53662d27d63cfba405"
+      },
+      "android": {
+        "source": "3d5a38a22b893f67bfed0e7ee3d6e9a2c685ab95",
+        "update": "01a05c7f-48f2-701c-8968-1c619536f57e",
+        "launchAssetSha256": "d6f7b26b91b7c98752c3366e1d92a3184133d162b399bd9a4dc26e18d1b5360b",
+        "apiContractSourceSha256": "7748f5c1d8eafa747212414dd4b1bb8d874009a72bc59e53662d27d63cfba405"
+      }
+    },
+    "legacyResponsesIdentical": {
+      "ios": 104,
+      "android": 104
+    },
+    "legacyBreakingPermissionControlRejected": true,
+    "ownerPolicyAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 3,
+      "probeSha256": "4e80578545338622565a3d8b143cbc8762c2a4dd6cf6a9bc639bc1fbaa8a511b"
+    },
+    "currentSessionIdentityAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 5,
+      "probeSha256": "4d4bf27156b110fb501453f6fc84e4821b1a1ec73c63d25f7b1f2189283ebe16"
+    },
+    "logs": "/Users/dominic/powerlifting_app/.git/release-receipts/95bc0855ddab-checks",
+    "liveDeploymentVerified": false,
+    "schemaAcceptance": {
+      "pass": true,
+      "changed": false
+    },
+    "backendArtworkAcceptance": {
+      "pass": true,
+      "approved_candidates": 547,
+      "objects": 1629,
+      "bytes": 1181103252,
+      "runtime_bindings": 508,
+      "mobile_checkout_required": false,
+      "probes": [
+        {
+          "name": "missing object",
+          "rejected": true
+        },
+        {
+          "name": "modified object",
+          "rejected": true
+        },
+        {
+          "name": "missing approved candidate",
+          "rejected": true
+        },
+        {
+          "name": "unapproved candidate inserted",
+          "rejected": true
+        },
+        {
+          "name": "wrong movement binding",
+          "rejected": true
+        }
+      ]
+    },
+    "archiveAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 14,
+      "probeSha256": "37759cc5e069f5116aa2d1282e370f74b00bd1a1ab90517780cb29099f6d3899",
+      "fixtureSha256": "39b116accbc970aac47d448bd1ae51dae278e94a6c6d2adc33673f1f4dc3ad79"
+    },
+    "repChainAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 8,
+      "probeSha256": "4c0d74abcb3ec4fb5468a1564b1a03f05319670d6ef14c46e75d03b4f8a65286",
+      "fixtureSha256": "a78d2c8812a3b12104324936afd3b3b5e347a1aabae9d000d35abce2ed3e69d0"
+    },
+    "todayLoadingAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 2,
+      "probeSha256": "99d7db842631d8beca04a7bdace0027a34ce2362143a067f06e479832349f7a6",
+      "fixtureSha256": "fd444ee8d19b09515ea80f9e9aa30bc2a871a4770a068f7c750783fe7cec827c"
+    },
+    "navigationLoadingAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 6,
+      "probeSha256": "26413b4fd449dfa4a226a7644c59454680304eff519839bb227c5a0cade16c6f",
+      "fixtureSha256": "67189433bc204a9988ff21bc3c5313af5668cd88e516072156c1bc4b018d9cd2",
+      "diverseFixtureSha256": "bce328d9a8fdb2bb5fee8d90c5e9be4e4199175409970258639dd3429abe6482"
+    }
+  },
+  "schemaAdmission": {
+    "pass": true,
+    "reviewSha256": "c5138995c9dbed3c285acb41bb104e281589894a896231649feb8a98afa73221",
+    "historical_declarations_preserved": true,
+    "historical_migrations_preserved": true,
+    "added_declarations": [
+      "BillingCheckoutAttempt.__tablename__",
+      "BillingCheckoutAttempt.checkout_url",
+      "BillingCheckoutAttempt.created_at",
+      "BillingCheckoutAttempt.expires_at",
+      "BillingCheckoutAttempt.id",
+      "BillingCheckoutAttempt.parameters_json",
+      "BillingCheckoutAttempt.status",
+      "BillingCheckoutAttempt.stripe_session_id",
+      "BillingCheckoutAttempt.tier",
+      "BillingCheckoutAttempt.user_id",
+      "OnboardingSupportRequest.__tablename__",
+      "OnboardingSupportRequest.claim_token",
+      "OnboardingSupportRequest.claim_until",
+      "OnboardingSupportRequest.contact_email",
+      "OnboardingSupportRequest.created_at",
+      "OnboardingSupportRequest.feedback_id",
+      "OnboardingSupportRequest.id",
+      "OnboardingSupportRequest.next_attempt_at",
+      "OnboardingSupportRequest.notification_attempts",
+      "OnboardingSupportRequest.notification_status",
+      "OnboardingSupportRequest.notified_at",
+      "OnboardingSupportRequest.step",
+      "OnboardingSupportRequest.user_id"
+    ],
+    "migrations": {
+      "f5b7d9e1a3c5_onboarding_recovery.py": "4ed2c2bfee39773c2032fca6b50c6f3dfc3a3280fdd24f04beaf8ce18e24e46d"
+    },
+    "postgres": {
+      "pass": true,
+      "actual_postgresql": true,
+      "unique_constraints": true,
+      "foreign_key_lifecycle": true,
+      "populated_downgrade_rejected": true,
+      "temporary_schema_rolled_back": true
+    },
+    "failure_controls": [
+      {
+        "name": "removed email",
+        "rejected": true
+      },
+      {
+        "name": "changed identity",
+        "rejected": true
+      },
+      {
+        "name": "unreviewed role column",
+        "rejected": true
+      },
+      {
+        "name": "changed reviewed migration",
+        "rejected": true
+      },
+      {
+        "name": "extra migration",
+        "rejected": true
+      },
+      {
+        "name": "historical rewrite",
+        "rejected": true
+      }
+    ]
+  },
+  "schemaRevision": "f5b7d9e1a3c5",
+  "supportWorker": {
+    "sourceSha": "95bc0855ddabc22da25930d411a1684b140ec5c5",
+    "liveVerified": true,
+    "processes": [
+      {
+        "pid": 39,
+        "threads": 2,
+        "command": "python -m app.workers.onboarding_support --with-video-exports"
+      }
+    ],
+    "mailConfigured": true,
+    "mailSuppressed": false,
+    "inboxDeliveryObserved": false
+  },
+  "preflight": {
+    "checks": {
+      "billing_enforced": true,
+      "email_verification_required": true,
+      "founder_price_configured": true,
+      "fourteen_day_trial": true,
+      "individual_price_configured": true,
+      "mail_credentials_configured": true,
+      "mail_delivery_enabled": true,
+      "mail_sender_configured": true,
+      "stripe_key_configured": true,
+      "stripe_price_founder_beta_monthly_valid": true,
+      "stripe_price_individual_monthly_valid": true,
+      "webhook_destination_enabled": true,
+      "webhook_secret_configured": true
+    },
+    "ready": true
+  },
+  "signatureProbe": {
+    "validAccepted": true,
+    "invalidRejected": true,
+    "duplicateSafe": true,
+    "signedBy": "server-configured-secret; synthetic unknown-account event",
+    "customerMutations": 0
+  },
+  "endpoint": {
+    "endpoint_id": "we_1UTgX7E6utTtO3UtpDyYJuyC",
+    "endpoint_status": "enabled",
+    "api_version": "2025-10-29.clover"
+  },
+  "customerFinancialMutations": 0,
+  "providerOriginatedEventObserved": false,
+  "physicalCardOrBankReturnObserved": false,
+  "emailInboxReceiptObserved": false
+}
