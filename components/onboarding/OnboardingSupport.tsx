@@ -6,7 +6,7 @@ import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLButton } from '@/components/ui/sl-button';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
-import { SLColors } from '@/constants/theme';
+import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 
 export function OnboardingSupport({ step }: { step: 'signup' | 'verify' | 'checkout' | 'confirm' | 'invite' | 'login' }) {
   const { user } = useAuth();
@@ -68,8 +68,8 @@ export function OnboardingSupport({ step }: { step: 'signup' | 'verify' | 'check
 const s = StyleSheet.create({
   panel: { borderTopWidth: 1, borderColor: SLColors.borderDefault, marginTop: 12 },
   body: { gap: 12, paddingVertical: 12 },
-  title: { color: SLColors.textStrong, fontSize: 17, fontWeight: '600' },
-  copy: { color: SLColors.textMuted, fontSize: 13, lineHeight: 20 },
-  input: { borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceInset, borderRadius: 10, padding: 12, minHeight: 48, color: SLColors.textStrong },
+  title: { color: SLColors.textStrong, fontSize: SLTypography.cardTitle.fontSize, fontWeight: '600' },
+  copy: { color: SLColors.textMuted, fontSize: SLTypography.caption.fontSize, lineHeight: 20 },
+  input: { borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceInset, borderRadius: SLRadius.radiusControl, padding: 12, minHeight: 48, color: SLColors.textStrong },
   details: { minHeight: 80, textAlignVertical: 'top' },
 });

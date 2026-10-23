@@ -1,0 +1,48 @@
+{
+  "priorScope": {
+    "ownerInstruction": "Yes — release onboarding and configure Stripe",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-23-onboarding.txt",
+    "ownerEvidenceSha256": "9b4d32f11276ab23b399efd0e0a0349a0ac883178bd1daeeb65339fe2f8b3bd5",
+    "reason": "Ship only the validated onboarding signup, verification, native browser-return and support recovery on the actual existing 3.0 native video/art baseline. Preserve all identities, cancellation/access policy, prior functionality and artwork.",
+    "scope": "onboarding-reliability-20261023",
+    "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+    "productFingerprint": "4838255164ff163f30a332acbf0b06cbd4da59e3aaa752c533a6d3c57a92e752",
+    "baselineUpdateId": "01a165cb-666a-75fd-8fdb-1031304d6435",
+    "baselineSourceSha": "e70522d8c493491b6dd88e37d19630160650bcde",
+    "baselineProductFingerprint": "e3fe8c9f586e1d65321f2bc94271d10969ab84a5ba224ac8c7c65f19cc95d9a5",
+    "baselineFiles": {
+      "path": "config/testflight-release-onboarding-20261023/baseline-product.json",
+      "sha256": "957eddd0a06116011c7aa3f91b0f82e23c4832cc41486f2e0c724adda3fe8ced"
+    },
+    "changedProductFiles": {
+      "app/(tabs)/link-coach.tsx": "7fdf75ab69046efef9f2aa1977dd4486cd99a89407d3d66bc66107c484e410e9",
+      "app/(tabs)/settings.tsx": "747673029f9f428c70fa27a4073a5600c96ba0da7ac2fb80154bb786b6c7097e",
+      "app/_layout.tsx": "b4fba68118cccdc3965e4e2b844c47e370003612c2511beb0641b60c6b59ab5c",
+      "app/billing-return.tsx": "e91a445226b4c5766686c22dd5525a11d4cba1fe1606ac6aadea1732200efa04",
+      "app/index.tsx": "56bea4dec964efacfc0de2af0319450c6d14e96debbf5aad4afe1618390fcb73",
+      "app/login.tsx": "98fd8a26e779e44d9c5cec1d22b25c02215aeb702822ecd3632eead3e88802e8",
+      "app/verify-email.tsx": "fa436f6ee58ce20f09e09f2c685c72e4a1f12470a079afd9ab6ef6956ce4e673",
+      "components/onboarding/OnboardingProgress.tsx": "21862a1ba23e29d5fed2751c6ad2a7d686ad213bc7ccb318593e36908d36588c",
+      "components/onboarding/OnboardingSupport.tsx": "6f575f1a7d2527b4330c15de624cbf577b8dc8fb34901815c0b2623d4a5b6f73",
+      "context/AuthContext.tsx": "a8abb0bf9794e9e6cfc99ef40b4e40807a01047c2897761601190028813577e6",
+      "lib/api.ts": "605fa4c39895708b55cfac7353a80354fd8f8d15638c064b32ace7d64cbcf54f",
+      "lib/checkoutBrowser.ts": "731df4de29ebfc0b71037590ed99335eb6a686573c609a7e7ed93c0a63c49293",
+      "lib/onboarding-message.ts": "10997cd0a26dfa7d9457076630480f8d5ae9bcc207cb9991f1b2501a8d32ea16"
+    },
+    "contracts": {
+      "scripts/test-onboarding-recovery.mjs": "36e4246b5f849c2e1054cc0d09a4995c6d3c324d73fe545edb271e684df7458f",
+      "scripts/test-onboarding-release-scope.mjs": "b5dc8ff39c8ba46fa79e26306fc86097fc509f374d384794188eff1fa23cd35e"
+    },
+    "backendSourceSha": "95bc0855ddabc22da25930d411a1684b140ec5c5",
+    "backendDeploymentReceipt": {
+      "path": "config/testflight-release-onboarding-20261023/backend-deployment.json",
+      "sha256": "da3faf62d637fa18ee2393b57c1123f2dcdeb35164a3386d2cc1a97baea5692c"
+    }
+  },
+  "reason": "Mandatory release guards blocked the initial candidate before export or publication; the product was corrected without changing keyboard/visual guards or exceptions.",
+  "passed": [
+    "test-keyboard-visibility.mjs",
+    "test-mobile3-visual-policy.mjs"
+  ],
+  "fullSourcePatchesRetainedIn": "reviewedPublication.sourceProgressions"
+}

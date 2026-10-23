@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
-import { SLColors, SLFontFamilies } from '@/constants/theme';
+import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
 
 export function OnboardingProgress({ step }: { step: 1 | 2 | 3 }) {
   return <View accessibilityLabel={`Setup step ${step} of 3`} style={s.row}>
@@ -14,9 +14,9 @@ export function OnboardingProgress({ step }: { step: 1 | 2 | 3 }) {
 const s = StyleSheet.create({
   row: { flexDirection: 'row', gap: 12, marginVertical: 8 },
   step: { flex: 1, gap: 8 },
-  dot: { width: 25, height: 25, borderRadius: 13, borderWidth: 1, borderColor: SLColors.borderDefault, alignItems: 'center', justifyContent: 'center' },
+  dot: { width: 25, height: 25, borderRadius: SLRadius.pill, borderWidth: 1, borderColor: SLColors.borderDefault, alignItems: 'center', justifyContent: 'center' },
   current: { borderColor: SLColors.accentViolet, backgroundColor: SLColors.surfaceInset },
-  number: { fontSize: 12, color: SLColors.textStrong },
-  label: { fontFamily: SLFontFamilies.sans, fontSize: 12, color: SLColors.textMuted },
+  number: { fontSize: SLTypography.micro.fontSize, color: SLColors.textStrong },
+  label: { fontFamily: SLFontFamilies.sans, fontSize: SLTypography.micro.fontSize, color: SLColors.textMuted },
   active: { color: SLColors.textStrong },
 });
