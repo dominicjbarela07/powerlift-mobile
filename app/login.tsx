@@ -1,3 +1,6 @@
+import { onboardingMessage } from '@/lib/onboarding-message';
+import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress';
+import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 // app/login.tsx
 import React, { ComponentType, useEffect, useState } from 'react';
@@ -335,6 +338,7 @@ export default function LoginScreen() {
             </View>
 
             <View style={styles.form}>
+              {authMode === 'signup' && signupRole !== 'athlete' ? <OnboardingProgress step={1} /> : null}
               {authMode === 'login' && SsoButtons ? (
                 <>
                   <SsoButtons
@@ -521,18 +525,19 @@ export default function LoginScreen() {
 
               {error ? (
                 <View style={styles.errorBox}>
-                  <Text style={styles.errorText}>{error}</Text>
+                  <Text style={styles.errorText}>{onboardingMessage(error)}</Text>
                 </View>
               ) : null}
 
               <SLButton
                 fullWidth
-                label={authMode === 'signup' ? 'Create Account' : 'Sign in'}
+                label={authMode === 'signup' ? 'Create account and continue' : 'Sign in'}
+                variant="secondary"
                 onPress={authMode === 'signup' ? handleSignup : handleLogin}
                 disabled={loading || (authMode === 'signup' && !canSubmitSignup)}
                 loading={loading}
                 size="lg"
-                style={styles.authSubmit}
+                style={[styles.authSubmit, { backgroundColor: SLColors.accentVioletSoft, borderColor: SLColors.accentViolet }]}
               />
 
               {authMode === 'login' && pendingOAuth ? (
@@ -622,6 +627,7 @@ export default function LoginScreen() {
                 </View>
               ) : null}
 
+              <OnboardingSupport step={authMode === 'signup' ? 'signup' : 'login'} />
               <View style={styles.linkRail}>
                 <Pressable
                   style={styles.linkButton}
@@ -653,7 +659,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: SLColors.surfaceCanvas,
   },
   safeArea: {
     flex: 1,
@@ -676,7 +682,7 @@ const styles = StyleSheet.create({
   },
   brandBlock: {
     alignItems: 'center',
-    marginBottom: 34,
+    marginBottom: 22,
   },
   logo: {
     width: 224,
@@ -703,8 +709,8 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: SLColors.borderSubtle,
-    borderRadius: SLRadius.radiusHero,
-    backgroundColor: SLColors.surface,
+    borderRadius: 18,
+    backgroundColor: SLColors.surfaceInset,
   },
   emailDivider: {
     flexDirection: 'row',

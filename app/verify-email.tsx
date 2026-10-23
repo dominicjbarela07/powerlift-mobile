@@ -1,5 +1,8 @@
+import { onboardingMessage } from '@/lib/onboarding-message';
+import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress';
+import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image, Keyboard, Platform, Pressable, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLButton } from '@/components/ui/sl-button';
@@ -9,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
   devSimulateEmailVerification,
+  correctOnboardingEmail,
   resendEmailVerificationCode,
   verifyEmailVerificationCode,
 } from '@/lib/api';
@@ -25,6 +29,28 @@ export default function VerifyEmailScreen() {
   const [resending, setResending] = useState(false);
   const [simulating, setSimulating] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [resendWait, setResendWait] = useState(0);
+  const [correcting, setCorrecting] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [savingEmail, setSavingEmail] = useState(false);
+  const changeEmail = async () => {
+    if (savingEmail) return;
+    setSavingEmail(true); setError(null);
+    try {
+      const result = await correctOnboardingEmail(newEmail);
+      if (!result.ok) throw new Error(result.json?.error || 'We could not update that email. Please retry.');
+      if (user && result.json?.email) await login({ user: { ...user, email: result.json.email }, token });
+      await refreshAccountState();
+      setCode(''); setCorrecting(false); setResendWait(60);
+      setMessage('Email updated. Enter the new code we sent you.');
+    } catch (err: any) { setError(err?.message || 'Could not connect. Your account is saved; please retry.'); }
+    finally { setSavingEmail(false); }
+  };
+  useEffect(() => {
+    if (!resendWait) return;
+    const timer = setTimeout(() => setResendWait(value => Math.max(0, value - 1)), 1000);
+    return () => clearTimeout(timer);
+  }, [resendWait]);
 
   const refreshVerificationState = useCallback(
     async ({ showMessage = false }: { showMessage?: boolean } = {}) => {
@@ -185,6 +211,7 @@ export default function VerifyEmailScreen() {
     try {
       const result = await resendEmailVerificationCode();
       const payload = result.json || {};
+      setResendWait(payload.retry_after_seconds || (result.ok ? 60 : 0));
       if (!result.ok || payload.ok === false) {
         setError(payload.error || payload.message || 'Could not send a new code yet.');
         return;
@@ -217,7 +244,8 @@ export default function VerifyEmailScreen() {
             />
 
             <View style={styles.panel}>
-              <Text style={styles.eyebrow}>Email Verification</Text>
+              {user.is_coach ? <OnboardingProgress step={2} /> : null}
+              <Text style={styles.eyebrow}>Keep your account secure</Text>
               <Text style={styles.title}>Enter your code</Text>
               <Text style={styles.body}>
                 We sent a 6-digit Strength Ledger verification code to {user.email}.
@@ -237,12 +265,14 @@ export default function VerifyEmailScreen() {
                 onSubmitEditing={Keyboard.dismiss}
               />
 
-              {error ? <Text style={styles.error}>{error}</Text> : null}
+              {error ? <Text style={styles.error}>{onboardingMessage(error)}</Text> : null}
               {message ? <Text style={styles.message}>{message}</Text> : null}
 
               <SLButton
                 fullWidth
-                label="Verify Email"
+                label="Verify email and continue"
+                variant="secondary"
+                style={{ backgroundColor: SLColors.accentVioletSoft, borderColor: SLColors.accentViolet }}
                 loading={submitting}
                 onPress={handleVerify}
                 size="lg"
@@ -250,7 +280,8 @@ export default function VerifyEmailScreen() {
 
               <SLButton
                 fullWidth
-                label="Resend code"
+                label={resendWait ? `Resend code in ${resendWait}s` : 'Resend code'}
+                disabled={resendWait > 0 || resending}
                 loading={resending}
                 onPress={handleResend}
                 variant="secondary"
@@ -258,12 +289,21 @@ export default function VerifyEmailScreen() {
 
               <SLButton
                 fullWidth
-                label="Check again"
+                label="Already verified? Check status"
                 loading={checking}
                 onPress={() => refreshVerificationState({ showMessage: true })}
-                variant="secondary"
+                variant="ghost"
               />
 
+              {user.is_coach ? <>
+                <SLButton label="Wrong email address?" variant="ghost" onPress={() => setCorrecting(!correcting)} />
+                {correcting && <View style={{ gap: 12 }}>
+                  <Text style={styles.body}>Correct your email. Your account stays the same; we will send a new code.</Text>
+                  <TextInput accessibilityLabel="Correct email" autoCapitalize="none" keyboardType="email-address" autoComplete="email" value={newEmail} onChangeText={setNewEmail} placeholder="Your correct email" placeholderTextColor={SLColors.textMuted} style={{ minHeight: 48, padding: 12, borderRadius: 10, borderWidth: 1, borderColor: SLColors.borderDefault, color: SLColors.textStrong }} />
+                  <SLButton label="Update email and send code" variant="secondary" loading={savingEmail} onPress={changeEmail} disabled={!newEmail.includes('@') || savingEmail} />
+                </View>}
+              </> : null}
+              <OnboardingSupport step="verify" />
               {showDevSimulation ? (
                 <Pressable
                   style={[styles.devButton, simulating && styles.disabledButton]}
@@ -289,7 +329,7 @@ export default function VerifyEmailScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: SLColors.surfaceCanvas,
   },
   flex: {
     flex: 1,
@@ -297,7 +337,7 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingVertical: 32,
+    paddingVertical: 20,
   },
   verificationPane: {
     width: '100%',
@@ -305,30 +345,30 @@ const styles = StyleSheet.create({
   },
   logo: {
     alignSelf: 'center',
-    width: 230,
-    height: 54,
-    marginBottom: 30,
+    width: 190,
+    height: 44,
+    marginBottom: 18,
   },
   panel: {
     gap: 14,
     padding: 22,
     borderWidth: 1,
-    borderColor: SLColors.borderSelected,
-    borderRadius: SLRadius.radiusHero,
-    backgroundColor: SLColors.surfaceCommand,
+    borderColor: SLColors.borderDefault,
+    borderRadius: 18,
+    backgroundColor: SLColors.surfaceInset,
   },
   eyebrow: {
     fontFamily: SLTypography.utilityLabel.fontFamily,
     fontSize: SLTypography.micro.fontSize,
     fontWeight: SLTypography.utilityLabel.fontWeight,
-    color: SLColors.warning,
+    color: SLColors.accentViolet,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
   title: {
     fontFamily: SLTypography.commandTitle.fontFamily,
-    fontSize: SLTypography.title.fontSize,
-    lineHeight: SLTypography.title.lineHeight,
+    fontSize: 27,
+    lineHeight: 33,
     fontWeight: SLTypography.commandTitle.fontWeight,
     color: SLColors.textStrong,
   },
@@ -365,19 +405,10 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   devButton: {
-    minHeight: 46,
-    borderRadius: SLRadius.radiusCard,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: SLColors.warning,
-    backgroundColor: SLColors.warningSoft,
+    minHeight: 44, alignItems: 'center', justifyContent: 'center',
   },
   devButtonText: {
-    color: SLColors.warning,
-    fontFamily: SLFontFamilies.sans,
-    fontSize: SLTypography.rowTitle.fontSize,
-    fontWeight: '800',
+    color: SLColors.textMuted, fontSize: 12,
   },
   disabledButton: {
     opacity: SLOpacity.disabled,

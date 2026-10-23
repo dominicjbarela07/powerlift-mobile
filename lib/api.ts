@@ -889,6 +889,10 @@ export async function startMobileBillingCheckout(): Promise<FetchJsonResult<any>
   });
 }
 
+export async function checkMobileBillingStatus(): Promise<FetchJsonResult<any>> {
+  return fetchJson('/mobile/billing/status', { timeoutMs: 12000 });
+}
+
 export async function cancelPendingTeamCoachUpgrade(): Promise<FetchJsonResult<any>> {
   return fetchJson(`/auth/account-transitions/team-coach-upgrade/cancel`, {
     method: 'POST',
@@ -2254,4 +2258,8 @@ export async function markAnnouncementRead(announcementId: number): Promise<{
     console.error('Mark announcement read error', err);
     return { ok: false, error: 'Network error' };
   }
+}
+
+export async function correctOnboardingEmail(email: string) {
+  return fetchJson<any>('/auth/mobile/onboarding/email', { method: 'POST', body: JSON.stringify({ email }) });
 }

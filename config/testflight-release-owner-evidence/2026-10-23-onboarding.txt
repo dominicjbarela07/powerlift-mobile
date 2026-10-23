@@ -1,0 +1,3 @@
+Original owner request: I want you to fix all the blockers in onboarding! Reliable recovery and a support button that notifies me; UI updates for web and mobile.
+Release question: I confirmed that live Stripe has no webhook endpoint and Production has no signing secret. May I release the validated onboarding changes to Production and mobile 3.0, including configuring that webhook after the release gates pass?
+Owner answer: Yes — release onboarding and configure Stripe
