@@ -38,4 +38,4 @@ assert.notEqual(previous, source, 'forced-dismiss failure injection must be appl
 let rejected=false;
 try{await run(previous)}catch{rejected=true}
 assert(rejected,'the previous two-minute forced-dismiss failure must be rejected');
-console.log('Deliberate forced-dismiss regression rejected.');
+console.log('PASS: deliberate forced-dismiss regression rejected; success, cancel, dismiss and presentation failure preserve native checkout recovery.');

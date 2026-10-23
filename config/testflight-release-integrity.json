@@ -158543,7 +158543,7 @@
     "scripts/test-video-engine-release-scope.mjs": "95dcced20b42b319533346bd40b64659674e6cb8a16b87246f7bbcd43887b4bd",
     "scripts/onboarding-release-scope.mjs": "40c713af9a6bcb65b2f25865bf6d56c1c8b76d01e55e494b614b70c19620980e",
     "scripts/test-onboarding-release-scope.mjs": "deb6b5f50c01918b6c361536dfa116aa5f91850e27e9109d15e52f997779b33c",
-    "scripts/test-onboarding-recovery.mjs": "36e4246b5f849c2e1054cc0d09a4995c6d3c324d73fe545edb271e684df7458f"
+    "scripts/test-onboarding-recovery.mjs": "f7352395309ea41c847751c423289aca833affc3f24c3fd99a5d853db7435657"
   },
   "historicalRemovalAuthorizations": [
     {
@@ -158976,7 +158976,7 @@
       "lib/onboarding-message.ts": "10997cd0a26dfa7d9457076630480f8d5ae9bcc207cb9991f1b2501a8d32ea16"
     },
     "contracts": {
-      "scripts/test-onboarding-recovery.mjs": "36e4246b5f849c2e1054cc0d09a4995c6d3c324d73fe545edb271e684df7458f",
+      "scripts/test-onboarding-recovery.mjs": "f7352395309ea41c847751c423289aca833affc3f24c3fd99a5d853db7435657",
       "scripts/test-onboarding-release-scope.mjs": "deb6b5f50c01918b6c361536dfa116aa5f91850e27e9109d15e52f997779b33c"
     },
     "backendSourceSha": "95bc0855ddabc22da25930d411a1684b140ec5c5",
@@ -165284,6 +165284,19 @@
       "exactPatchEvidence": {
         "path": "config/testflight-release-onboarding-20261023/receipt-shape-correction.json",
         "sha256": "fd776aeb73676b73123b9af702784a4b8078af90c9887ed976ee42f5549d394b"
+      }
+    },
+    {
+      "ownerInstruction": "Yes \u2014 release onboarding and configure Stripe",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-23-onboarding.txt",
+      "ownerEvidenceSha256": "9b4d32f11276ab23b399efd0e0a0349a0ac883178bd1daeeb65339fe2f8b3bd5",
+      "path": "scripts/test-onboarding-recovery.mjs",
+      "before": "36e4246b5f849c2e1054cc0d09a4995c6d3c324d73fe545edb271e684df7458f",
+      "after": "f7352395309ea41c847751c423289aca833affc3f24c3fd99a5d853db7435657",
+      "review": "The existing owner-directed contract runner requires a PASS marker as well as exit 0. Add that marker after all original behavior assertions and negative controls complete; no assertion or runner changes.",
+      "exactPatchEvidence": {
+        "path": "config/testflight-release-onboarding-20261023/contract-output-correction.json",
+        "sha256": "a9dbff31bd5eb3e3f551c415e1cf00a6e2fa9874c870708534d4d8510304dd45"
       }
     }
   ],
