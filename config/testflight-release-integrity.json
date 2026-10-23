@@ -165505,5 +165505,71 @@
     "nativeBinaryChanged": false,
     "physicalPhoneForceQuitCertified": false,
     "productFingerprint": "e3fe8c9f586e1d65321f2bc94271d10969ab84a5ba224ac8c7c65f19cc95d9a5"
+  },
+  "verifiedProduction3Onboarding": {
+    "publication": {
+      "id": "01a168a9-0425-705f-bf22-b596ed9a283d",
+      "group": "ec4d87ab-dd6e-4792-9a84-6803930ee070",
+      "gitCommitHash": "afa5605b4ffc99ac80409e9ed72cb32689e9b2cc",
+      "createdAt": "2026-10-23T12:07:49.541Z",
+      "runtimeVersion": "3.0.0",
+      "platform": "ios",
+      "message": "Reliable onboarding: safe trial recovery, clear verification and owner support",
+      "manifestPermalink": "https://u.expo.dev/update/01a168a9-0425-705f-bf22-b596ed9a283d",
+      "branch": "production-3-preparation",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a168a9-0425-705f-bf22-b596ed9a283d"
+      ],
+      "servedBundleSha256": "a8c9921e405cb6cfb82a711eb2c74d0da630d5fed383ee1a9875b5648c2c4b54"
+    },
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-onboarding-20261023/runtime-3.0.0/gate-c.json",
+        "sha256": "db6b58233ca361ba7767617079626db5e913c9828a324bd014050207dd968548"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-onboarding-20261023/runtime-3.0.0/asset-audit.json",
+        "sha256": "14a1812deedada643c07d25a366ff58688126b1dd49075ba495f71d8c53c5a13"
+      },
+      "exportSource": {
+        "path": "config/testflight-release-onboarding-20261023/runtime-3.0.0/export-source.json",
+        "sha256": "f214a6ab4753161e41033ce3915f5603526616fe3994d0e2f852b7424bdc85f5"
+      },
+      "contracts": {
+        "path": "config/testflight-release-onboarding-20261023/runtime-3.0.0/contracts.json",
+        "sha256": "5a5f5fa390f8b97cf88c2de07cac45efe028d2d8b17626b887f57e69da7a6290"
+      },
+      "sharedValidation": {
+        "path": "config/testflight-release-onboarding-20261023/runtime-3.0.0/shared-validation.json",
+        "sha256": "9d8e3b1821c36fac083a870d740424e938cc646a8e20f60242a8ffe72434127f"
+      },
+      "movementImagery": {
+        "path": "config/testflight-release-onboarding-20261023/runtime-3.0.0/movement-imagery.json",
+        "sha256": "014369c588a278fee7fb2c5062395676f4c16214b16de32e1ee60fefde3a3e1e"
+      },
+      "channel": {
+        "path": "config/testflight-release-onboarding-20261023/runtime-3.0.0/channel.json",
+        "sha256": "e111bf7e52ab432a8364709398b25c06ed889ebe594829d641c3cadbe702e355"
+      },
+      "worktreeCloseout": {
+        "path": "config/testflight-release-onboarding-20261023/runtime-3.0.0/worktree-closeout.json",
+        "sha256": "a7615b3f5ec11794754c15cc535d49411182858f4df581b27382be15ed25b77c"
+      }
+    },
+    "backendSourceSha": "95bc0855ddabc22da25930d411a1684b140ec5c5",
+    "backendDeploymentReceipt": {
+      "path": "config/testflight-release-onboarding-20261023/backend-deployment.json",
+      "sha256": "da3faf62d637fa18ee2393b57c1123f2dcdeb35164a3386d2cc1a97baea5692c"
+    },
+    "acceptedContracts": 310,
+    "criticalProductAreas": 90,
+    "typescript": true,
+    "nativeBinaryChanged": false,
+    "physicalCardOrBankReturnObserved": false,
+    "emailInboxReceiptObserved": false,
+    "providerOriginatedFinancialEventObserved": false,
+    "productFingerprint": "8bc3d5e1a651bc418729451b3b30c81272defc7cc07ae6e6ce2b51348e0a61fd",
+    "workflowComplete": true
   }
 }

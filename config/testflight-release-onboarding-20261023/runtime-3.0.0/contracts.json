@@ -1,0 +1,21 @@
+{
+  "scope": "onboarding-reliability-20261023",
+  "productFingerprint": "8bc3d5e1a651bc418729451b3b30c81272defc7cc07ae6e6ce2b51348e0a61fd",
+  "completedAt": "2026-10-23T12:06:40.606Z",
+  "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+  "runtimeVerified": false,
+  "contracts": [
+    {
+      "file": "scripts/test-onboarding-recovery.mjs",
+      "sourceSha256": "f7352395309ea41c847751c423289aca833affc3f24c3fd99a5d853db7435657",
+      "result": "PASS",
+      "output": "{\"noForcedClose\":true,\"callback\":true,\"updateBlockerReleased\":true}\nCancel, dismiss and presentation failure release the update blocker.\nPASS: deliberate forced-dismiss regression rejected; success, cancel, dismiss and presentation failure preserve native checkout recovery.\n"
+    },
+    {
+      "file": "scripts/test-onboarding-release-scope.mjs",
+      "sourceSha256": "deb6b5f50c01918b6c361536dfa116aa5f91850e27e9109d15e52f997779b33c",
+      "result": "PASS",
+      "output": "PASS: onboarding release retains exact current 3.0 video/art baseline, thirteen bounded source paths, complete owner authorization, matching live schema/worker/Stripe configuration and signed verification; deliberate hidden changes and regressions rejected.\n"
+    }
+  ]
+}
