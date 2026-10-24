@@ -1,0 +1,12 @@
+{
+  "apiBase": "https://app.strengthledger.fit",
+  "realAuthKeysAccessed": false,
+  "observedAt": "2026-10-24T16:42:44.945Z",
+  "missingReadIsNull": true,
+  "roundtrip": true,
+  "deletedReadIsNull": true,
+  "liveHealthStatus": 200,
+  "liveSourceSHA": "72e1987fa086ae10ef42b10d0ee373e2b706a7de",
+  "liveReady": true,
+  "pass": true
+}

@@ -48,7 +48,23 @@ suite pass. Unchanged identity, billing, SSO, Education and support mutations ke
 the preceding source-bound checks; no new account access owner or writer exists.
 No live account, payment or support message was created. Evidence:
 `docs/validation/onboarding-strength-atmosphere-2026-10-24/`.
-Final refreshed native live handoff verification is pending.
+Final refreshed native handoff passed. Installed product source:
+`238f916fbc2309d02a9f3693de0ffbc500370d9e`; bundle SHA-256:
+`b05ed7be7d8fabb3f3997be388a98856e6a924811afc3ad665a6899e56491013`.
+The actual installed bundle's source map matches LoginScreen, SignupWelcome and
+role-definition bytes. All 994 native export files, including the exact new photo,
+match installed bytes; all 998 prior published asset entries remain preserved.
+Fresh native SecureStore read/write/delete and live Production health passed
+(HTTP 200, ready true, source `72e1987fa086ae10ef42b10d0ee373e2b706a7de`). The
+installed-app guard passed embedded entitlements, signature, exact bundle and
+live targeting. Temporary instrumentation is removed. The guard's unchanged
+same-day negative controls remain applicable to its stale-bundle/origin checks.
+
+Observed the final native photo-led opening on iPhone Air and left it there for
+owner takeover. The compact test device is restored and shut down. No real
+signup/payment/support message, backend change, OTA or store publication ran.
+This is the current canonical DEV design in a local simulator preview against
+live services, using the retained simulator shell, not new store certification.
 
 Owner request: replace the uninviting signup entrance with a premium, atmospheric
 experience. Athlete, Coach and Self-Coach selection comes before forms. Show real

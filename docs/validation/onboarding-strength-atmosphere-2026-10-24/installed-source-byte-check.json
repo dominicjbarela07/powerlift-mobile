@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "mobileSourceSHA": "238f916fbc2309d02a9f3693de0ffbc500370d9e",
+  "sourceSHA256": {
+    "app/login.tsx": "30597d782bc26ef36f1b7a2392722041becd7d47a9f8c0e8283b43932fc515fe",
+    "components/onboarding/SignupWelcome.tsx": "8d792c147d88a17e9e7cb12b1846f97529ef0bef0716ee21eeddbb1c9110e5a6",
+    "lib/signup-paths.ts": "06dc225dcc7ff4f69c38c4ced9573649c50a827f5221ce27d626de101458ce3f"
+  },
+  "nativeExportFilesVerified": 994,
+  "welcomePhotoBytesMatch": true
+}
