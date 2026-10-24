@@ -1,0 +1,11 @@
+{
+  "sourceSHA": "64208a8d1c1f70e6f7e829a1473ab1a465538c01",
+  "installedApp": "/Users/dominic/Library/Developer/CoreSimulator/Devices/932A8DB1-E374-4040-9DD3-627EDA94EE26/data/Containers/Bundle/Application/22379DCF-5626-4867-A624-6DDBFE89E312/StrengthLedger.app",
+  "allExportedFilesByteEqual": 994,
+  "sourcesEqualExport": {
+    "app/login.tsx": "db933e8b04dc51be5a3bb68112471eec87b828cdab83023d95683b5874be939c",
+    "components/onboarding/SignupWelcome.tsx": "c8bb17b387c1b6a9a65043409a760f817b9f1dcb56ed9aba59f07d19584dc090",
+    "lib/signup-paths.ts": "957f261a17c646c9a0571280e75c30eacbde747fc19e6887febf6e7f501a3f2b"
+  },
+  "probeAbsent": true
+}

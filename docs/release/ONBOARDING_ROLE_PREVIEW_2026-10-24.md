@@ -40,7 +40,7 @@ Production/OTA/store publication. Preserve screenshot files and Education uses
 on disk; remove only their onboarding consumption. Validate actual direct role
 handlers, role changes/drafts, admission, back navigation and regression controls;
 inspect actual revised forms and refresh native handoff verification.
-Status: implementing the direct role → account path.
+Status: completed in canonical DEV and the local live-connected simulator.
 
 ## Standards correction — implementation and validation
 
@@ -78,7 +78,26 @@ and support. No identity/entitlement/billing writer changed. Verification resend
 email correction, checkout terms/return/status recovery and support fallback were
 reviewed in source and retained. No live signup, purchase or support submission was
 performed; source review and fixture tests do not prove customer email/card delivery.
-The native simulator refresh and live-service receipt follow below.
+The native simulator refresh passed. Installed product source:
+`64208a8d1c1f70e6f7e829a1473ab1a465538c01`; bundle SHA-256:
+`0790143840bcd8f77af9283c6358a3aa75bc8a0e195f292db609f83ee19a5e73`.
+All 994 exported runtime files equal their installed bytes; the three edited
+product source files equal the export source map; all 998 prior protected export
+asset entries remain present by content hash. No native graph, signing identity,
+approved-art policy or store provisioning was changed. This uses the preserved
+simulator shell and does not certify a new store/native build.
+
+The actual installed native probe at `2026-10-24T17:07:39.199Z` passed disposable
+SecureStore missing/read/write/delete checks without accessing real auth keys;
+the actual native live health request returned HTTP 200, ready true, serving
+`72e1987fa086ae10ef42b10d0ee373e2b706a7de` at
+`https://app.strengthledger.fit`. Restored the normal entry and removed the probe.
+The mandatory installed-app simulator handoff verifier passed; its unchanged
+same-day negative controls remain in
+`docs/validation/onboarding-simulator-live-2026-10-24/guard-negative-controls.json`.
+Observed native Self-Coach → account creation directly and Back → roles. Left
+iPhone Air at role selection for owner takeover. Product source was pushed to
+`origin/dev/canonical-mobile`; no Production/backend/OTA/store publication.
 
 ## Owner visual correction — superseded preview design
 

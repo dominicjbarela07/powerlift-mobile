@@ -1,0 +1,21 @@
+{
+  "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "sourceSHA": "64208a8d1c1f70e6f7e829a1473ab1a465538c01",
+  "bundleSHA256": "0790143840bcd8f77af9283c6358a3aa75bc8a0e195f292db609f83ee19a5e73",
+  "apiBase": "https://app.strengthledger.fit",
+  "temporaryProbeRemoved": true,
+  "missingExportAssets": 0,
+  "nativeExpoSecureStoreProof": {
+    "apiBase": "https://app.strengthledger.fit",
+    "realAuthKeysAccessed": false,
+    "observedAt": "2026-10-24T17:07:39.199Z",
+    "missingReadIsNull": true,
+    "roundtrip": true,
+    "deletedReadIsNull": true,
+    "liveHealthStatus": 200,
+    "liveSourceSHA": "72e1987fa086ae10ef42b10d0ee373e2b706a7de",
+    "liveReady": true,
+    "pass": true
+  },
+  "liveBackendSource": "72e1987fa086ae10ef42b10d0ee373e2b706a7de"
+}

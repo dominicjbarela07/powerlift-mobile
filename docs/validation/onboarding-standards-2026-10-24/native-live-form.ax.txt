@@ -1,0 +1,150 @@
+Window: "iPhone Air", App: Device Hub.
+0 standard window iPhone Air – iOS 26.2, ID: com.apple.dt.DeviceKit.DeviceManagementWindow-AppWindow-1, Secondary Actions: Raise
+	1 split group
+		2 split group com.apple.dt.DeviceKit.DeviceManagementWindow-AppWindow-1, SidebarNavigationSplitView
+			3 scroll area Secondary Actions: Scroll Up, Scroll Down
+				4 list Sidebar
+					5 row (selectable) Description: Available, Value: Expanded
+					6 row (selected) Description: iphone.gen3, Value: iPhone Air
+26.2
+Simulator
+					7 row (selectable) Description: iphone.gen1, Value: Strength Ledger Typography Compact
+26.2
+Simulator
+					8 row (selectable) Description: Iphone, Value: Strength Ledger Distribution 6.5 Upload
+26.2
+Simulator
+					9 row (selectable) Description: ipad, Value: Strength Ledger Distribution iPad
+26.2
+Simulator
+					10 row (selectable) Description: iphone.gen3, Value: Strength Ledger Distribution iPhone
+26.2
+Simulator
+					11 row (selectable) Description: iphone.gen3, Value: iPhone 17
+26.2
+Simulator
+					12 row (selectable) Description: iphone.gen3, Value: iPhone 17 Pro
+26.2
+Simulator
+					13 row (selectable) Description: iphone.gen3, Value: iPhone 17 Pro Max
+26.2
+Simulator
+					14 row (selectable) Description: Iphone, Value: iPhone 16e
+26.2
+Simulator
+					15 row (selectable) Description: iphone.gen3, Value: SL Session Workspace iPhone 15 QA
+26.2
+Simulator
+					16 row (selectable) Description: iphone.gen1, Value: SL Session Workspace Small iPhone QA
+26.2
+Simulator
+					17 row (selectable) Description: iphone.gen3, Value: iPhone 17 Pro
+26.1
+Simulator
+					18 row (selectable) Description: iphone.gen3, Value: iPhone 17
+26.1
+Simulator
+					19 row (selectable) Description: Iphone, Value: iPhone 16e
+26.1
+Simulator
+					20 row (selectable) Description: Iphone, Value: SL Accessory Editor Small QA
+26.2
+Simulator
+					21 row (selectable) Description: iphone.gen3, Value: SL Other Milestones Standard QA
+26.2
+Simulator
+					22 row (selectable) Description: iphone.gen1, Value: SL Other Milestones Compact QA
+26.2
+Simulator
+					23 row (selectable) Description: iphone.gen3, Value: iPhone 17 Pro
+26.5
+Simulator
+					24 row (selectable) Description: iphone.gen3, Value: iPhone 17 Pro Max
+26.5
+Simulator
+					25 row (selectable) Description: ipad, Value: iPad Pro 13-inch (M5)
+26.5
+Simulator
+					26 row (selectable) Description: iphone.gen3, Value: iPhone 17 Pro Max
+26.1
+Simulator
+				27 scroll bar (settable, float) 0
+					28 value indicator (settable, float) 0
+					29 increment arrow button
+					30 decrement arrow button
+					31 increment page button
+					32 decrement page button
+			33 search text field (settable, string) Search
+				34 button Search
+			35 splitter (disabled, settable, float) 248
+			36 container
+				37 container
+					38 button Description: Choose another account type, Secondary Actions: Cancel
+					39 element Description: Strength Ledger, Secondary Actions: Cancel
+					40 text Description: Create account, Secondary Actions: Cancel
+					41 text Description: Plan sessions, log your lifts and track personal bests., Secondary Actions: Cancel
+					42 text Description: 1, Secondary Actions: Cancel
+					43 text Description: 2, Secondary Actions: Cancel
+					44 text Description: 3, Secondary Actions: Cancel
+					45 text Description: Account, Secondary Actions: Cancel
+					46 text Description: Verify email, Secondary Actions: Cancel
+					47 text Description: Start trial, Secondary Actions: Cancel
+					48 button Description: Change account type, Secondary Actions: Cancel
+					49 text Description: Self-Coach, Secondary Actions: Cancel
+					50 text Description: Your own Individual workspace. Verify your email, then set up your trial., Secondary Actions: Cancel
+					51 text Description: FIRST NAME, Secondary Actions: Cancel
+					52 text Description: LAST NAME, Secondary Actions: Cancel
+					53 text field (settable, string) Description: First name, Value: Alex, Secondary Actions: Cancel
+					54 text field (settable, string) Description: Last name, Value: Carter, Secondary Actions: Cancel
+					55 text Description: EMAIL, Secondary Actions: Cancel
+					56 text field (settable, string) Description: Email, Value: you@example.com, Secondary Actions: Cancel
+					57 text Description: PASSWORD, Secondary Actions: Cancel
+					58 secure text field (settable, string) Description: Password, Secondary Actions: Cancel
+					59 button Description: Show password, Secondary Actions: Cancel
+					60 text Description: At least 8 characters., Secondary Actions: Cancel
+					61 text Description: CONFIRM PASSWORD, Secondary Actions: Cancel
+					62 secure text field (settable, string) Description: Confirm password, Secondary Actions: Cancel
+					63 button Description: Show confirm password, Secondary Actions: Cancel
+					64 button (disabled) Description: Create account and continue, Secondary Actions: Cancel
+					65 button Description: Need help with setup?, Secondary Actions: Cancel
+					66 element Description: Forgot password?, Secondary Actions: Cancel
+					67 element Description: Sign in, Secondary Actions: Cancel
+				68 button Description: Home, ID: app.grid.3x3
+				69 button Description: Screenshot, ID: camera.viewfinder
+				70 button Description: Record, ID: record.circle
+				71 button Rotate Left
+	72 toolbar
+		73 menu button Add, Help: Add Device, ID: plus
+		74 toggle button Description: Filter, Help: Sort and Filter, Value: off
+		75 button Description: Hide Sidebar, Secondary Actions: Increment, Decrement, Delete, Cancel
+		76 toggle button Description: Capture Keyboard, Value: off
+		77 toggle button (disabled) Description: Resize mode, Help: Enter resize mode, Value: off
+		78 Zoom
+			79 radio button Description: Zoom Out, Value: 0, ID: minus.magnifyingglass
+			80 radio button Description: arrowtriangles.up.right.down.left.magnifyingglass, Help: Zoom to Fit, Value: 1
+			81 radio button Description: Zoom To Actual Size, Help: Physical Size, Value: 0, ID: 1.magnifyingglass
+			82 radio button Description: Zoom In, Value: 0, ID: plus.magnifyingglass
+		83 button Description: Switch to compact window, Secondary Actions: Increment, Decrement, Delete, Cancel, Move previous, Move next, Remove from toolbar
+		84 menu button More, Help: More Actions, ID: ellipsis
+		85 Inspector Category
+			86 radio button Description: Edit, Help: Settings, Value: 0, ID: slider.horizontal.3
+			87 radio button Description: text.document, Help: Reports, Value: 0
+			88 radio button Description: Info, Value: 0, ID: info
+	89 close button
+	90 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	91 minimize button
+	92 text iPhone Air iOS 26.2
+93 menu bar
+	94 Device Hub
+	95 File
+	96 Edit
+	97 View
+	98 Device
+	99 Controls
+	100 Window
+	101 Help
+
+Selected:
+	6 row (selected)
+
+Note: Pay special attention to the content selected by the user. If the user asks a question or refers to the content they are looking at on-screen, they might be referring to the selected content (but they might be referring to something else that's visible, too).

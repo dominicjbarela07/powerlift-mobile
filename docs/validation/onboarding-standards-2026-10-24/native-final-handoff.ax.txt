@@ -1,0 +1,128 @@
+Window: "iPhone Air", App: Device Hub.
+0 standard window iPhone Air – iOS 26.2, ID: com.apple.dt.DeviceKit.DeviceManagementWindow-AppWindow-1, Secondary Actions: Raise
+	1 split group
+		2 split group com.apple.dt.DeviceKit.DeviceManagementWindow-AppWindow-1, SidebarNavigationSplitView
+			3 scroll area Secondary Actions: Scroll Up, Scroll Down
+				4 list Sidebar
+					5 row (selectable) Description: Available, Value: Expanded
+					6 row (selected) Description: iphone.gen3, Value: iPhone Air
+26.2
+Simulator
+					7 row (selectable) Description: iphone.gen1, Value: Strength Ledger Typography Compact
+26.2
+Simulator
+					8 row (selectable) Description: Iphone, Value: Strength Ledger Distribution 6.5 Upload
+26.2
+Simulator
+					9 row (selectable) Description: ipad, Value: Strength Ledger Distribution iPad
+26.2
+Simulator
+					10 row (selectable) Description: iphone.gen3, Value: Strength Ledger Distribution iPhone
+26.2
+Simulator
+					11 row (selectable) Description: iphone.gen3, Value: iPhone 17
+26.2
+Simulator
+					12 row (selectable) Description: iphone.gen3, Value: iPhone 17 Pro
+26.2
+Simulator
+					13 row (selectable) Description: iphone.gen3, Value: iPhone 17 Pro Max
+26.2
+Simulator
+					14 row (selectable) Description: Iphone, Value: iPhone 16e
+26.2
+Simulator
+					15 row (selectable) Description: iphone.gen3, Value: SL Session Workspace iPhone 15 QA
+26.2
+Simulator
+					16 row (selectable) Description: iphone.gen1, Value: SL Session Workspace Small iPhone QA
+26.2
+Simulator
+					17 row (selectable) Description: iphone.gen3, Value: iPhone 17 Pro
+26.1
+Simulator
+					18 row (selectable) Description: iphone.gen3, Value: iPhone 17
+26.1
+Simulator
+					19 row (selectable) Description: Iphone, Value: iPhone 16e
+26.1
+Simulator
+					20 row (selectable) Description: Iphone, Value: SL Accessory Editor Small QA
+26.2
+Simulator
+					21 row (selectable) Description: iphone.gen3, Value: SL Other Milestones Standard QA
+26.2
+Simulator
+					22 row (selectable) Description: iphone.gen1, Value: SL Other Milestones Compact QA
+26.2
+Simulator
+					23 row (selectable) Description: iphone.gen3, Value: iPhone 17 Pro
+26.5
+Simulator
+					24 row (selectable) Description: iphone.gen3, Value: iPhone 17 Pro Max
+26.5
+Simulator
+					25 row (selectable) Description: ipad, Value: iPad Pro 13-inch (M5)
+26.5
+Simulator
+					26 row (selectable) Description: iphone.gen3, Value: iPhone 17 Pro Max
+26.1
+Simulator
+				27 scroll bar (settable, float) 0
+					28 value indicator (settable, float) 0
+					29 increment arrow button
+					30 decrement arrow button
+					31 increment page button
+					32 decrement page button
+			33 search text field (settable, string) Search
+				34 button Search
+			35 splitter (disabled, settable, float) 248
+			36 container
+				37 container
+					38 element Description: Strength Ledger, Secondary Actions: Cancel
+					39 button Description: Sign in, Secondary Actions: Cancel
+					40 heading Secondary Actions: Cancel, Description: BUILT FOR
+THE WORK.
+					41 text Description: CHOOSE YOUR PATH, Secondary Actions: Cancel
+					42 button Description: Athlete, Help: Create an account as Athlete, Secondary Actions: Cancel
+					43 button Description: Coach, Help: Create an account as Coach, Secondary Actions: Cancel
+					44 button Description: Self-Coach, Help: Create an account as Self-Coach, Secondary Actions: Cancel
+				45 button Description: Home, ID: app.grid.3x3
+				46 button Description: Screenshot, ID: camera.viewfinder
+				47 button Description: Record, ID: record.circle
+				48 button Rotate Left
+	49 toolbar
+		50 menu button Add, Help: Add Device, ID: plus
+		51 toggle button Description: Filter, Help: Sort and Filter, Value: off
+		52 button Description: Hide Sidebar, Secondary Actions: Increment, Decrement, Delete, Cancel
+		53 toggle button Description: Capture Keyboard, Value: off
+		54 toggle button (disabled) Description: Resize mode, Help: Enter resize mode, Value: off
+		55 Zoom
+			56 radio button Description: Zoom Out, Value: 0, ID: minus.magnifyingglass
+			57 radio button Description: arrowtriangles.up.right.down.left.magnifyingglass, Help: Zoom to Fit, Value: 1
+			58 radio button Description: Zoom To Actual Size, Help: Physical Size, Value: 0, ID: 1.magnifyingglass
+			59 radio button Description: Zoom In, Value: 0, ID: plus.magnifyingglass
+		60 button Description: Switch to compact window, Secondary Actions: Increment, Decrement, Delete, Cancel, Move previous, Move next, Remove from toolbar
+		61 menu button More, Help: More Actions, ID: ellipsis
+		62 Inspector Category
+			63 radio button Description: Edit, Help: Settings, Value: 0, ID: slider.horizontal.3
+			64 radio button Description: text.document, Help: Reports, Value: 0
+			65 radio button Description: Info, Value: 0, ID: info
+	66 close button
+	67 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	68 minimize button
+	69 text iPhone Air iOS 26.2
+70 menu bar
+	71 Device Hub
+	72 File
+	73 Edit
+	74 View
+	75 Device
+	76 Controls
+	77 Window
+	78 Help
+
+Selected:
+	6 row (selected)
+
+Note: Pay special attention to the content selected by the user. If the user asks a question or refers to the content they are looking at on-screen, they might be referring to the selected content (but they might be referring to something else that's visible, too).
