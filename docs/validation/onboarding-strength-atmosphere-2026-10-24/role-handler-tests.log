@@ -1,0 +1,5 @@
+
+> powerlift_mobile@1.0.0 test:signup-role-preview
+> node scripts/test-signup-role-preview.mjs
+
+PASS: sparse photographic opening, all three choose/preview/form handlers, drafts, registration requirements/payloads, rejected request, Android back, image failure and previews. Deliberate form-first and busy-opening regressions rejected.

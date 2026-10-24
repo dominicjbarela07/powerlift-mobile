@@ -44,7 +44,7 @@ export default function LoginScreen() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [authMode, setAuthMode] = useState<AuthMode>('signup');
-  const [signupStep, setSignupStep] = useState<'preview' | 'details'>('preview');
+  const [signupStep, setSignupStep] = useState<'choose' | 'preview' | 'details'>('choose');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -76,7 +76,7 @@ export default function LoginScreen() {
   const backToPaths = () => {
     Keyboard.dismiss();
     setError(null);
-    setSignupStep('preview');
+    setSignupStep('choose');
   };
 
   useEffect(() => {
@@ -86,6 +86,7 @@ export default function LoginScreen() {
       Keyboard.dismiss();
       setError(null);
       if (signupStep === 'details') setSignupStep('preview');
+      else if (signupStep === 'preview') setSignupStep('choose');
       else setAuthMode('login');
       return true;
     });
@@ -331,10 +332,12 @@ export default function LoginScreen() {
       (signupRole !== 'coach' || setupAccessCode.trim().length > 0)
     );
 
-  if (authMode === 'signup' && signupStep === 'preview') {
+  if (authMode === 'signup' && signupStep !== 'details') {
     return <SignupWelcome
       role={signupRole}
-      onSelectRole={setSignupRole}
+      stage={signupStep}
+      onBack={() => setSignupStep('choose')}
+      onSelectRole={role => { setSignupRole(role); setSignupStep('preview'); }}
       onContinue={() => { setError(null); setSignupStep('details'); }}
       onSignIn={() => { setError(null); setAuthMode('login'); }}
     />;
@@ -353,7 +356,7 @@ export default function LoginScreen() {
             contentContainerStyle={styles.scrollContent}
           >
             <View style={styles.authPane}>
-            {authMode === 'signup' ? <Pressable accessibilityRole="button" accessibilityLabel="Back to account types" onPress={backToPaths} style={styles.backToPaths}>
+            {authMode === 'signup' ? <Pressable accessibilityRole="button" accessibilityLabel="Back to app preview" onPress={() => { Keyboard.dismiss(); setError(null); setSignupStep('preview'); }} style={styles.backToPaths}>
               <Text style={styles.backToPathsText}>←  Your path</Text>
             </Pressable> : null}
             <View style={styles.brandBlock}>
@@ -648,7 +651,7 @@ export default function LoginScreen() {
                   onPress={() => {
                     setError(null);
                     setPendingOAuth(null);
-                    setSignupStep('preview');
+                    setSignupStep('choose');
                     setAuthMode(authMode === 'signup' ? 'login' : 'signup');
                   }}
                 >

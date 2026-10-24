@@ -1,5 +1,55 @@
 # Role-first onboarding — October 24, 2026
 
+## Owner visual correction — current direction
+
+The owner rejected the first delivered atmosphere as unrelated to strength and
+too busy. This supersedes the violet rings/auras and the dense all-in-one role,
+headline, feature grid and screenshot composition. Rebuild the opening around
+physical lifting imagery: loaded iron, chalk, hard light and a neutral dark gym.
+The first screen contains only brand/sign-in, one headline and three clear role
+actions. Choosing a role opens a separate, restrained app preview before the
+existing account form. Keep role-specific screenshots and setup requirements,
+draft preservation, admission/recovery/access guards and live simulator targeting.
+No Production/OTA release is authorized by this visual correction. Inspect actual
+canonical runtime captures twice, with explicit assessment of visual density and
+the strength-related background. Preserve prior evidence as rejected history.
+The correction is implemented in DEV; the earlier completion below is historical.
+
+Current flow: choose one of three full-width role actions → that role's app
+preview → existing account form. The opening has a photographic loaded-barbell
+background, one headline, three role rows and Sign in. Feature grids, decorative
+orbits/auras, preview dots, screenshot captions and the large violet Continue
+button were removed from the opening. The role preview retains two actual app
+captures and a concise feature sentence. A short, accurate admission/setup note
+stays beside Continue; full requirements remain in the form. Back and Android
+back move through the stages without discarding the draft.
+
+Generated a new DEV background with the built-in image tool:
+`assets/images/onboarding/loaded-iron-welcome-v1.png`. Its exact prompt, source
+file and generation mode are retained in
+`docs/validation/onboarding-strength-atmosphere-2026-10-24/background-generation.json`.
+The original generated file is preserved. This is welcome-screen imagery; no
+movement image, human approval, original asset or crop registry was changed.
+
+Visual convergence assessed three weak areas: (1) the initial cover crop hid the
+loaded barbell's sleeve, repaired with a full-width, explicitly measured image
+frame; (2) information density, repaired by separating the opening and product
+preview and removing repeated UI; (3) reading/action clarity, repaired with larger
+role subtitles, an always-visible setup note and bounded decorative-heading
+scaling while role text remains scalable. Inspected actual canonical npm-start
+captures after these refinements, all three role previews, the transition to the
+account form, compact iPhone SE and accessibility-large scrolling/role access.
+
+The actual-handler guard now covers choose → preview → details, draft retention,
+registration admission/payloads, rejected requests, all Android back levels,
+backdrop/preview failures and the sparse opening. Deliberate form-first and
+busy-opening regressions are rejected. TypeScript and the canonical keyboard
+suite pass. Unchanged identity, billing, SSO, Education and support mutations keep
+the preceding source-bound checks; no new account access owner or writer exists.
+No live account, payment or support message was created. Evidence:
+`docs/validation/onboarding-strength-atmosphere-2026-10-24/`.
+Final refreshed native live handoff verification is pending.
+
 Owner request: replace the uninviting signup entrance with a premium, atmospheric
 experience. Athlete, Coach and Self-Coach selection comes before forms. Show real
 app screenshots and relevant features for the selected role, then collect account

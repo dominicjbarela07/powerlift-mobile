@@ -17,7 +17,8 @@ function load(source, modules) {
 }
 const paths = load(read('lib/signup-paths.ts'), {});
 function runtime() {
-  const states = [], effects = [], back = new Map();
+  let states = [];
+  const componentStates = new Map(), effects = [], back = new Map();
   let cursor = 0, effectCursor = 0, dismissed = 0;
   const React = {
     createElement: (type, props, ...children) => ({ type, props: { ...props, children } }),
@@ -55,9 +56,10 @@ function runtime() {
     '@/lib/signup-paths': paths, '@/lib/onboarding-message': { onboardingMessage: x => x },
     '@/components/ui': { SLButton: 'Button' },
     '../assets/images/16:9.png': {}, '../../assets/images/16:9.png': {},
+    '../../assets/images/onboarding/loaded-iron-welcome-v1.png': 'gym-photo',
     '@/components/AuthSsoButtons': { default: 'SsoButtons' },
   };
-  return { modules, back, states, render: (component, props) => { cursor = 0; effectCursor = 0; return component(props); }, dismissed: () => dismissed };
+  return { modules, back, render: (component, props) => { states = componentStates.get(component) ?? []; componentStates.set(component, states); cursor = 0; effectCursor = 0; return component(props); }, dismissed: () => dismissed };
 }
 const flatten = tree => !tree ? [] : Array.isArray(tree) ? tree.flatMap(flatten) : typeof tree === 'object'
   ? [tree, ...flatten(tree.props?.children)] : [];
@@ -82,7 +84,7 @@ async function exerciseLogin(source = read('app/login.tsx')) {
     press(tree, 'Sign up').props.onPress(); tree = render();
     assert.equal(tree.type, 'SignupWelcome', 'Signup must begin with the role experience');
     assert.equal(flatten(tree).some(node => node.type === 'Input'), false, 'Role preview never mounts account inputs');
-    tree.props.onSelectRole(role); tree = render(); assert.equal(tree.props.role, role);
+    tree.props.onSelectRole(role); tree = render(); assert.equal(tree.props.role, role); assert.equal(tree.props.stage, 'preview');
     tree.props.onContinue(); tree = render();
     assert.ok(text(tree).includes(paths.SIGNUP_PATHS[role].requirement));
     assert.equal(flatten(tree).filter(node => node.type === 'Progress').length, role === 'athlete' ? 0 : 1, 'Athletes do not enter trial steps');
@@ -100,8 +102,8 @@ async function exerciseLogin(source = read('app/login.tsx')) {
       set('Access code', 'FICTIONAL-CODE');
     }
     press(render(), 'Change account type').props.onPress(); tree = render();
-    assert.equal(tree.type, 'SignupWelcome'); assert.equal(tree.props.role, role);
-    tree.props.onContinue(); tree = render();
+    assert.equal(tree.type, 'SignupWelcome'); assert.equal(tree.props.role, role); assert.equal(tree.props.stage, 'choose');
+    tree.props.onSelectRole(role); tree = render(); tree.props.onContinue(); tree = render();
     assert.equal(find(tree, node => node.type === 'Input' && node.props.placeholder === 'Alex').props.value, 'Example');
     assert.equal(find(tree, node => node.type === 'Input' && node.props.placeholder === 'you@example.com').props.value, 'example@onboarding.test');
     assert.equal(find(tree, node => node.type === 'Input' && node.props.placeholder === 'Password').props.value, 'fictional-password');
@@ -112,42 +114,56 @@ async function exerciseLogin(source = read('app/login.tsx')) {
     assert.equal(routes.length, 0); assert.equal(logins.length, 0, 'Presentation must not grant access after server rejection');
     assert.equal(find(render(), node => node.type === 'Input' && node.props.placeholder === 'you@example.com').props.value, 'example@onboarding.test', 'Retry preserves draft');
     assert.equal(r.back.get('hardwareBackPress')(), true); tree = render();
-    assert.equal(tree.type, 'SignupWelcome'); assert.ok(r.dismissed() > 0);
+    assert.equal(tree.type, 'SignupWelcome'); assert.equal(tree.props.stage, 'preview'); assert.ok(r.dismissed() > 0);
+    assert.equal(r.back.get('hardwareBackPress')(), true); tree = render(); assert.equal(tree.props.stage, 'choose');
     assert.equal(r.back.get('hardwareBackPress')(), true); tree = render();
     assert.notEqual(tree.type, 'SignupWelcome', 'Android back returns to sign-in');
   }
 }
 await exerciseLogin();
 
-// Exercise the actual role controls, screenshots and image-error handler.
-for (const role of ['athlete', 'coach', 'self_coach']) {
-  const r = runtime(), selected = [], continued = [], signedIn = [];
-  const component = load(read('components/onboarding/SignupWelcome.tsx'), r.modules).SignupWelcome;
-  const props = { role, onSelectRole: value => selected.push(value), onContinue: () => continued.push(role), onSignIn: () => signedIn.push(true) };
-  const tree = r.render(component, props);
-  const tabs = flatten(tree).filter(node => node.props?.accessibilityRole === 'tab');
-  assert.equal(tabs.length, 3); assert.equal(tabs.filter(node => node.props.accessibilityState.selected).length, 1);
-  for (const tab of tabs) {
-    const style = Object.assign({}, ...tab.props.style({ pressed: false }).filter(Boolean));
-    assert.equal(style.flex, 0, 'At large text sizes, roles must use full rows rather than compress their labels');
-    assert.equal(style.flexDirection, 'row');
-    assert.ok(style.minHeight >= 44);
+// Exercise the actual sparse opening, role previews and image-error handlers.
+function exerciseWelcome(source = read('components/onboarding/SignupWelcome.tsx')) {
+ for (const role of ['athlete', 'coach', 'self_coach']) {
+  const r = runtime(), selected = [], continued = [], signedIn = [], returned = [];
+  const component = load(source, r.modules).SignupWelcome;
+  const props = { role, stage: 'choose', onSelectRole: value => selected.push(value), onContinue: () => continued.push(role), onSignIn: () => signedIn.push(true), onBack: () => returned.push(true) };
+  let tree = r.render(component, props);
+  const choices = flatten(tree).filter(node => ['Athlete', 'Coach', 'Self-Coach'].includes(node.props?.accessibilityLabel));
+  assert.equal(choices.length, 3);
+  for (const choice of choices) {
+    const style = Object.assign({}, ...choice.props.style({ pressed: false }).filter(Boolean));
+    assert.equal(style.flexDirection, 'row'); assert.ok(style.minHeight >= 44);
+    choice.props.onPress();
   }
-  tabs.forEach(node => node.props.onPress()); assert.deepEqual(selected, ['athlete', 'coach', 'self_coach']);
+  assert.deepEqual(selected, ['athlete', 'coach', 'self_coach']);
+  assert.equal(flatten(tree).some(node => typeof node.type === 'function' && node.type.name === 'ScreenshotPreview'), false, 'The opening must keep app screenshots on the next screen');
+  assert.equal(paths.SIGNUP_PATHS[role].features.some(feature => text(tree).includes(feature)), false, 'The opening must not restore the busy feature grid');
+  assert.ok(find(tree, node => node.props?.accessibilityRole === 'header').props.maxFontSizeMultiplier <= 1.4, 'The decorative headline must not crowd out the role choices at accessibility text sizes');
+  const photo = find(tree, node => node.props?.source === 'gym-photo');
+  assert.equal(photo.props.resizeMode, 'contain', 'The opening must preserve the loaded barbell rather than crop away its sleeve');
+  assert.equal(Object.assign({}, ...photo.props.style).height, 375 * 1.5, 'The native image frame must have an explicit height rather than inherit the original pixel height');
+  photo.props.onError(); tree = r.render(component, props);
+  assert.equal(flatten(tree).filter(node => ['Athlete', 'Coach', 'Self-Coach'].includes(node.props?.accessibilityLabel)).length, 3, 'A failed backdrop never blocks role selection');
+  press(tree, 'Sign in').props.onPress(); assert.equal(signedIn.length, 1);
+  tree = r.render(component, { ...props, stage: 'preview' });
   press(tree, `Continue as ${paths.SIGNUP_PATHS[role].label}`).props.onPress(); assert.equal(continued.length, 1);
-  find(tree, node => node.type === 'Pressable' && text(node).startsWith('Sign in')).props.onPress(); assert.equal(signedIn.length, 1);
+  press(tree, 'Choose another path').props.onPress(); assert.equal(returned.length, 1);
   const preview = find(tree, node => typeof node.type === 'function' && node.type.name === 'ScreenshotPreview');
   const screen = () => r.render(preview.type, preview.props);
   let gallery = screen();
   assert.ok(text(gallery).includes(paths.SIGNUP_PATHS[role].captures[0].label));
-  press(gallery, 'Next app preview').props.onPress(); gallery = screen();
+  press(gallery, 'Next app preview. 1 of 2').props.onPress(); gallery = screen();
   assert.ok(text(gallery).includes(paths.SIGNUP_PATHS[role].captures[1].label));
-  const image = find(gallery, node => typeof node.props?.onError === 'function');
-  image.props.onError(); gallery = screen();
+  find(gallery, node => typeof node.props?.onError === 'function').props.onError(); gallery = screen();
   assert.ok(text(gallery).includes('You can still continue with setup'), 'Failed preview must not block registration');
+ }
 }
-
-const broken = read('app/login.tsx').replace("authMode === 'signup' && signupStep === 'preview'", "false /* reproduce form-first signup */");
+exerciseWelcome();
+const broken = read('app/login.tsx').replace("authMode === 'signup' && signupStep !== 'details'", "false /* reproduce form-first signup */");
 assert.notEqual(broken, read('app/login.tsx'));
 await assert.rejects(exerciseLogin(broken), /Signup must begin with the role experience/);
-console.log('PASS: all three real role-to-form handlers, preserved drafts, registration payloads, admission validation, server rejection, Android back, preview controls and image failure. Deliberate form-first regression rejected.');
+const busy = read('components/onboarding/SignupWelcome.tsx').replace('<View style={styles.choiceBody}>', '<View style={styles.choiceBody}><ScreenshotPreview role={role} />');
+assert.notEqual(busy, read('components/onboarding/SignupWelcome.tsx'));
+assert.throws(() => exerciseWelcome(busy), /opening must keep app screenshots on the next screen/);
+console.log('PASS: sparse photographic opening, all three choose/preview/form handlers, drafts, registration requirements/payloads, rejected request, Android back, image failure and previews. Deliberate form-first and busy-opening regressions rejected.');
