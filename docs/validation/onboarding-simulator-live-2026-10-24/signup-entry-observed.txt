@@ -1,0 +1,25 @@
+The following is a diff from the previous accessibility tree for Window: "iPhone Air" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 91-94
++					104 text Description: Create account, Secondary Actions: Cancel
++					105 text Description: Build your training space., Secondary Actions: Cancel
++					106 text Description: 1, Secondary Actions: Cancel
++					107 text Description: 2, Secondary Actions: Cancel
++					108 text Description: 3, Secondary Actions: Cancel
++					109 text Description: Account, Secondary Actions: Cancel
++					110 text Description: Verify email, Secondary Actions: Cancel
++					111 text Description: Start trial, Secondary Actions: Cancel
++					112 text Description: Choose account type, Secondary Actions: Cancel
++					113 button Description: Athlete, Secondary Actions: Cancel
++					114 element Description: Coach, Secondary Actions: Cancel
++					115 button Description: Self-Coach, Secondary Actions: Cancel
++					116 text Description: Self-Coach creates an Individual workspace for your own training., Secondary Actions: Cancel
++					117 text Description: FIRST NAME, Secondary Actions: Cancel
++					118 text Description: LAST NAME, Secondary Actions: Cancel
++					119 text field (settable, string) Value: Alex, Secondary Actions: Cancel
++					120 text field (settable, string) Value: Carter, Secondary Actions: Cancel
++					121 text Description: CONFIRM PASSWORD, Secondary Actions: Cancel
++					122 secure text field (settable, string) Value: Confirm password, Secondary Actions: Cancel
++					123 element Description: Show, Secondary Actions: Cancel
+~					100 button (disabled) Description: Create account and continue, Secondary Actions: Cancel
+~					103 button Description: Sign in, Secondary Actions: Cancel
+The focused UI element is 0 standard window iPhone Air – iOS 26.2, ID: com.apple.dt.DeviceKit.DeviceManagementWindow-AppWindow-1, Secondary Actions: Raise

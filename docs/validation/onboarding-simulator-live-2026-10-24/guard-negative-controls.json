@@ -1,0 +1,10 @@
+{
+  "stale-bundle": {
+    "rejected": true,
+    "reason": "SIMULATOR HANDOFF FAIL: Installed bundle is stale or differs from the tested candidate"
+  },
+  "local-backend": {
+    "rejected": true,
+    "reason": "SIMULATOR HANDOFF FAIL: Candidate is not using the actual live Production backend"
+  }
+}

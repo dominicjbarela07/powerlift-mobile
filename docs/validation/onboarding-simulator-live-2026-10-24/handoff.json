@@ -1,0 +1,15 @@
+{
+  "finalScreen": "Create account",
+  "selectedRole": "Self-Coach",
+  "fieldsBlank": true,
+  "observedWith": "Device Hub through computer-use",
+  "signupSubmitted": false,
+  "existingSimulatorSessionSignedOutViaUI": true,
+  "accountDeleted": false,
+  "productionMutationsPerformed": false,
+  "nativeShellVersion": "2.1.0",
+  "currentMobileProductSource": "afa5605b4ffc99ac80409e9ed72cb32689e9b2cc",
+  "nativeStoreBinaryCertified": false,
+  "finalInstalledBundleSHA256": "2f9e7e48c00139abd1ddb96319b0d49f23aed79d8b0cd3b6ba5ebb44b072761e",
+  "liveBackendSource": "72e1987fa086ae10ef42b10d0ee373e2b706a7de"
+}
