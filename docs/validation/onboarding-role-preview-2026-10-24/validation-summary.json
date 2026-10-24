@@ -1,0 +1,34 @@
+{
+  "checks": {
+    "roleHandlersAndAdmission": "PASS; actual rendered callbacks, deliberate form-first rejection",
+    "nativeCheckoutRecovery": "PASS; success/cancel/dismiss/error and forced-dismiss rejection",
+    "canonicalFreshLoginIdentity": "PASS; missing-ID regression rejected",
+    "educationProviderNavigation": "PASS; real callbacks and completion-loop failure control",
+    "keyboardVisibility": "PASS; 36 frame geometries, 264 consumer imports, actual iOS/Android event store",
+    "typescript": "PASS"
+  },
+  "sourceSHA256": {
+    "app/login.tsx": "e7a6979fc5d479ee4a2443a5a1f55e5a60c44520283ab1bd69d89339b3baaafe",
+    "components/onboarding/SignupWelcome.tsx": "e685e9ce1dc5e8328b445d96d0f4fb4887e2c647c1049c9c4b38b9a4f473a1de",
+    "lib/signup-paths.ts": "d1726c68a8ba50aff159c30421a99a084b1ddf6b40d8a3839c80c861199317e9",
+    "scripts/test-signup-role-preview.mjs": "5b7491ec17acfa25ede594119401b8273d14839f87cd16ed21ac93379bf3fbe3",
+    "components/ui/sl-text.tsx": "17ef4baad8a2fb159ef8cea529edf013204f58ffd35a1cc9fba46ad751f8d62b",
+    "lib/checkoutBrowser.ts": "731df4de29ebfc0b71037590ed99335eb6a686573c609a7e7ed93c0a63c49293",
+    "context/MobileEducationContext.tsx": "d86fa554ec272d97d696e7a87e032fcbfbf5a881ec680c4af339a87124922c50",
+    "components/keyboard/KeyboardSurface.tsx": "8be8583a3d1fc4f3991f873430603b930e8c2af2b7f2c3dfbabb7f800d9fa074"
+  },
+  "nativeObservations": [
+    "All three role screens",
+    "Coach preview -> details -> back with Coach selected",
+    "Screenshot switching",
+    "iPhone SE 3rd generation compact screen",
+    "Accessibility-large: stacked roles and scrollable content with fixed action"
+  ],
+  "notPerformed": [
+    "Real signup",
+    "Real payment",
+    "Support notification",
+    "Physical device certification",
+    "Production/OTA release"
+  ]
+}

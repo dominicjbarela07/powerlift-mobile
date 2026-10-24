@@ -1,0 +1,5 @@
+
+> powerlift_mobile@1.0.0 test:signup-role-preview
+> node scripts/test-signup-role-preview.mjs
+
+PASS: all three real role-to-form handlers, preserved drafts, registration payloads, admission validation, server rejection, Android back, preview controls and image failure. Deliberate form-first regression rejected.

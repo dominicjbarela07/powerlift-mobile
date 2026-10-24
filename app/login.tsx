@@ -1,10 +1,12 @@
+import { SignupWelcome } from '@/components/onboarding/SignupWelcome';
+import { SIGNUP_PATHS, type SignupRole } from '@/lib/signup-paths';
 import { onboardingMessage } from '@/lib/onboarding-message';
 import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress';
 import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 // app/login.tsx
 import React, { ComponentType, useEffect, useState } from 'react';
-import { View, Pressable, StyleSheet, Image, Platform, Linking } from 'react-native';
+import { View, Pressable, StyleSheet, Image, Platform, Linking, Keyboard, BackHandler } from 'react-native';
 import { TextInput, Text } from '@/components/ui/sl-text';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,7 +18,7 @@ import { SLButton } from '@/components/ui';
 const PASSWORD_RESET_URL = 'https://app.strengthledger.fit/auth/reset_request';
 
 type OAuthProvider = 'google' | 'apple';
-type AccountRole = 'coach' | 'athlete' | 'self_coach';
+type AccountRole = SignupRole;
 type AuthMode = 'login' | 'signup';
 
 type PendingOAuthSetup = {
@@ -42,6 +44,7 @@ export default function LoginScreen() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [authMode, setAuthMode] = useState<AuthMode>('login');
+  const [signupStep, setSignupStep] = useState<'preview' | 'details'>('preview');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -69,6 +72,25 @@ export default function LoginScreen() {
       mounted = false;
     };
   }, []);
+
+  const backToPaths = () => {
+    Keyboard.dismiss();
+    setError(null);
+    setSignupStep('preview');
+  };
+
+  useEffect(() => {
+    if (authMode !== 'signup') return;
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (loading) return true;
+      Keyboard.dismiss();
+      setError(null);
+      if (signupStep === 'details') setSignupStep('preview');
+      else setAuthMode('login');
+      return true;
+    });
+    return () => subscription.remove();
+  }, [authMode, signupStep, loading]);
 
   const openInfoPage = async (url: string, fallbackMessage: string, label: string) => {
     try {
@@ -309,6 +331,15 @@ export default function LoginScreen() {
       (signupRole !== 'coach' || setupAccessCode.trim().length > 0)
     );
 
+  if (authMode === 'signup' && signupStep === 'preview') {
+    return <SignupWelcome
+      role={signupRole}
+      onSelectRole={setSignupRole}
+      onContinue={() => { setError(null); setSignupStep('details'); }}
+      onSignIn={() => { setError(null); setAuthMode('login'); }}
+    />;
+  }
+
   return (
     <View style={styles.screen}>
       <SafeAreaView style={styles.safeArea}>
@@ -322,6 +353,9 @@ export default function LoginScreen() {
             contentContainerStyle={styles.scrollContent}
           >
             <View style={styles.authPane}>
+            {authMode === 'signup' ? <Pressable accessibilityRole="button" accessibilityLabel="Back to account types" onPress={backToPaths} style={styles.backToPaths}>
+              <Text style={styles.backToPathsText}>←  Your path</Text>
+            </Pressable> : null}
             <View style={styles.brandBlock}>
               <Image
                 source={require('../assets/images/16:9.png')}
@@ -333,7 +367,7 @@ export default function LoginScreen() {
             <View style={styles.header}>
               <Text typographyRole="pageTitle" style={styles.title}>{authMode === 'signup' ? 'Create account' : 'Welcome back'}</Text>
               <Text typographyRole="supportingBody" style={styles.headerSubtitle}>
-                {authMode === 'signup' ? 'Build your training space.' : 'Return to the work.'}
+                {authMode === 'signup' ? `Your ${SIGNUP_PATHS[signupRole].label} journey starts here.` : 'Return to the work.'}
               </Text>
             </View>
 
@@ -358,41 +392,14 @@ export default function LoginScreen() {
 
               {authMode === 'signup' ? (
                 <>
-                  <View style={styles.setupPanel}>
-                    <Text style={styles.setupTitle}>Choose account type</Text>
-                    <View style={styles.roleGrid}>
-                      <Pressable
-                        style={[styles.roleOption, signupRole === 'athlete' && styles.roleOptionActive]}
-                        onPress={() => setSignupRole('athlete')}
-                      >
-                        <Text style={[styles.roleOptionText, signupRole === 'athlete' && styles.roleOptionTextActive]}>
-                          Athlete
-                        </Text>
-                      </Pressable>
-                      <Pressable
-                        style={[styles.roleOption, signupRole === 'coach' && styles.roleOptionActive]}
-                        onPress={() => setSignupRole('coach')}
-                      >
-                        <Text style={[styles.roleOptionText, signupRole === 'coach' && styles.roleOptionTextActive]}>
-                          Coach
-                        </Text>
-                      </Pressable>
-                      <Pressable
-                        style={[styles.roleOption, signupRole === 'self_coach' && styles.roleOptionActive]}
-                        onPress={() => setSignupRole('self_coach')}
-                      >
-                        <Text style={[styles.roleOptionText, signupRole === 'self_coach' && styles.roleOptionTextActive]}>
-                          Self-Coach
-                        </Text>
-                      </Pressable>
+                  <View style={styles.chosenPath}>
+                    <View style={styles.chosenPathCopy}>
+                      <Text style={styles.chosenPathLabel}>{SIGNUP_PATHS[signupRole].label}</Text>
+                      <Text style={styles.setupHint}>{SIGNUP_PATHS[signupRole].requirement}</Text>
                     </View>
-                    <Text style={styles.setupHint}>
-                      {signupRole === 'self_coach'
-                        ? 'Self-Coach creates an Individual workspace for your own training.'
-                        : signupRole === 'coach'
-                        ? 'Coach accounts require a Founder Beta Access Code.'
-                        : 'Athlete accounts require a pending coach invite for this email.'}
-                    </Text>
+                    <Pressable accessibilityRole="button" accessibilityLabel="Change account type" onPress={backToPaths} style={styles.changePath}>
+                      <Text style={styles.changePathText}>Change</Text>
+                    </Pressable>
                   </View>
 
                   <View style={styles.nameGrid}>
@@ -641,6 +648,7 @@ export default function LoginScreen() {
                   onPress={() => {
                     setError(null);
                     setPendingOAuth(null);
+                    setSignupStep('preview');
                     setAuthMode(authMode === 'signup' ? 'login' : 'signup');
                   }}
                 >
@@ -760,6 +768,13 @@ const styles = StyleSheet.create({
     color: SLColors.textStrong,
     backgroundColor: SLColors.surfaceInset,
   },
+  backToPaths: { minHeight: 44, alignSelf: 'flex-start', justifyContent: 'center', marginBottom: 8 },
+  backToPathsText: { color: SLColors.accentMuted, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 14 },
+  chosenPath: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingBottom: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderStandard },
+  chosenPathCopy: { flex: 1, gap: 4 },
+  chosenPathLabel: { color: SLColors.accentMuted, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 16 },
+  changePath: { minWidth: 60, minHeight: 44, justifyContent: 'center', alignItems: 'center' },
+  changePathText: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 14 },
   authSubmit: {
     marginTop: 4,
   },
