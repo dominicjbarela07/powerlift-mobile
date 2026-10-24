@@ -76,6 +76,8 @@ async function exerciseLogin(source = read('app/login.tsx')) {
     const component = load(source, r.modules).default;
     const render = () => r.render(component);
     let tree = render();
+    assert.equal(tree.type, 'SignupWelcome', 'Signup must begin with the role experience, including the signed-out entry');
+    tree.props.onSignIn(); tree = render();
     assert.equal(flatten(tree).filter(node => node.type === 'Input').length, 2, 'Existing email sign-in stays available');
     press(tree, 'Sign up').props.onPress(); tree = render();
     assert.equal(tree.type, 'SignupWelcome', 'Signup must begin with the role experience');

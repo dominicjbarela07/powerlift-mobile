@@ -25,13 +25,14 @@ Acceptance:
   actual role-to-form handlers and unchanged registration request requirements.
 - Refresh and verify the final installed live simulator candidate before handoff.
 
-Implemented in canonical DEV. Signup now opens a separate role experience with
+Implemented in canonical DEV. The signed-out entry now opens a separate role experience with
 atmospheric violet material, three accessible role choices, relevant features,
 two manually switched real app captures per role, clear setup expectations and
 a persistent Continue action. Existing example-data screenshot bytes are reused;
 no artwork, native dependency, account authority or registration API changed.
 The details stage carries the selected role and its requirements. Back/change
 keeps the draft. Sign-in/SSO and setup support remain in their existing paths.
+Returning users have a persistent Sign in action at the top of the opening screen.
 
 Actual canonical npm-start visual convergence:
 1. First pass: benefits fell below the opening viewport, the image fade obscured
