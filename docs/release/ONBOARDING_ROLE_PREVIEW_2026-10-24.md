@@ -61,5 +61,27 @@ SSO, Education and support keep their owners. No client access grant or API
 contract changed. No live signup, payment or support notification was performed.
 
 Evidence: `docs/validation/onboarding-role-preview-2026-10-24/`.
-Final installed live candidate verification is pending; this DEV change is not
-an OTA/Production/store publication.
+
+Completed live simulator handoff: installed product source
+`7b317362d1e1c2a97018c13afc24d369a2576970`, clean bundle SHA-256
+`ec3a0068573028026a5cc1c7625ebc47cafd0ebf516aea032c05da953cc35a26`.
+The fresh native disposable SecureStore probe passed read/write/delete and called
+`https://app.strengthledger.fit/health/recognition`: HTTP 200, ready true, backend
+`72e1987fa086ae10ef42b10d0ee373e2b706a7de`. Its API source is unchanged across the
+final entry-default correction. The installed-app handoff guard passed; all 993
+actual native export files match installed bytes. All 998 prior published asset
+entries are preserved. Source-map contents for LoginScreen, SignupWelcome and
+the role definitions match the named checkout's exact source bytes. Temporary
+instrumentation was removed. The unchanged guard's deliberate stale-bundle and
+localhost-receipt rejection evidence is retained in the preceding same-day
+`onboarding-simulator-live-2026-10-24` validation directory.
+
+Observed the final installed native app open directly at the role preview, with
+Self-Coach selected, live services, no account inputs and no error. Left it there
+for owner takeover. Choose a role, use the preview arrow/dots to see both app
+captures, then Continue to the account form. Back/Change returns to the preview.
+The compact simulator was restored to its original text size and shut down.
+
+Product source and evidence are in canonical DEV. This is an owner-requested
+local simulator preview using the retained native shell, not an OTA/Production
+publication or newly certified 3.0 native store binary.
