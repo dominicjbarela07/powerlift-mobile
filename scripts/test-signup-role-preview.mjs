@@ -16,7 +16,7 @@ function load(source, modules) {
   return context.exports;
 }
 const paths = load(read('lib/signup-paths.ts'), {});
-function runtime() {
+function runtime(os = 'android') {
   let states = [];
   const componentStates = new Map(), effects = [], back = new Map();
   let cursor = 0, effectCursor = 0, dismissed = 0;
@@ -40,7 +40,7 @@ function runtime() {
     SLTypography: new Proxy({}, { get: () => ({ fontSize: 14, lineHeight: 20 }) }) };
   const modules = {
     react: React,
-    'react-native': { View: 'View', Pressable: 'Pressable', Image, Platform: { OS: 'android' },
+    'react-native': { View: 'View', Pressable: 'Pressable', Image, Platform: { OS: os },
       StyleSheet: { create: x => x, absoluteFill: {}, hairlineWidth: 0.5 }, Linking: {},
       Keyboard: { dismiss: () => dismissed++ }, useWindowDimensions: () => ({ width: 375, height: 667, fontScale: 2 }),
       BackHandler: { addEventListener: (event, fn) => { back.set(event, fn); return { remove: () => back.delete(event) }; } } },
@@ -52,7 +52,6 @@ function runtime() {
     '@/components/onboarding/SignupWelcome': { SignupWelcome: 'SignupWelcome' },
     '@/components/onboarding/OnboardingProgress': { OnboardingProgress: 'Progress' },
     '@/components/onboarding/OnboardingSupport': { OnboardingSupport: 'Support' },
-    '@/lib/mobile-education-images': { educationImage: name => ({ uri: `example:${name}`, width: 1206, height: 2622 }) },
     '@/lib/signup-paths': paths, '@/lib/onboarding-message': { onboardingMessage: x => x },
     '@/components/ui': { SLButton: 'Button' },
     '../assets/images/16:9.png': {}, '../../assets/images/16:9.png': {},
@@ -70,23 +69,44 @@ const press = (tree, name) => find(tree, node => ['Pressable', 'Button'].include
 
 // Execute the real LoginScreen callbacks, not a duplicate of its transitions.
 async function exerciseLogin(source = read('app/login.tsx')) {
-  for (const role of ['athlete', 'coach', 'self_coach']) {
-    const r = runtime(), requests = [], routes = [], logins = [];
+  for (const os of ['ios', 'android']) for (const role of ['athlete', 'coach', 'self_coach']) {
+    const r = runtime(os), requests = [], routes = [], logins = [];
+    let response = { ok: false, error: 'Example server rejection' };
     r.modules['expo-router'] = { useRouter: () => ({ replace: value => routes.push(value) }) };
     r.modules['@/context/AuthContext'] = { useAuth: () => ({ login: (...args) => logins.push(args) }) };
-    r.modules['@/lib/api'] = { registerMobileRequest: async payload => { requests.push(payload); return { ok: false, error: 'Example server rejection' }; } };
+    r.modules['@/lib/api'] = { registerMobileRequest: async payload => { requests.push(payload); return response; } };
     const component = load(source, r.modules).default;
     const render = () => r.render(component);
     let tree = render();
     assert.equal(tree.type, 'SignupWelcome', 'Signup must begin with the role experience, including the signed-out entry');
     tree.props.onSignIn(); tree = render();
     assert.equal(flatten(tree).filter(node => node.type === 'Input').length, 2, 'Existing email sign-in stays available');
+    const signInPassword = find(tree, node => node.type === 'Input' && node.props.placeholder === 'Password');
+    assert.equal(os === 'ios' ? signInPassword.props.textContentType : signInPassword.props.autoComplete, os === 'ios' ? 'password' : 'current-password');
     press(tree, 'Sign up').props.onPress(); tree = render();
     assert.equal(tree.type, 'SignupWelcome', 'Signup must begin with the role experience');
     assert.equal(flatten(tree).some(node => node.type === 'Input'), false, 'Role preview never mounts account inputs');
-    tree.props.onSelectRole(role); tree = render(); assert.equal(tree.props.role, role); assert.equal(tree.props.stage, 'preview');
-    tree.props.onContinue(); tree = render();
+    tree.props.onSelectRole(role); tree = render();
+    assert.notEqual(tree.type, 'SignupWelcome', 'Role selection must open account creation directly');
+    assert.ok(flatten(tree).some(node => node.type === 'Input'), 'Role selection must open account creation directly');
     assert.ok(text(tree).includes(paths.SIGNUP_PATHS[role].requirement));
+    assert.ok(text(tree).includes(paths.SIGNUP_PATHS[role].description));
+    assert.ok(text(tree).includes('At least 8 characters.'));
+    assert.ok(flatten(tree).some(node => node.type === 'Support'), 'Setup support stays reachable');
+    for (const label of ['First name', 'Last name', 'Email', 'Password', 'Confirm password']) {
+      const field = find(tree, node => node.type === 'Input' && node.props.accessibilityLabel === label);
+      assert.ok(os === 'ios' ? field.props.textContentType && !field.props.autoComplete : field.props.autoComplete && !field.props.textContentType);
+    }
+    for (const label of ['Password', 'Confirm password']) {
+      const field = find(tree, node => node.type === 'Input' && node.props.accessibilityLabel === label);
+      assert.equal(os === 'ios' ? field.props.textContentType : field.props.autoComplete, os === 'ios' ? 'newPassword' : 'new-password');
+      assert.equal(field.props.secureTextEntry, true);
+      assert.equal(field.props.autoCorrect, false); assert.equal(field.props.spellCheck, false);
+    }
+    press(tree, 'Show password').props.onPress(); tree = render();
+    assert.equal(find(tree, node => node.type === 'Input' && node.props.accessibilityLabel === 'Password').props.secureTextEntry, false);
+    assert.equal(find(tree, node => node.type === 'Input' && node.props.accessibilityLabel === 'Confirm password').props.secureTextEntry, true);
+    press(tree, 'Hide password').props.onPress();
     assert.equal(flatten(tree).filter(node => node.type === 'Progress').length, role === 'athlete' ? 0 : 1, 'Athletes do not enter trial steps');
     const submit = () => press(render(), 'Create account and continue');
     assert.equal(submit().props.disabled, true);
@@ -102,8 +122,12 @@ async function exerciseLogin(source = read('app/login.tsx')) {
       set('Access code', 'FICTIONAL-CODE');
     }
     press(render(), 'Change account type').props.onPress(); tree = render();
-    assert.equal(tree.type, 'SignupWelcome'); assert.equal(tree.props.role, role); assert.equal(tree.props.stage, 'choose');
-    tree.props.onSelectRole(role); tree = render(); tree.props.onContinue(); tree = render();
+    assert.equal(tree.type, 'SignupWelcome');
+    const alternate = role === 'coach' ? 'athlete' : 'coach';
+    tree.props.onSelectRole(alternate); tree = render();
+    assert.ok(text(tree).includes(paths.SIGNUP_PATHS[alternate].requirement));
+    press(tree, 'Choose another account type').props.onPress(); tree = render();
+    tree.props.onSelectRole(role); tree = render();
     assert.equal(find(tree, node => node.type === 'Input' && node.props.placeholder === 'Alex').props.value, 'Example');
     assert.equal(find(tree, node => node.type === 'Input' && node.props.placeholder === 'you@example.com').props.value, 'example@onboarding.test');
     assert.equal(find(tree, node => node.type === 'Input' && node.props.placeholder === 'Password').props.value, 'fictional-password');
@@ -112,22 +136,25 @@ async function exerciseLogin(source = read('app/login.tsx')) {
     assert.equal(requests[0].role, role); assert.equal(requests[0].email, 'example@onboarding.test');
     assert.equal(requests[0].access_code, role === 'coach' ? 'FICTIONAL-CODE' : undefined);
     assert.equal(routes.length, 0); assert.equal(logins.length, 0, 'Presentation must not grant access after server rejection');
+    response = { ok: true, token: 'fictional-token', role: role === 'athlete' ? 'athlete' : 'coach', email: 'example@onboarding.test', account_state: 'EMAIL_VERIFICATION_REQUIRED', email_verified: false, verification_required: true, can_access_product: false };
+    await submit().props.onPress();
+    assert.equal(logins.length, 1); assert.equal(logins[0][0].user.account_state, 'EMAIL_VERIFICATION_REQUIRED');
+    assert.equal(logins[0][0].user.can_access_product, false);
+    assert.deepEqual(routes, ['/'], 'Successful registration must return to the canonical account-state resolver');
     assert.equal(find(render(), node => node.type === 'Input' && node.props.placeholder === 'you@example.com').props.value, 'example@onboarding.test', 'Retry preserves draft');
     assert.equal(r.back.get('hardwareBackPress')(), true); tree = render();
-    assert.equal(tree.type, 'SignupWelcome'); assert.equal(tree.props.stage, 'preview'); assert.ok(r.dismissed() > 0);
-    assert.equal(r.back.get('hardwareBackPress')(), true); tree = render(); assert.equal(tree.props.stage, 'choose');
+    assert.equal(tree.type, 'SignupWelcome'); assert.ok(r.dismissed() > 0);
     assert.equal(r.back.get('hardwareBackPress')(), true); tree = render();
     assert.notEqual(tree.type, 'SignupWelcome', 'Android back returns to sign-in');
   }
 }
 await exerciseLogin();
 
-// Exercise the actual sparse opening, role previews and image-error handlers.
+// Execute the actual role controls and backdrop recovery. No capture dependency is mocked.
 function exerciseWelcome(source = read('components/onboarding/SignupWelcome.tsx')) {
- for (const role of ['athlete', 'coach', 'self_coach']) {
-  const r = runtime(), selected = [], continued = [], signedIn = [], returned = [];
+  const r = runtime(), selected = [], signedIn = [];
   const component = load(source, r.modules).SignupWelcome;
-  const props = { role, stage: 'choose', onSelectRole: value => selected.push(value), onContinue: () => continued.push(role), onSignIn: () => signedIn.push(true), onBack: () => returned.push(true) };
+  const props = { onSelectRole: value => selected.push(value), onSignIn: () => signedIn.push(true) };
   let tree = r.render(component, props);
   const choices = flatten(tree).filter(node => ['Athlete', 'Coach', 'Self-Coach'].includes(node.props?.accessibilityLabel));
   assert.equal(choices.length, 3);
@@ -137,33 +164,26 @@ function exerciseWelcome(source = read('components/onboarding/SignupWelcome.tsx'
     choice.props.onPress();
   }
   assert.deepEqual(selected, ['athlete', 'coach', 'self_coach']);
-  assert.equal(flatten(tree).some(node => typeof node.type === 'function' && node.type.name === 'ScreenshotPreview'), false, 'The opening must keep app screenshots on the next screen');
-  assert.equal(paths.SIGNUP_PATHS[role].features.some(feature => text(tree).includes(feature)), false, 'The opening must not restore the busy feature grid');
+  assert.equal(flatten(tree).filter(node => node.type === r.modules['react-native'].Image).length, 2, 'Only brand and backdrop images belong in signup');
+  assert.equal(flatten(tree).some(node => typeof node.type === 'function' && /preview|gallery/i.test(node.type.name)), false, 'Signup must not restore a screenshot gallery');
   assert.ok(find(tree, node => node.props?.accessibilityRole === 'header').props.maxFontSizeMultiplier <= 1.4, 'The decorative headline must not crowd out the role choices at accessibility text sizes');
   const photo = find(tree, node => node.props?.source === 'gym-photo');
-  assert.equal(photo.props.resizeMode, 'contain', 'The opening must preserve the loaded barbell rather than crop away its sleeve');
-  assert.equal(Object.assign({}, ...photo.props.style).height, 375 * 1.5, 'The native image frame must have an explicit height rather than inherit the original pixel height');
+  assert.equal(photo.props.resizeMode, 'contain', 'Preserve the loaded barbell rather than crop away its sleeve');
+  assert.equal(Object.assign({}, ...photo.props.style).height, 375 * 1.5, 'The native image frame must have an explicit height');
   photo.props.onError(); tree = r.render(component, props);
   assert.equal(flatten(tree).filter(node => ['Athlete', 'Coach', 'Self-Coach'].includes(node.props?.accessibilityLabel)).length, 3, 'A failed backdrop never blocks role selection');
   press(tree, 'Sign in').props.onPress(); assert.equal(signedIn.length, 1);
-  tree = r.render(component, { ...props, stage: 'preview' });
-  press(tree, `Continue as ${paths.SIGNUP_PATHS[role].label}`).props.onPress(); assert.equal(continued.length, 1);
-  press(tree, 'Choose another path').props.onPress(); assert.equal(returned.length, 1);
-  const preview = find(tree, node => typeof node.type === 'function' && node.type.name === 'ScreenshotPreview');
-  const screen = () => r.render(preview.type, preview.props);
-  let gallery = screen();
-  assert.ok(text(gallery).includes(paths.SIGNUP_PATHS[role].captures[0].label));
-  press(gallery, 'Next app preview. 1 of 2').props.onPress(); gallery = screen();
-  assert.ok(text(gallery).includes(paths.SIGNUP_PATHS[role].captures[1].label));
-  find(gallery, node => typeof node.props?.onError === 'function').props.onError(); gallery = screen();
-  assert.ok(text(gallery).includes('You can still continue with setup'), 'Failed preview must not block registration');
- }
 }
 exerciseWelcome();
-const broken = read('app/login.tsx').replace("authMode === 'signup' && signupStep !== 'details'", "false /* reproduce form-first signup */");
-assert.notEqual(broken, read('app/login.tsx'));
+const loginSource = read('app/login.tsx');
+const broken = loginSource.replace("authMode === 'signup' && signupStep === 'choose'", "false /* reproduce form-first signup */");
+assert.notEqual(broken, loginSource);
 await assert.rejects(exerciseLogin(broken), /Signup must begin with the role experience/);
-const busy = read('components/onboarding/SignupWelcome.tsx').replace('<View style={styles.choiceBody}>', '<View style={styles.choiceBody}><ScreenshotPreview role={role} />');
-assert.notEqual(busy, read('components/onboarding/SignupWelcome.tsx'));
-assert.throws(() => exerciseWelcome(busy), /opening must keep app screenshots on the next screen/);
-console.log('PASS: sparse photographic opening, all three choose/preview/form handlers, drafts, registration requirements/payloads, rejected request, Android back, image failure and previews. Deliberate form-first and busy-opening regressions rejected.');
+const blocked = loginSource.replace("setSignupRole(role); setSignupStep('details');", "setSignupRole(role); /* reproduce extra role interstitial */");
+assert.notEqual(blocked, loginSource);
+await assert.rejects(exerciseLogin(blocked), /Role selection must open account creation directly/);
+const welcomeSource = read('components/onboarding/SignupWelcome.tsx');
+const busy = welcomeSource.replace('<View style={styles.choiceBody}>', '<View style={styles.choiceBody}><Image source="example-app-screenshot" />');
+assert.notEqual(busy, welcomeSource);
+assert.throws(() => exerciseWelcome(busy), /Only brand and backdrop images belong in signup/);
+console.log('PASS: all three direct role/account handlers on iOS and Android; role changes/drafts, admission/payloads, rejected request/retry/support, sign-in, native autofill/password controls, back and failed backdrop. Deliberate form-first, extra interstitial and screenshot regressions rejected.');

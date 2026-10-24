@@ -1,0 +1,1 @@
+PASS: all three direct role/account handlers on iOS and Android; role changes/drafts, admission/payloads, rejected request/retry/support, sign-in, native autofill/password controls, back and failed backdrop. Deliberate form-first, extra interstitial and screenshot regressions rejected.

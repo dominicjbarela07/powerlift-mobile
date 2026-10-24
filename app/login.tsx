@@ -44,7 +44,7 @@ export default function LoginScreen() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [authMode, setAuthMode] = useState<AuthMode>('signup');
-  const [signupStep, setSignupStep] = useState<'choose' | 'preview' | 'details'>('choose');
+  const [signupStep, setSignupStep] = useState<'choose' | 'details'>('choose');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -85,8 +85,7 @@ export default function LoginScreen() {
       if (loading) return true;
       Keyboard.dismiss();
       setError(null);
-      if (signupStep === 'details') setSignupStep('preview');
-      else if (signupStep === 'preview') setSignupStep('choose');
+      if (signupStep === 'details') setSignupStep('choose');
       else setAuthMode('login');
       return true;
     });
@@ -332,13 +331,9 @@ export default function LoginScreen() {
       (signupRole !== 'coach' || setupAccessCode.trim().length > 0)
     );
 
-  if (authMode === 'signup' && signupStep !== 'details') {
+  if (authMode === 'signup' && signupStep === 'choose') {
     return <SignupWelcome
-      role={signupRole}
-      stage={signupStep}
-      onBack={() => setSignupStep('choose')}
-      onSelectRole={role => { setSignupRole(role); setSignupStep('preview'); }}
-      onContinue={() => { setError(null); setSignupStep('details'); }}
+      onSelectRole={role => { setError(null); setSignupRole(role); setSignupStep('details'); }}
       onSignIn={() => { setError(null); setAuthMode('login'); }}
     />;
   }
@@ -353,28 +348,30 @@ export default function LoginScreen() {
           <ScrollView
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={[styles.scrollContent, authMode === 'signup' && styles.signupContent]}
           >
-            <View style={styles.authPane}>
-            {authMode === 'signup' ? <Pressable accessibilityRole="button" accessibilityLabel="Back to app preview" onPress={() => { Keyboard.dismiss(); setError(null); setSignupStep('preview'); }} style={styles.backToPaths}>
-              <Text style={styles.backToPathsText}>←  Your path</Text>
-            </Pressable> : null}
-            <View style={styles.brandBlock}>
+            <View style={[styles.authPane, authMode === 'signup' && styles.signupPane]}>
+            {authMode === 'signup' ? <View style={styles.signupNavigation}>
+              <Pressable accessibilityRole="button" accessibilityLabel="Choose another account type" onPress={backToPaths} style={styles.backToPaths}>
+                <Text style={styles.backToPathsText}>←  Back</Text>
+              </Pressable>
+              <Image accessible accessibilityLabel="Strength Ledger" source={require('../assets/images/16:9.png')} resizeMode="contain" style={styles.signupLogo} />
+            </View> : <View style={styles.brandBlock}>
               <Image
                 source={require('../assets/images/16:9.png')}
                 style={styles.logo}
                 resizeMode="contain"
               />
-            </View>
+            </View>}
 
             <View style={styles.header}>
               <Text typographyRole="pageTitle" style={styles.title}>{authMode === 'signup' ? 'Create account' : 'Welcome back'}</Text>
               <Text typographyRole="supportingBody" style={styles.headerSubtitle}>
-                {authMode === 'signup' ? `Your ${SIGNUP_PATHS[signupRole].label} journey starts here.` : 'Return to the work.'}
+                {authMode === 'signup' ? SIGNUP_PATHS[signupRole].description : 'Return to the work.'}
               </Text>
             </View>
 
-            <View style={styles.form}>
+            <View style={[styles.form, authMode === 'signup' && styles.signupForm]}>
               {authMode === 'signup' && signupRole !== 'athlete' ? <OnboardingProgress step={1} /> : null}
               {authMode === 'login' && SsoButtons ? (
                 <>
@@ -396,13 +393,13 @@ export default function LoginScreen() {
               {authMode === 'signup' ? (
                 <>
                   <View style={styles.chosenPath}>
-                    <View style={styles.chosenPathCopy}>
+                    <View style={styles.chosenPathHeader}>
                       <Text style={styles.chosenPathLabel}>{SIGNUP_PATHS[signupRole].label}</Text>
-                      <Text style={styles.setupHint}>{SIGNUP_PATHS[signupRole].requirement}</Text>
+                      <Pressable accessibilityRole="button" accessibilityLabel="Change account type" onPress={backToPaths} style={styles.changePath}>
+                        <Text style={styles.changePathText}>Change</Text>
+                      </Pressable>
                     </View>
-                    <Pressable accessibilityRole="button" accessibilityLabel="Change account type" onPress={backToPaths} style={styles.changePath}>
-                      <Text style={styles.changePathText}>Change</Text>
-                    </Pressable>
+                    <Text style={styles.setupHint}>{SIGNUP_PATHS[signupRole].requirement}</Text>
                   </View>
 
                   <View style={styles.nameGrid}>
@@ -411,7 +408,8 @@ export default function LoginScreen() {
                       <TextInput
                         style={styles.input}
                         autoCapitalize="words"
-                        textContentType="givenName"
+                        {...(Platform.OS === 'ios' ? { textContentType: 'givenName' as const } : { autoComplete: 'given-name' as const })}
+                        accessibilityLabel="First name"
                         placeholder="Alex"
                         placeholderTextColor="rgba(184, 172, 161, 0.48)"
                         value={firstName}
@@ -423,7 +421,8 @@ export default function LoginScreen() {
                       <TextInput
                         style={styles.input}
                         autoCapitalize="words"
-                        textContentType="familyName"
+                        {...(Platform.OS === 'ios' ? { textContentType: 'familyName' as const } : { autoComplete: 'family-name' as const })}
+                        accessibilityLabel="Last name"
                         placeholder="Carter"
                         placeholderTextColor="rgba(184, 172, 161, 0.48)"
                         value={lastName}
@@ -441,7 +440,8 @@ export default function LoginScreen() {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  textContentType="emailAddress"
+                  {...(Platform.OS === 'ios' ? { textContentType: 'emailAddress' as const } : { autoComplete: 'email' as const })}
+                  accessibilityLabel="Email"
                   placeholder="you@example.com"
                   placeholderTextColor="rgba(184, 172, 161, 0.48)"
                   value={email}
@@ -455,6 +455,8 @@ export default function LoginScreen() {
                   <TextInput
                     style={styles.input}
                     autoCapitalize="characters"
+                    autoCorrect={false}
+                    accessibilityLabel="Founder beta access code"
                     placeholder="Access code"
                     placeholderTextColor="rgba(184, 172, 161, 0.48)"
                     value={setupAccessCode}
@@ -469,7 +471,13 @@ export default function LoginScreen() {
                   <TextInput
                     style={[styles.input, styles.passwordInput]}
                     secureTextEntry={!showPassword}
-                    textContentType="password"
+                    {...(Platform.OS === 'ios'
+                      ? { textContentType: authMode === 'signup' ? 'newPassword' as const : 'password' as const }
+                      : { autoComplete: authMode === 'signup' ? 'new-password' as const : 'current-password' as const })}
+                    accessibilityLabel="Password"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    spellCheck={false}
                     placeholder="Password"
                     placeholderTextColor="rgba(184, 172, 161, 0.48)"
                     value={password}
@@ -477,6 +485,8 @@ export default function LoginScreen() {
                   />
                   <Pressable
                     style={styles.eyeToggle}
+                    accessibilityRole="button"
+                    accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
                     onPress={() => setShowPassword(v => !v)}
                     hitSlop={10}
                   >
@@ -485,6 +495,7 @@ export default function LoginScreen() {
                     </Text>
                   </Pressable>
                 </View>
+                {authMode === 'signup' ? <Text style={styles.setupHint}>At least 8 characters.</Text> : null}
               </View>
 
               {authMode === 'signup' ? (
@@ -494,7 +505,11 @@ export default function LoginScreen() {
                     <TextInput
                       style={[styles.input, styles.passwordInput]}
                       secureTextEntry={!showConfirmPassword}
-                      textContentType="password"
+                      {...(Platform.OS === 'ios' ? { textContentType: 'newPassword' as const } : { autoComplete: 'new-password' as const })}
+                      accessibilityLabel="Confirm password"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      spellCheck={false}
                       placeholder="Confirm password"
                       placeholderTextColor="rgba(184, 172, 161, 0.48)"
                       value={confirmPassword}
@@ -502,6 +517,8 @@ export default function LoginScreen() {
                     />
                     <Pressable
                       style={styles.eyeToggle}
+                      accessibilityRole="button"
+                      accessibilityLabel={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                       onPress={() => setShowConfirmPassword(v => !v)}
                       hitSlop={10}
                     >
@@ -588,7 +605,8 @@ export default function LoginScreen() {
                       <TextInput
                         style={styles.input}
                         autoCapitalize="words"
-                        textContentType="givenName"
+                        {...(Platform.OS === 'ios' ? { textContentType: 'givenName' as const } : { autoComplete: 'given-name' as const })}
+                        accessibilityLabel="First name"
                         placeholder="Alex"
                         placeholderTextColor="rgba(184, 172, 161, 0.48)"
                         value={setupFirstName}
@@ -600,7 +618,8 @@ export default function LoginScreen() {
                       <TextInput
                         style={styles.input}
                         autoCapitalize="words"
-                        textContentType="familyName"
+                        {...(Platform.OS === 'ios' ? { textContentType: 'familyName' as const } : { autoComplete: 'family-name' as const })}
+                        accessibilityLabel="Last name"
                         placeholder="Carter"
                         placeholderTextColor="rgba(184, 172, 161, 0.48)"
                         value={setupLastName}
@@ -691,6 +710,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingHorizontal: 16,
   },
+  signupContent: { justifyContent: 'flex-start', paddingTop: 8 },
+  signupPane: { paddingHorizontal: 24 },
+  signupNavigation: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 18 },
+  signupLogo: { width: 126, height: 32 },
+  signupForm: { padding: 0, borderWidth: 0, backgroundColor: 'transparent' },
   brandBlock: {
     alignItems: 'center',
     marginBottom: 22,
@@ -771,11 +795,11 @@ const styles = StyleSheet.create({
     color: SLColors.textStrong,
     backgroundColor: SLColors.surfaceInset,
   },
-  backToPaths: { minHeight: 44, alignSelf: 'flex-start', justifyContent: 'center', marginBottom: 8 },
+  backToPaths: { minHeight: 44, justifyContent: 'center', flexShrink: 1 },
   backToPathsText: { color: SLColors.accentMuted, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 14 },
-  chosenPath: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingBottom: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderStandard },
-  chosenPathCopy: { flex: 1, gap: 4 },
-  chosenPathLabel: { color: SLColors.accentMuted, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 16 },
+  chosenPath: { gap: 4, paddingBottom: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderStandard },
+  chosenPathHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  chosenPathLabel: { flexShrink: 1, color: SLColors.accentMuted, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 16 },
   changePath: { minWidth: 60, minHeight: 44, justifyContent: 'center', alignItems: 'center' },
   changePathText: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 14 },
   authSubmit: {

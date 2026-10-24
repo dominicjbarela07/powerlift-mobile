@@ -1,0 +1,3 @@
+{"noForcedClose":true,"callback":true,"updateBlockerReleased":true}
+Cancel, dismiss and presentation failure release the update blocker.
+PASS: deliberate forced-dismiss regression rejected; success, cancel, dismiss and presentation failure preserve native checkout recovery.

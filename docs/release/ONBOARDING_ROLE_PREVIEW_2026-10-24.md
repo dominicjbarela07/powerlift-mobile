@@ -1,6 +1,86 @@
 # Role-first onboarding — October 24, 2026
 
-## Owner visual correction — current direction
+## Published guidance — latest owner instruction
+
+The owner requested research into established app onboarding instead of invented
+flows. Apply the relevant published recommendations to the rejected screenshot
+flow, preserving all established account/access rules. Research reviewed October
+24, 2026; these are design recommendations, not a universal mandatory sequence.
+
+| Primary source | Relevant guidance | Strength Ledger application |
+| --- | --- | --- |
+| [Apple HIG: Onboarding](https://developer.apple.com/design/human-interface-guidelines/onboarding) | Keep prerequisites brief; prefer interaction and contextual teaching. | Remove the compulsory preview. Existing role-aware Education remains contextual and replayable after admission. |
+| [Material Design 2: Onboarding](https://m2.material.io/design/communication/onboarding.html) | Keep meaningful self-selection short; do not combine self-selection with a benefits carousel. This is published M2 guidance, not a new M3 requirement. | Keep the three consequential role choices on one screen; role selection opens account creation immediately. |
+| [NN/g: Mobile-App Onboarding](https://www.nngroup.com/articles/mobile-app-onboarding/) | Avoid introductory card tutorials; minimize setup and teach unfamiliar tasks in context. | No screenshot gallery, feature grid or extra Continue screen. |
+| [GOV.UK: Create accounts](https://design-system.service.gov.uk/patterns/create-accounts/) | Explain the task clearly and avoid distracting account-creation content. | One short role benefit, accurate eligibility and a focused account form. Accounts remain necessary for private training data. |
+| [GOV.UK: Password input](https://design-system.service.gov.uk/components/password-input/) | Support password managers, show/hide, paste and correct creation/login autofill semantics. | Correct native semantic hints, explicit field/toggle labels, no correction/spellcheck of passwords. Existing confirmation remains because the registration contract requires it; removing it is outside this presentation correction. |
+| [React Native: TextInput](https://reactnative.dev/docs/textinput) | Native semantic hints differ by platform; avoid conflicting autofill properties. | iOS textContentType; Android autoComplete, without supplying both. |
+
+Acceptance: direct role → account callbacks for all three roles; no onboarding
+screenshot dependency; no draft loss on Back/Change; existing invite, beta-code,
+password, backend rejection, sign-in, SSO, verification, trial and support recovery
+remain intact. Verify actual callbacks and deliberate regressions, TypeScript,
+affected keyboard behavior, actual canonical DEV visual convergence, and refreshed
+native live-backend proof. Delivery remains canonical DEV and the local simulator;
+no new Production/OTA/store release. Do not claim conversion or trust improvements
+as measured: those require usability testing and production funnel evidence.
+
+## Screenshot rejection — latest owner direction
+
+The owner explicitly rejected screenshots as an eyesore that adds nothing to the
+signup flow. This supersedes the earlier request to display screenshots and the
+intermediate preview stage. Remove that stage entirely. Keep the photographic
+role entrance. A role tap opens its account form directly, with one concise
+role-specific benefit sentence and accurate admission requirements. Back/Change
+returns to roles without losing the draft. Preserve sign-in, SSO, registration,
+verification, trial/support recovery and backend access authority.
+
+Delivery: canonical DEV and refreshed live-connected iPhone Air preview. No
+Production/OTA/store publication. Preserve screenshot files and Education uses
+on disk; remove only their onboarding consumption. Validate actual direct role
+handlers, role changes/drafts, admission, back navigation and regression controls;
+inspect actual revised forms and refresh native handoff verification.
+Status: implementing the direct role → account path.
+
+## Standards correction — implementation and validation
+
+Implemented direct role → account creation in canonical DEV. Removed the gallery
+component and its Education image dependency, preview stage and unused capture
+metadata. Original screenshots and Education consumers remain intact. The photo
+entrance is unchanged; no new decorative style or imagery was introduced.
+Account forms now use a compact Back/brand row, full-width eligibility copy and
+unboxed fields, with the password minimum visible before typing. Added native
+name/email/password autofill hints and distinct accessible password controls.
+Confirmation remains an explicit retained API/product constraint; this is not a
+claim of perfect adherence to every general recommendation.
+
+Actual source callback checks passed for all three roles on iOS and Android:
+direct account entry; alternate role/back changes retaining drafts; coach code
+and password admission; rejected submission/retry; successful unverified signup
+passing backend state to AuthContext and the canonical resolver; support presence;
+native autofill hints, independent show/hide and back navigation. Deliberate
+form-first, extra-interstitial and screenshot reintroduction failures were rejected.
+TypeScript, keyboard geometry/event/consumer checks, existing checkout recovery
+including forced-dismiss rejection, and canonical fresh-login identity passed.
+
+Canonical npm-start visual convergence: first pass exposed oversized brand space,
+nested form framing and cramped eligibility copy. Refined all three; inspected
+the second pass, all three direct role forms and retained draft after Coach →
+Self-Coach. Compact iPhone SE normal and accessibility-large were inspected;
+eligibility now uses the full width and scrolling reaches password, confirmation,
+submit, help and sign-in. Restored compact text size and shut down that fixture.
+Evidence: `docs/validation/onboarding-standards-2026-10-24/`.
+
+State machine touched: signed-out signup presentation (choose/details), semantic
+input configuration and Back/Change. Adjacent systems: sign-in/SSO setup,
+registration, verification, billing admission, Auth bootstrap, keyboard, Education
+and support. No identity/entitlement/billing writer changed. Verification resend,
+email correction, checkout terms/return/status recovery and support fallback were
+reviewed in source and retained. No live signup, purchase or support submission was
+performed; source review and fixture tests do not prove customer email/card delivery.
+The native simulator refresh and live-service receipt follow below.
+
+## Owner visual correction — superseded preview design
 
 The owner rejected the first delivered atmosphere as unrelated to strength and
 too busy. This supersedes the violet rings/auras and the dense all-in-one role,

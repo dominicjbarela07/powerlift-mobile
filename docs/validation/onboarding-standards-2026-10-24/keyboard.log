@@ -1,0 +1,7 @@
+(node:16857) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/lib/keyboard-layout.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/dominic/powerlifting_app_dev/powerlift_mobile/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Keyboard visibility: 36 device/frame geometries; actual focus transitions, refs/events, multiline caps, modal/sheet/navigation ownership and 264 consumer import contracts PASS
+Actual keyboard event store: iOS frame changes, Android did-show/hide, orientation reconciliation, background/foreground and late events PASS
+Messages composer: floating-dock clearance, keyboard-open compact spacing, complete action row and workspace consumption PASS
