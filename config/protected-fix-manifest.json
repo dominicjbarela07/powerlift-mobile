@@ -1371,6 +1371,14 @@
             }
           ]
         }
+      },
+      {
+        "path": "package.json",
+        "sourceCommit": "afa5605b4ffc99ac80409e9ed72cb32689e9b2cc",
+        "blob": "801b26d467dd9a6bbe31d6d8e17125cca9a6102f",
+        "devSha256": "8ac83663c5e8eff9959e9795a5ca63febb2819601a58592d8bdf092df11449da",
+        "candidateSha256": "ee2c0a8bd23d534101ab1f082ab5575dd3aab3729a370765d0cfc121a5c382a7",
+        "reason": "The DEV-only signup-role-preview command belongs to the held onboarding design. Preserve the exact published package/scripts/native dependency boundary and original enforcement pin."
       }
     ]
   }
