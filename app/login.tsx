@@ -382,11 +382,6 @@ export default function LoginScreen() {
                     onOAuthResult={handleOAuthResponse}
                     onError={setError}
                   />
-                  <View style={styles.emailDivider}>
-                    <View style={styles.emailDividerLine} />
-                    <Text style={styles.emailDividerText}>or continue with email</Text>
-                    <View style={styles.emailDividerLine} />
-                  </View>
                 </>
               ) : null}
 
@@ -746,24 +741,6 @@ const styles = StyleSheet.create({
     borderColor: SLColors.borderSubtle,
     borderRadius: SLRadius.radiusCard,
     backgroundColor: SLColors.surfaceInset,
-  },
-  emailDivider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginVertical: 2,
-  },
-  emailDividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: 'rgba(222, 198, 166, 0.10)',
-  },
-  emailDividerText: {
-    fontFamily: SLFontFamilies.sansMedium,
-    fontSize: SLTypography.micro.fontSize,
-    color: SLColors.textSubtle,
-    textTransform: 'uppercase',
-    letterSpacing: 0.3,
   },
   field: {
     gap: 7,

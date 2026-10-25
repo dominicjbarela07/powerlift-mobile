@@ -23,7 +23,16 @@ export function assertReviewedPublicationSource(root, state, files) {
   const scope = state.reviewedPublication;
   if (!scope) return;
   assertProgressionEvidence(root, scope);
-  for (const [file, expected] of Object.entries(scope.requiredFiles)) assert.equal(files[file], expected, `reviewed cumulative state disappeared or changed: ${file}`);
+  for (const [file, expected] of Object.entries(scope.requiredFiles)) {
+    if (files[file] === expected) continue;
+    // Keep the original required pin. A later owner-directed change must prove
+    // every byte from that exact original source, using the normal patch gate.
+    const row = scope.sourceProgressions.find(row => row.path === file && row.before === expected && row.after === files[file]);
+    assert.ok(row, `reviewed cumulative state disappeared or changed: ${file}`);
+    const before = execFileSync('git', ['show', `${row.sourceCommit}:${file}`], {cwd: root, maxBuffer: 32 * 1024 * 1024});
+    assert.equal(hash(before), expected, `required progression must begin at the original pin: ${file}`);
+    assertExactReleaseProgression(root, state, file, before, fs.readFileSync(path.join(root, file)));
+  }
   for (const file of new Set(scope.sourceProgressions.map(row => row.path))) {
     const rows = scope.sourceProgressions.filter(row => row.path === file && row.after === files[file]);
     assert.ok(rows.length, `unreviewed cumulative source: ${file}`);

@@ -1,0 +1,7 @@
+Continue with Apple: the following owner correction supersedes the repair request.
+
+Don't fix it, just so I can get rid of it. We're just gonna stick with email verification for now. Just make sure that it doesn't show anywhere anymore on production.
+
+Preserve canonical identities, email/password, verification, recovery and existing Google behavior. Production means web and the active mobile 3.0 runtime. No native build or native graph change. Retain the separately requested DEV onboarding design; publish only Apple retirement on the verified cumulative release source.
+
+Earlier owner DEV onboarding direction: The athlete, coach, self-coach selection should be the first thing they see, not with the forms.

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
 import { FontAwesome } from '@expo/vector-icons';
@@ -12,7 +12,6 @@ import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/th
 WebBrowser.maybeCompleteAuthSession();
 
 type OAuthProvider = 'google' | 'apple';
-type AppleAuthenticationModule = typeof import('expo-apple-authentication');
 
 type Props = {
   disabled?: boolean;
@@ -107,9 +106,6 @@ export default function AuthSsoButtons({
   onOAuthResult,
   onError,
 }: Props) {
-  const [appleAvailable, setAppleAvailable] = useState(false);
-  const [appleAuth, setAppleAuth] = useState<AppleAuthenticationModule | null>(null);
-
   const googleClientIds = useMemo(() => ({
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
@@ -122,63 +118,7 @@ export default function AuthSsoButtons({
       ? !!(googleClientIds.androidClientId || googleClientIds.webClientId)
       : !!googleClientIds.webClientId;
 
-  useEffect(() => {
-    let mounted = true;
-    import('expo-apple-authentication')
-      .then(async (module) => {
-        const available = await module.isAvailableAsync();
-        if (mounted) {
-          setAppleAuth(module);
-          setAppleAvailable(available);
-        }
-      })
-      .catch(() => {
-        if (mounted) {
-          setAppleAuth(null);
-          setAppleAvailable(false);
-        }
-      });
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const handleAppleSignIn = async () => {
-    if (!appleAvailable || !appleAuth) {
-      onError('Apple sign-in is not available on this device.');
-      return;
-    }
-
-    onError(null);
-    setOauthLoading('apple');
-    try {
-      const credential = await appleAuth.signInAsync({
-        requestedScopes: [
-          appleAuth.AppleAuthenticationScope.FULL_NAME,
-          appleAuth.AppleAuthenticationScope.EMAIL,
-        ],
-      });
-      const idToken = credential.identityToken;
-      if (!idToken) {
-        onError('Apple did not return an identity token. Please try again.');
-        return;
-      }
-      const res = await mobileOAuthRequest('apple', idToken, {
-        first_name: credential.fullName?.givenName || undefined,
-        last_name: credential.fullName?.familyName || undefined,
-      });
-      await onOAuthResult('apple', idToken, res);
-    } catch (err: any) {
-      if (err?.code !== 'ERR_REQUEST_CANCELED') {
-        console.error('Apple sign-in failed', err);
-        onError('Apple sign-in failed. Please try again.');
-      }
-    } finally {
-      setOauthLoading(null);
-    }
-  };
-
-  if (!googleConfigured && !appleAvailable) {
+  if (!googleConfigured) {
     return null;
   }
 
@@ -195,32 +135,35 @@ export default function AuthSsoButtons({
         />
       ) : null}
 
-      {appleAvailable ? (
-        <Pressable
-          style={({ pressed }) => [
-            styles.ssoButton,
-            styles.ssoButtonApple,
-            pressed && styles.ssoButtonPressed,
-            (disabled || oauthLoading === 'apple') && styles.ssoButtonDisabled,
-          ]}
-          onPress={handleAppleSignIn}
-          disabled={disabled || !!oauthLoading}
-        >
-          {oauthLoading === 'apple' ? (
-            <ActivityIndicator color={SLColors.white} />
-          ) : (
-            <>
-              <FontAwesome name="apple" size={20} color={SLColors.white} />
-              <Text style={styles.ssoTextApple}>Continue with Apple</Text>
-            </>
-          )}
-        </Pressable>
-      ) : null}
+      <View style={styles.emailDivider}>
+        <View style={styles.emailDividerLine} />
+        <Text style={styles.emailDividerText}>or continue with email</Text>
+        <View style={styles.emailDividerLine} />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  emailDivider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginVertical: 2,
+  },
+  emailDividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(222, 198, 166, 0.10)',
+  },
+  emailDividerText: {
+    fontFamily: SLFontFamilies.sansMedium,
+    fontSize: SLTypography.micro.fontSize,
+    color: SLColors.textSubtle,
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
+  },
+
   ssoStack: {
     gap: 10,
   },
@@ -237,10 +180,6 @@ const styles = StyleSheet.create({
     backgroundColor: SLColors.white,
     borderColor: 'rgba(255,255,255,0.72)',
   },
-  ssoButtonApple: {
-    backgroundColor: SLColors.black,
-    borderColor: 'rgba(255,255,255,0.18)',
-  },
   ssoButtonPressed: {
     opacity: 0.9,
     transform: [{ scale: 0.99 }],
@@ -252,10 +191,5 @@ const styles = StyleSheet.create({
     fontFamily: SLFontFamilies.sansSemiBold,
     fontSize: SLTypography.rowTitle.fontSize,
     color: SLColors.surfaceRaised,
-  },
-  ssoTextApple: {
-    fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: SLTypography.rowTitle.fontSize,
-    color: SLColors.white,
   },
 });

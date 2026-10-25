@@ -9,15 +9,19 @@ import { assertWeeklyReportBaseline, assertWeeklyReportDeployment } from './week
 import { assertSessionCopyBackdownBaseline } from './session-copy-backdown-release-scope.mjs';
 import { assertVideoEngineBaseline, verifyVideoEngineDeployment } from './video-engine-release-scope.mjs';
 import { assertOnboardingBaseline, verifyOnboardingDeployment } from './onboarding-release-scope.mjs';
+import { assertAppleRetirementBaseline, verifyAppleRetirementPublication, retirementInstruction } from './apple-retirement-release-scope.mjs';
 import { assertPortableArtworkBaseline } from './approved-artwork-portability-release-scope.mjs';
 
 // Exact source-bound owner validation; never represents visual/device proof.
 export function assertClientFixScope(scope, fingerprint, modifications, ownerText) {
-  assert.ok(['onboarding-reliability-20261023', 'video-engine-20261022', 'approved-artwork-portability-20261021', 'session-copy-backdown-20261018', 'weekly-training-report-20261017', 'canonical-zero-load-edit-20261005', 'canonical-set-save-recovery-20261008', 'canonical-copied-week-identity-20261013', 'athlete-video-archive-access-20261014', 'set-entry-video-preview-20261014', 'canonical-logger-floating-unit-20261014', 'canonical-fixed-equipment-eligibility-20261014', 'mobile-navigation-loading-20261016'].includes(scope?.scope), 'unknown owner client-fix scope');
+  assert.ok(['apple-sign-in-retirement-20261024', 'onboarding-reliability-20261023', 'video-engine-20261022', 'approved-artwork-portability-20261021', 'session-copy-backdown-20261018', 'weekly-training-report-20261017', 'canonical-zero-load-edit-20261005', 'canonical-set-save-recovery-20261008', 'canonical-copied-week-identity-20261013', 'athlete-video-archive-access-20261014', 'set-entry-video-preview-20261014', 'canonical-logger-floating-unit-20261014', 'canonical-fixed-equipment-eligibility-20261014', 'mobile-navigation-loading-20261016'].includes(scope?.scope), 'unknown owner client-fix scope');
   assert.equal(scope.productFingerprint, fingerprint, 'client-fix validation cannot cover changed product source');
   assert.equal(scope.validation, 'OWNER_DIRECTED_CONTRACTS_ONLY');
   assert.ok(ownerText.includes(scope.ownerInstruction), 'exact current owner task is required');
-  if (scope.scope === 'onboarding-reliability-20261023') {
+  if (scope.scope === 'apple-sign-in-retirement-20261024') {
+    assert.equal(scope.ownerInstruction, retirementInstruction);
+    assert.ok(ownerText.includes('Continue with Apple') && ownerText.includes('supersedes'), 'Retain the exact Apple removal correction');
+  } else if (scope.scope === 'onboarding-reliability-20261023') {
     assert.equal(scope.ownerInstruction, 'Yes — release onboarding and configure Stripe');
     assert.ok(ownerText.includes('Production and mobile 3.0') && ownerText.includes('webhook') && ownerText.includes('onboarding'), 'Retain exact approved onboarding release question and answer');
   } else if (scope.scope === 'video-engine-20261022') {
@@ -49,7 +53,9 @@ export function assertClientFixScope(scope, fingerprint, modifications, ownerTex
   } else assert.ok(ownerText.includes('You will not do simulator runs. Stop talking about it'), 'validation restriction requires the exact owner instruction');
   assert.deepEqual(modifications.map(row => row.path).sort(), Object.keys(scope.changedProductFiles).sort(), 'client-fix scope cannot include unrelated changes');
   for (const row of modifications) assert.equal(row.after, scope.changedProductFiles[row.path], 'client-fix source changed');
-  assert.deepEqual(Object.keys(scope.contracts).sort(), scope.scope === 'onboarding-reliability-20261023'
+  assert.deepEqual(Object.keys(scope.contracts).sort(), scope.scope === 'apple-sign-in-retirement-20261024'
+    ? ['scripts/test-apple-retirement-release-scope.mjs', 'scripts/test-apple-sign-in-retirement.mjs', 'scripts/test-onboarding-recovery.mjs']
+    : scope.scope === 'onboarding-reliability-20261023'
     ? ['scripts/test-onboarding-recovery.mjs', 'scripts/test-onboarding-release-scope.mjs']
     : scope.scope === 'video-engine-20261022'
     ? ['scripts/test-video-artifact-cache.mjs', 'scripts/test-video-engine-failure-controls.mjs', 'scripts/test-video-engine-queue.mjs', 'scripts/test-video-engine-release-scope.mjs', 'scripts/test-video-player-recovery.mjs']
@@ -235,7 +241,9 @@ export function runClientFixContracts({root, scope, fingerprint, delta, exportDi
   assert.deepEqual(delta.subtractions, [], 'client fix cannot remove existing product files');
   const evidence = fs.readFileSync(path.join(root, scope.ownerEvidencePath));
   assert.equal(sha(evidence), scope.ownerEvidenceSha256);
-  const modifications = scope.scope === 'onboarding-reliability-20261023'
+  const modifications = scope.scope === 'apple-sign-in-retirement-20261024'
+    ? assertAppleRetirementBaseline({root, scope, state, files})
+    : scope.scope === 'onboarding-reliability-20261023'
     ? assertOnboardingBaseline({root, scope, state, files})
     : scope.scope === 'video-engine-20261022'
     ? assertVideoEngineBaseline({root, scope, state, files})
@@ -304,6 +312,7 @@ export function runClientFixContracts({root, scope, fingerprint, delta, exportDi
     assert.equal(live.source_sha, scope.backendSourceSha, 'identity correction must be live before its mobile publication');
     assert.equal(live.ready, true);
   }
+  if (scope.scope === 'apple-sign-in-retirement-20261024') verifyAppleRetirementPublication({root, scope, state});
   if (scope.scope === 'onboarding-reliability-20261023') verifyOnboardingDeployment({root, scope, state});
   if (scope.scope === 'video-engine-20261022') verifyVideoEngineDeployment({root, scope, state});
   if (scope.scope === 'weekly-training-report-20261017') assertWeeklyReportDeployment({root, scope});
