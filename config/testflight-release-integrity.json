@@ -158985,7 +158985,7 @@
     "scope": "apple-sign-in-retirement-20261024",
     "reason": "Retire Apple discovery and recover old web links to email; existing identities and email verification remain. Only the two auth components and exact release-holdback metadata change.",
     "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
-    "productFingerprint": "16bc97a15fb6d040c1038b921a216cbab933b5badcc2ea112362aa20fa007f77",
+    "productFingerprint": "f6a68ad2de1ec6c62d1860def9246ac7b271b8a58b88a249f4134ef8a61c7bc7",
     "baselineUpdateId": "01a168a9-0425-705f-bf22-b596ed9a283d",
     "baselineSourceSha": "afa5605b4ffc99ac80409e9ed72cb32689e9b2cc",
     "baselineProductFingerprint": "8bc3d5e1a651bc418729451b3b30c81272defc7cc07ae6e6ce2b51348e0a61fd",
