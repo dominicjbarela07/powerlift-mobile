@@ -165799,5 +165799,69 @@
     "providerOriginatedFinancialEventObserved": false,
     "productFingerprint": "8bc3d5e1a651bc418729451b3b30c81272defc7cc07ae6e6ce2b51348e0a61fd",
     "workflowComplete": true
+  },
+  "verifiedProduction3AppleSignInRetirement": {
+    "publication": {
+      "id": "01a1706f-f9a7-71bd-91b4-ba799e88c492",
+      "group": "40ccf2fa-4d5a-4d21-ae91-26edf9cea012",
+      "gitCommitHash": "9e8e283e080f14d02086ca339e3cd3a85c123eee",
+      "manifestId": "01a1706f-f9a7-71bd-91b4-ba799e88c492",
+      "servedBundleSha256": "a287ca1a97932ba4944f48eee9af6c02c2736339c4ec02e49237d4f92a7ab36a",
+      "branch": "production-3-preparation",
+      "runtimeVersion": "3.0.0",
+      "platform": "ios",
+      "createdAt": "2026-10-25T00:22:29.031Z",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a1706f-f9a7-71bd-91b4-ba799e88c492"
+      ]
+    },
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-apple-retirement-20261024/runtime-3.0.0/gate-c.json",
+        "sha256": "9aeb70c07525bee324138271f0150928aea21caa50793919d254c56258e2da1a"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-apple-retirement-20261024/runtime-3.0.0/asset-audit.json",
+        "sha256": "00f9cbc07d1031d1d7ca4aeee181e10a776442799df6fe2e00be1eb0c40339b3"
+      },
+      "exportSource": {
+        "path": "config/testflight-release-apple-retirement-20261024/runtime-3.0.0/export-source.json",
+        "sha256": "5be8af6f0ec6c56ed3745897202c21c68160ff201abbf8fd7bef52e49ef0fc90"
+      },
+      "contracts": {
+        "path": "config/testflight-release-apple-retirement-20261024/runtime-3.0.0/contracts.json",
+        "sha256": "d0b4981a83779dd101f5bdae05e115583e6cab5fe657a540f9d51cea2181b530"
+      },
+      "sharedValidation": {
+        "path": "config/testflight-release-apple-retirement-20261024/runtime-3.0.0/shared-validation.json",
+        "sha256": "fefdca6414c78536a6db415cf1e2850d2969cc94d44676af7506e440a486b0ba"
+      },
+      "movementImagery": {
+        "path": "config/testflight-release-apple-retirement-20261024/runtime-3.0.0/movement-imagery.json",
+        "sha256": "014369c588a278fee7fb2c5062395676f4c16214b16de32e1ee60fefde3a3e1e"
+      },
+      "channel": {
+        "path": "config/testflight-release-apple-retirement-20261024/runtime-3.0.0/channel.json",
+        "sha256": "c5dfb001c2e4b06d6955f518b45bb8b0ddac36413afc2a8e9ae8599d1846a5f8"
+      },
+      "worktreeCloseout": {
+        "path": "config/testflight-release-apple-retirement-20261024/runtime-3.0.0/worktree-closeout.json",
+        "sha256": "2928e099480c0967b16073f5cbf56810295c753def9143b912225fb19a9b850d"
+      },
+      "nativeChannel": {
+        "path": "config/testflight-release-apple-retirement-20261024/runtime-3.0.0/native-channel.json",
+        "sha256": "fc13c69f627d8870bfad409a95b3d7c1df0232442492dd09e0b198d3da1bc91c"
+      }
+    },
+    "backendSourceSha": "d5ef21b412cc9a1201b0505c7b57886040c18ffa",
+    "acceptedContracts": 312,
+    "criticalProductAreas": 90,
+    "typescript": true,
+    "nativeBinaryChanged": false,
+    "productFingerprint": "b3079d92e22999bec3124255831823ff4b21f29fba4b3f2386c11c3e44d6218a",
+    "appleButtonStringAbsentFromServedBundle": true,
+    "installedDeviceObserved": false,
+    "workflowComplete": true
   }
 }

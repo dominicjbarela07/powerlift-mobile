@@ -1,0 +1,10 @@
+{
+  "channel": "production-3-preparation",
+  "runtimeVersion": "3.0.0",
+  "platform": "ios",
+  "selectedUpdateId": "01a1706f-f9a7-71bd-91b4-ba799e88c492",
+  "servedBundleSha256": "a287ca1a97932ba4944f48eee9af6c02c2736339c4ec02e49237d4f92a7ab36a",
+  "retainedAssetEntries": 998,
+  "appleButtonStringAbsent": true,
+  "installedDeviceObserved": false
+}

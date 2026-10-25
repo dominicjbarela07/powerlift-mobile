@@ -1,0 +1,27 @@
+{
+  "scope": "apple-sign-in-retirement-20261024",
+  "productFingerprint": "b3079d92e22999bec3124255831823ff4b21f29fba4b3f2386c11c3e44d6218a",
+  "completedAt": "2026-10-25T00:21:29.555Z",
+  "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+  "runtimeVerified": false,
+  "contracts": [
+    {
+      "file": "scripts/test-apple-retirement-release-scope.mjs",
+      "sourceSha256": "0aaac1873e785b45e30e9bced4574a4c8053a341b43cf3e3c5adf000404d260a",
+      "result": "PASS",
+      "output": "PASS: Apple removal requires exact correction, source, complete verified 3.0 baseline, two paths and all contracts. Unrelated access/art changes, loss, stale source, old authorization and missing protection rejected.\n"
+    },
+    {
+      "file": "scripts/test-apple-sign-in-retirement.mjs",
+      "sourceSha256": "50712f734ae1719f87fc83ccd832521458a8e5496d02ed9420fcf05720ebafa2",
+      "result": "PASS",
+      "output": "PASS: actual SSO renderer across iOS/Android/web, with/without Google; Google action retained, no orphan divider/native Apple probe. Deliberate Apple restoration rejected.\n"
+    },
+    {
+      "file": "scripts/test-onboarding-recovery.mjs",
+      "sourceSha256": "f7352395309ea41c847751c423289aca833affc3f24c3fd99a5d853db7435657",
+      "result": "PASS",
+      "output": "{\"noForcedClose\":true,\"callback\":true,\"updateBlockerReleased\":true}\nCancel, dismiss and presentation failure release the update blocker.\nPASS: deliberate forced-dismiss regression rejected; success, cancel, dismiss and presentation failure preserve native checkout recovery.\n"
+    }
+  ]
+}
