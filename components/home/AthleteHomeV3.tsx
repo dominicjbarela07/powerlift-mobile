@@ -132,7 +132,7 @@ function StateHero({ creatingTodaySession, home, onAction, state, today, unit }:
   if (state === 'meet') return <MeetHero home={home} onAction={onAction} />;
   if (state === 'achievement') return <AchievementHero achievement={home.hero?.achievement || home.achievement} onAction={onAction} unit={unit} />;
   if (state === 'recovery') return <RecoveryHero onAction={onAction} today={today} unit={unit} />;
-  if (state === 'rest') return <RestHero creatingTodaySession={creatingTodaySession} home={home} onAction={onAction} today={today} />;
+  if (state === 'rest') return <RestHero creatingTodaySession={creatingTodaySession} home={home} onAction={onAction} />;
   return <TrainingHero home={home} onAction={onAction} today={today} />;
 }
 
@@ -248,34 +248,13 @@ function MeetHero({ home, onAction }: { home: AthleteHomeV3Projection; onAction:
   );
 }
 
-function RestDayReadinessNudge({ today, onAction }: { today: Today; onAction: Props['onAction'] }) {
-  if (today.capabilities?.can_daily_check_in !== true) return null;
-  const recorded = Boolean(today.daily_check_in);
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={recorded ? "View today's readiness check-in" : 'Log readiness and body weight'}
-      onPress={() => onAction(today.daily_check_in_action || { route: 'daily_readiness' })}
-      style={({ pressed }) => [styles.restReadiness, pressed && styles.pressed]}
-    >
-      <Ionicons name={recorded ? 'checkmark-circle-outline' : 'pulse-outline'} size={20} color={recorded ? SLColors.success : SLColors.accentViolet} />
-      <View style={styles.flex}>
-        <Text style={styles.restReadinessTitle}>{recorded ? "Today's check-in" : 'Log readiness & body weight'}</Text>
-        <Text style={styles.restReadinessHint}>{recorded ? 'Recorded · View check-in' : 'Optional check-in'}</Text>
-      </View>
-      <Ionicons name="chevron-forward" size={18} color={SLColors.textSecondary} />
-    </Pressable>
-  );
-}
-
-function RestHero({ creatingTodaySession, home, onAction, today }: { creatingTodaySession: boolean; home: AthleteHomeV3Projection; onAction: Props['onAction']; today: Today }) {
+function RestHero({ creatingTodaySession, home, onAction }: { creatingTodaySession: boolean; home: AthleteHomeV3Projection; onAction: Props['onAction'] }) {
   return (
     <HeroFrame accent="#5C8CFF" art={REST_ART}>
       <View style={styles.heroCopy}>
         <Text style={styles.heroEyebrow}>TODAY</Text>
         <Text style={styles.heroTitle}>Rest Day</Text>
         <Text style={styles.heroMeta}>{home.next_up ? `Next: ${home.next_up.title}` : 'No programmed Session'}</Text>
-        <RestDayReadinessNudge today={today} onAction={onAction} />
       </View>
       {home.can_create_today_session === true ? (
         <HeroButton disabled={creatingTodaySession} label={creatingTodaySession ? 'Creating Session' : 'Create Session'} onPress={() => onAction({ route: 'create_today_session' })} />
@@ -604,9 +583,6 @@ const styles = StyleSheet.create({
   meetLabel: { flex: 1, color: '#D4CED9', fontSize: 10 },
   meetTime: { color: '#8B8491', fontSize: 9 },
   restLinks: { gap: 5, marginHorizontal: 12, marginBottom: 12 },
-  restReadiness: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: 9, marginTop: 16, paddingVertical: 10, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderHairline },
-  restReadinessTitle: { color: SLColors.textStrong, fontSize: 15, lineHeight: 20, fontWeight: '600' },
-  restReadinessHint: { color: SLColors.textMuted, fontSize: 12, lineHeight: 17, marginTop: 2 },
   miniLink: { minHeight: 32, flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 9, borderRadius: 8, backgroundColor: 'rgba(8,11,17,0.76)', borderWidth: StyleSheet.hairlineWidth, borderColor: '#203241' },
   miniLinkText: { flex: 1, color: '#D1D4D9', fontSize: 10 },
   weekSection: { gap: 9, padding: 11, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: '#24222A', backgroundColor: '#08090D' },
