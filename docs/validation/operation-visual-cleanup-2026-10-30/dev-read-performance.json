@@ -1,0 +1,34 @@
+{
+  "environment": "localhost canonical DEV",
+  "user_id": 78,
+  "athlete_id": 68,
+  "role": "athlete",
+  "read_only": true,
+  "production_measurement": false,
+  "checks": [
+    {
+      "path": "/athletes/mobile/progression?range=90d",
+      "status": 200,
+      "elapsed_ms": 114.8,
+      "ok": true
+    },
+    {
+      "path": "/workouts/mobile/accomplishments/current-bests?scope=career&limit=24",
+      "status": 200,
+      "elapsed_ms": 31.5,
+      "ok": true
+    },
+    {
+      "path": "/mobile/ledger/archive/training?limit=24",
+      "status": 200,
+      "elapsed_ms": 18.0,
+      "ok": true
+    },
+    {
+      "path": "/mobile/ledger/archive/movement-progress?view=index",
+      "status": 200,
+      "elapsed_ms": 13.5,
+      "ok": true
+    }
+  ]
+}

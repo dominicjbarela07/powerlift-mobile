@@ -134,3 +134,14 @@ PNG with `scripts/verify-distribution-screenshots.py` for its target slot. Retai
 the deliberate rejection of the known 1206 × 2622 / 6.5-inch mismatch. Preserve
 original captures, use the owner-required backend and fictional data, and label
 folders by exact upload slot with pixel dimensions in the file guide.
+
+## Owner visual direction — Operation Visual Cleanup, October30
+
+When the owner asks for a clean feel, follow the approved Ledger concept
+direction: layered charcoal surfaces, comfortable contrast, visible meaningful
+charts, restrained metric color and purposeful earned imagery. Clean does not
+mean a flat text-only interface or removing visual character. Retain easy
+navigation and readable density. See
+`docs/design/OPERATION_VISUAL_CLEANUP_2026-10-30.md` and its actual-runtime
+convergence evidence. Apply this direction within each authorized task's scope;
+it grants no app-wide redesign or release authorization.

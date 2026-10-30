@@ -1,0 +1,24 @@
+{
+  "base": "2346a9421535ce6e6588a1ff64df5dbe336cbe81",
+  "files": {
+    "AGENTS.md": "12af367f3945595b06022abd34f7c695ffbd71565fe54ada9a7aaf86c66956e8",
+    "components/ledger/LedgerExperience.tsx": "59292ddbd1d01398ef9a863f4d228fc746e98d3cec0a60a9ff19c4663061e093",
+    "components/ledger/LedgerHistoryPane.tsx": "828c652c64d49ac1a2ea82fa5fdc677f79958aa1740a1bc0a3b1bc74cd32a07f",
+    "components/ledger/LedgerCollections.tsx": "2a8204c9ea548153cb33155a155b4f118475f1a70c8a973c03ce8e5446bbdfb2",
+    "components/ledger/LedgerVisuals.tsx": "c42790e852c20e2ea01c5171f1fee6a5ab1a770667ffa1307d8279bf5a367f59",
+    "constants/ledger.ts": "ce5daa30de6cf6bf16c091c54bc43234d5390f9fa711c0290c1f70e5be89dbc7",
+    "constants/theme.ts": "4c0f1e417c8f361aa26861d59aa661919758cdd531c52ca407569c2e59151492",
+    "lib/ledger-visuals.ts": "35e6a287c03e9fc96f1d3c0f38ed8b2517af3d97d907ac603a15257bbf7f375e",
+    "scripts/test-ledger-visuals.mjs": "0df50d5a4b3e5225cd657739a8b192593ab94e50e3700646b4aa065beda3a869",
+    "package.json": "39f6eb3089f8e739ccafc60697fab61f3512b1bcdedfcf13b2c6f8d16027b602",
+    "docs/CANONICAL_DYNAMIC_ANATOMY_SYSTEM.md": "f2d713eb64ca464e8a7d2eecc20e657e4f02e36097089b2efaddb668177746b5",
+    "docs/design/OPERATION_VISUAL_CLEANUP_2026-10-30.md": "d175ac0132cf3daee23ee7f9fbb6979320c5686049952b1b813422c3ad3dedc1"
+  },
+  "runtime": "Normal Expo Router product app / canonical npm start / Expo Go SDK54",
+  "screen": "Ledger / Records / Core lifts",
+  "authenticated_role": "athlete",
+  "athlete_id": 68,
+  "backend": "127.0.0.1:5017 / strength_ledger_dev",
+  "publication_scope": "DEV only",
+  "production_publication": false
+}

@@ -225,7 +225,7 @@
     "dev:ledger-study": "node scripts/serve-ledger-study.mjs",
     "test:ledger-study": "node --import tsx scripts/test-ledger-study.mjs",
     "test:ledger-study:browser": "node scripts/test-ledger-study-browser.cjs",
-    "test:ledger-connected": "node --import tsx scripts/test-ledger-connected.mjs && node scripts/test-ledger-history.mjs"
+    "test:ledger-connected": "node --import tsx scripts/test-ledger-connected.mjs && node scripts/test-ledger-history.mjs && node --import tsx scripts/test-ledger-visuals.mjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

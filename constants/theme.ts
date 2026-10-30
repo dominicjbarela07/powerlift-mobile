@@ -1152,3 +1152,24 @@ export const SLTheme = {
 } as const;
 
 export type SLStatusTone = keyof typeof SLStatusTones;
+
+/** Owner-approved Operation Visual Cleanup material palette. Ledger consumers
+ * share these tokens; the rest of the app keeps its existing material system. */
+export const SLLedgerMaterial = {
+  canvas: '#0C0F13',
+  face: '#1A1E24',
+  top: '#242930',
+  bottom: '#171B21',
+  raised: '#2B3038',
+  line: '#3A414C',
+  subtleLine: '#2D343E',
+  text: '#F4F3F7',
+  secondary: '#C6C9D2',
+  muted: '#A1A8B5',
+  accent: '#B48AFF',
+  accentFace: '#372454',
+  accentEdge: '#8D5BD0',
+  goldFace: '#2D2920',
+  goldLine: '#796442',
+  chartGrid: '#3A414C',
+} as const;

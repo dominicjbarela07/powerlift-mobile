@@ -197,3 +197,13 @@ one colored full-resolution bitmap per muscle. Only governed active segment
 masks are mounted (currently capped by role normalization), and list consumers
 use cropped thumbnail/card viewBoxes rather than separate high-resolution
 compositions. No 4K layer is decoded in a scrolling list.
+
+### Operation Visual Cleanup — October30
+
+`components/ledger/LedgerVisuals.tsx` adds the athlete Ledger History muscle
+exposure card. It renders only specifically governed muscle-group keys via `ProgrammingMuscleRegionArt` / `MuscleMap`
+with registered automatic views, actor presentation and card framing. It owns only
+the container size, not masks, geometry, image masters or transforms. Labels
+explicitly say recorded working sets / all history; no recovery or growth
+inference. Exact lift profiles continue to use source performance, not anatomy
+as a replacement for movement identity.
