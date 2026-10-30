@@ -158876,18 +158876,18 @@
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
-        "sha256": "196eb86ca585a86cbbe16e942fe8e5a15053beacfdcfcf97c650d3d93fee4e8c"
+        "sha256": "dc3afa49a31dd92c99cc80eda8edfd27d0679ec38e12e605a75ab2461bdb68a2"
       },
       {
         "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
-        "sha256": "8016c1950a4ae7294b539428704ce0f0ae20fa409aabbd4eb105df9e4d6a6e61"
+        "sha256": "c07b927c3205f09a3325143652a669d34c965a8c0ccba7d6b13b91e5b4b0cbe9"
       }
     ],
     "reviewedCanonicalContinuation": {
-      "ownerInstruction": "Find what the fuck is going on, fix it, and deploy the fix.",
-      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-21-rdl-artwork.txt",
-      "ownerEvidenceSha256": "83c005be5f603cfce3c33aab90d1b75cae956759ec365eb5ddadf7d2481aee7d",
-      "reason": "Close only the scoped RDL/global-ID approved-art recurrence with executed positive/negative proof and exact served 3.0 publication. Preserve every prior incident/protection, broad OPEN status, historical pins and unrelated DEV incident. Product/source fingerprint is unchanged by this metadata closeout."
+      "ownerInstruction": "Fix this. Fix it, validate it, and fucking ship it again, dude.",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-30-video-portrait.txt",
+      "ownerEvidenceSha256": "c196dd037a5dd9824985996dc885a4f0d9c2df951509fb1c02e14a4e0bfc8b2a",
+      "reason": "Close only the exact owner-designated undersized/obstructed portrait-review class after 78 independently pinned rendered cases, six actual nonzero regressions, authenticated workflow and personal ownership proof, guarded Production push and verified serving SHA/asset bytes. Preserve every prior incident and unresolved broader count, historical governance continuations and all original source/asset/native protections. This is web-only; the published 3.0 product fingerprint and update are unchanged."
     },
     "previousCanonicalFiles": [
       {
@@ -158932,6 +158932,50 @@
           "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-21-rdl-artwork.txt",
           "ownerEvidenceSha256": "83c005be5f603cfce3c33aab90d1b75cae956759ec365eb5ddadf7d2481aee7d",
           "reason": "Record the actual owner-designated RDL recurrence, retained failed original-code probe, complete portable-art inventory coverage and bounded release protection. Preserve historical incident records and existing owner Bot/web guidance additions; no original protection is removed or weakened."
+        }
+      },
+      {
+        "canonicalFiles": [
+          {
+            "path": "AGENTS.md",
+            "sha256": "73da85808f0732851f994562996d319693f51eeeca067a6d6c948795fa805c2d"
+          },
+          {
+            "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
+            "sha256": "196eb86ca585a86cbbe16e942fe8e5a15053beacfdcfcf97c650d3d93fee4e8c"
+          },
+          {
+            "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
+            "sha256": "8016c1950a4ae7294b539428704ce0f0ae20fa409aabbd4eb105df9e4d6a6e61"
+          }
+        ],
+        "continuation": {
+          "ownerInstruction": "Find what the fuck is going on, fix it, and deploy the fix.",
+          "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-21-rdl-artwork.txt",
+          "ownerEvidenceSha256": "83c005be5f603cfce3c33aab90d1b75cae956759ec365eb5ddadf7d2481aee7d",
+          "reason": "Close only the scoped RDL/global-ID approved-art recurrence with executed positive/negative proof and exact served 3.0 publication. Preserve every prior incident/protection, broad OPEN status, historical pins and unrelated DEV incident. Product/source fingerprint is unchanged by this metadata closeout."
+        }
+      },
+      {
+        "canonicalFiles": [
+          {
+            "path": "AGENTS.md",
+            "sha256": "73da85808f0732851f994562996d319693f51eeeca067a6d6c948795fa805c2d"
+          },
+          {
+            "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.md",
+            "sha256": "bbf61262358955dedef059d72e4d4716dd79af21177e91fb976d8e613301a136"
+          },
+          {
+            "path": "docs/OWNER_NON_RECURRENCE_INCIDENTS.json",
+            "sha256": "ff79bbe79a453d2403a27c808f0708d03bbbb5a2ea583cf38386ac676cb77785"
+          }
+        ],
+        "continuation": {
+          "ownerInstruction": "Fix this. Fix it, validate it, and fucking ship it again, dude.",
+          "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-30-video-portrait.txt",
+          "ownerEvidenceSha256": "c196dd037a5dd9824985996dc885a4f0d9c2df951509fb1c02e14a4e0bfc8b2a",
+          "reason": "Retain the exact owner-designated portrait-video recurrence as OPEN pending guarded web delivery and verified live bytes. Add the independent rendered viewport acceptance and actual old-layout failure controls. Preserve every prior incident, original release/asset/source protection and the unchanged published mobile 3.0 state. This is a web-only repair; no native build or mobile OTA is authorized or inferred."
         }
       }
     ]
