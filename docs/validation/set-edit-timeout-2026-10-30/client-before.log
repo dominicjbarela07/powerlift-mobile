@@ -1,0 +1,10 @@
+file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-set-edit-recovery.mjs:66
+    await Promise.race([h.save(), new Promise((_, reject) => { timeout = setTimeout(() => reject(new Error('confirmed edit remained blocked on Session reload')), 100); })]);
+                                                                                                 ^
+
+Error: confirmed edit remained blocked on Session reload
+    at Timeout.<anonymous> (file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-set-edit-recovery.mjs:66:98)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+
+Node.js v25.2.1

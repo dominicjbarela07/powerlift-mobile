@@ -130,6 +130,7 @@ import {
   shouldSurfaceRequestFailure,
 } from '@/lib/api-request-policy';
 import { recoverCanonicalSetSave } from '@/lib/canonical-set-save-recovery';
+import { applyConfirmedSetEdit, recoverSetEdit } from '@/lib/set-edit-recovery';
 import {
   createClientEventId,
   createLifecycleTimingEvent,
@@ -2900,12 +2901,14 @@ export default function WorkoutViewerScreen() {
 
   const [editSetVisible, setEditSetVisible] = useState(false);
   const [editSetSubmitting, setEditSetSubmitting] = useState(false);
+  const editSetInFlightRef = useRef(false);
   const [setMutationNotice, setSetMutationNotice] = useState<string | null>(null);
   const setMutationNoticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [editSetCtx, setEditSetCtx] = useState<{
     itemId: number;
     setIndex: number;
     setLogId: number;
+    evidenceRevision: number | null;
     mode: 'rpe' | 'rir';
     movementName: string;
     loggedWeightKg: number | null;
@@ -3284,6 +3287,7 @@ export default function WorkoutViewerScreen() {
     setLog: SetLog,
     opts: { mode: 'rpe' | 'rir'; movementName: string }
   ) => {
+    setError(null);
     const rawWeight =
       setLog.actual_weight_kg != null
         ? unit === 'kg'
@@ -3301,6 +3305,12 @@ export default function WorkoutViewerScreen() {
       itemId,
       setIndex: setLog.set_index,
       setLogId: setLog.id,
+      evidenceRevision: (() => {
+        const item = [...(data?.workout?.core_items || []), ...(data?.workout?.accessory_groups || []).flatMap(group => group.items)]
+          .find(candidate => candidate.id === itemId);
+        const revision = Number((item as any)?.evidence_revision);
+        return Number.isInteger(revision) && revision > 0 ? revision : null;
+      })(),
       mode: opts.mode,
       movementName: opts.movementName,
       loggedWeightKg: setLog.actual_weight_kg ?? null,
@@ -3324,7 +3334,11 @@ export default function WorkoutViewerScreen() {
   };
 
   const saveEditedSet = async () => {
-    if (!workoutId || !editSetCtx) return;
+    if (!workoutId || !editSetCtx || editSetInFlightRef.current) return;
+    const ownerAtDispatch = executionScope;
+    const assertEditOwner = () => {
+      if (!screenMountedRef.current || executionScopeRef.current !== ownerAtDispatch) throw new Error('Session ownership changed.');
+    };
 
     let weightInUnit =
       editSetForm.weight.trim() === '' ? NaN : parseFloat(editSetForm.weight);
@@ -3369,6 +3383,8 @@ export default function WorkoutViewerScreen() {
     }
 
     try {
+      editSetInFlightRef.current = true;
+      assertEditOwner();
       setEditSetSubmitting(true);
       setSavingItemId(editSetCtx.itemId);
       setError(null);
@@ -3412,24 +3428,20 @@ export default function WorkoutViewerScreen() {
         return;
       }
 
-      const { ok, status, json } = await fetchJson(
-        `${API_BASE}/workouts/mobile/${workoutId}/items/${editSetCtx.itemId}/edit_set`,
-        {
+      const desired = { actual_weight_kg: weightKg, actual_reps: reps, actual_rpe, actual_rir };
+      const body = Object.freeze({ ...desired, set_index: editSetCtx.setIndex, set_log_id: editSetCtx.setLogId,
+        ...(editSetCtx.evidenceRevision != null ? { expected_evidence_revision: editSetCtx.evidenceRevision } : {}),
+      });
+      const json = await recoverSetEdit({
+        workoutId: String(workoutId), itemId: editSetCtx.itemId, setLogId: editSetCtx.setLogId,
+        desired, expectedRevision: editSetCtx.evidenceRevision, assertOwner: assertEditOwner,
+        request: () => fetchJson(`${API_BASE}/workouts/mobile/${workoutId}/items/${editSetCtx.itemId}/edit_set`, {
           method: 'POST',
           auth: true,
-          body: {
-            set_index: editSetCtx.setIndex,
-            actual_weight_kg: weightKg,
-            actual_reps: reps,
-            actual_rpe,
-            actual_rir,
-          },
-        }
-      );
-
-      if (!ok || !json?.ok) {
-        throw new Error(json?.error || `Failed to update set (HTTP ${status})`);
-      }
+          body,
+        }),
+      });
+      assertEditOwner();
 
       feedbackDispatch({ type: 'SET_EDITED', sourceSetLogId: editSetCtx.setLogId });
       const invalidatedEventIds = Array.isArray(json?.invalidated_recognition_event_ids)
@@ -3441,16 +3453,24 @@ export default function WorkoutViewerScreen() {
       feedbackAnalytics('recognition_invalidated_before_display', { source_set_log_id: editSetCtx.setLogId, mutation: 'edit' });
 
       setEditSetVisible(false);
+      setData(current => applyConfirmedSetEdit(current, editSetCtx.itemId, editSetCtx.setLogId, json.set, json.item_evidence_revision));
       setEditSetCtx(null);
       rememberScroll();
-      await fetchWorkout();
       showSetMutationNotice('Set updated · progress recalculated');
+      void fetchWorkout({ silent: true, reason: 'post_set' });
     } catch (err: any) {
       console.log('saveEditedSet error', err);
-      setError(err?.message || 'Error updating set');
+      if (screenMountedRef.current && executionScopeRef.current === ownerAtDispatch) {
+        setError(isApiRequestError(err) && (err.kind === 'network' || err.kind === 'timeout')
+          ? "Couldn't confirm this edit. Your changes are still here. Try again."
+          : err?.message || 'Error updating set');
+      }
     } finally {
-      setEditSetSubmitting(false);
-      setSavingItemId(null);
+      editSetInFlightRef.current = false;
+      if (screenMountedRef.current && executionScopeRef.current === ownerAtDispatch) {
+        setEditSetSubmitting(false);
+        setSavingItemId(null);
+      }
     }
   };
 
@@ -10621,6 +10641,8 @@ export default function WorkoutViewerScreen() {
                 title={`${editSetCtx.movementName} · Set ${editSetCtx.setIndex}`}
                 unit={unit}
               />
+
+              {error && !editSetSubmitting ? <Text accessibilityRole="alert" style={styles.errorText}>{error}</Text> : null}
 
               <LoggerWheelPicker columns={[
                 { key: 'weight', label: 'Weight', value: editSetForm.weight, options: buildEditWeightOptions(editSetCtx.mode, unit, editSetForm.weight), suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (weight) => setEditSetForm((prev) => ({ ...prev, weight })) },

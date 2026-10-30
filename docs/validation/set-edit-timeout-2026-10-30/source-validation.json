@@ -1,0 +1,36 @@
+{
+  "baseline": "d266bd921f5e95036eed41082e3daf96382b82ab",
+  "source": [
+    {
+      "path": "app/(tabs)/workout/[workoutId].tsx",
+      "sha256": "0da75f6eeee16dbfcd9016baae5464c567f500496ccef9bf05effd68746841c8"
+    },
+    {
+      "path": "lib/set-edit-recovery.ts",
+      "sha256": "23e13af8fc1ff1ab4b867903af48ecbb8c164d46ae0a19d8721b3554e07b5bd1"
+    },
+    {
+      "path": "scripts/test-set-edit-recovery.mjs",
+      "sha256": "e422ceaa87602c0b6015cb22a807c5afb85e20cdd3122fec63529b89361f2e50"
+    },
+    {
+      "path": "scripts/test-zero-load-edit-set.mjs",
+      "sha256": "07a09aa4d02b90396c68744b34b3cca8caf65f729894d2d48ee0d5b869e304e8"
+    },
+    {
+      "path": "scripts/test-set-edit-api.mjs",
+      "sha256": "2f5853be399fc80e3691fa10ef979060a09aa11fbd665756c6a82e2f1f01331e"
+    }
+  ],
+  "typecheckExitCode": 0,
+  "actualHandlerExitCode": 0,
+  "apiWrapperExitCode": 0,
+  "zeroEditorExitCode": 0,
+  "originalHandlerExitCode": 1,
+  "blockingReloadRemovalControlRejected": true,
+  "published": false,
+  "deviceObserved": false,
+  "backendRecord": "/Users/dominic/powerlifting_app_dev/docs/release/SET_EDIT_TIMEOUT_2026-10-30.md",
+  "backendCommit": "480b5e537a078b1e7a51fd8af98a78f290b34523",
+  "recovery": "Existing bounded canonical network/timeout recovery; immutable Set ID plus CAS revision; replayed acknowledgement retains dependent invalidations"
+}

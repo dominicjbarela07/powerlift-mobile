@@ -1,0 +1,130 @@
+const saveEditedSet = async () => {
+    if (!workoutId || !editSetCtx) return;
+
+    let weightInUnit =
+      editSetForm.weight.trim() === '' ? NaN : parseFloat(editSetForm.weight);
+
+    const repsStr = String(editSetForm.reps ?? '').replace(/[^0-9]/g, '');
+    const reps = repsStr ? Number(repsStr) : NaN;
+
+    // Zero is a performed load (for example, bodyweight with no added load),
+    // not missing input. Match the canonical edit-set API's nonnegative rule.
+    if (!Number.isFinite(weightInUnit) || weightInUnit < 0) {
+      setError('Weight required');
+      return;
+    }
+    if (!Number.isFinite(reps) || reps < 0) {
+      setError('Reps required');
+      return;
+    }
+
+    if (unit === 'lb') {
+      weightInUnit = roundToNearestGymIncrementLb(weightInUnit);
+    }
+
+    const weightKg = unit === 'kg' ? weightInUnit : weightInUnit * KG_PER_LB;
+
+    let actual_rpe: number | null = null;
+    let actual_rir: number | null = null;
+
+    if (editSetCtx.mode === 'rpe') {
+      actual_rpe =
+        editSetForm.rpe.trim() === '' ? null : parseFloat(editSetForm.rpe);
+      if (editSetForm.rpe.trim() !== '' && !Number.isFinite(actual_rpe as number)) {
+        setError('Enter a valid RPE');
+        return;
+      }
+    } else {
+      actual_rir =
+        editSetForm.rir.trim() === '' ? null : parseFloat(editSetForm.rir);
+      if (editSetForm.rir.trim() !== '' && !Number.isFinite(actual_rir as number)) {
+        setError('Enter a valid RIR');
+        return;
+      }
+    }
+
+    try {
+      setEditSetSubmitting(true);
+      setSavingItemId(editSetCtx.itemId);
+      setError(null);
+
+      const isDevFixtureSet = isIdealWorkoutDetailPreview
+        && data?.workout?.accessory_groups?.some((group) =>
+          group.items.some((item) =>
+            item.id === editSetCtx.itemId
+            && (item.set_logs || []).some((log) => log.id === editSetCtx.setLogId),
+          ),
+        );
+      if (isDevFixtureSet) {
+        setData((current) => current ? {
+          ...current,
+          workout: {
+            ...current.workout,
+            accessory_groups: current.workout.accessory_groups.map((group) => ({
+              ...group,
+              items: group.items.map((item) => item.id !== editSetCtx.itemId
+                ? item
+                : {
+                    ...item,
+                    set_logs: (item.set_logs || []).map((log) =>
+                      log.id !== editSetCtx.setLogId
+                        ? log
+                        : {
+                            ...log,
+                            actual_weight_kg: weightKg,
+                            actual_reps: reps,
+                            actual_rpe,
+                            actual_rir,
+                          }),
+                  }),
+            })),
+          },
+        } : current);
+        feedbackDispatch({ type: 'SET_EDITED', sourceSetLogId: editSetCtx.setLogId });
+        setEditSetVisible(false);
+        setEditSetCtx(null);
+        showSetMutationNotice('Set updated · progress recalculated');
+        return;
+      }
+
+      const { ok, status, json } = await fetchJson(
+        `${API_BASE}/workouts/mobile/${workoutId}/items/${editSetCtx.itemId}/edit_set`,
+        {
+          method: 'POST',
+          auth: true,
+          body: {
+            set_index: editSetCtx.setIndex,
+            actual_weight_kg: weightKg,
+            actual_reps: reps,
+            actual_rpe,
+            actual_rir,
+          },
+        }
+      );
+
+      if (!ok || !json?.ok) {
+        throw new Error(json?.error || `Failed to update set (HTTP ${status})`);
+      }
+
+      feedbackDispatch({ type: 'SET_EDITED', sourceSetLogId: editSetCtx.setLogId });
+      const invalidatedEventIds = Array.isArray(json?.invalidated_recognition_event_ids)
+        ? json.invalidated_recognition_event_ids.map(Number).filter(Number.isFinite)
+        : [];
+      feedbackDispatch({ type: 'INVALIDATE_EVENTS', eventIds: invalidatedEventIds });
+      if (workoutId) void invalidateRecognitionForSet(String(workoutId), editSetCtx.setLogId).catch(() => feedbackAnalytics('recognition_invalidation_storage_failed', { mutation: 'edit', source_set_log_id: editSetCtx.setLogId }));
+      if (workoutId) void invalidateRecognitionEvents(String(workoutId), invalidatedEventIds).catch(() => feedbackAnalytics('recognition_invalidation_storage_failed', { mutation: 'edit', count: invalidatedEventIds.length }));
+      feedbackAnalytics('recognition_invalidated_before_display', { source_set_log_id: editSetCtx.setLogId, mutation: 'edit' });
+
+      setEditSetVisible(false);
+      setEditSetCtx(null);
+      rememberScroll();
+      await fetchWorkout();
+      showSetMutationNotice('Set updated · progress recalculated');
+    } catch (err: any) {
+      console.log('saveEditedSet error', err);
+      setError(err?.message || 'Error updating set');
+    } finally {
+      setEditSetSubmitting(false);
+      setSavingItemId(null);
+    }
+  };

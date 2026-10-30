@@ -1,0 +1,1 @@
+PASS actual Set edit: immediate confirmed completion, fresh revision/identity, background reload, before/after-write drops, safe CAS replay with dependent recognition invalidation, bounded outage/manual retry, retained draft, permission/conflict/malformed rejection, ownership and double taps; blocking-reload failure rejected.

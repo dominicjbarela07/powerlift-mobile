@@ -1,0 +1,1 @@
+Canonical Set save recovery: PASS — actual shipping handler/transport, all Set types, dropped request/acknowledgement, one write/acceptance, stable payload, bounded outage, cancellation, ownership and double-tap safety

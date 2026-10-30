@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
 import { formatPerformedLoad } from '../lib/performed-load-semantics.ts';
+import { applyConfirmedSetEdit, recoverSetEdit } from '../lib/set-edit-recovery.ts';
+import { isApiRequestError } from '../lib/api-request-policy.ts';
 
 // Execute the shipping editor's handlers, not a second implementation of validation.
 const sourceArgument = process.argv.indexOf('--source');
@@ -29,6 +31,11 @@ for (const unit of ['lb', 'kg']) {
     workoutId: '8', API_BASE: 'https://qa.invalid', unit, KG_PER_LB,
     MAX_ACCESSORY_LOAD_KG: 350, MAX_ACCESSORY_LOAD_LB: 800,
     isIdealWorkoutDetailPreview: false,
+    data: { workout: { core_items: [], accessory_groups: [{ items: [{ id: 12, evidence_revision: 4, set_logs: [persisted] }] }] } },
+    executionScope: 'actor:1:session:8', executionScopeRef: { current: 'actor:1:session:8' },
+    screenMountedRef: { current: true }, editSetInFlightRef: { current: false },
+    applyConfirmedSetEdit, recoverSetEdit, isApiRequestError,
+    setData(update) { ctx.data = update(ctx.data); },
     formatWeight: (kg, toUnit) => String(toUnit === 'kg' ? kg : kg / KG_PER_LB),
     roundToNearestGymIncrementLb: value => Math.round(value / 2.5) * 2.5,
     roundLoggerDisplayWeight: (value, toUnit) => Math.round(value / (toUnit === 'kg' ? 1.25 : 2.5)) * (toUnit === 'kg' ? 1.25 : 2.5),
