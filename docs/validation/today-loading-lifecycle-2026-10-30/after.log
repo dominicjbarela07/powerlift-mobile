@@ -1,0 +1,1 @@
+PASS Today actual-route lifecycle: cold/resume (Athlete + Self-Coach), blur/refocus, overlapping refresh, obsolete responses/cache, Retry, API/invalid/transport/reconciliation failures, 401/account-state denial, day rollover, hidden foreground, stale redirect, workspace departure and display units; deliberate loading-guard removal rejected.

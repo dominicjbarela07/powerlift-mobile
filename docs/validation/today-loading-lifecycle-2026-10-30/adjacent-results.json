@@ -1,0 +1,42 @@
+[
+  {
+    "name": "test-calendar-today-and-today-lifecycle.mjs",
+    "exitCode": 0
+  },
+  {
+    "name": "test-mobile-mode-transition.mjs",
+    "exitCode": 0
+  },
+  {
+    "name": "test-mobile-navigation-loading.mjs",
+    "exitCode": 0
+  },
+  {
+    "name": "test-athlete-home-v3.mjs",
+    "exitCode": 0
+  },
+  {
+    "name": "test-recovery-day-check-in-state.mjs",
+    "exitCode": 0
+  },
+  {
+    "name": "test-today-archive-access.mjs",
+    "exitCode": 0
+  },
+  {
+    "name": "test-training-hub-today-hero.mjs",
+    "exitCode": 0
+  },
+  {
+    "name": "test-preferred-unit-display.mjs",
+    "exitCode": 1
+  },
+  {
+    "name": "test-readiness-modal.mjs",
+    "exitCode": 0
+  },
+  {
+    "name": "test-readiness-survey-render.mjs",
+    "exitCode": 0
+  }
+]

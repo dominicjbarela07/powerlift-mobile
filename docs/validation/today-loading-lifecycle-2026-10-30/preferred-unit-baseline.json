@@ -1,0 +1,21 @@
+{
+  "baseline": "bc2cea017a467d9c0a9a4d93e94aa4e340505511",
+  "quarantineGroup": "superseded-source-shape-snapshot",
+  "unchanged": [
+    {
+      "path": "scripts/test-preferred-unit-display.mjs",
+      "unchangedFromHEAD": true
+    },
+    {
+      "path": "app/(tabs)/settings.tsx",
+      "unchangedFromHEAD": true
+    }
+  ],
+  "originalDashboardProbe": {
+    "exitCode": 1,
+    "error": "AssertionError",
+    "operator": "match",
+    "expected": "/fetchJson<any>\\('\\/mobile\\/settings', \\{\\s*method: 'PATCH',\\s*body: \\{ preferred_units: units \\}/s",
+    "location": "at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-preferred-unit-display.mjs:86:8"
+  }
+}

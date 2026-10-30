@@ -259,6 +259,9 @@ export default function AthleteDashboard() {
   const params = useLocalSearchParams<{ submittedCheckIn?: string }>();
   const { token, user, applyAccountStatePayload, workspaceKey, activeMobileMode } = useAuth();
   const requestManagerRef = useRef(createLatestRequestManager<any>());
+  const loadGenerationRef = useRef(0);
+  const focusedRef = useRef(false);
+  const liveTodayRevisionRef = useRef(0);
   const todayRef = useRef<TodayPayload | null>(null);
   const [today, setToday] = useState<TodayPayload | null>(null);
   const [loading, setLoading] = useState(true);
@@ -285,9 +288,10 @@ export default function AthleteDashboard() {
 
   useEffect(() => {
     let mounted = true;
+    const liveRevision = liveTodayRevisionRef.current;
     AsyncStorage.getItem(todayCacheKey)
       .then((raw) => {
-        if (!mounted || !raw) return;
+        if (!mounted || !raw || liveRevision !== liveTodayRevisionRef.current) return;
         const cached = JSON.parse(raw) as TodayPayload;
         if (cached?.date && isAthleteHomePayloadCurrent(cached)) {
           setToday(normalizeTodayPayload(cached));
@@ -342,6 +346,7 @@ export default function AthleteDashboard() {
 
   const loadToday = React.useCallback(
     async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
+      const loadGeneration = ++loadGenerationRef.current;
       const silent = !!opts?.silent;
       try {
         if (silent) {
@@ -362,7 +367,13 @@ export default function AthleteDashboard() {
           headers: { Authorization: `Bearer ${token}`, 'Cache-Control': 'no-cache' },
           signal,
         }));
-        if (result.kind === 'cancelled' || result.kind === 'obsolete') return;
+        if (loadGeneration !== loadGenerationRef.current || result.kind === 'obsolete') return;
+        // Cancellation from blur/supersession has already lost ownership. An
+        // unexpected transport abort of the current read is a retryable failure.
+        if (result.kind === 'cancelled') {
+          setError('Network error while loading Today.');
+          return;
+        }
         if (result.kind === 'error') {
           if (__DEV__) console.warn('Athlete Today request failed', '/athletes/mobile/dashboard', result.error);
           setError('Network error while loading Today.');
@@ -372,11 +383,13 @@ export default function AthleteDashboard() {
         const res: any = result.value;
         const classified = classifyTodayResponse<TodayPayload>(res, isAccountStateBlockedPayload);
         if (classified.kind === 'account-state-block') {
+          liveTodayRevisionRef.current += 1;
           await applyAccountStatePayload(classified.payload);
-          router.replace('/');
+          if (loadGeneration === loadGenerationRef.current) router.replace('/');
           return;
         }
         if (classified.kind === 'unauthorized') {
+          liveTodayRevisionRef.current += 1;
           setError(classified.message);
           router.replace('/login');
           return;
@@ -392,6 +405,7 @@ export default function AthleteDashboard() {
             res?.json,
           ),
         );
+        liveTodayRevisionRef.current += 1;
         if (!isAthleteHomePayloadCurrent(normalized)) {
           todayRef.current = null;
           setToday(null);
@@ -402,11 +416,18 @@ export default function AthleteDashboard() {
         setToday(normalized);
         setError(null);
         void AsyncStorage.setItem(todayCacheKey, JSON.stringify(normalized)).catch(() => undefined);
+      } catch (error) {
+        if (loadGeneration === loadGenerationRef.current) {
+          if (__DEV__) console.warn('Athlete Today could not reconcile its response', error);
+          setError('Today could not load. Please try again.');
+        }
       } finally {
-        if (silent) {
-          if (opts?.showRefreshIndicator !== false) setRefreshing(false);
-        } else {
+        // A superseded read still runs finally after its replacement starts.
+        // Only the owner may finish either indicator; otherwise a cold Today
+        // falls through to the unavailable screen while the new read is pending.
+        if (loadGeneration === loadGenerationRef.current) {
           setLoading(false);
+          setRefreshing(false);
         }
       }
     },
@@ -415,15 +436,20 @@ export default function AthleteDashboard() {
 
   useFocusEffect(
     React.useCallback(() => {
+      focusedRef.current = true;
       void loadToday({ silent: !!todayRef.current, showRefreshIndicator: false });
-      return () => requestManagerRef.current.cancel();
+      return () => {
+        focusedRef.current = false;
+        loadGenerationRef.current += 1;
+        requestManagerRef.current.cancel();
+      };
     }, [loadToday])
   );
 
   useEffect(() => {
     let previousState = AppState.currentState;
     const subscription = AppState.addEventListener('change', (nextState) => {
-      if (/inactive|background/.test(previousState) && nextState === 'active') {
+      if (focusedRef.current && /inactive|background/.test(previousState) && nextState === 'active') {
         void loadToday({ silent: !!todayRef.current, showRefreshIndicator: false });
       }
       previousState = nextState;

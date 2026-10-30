@@ -1,0 +1,621 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /fetchJson<any>\('\/mobile\/settings', \{\s*method: 'PATCH',\s*body: \{ preferred_units: units \}/s. Input:
+
+"import { useKeyboardState } from '@/components/keyboard/keyboard-state';\n" +
+  "import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';\n" +
+  "import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';\n" +
+  "import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';\n" +
+  "import { ActivityIndicator, Alert, FlatList, Keyboard, Linking, Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';\n" +
+  "import { TextInput } from '@/components/ui/sl-text';\n" +
+  "import { Ionicons } from '@expo/vector-icons';\n" +
+  "import { useFocusEffect } from '@react-navigation/native';\n" +
+  "import * as Updates from 'expo-updates';\n" +
+  "import { useRouter } from 'expo-router';\n" +
+  "import * as ImagePicker from 'expo-image-picker';\n" +
+  '\n' +
+  "import { ThemedText } from '@/components/themed-text';\n" +
+  "import { SLProfileAvatar, SLScreen } from '@/components/ui';\n" +
+  "import { useAuth } from '@/context/AuthContext';\n" +
+  "import { useMobileEducation } from '@/context/MobileEducationContext';\n" +
+  "import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';\n" +
+  'import {\n' +
+  '  API_BASE,\n' +
+  '  PRODUCTION_API_BASE,\n' +
+  '  deleteAccountRequest,\n' +
+  '  fetchJson,\n' +
+  '  startMobileBillingCheckout,\n' +
+  '  getDeviceTimezone,\n' +
+  '  setManualTimezonePreference,\n' +
+  "} from '@/lib/api';\n" +
+  "import type { MobileViewMode } from '@/lib/mobileViewMode';\n" +
+  "import { openRecoverableCheckoutBrowser, waitForBlockingUiToDismiss } from '@/lib/checkoutBrowser';\n" +
+  "import { ACCESSORY_REVIEW_CATALOG, canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';\n" +
+  'import {\n' +
+  '  convertDisplayWeightValue,\n' +
+  '  kilogramsToDisplayValue,\n' +
+  '  normalizeDisplayWeightUnit,\n' +
+  "} from '@/lib/display-units';\n" +
+  'import {\n' +
+  '  personalTrainingProfileHeaders,\n' +
+  '  resolvePersonalTrainingProfileMode,\n' +
+  '  resolveSettingsIdentityName,\n' +
+  "} from '@/lib/settings-account-parity';\n" +
+  '\n' +
+  'const FALLBACK_TIMEZONES = [\n' +
+  "  'Africa/Cairo',\n" +
+  "  'Africa/Johannesburg',\n" +
+  "  'America/Anchorage',\n" +
+  "  'America/Argentina/Buenos_Aires',\n" +
+  "  'America/Bogota',\n" +
+  "  'America/Chicago',\n" +
+  "  'America/Denver',\n" +
+  "  'America/Los_Angeles',\n" +
+  "  'America/Mexico_City',\n" +
+  "  'America/New_York',\n" +
+  "  'America/Phoenix',\n" +
+  "  'America/Sao_Paulo',\n" +
+  "  'America/Toronto',\n" +
+  "  'America/Vancouver',\n" +
+  "  'Asia/Bangkok',\n" +
+  "  'Asia/Dubai',\n" +
+  "  'Asia/Hong_Kong',\n" +
+  "  'Asia/Jakarta',\n" +
+  "  'Asia/Kolkata',\n" +
+  "  'Asia/Manila',\n" +
+  "  'Asia/Seoul',\n" +
+  "  'Asia/Shanghai',\n" +
+  "  'Asia/Singapore',\n" +
+  "  'Asia/Tokyo',\n" +
+  "  'Australia/Brisbane',\n" +
+  "  'Australia/Melbourne',\n" +
+  "  'Australia/Perth',\n" +
+  "  'Australia/Sydney',\n" +
+  "  'Europe/Amsterdam',\n" +
+  "  'Europe/Berlin',\n" +
+  "  'Europe/London',\n" +
+  "  'Europe/Madrid',\n" +
+  "  'Europe/Paris',\n" +
+  "  'Europe/Rome',\n" +
+  "  'Pacific/Auckland',\n" +
+  "  'Pacific/Honolulu',\n" +
+  '];\n' +
+  '\n' +
+  'const TIMEZONE_ALIASES: Record<string, string> = {\n' +
+  "  'Asia/Manila': 'Philippines Manila Filipino PH',\n" +
+  "  'America/Los_Angeles': 'Pacific Los Angeles California US USA',\n" +
+  "  'America/New_York': 'Eastern New York US USA',\n" +
+  "  'America/Chicago': 'Central Chicago US USA',\n" +
+  "  'America/Denver': 'Mountain Denver US USA',\n" +
+  "  'Europe/London': 'United Kingdom UK London GMT',\n" +
+  "  'Europe/Paris': 'France Paris Central Europe',\n" +
+  "  'Australia/Sydney': 'Sydney NSW Australia',\n" +
+  "  'Pacific/Auckland': 'New Zealand Auckland',\n" +
+  '};\n' +
+  '\n' +
+  'type TrainingProfileSummary = {\n' +
+  '  id?: number | null;\n' +
+  '  name?: string | null;\n' +
+  '  email?: string | null;\n' +
+  '  sex?: string | null;\n' +
+  '  bodyweight?: number | null;\n' +
+  '  preferred_units?: string | null;\n' +
+  '  squat_tm?: number | null;\n' +
+  '  bench_tm?: number | null;\n' +
+  '  deadlift_tm?: number | null;\n' +
+  '  total_tm?: number | null;\n' +
+  '  dots?: number | null;\n' +
+  '  meet_date?: string | null;\n' +
+  '  federation?: string | null;\n' +
+  '  weight_class?: string | null;\n' +
+  '  context?: TrainingProfileContext | null;\n' +
+  '  training_max_permissions?: {\n' +
+  '    can_direct_edit?: boolean;\n' +
+  '    managed_by_external_coach?: boolean;\n' +
+  '    can_suggest?: boolean;\n' +
+  '    authority_resolved?: boolean;\n' +
+  '  } | null;\n' +
+  '};\n' +
+  '\n' +
+  'type TrainingProfileContext = {\n' +
+  '  relationship_started_at?: string | null;\n' +
+  '  relationship_started_date?: string | null;\n' +
+  '  relationship_started_label?: string | null;\n' +
+  '  relationship_age_label?: string | null;\n' +
+  '  preferred_units?: string | null;\n' +
+  '  federation?: string | null;\n' +
+  '  weight_class?: string | null;\n' +
+  '  equipment_access?: string | null;\n' +
+  '  injury_notes?: string | null;\n' +
+  '  mobility_limitations?: string | null;\n' +
+  '  preferred_cues?: string | null;\n' +
+  '};\n' +
+  '\n' +
+  "type ProfileEditor = 'details' | 'units' | 'maxes' | 'context' | null;\n" +
+  "type SettingsPanel = 'coach' | 'review_queue' | 'equipment' | 'notifications' | 'privacy' | 'guidance' | 'about' | 'logout' | null;\n" +
+  '\n' +
+  'type AccountTransitionMode = {\n' +
+  '  mode?: string | null;\n' +
+  '  available?: boolean;\n' +
+  '  reason?: string | null;\n' +
+  '  next_action?: string | null;\n' +
+  '};\n' +
+  '\n' +
+  'type AccountTransitionOption = {\n' +
+  '  transition?: string | null;\n' +
+  '  available?: boolean;\n' +
+  '  reason?: string | null;\n' +
+  '  next_action?: string | null;\n' +
+  '  requires_confirmation?: boolean;\n' +
+  '  destructive?: boolean;\n' +
+  '};\n' +
+  '\n' +
+  'type AccountTransitionMetadata = {\n' +
+  '  ok?: boolean;\n' +
+  '  posture?: string | null;\n' +
+  '  current_mode?: string | null;\n' +
+  '  account_state?: string | null;\n' +
+  '  is_owner_admin?: boolean;\n' +
+  '  next_action?: string | null;\n' +
+  '  available_modes?: AccountTransitionMode[];\n' +
+  '  transitions?: AccountTransitionOption[];\n' +
+  '  unavailable_transitions?: AccountTransitionOption[];\n' +
+  '};\n' +
+  '\n' +
+  'type LinkCoachStatus = {\n' +
+  '  already_linked?: boolean;\n' +
+  '  can_link_coach?: boolean;\n' +
+  '  coach?: {\n' +
+  '    id?: number | null;\n' +
+  '    name?: string | null;\n' +
+  '    email?: string | null;\n' +
+  '  } | null;\n' +
+  '  athlete?: {\n' +
+  '    id?: number | null;\n' +
+  '    name?: string | null;\n' +
+  '    coach_id?: number | null;\n' +
+  '  } | null;\n' +
+  '  pending_invites?: Array<{\n' +
+  '    id: number;\n' +
+  '    coach_id?: number | null;\n' +
+  '    coach_name?: string | null;\n' +
+  '    coach_email?: string | null;\n' +
+  '  }>;\n' +
+  '};\n' +
+  '\n' +
+  "const TRANSITION_ATHLETE_TO_TEAM_COACH = 'athlete_to_team_coach';\n" +
+  "const TRANSITION_TEAM_COACH_TO_ATHLETE = 'team_coach_to_athlete';\n" +
+  'const normalizeUnits = (value?: string | null) => {\n' +
+  "  const raw = String(value || '').trim().toLowerCase();\n" +
+  "  return raw === 'kg' || raw === 'kgs' ? 'kg' : 'lbs';\n" +
+  '};\n' +
+  '\n' +
+  "const kgToDisplayValue = (value?: number | null, units: 'kg' | 'lbs' = 'lbs') => {\n" +
+  "  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return '';\n" +
+  '  const converted = kilogramsToDisplayValue(value, normalizeDisplayWeightUnit(units));\n' +
+  '  return Number.isInteger(converted) ? converted.toFixed(0) : converted.toFixed(1);\n' +
+  '};\n' +
+  '\n' +
+  "const displayValueToKg = (value: string, units: 'kg' | 'lbs' = 'lbs') => {\n" +
+  "  const parsed = Number(String(value || '').trim());\n" +
+  '  if (!Number.isFinite(parsed)) return 0;\n' +
+  "  return convertDisplayWeightValue(parsed, normalizeDisplayWeightUnit(units), 'kg');\n" +
+  '};\n' +
+  '\n' +
+  'const normalizeMobileMode = (value: unknown): MobileViewMode | null => {\n' +
+  "  const mode = String(value || '').trim().toLowerCase();\n" +
+  "  return ['athlete', 'coach', 'individual'].includes(mode) ? (mode as MobileViewMode) : null;\n" +
+  '};\n' +
+  '\n' +
+  'const humanizeToken = (value?: string | null) =>\n' +
+  "  String(value || '')\n" +
+  "    .replace(/_/g, ' ')\n" +
+  '    .replace(/\\b\\w/g, (char) => char.toUpperCase());\n' +
+  '\n' +
+  'const accountAccessLabel = (value?: string | null) => {\n' +
+  "  switch (String(value || '').trim().toUpperCase()) {\n" +
+  "    case 'READY_ATHLETE':\n" +
+  "    case 'READY_INDIVIDUAL':\n" +
+  "    case 'READY_TEAM_COACH':\n" +
+  "    case 'READY_OWNER_ADMIN':\n" +
+  "      return 'Ready';\n" +
+  "    case 'EMAIL_VERIFICATION_REQUIRED':\n" +
+  "      return 'Verify email';\n" +
+  "    case 'LINK_COACH_REQUIRED':\n" +
+  "      return 'Coach link needed';\n" +
+  "    case 'ACTIVATION_REQUIRED':\n" +
+  "      return 'Activation needed';\n" +
+  '    default:\n' +
+  "      return 'Status not loaded';\n" +
+  '  }\n' +
+  '};\n' +
+  '\n' +
+  'const accountActionLabel = (value?: string | null) => {\n' +
+  "  switch (String(value || '').trim().toLowerCase()) {\n" +
+  "    case 'verify_email':\n" +
+  "      return 'Verify your email to continue';\n" +
+  "    case 'activate_billing':\n" +
+  "      return 'Activate membership to continue';\n" +
+  "    case 'link_coach':\n" +
+  "    case 'accept_invite':\n" +
+  "      return 'Connect a coach to continue';\n" +
+  "    case 'confirm_offboarding':\n" +
+  "      return 'Resolve roster and billing first';\n" +
+  "    case 'choose_external_coach':\n" +
+  "      return 'Choose a coach to continue';\n" +
+  "    case 'end_external_relationship':\n" +
+  "      return 'End the active coaching relationship first';\n" +
+  "    case 'enter_beta_code':\n" +
+  "      return 'Enter your Founder Beta code';\n" +
+  '    default:\n' +
+  '      return null;\n' +
+  '  }\n' +
+  '};\n' +
+  '\n' +
+  'const accountRestrictionLabel = (value?: string | null) => {\n' +
+  "  switch (String(value || '').trim().toLowerCase()) {\n" +
+  "    case 'email_verification_required':\n" +
+  "      return 'Verify your email first';\n" +
+  "    case 'billing_required':\n" +
+  "      return 'Membership activation is required';\n" +
+  "    case 'cancelled_billing_requires_offboarding':\n" +
+  "    case 'roster_offboarding_required':\n" +
+  "      return 'Resolve roster athletes and billing first';\n" +
+  "    case 'link_coach_required':\n" +
+  "      return 'Connect a coach first';\n" +
+  "    case 'external_coach_active':\n" +
+  "      return 'End the active coaching relationship first';\n" +
+  "    case 'self_relationship_active':\n" +
+  "      return 'End self-coaching first';\n" +
+  "    case 'owner_admin_explicit':\n" +
+  "      return 'Owner/Admin access cannot be changed here';\n" +
+  "    case 'already_in_target_mode':\n" +
+  "      return 'Already using this mode';\n" +
+  "    case 'mobile_switch_not_enabled':\n" +
+  "      return 'Not enabled for this account';\n" +
+  "    case 'not_current_posture':\n" +
+  "    case 'unsupported_transition':\n" +
+  "    case 'unknown_role':\n" +
+  "      return 'Not available for this account';\n" +
+  '    default:\n' +
+  '      return null;\n' +
+  '  }\n' +
+  '};\n' +
+  '\n' +
+  "type SettingsAccent = 'purple' | 'amber' | 'teal' | 'neutral';\n" +
+  '\n' +
+  'const settingsAccentColor: Record<SettingsAccent, string> = {\n' +
+  '  purple: SLColors.accentViolet,\n' +
+  '  amber: SLColors.warning,\n' +
+  '  teal: SLColors.accentCyanMuted,\n' +
+  '  neutral: SLColors.textMuted,\n' +
+  '};\n' +
+  '\n' +
+  'function supportedTimezones(deviceTimezone: string | null) {\n' +
+  '  let zones: string[] = [];\n' +
+  '  try {\n' +
+  "    const supported = (Intl as any).supportedValuesOf?.('timeZone');\n" +
+  '    if (Array.isArray(supported)) zones = supported;\n' +
+  '  } catch {\n' +
+  '    zones = [];\n' +
+  '  }\n' +
+  '  if (!zones.length) zones = FALLBACK_TIMEZONES;\n' +
+  '  if (deviceTimezone && !zones.includes(deviceTimezone)) zones = [deviceTimezone, ...zones];\n' +
+  "  for (const required of ['Asia/Manila', 'America/Los_Angeles', 'America/New_York', 'Europe/London', 'Europe/Paris', 'Australia/Sydney', 'Pacific/Auckland']) {\n" +
+  '  '... 141611 more characters
+
+    at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-preferred-unit-display.mjs:86:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: "import { useKeyboardState } from '@/components/keyboard/keyboard-state';\n" +
+    "import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';\n" +
+    "import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';\n" +
+    "import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';\n" +
+    "import { ActivityIndicator, Alert, FlatList, Keyboard, Linking, Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';\n" +
+    "import { TextInput } from '@/components/ui/sl-text';\n" +
+    "import { Ionicons } from '@expo/vector-icons';\n" +
+    "import { useFocusEffect } from '@react-navigation/native';\n" +
+    "import * as Updates from 'expo-updates';\n" +
+    "import { useRouter } from 'expo-router';\n" +
+    "import * as ImagePicker from 'expo-image-picker';\n" +
+    '\n' +
+    "import { ThemedText } from '@/components/themed-text';\n" +
+    "import { SLProfileAvatar, SLScreen } from '@/components/ui';\n" +
+    "import { useAuth } from '@/context/AuthContext';\n" +
+    "import { useMobileEducation } from '@/context/MobileEducationContext';\n" +
+    "import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';\n" +
+    'import {\n' +
+    '  API_BASE,\n' +
+    '  PRODUCTION_API_BASE,\n' +
+    '  deleteAccountRequest,\n' +
+    '  fetchJson,\n' +
+    '  startMobileBillingCheckout,\n' +
+    '  getDeviceTimezone,\n' +
+    '  setManualTimezonePreference,\n' +
+    "} from '@/lib/api';\n" +
+    "import type { MobileViewMode } from '@/lib/mobileViewMode';\n" +
+    "import { openRecoverableCheckoutBrowser, waitForBlockingUiToDismiss } from '@/lib/checkoutBrowser';\n" +
+    "import { ACCESSORY_REVIEW_CATALOG, canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';\n" +
+    'import {\n' +
+    '  convertDisplayWeightValue,\n' +
+    '  kilogramsToDisplayValue,\n' +
+    '  normalizeDisplayWeightUnit,\n' +
+    "} from '@/lib/display-units';\n" +
+    'import {\n' +
+    '  personalTrainingProfileHeaders,\n' +
+    '  resolvePersonalTrainingProfileMode,\n' +
+    '  resolveSettingsIdentityName,\n' +
+    "} from '@/lib/settings-account-parity';\n" +
+    '\n' +
+    'const FALLBACK_TIMEZONES = [\n' +
+    "  'Africa/Cairo',\n" +
+    "  'Africa/Johannesburg',\n" +
+    "  'America/Anchorage',\n" +
+    "  'America/Argentina/Buenos_Aires',\n" +
+    "  'America/Bogota',\n" +
+    "  'America/Chicago',\n" +
+    "  'America/Denver',\n" +
+    "  'America/Los_Angeles',\n" +
+    "  'America/Mexico_City',\n" +
+    "  'America/New_York',\n" +
+    "  'America/Phoenix',\n" +
+    "  'America/Sao_Paulo',\n" +
+    "  'America/Toronto',\n" +
+    "  'America/Vancouver',\n" +
+    "  'Asia/Bangkok',\n" +
+    "  'Asia/Dubai',\n" +
+    "  'Asia/Hong_Kong',\n" +
+    "  'Asia/Jakarta',\n" +
+    "  'Asia/Kolkata',\n" +
+    "  'Asia/Manila',\n" +
+    "  'Asia/Seoul',\n" +
+    "  'Asia/Shanghai',\n" +
+    "  'Asia/Singapore',\n" +
+    "  'Asia/Tokyo',\n" +
+    "  'Australia/Brisbane',\n" +
+    "  'Australia/Melbourne',\n" +
+    "  'Australia/Perth',\n" +
+    "  'Australia/Sydney',\n" +
+    "  'Europe/Amsterdam',\n" +
+    "  'Europe/Berlin',\n" +
+    "  'Europe/London',\n" +
+    "  'Europe/Madrid',\n" +
+    "  'Europe/Paris',\n" +
+    "  'Europe/Rome',\n" +
+    "  'Pacific/Auckland',\n" +
+    "  'Pacific/Honolulu',\n" +
+    '];\n' +
+    '\n' +
+    'const TIMEZONE_ALIASES: Record<string, string> = {\n' +
+    "  'Asia/Manila': 'Philippines Manila Filipino PH',\n" +
+    "  'America/Los_Angeles': 'Pacific Los Angeles California US USA',\n" +
+    "  'America/New_York': 'Eastern New York US USA',\n" +
+    "  'America/Chicago': 'Central Chicago US USA',\n" +
+    "  'America/Denver': 'Mountain Denver US USA',\n" +
+    "  'Europe/London': 'United Kingdom UK London GMT',\n" +
+    "  'Europe/Paris': 'France Paris Central Europe',\n" +
+    "  'Australia/Sydney': 'Sydney NSW Australia',\n" +
+    "  'Pacific/Auckland': 'New Zealand Auckland',\n" +
+    '};\n' +
+    '\n' +
+    'type TrainingProfileSummary = {\n' +
+    '  id?: number | null;\n' +
+    '  name?: string | null;\n' +
+    '  email?: string | null;\n' +
+    '  sex?: string | null;\n' +
+    '  bodyweight?: number | null;\n' +
+    '  preferred_units?: string | null;\n' +
+    '  squat_tm?: number | null;\n' +
+    '  bench_tm?: number | null;\n' +
+    '  deadlift_tm?: number | null;\n' +
+    '  total_tm?: number | null;\n' +
+    '  dots?: number | null;\n' +
+    '  meet_date?: string | null;\n' +
+    '  federation?: string | null;\n' +
+    '  weight_class?: string | null;\n' +
+    '  context?: TrainingProfileContext | null;\n' +
+    '  training_max_permissions?: {\n' +
+    '    can_direct_edit?: boolean;\n' +
+    '    managed_by_external_coach?: boolean;\n' +
+    '    can_suggest?: boolean;\n' +
+    '    authority_resolved?: boolean;\n' +
+    '  } | null;\n' +
+    '};\n' +
+    '\n' +
+    'type TrainingProfileContext = {\n' +
+    '  relationship_started_at?: string | null;\n' +
+    '  relationship_started_date?: string | null;\n' +
+    '  relationship_started_label?: string | null;\n' +
+    '  relationship_age_label?: string | null;\n' +
+    '  preferred_units?: string | null;\n' +
+    '  federation?: string | null;\n' +
+    '  weight_class?: string | null;\n' +
+    '  equipment_access?: string | null;\n' +
+    '  injury_notes?: string | null;\n' +
+    '  mobility_limitations?: string | null;\n' +
+    '  preferred_cues?: string | null;\n' +
+    '};\n' +
+    '\n' +
+    "type ProfileEditor = 'details' | 'units' | 'maxes' | 'context' | null;\n" +
+    "type SettingsPanel = 'coach' | 'review_queue' | 'equipment' | 'notifications' | 'privacy' | 'guidance' | 'about' | 'logout' | null;\n" +
+    '\n' +
+    'type AccountTransitionMode = {\n' +
+    '  mode?: string | null;\n' +
+    '  available?: boolean;\n' +
+    '  reason?: string | null;\n' +
+    '  next_action?: string | null;\n' +
+    '};\n' +
+    '\n' +
+    'type AccountTransitionOption = {\n' +
+    '  transition?: string | null;\n' +
+    '  available?: boolean;\n' +
+    '  reason?: string | null;\n' +
+    '  next_action?: string | null;\n' +
+    '  requires_confirmation?: boolean;\n' +
+    '  destructive?: boolean;\n' +
+    '};\n' +
+    '\n' +
+    'type AccountTransitionMetadata = {\n' +
+    '  ok?: boolean;\n' +
+    '  posture?: string | null;\n' +
+    '  current_mode?: string | null;\n' +
+    '  account_state?: string | null;\n' +
+    '  is_owner_admin?: boolean;\n' +
+    '  next_action?: string | null;\n' +
+    '  available_modes?: AccountTransitionMode[];\n' +
+    '  transitions?: AccountTransitionOption[];\n' +
+    '  unavailable_transitions?: AccountTransitionOption[];\n' +
+    '};\n' +
+    '\n' +
+    'type LinkCoachStatus = {\n' +
+    '  already_linked?: boolean;\n' +
+    '  can_link_coach?: boolean;\n' +
+    '  coach?: {\n' +
+    '    id?: number | null;\n' +
+    '    name?: string | null;\n' +
+    '    email?: string | null;\n' +
+    '  } | null;\n' +
+    '  athlete?: {\n' +
+    '    id?: number | null;\n' +
+    '    name?: string | null;\n' +
+    '    coach_id?: number | null;\n' +
+    '  } | null;\n' +
+    '  pending_invites?: Array<{\n' +
+    '    id: number;\n' +
+    '    coach_id?: number | null;\n' +
+    '    coach_name?: string | null;\n' +
+    '    coach_email?: string | null;\n' +
+    '  }>;\n' +
+    '};\n' +
+    '\n' +
+    "const TRANSITION_ATHLETE_TO_TEAM_COACH = 'athlete_to_team_coach';\n" +
+    "const TRANSITION_TEAM_COACH_TO_ATHLETE = 'team_coach_to_athlete';\n" +
+    'const normalizeUnits = (value?: string | null) => {\n' +
+    "  const raw = String(value || '').trim().toLowerCase();\n" +
+    "  return raw === 'kg' || raw === 'kgs' ? 'kg' : 'lbs';\n" +
+    '};\n' +
+    '\n' +
+    "const kgToDisplayValue = (value?: number | null, units: 'kg' | 'lbs' = 'lbs') => {\n" +
+    "  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return '';\n" +
+    '  const converted = kilogramsToDisplayValue(value, normalizeDisplayWeightUnit(units));\n' +
+    '  return Number.isInteger(converted) ? converted.toFixed(0) : converted.toFixed(1);\n' +
+    '};\n' +
+    '\n' +
+    "const displayValueToKg = (value: string, units: 'kg' | 'lbs' = 'lbs') => {\n" +
+    "  const parsed = Number(String(value || '').trim());\n" +
+    '  if (!Number.isFinite(parsed)) return 0;\n' +
+    "  return convertDisplayWeightValue(parsed, normalizeDisplayWeightUnit(units), 'kg');\n" +
+    '};\n' +
+    '\n' +
+    'const normalizeMobileMode = (value: unknown): MobileViewMode | null => {\n' +
+    "  const mode = String(value || '').trim().toLowerCase();\n" +
+    "  return ['athlete', 'coach', 'individual'].includes(mode) ? (mode as MobileViewMode) : null;\n" +
+    '};\n' +
+    '\n' +
+    'const humanizeToken = (value?: string | null) =>\n' +
+    "  String(value || '')\n" +
+    "    .replace(/_/g, ' ')\n" +
+    '    .replace(/\\b\\w/g, (char) => char.toUpperCase());\n' +
+    '\n' +
+    'const accountAccessLabel = (value?: string | null) => {\n' +
+    "  switch (String(value || '').trim().toUpperCase()) {\n" +
+    "    case 'READY_ATHLETE':\n" +
+    "    case 'READY_INDIVIDUAL':\n" +
+    "    case 'READY_TEAM_COACH':\n" +
+    "    case 'READY_OWNER_ADMIN':\n" +
+    "      return 'Ready';\n" +
+    "    case 'EMAIL_VERIFICATION_REQUIRED':\n" +
+    "      return 'Verify email';\n" +
+    "    case 'LINK_COACH_REQUIRED':\n" +
+    "      return 'Coach link needed';\n" +
+    "    case 'ACTIVATION_REQUIRED':\n" +
+    "      return 'Activation needed';\n" +
+    '    default:\n' +
+    "      return 'Status not loaded';\n" +
+    '  }\n' +
+    '};\n' +
+    '\n' +
+    'const accountActionLabel = (value?: string | null) => {\n' +
+    "  switch (String(value || '').trim().toLowerCase()) {\n" +
+    "    case 'verify_email':\n" +
+    "      return 'Verify your email to continue';\n" +
+    "    case 'activate_billing':\n" +
+    "      return 'Activate membership to continue';\n" +
+    "    case 'link_coach':\n" +
+    "    case 'accept_invite':\n" +
+    "      return 'Connect a coach to continue';\n" +
+    "    case 'confirm_offboarding':\n" +
+    "      return 'Resolve roster and billing first';\n" +
+    "    case 'choose_external_coach':\n" +
+    "      return 'Choose a coach to continue';\n" +
+    "    case 'end_external_relationship':\n" +
+    "      return 'End the active coaching relationship first';\n" +
+    "    case 'enter_beta_code':\n" +
+    "      return 'Enter your Founder Beta code';\n" +
+    '    default:\n' +
+    '      return null;\n' +
+    '  }\n' +
+    '};\n' +
+    '\n' +
+    'const accountRestrictionLabel = (value?: string | null) => {\n' +
+    "  switch (String(value || '').trim().toLowerCase()) {\n" +
+    "    case 'email_verification_required':\n" +
+    "      return 'Verify your email first';\n" +
+    "    case 'billing_required':\n" +
+    "      return 'Membership activation is required';\n" +
+    "    case 'cancelled_billing_requires_offboarding':\n" +
+    "    case 'roster_offboarding_required':\n" +
+    "      return 'Resolve roster athletes and billing first';\n" +
+    "    case 'link_coach_required':\n" +
+    "      return 'Connect a coach first';\n" +
+    "    case 'external_coach_active':\n" +
+    "      return 'End the active coaching relationship first';\n" +
+    "    case 'self_relationship_active':\n" +
+    "      return 'End self-coaching first';\n" +
+    "    case 'owner_admin_explicit':\n" +
+    "      return 'Owner/Admin access cannot be changed here';\n" +
+    "    case 'already_in_target_mode':\n" +
+    "      return 'Already using this mode';\n" +
+    "    case 'mobile_switch_not_enabled':\n" +
+    "      return 'Not enabled for this account';\n" +
+    "    case 'not_current_posture':\n" +
+    "    case 'unsupported_transition':\n" +
+    "    case 'unknown_role':\n" +
+    "      return 'Not available for this account';\n" +
+    '    default:\n' +
+    '      return null;\n' +
+    '  }\n' +
+    '};\n' +
+    '\n' +
+    "type SettingsAccent = 'purple' | 'amber' | 'teal' | 'neutral';\n" +
+    '\n' +
+    'const settingsAccentColor: Record<SettingsAccent, string> = {\n' +
+    '  purple: SLColors.accentViolet,\n' +
+    '  amber: SLColors.warning,\n' +
+    '  teal: SLColors.accentCyanMuted,\n' +
+    '  neutral: SLColors.textMuted,\n' +
+    '};\n' +
+    '\n' +
+    'function supportedTimezones(deviceTimezone: string | null) {\n' +
+    '  let zones: string[] = [];\n' +
+    '  try {\n' +
+    "    const supported = (Intl as any).supportedValuesOf?.('timeZone');\n" +
+    '    if (Array.isArray(supported)) zones = supported;\n' +
+    '  } catch {\n' +
+    '    zones = [];\n' +
+    '  }\n' +
+    '  if (!zones.length) zones = FALLBACK_TIMEZONES;\n' +
+    '  if (deviceTimezone && !zones.includes(deviceTimezone)) zones = [deviceTimezone, ...zones];\n' +
+    "  for (const required of ['Asia/Manila', 'America/Los_Angeles', 'America/New_York', 'Europe/London', 'Europe/Paris', 'Australia/Sydney', 'Pacific/Auckland']) {\n" +
+    '  '... 141611 more characters,
+  expected: /fetchJson<any>\('\/mobile\/settings', \{\s*method: 'PATCH',\s*body: \{ preferred_units: units \}/s,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v25.2.1

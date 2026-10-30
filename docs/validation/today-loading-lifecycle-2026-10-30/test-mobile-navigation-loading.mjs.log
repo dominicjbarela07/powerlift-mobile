@@ -1,0 +1,1 @@
+PASS: actual Ledger hook and Calendar route; cold/warm/expiry, concurrent reads, mutation, account switch, obsolete responses, foreground/manual freshness and authorization denial.

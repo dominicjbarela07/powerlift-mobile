@@ -1,0 +1,48 @@
+{
+  "baseline": "bc2cea017a467d9c0a9a4d93e94aa4e340505511",
+  "destination": "canonical mobile DEV, runtime 3.0",
+  "source": [
+    {
+      "path": "app/(tabs)/athlete-dashboard.tsx",
+      "sha256": "b68b8548086789d35bf48d01f94ecffa6cc1a25330c19bcd3298a895e41bc926"
+    },
+    {
+      "path": "scripts/test-today-loading-lifecycle.mjs",
+      "sha256": "8e60694e2a22da84c989c8aea5b7a35b4d66c2606b752e28edfa312026203ebe"
+    },
+    {
+      "path": "docs/release/TODAY_LOADING_LIFECYCLE_2026-10-30.md",
+      "sha256": "7d0ea2edbb936539935390ff5f2a8fcc0b665a34c3fff3e59ed172bec42b404c"
+    }
+  ],
+  "originalRouteSha256": "c2660b6e4931d9fdccee1089f2c8aeb1e7d9a2aadbc51a94e82d953af16ccca1",
+  "originalRegressionExitCode": 1,
+  "finalRegressionExitCode": 0,
+  "deliberateOwnerGuardRemovalRejected": true,
+  "typecheckExitCode": 0,
+  "adjacentPasses": 9,
+  "knownHistoricalCheck": {
+    "baseline": "bc2cea017a467d9c0a9a4d93e94aa4e340505511",
+    "quarantineGroup": "superseded-source-shape-snapshot",
+    "unchanged": [
+      {
+        "path": "scripts/test-preferred-unit-display.mjs",
+        "unchangedFromHEAD": true
+      },
+      {
+        "path": "app/(tabs)/settings.tsx",
+        "unchangedFromHEAD": true
+      }
+    ],
+    "originalDashboardProbe": {
+      "exitCode": 1,
+      "error": "AssertionError",
+      "operator": "match",
+      "expected": "/fetchJson<any>\\('\\/mobile\\/settings', \\{\\s*method: 'PATCH',\\s*body: \\{ preferred_units: units \\}/s",
+      "location": "at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-preferred-unit-display.mjs:86:8"
+    }
+  },
+  "published": false,
+  "simulatorRun": false,
+  "physicalDeviceObserved": false
+}
