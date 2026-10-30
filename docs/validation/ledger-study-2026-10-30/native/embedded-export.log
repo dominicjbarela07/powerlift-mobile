@@ -1,0 +1,11 @@
+React Compiler enabled
+Starting Metro Bundler
+| (node:68541) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:68542) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+iOS dev-mocks/ledger-study/native.tsx ▓▓▓▓▓▓░░░░░░░░░░ 41.4% (285/443)
+iOS Bundled 4072ms dev-mocks/ledger-study/native.tsx (795 modules)
+Writing bundle output to: /Users/dominic/.codex/work/ledger-study-20261030/native/candidate/StrengthLedger.app/main.jsbundle
+Copying 24 asset files
+Done writing bundle output

@@ -1,0 +1,43 @@
+{
+  "installedHandoff": {
+    "pass": true,
+    "bundleSHA256": "c45498377ff0691dc4c55ef0ba6c3bcbfce9d7ae056bc3214fa3d6653012f9b6",
+    "apiBase": "https://app.strengthledger.fit",
+    "liveSourceSHA": "ca6213b7378dad5d3546fe5b3ef8b73e4fb3af82"
+  },
+  "negativeControls": [
+    {
+      "name": "stale-bundle",
+      "rejected": true,
+      "reason": "Installed bundle is stale or differs from the tested candidate"
+    },
+    {
+      "name": "local-backend",
+      "rejected": true,
+      "reason": "Candidate is not using the actual live Production backend"
+    },
+    {
+      "name": "probe-not-removed",
+      "rejected": true,
+      "reason": "Temporary probe remains in handoff"
+    }
+  ],
+  "preservedOriginalNativeResources": 1173,
+  "expectedChangedNativeFiles": [
+    "main.jsbundle (local isolated preview)",
+    "StrengthLedger and _CodeSignature (ad-hoc simulator re-signing)"
+  ],
+  "observedNativeFlows": [
+    "Records: all three core lifts visible; fonts and icons loaded",
+    "Squat: 5-rep metric and 6-week chart with six observations",
+    "5-rep source sheet: 170kg x5, October28, prior165kg; close returns to same profile",
+    "History: Lower Week4 with14sets and original equipment contexts",
+    "Milestones:150kg qualifying single and405lb unit-specific qualification",
+    "Tab switching retains selected Squat and chart controls; Back returns to Records",
+    "Owner takeover at Records in kg"
+  ],
+  "productDataMutations": 0,
+  "recordData": "fictional",
+  "nativeStoreBuild": false,
+  "productionRelease": false
+}

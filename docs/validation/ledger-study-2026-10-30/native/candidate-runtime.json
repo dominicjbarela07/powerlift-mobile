@@ -1,0 +1,28 @@
+{
+  "apiBase": "https://app.strengthledger.fit",
+  "bundleSHA256": "c45498377ff0691dc4c55ef0ba6c3bcbfce9d7ae056bc3214fa3d6653012f9b6",
+  "nativeShellVersion": "2.1.0",
+  "nativeStoreCertification": false,
+  "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "sourceBaseSHA": "0d61d64f5117d80f12042c57e46ee1d7715c2cfc",
+  "nativeEntrySHA256": "7cd02a2d0d470688e475a0f67dc88887f9c75b64baa989bb5691e5d9e1faa5f4",
+  "temporaryProbeRemoved": true,
+  "exportedAssetEntries": 24,
+  "missingExportAssets": 0,
+  "nativeExpoSecureStoreProof": {
+    "apiBase": "https://app.strengthledger.fit",
+    "realAuthKeysAccessed": false,
+    "observedAt": "2026-10-30T18:38:27.914Z",
+    "missingReadIsNull": true,
+    "roundtrip": true,
+    "deletedReadIsNull": true,
+    "liveHealthStatus": 200,
+    "liveSourceSHA": "ca6213b7378dad5d3546fe5b3ef8b73e4fb3af82",
+    "liveReady": true,
+    "pass": true
+  },
+  "liveBackendSource": "ca6213b7378dad5d3546fe5b3ef8b73e4fb3af82",
+  "fixtureRecordsOnly": true,
+  "installedApp": "/Users/dominic/Library/Developer/CoreSimulator/Devices/932A8DB1-E374-4040-9DD3-627EDA94EE26/data/Containers/Bundle/Application/AB7F600E-2D03-4F9C-B417-DA75EFB34704/StrengthLedger.app",
+  "observedPlatform": "Native iOS 26.2, iPhone Air, existing simulator shell; no store/native compilation"
+}

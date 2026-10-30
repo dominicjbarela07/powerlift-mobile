@@ -245,3 +245,56 @@ Recommended next design review: find a five-rep best; inspect an assisted-machin
 record; locate a past Session; find a club's qualifying set; then return without
 restarting the task. The owner can use this concrete prototype to judge the
 navigation and visual direction before authorizing a product migration.
+
+## Owner simulator correction — October 30
+
+The owner explicitly requested the new Ledger design in the iOS simulator,
+superseding the browser-only presentation destination. Acceptance: load the
+canonical DEV React Native study in the iPhone simulator, inspect actual native
+rendering and primary flows, and leave Records open for owner interaction.
+Reuse an installed native shell if compatible; preserve its previous bundle
+and all app data. No store build, TestFlight publication, product-auth bypass,
+Production change, artwork alteration or live-record mutation is authorized.
+Run the existing native handoff checks, including a fresh disposable SecureStore
+and anonymous live-backend health proof; distinguish the illustrative record
+data from the real service check. Browser evidence does not establish this
+native handoff.
+
+### Native handoff completed
+
+The isolated `dev-mocks/ledger-study/native.tsx` entry renders the same study
+inside native safe areas, with the actual fonts, icons and status bar. It is
+explicitly bundled for this local presentation and never imported by the product
+root. The existing authenticated app route retains its DEV guard. The historical
+2.1.0 simulator shell was reused and locally re-signed; no store/runtime release
+or native compilation occurred. The original app is preserved outside Git and
+all original native resources, including imagery, are byte-identical.
+
+Initial raw bundles exposed two local packaging issues: embedded development
+devtools could not initialize, and a raw release Metro bundle resolved embedded
+fonts incorrectly. Neither state was handed over. The final candidate uses the
+official Expo `export:embed` serializer against canonical DEV source, with an
+explicit isolated entry and release-style JavaScript. All24 required assets and
+the actual installed bundle were byte checked. Corrected native typography and
+icons, safe areas and the final Records screen were visually inspected. Canonical
+npm-start browser evidence remains separate from this embedded native evidence.
+
+Actual iPhone Air/iOS26.2 interaction verified Records, Squat, chart metric/range
+changes, exact source evidence and return, History → Session, Milestones,
+unit-specific qualifications, preserved destination context and Back to Records.
+The simulator is left on Records in kg for owner interaction.
+
+Fresh native SecureStore missing/read/write/delete checks passed using a disposable
+key. The actual native anonymous Production health request returned200, readytrue,
+source `ca6213b7378dad5d3546fe5b3ef8b73e4fb3af82`; no customer auth keys were read.
+The temporary probe is absent from the final bundle. The existing native handoff
+guard passed and deliberately rejected stale-bundle, local-backend and retained-
+probe receipts. This connection check is separate from the fictional Ledger data.
+
+TypeScript and all18 semantic checks passed. Evidence is retained under
+`docs/validation/ledger-study-2026-10-30/native/`, including the exact installed
+bundle and entry hashes, asset checks, fresh runtime proof, guard failures and
+observed flows. Source base: `0d61d64f`; the additive entry is SHA256-bound.
+The changed state is local presentation/bootstrap only. Product AuthContext,
+account access, data writers and backend are untouched; real training history
+and Production are unchanged. No TestFlight or store publication was performed.
