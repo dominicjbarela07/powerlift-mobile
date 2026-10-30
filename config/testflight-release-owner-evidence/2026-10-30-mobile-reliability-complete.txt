@@ -1,0 +1,12 @@
+Observed supplied Today UI: Today is unavailable.
+Owner Today report: It just pops up every time I switch to athlete or open it up, Today unavailable, and then it'll randomly resolve itself or, like, I have to fucking click around in some shit and then it'll end up resolving itself. Please look into what's going on, because I'm fucking tired of seeing that and it's a bad look.
+
+Active Session Set edit owner report: When I go to edit a set log when I'm in an active session, it'll just give me the fucking spinning wheel of death when I submit it. It'll time out after 15 seconds. I'll click retry and it automatically goes through. I believe we had a similar issue in the past on the actual initial set logs where we fixed it, but I need you to figure out what that is.
+
+Exact current release authorization:
+If the last two fixes are fully validated and you're confident in its ability to work, please ship it to 3.0.
+
+Engineering delivery scope: preserve the complete currently published 3.0 release, native build and approved art. Only Today loading and active-Session edit reliability plus matching validated backend are included. Keep unrelated DEV onboarding and prior explicit Cable holdbacks. No native build, simulator, 2.1 publication or legacy Production channel remap.
+
+Observed supplied Today screen control label: Retry.
+This UI observation supplements the unchanged original owner report above; it is not a new owner instruction.
