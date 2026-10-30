@@ -159012,8 +159012,8 @@
   },
   "ownerDirectedClientFix": {
     "ownerInstruction": "If the last two fixes are fully validated and you're confident in its ability to work, please ship it to 3.0.",
-    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-30-mobile-reliability.txt",
-    "ownerEvidenceSha256": "e51066a325e628ed15c0fe72313f99b10d23277ea17cb92cd9c43bd2145c7684",
+    "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-10-30-mobile-reliability-complete.txt",
+    "ownerEvidenceSha256": "b3c792d260e7674eca6552255d4c35a166c287f1b62ccf7a7527405dd21908d0",
     "scope": "mobile-reliability-20261030",
     "reason": "Release only the validated Today loading ownership and active Session edit reliability fixes, retaining all current 3.0 source, native graph and approved images.",
     "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
@@ -166100,5 +166100,18 @@
     "appleButtonStringAbsentFromServedBundle": true,
     "installedDeviceObserved": false,
     "workflowComplete": true
-  }
+  },
+  "ownerEvidenceSupplements": [
+    {
+      "original": {
+        "path": "config/testflight-release-owner-evidence/2026-10-30-mobile-reliability.txt",
+        "sha256": "e51066a325e628ed15c0fe72313f99b10d23277ea17cb92cd9c43bd2145c7684"
+      },
+      "supplement": {
+        "path": "config/testflight-release-owner-evidence/2026-10-30-mobile-reliability-complete.txt",
+        "sha256": "b3c792d260e7674eca6552255d4c35a166c287f1b62ccf7a7527405dd21908d0"
+      },
+      "reason": "Retain original exact user wording and record the actual Retry button label visible in the supplied Today screenshot, as required by the existing scope guard."
+    }
+  ]
 }
