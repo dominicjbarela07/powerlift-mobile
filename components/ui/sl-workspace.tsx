@@ -14,6 +14,7 @@ import {
 import React, { useState, type ReactNode } from 'react';
 import {
   ImageBackground,
+  Image,
   ImageStyle,
   StyleSheet,
   View,
@@ -90,7 +91,9 @@ function surfaceStyle(
 
 export function SLWorkspaceBackground({ style }: { style?: StyleProp<ViewStyle> }) {
   const ledger = ledgerCanvasActive(usePathname());
-  return <View pointerEvents="none" style={[StyleSheet.absoluteFillObject, styles.workspace, ledger && { backgroundColor: SLLedgerMaterial.canvas }, style]} />;
+  return <View pointerEvents="none" style={[StyleSheet.absoluteFillObject, styles.workspace, ledger && { backgroundColor: SLLedgerMaterial.canvas }, style]}>
+    {ledger ? <Image accessible={false} accessibilityIgnoresInvertColors source={require('@/assets/images/ledger-cleanup/brushed-gunmetal-v1.png')} resizeMode="cover" style={[StyleSheet.absoluteFillObject, { opacity: SLLedgerMaterial.textureOpacity }]} /> : null}
+  </View>;
 }
 
 export function SLMaterialOverlay({

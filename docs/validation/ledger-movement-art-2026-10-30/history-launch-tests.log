@@ -1,0 +1,5 @@
+
+> powerlift_mobile@1.0.0 test:movement-history-launch
+> node --import tsx scripts/test-movement-history-launch.mjs
+
+[movement-history-launch] canonical identity, legacy resolution, equipment context, controlled failure, and state preservation passed

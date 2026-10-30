@@ -1,0 +1,17 @@
+{
+  "tool": "built-in image_gen",
+  "use": "Ledger shared canvas only",
+  "source": "/Users/dominic/.codex/generated_images/01a16161-4520-7831-bf82-fa67f2d53abc/exec-df67a29f-bd23-43d2-b7ac-2e628fd90a3b.png",
+  "sha256": "8e377d346106ceb7c3857936d9d7556657bc892e055f404cddcd83d25261e767",
+  "dimensions": [
+    1024,
+    1536
+  ],
+  "prompt": "Use case: stylized-concept. Asset type: a production mobile-app background texture, NOT a mockup and NOT an interface. Generate a single seamless-looking flat dark brushed GUNMETAL sheet filling the entire portrait image, 1024 by 1536 aspect ratio. Material: premium cold rolled dark iron, exceptionally fine horizontal hairline brushing, very subtle micrograin, muted cool graphite and steel undertones. Overall appearance is DARK, near rgb(16,20,25) to rgb(25,30,36), not pale gray and not jet black. Extremely low contrast texture and very soft broad ambient variation only, so white typography over the image stays perfectly readable. Straight-on orthographic flat plane; no visible edges, no perspective, no seams. No glints or bright highlights; no scratches, distress, grunge, rust, objects, icons, circles, plates, equipment, gradients of colored light, blue/purple glow, text, UI, borders, or vignette. Keep the brushing fine and understated enough to disappear behind content. The result must feel like a quiet premium dark metal material, cool iron.",
+  "native_presentation": {
+    "base": "SLLedgerMaterial.canvas",
+    "opacity": "SLLedgerMaterial.textureOpacity",
+    "resizeMode": "cover"
+  },
+  "movement_artwork_changed": false
+}

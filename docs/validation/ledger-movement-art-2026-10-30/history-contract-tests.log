@@ -1,0 +1,5 @@
+
+> powerlift_mobile@1.0.0 test:canonical-movement-history-v2
+> node --import tsx scripts/test-canonical-movement-history-v2.mjs
+
+[movement-history-v2] canonical surface, analytics charts, shared detail, units, and entry-point contracts passed

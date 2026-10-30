@@ -1,0 +1,19 @@
+{
+  "parent": "ff2e9e9b8655b6846baf49544591a96f468bbbd4",
+  "movement_art": {
+    "assets/images/movement-artwork/core-sbd-v1/competition_squat-app.png": {
+      "sha256": "2c2439f2c2b90aaaafa137aff4b1328d8c2ec3a182a501c24180a66912bbbed6",
+      "unchanged_from_parent": true
+    },
+    "assets/images/movement-artwork/core-sbd-v1/competition_bench-app.png": {
+      "sha256": "7541a61a7251e6a90389d211db3e1c9eca82fed604b76e5c064ee755e1395edc",
+      "unchanged_from_parent": true
+    },
+    "assets/images/movement-artwork/core-sbd-v1/competition_deadlift-app.png": {
+      "sha256": "4955e749892a946660fc80858e14a716ebc22df8634877c05ce13da2eb5c9b2b",
+      "unchanged_from_parent": true
+    }
+  },
+  "policy_or_crop_edits": false,
+  "backend_or_training_data_mutations": false
+}

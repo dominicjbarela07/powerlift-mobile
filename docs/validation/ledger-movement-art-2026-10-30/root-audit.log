@@ -1,0 +1,3 @@
+Transparent screen-root audit failed:
+- components/ledger-study/LedgerDesignStudy.tsx::root paints C.canvas
+- components/onboarding/SignupWelcome.tsx::screen paints SLColors.canvas

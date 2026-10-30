@@ -1,0 +1,5 @@
+
+> powerlift_mobile@1.0.0 test:canonical-movement-artwork
+> node --import tsx scripts/test-canonical-movement-artwork.mjs
+
+[canonical-movement-artwork] 6 screenshot fixtures + fail-closed and consumer enforcement passed

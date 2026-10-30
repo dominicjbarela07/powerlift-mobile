@@ -10,6 +10,8 @@ import { AnalyticalHistoryChart } from '@/components/movement-history/Analytical
 import { EducationInlineHint, useEducationHint, useMobileEducation } from '@/context/MobileEducationContext';
 import { ChartAxisModeToggle } from '@/components/charts/ChartAxisModeToggle';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { LedgerMovementBackdrop } from '@/components/ledger/LedgerMovementBackdrop';
+import { ledgerDefinitionArtwork } from '@/lib/ledger-movement-art';
 import { canonicalArtworkInputFromDefinition } from '@/lib/canonical-movement-artwork';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { SLContextualHeader } from '@/components/ui';
@@ -188,6 +190,7 @@ export function CanonicalMovementHistoryScreen({
   activeSessionId,
   initialDisplayUnit,
   presentation = 'screen',
+  ledgerAtmosphere = false,
   readOnly = false,
   onRequestClose,
 }: {
@@ -197,6 +200,7 @@ export function CanonicalMovementHistoryScreen({
   initialEquipmentContextDefinitionId?: number | null;
   activeSessionId?: number | null;
   initialDisplayUnit?: MovementHistoryUnit | null;
+  ledgerAtmosphere?: boolean;
   presentation?: 'screen' | 'sheet';
   readOnly?: boolean;
   onRequestClose?: () => void;
@@ -404,17 +408,17 @@ export function CanonicalMovementHistoryScreen({
       >
         {loading && !history ? <State icon="hourglass-outline" title="Loading exact movement evidence" /> : error && !history ? <State icon="alert-circle-outline" title={error} action="Try again" onAction={() => void load(false)} /> : history ? (
           <>
-            <View style={styles.movementHeader}>
-              <View style={styles.muscleArtworkFrame}>
+            <View style={[styles.movementHeader,ledgerAtmosphere&&styles.ledgerMovementHeader]}>
+              {ledgerAtmosphere?<LedgerMovementBackdrop movement={ledgerDefinitionArtwork(history.movement)} width={226} testID="ledger-history-movement-backdrop"/>:<View style={styles.muscleArtworkFrame}>
                 <CanonicalMovementArtwork movement={canonicalArtworkInputFromDefinition(history.movement)} size={__DEV__ ? 112 : 86} testID="movement-history-canonical-artwork" />
-              </View>
-              <View style={styles.movementIdentity}>
+              </View>}
+              <View style={[styles.movementIdentity,ledgerAtmosphere&&styles.ledgerMovementIdentity]}>
                 <Text style={styles.movementName}>{history.movement.display_name}</Text>
                 <Text style={styles.movementMuscles}>{muscleLine || 'Governed movement identity'}</Text>
               </View>
-              {!readOnly && history.movement.favorite_supported !== false ? <Pressable accessibilityLabel={history.movement.is_favorite ? 'Remove movement favorite' : 'Favorite movement'} accessibilityRole="button" accessibilityState={{ selected: Boolean(history.movement.is_favorite), busy: favoriteSaving }} onPress={() => void toggleFavorite()} style={styles.favoriteButton}>
+              {!readOnly && history.movement.favorite_supported !== false ? <Pressable accessibilityLabel={history.movement.is_favorite ? 'Remove movement favorite' : 'Favorite movement'} accessibilityRole="button" accessibilityState={{ selected: Boolean(history.movement.is_favorite), busy: favoriteSaving }} onPress={() => void toggleFavorite()} style={[styles.favoriteButton,ledgerAtmosphere&&styles.ledgerFavorite]}>
                 <Ionicons name={history.movement.is_favorite ? 'star' : 'star-outline'} size={23} color="#E9B83F" />
-              </Pressable> : __DEV__ ? null : <View style={styles.favoriteButton} />}
+              </Pressable> : __DEV__ ? null : <View style={[styles.favoriteButton,ledgerAtmosphere&&styles.ledgerFavorite]} />}
             </View>
 
             {activeSessionId ? <RecentSessionSets
@@ -719,6 +723,9 @@ const styles = StyleSheet.create({
   movementHeader: { minHeight: __DEV__ ? 120 : 104, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 4 },
   muscleArtworkFrame: __DEV__ ? { width: 112, height: 112, flexShrink: 0, alignItems: 'center', justifyContent: 'center' } : { width: 96, height: 86, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   coreArtwork: { width: 88, height: 82 },
+  ledgerFavorite: { position: 'absolute', right: 0, top: 8, width: 44, height: 44 },
+  ledgerMovementHeader: { minHeight: 196 },
+  ledgerMovementIdentity: { flex: 0, width: '58%', paddingVertical: 18 },
   movementIdentity: { flex: 1, minWidth: 0, gap: 4 },
   recentSessionCard: { marginBottom: 12, overflow: 'hidden', borderRadius: 12, borderWidth: 1, borderColor: '#50336B', backgroundColor: '#100B17' },
   recentSessionHeader: { minHeight: 58, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#392743' },

@@ -1,0 +1,5 @@
+
+> powerlift_mobile@1.0.0 test:logger-canonical-artwork-subject
+> node --import tsx scripts/test-logger-canonical-artwork-subject.mjs
+
+[logger-canonical-artwork-subject] normalized identity boundary and same-movement equivalence passed

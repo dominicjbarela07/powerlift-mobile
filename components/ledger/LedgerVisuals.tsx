@@ -16,6 +16,8 @@ import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolv
 import { kilogramsToDisplayValue } from '@/lib/display-units';
 import { milestoneRenderAsset, MILESTONE_RENDER_ORIENTATION_STYLE } from '@/lib/barbell/milestone-render-assets';
 import { useLedgerResource } from './use-ledger-resource';
+import { LedgerMovementBackdrop } from './LedgerMovementBackdrop';
+import { ledgerCompetitionArtwork } from '@/lib/ledger-movement-art';
 const C=T.colors;
 
 export function LedgerSurface({children,style,gold=false,tone}:{children:React.ReactNode;style?:StyleProp<ViewStyle>;gold?:boolean;tone?:RecordLift}) {
@@ -40,11 +42,14 @@ export function LedgerSparkline({points,color,unit='kg',width=164,height=78}:{po
 }
 export function LedgerRecordCard({label,lift,kg,reps,points,unit,onPress,aggregation}:{label:string;lift:RecordLift;kg?:number|null;reps?:number|null;points:readonly StrengthProgressionPoint[];unit:LedgerUnit;onPress:()=>void;aggregation?:string}) {
   const {width}=useWindowDimensions();
-  const chartWidth=width<360?110:width<410?140:172;
+  const artWidth=Math.min(210,(width-36)*.55),chartWidth=Math.min(194,(width-36-32)*.56);
   return <Pressable accessibilityRole="button" accessibilityLabel={`Open ${label} record. Best recorded load ${performedWeightValue(kg,unit)} ${unit}${reps!=null?` for ${reps} reps`:''}.`} onPress={onPress} style={({pressed})=>pressed&&v.pressed}>
     <LedgerSurface tone={lift} style={v.record}>
-      <View style={v.recordCopy}><Text style={v.lift}>{label}</Text><Text style={v.note}>Best recorded load</Text><View style={v.weightLine}><Text style={[v.weight,{color:C[lift]}]}>{performedWeightValue(kg,unit)}</Text>{kg!=null?<Text style={[v.weightUnit,{color:C[lift]},width<390&&v.compactUnit]}>{unit}{reps!=null?` × ${reps}`:''}</Text>:null}</View></View>
-      <View style={v.preview}><LedgerSparkline points={points} unit={unit} color={C[lift]} width={chartWidth}/></View><Ionicons name="chevron-forward" color={C.muted} size={15}/>
+      <LedgerMovementBackdrop movement={ledgerCompetitionArtwork(lift)} width={artWidth} align="right" testID={`ledger-record-${lift}-artwork`}/>
+      <View style={[v.recordCopy,{flex:0,width:chartWidth}]}><View style={v.between}><Text style={v.lift}>{label}</Text><Ionicons name="chevron-forward" color={C.muted} size={15}/></View>
+        <View style={v.weightLine}><Text style={[v.weight,{color:C[lift]}]}>{performedWeightValue(kg,unit)}</Text>{kg!=null?<Text style={[v.weightUnit,{color:C[lift]},width<390&&v.compactUnit]}>{unit}{reps!=null?` × ${reps}`:''}</Text>:null}</View>
+        <LedgerSparkline points={points} unit={unit} color={C[lift]} width={chartWidth} height={64}/>
+      </View>
     </LedgerSurface>
   </Pressable>;
 }
@@ -95,7 +100,7 @@ export function LedgerProgressMeter({value,maximum,color=C.accent}:{value:number
 function shortDate(date:string){const d=new Date(`${date.slice(0,10)}T12:00:00Z`);return d.toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'});}
 const v=StyleSheet.create({
  compactCalendar:{padding:12,gap:5,marginTop:2},calendarMiniRow:{flexDirection:'row',gap:5},miniDay:{height:9},compactPanel:{padding:12,gap:5,marginTop:2},compactDay:{height:12},surface:{backgroundColor:C.panel,borderWidth:1,borderColor:T.material.line,borderRadius:T.radius.material,overflow:'hidden'},gold:{borderColor:T.material.goldLine},panel:{padding:17,gap:12,marginTop:16},between:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',gap:8},heading:{fontFamily:T.fonts.bodySemiBold,color:C.text,fontSize:T.type.row,lineHeight:25},body:{fontFamily:T.fonts.bodyMedium,color:C.text,fontSize:T.type.bodySmall,lineHeight:20},note:{color:C.muted,fontSize:T.type.caption,lineHeight:18},tiny:{color:C.muted,fontSize:T.type.micro,lineHeight:16},link:{color:C.accent,fontFamily:T.fonts.bodyMedium,fontSize:T.type.caption},inlineAction:{minHeight:44,alignItems:'center',flexDirection:'row',gap:7},pressed:{opacity:0.76},
- record:{padding:15,minHeight:124,flexDirection:'row',alignItems:'center',gap:7,marginBottom:10},recordCopy:{flex:1,minWidth:0,gap:4},lift:{color:C.text,fontFamily:T.fonts.bodySemiBold,fontSize:T.type.row,lineHeight:24},weightLine:{flexDirection:'row',alignItems:'baseline',gap:4,flexWrap:'wrap',marginTop:3},weight:{fontFamily:T.fonts.bodySemiBold,fontSize:T.type.cardNumber,lineHeight:35,fontVariant:['tabular-nums']},weightUnit:{fontFamily:T.fonts.bodyMedium,fontSize:T.type.lead},compactUnit:{fontSize:T.type.small},noTrend:{justifyContent:'center',alignItems:'center'},
+ record:{padding:15,minHeight:174,flexDirection:'row',alignItems:'center',gap:12,marginBottom:12},recordCopy:{flex:1,minWidth:0,gap:4},lift:{color:C.text,fontFamily:T.fonts.bodySemiBold,fontSize:T.type.row,lineHeight:24},weightLine:{flexDirection:'row',alignItems:'baseline',gap:4,flexWrap:'wrap',marginTop:3},weight:{fontFamily:T.fonts.bodySemiBold,fontSize:T.type.cardNumber,lineHeight:35,fontVariant:['tabular-nums']},weightUnit:{fontFamily:T.fonts.bodyMedium,fontSize:T.type.lead},compactUnit:{fontSize:T.type.small},noTrend:{justifyContent:'center',alignItems:'center'},
  bars:{flexDirection:'row',gap:6,marginTop:5},barColumn:{flex:1,gap:5,alignItems:'center'},barTrack:{height:65,width:'100%',justifyContent:'flex-end',borderBottomWidth:1,borderBottomColor:C.line},barFill:{width:'100%',borderTopLeftRadius:3,borderTopRightRadius:3,minHeight:0},
  calendarRow:{flexDirection:'row',alignItems:'center',gap:5},weekLabel:{width:43,fontSize:T.type.micro},dayLabel:{flex:1,color:C.muted,textAlign:'center',fontSize:T.type.micro},calendarCell:{flex:1,alignItems:'center'},day:{width:'100%',height:22,maxWidth:32,borderRadius:T.radius.sm,backgroundColor:C.raised},dayActive:{backgroundColor:C.squat},
  muscleRow:{flexDirection:'row',alignItems:'center',gap:15},muscleArt:{width:150,height:176},full:{width:'100%',height:'100%'},preview:{gap:3},muscleValues:{flex:1,gap:17,minWidth:0},muscleValue:{gap:7},meter:{height:6,borderRadius:T.radius.xs,backgroundColor:C.raised,overflow:'hidden'},meterFill:{height:'100%',borderRadius:T.radius.xs,backgroundColor:C.squat},rep:{flexDirection:'row',alignItems:'center',gap:12,minHeight:62},repMiddle:{flex:1,gap:4},plate:{width:124,height:94},plateLarge:{width:180,height:130},plateStage:{borderRadius:T.radius.chip,borderWidth:1,borderColor:T.material.artEdge,padding:5},medallion:{width:118,height:118},medallionCompact:{width:62,height:62},volumePlot:{flex:1,gap:3},volumeChart:{height:106,flexDirection:'row',gap:6},axis:{width:36,paddingBottom:20,justifyContent:'space-between'},volumeColumns:{flex:1,flexDirection:'row',gap:5},volumeColumn:{flex:1},volumeBar:{height:82,justifyContent:'flex-end',overflow:'hidden',borderBottomWidth:1,borderBottomColor:C.strongLine},legend:{flexDirection:'row',justifyContent:'center',gap:16},legendItem:{flexDirection:'row',alignItems:'center',gap:5},legendDot:{height:6,width:6,borderRadius:T.radius.xs},

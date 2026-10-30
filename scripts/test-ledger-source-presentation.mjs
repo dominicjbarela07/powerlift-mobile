@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import * as history from '../lib/ledger-history-presentation.ts';
 import * as records from '../lib/ledger-records.ts';
+import * as artwork from '../lib/ledger-movement-art.ts';
 const {ledgerPrValue,ledgerArchiveFacts,ledgerSourceFacts,ledgerReflectionFacts,historyItemDateWithin}=history;
 const event={event_type:'CORE_WEIGHT_PR',unit:'kg',current_value:117.5,evidence:{actual_reps:5}};
 assert.equal(ledgerPrValue(event,'lb'),'259 lb × 5','Performed PRs retain literal unit conversion, without estimated-strength rounding');
@@ -18,7 +19,7 @@ assert.equal(historyItemDateWithin('2026-10-12T22:00:00Z',{from:'2026-10-12',to:
 assert.equal(historyItemDateWithin('2026-02-30',{from:'2026-01-01'}),false);
 assert.equal(historyItemDateWithin(undefined,{}),true);assert.equal(historyItemDateWithin(undefined,{from:'2026-01-01'}),false);
 const token=new Proxy({},{get:(_,key)=>String(key)}),theme={colors:token,fonts:token,type:token,radius:token};
-const mocks={react:{createElement:(type,props,...children)=>({type,props:{...props,children}})},'react-native':{View:'View',Pressable:'Pressable',StyleSheet:{create:x=>x}},'@expo/vector-icons':{Ionicons:'Icon'},'@/components/ui/sl-text':{Text:'Text'},'@/constants/ledger':{LEDGER:theme},'@/lib/ledger-records':records,'@/lib/ledger-history-presentation':history};
+const mocks={'./LedgerMovementBackdrop':{LedgerMovementBackdrop:'MovementBackdrop'},'@/lib/ledger-movement-art':artwork,react:{createElement:(type,props,...children)=>({type,props:{...props,children}})},'react-native':{View:'View',Pressable:'Pressable',StyleSheet:{create:x=>x}},'@expo/vector-icons':{Ionicons:'Icon'},'@/components/ui/sl-text':{Text:'Text'},'@/constants/ledger':{LEDGER:theme},'@/lib/ledger-records':records,'@/lib/ledger-history-presentation':history};
 const exports={};vm.runInNewContext(ts.transpileModule(fs.readFileSync('components/ledger/LedgerSourceContent.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.React,esModuleInterop:true,target:ts.ScriptTarget.ES2022}}).outputText,{exports,require:name=>{assert.ok(name in mocks,name);return mocks[name];}});
 const nodes=tree=>tree==null||tree===false?[]:Array.isArray(tree)?tree.flatMap(nodes):typeof tree==='object'?[tree,...nodes(tree.props?.children)]:[tree];
 const item={archive_item_type:'session',source_id:20,title:'Saved Session',occurred_on:'2026-10-12',performance:{set_count:1,total_volume_kg:0},athlete_reflection:{rpe:0,strength:4,fatigue:2,note:'My saved note'},sets:[{archive_item_type:'set',source_id:41,title:'Bodyweight set',performance:{weight_kg:0,reps:8,set_index:1}}],media:{video_count:1}};

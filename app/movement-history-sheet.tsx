@@ -19,6 +19,7 @@ export default function MovementHistorySheetRoute() {
   const params = useLocalSearchParams<{
     sessionOrigin?: string;
     displayUnit?: string;
+    ledgerAtmosphere?: string;
     athleteId?: string | string[];
     equipmentContextDefinitionId?: string | string[];
     equipmentDefinitionId?: string | string[];
@@ -56,6 +57,7 @@ export default function MovementHistorySheetRoute() {
           coreMovementId={coreMovementId}
           onRequestClose={requestClose}
           presentation="sheet"
+          ledgerAtmosphere={params.ledgerAtmosphere === '1'}
         />
       ) : null}
     </StrengthLedgerBottomSheet>

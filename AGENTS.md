@@ -145,3 +145,15 @@ navigation and readable density. See
 `docs/design/OPERATION_VISUAL_CLEANUP_2026-10-30.md` and its actual-runtime
 convergence evidence. Apply this direction within each authorized task's scope;
 it grants no app-wide redesign or release authorization.
+
+October 30 follow-up: the owner rejected square movement thumbnail tiles and
+requested darker brushed gunmetal / cool iron. In the new Ledger presentation,
+integrate original approved movement pixels into backgrounds with soft alpha
+feathering. Protect foreground data and controls, feather the actual contained
+image bounds, preserve source bytes/approval gates, and never infer an image from
+a display label. Do not recreate framed square tiles in new Ledger work.
+
+Subject visibility is an explicit part of this direction: do not fade or crowd
+the lifter's face, torso or lower body to make room for data. Give the movement
+a protected visual area, inspect each actual image, and verify the final native
+composition for Squat, Bench and Deadlift.

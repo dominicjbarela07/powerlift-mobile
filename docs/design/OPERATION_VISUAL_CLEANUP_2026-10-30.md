@@ -285,3 +285,117 @@ manifest/native base version is not a 3.0 native binary certification or a relea
 No Production endpoint, mobile update channel, TestFlight or store artifact was
 published by this iteration. The final DEV commit and exact serving-source receipt
 are retained with the validation evidence.
+
+## Movement artwork correction — October 30
+
+Owner correction: “what … is the point of having movement artwork if we are not
+going to … use them”. The previous layout removed purposeful movement identity
+from the new primary Records surface while retaining only data and award art.
+
+Accepted scope: use the existing governed, approved movement artwork on Core
+record cards, Core/variant details, variant/accessory discovery rows and exact
+source evidence where an authoritative movement reference exists. Keep charts,
+performed values, dates and controls readable. Do not substitute broad anatomy
+for an exact movement, infer identity from a title, invent artwork/approval, alter
+historical data or erase existing milestones. Preserve charcoal materials,
+semantic lift colors, subject authorization and all existing history/source links.
+
+Destination: canonical mobile DEV and its already-authorized athlete simulator
+experience; no Production/TestFlight publication. Acceptance requires actual
+native screenshots, direct comparison with the approved reference and original
+artwork, correction of the weakest three visual areas, a second screenshot pass,
+typed identity/render regressions, affected Ledger tests and type checking.
+
+Atmosphere correction in the same task: the owner rejected the pale-gray feel
+and requested “a dark brushed gunmetal … cool iron” atmosphere. Darken the scoped
+Ledger material tokens and give the shared canvas a quiet brushed-iron texture.
+Keep lift/recognition colors semantic and preserve text/art/chart contrast.
+Use the imagegen skill for the new texture only; no movement image regeneration.
+
+Latest owner correction supersedes the framed-art pass: square thumbnail images
+are rejected “at all cost”; movement art must integrate into the background, and
+the Ledger background should be darker again. Remove the new image tiles, use
+original approved source pixels with soft alpha feathering as background layers,
+and keep evidence text/charts in protected foreground areas. Do not edit approved
+image bytes, cut out/regenerate lifters or hide controls. The prior tile captures
+remain rejected intermediate evidence, not acceptance screenshots.
+
+### Final artwork/material iteration
+
+The final direction supersedes all framed-thumbnail captures in this follow-up.
+The existing approved movement images now dissolve into the actual card/hero
+background with two alpha masks; no image border, rounded photo tile, tint or
+new movement crop is introduced. The mask follows the contained raster's real
+aspect ratio, including landscape/portrait sources, rather than its wider
+container. Complete source pixels remain on disk and are rendered with contain.
+
+| Added / changed | Reason |
+| --- | --- |
+| Integrated artwork on Core record cards, Core/variant heroes and movement discovery rows | Recognizable movement identity without disconnected square thumbnails |
+| Integrated original-set art and Ledger-opened accessory-history header | Carry visual identity into the actual evidence drill-down |
+| Text/chart safe areas and earlier alpha falloff | Keep racks and apparatus away from values and axis labels |
+| Darker gunmetal canvas, fine brushed-iron texture and darker scoped materials | Follow the owner's cool-iron atmosphere while retaining readable faces |
+| Exact physical/Core artwork adapters and approved-source backdrop tests | Prevent mixing physical IDs, Core IDs, row IDs, private definitions or display labels |
+| Correct block-volume label: unit × reps | Avoid presenting volume as a performed load |
+
+Removed the new framed image tiles and the repeated image thumbnails in Session
+set rows. Kept Session rows focused on evidence; movement art appears when the
+original set opens. Kept the earned medallion, unit-aware plates, exact charts,
+source links, search/date controls, historic data and authorization unchanged.
+No old image files, approval receipts, crops, protected pins or data were removed.
+
+The three weakest areas were corrected in successive native passes: (1) framed
+images were visually detached, so art became background layers; (2) the first
+background pass let a rack intrude into chart labels, so the fade now finishes
+before the data zone; (3) masks originally followed a wider container rather
+than the contained image, leaving an edge, so actual-raster masking replaced it
+and a deliberate wider-mask failure was retained. The accessory-history favorite
+control was moved to its own 44-point corner target instead of over the lifter.
+
+The approved concept's charcoal layering, meaningful data graphics, semantic
+colors and direct hierarchy remain. The owner's subsequent image/background
+corrections control where they differ from that concept. The official Hevy
+exercise-performance flow was rechecked for movement-specific records, charts
+and original Session context: https://www.hevyapp.com/features/exercise-performance/.
+Its artwork and data were not copied.
+
+Validation: affected connected-Ledger, actual backdrop/card/source rendering,
+chart fidelity, artwork identity/approval, Logger artwork subject, movement-history
+launch/shared-reader contracts, horizontal layout and TypeScript checks pass.
+Card balance was executed at 320/375/390/430/768 widths; actual native observation
+is iPhone Air/iOS26.2 only. Original movement bytes remain unchanged. The new
+non-movement texture and complete built-in imagegen prompt are recorded in
+`assets/images/ledger-cleanup/brushed-gunmetal-v1.generation.json`.
+
+The UI audit initially caught six mask-color literals; they were moved to the
+canonical material tokens without adding exceptions. The final audit retains the
+same five pre-existing unrelated findings from the preceding turn. The two
+pre-existing transparent-root findings also remain. Raw failure logs are retained;
+this is not a fully-green whole-app or release claim. An Expo Go deep-link reload
+emitted a native splash-registration warning; it is retained as DEV-shell evidence.
+It did not block the Ledger, and this iteration does not claim native3.0 shell
+certification. No splash/auth readiness behavior was changed.
+
+State-machine scope: read-only Ledger presentation and an opt-in movement-history
+header parameter. The athlete subject, access rules, source navigation, equipment
+comparisons, unit ownership, favorite mutation and shared Logger-history default
+remain intact. Adjacent readers are protected by the launch/shared-history tests
+and the existing subject/race/authorization regressions. No backend code or saved
+training data was changed. DEV-only delivery; no Production/TestFlight release.
+
+### Subject visibility correction — final owner steering
+
+The owner then identified that the left-side composition faded the actual lifter
+on Squat, Bench and Deadlift. The final Core cards reverse that composition:
+values and readable charts are on the left, with a wider, contained original
+movement scene on the right. The center and lower body remain opaque; only the
+outer background dissolves. All three original 512px files were visually inspected
+and their face/torso/lower-body points were checked against the actual renderer.
+A deliberate reintroduction of the rejected subject-fading mask fails the test.
+
+Final native evidence is `records-subjects-final.png` (all three complete cards)
+and `deadlift-subject-final.png` (full record detail). Earlier `*-background-final`
+captures are superseded iterations and do not represent the final subject pass.
+The native final pass visibly retains the face, full body, bench position and
+loaded bar for each movement; values and chart axes remain separate and readable.
+No movement source file, human-approval receipt or shared Logger crop was edited.
