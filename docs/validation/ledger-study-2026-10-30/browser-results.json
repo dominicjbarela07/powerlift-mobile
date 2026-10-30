@@ -1,0 +1,128 @@
+{
+  "pass": true,
+  "platform": "Actual React Native Web via canonical npm-start Metro; no native simulator certification",
+  "results": [
+    {
+      "engine": "chromium",
+      "kind": "layout",
+      "label": "390-phone-record",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "phone": {
+        "x": 0,
+        "y": 44,
+        "width": 390,
+        "height": 800
+      },
+      "dock": {
+        "x": 0,
+        "y": 772,
+        "width": 390,
+        "height": 72,
+        "top": 772,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "controls": 15
+    },
+    {
+      "engine": "chromium",
+      "kind": "nine-scene-responsive-pass",
+      "width": 360,
+      "height": 780,
+      "scenes": 9
+    },
+    {
+      "engine": "chromium",
+      "kind": "nine-scene-responsive-pass",
+      "width": 390,
+      "height": 844,
+      "scenes": 9
+    },
+    {
+      "engine": "chromium",
+      "kind": "nine-scene-responsive-pass",
+      "width": 430,
+      "height": 932,
+      "scenes": 9
+    },
+    {
+      "engine": "chromium",
+      "kind": "actual-flows",
+      "flows": 18,
+      "pointerPaintMs": [
+        148.59999990463257,
+        76.20000004768372,
+        65.29999995231628
+      ],
+      "cpuSlowdown": 4,
+      "errors": [],
+      "writes": [],
+      "apiRequests": []
+    },
+    {
+      "engine": "webkit",
+      "kind": "layout",
+      "label": "390-phone-record",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "phone": {
+        "x": 0,
+        "y": 44,
+        "width": 390,
+        "height": 800
+      },
+      "dock": {
+        "x": 0,
+        "y": 772,
+        "width": 390,
+        "height": 72,
+        "top": 772,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "controls": 15
+    },
+    {
+      "engine": "webkit",
+      "kind": "nine-scene-responsive-pass",
+      "width": 360,
+      "height": 780,
+      "scenes": 9
+    },
+    {
+      "engine": "webkit",
+      "kind": "nine-scene-responsive-pass",
+      "width": 390,
+      "height": 844,
+      "scenes": 9
+    },
+    {
+      "engine": "webkit",
+      "kind": "nine-scene-responsive-pass",
+      "width": 430,
+      "height": 932,
+      "scenes": 9
+    },
+    {
+      "engine": "webkit",
+      "kind": "actual-flows",
+      "flows": 18,
+      "pointerPaintMs": [
+        28,
+        30,
+        30
+      ],
+      "cpuSlowdown": 1,
+      "errors": [],
+      "writes": [],
+      "apiRequests": []
+    }
+  ]
+}

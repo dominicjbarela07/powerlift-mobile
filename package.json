@@ -221,7 +221,10 @@
     "worktree:close": "node scripts/worktree-lifecycle.mjs close",
     "worktree:register": "node scripts/worktree-lifecycle.mjs register",
     "worktree:create": "node scripts/worktree-lifecycle.mjs create",
-    "test:worktree-lifecycle": "node scripts/test-worktree-lifecycle.mjs"
+    "test:worktree-lifecycle": "node scripts/test-worktree-lifecycle.mjs",
+    "dev:ledger-study": "node scripts/serve-ledger-study.mjs",
+    "test:ledger-study": "node --import tsx scripts/test-ledger-study.mjs",
+    "test:ledger-study:browser": "node scripts/test-ledger-study-browser.cjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

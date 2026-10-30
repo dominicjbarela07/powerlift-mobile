@@ -1,0 +1,56 @@
+{
+  "pass": true,
+  "newStudySources": [
+    {
+      "path": "components/ledger-study/LedgerDesignStudy.tsx",
+      "rawVisualLiterals": 0
+    },
+    {
+      "path": "app/(tabs)/dev-mocks/ledger-study.tsx",
+      "rawVisualLiterals": 0
+    }
+  ],
+  "existingAdjacentSources": [
+    {
+      "path": "app/(tabs)/settings.tsx",
+      "existingVisualLiteralValuesUnchanged": true
+    },
+    {
+      "path": "app/(tabs)/_layout.tsx",
+      "existingVisualLiteralValuesUnchanged": true
+    }
+  ],
+  "broaderExistingAuditFindings": 5,
+  "broaderAuditPassing": false,
+  "unrelatedSourcesRetained": [
+    {
+      "path": "components/home/AthleteHomeV3.tsx",
+      "sha256": "8bf674dfca6976030e0f4e1d34adf52e6194415eb7e8932f893c151756fae090",
+      "matchesPreTaskHead": true,
+      "lastModified": "2026-10-18T15:07:59.332006+00:00",
+      "taskModified": false
+    },
+    {
+      "path": "components/onboarding/SignupWelcome.tsx",
+      "sha256": "c8bb17b387c1b6a9a65043409a760f817b9f1dcb56ed9aba59f07d19584dc090",
+      "matchesPreTaskHead": true,
+      "lastModified": "2026-10-24T17:01:01.116702+00:00",
+      "taskModified": false
+    },
+    {
+      "path": "components/workout-logger/session-follow-through.tsx",
+      "sha256": "2dc0c251dc868a02b32bafe8cb681848fca7827346df186a69ae0ad534d8f140",
+      "matchesPreTaskHead": true,
+      "lastModified": "2026-10-22T02:50:36.506867+00:00",
+      "taskModified": false
+    },
+    {
+      "path": "app/login.tsx",
+      "sha256": "7498a91b01e0b2e1be6d04605e3d5afe10cbcefe6b82b794c056ba9b6f796a3a",
+      "matchesPreTaskHead": true,
+      "lastModified": "2026-10-24T23:56:49.248994+00:00",
+      "taskModified": false
+    }
+  ],
+  "exceptionRegisterChanged": false
+}

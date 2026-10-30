@@ -1866,12 +1866,17 @@ export default function SettingsScreen() {
 
         {typeof __DEV__ !== 'undefined' && __DEV__
           ? settingsGroup(
-              settingsRow({
+              <>{settingsRow({
                 icon: 'body-outline',
                 title: 'Dynamic Anatomy QA',
                 description: 'Inspect registered muscle geometry, roles, views, and presentation variants',
                 onPress: () => router.push('/(tabs)/dev-mocks/anatomy-system' as any),
-              }),
+              })}{settingsRow({
+                icon: 'book-outline',
+                title: 'Ledger Design Study',
+                description: 'Explore the new record, history and milestone direction · example data',
+                onPress: () => router.push('/(tabs)/dev-mocks/ledger-study' as any),
+              })}</>,
               'Developer'
             )
           : null}

@@ -1,0 +1,33 @@
+{
+  "testedSource": {
+    "constants/ledger-study.ts": "f238654bdbdae0eaba6cfeb1f43eb766492f5d944ae2e117b6328b2453fde4fb",
+    "dev-mocks/fixtures/ledger-study.ts": "8040972a3ca03477be7371a6a33148ddee4439cd526becb5dd57d85cb0bf67b4",
+    "components/ledger-study/LedgerDesignStudy.tsx": "1b97c76132e1d2d2a4fe1a17455b5251941ceb25abda00ddc4d20baa781e9349",
+    "dev-mocks/ledger-study/entry.tsx": "c7993edc98ea2afa12caa14186108c8dec621c48a2eb3b645a90d7e351ae4740",
+    "app/(tabs)/dev-mocks/ledger-study.tsx": "f1ddbda35a46eebe1b31a6ee661e657ebfdecdd6d39cefff9172343f54a26052",
+    "scripts/serve-ledger-study.mjs": "41ee6db53aab6187dbe23270c927c3451794d0294c58f7b347ded9ff4b4cf255",
+    "scripts/test-ledger-study.mjs": "6156952664144fa1d050a460d47e38b49057931da94f14783803543aefd62cfc",
+    "scripts/test-ledger-study-browser.cjs": "07d7304cdab53d5862db8191a2a7a42ae47e104872686eeec2306f514fa1a829",
+    "app/(tabs)/settings.tsx": "d4f283e86e6f6c8722993baa1aa7a43fc06a67cdeed523e4b545d6c17a392a6a",
+    "app/(tabs)/_layout.tsx": "e867c4edfcc1212a1a9951f476a8c4cb3690853daea18d221610110312c82eac",
+    "package.json": "ccc47d98e6e001c835e4e2536e7533e518a141390e8c516b9070ae7ca856d7ba"
+  },
+  "preservedProductSource": {
+    "context/AuthContext.tsx": "a8abb0bf9794e9e6cfc99ef40b4e40807a01047c2897761601190028813577e6",
+    "lib/api.ts": "605fa4c39895708b55cfac7353a80354fd8f8d15638c064b32ace7d64cbcf54f",
+    "lib/api-base.ts": "332da47842ab7301a03e74d4d08e7765742dd12402dc8f1b5a57106e195bd3ac",
+    "constants/theme.ts": "bfb2c62c9edc3351794a57d16f9975aec1525f429b64a6fca2b465913956a91e",
+    "components/ledger/StrengthExperience.tsx": "f9594d8221d89e0ce7e4951e287b4b6e139682d2b2aa1395af64101e831382c7",
+    "components/ledger/index-experience.tsx": "8c19d8d22f4f271ba842ecf39eda54f821e4d361aa5d8b42d97e78db3d129791",
+    "components/ledger/routing.ts": "a2b4e15a2b6dccbb0f1297688e73cb40c673f01b41255fe17915967179cf3ff2",
+    "components/ledger/AchievementsExperience.tsx": "d4dcbaa552c9d9a86c27744a390575833f05e6f22047f0a05653e85920949f68",
+    "lib/ledger-rewards.ts": "0d48f54ebbc546a231f8e3d3d0141a889e9929dc05c33947978179599b54b49f",
+    "lib/movement-strength-metric.ts": "9f168cc92f5eb9bed1a0ebcdc276875a790070f5d94ad565faac0bc2f5b2a7a1"
+  },
+  "sourceRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "branch": "dev/canonical-mobile",
+  "actualRuntime": "Canonical npm start / Metro 8081; loopback viewer 8095",
+  "productServicesMounted": false,
+  "productionPublication": false,
+  "nativeDeviceObserved": false
+}
