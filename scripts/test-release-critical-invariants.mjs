@@ -2,6 +2,7 @@ import {backendRootForContract} from './backend-contract-snapshot.mjs';
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['Today loading and accepted Set edit recovery retain exact scoped backend and source proof', ['scripts/test-mobile-reliability-release-scope.mjs', 'scripts/test-today-loading-lifecycle.mjs', 'scripts/test-set-edit-recovery.mjs', 'scripts/test-set-edit-api.mjs']],
   ['approved exact art survives live database sequences without borrowing private identities', ['scripts/test-approved-artwork-portability.mjs', 'scripts/test-approved-artwork-portability-release-scope.mjs']],
   ['copied Core Top/Backdown modules preserve one grouped prescription', ['scripts/test-session-workspace-top-backdown-copy.mjs', 'scripts/test-session-copy-backdown-api.mjs', 'scripts/test-session-copy-backdown-release-scope.mjs']],
   ['athlete-owned weekly report preserves saved evidence and exact release scope', ['scripts/test-training-week-report.mjs','scripts/test-weekly-report-release-scope.mjs']],

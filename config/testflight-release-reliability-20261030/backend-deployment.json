@@ -1,0 +1,128 @@
+{
+  "sourceSha": "1ace1350e337d4474ba2be5cee37df76d88560ff",
+  "liveVerified": true,
+  "verifiedAt": "2026-10-30T15:27:52.845638+00:00",
+  "healthUrl": "https://app.strengthledger.fit/health/recognition",
+  "health": {
+    "lower_rep_thresholds_derived_from_performed_sets": true,
+    "machine_first_baseline_recognized": false,
+    "manufacturers_isolated": true,
+    "migration_revisions": [
+      "f5b7d9e1a3c5"
+    ],
+    "minimum_delivery_client_version": "2.1.0",
+    "other_is_separate_equipment_context": true,
+    "policy_version": "accessory-rep-chain-equipment-isolated-v4",
+    "pr_comparison_scope": "canonical_movement_exact_equipment",
+    "ready": true,
+    "rep_threshold_policy": "at-least-completed-reps-canonical-kg-v1",
+    "schema_fingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+    "source_sha": "1ace1350e337d4474ba2be5cee37df76d88560ff",
+    "synthetic_lower_rep_recognitions": false
+  },
+  "gate": {
+    "pass": true,
+    "baselineSha": "a0cfb41219a17766633ee4ab920244bd1b0f5a2f",
+    "candidateSha": "1ace1350e337d4474ba2be5cee37df76d88560ff",
+    "candidateTree": "13ea9434221c22aa77662d424af042adb4fb5c8a",
+    "schemaChanged": false,
+    "modelSha256": "c0054211a5e9466b20fc855109420cb72f2aa7c3cca1945117d6a641467a3f3e",
+    "frozenMobileBaselineSha256": "16db350a9bff4a0694d972fdc3801ee6e8a8782605a02fcef70824ed0343a12d",
+    "frozenClients": {
+      "ios": {
+        "source": "a5d56d2205f93ab6b00b3be0ca836d4235b82a57",
+        "update": "01a05051-47f5-7b6a-b930-b59c8d6a9248",
+        "launchAssetSha256": "4c2c1543d3fff0b9dc5a405b8f42bbc284c1c5130c80153138790ddce49079c3",
+        "apiContractSourceSha256": "7748f5c1d8eafa747212414dd4b1bb8d874009a72bc59e53662d27d63cfba405"
+      },
+      "android": {
+        "source": "3d5a38a22b893f67bfed0e7ee3d6e9a2c685ab95",
+        "update": "01a05c7f-48f2-701c-8968-1c619536f57e",
+        "launchAssetSha256": "d6f7b26b91b7c98752c3366e1d92a3184133d162b399bd9a4dc26e18d1b5360b",
+        "apiContractSourceSha256": "7748f5c1d8eafa747212414dd4b1bb8d874009a72bc59e53662d27d63cfba405"
+      }
+    },
+    "legacyResponsesIdentical": {
+      "ios": 104,
+      "android": 104
+    },
+    "legacyBreakingPermissionControlRejected": true,
+    "ownerPolicyAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 3,
+      "probeSha256": "4e80578545338622565a3d8b143cbc8762c2a4dd6cf6a9bc639bc1fbaa8a511b"
+    },
+    "currentSessionIdentityAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 5,
+      "probeSha256": "4d4bf27156b110fb501453f6fc84e4821b1a1ec73c63d25f7b1f2189283ebe16"
+    },
+    "logs": "/Users/dominic/powerlifting_app/.git/release-receipts/1ace1350e337-checks",
+    "liveDeploymentVerified": false,
+    "schemaAcceptance": {
+      "pass": true,
+      "changed": false
+    },
+    "backendArtworkAcceptance": {
+      "pass": true,
+      "approved_candidates": 547,
+      "objects": 1629,
+      "bytes": 1181103252,
+      "runtime_bindings": 508,
+      "mobile_checkout_required": false,
+      "probes": [
+        {
+          "name": "missing object",
+          "rejected": true
+        },
+        {
+          "name": "modified object",
+          "rejected": true
+        },
+        {
+          "name": "missing approved candidate",
+          "rejected": true
+        },
+        {
+          "name": "unapproved candidate inserted",
+          "rejected": true
+        },
+        {
+          "name": "wrong movement binding",
+          "rejected": true
+        }
+      ]
+    },
+    "archiveAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 14,
+      "probeSha256": "37759cc5e069f5116aa2d1282e370f74b00bd1a1ab90517780cb29099f6d3899",
+      "fixtureSha256": "39b116accbc970aac47d448bd1ae51dae278e94a6c6d2adc33673f1f4dc3ad79"
+    },
+    "repChainAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 8,
+      "probeSha256": "4c0d74abcb3ec4fb5468a1564b1a03f05319670d6ef14c46e75d03b4f8a65286",
+      "fixtureSha256": "a78d2c8812a3b12104324936afd3b3b5e347a1aabae9d000d35abce2ed3e69d0"
+    },
+    "todayLoadingAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 2,
+      "probeSha256": "99d7db842631d8beca04a7bdace0027a34ce2362143a067f06e479832349f7a6",
+      "fixtureSha256": "fd444ee8d19b09515ea80f9e9aa30bc2a871a4770a068f7c750783fe7cec827c"
+    },
+    "navigationLoadingAcceptance": {
+      "pass": true,
+      "candidateOwned": false,
+      "cases": 6,
+      "probeSha256": "26413b4fd449dfa4a226a7644c59454680304eff519839bb227c5a0cade16c6f",
+      "fixtureSha256": "67189433bc204a9988ff21bc3c5313af5668cd88e516072156c1bc4b018d9cd2",
+      "diverseFixtureSha256": "bce328d9a8fdb2bb5fee8d90c5e9be4e4199175409970258639dd3429abe6482"
+    }
+  }
+}
