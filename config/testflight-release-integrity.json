@@ -166113,5 +166113,72 @@
       },
       "reason": "Retain original exact user wording and record the actual Retry button label visible in the supplied Today screenshot, as required by the existing scope guard."
     }
-  ]
+  ],
+  "verifiedProduction3TodaySetEditReliability": {
+    "publication": {
+      "id": "01a18d81-51fd-77b3-bdfc-6334c56fe0ee",
+      "group": "7a9477ad-481a-4e70-aed0-0effff7652c9",
+      "gitCommitHash": "1767b1080df6af3eb8c6217349f587ca934aecb6",
+      "manifestId": "01a18d81-51fd-77b3-bdfc-6334c56fe0ee",
+      "servedBundleSha256": "5355bb632a9cf63096ae6ac31f9bd57cf012d93d817ef6b5843d02ec87009ef8",
+      "branch": "production-3-preparation",
+      "runtimeVersion": "3.0.0",
+      "platform": "ios",
+      "createdAt": "2026-10-30T15:50:25.021Z",
+      "sourceAvailable": true,
+      "recoverableRefs": [
+        "refs/archive/testflight-published/01a18d81-51fd-77b3-bdfc-6334c56fe0ee"
+      ]
+    },
+    "publishedProof": {
+      "gateC": {
+        "path": "config/testflight-release-reliability-20261030/runtime-3.0.0/gate-c.json",
+        "sha256": "4fd911dc9151b1968e7d9f5a7e89a2ec103bd34f2f4c85371226629f6cf7f26f"
+      },
+      "assetAudit": {
+        "path": "config/testflight-release-reliability-20261030/runtime-3.0.0/asset-audit.json",
+        "sha256": "a9454ffec8cd1345269c21f2695d8a65d8dfbe0a867b557c581deb61c407a3da"
+      },
+      "exportSource": {
+        "path": "config/testflight-release-reliability-20261030/runtime-3.0.0/export-source.json",
+        "sha256": "46e6122181e428dff9ffad5a02b99047a5c63b27fcbdbfeae9de1a51dc0fdd27"
+      },
+      "contracts": {
+        "path": "config/testflight-release-reliability-20261030/runtime-3.0.0/contracts.json",
+        "sha256": "286741c7d8e036d1ea423b9190c8c8c20e538422c8eb6a1fc53cab0766787734"
+      },
+      "sharedValidation": {
+        "path": "config/testflight-release-reliability-20261030/runtime-3.0.0/shared-validation.json",
+        "sha256": "df5508ec2fe93711d5501121a23200e413f400d4e3898b107b6bb773ea91e0ae"
+      },
+      "movementImagery": {
+        "path": "config/testflight-release-reliability-20261030/runtime-3.0.0/movement-imagery.json",
+        "sha256": "014369c588a278fee7fb2c5062395676f4c16214b16de32e1ee60fefde3a3e1e"
+      },
+      "channel": {
+        "path": "config/testflight-release-reliability-20261030/runtime-3.0.0/channel.json",
+        "sha256": "a449f5fa0ba87861afd137021de3e669a65394c33ce402ace7c1cb992266c5ba"
+      },
+      "worktreeCloseout": {
+        "path": "config/testflight-release-reliability-20261030/runtime-3.0.0/worktree-closeout.json",
+        "sha256": "4e9be49c83b717f736b81a8b65bd1b454ade19cecc16d34f81a0a60c92d4c364"
+      },
+      "nativeChannel": {
+        "path": "config/testflight-release-reliability-20261030/runtime-3.0.0/native-channel.json",
+        "sha256": "e4b773fc8e4e5faf02bc92ee3943042a9efcf72211ef2e6bb95b196b7ba90629"
+      },
+      "liveBackend": {
+        "path": "config/testflight-release-reliability-20261030/runtime-3.0.0/live-backend.json",
+        "sha256": "45270cf83bd25599a5c96eb601516dbdfe5603841df7c1edaa290b6b9546e2eb"
+      }
+    },
+    "backendSourceSha": "1ace1350e337d4474ba2be5cee37df76d88560ff",
+    "acceptedContracts": 316,
+    "criticalProductAreas": 91,
+    "typescript": true,
+    "nativeBinaryChanged": false,
+    "productFingerprint": "d43c6a758f47a142567ab6afacb2f5499fd86997a4840b0bb9144e41a8344d9b",
+    "installedDeviceObserved": false,
+    "workflowComplete": true
+  }
 }

@@ -1,0 +1,45 @@
+{
+  "scope": "mobile-reliability-20261030",
+  "productFingerprint": "d43c6a758f47a142567ab6afacb2f5499fd86997a4840b0bb9144e41a8344d9b",
+  "completedAt": "2026-10-30T15:49:47.715Z",
+  "validation": "OWNER_DIRECTED_CONTRACTS_ONLY",
+  "runtimeVerified": false,
+  "contracts": [
+    {
+      "file": "scripts/test-mobile-reliability-release-scope.mjs",
+      "sourceSha256": "fb3c42eae326f1f457de2fbb9407cdb65c375036048ef90a7f00510f50059660",
+      "result": "PASS",
+      "output": "PASS exact Today/Set edit release: current complete 3.0 source/assets retained; only the two repairs and their guard metadata allowed; stale baselines, hidden changes, missing art, wrong owner scope and missing contracts rejected.\n"
+    },
+    {
+      "file": "scripts/test-today-loading-lifecycle.mjs",
+      "sourceSha256": "8e60694e2a22da84c989c8aea5b7a35b4d66c2606b752e28edfa312026203ebe",
+      "result": "PASS",
+      "output": "PASS Today actual-route lifecycle: cold/resume (Athlete + Self-Coach), blur/refocus, overlapping refresh, obsolete responses/cache, Retry, API/invalid/transport/reconciliation failures, 401/account-state denial, day rollover, hidden foreground, stale redirect, workspace departure and display units; deliberate loading-guard removal rejected.\n"
+    },
+    {
+      "file": "scripts/test-set-edit-recovery.mjs",
+      "sourceSha256": "e422ceaa87602c0b6015cb22a807c5afb85e20cdd3122fec63529b89361f2e50",
+      "result": "PASS",
+      "output": "PASS actual Set edit: immediate confirmed completion, fresh revision/identity, background reload, before/after-write drops, safe CAS replay with dependent recognition invalidation, bounded outage/manual retry, retained draft, permission/conflict/malformed rejection, ownership and double taps; blocking-reload failure rejected.\n"
+    },
+    {
+      "file": "scripts/test-set-edit-api.mjs",
+      "sourceSha256": "2f5853be399fc80e3691fa10ef979060a09aa11fbd665756c6a82e2f1f01331e",
+      "result": "PASS",
+      "output": "EDIT_PERFORMANCE {\"lane\": \"ACC\", \"queries\": 56, \"secondsWith15msPerQuery\": 1.3421, \"changed\": true, \"queryGroups\": [[[\"UPDATE\", \"core_accomplishment_event\"], 13], [[\"SELECT\", \"athlete\"], 8], [[\"SELECT\", \"set_log\"], 8], [[\"SELECT\", \"core_accomplishment_event\"], 6], [[\"SELECT\", \"workout_item\"], 4], [[\"SELECT\", \"movement_definition\"], 3], [[\"SELECT\", \"workout\"], 2], [[\"SELECT\", \"coach_athlete_relationship\"], 1]]}\nEDIT_PERFORMANCE {\"lane\": \"ACC\", \"queries\": 14, \"secondsWith15msPerQuery\": 0.0062, \"changed\": false, \"queryGroups\": [[[\"SELECT\", \"athlete\"], 5], [[\"SELECT\", \"workout\"], 2], [[\"SELECT\", \"workout_item\"], 2], [[\"SELECT\", \"set_log\"], 2], [[\"SELECT\", \"users\"], 1], [[\"SELECT\", \"coach_athlete_relationship\"], 1], [[\"SELECT\", \"core_accomplishment_event\"], 1]]}\nEDIT_PERFORMANCE {\"lane\": \"STRAIGHT\", \"queries\": 190, \"secondsWith15msPerQuery\": 4.1208, \"changed\": true, \"queryGroups\": [[[\"INSERT\", \"core_accomplishment_best\"], 124], [[\"UPDATE\", \"core_accomplishment_event\"], 13], [[\"SELECT\", \"set_log\"], 10], [[\"SELECT\", \"core_accomplishment_event\"], 10], [[\"SELECT\", \"athlete\"], 7], [[\"SELECT\", \"workout_item\"], 5], [[\"SELECT\", \"workout\"], 3], [[\"SELECT\", \"movement_definition\"], 3]]}\nEDIT_PERFORMANCE {\"lane\": \"STRAIGHT\", \"queries\": 15, \"secondsWith15msPerQuery\": 0.0051, \"changed\": false, \"queryGroups\": [[[\"SELECT\", \"athlete\"], 6], [[\"SELECT\", \"workout\"], 2], [[\"SELECT\", \"workout_item\"], 2], [[\"SELECT\", \"set_log\"], 2], [[\"SELECT\", \"users\"], 1], [[\"SELECT\", \"coach_athlete_relationship\"], 1], [[\"SELECT\", \"core_accomplishment_event\"], 1]]}\nPASS actual Set edit API: Core/Accessory long history, latency budget, immutable evidence, no-op retry, atomic rollback and deliberate per-Set query failure.\n"
+    },
+    {
+      "file": "scripts/test-zero-load-edit-set.mjs",
+      "sourceSha256": "07a09aa4d02b90396c68744b34b3cca8caf65f729894d2d48ee0d5b869e304e8",
+      "result": "PASS",
+      "output": "Canonical zero-load editor: real open/save handlers, lb/kg, positive -> zero, reload/reopen, same set, RIR zero, recognition invalidation and invalid-load rejection PASS\n"
+    },
+    {
+      "file": "scripts/test-zero-load-edit-api.mjs",
+      "sourceSha256": "a19f2b1b7d6b0ad2335f8e3668657a1a74675ca14d14ba8bf13616b16f3dbc2a",
+      "result": "PASS",
+      "output": "Canonical zero-load API: actual edit POST + Session GET, three bodyweight/added-load movements, in-place persistence, immutable identity, no-op replay, negative rejection PASS\n"
+    }
+  ]
+}
