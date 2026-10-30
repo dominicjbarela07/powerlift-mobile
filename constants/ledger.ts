@@ -5,7 +5,7 @@ export const LEDGER = {
   colors: {
     canvas: SLLedgerMaterial.canvas,
     panel: SLLedgerMaterial.face,
-    inset: SLColors.surfaceInset,
+    inset: SLLedgerMaterial.chartFace,
     raised: SLLedgerMaterial.raised,
     text: SLLedgerMaterial.text,
     secondary: SLLedgerMaterial.secondary,
@@ -26,6 +26,6 @@ export const LEDGER = {
   material: SLLedgerMaterial,
   fonts: SLFontFamilies,
   radius: { control: SLRadius.control, panel: SLRadius.lg, sheet: SLRadius.sheet, phone: SLRadius.xl, orbit: 95, hairline: 2, xs: 4, sm: 5, chip: 12, inner: 10, tight: 8, card: 16, material: 18 },
-  type: { micro: 11, caption: 12, small: 13, body: 15, lead: 17, section: 20, title: 30, hero: 44, number: 50, studio: 40, heading: 26, screenTitle: 27, record: 48, cardNumber: 28, row: 18, bodyStrong: 16, bodySmall: 14, sectionCompact: 19, numberSmall: 23 },
+  type: { micro: 11, caption: 12, small: 13, body: 15, lead: 17, section: 20, title: 30, hero: 44, number: 50, studio: 40, heading: 26, screenTitle: 27, record: 48, cardNumber: 32, row: 19, bodyStrong: 16, bodySmall: 14, sectionCompact: 19, numberSmall: 23 },
   space: { hairline: 2, xs: 4, sm: 8, md: 12, lg: 20, xl: 28, xxl: 40 },
 } as const;

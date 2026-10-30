@@ -88,7 +88,7 @@ function recordStatusLabel(status?: string | null): string {
   return labels[String(status || '').toLowerCase()] || 'Recorded';
 }
 
-export function ArchiveDetailExperience({ target, onClose, onOpenSource, initialDisplayUnit, presentation, renderContent }: { renderContent?: (item: ArchiveDetailItem, unit: DisplayWeightUnit, onPlay: () => void) => React.ReactNode; presentation?: 'ledger'; initialDisplayUnit?: DisplayWeightUnit; target?: { type: ArchiveItemType; id: number }; onClose?: () => void; onOpenSource?: (source: { type: ArchiveItemType; id: number }) => void } = {}) {
+export function ArchiveDetailExperience({ target, onClose, onOpenSource, initialDisplayUnit, presentation, renderContent, onDisplayUnitChange }: { onDisplayUnitChange?: (unit:DisplayWeightUnit)=>void; renderContent?: (item: ArchiveDetailItem, unit: DisplayWeightUnit, onPlay: () => void) => React.ReactNode; presentation?: 'ledger'; initialDisplayUnit?: DisplayWeightUnit; target?: { type: ArchiveItemType; id: number }; onClose?: () => void; onOpenSource?: (source: { type: ArchiveItemType; id: number }) => void } = {}) {
   const router = useRouter();
   const ledgerSubject = useAthleteLedgerSubject();
   const { user } = useAuth();
@@ -102,6 +102,8 @@ export function ArchiveDetailExperience({ target, onClose, onOpenSource, initial
   const [reloadToken, setReloadToken] = useState(0);
   const [videoOpen, setVideoOpen] = useState(false);
   const { unit: displayUnit, setUnit: setDisplayUnit } = useSurfaceWeightUnit(preferredDisplayUnit, initialDisplayUnit ?? first(params.displayUnit));
+
+  useEffect(()=>{onDisplayUnitChange?.(displayUnit);},[displayUnit,onDisplayUnitChange]);
 
   useEffect(() => {
     let active = true;

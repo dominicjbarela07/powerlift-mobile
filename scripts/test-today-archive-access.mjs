@@ -33,7 +33,7 @@ function harness() {
     '@/components/ui/floating-control-coordinator':{FloatingDisplayUnitRegistration:'Unit'},'@/constants/theme':theme,
     '@/lib/api':api,'@/lib/ledger-archive':archive,'./primitives':{SectionLabel:'Label'},'./routing':{ledgerHrefFor:()=> '/(tabs)/ledger/archive'},
     '@/context/AuthContext':{useAuth:()=>({user:state.user})},'./athlete-ledger-subject':{useAthleteLedgerSubject:()=>state.subject},
-    '@/lib/surface-weight-unit':{useSurfaceWeightUnit:()=>({unit:'lb',setUnit:()=>{}})},
+    '@/lib/surface-weight-unit':{useSurfaceWeightUnit:(_preference,initial)=>({unit:state.unit??initial??'lb',setUnit:unit=>{state.unit=unit;}})},
     '@/lib/display-units':{normalizeDisplayWeightUnit:()=> 'lb',formatWeightFromKg:v=>String(v)},
     '@/components/SetVideoPlayerModal':'VideoPlayer','@/components/home/TodayQuickAccess':{TodayQuickAccess:'QuickAccess'},
     './VideoMovementPicker':{VideoMovementPicker:'MovementPicker'},
@@ -87,3 +87,13 @@ h.find('Pressable').props.onPress();await h.render();assert.equal(h.find('Sheet'
 const benchRow=h.nodes(h.find('Fragment')).find(n=>n.props.accessibilityLabel?.startsWith('Competition Bench,'));assert.ok(benchRow);benchRow.props.onPress();await h.render();assert.equal(picked.key,'movement:2');assert.equal(h.find('Sheet').props.visible,false);
 for(const n of h.nodes(h.find('Fragment')).filter(n=>n.type==='Text'&&['By movement','Competition Bench','Competition Squat'].includes(n.children[0])))assert.ok(n.props.style?.color,'sheet titles and movement labels remain legible on the dark surface');
 console.log('PASS: actual Today widgets for athlete/self-coach; all three routes; direct media entry; authorized video IDs; close retains collection; Today/workspace returns; scoped export policy; stale request rejection; direct detail playback; denied detail remains unplayable.');
+
+h=harness();h.state.params={itemType:'set',sourceId:'41'};
+const sourceReader=h.load('components/ledger/archive-detail.tsx').ArchiveDetailExperience;
+let inheritedUnit;const observeUnit=unit=>{inheritedUnit=unit;};
+await h.render(()=>sourceReader({presentation:'ledger',initialDisplayUnit:'kg',onDisplayUnitChange:observeUnit}));
+assert.equal(h.find('Unit').props.unit,'kg');assert.equal(inheritedUnit,'kg');
+h.find('Unit').props.onChange('lb');await h.render();assert.equal(inheritedUnit,'lb','The actual source reader reports the selected surface unit');
+const nested=harness(),nestedReader=nested.load('components/ledger/archive-detail.tsx').ArchiveDetailExperience;
+await nested.render(()=>nestedReader({presentation:'ledger',initialDisplayUnit:inheritedUnit,onDisplayUnitChange:observeUnit}));assert.equal(nested.find('Unit').props.unit,'lb','A child source initializes from its source stack unit, without falling back to account preference');
+console.log('PASS: actual source reader selection callback and nested evidence-unit inheritance.');

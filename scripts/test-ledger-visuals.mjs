@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { ledgerBarFraction, ledgerCalendar, ledgerDay, ledgerPreviewGeometry, ledgerTrainingWeeks } from '../lib/ledger-visuals.ts';
+import { ledgerBarFraction, ledgerCalendar, ledgerCompetitionVolume, ledgerDay, ledgerPreviewGeometry, ledgerSessionTotal, ledgerTrainingWeeks } from '../lib/ledger-visuals.ts';
 
 assert.equal(ledgerDay('2026-02-30'),null,'Impossible dates cannot enter a chart');
 assert.equal(ledgerDay('2024-02-29'),Date.parse('2024-02-29T12:00:00Z'));
@@ -18,6 +18,21 @@ assert.equal(ledgerCalendar([session(1,'2026-10-12','canceled')]),null,'A date n
 const weeks=ledgerTrainingWeeks({consistency:{weeks:[{week_start:'2026-10-12',completed:0},{week_start:'bad',completed:999},{week_start:'2026-10-05',completed:3},{week_start:'2026-10-19',completed:null}]}});
 assert.deepEqual(weeks.map(w=>w.completed),[3,0],'Preserve recorded zero, exclude unknown completion counts');
 
+assert.equal(timed.lastValue,120,'End labels must use the final dated observation, not the career maximum');
+const decline=ledgerPreviewGeometry([{date:'2026-10-01',value_kg:150},{date:'2026-10-02',value_kg:100}]);
+assert.equal(decline.lastValue,100);
+const volume=ledgerCompetitionVolume({big_three_arc:{lifts:[
+ {key:'Squat',strength_lenses:{training_volume:{points:[{date:'2026-10-05',value_kg:1000},{date:'2026-10-07',value_kg:500},{date:'bad',value_kg:9999}]}}},
+ {key:'Bench press',strength_lenses:{training_volume:{points:[{date:'2026-10-06',value_kg:750},{date:'2026-10-12',value_kg:0}]}}},
+ {key:'Deadlift',strength_lenses:{training_volume:{points:[{date:'2026-10-11',value_kg:900},{date:'2026-10-12',value_kg:-1}]}}},
+ {key:'paused_squat',strength_lenses:{training_volume:{points:[{date:'2026-10-06',value_kg:9999}]}}},
+]}});
+assert.deepEqual(volume,[{date:'2026-10-05',squat:1500,bench:750,deadlift:900,total:3150},{date:'2026-10-12',squat:0,bench:0,deadlift:0,total:0}],'Stack exact Competition volume, retaining real zero and rejecting variants/invalid dates/negative volume');
+assert.deepEqual(ledgerCompetitionVolume(null),[],'Unknown volume never produces decorative bars');
+const {ledgerCanvasActive}=await import('../lib/ledger-surface-policy.ts');
+for(const route of ['/ledger','/ledger/home','/(tabs)/ledger/strength','/ledger/muscle-groups'])assert.equal(ledgerCanvasActive(route),true);
+for(const route of ['/today','/login','/ledger-study','/movement-history-sheet','/coach/ledger','/(tabs)/calendar'])assert.equal(ledgerCanvasActive(route),false,'Other surfaces retain their canonical canvas');
+
 const source=file=>fs.readFileSync(new URL('../'+file,import.meta.url),'utf8');
 const product=source('components/ledger/LedgerExperience.tsx'),visuals=source('components/ledger/LedgerVisuals.tsx');
 assert.match(product,/<LedgerRecordCard[\s\S]*points=\{p\.lenses\?\.weight_on_bar\.points/,'Landing charts must use performed load, not estimates');
@@ -29,3 +44,24 @@ const color=key=>new RegExp(`${key}: '(#[0-9A-Fa-f]{6})'`).exec(palette)?.[1];
 const luminance=hex=>{const c=hex.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return c[0]*.2126+c[1]*.7152+c[2]*.0722;};
 for(const foreground of ['text','secondary','muted','accent'])for(const background of ['face','top','bottom']){const a=luminance(color(foreground)),b=luminance(color(background));assert.ok((Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5,`${foreground} / ${background} must retain readable contrast`);}
 console.log('PASS: actual visual helpers; chronological scales, missing/zero data, exact rep bars, completed-only calendar, quantitative rhythm, governed anatomy, real product evidence and text contrast.');
+
+const background=source('components/ui/sl-workspace.tsx'),layout=source('app/(tabs)/ledger/_layout.tsx'),chart=source('components/charts/AnalyticalTimeSeriesChart.tsx');
+const canvasGuard=(background,layout)=>{
+ assert.match(background,/ledgerCanvasActive\(usePathname\(\)\)/);
+ assert.match(background,/ledger && \{ backgroundColor: SLLedgerMaterial\.canvas \}/,'The actual canvas owner must apply the material, not an unused route token');
+ assert.match(layout,/contentStyle: \{ backgroundColor: 'transparent' \}/,'Nested navigation must not cover the canvas');
+};
+canvasGuard(background,layout);
+assert.throws(()=>canvasGuard(background.replace('ledger && { backgroundColor: SLLedgerMaterial.canvas }','null'),layout),'Deliberately subtracting the actual background must fail');
+assert.throws(()=>canvasGuard(background,layout.replace("backgroundColor: 'transparent'","backgroundColor: 'black'")),'Deliberately covering the background must fail');
+assert.match(visuals,/ledgerCompetitionVolume\(progression\)/);assert.match(product,/<LedgerTrainingRhythm unit=\{unit\}/,'Volume display follows the active surface unit');
+assert.match(product,/event_type==='CORE_WEIGHT_PR'&&e.unit==='kg'/,'The medallion never relabels an estimated PR as a performed load');
+assert.match(visuals,/resolvePlateStackRender\(\{weight:value,unit\}\)/,'Plate imagery must resolve the actual unit-aware threshold');
+assert.doesNotMatch(visuals,/filter:|tintColor:/,'Native brightness compositing whitened alpha in the first visual pass; plate details must use readable source pixels');
+assert.match(visuals,/LedgerEarnedMedallion/);assert.match(visuals,/g\.lastValue/);assert.match(chart,/fillArea = false/,'Area presentation is opt-in for other analytical consumers');
+assert.match(product,/<AnalyticalTimeSeriesChart fillArea surfaceColor=/);
+console.log('PASS: actual Ledger canvas owner and deliberate subtraction/opaque-navigation failures; exact performed-volume stacks, active units, performed-only medallion, and native-safe plate alpha.');
+
+assert.match(product,/<Modal backdropColor=\{T.material.canvas\}/,'The native source sheet must use the same charcoal material');
+
+assert.equal(ledgerSessionTotal({consistency:{sessions_completed:0,weeks:[{completed:99}]}}),0);assert.equal(ledgerSessionTotal({consistency:{sessions_completed:36,weeks:[{completed:3}]}}),36,'A shortened preview cannot redefine the server-reported range total');assert.equal(ledgerSessionTotal({consistency:{weeks:[{completed:3}]}}),null,'Missing range totals stay missing');

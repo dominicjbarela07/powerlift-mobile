@@ -1,0 +1,16 @@
+{
+  "file": "assets/images/ledger-cleanup/earned-pr-medallion-v1.png",
+  "sha256": "a64d3d86488322d3384c4ed6bac1f90403cda93c0df9466ed80f951d4e31bfad",
+  "width": 1254,
+  "height": 1254,
+  "mode": "RGBA",
+  "alpha_extrema": [
+    0,
+    255
+  ],
+  "reference": "docs/design/operation-visual-cleanup/milestones.png",
+  "purpose": "Symbolic earned personal-record medallion; does not define a new tier, qualification or performance metric.",
+  "tool": "image_gen.imagegen",
+  "original_art_unchanged": true,
+  "generation_brief": "Extract only the round brass barbell medallion from the approved primary achievement card. Preserve the raised central barbell, small SL monogram, thin concentric machined rim and brushed brass. Complete front-on medallion centered on transparent background, approximately 90 percent canvas occupancy. Bright broad studio key lighting makes the barbell, engraved details, rim and metal texture readable at about 90 pixels on charcoal. Restrained gold, crisp highlights, shallow relief; no ribbon, laurel, star, neon, glitter, external hard drop shadow, UI, phone, dates, thresholds, numbers or screenshot rectangle. True alpha outside the circular rim."
+}

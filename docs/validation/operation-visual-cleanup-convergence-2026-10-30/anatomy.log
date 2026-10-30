@@ -1,0 +1,5 @@
+
+> powerlift_mobile@1.0.0 test:anatomy-consumer-convergence
+> node --import tsx scripts/test-anatomy-consumer-convergence.mjs
+
+[anatomy-consumer-convergence] shared renderer and exact-movement boundary: PASS

@@ -53,9 +53,10 @@ export function KeyboardModal({ children, onRequestClose, onDismiss, visible, ..
   // Opaque native modals default to white. Their backdrop must cover the entire
   // presentation, including avoidance padding and the keyboard's rounded corners.
   // Transparent sheets keep their existing backdrop over the app's canvas.
-  return <NativeModal {...props} backdropColor={SLColors.canvas} visible={visible} onRequestClose={event => { Keyboard.dismiss(); onRequestClose?.(event); }}
+  const opaqueCanvasColor = props.backdropColor ?? SLColors.canvas;
+  return <NativeModal {...props} backdropColor={opaqueCanvasColor} visible={visible} onRequestClose={event => { Keyboard.dismiss(); onRequestClose?.(event); }}
     onDismiss={onDismiss}>
-    <KeyboardViewport independent style={[styles.viewport, !props.transparent && styles.opaqueCanvas]}>
+    <KeyboardViewport independent style={[styles.viewport, !props.transparent && styles.opaqueCanvas, !props.transparent && { backgroundColor: opaqueCanvasColor }]}>
       <View style={[styles.viewport, props.transparent && keyboard.visible ? { paddingTop: insets.top } : null]}>{children}</View>
     </KeyboardViewport>
   </NativeModal>;

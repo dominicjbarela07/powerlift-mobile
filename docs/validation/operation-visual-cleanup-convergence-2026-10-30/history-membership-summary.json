@@ -1,0 +1,15 @@
+{
+  "CANONICALLY_REACHABLE_SETLOGS": 14088,
+  "CROSS_MOVEMENT_HISTORY_LEAK_COUNT": 22,
+  "EXPLICITLY_RECONCILED_SETLOGS": 426,
+  "HISTORY_IDENTITIES_WITH_KNOWN_EVIDENCE_RETURNING_ZERO": 0,
+  "LEGITIMATELY_UNRESOLVED_HISTORICAL_SETLOGS": 6532,
+  "ORPHANED_KNOWN_SETLOGS": 0,
+  "PARENT_VARIANT_LEAK_COUNT": 0,
+  "TOTAL_IMMUTABLE_SETLOGS": 20620,
+  "governed_shared_core_accessory_dual_views": 22,
+  "unexplained_cross_movement_cases": 0,
+  "raw_audit_exit": 1,
+  "governing_merge_config_sha256": "0499010cdbddec7da056d18bc8e2eac91969a60702b8db9285e28dda38d17036",
+  "note": "The raw audit counts role namespaces separately. All 22 findings share an explicit Core foreign key and an accepted shared physical movement. No label/family guesses, data writes, guard changes or pin updates. Raw failure retained."
+}

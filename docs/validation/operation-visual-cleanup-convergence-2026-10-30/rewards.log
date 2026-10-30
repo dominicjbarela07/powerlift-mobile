@@ -1,0 +1,5 @@
+
+> powerlift_mobile@1.0.0 test:ledger-rewards
+> node --import tsx scripts/test-ledger-rewards.mjs
+
+[ledger rewards] sex-specific kg tier boundaries, exact identity, totals, unit parity, medallions, and PR history passed

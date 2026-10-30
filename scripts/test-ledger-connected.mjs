@@ -24,8 +24,11 @@ const product=read('components/ledger/LedgerExperience.tsx');
 assert.doesNotMatch(product,/dev-mocks|STUDY_|LedgerDesignStudy|Alex Morgan|AppRegistry/,'Normal Ledger must not import illustrative records or register an alternate app');
 assert.match(read('components/ledger/route-screen.tsx'),/screen === 'home' \|\| screen === 'strength'\) return <LedgerExperience/);
 assert.match(product,/<ConnectedLedger key=\{`\$\{user\?\.id\}:\$\{subject\.athleteId/,'Identity changes must reset local state and sheets');
-assert.match(product,/ArchiveDetailExperience[\s\S]*target=\{sources\.at\(-1\)\}[\s\S]*initialDisplayUnit=\{unit\}/);
+assert.match(product,/ArchiveDetailExperience[\s\S]*target=\{sources\.at\(-1\)\}[\s\S]*initialDisplayUnit=\{sourceUnit\?\?unit\}/);
 assert.match(read('components/ledger/use-ledger-history.ts'),/current\.current !== key/);assert.match(read('components/ledger/use-ledger-history.ts'),/CAREER_PR_EVENT_TYPES/);
 assert.doesNotMatch(read('app/(tabs)/settings.tsx'),/Ledger Design Study/,'The presentation cannot substitute for normal application navigation');
 assert.match(product,/LedgerHistoryPane[^\n]*athleteId=\{subject\.athleteId\}/,'Personal history must not send a coach-only athlete override for the signed-in athlete');
 console.log('[connected Ledger] exact Competition identity, literal reps, separate estimates, source provenance, incomplete totals, normal app entry and state boundaries PASS');
+
+assert.match(product,/onDisplayUnitChange=\{setSourceUnit\}/,'Nested evidence readers inherit the unit selected on their source sheet');
+assert.match(read('components/ledger/archive-detail.tsx'),/onDisplayUnitChange\?\.\(displayUnit\)/,'The actual source reader reports unit changes to its source stack owner');

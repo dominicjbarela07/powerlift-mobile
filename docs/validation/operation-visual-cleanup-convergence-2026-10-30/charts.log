@@ -1,0 +1,5 @@
+
+> powerlift_mobile@1.0.0 test:chart-fidelity
+> node --import tsx scripts/test-chart-fidelity-standard.mjs
+
+[chart-fidelity-standard] PASS — metric-aware axes, meaningful time ticks, touch/scrub inspection, and primary analytical consumers are protected

@@ -15,7 +15,7 @@ function LedgerSubjectGate() {
   if (subject.isWorkspaceScoped && !subject.valid) {
     return <View style={styles.state}><Text style={styles.title}>Athlete evidence unavailable</Text><Text style={styles.body}>The athlete workspace subject could not be verified. Return to Coach Home and reopen the athlete.</Text></View>;
   }
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }} />;
 }
 
 const styles = StyleSheet.create({

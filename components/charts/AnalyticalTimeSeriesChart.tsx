@@ -56,6 +56,8 @@ type Props = Readonly<{
   readableText?: boolean;
   largeReadableText?: boolean;
   testID?: string;
+  surfaceColor?: string;
+  fillArea?: boolean;
 }>;
 
 type NormalizedPoint = Readonly<{
@@ -96,6 +98,8 @@ export function AnalyticalTimeSeriesChart({
   readableText = false,
   largeReadableText = false,
   testID,
+  surfaceColor,
+  fillArea = false,
 }: Props) {
   const [width, setWidth] = useState(320);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -221,7 +225,7 @@ export function AnalyticalTimeSeriesChart({
       }
       gestureStartX.current = null;
     }}
-    style={[styles.frame, { minHeight: height }]}
+    style={[styles.frame, { minHeight: height }, surfaceColor ? { backgroundColor: surfaceColor } : null]}
     testID={testID}
   >
     <Svg height={height} width={width}>
@@ -235,10 +239,11 @@ export function AnalyticalTimeSeriesChart({
       })}
       {plot.bandPath ? <Path d={plot.bandPath} fill="rgba(151,105,255,0.13)" stroke="rgba(151,105,255,0.25)" strokeWidth={0.7} /> : null}
       {plot.rows.map((item) => <React.Fragment key={item.key}>
+        {fillArea && item.points.length > 1 ? <Path d={`${pathFor(item.points)} L${item.points.at(-1)!.x},${plot.top+plot.chartHeight} L${item.points[0].x},${plot.top+plot.chartHeight} Z`} fill={item.color} opacity={0.13}/> : null}
         {item.points.length > 1 ? <Path d={pathFor(item.points)} fill="none" stroke={item.color} strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.6} /> : null}
         {item.points.map((point) => {
-          const isSelected = selectedDate?.date === point.date;
-          return <Circle key={`${item.key}:${point.date}`} cx={point.x} cy={point.y} r={isSelected ? 6 : 3.4} fill={isSelected ? '#F7F2FF' : item.color} stroke={item.color} strokeWidth={isSelected ? 2.5 : 0} />;
+          const isSelected = selectedDate?.key === point.key;
+          return <Circle key={`${item.key}:${point.key}`} cx={point.x} cy={point.y} r={isSelected ? 6 : 3.4} fill={isSelected ? '#F7F2FF' : item.color} stroke={item.color} strokeWidth={isSelected ? 2.5 : 0} />;
         })}
       </React.Fragment>)}
       {selectedDate ? <Line x1={selectedDate.x} x2={selectedDate.x} y1={plot.top} y2={plot.top + plot.chartHeight} stroke="#B878FF" strokeDasharray="3 4" strokeWidth={1} /> : null}

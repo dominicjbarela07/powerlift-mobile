@@ -1,0 +1,1 @@
+PASS: actual native modal owner; default/explicit materials, transparent/opaque bounds, keyboard states and close callbacks preserved.

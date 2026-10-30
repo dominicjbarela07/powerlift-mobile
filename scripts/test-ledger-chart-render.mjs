@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import ts from 'typescript';
+import * as fidelity from '../lib/chart-fidelity.ts';
+let slot=0;
+const react={createElement:(type,props,...children)=>({type,props:{...props,children}}),useState:initial=>[slot++===1?1:initial,()=>{}],useMemo:fn=>fn(),useEffect:()=>{},useRef:value=>({current:value})};
+const mocks={react,'react-native':{View:'View',StyleSheet:{create:x=>x}},'react-native-svg':{__esModule:true,default:'Svg',Circle:'Circle',Line:'Line',Path:'Path',Text:'SvgText'},'@/components/ui/sl-text':{Text:'Text'},'@/lib/chart-fidelity':fidelity};
+const exports={};vm.runInNewContext(ts.transpileModule(fs.readFileSync('components/charts/AnalyticalTimeSeriesChart.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.React,esModuleInterop:true,target:ts.ScriptTarget.ES2022}}).outputText,{exports,require:name=>{assert.ok(name in mocks,name);return mocks[name];}});
+const tree=exports.AnalyticalTimeSeriesChart({series:[{key:'bodyweight',label:'Reported bodyweight',color:'#66CCDD',points:[{id:'session:9',date:'2026-10-12',value:75},{id:'session:10',date:'2026-10-12',value:76}]}],metric:fidelity.analyticalMetricDefinition('bodyweight',{label:'Reported bodyweight',kind:'weight',unit:'kg'}),fillArea:true,surfaceColor:'#20262F'});
+const nodes=t=>t==null?[]:Array.isArray(t)?t.flatMap(nodes):typeof t==='object'?[t,...nodes(t.props?.children)]:[];
+const all=nodes(tree),circles=all.filter(n=>n.type==='Circle');
+assert.equal(circles.length,2);assert.equal(new Set(circles.map(n=>n.props.key)).size,2,'Actual SVG keys preserve distinct same-day observations');assert.equal(circles.filter(n=>n.props.r===6).length,1,'Only the selected immutable observation is highlighted');
+assert.match(tree.props.accessibilityLabel,/2 observations/);assert.ok(all.some(n=>n.type==='Path'&&n.props.opacity===.13),'Filled area uses the real plotted series');
+console.log('PASS: actual analytical chart render; same-day observation identities, single selection, truthful count and opt-in filled series.');

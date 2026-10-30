@@ -147,3 +147,141 @@ Squat observations), performed-volume metric switching, exact PauseSquat
 92.5kg×4 /12Sessions, and the canonical accessory-history return for BarbellRow
 (12exposures /36sets). Families now describe their own scope; the90-day
 caption applies only to Competition-lift overview trends.
+
+## Owner rejection and required reference convergence
+
+The owner rejected the first implementation as materially weaker than the
+approved concepts. Plate stacks and milestones are too dark to recognize;
+Records lost the concepts' visual richness and scale. The owner explicitly
+requests a slightly lighter background. Current acceptance is actual visual
+convergence in DEV, not a reduced interpretation of the concepts: visible
+quantitative charts and filled trend areas, prominent readable performed loads,
+strong surface hierarchy, legible illuminated plate presentation, the approved
+medallion direction for an actual earned PR, and a charcoal Ledger canvas.
+Finish on the populated athlete Ledger in the simulator. Preserve data,
+qualification rules, source/return flows, artwork originals, other app surfaces
+and all release protections. No Production/TestFlight release.
+
+Cause identified: the shared canvas and nested Navigator owned the actual
+background, so the previous isolated Ledger token never changed served pixels.
+The borrowed tiny, dark plate captures were inappropriate for the requested
+hero composition. Source/color checks did not establish visual fidelity.
+Correct the actual background owner with a Ledger-only route policy, retain
+transparent route roots, brighten presentation without modifying approved
+asset bytes, and validate actual rendered visibility. Retain quantitative chart
+semantics and range/unit correctness while increasing visual fidelity.
+
+## Continued owner-directed iteration and completeness audit
+
+Owner explicitly requires repeated implementation, actual-screen inspection,
+comparison with approved references AND other professional apps, followed by
+further refinement. The final report must identify additions, removals and why.
+Acceptance includes intentional typography/color, balanced visuals, readable
+assets/axes, truthful charts and preserved access to every existing historical
+data class. Continue in canonical DEV and the populated athlete app; no release.
+Do not substitute a text-only redesign or claim source checks prove visual quality.
+Audit discoverability of Session, Set, film, exact movement, imported performance,
+meet, PR and contextual history, including older records and account boundaries.
+Distinguish captured data from currently exposed collections and any real gaps.
+
+## Convergence result and continued comparison
+
+Compared the actual app repeatedly with the four approved images, then with
+Hevy's published exercise/history screens, Oura's current overview/detail
+structure and Strava's documented training-log filter placement. These are
+references for hierarchy and interaction, not copied artwork or metric rules:
+
+- https://www.hevyapp.com/features/exercise-performance/
+- https://ouraring.com/blog/new-app-design/
+- https://support.strava.com/en-us/articles/15402077-training-log
+
+| Added or changed | Why / evidence policy |
+| --- | --- |
+| Actual Ledger-only charcoal canvas and lighter layered faces | The old token never reached the shared canvas; the nested Stack painted over it. Other routes retain their canvas. |
+| Large performed-load values, dated/numbered filled previews and opt-in filled analytical charts | Restore the approved hierarchy. Keep all-time bests separate from the selected chart range, literal loads separate from estimated 1RM, and actual chronological gaps. |
+| Exact Competition-lift stacked volume | Three lift colors retain their existing meaning. The graph is labeled load × reps; no invented completed-set counts or variant totals. |
+| Clearly lit, larger, higher-resolution canonical plate images | Replace tiny dark captures in this presentation. Preserve every original image byte and orientation contract. A native brightness effect produced white alpha and was removed after inspection. |
+| Brass earned-PR medallion and direct qualifying-set action | Recreate the approved strength motif as an isolated asset, not a screenshot panel or new qualification. Latest-PR recognition uses a real performed-load event. |
+| Search, date range and five history filters at the top | Training, personal bests, imported/manual past entries, film and meets are directly discoverable. Global archive queries receive real server date bounds. PR text/date filtering explicitly describes loaded pages. |
+| Compact dated activity grid and richer Session rows | Keep useful visual context while exposing actual training sooner. Rows show recorded sets, movements and duration. Loaded-page counts never claim to be career totals. |
+| Session summary tiles and restored source fields | Preserve actual set IDs, original dates, recorded volume, imported set counts/estimates/bodyweight, numeric Session ratings, notes and shared film feedback. Keep canonical competition attempts/results. |
+| Reported-bodyweight trend and source check-ins | Only explicit pre-Session measurements qualify. Profile bodyweight cannot become an invented history; recent shown and saved-overall counts are separate. |
+| Unit continuity through nested sources | Native testing reproduced kg → Session set resetting to lb. The source-stack owner now inherits the selected sheet unit through Session → Set → Back without mutating stored values. |
+| Distinct chart point identities | Same-day observations no longer share SVG keys or all highlight together. The actual analytical renderer is failure-tested with two different observations on one date. |
+
+Removed or moved: giant muscle artwork ahead of History search/results; oversized
+calendar scaffolding; the text-only latest-PR treatment; unlabeled miniature
+trends; dark low-resolution plate presentation; placeholder date-search wording
+(the query did not implement date parsing); estimated-strength rounding applied
+to performed PRs; native brightness compositing that whitened transparent art.
+Muscle anatomy, complete collections, advanced filters, career chapters, original
+source records, auth/access rules and all historical image originals remain.
+No new target writer, scoring system, metric inference or mutation is introduced.
+
+### Data coverage and honest audit limits
+
+The read-only DEV membership audit inspected 20,620 immutable SetLogs: 14,088
+canonically reachable, 6,532 legitimately unresolved legacy identities, zero
+orphaned known sets, zero known histories returning empty, zero parent/variant
+leaks. Its raw cross-movement result is 22 and its raw exit remains 1. Every one
+of those 22 is the same explicitly governed RDL physical identity exposed through
+Core 57 / general 625 programming contexts. Independently checked the actual Core
+foreign key, accepted merge configuration and shared-context policy; unexplained
+cross-movement cases: zero. No audit/policy/pin was changed to suppress this.
+Unresolved legacy identities stay in their original Session evidence; they are
+not guessed into exact movement graphs. No saved training data was changed.
+The safe aggregate receipt is `history-membership-summary.json`; full raw IDs
+remain in private task evidence outside source control.
+
+The archive/variant isolated API run passed 12 of 13 cases. One pre-existing
+failure remains on the retired `/mobile/athlete/focus?scope=training` projection
+expecting `training_history` to be omitted; the new Ledger does not consume it.
+The raw failure is retained. It is not represented as a green backend release.
+Archive source/privacy, imports, competition, cursors, exact variants and owner/
+coach authorization cases passed. Existing full bodyweight pagination, career
+history and advanced archive readers remain available; this iteration does not
+claim every deep legacy view has received the new visual styling.
+
+Final affected checks pass: TypeScript; actual History paging/race/denial/date/
+import handling; exact record/reward and unit semantics; actual source-renderer
+fields; actual native-modal backing; actual analytical SVG same-day identities;
+Today/archive source handler and nested-unit callback; chart fidelity; anatomy
+consumer convergence; navigation loading and horizontal layout. Broader UI audit
+still has its five pre-existing unrelated findings. Transparent-root audit still
+has its study/onboarding findings. Whole-app keyboard scan still flags the old
+study's bypass; the affected live Ledger inputs/scrolls use the canonical owners,
+and actual modal default/override/transparent/close tests pass. No exception or
+protection hash was refreshed.
+
+### Actual device observations and destination
+
+iPhone Air / iOS 26.2, normal authenticated athlete, canonical npm-start DEV app
+and local DEV backend. Repeated visual comparisons caught and corrected the
+canvas ownership, white-alpha compositing, wrapped volume-date labels, dominant
+History artwork and source-unit reset. Current captures are under
+`docs/validation/operation-visual-cleanup-convergence-2026-10-30/`; earlier rejected
+and intermediate captures are retained as historical evidence, not final proof.
+Observed: populated three-lift Records, kg/lb conversion; performed/estimated
+separation; legible medallion and steel plates; qualifying-set source; exact
+Oct 12–14 History results; search; Session totals 6 sets / 2 movements / 55 min /
+2,805 kg×reps; original Pause Squat 92.5 kg×4; restored Session RPE 7 and note;
+Session kg → child Set kg → parent kg. Film feedback/import rendering and same-day
+chart cases are actual-component tests and isolated API fixtures, not claimed as
+all represented by this simulator account. No Android or physical-phone
+certification is claimed. Finish on populated athlete Records, in DEV only.
+
+Final refinement also replaces the Context screen's huge missing-value placeholder
+and raw target list with compact training totals, a truthful check-in card and
+canonical registered front/rear anatomy. On this QA athlete there are no submitted
+bodyweight observations: the app correctly shows that state instead of fabricating
+an apparent trend from profile weight. Context retains all-region exploration.
+The final History activity summary is compact enough to expose real Session rows
+on the first screen. Session totals use the server's selected-range count rather
+than summing a shortened graph preview. Exact native captures distinguish this
+final balance from earlier intermediate captures.
+
+The simulator runs Expo Go against canonical npm-start DEV source. Its historical
+manifest/native base version is not a 3.0 native binary certification or a release.
+No Production endpoint, mobile update channel, TestFlight or store artifact was
+published by this iteration. The final DEV commit and exact serving-source receipt
+are retained with the validation evidence.

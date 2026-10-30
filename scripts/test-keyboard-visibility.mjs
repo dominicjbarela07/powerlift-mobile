@@ -52,6 +52,11 @@ for(const visible of [false,true,false])for(const transparent of [false,true]){
  const boundaryStyle=style.flatten(modal.props.children[0].props.style);
  assert.equal(boundaryStyle.backgroundColor,transparent?undefined:'#020205','opaque viewport paints its full bounds; transparent sheets retain underlying app');
 }
+for(const transparent of [false,true]){
+ const modal=exports.KeyboardModal({visible:true,transparent,backdropColor:'#191D23',children:'source-evidence'});
+ assert.equal(modal.props.backdropColor,'#191D23','An explicit native surface material reaches the actual backdrop');
+ assert.equal(style.flatten(modal.props.children[0].props.style).backgroundColor,transparent?undefined:'#191D23','Opaque keyboard bounds match the requested material; transparent sheets stay transparent');
+}
 context.visible=true;
 
 const scrolls=[];let callerScrolls=0,callerLayouts=0,callerSizes=0;const forwarded={current:null};

@@ -1,4 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { usePathname } from 'expo-router';
+import { ledgerCanvasActive } from '@/lib/ledger-surface-policy';
 import {
   Box,
   BoxShadow,
@@ -24,6 +26,7 @@ import {
 
 import {
   SLColors,
+  SLLedgerMaterial,
   SLElevation,
   SLShadows,
   SLLayout,
@@ -86,7 +89,8 @@ function surfaceStyle(
 }
 
 export function SLWorkspaceBackground({ style }: { style?: StyleProp<ViewStyle> }) {
-  return <View pointerEvents="none" style={[StyleSheet.absoluteFillObject, styles.workspace, style]} />;
+  const ledger = ledgerCanvasActive(usePathname());
+  return <View pointerEvents="none" style={[StyleSheet.absoluteFillObject, styles.workspace, ledger && { backgroundColor: SLLedgerMaterial.canvas }, style]} />;
 }
 
 export function SLMaterialOverlay({
