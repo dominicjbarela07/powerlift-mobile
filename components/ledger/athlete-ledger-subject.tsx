@@ -1,5 +1,6 @@
-import { useLocalSearchParams } from 'expo-router';
-import React, { createContext, type ReactNode, useContext, useMemo } from 'react';
+import { useGlobalSearchParams, usePathname } from 'expo-router';
+import { ledgerRouteContext } from '@/lib/ledger-route-context';
+import React, { createContext, type ReactNode, useContext, useMemo, useRef } from 'react';
 
 type AthleteLedgerSubject = {
   athleteId?: number;
@@ -20,13 +21,16 @@ function first(value?: string | string[]) {
   return Array.isArray(value) ? value[0] : value;
 }
 export function AthleteLedgerSubjectProvider({ children }: { children: ReactNode }) {
-  const params = useLocalSearchParams<{
+  const activeParams = useGlobalSearchParams<{
     athleteId?: string | string[];
     athlete_id?: string | string[];
     workspaceAthleteId?: string | string[];
     returnToWorkspace?: string | string[];
     workspaceReturn?: string | string[];
   }>();
+  const retained = useRef(activeParams);
+  retained.current = ledgerRouteContext(usePathname(), activeParams, retained.current);
+  const params = retained.current;
   const values = [first(params.workspaceAthleteId), first(params.athleteId), first(params.athlete_id)]
     .filter((value): value is string => Boolean(value));
   const ids = [...new Set(values.map(Number).filter((value) => Number.isInteger(value) && value > 0))];

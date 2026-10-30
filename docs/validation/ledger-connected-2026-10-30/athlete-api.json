@@ -1,0 +1,35 @@
+{
+  "role": "athlete",
+  "database": "strength_ledger_dev",
+  "actor": 78,
+  "results": [
+    {
+      "path": "/athletes/mobile/progression?range=all&view=ledger-index",
+      "status": 200,
+      "items": 0,
+      "athlete_id": 68
+    },
+    {
+      "path": "/workouts/mobile/accomplishments/current-bests?scope=career&limit=24",
+      "status": 200,
+      "items": 0,
+      "bests": 12
+    },
+    {
+      "path": "/mobile/ledger/archive/training?limit=24",
+      "status": 200,
+      "items": 24
+    },
+    {
+      "path": "/mobile/ledger/archive/core-variants",
+      "status": 200,
+      "items": 1
+    },
+    {
+      "path": "/mobile/ledger/archive/movement-progress?view=index",
+      "status": 200,
+      "items": 6
+    }
+  ],
+  "other_athlete_denied": true
+}

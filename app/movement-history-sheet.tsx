@@ -1,3 +1,4 @@
+import { parseDisplayWeightUnit } from '@/lib/display-units';
 import { parseSessionHistoryOrigin } from '@/lib/movement-history-launch';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useRef } from 'react';
@@ -17,6 +18,7 @@ export default function MovementHistorySheetRoute() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     sessionOrigin?: string;
+    displayUnit?: string;
     athleteId?: string | string[];
     equipmentContextDefinitionId?: string | string[];
     equipmentDefinitionId?: string | string[];
@@ -47,7 +49,7 @@ export default function MovementHistorySheetRoute() {
         <CanonicalMovementHistoryScreen
           athleteId={athleteId}
           readOnly={origin?.mode === 'preview'}
-          initialDisplayUnit={origin?.displayUnit}
+          initialDisplayUnit={origin?.displayUnit ?? parseDisplayWeightUnit(params.displayUnit) ?? undefined}
           initialEquipmentContextDefinitionId={equipmentContextDefinitionId}
           activeSessionId={origin?.mode === 'execute' ? origin.workoutId : null}
           movementDefinitionId={movementDefinitionId}

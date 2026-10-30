@@ -298,3 +298,70 @@ observed flows. Source base: `0d61d64f`; the additive entry is SHA256-bound.
 The changed state is local presentation/bootstrap only. Product AuthContext,
 account access, data writers and backend are untouched; real training history
 and Production are unchanged. No TestFlight or store publication was performed.
+
+## Owner correction: integrate the actual development app
+
+The owner explicitly rejected the standalone presentation and requested the design
+in the actual development application. The required destination is the normal
+Ledger tab under the existing application shell, authentication, navigation and
+real account data. Replace the chapter landing with Records / History /
+Milestones, connect the useful profiles and evidence flows, and leave the normal
+app open in the simulator. No example-data entry, fake app dock, tutorial rail or
+illustrative account is acceptable as delivery. Retain legacy deep links and
+complete evidence/award inventories. Preserve canonical subject authorization,
+exact variant and equipment histories, source identities, units, estimates,
+access states, imagery and mutations. Validate actual connected rendering,
+source/return flows, empty/error recovery and identity changes. This authorizes
+DEV product integration, not Production publication or a store build.
+
+### Actual app delivery and athlete correction
+
+The owner corrected the account requirement: this must be an athlete's own
+Ledger. Final validation uses existing DEV user78 / athlete68, authenticated by
+the normal email/password form. Settings visibly confirms Athlete role and mode.
+No coach impersonation, workspace athlete override or authentication bypass is
+used. The local canonical DEV backend runs on127.0.0.1:5017 against
+strength_ledger_dev; the normal canonical `npm start` loads the product through
+Expo Go on iPhone Air/iOS26.2. Production and TestFlight are unchanged. This is
+a DEV application review, not native-store or live-Production certification.
+
+The empty Ledger was the wrong account: the coach's own sparse record was shown
+instead of an athlete. The retained athlete fixture now has36 additional completed
+Sessions and180 SetLogs, recorded through canonical identity snapshots and
+accomplishment evaluators. The DEV-only backend seeder is guarded to the canonical
+DEV checkout and local database, idempotent, and fingerprint-verifies all37,530
+pre-existing protected rows unchanged. No credentials, roles or relationships
+changed. Data belongs to the actual athlete; the presentation has no fake fallback.
+
+Normal Home/Strength routes render the new Records / History / Milestones inside
+the existing app header and dock. Core lift profiles, exact variants, accessories,
+source evidence, reference tiers and volume collections use authenticated readers.
+The source sheet retains actual archive authorization and video handling. Existing
+advanced analysis, timeline, archive and complete award inventories remain reachable.
+No art, mutation endpoint, access policy or protection pin changed.
+
+Native testing caught and corrected two account-context failures: a retained
+Ledger layout could keep the previous query subject, and personal-best history
+was incorrectly sending a coach-only athlete override for an athlete's own view.
+Global active Ledger query context now updates the scoped provider while unrelated
+sheets cannot retarget it. Personal readers use authenticated self unless the
+canonical provider explicitly selects a coach workspace athlete. Account/subject
+changes reset local detail and modal state. Permanent guards cover both cases.
+
+Actual simulator observations: own Records has Squat117.5kg×5, Bench82.5kg×5,
+Deadlift137.5kg×3; Squat source is the same original117.5kg×5 set (259lb after
+unit switch). History loads the first24 Sessions, older paging reaches the remaining
+review history, Session→Set→previous→close preserves the selected History state.
+Personal-best history loads after the self-scope correction. Pause Squat has its
+own92.5kg×4 record and12 exposures; Barbell Row opens canonical Movement History
+with12 exposures/36 sets. Milestones and reference tiers use actual performed
+qualification; separate lift bests are explicitly not a meet total.
+
+TypeScript, connected numerical/route guards, actual History-hook race/paging/
+retry/denial tests, actual Today/archive handlers and actual Ledger/navigation
+loading tests pass. Existing coach workspace/performance, variant, exploration,
+reward and tier app-shell tests also passed during this integration. The broader
+UI audit retains five pre-existing findings elsewhere, with no new raw visual
+literal finding in this change. Screenshots and sanitized results are in
+`docs/validation/ledger-connected-2026-10-30/`. Final handoff is the normal athlete
+Ledger's populated Records screen in kg.

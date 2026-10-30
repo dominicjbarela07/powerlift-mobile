@@ -88,20 +88,20 @@ function recordStatusLabel(status?: string | null): string {
   return labels[String(status || '').toLowerCase()] || 'Recorded';
 }
 
-export function ArchiveDetailExperience() {
+export function ArchiveDetailExperience({ target, onClose, onOpenSource, initialDisplayUnit, presentation, renderContent }: { renderContent?: (item: ArchiveDetailItem, unit: DisplayWeightUnit, onPlay: () => void) => React.ReactNode; presentation?: 'ledger'; initialDisplayUnit?: DisplayWeightUnit; target?: { type: ArchiveItemType; id: number }; onClose?: () => void; onOpenSource?: (source: { type: ArchiveItemType; id: number }) => void } = {}) {
   const router = useRouter();
   const ledgerSubject = useAthleteLedgerSubject();
   const { user } = useAuth();
   const preferredDisplayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
   const params = useLocalSearchParams<{ itemType?: string; sourceId?: string; collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string; displayUnit?: string; returnTo?: string }>();
-  const itemType = first(params.itemType) as ArchiveItemType;
-  const sourceId = Number(first(params.sourceId));
+  const itemType = target?.type ?? first(params.itemType) as ArchiveItemType;
+  const sourceId = target?.id ?? Number(first(params.sourceId));
   const athleteId = ledgerSubject.athleteId ?? (Number(first(params.athlete_id)) || undefined);
   const [item, setItem] = useState<ArchiveDetailItem | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'unavailable' | 'unauthorized' | 'error'>('loading');
   const [reloadToken, setReloadToken] = useState(0);
   const [videoOpen, setVideoOpen] = useState(false);
-  const { unit: displayUnit, setUnit: setDisplayUnit } = useSurfaceWeightUnit(preferredDisplayUnit, first(params.displayUnit));
+  const { unit: displayUnit, setUnit: setDisplayUnit } = useSurfaceWeightUnit(preferredDisplayUnit, initialDisplayUnit ?? first(params.displayUnit));
 
   useEffect(() => {
     let active = true;
@@ -121,17 +121,18 @@ export function ArchiveDetailExperience() {
     return () => { active = false; };
   }, [athleteId, itemType, reloadToken, sourceId, user?.id]);
 
-  const back = () => router.replace({ pathname: ledgerHrefFor('archive') as never, params: { collection: first(params.collection), q: first(params.q), athlete_id: athleteId ? String(athleteId) : undefined, date_from: first(params.date_from), date_to: first(params.date_to), displayUnit, returnTo: first(params.returnTo) === 'today' ? 'today' : undefined, ...ledgerSubject.routeParams } } as never);
+  const back = () => onClose ? onClose() : router.replace({ pathname: ledgerHrefFor('archive') as never, params: { collection: first(params.collection), q: first(params.q), athlete_id: athleteId ? String(athleteId) : undefined, date_from: first(params.date_from), date_to: first(params.date_to), displayUnit, returnTo: first(params.returnTo) === 'today' ? 'today' : undefined, ...ledgerSubject.routeParams } } as never);
   const meta = TYPE_META[itemType] || TYPE_META.session;
 
   return <ArchiveDetailUnitContext.Provider value={displayUnit}><View style={styles.page} testID="ledger-archive-detail">
     <FloatingDisplayUnitRegistration unit={displayUnit} onChange={setDisplayUnit} testID="ledger-archive-detail-unit-toggle" />
-    <Pressable accessibilityLabel="Back to Archive results" onPress={back} style={styles.back}><Ionicons name="chevron-back" size={20} color={SLColors.iconPrimary} /><Text typographyRole="shortButtonLabel" style={styles.backText}>Archive</Text></Pressable>
+    {presentation!=='ledger' ? <Pressable accessibilityLabel={onClose ? "Return to Ledger" : "Back to Archive results"} onPress={back} style={styles.back}><Ionicons name="chevron-back" size={20} color={SLColors.iconPrimary} /><Text typographyRole="shortButtonLabel" style={styles.backText}>{onClose ? "Back" : "Archive"}</Text></Pressable> : null}
     {state === 'loading' ? <DetailState loading icon="layers-outline" title="Opening record" body="Loading your saved training history…" /> : null}
     {state === 'unauthorized' ? <DetailState icon="lock-closed-outline" title="Archive unavailable" body="You do not have access to this record right now." /> : null}
     {state === 'unavailable' ? <DetailState icon="unlink-outline" title="Record unavailable" body="This record is no longer available." /> : null}
     {state === 'error' ? <DetailState icon="alert-circle-outline" title="Could not open this record" body="Please try again." action="Try again" onAction={() => { setState('loading'); setReloadToken((value) => value + 1); }} /> : null}
-    {state === 'ready' && item ? <View style={styles.detail}>
+    {state === 'ready' && item && presentation==='ledger' ? <>{renderContent?.(item,displayUnit,()=>setVideoOpen(true))}<MeetSection value={item.meet_context}/></> : null}
+    {state === 'ready' && item && presentation!=='ledger' ? <View style={styles.detail}>
       <View style={styles.masthead}>
         <View style={[styles.typeSeal, { borderColor: `${meta.tone}70` }]}><SLCanonicalIcon name={meta.icon} size={26} color={meta.tone} trophyTier="bronze" /></View>
         <Text typographyRole="shortTechnicalLabel" style={[styles.kicker, { color: meta.tone }]}>{item.provenance_label || meta.label}</Text>
@@ -154,7 +155,7 @@ export function ArchiveDetailExperience() {
       <DetailSection icon="albums-outline" title="Program" value={item.program_context} />
       <MeetSection value={item.meet_context} />
       <DetailSection icon="videocam-outline" title="Film" value={item.media} />
-      {item.sets?.length ? <SetEvidence items={item.sets} /> : null}
+      {item.sets?.length ? <SetEvidence items={item.sets} onOpenSource={onOpenSource} /> : null}
       <DetailSection icon="create-outline" title="Athlete reflection" value={item.athlete_reflection} />
       {item.athlete_visible_coach_feedback ? <View style={styles.feedback}><View style={styles.feedbackIcon}><Ionicons name="chatbubble-ellipses-outline" size={21} color="#5ED7CA" /></View><View style={styles.feedbackCopy}><Text typographyRole="shortTechnicalLabel" style={styles.feedbackLabel}>ATHLETE-VISIBLE COACH FEEDBACK</Text><Text typographyRole="body" style={styles.feedbackBody}>{item.athlete_visible_coach_feedback}</Text></View></View> : null}
     </View> : null}
@@ -191,9 +192,9 @@ function DetailFields({ value, compact = false }: { value: Record<string, unknow
   return <View style={[styles.fields, compact && styles.fieldsCompact]}>{visibleFields(value).filter(([, entry]) => entry !== false).map(([key, entry]) => <View key={key} style={styles.field}><Text typographyRole="caption" style={styles.fieldName}>{readable(key)}</Text><Text typographyRole="bodyStrong" style={styles.fieldValue}>{displayValue(key, entry, unit)}</Text></View>)}</View>;
 }
 
-function SetEvidence({ items }: { items: ArchiveItem[] }) {
+function SetEvidence({ items, onOpenSource }: { items: ArchiveItem[]; onOpenSource?: (source: { type: ArchiveItemType; id: number }) => void }) {
   const unit = React.useContext(ArchiveDetailUnitContext);
-  return <View style={styles.block}><View style={styles.blockHeading}><View style={styles.blockIcon}><Ionicons name="pulse-outline" size={18} color={SLColors.accentMuted} /></View><Text typographyRole="sectionTitle" style={styles.blockTitle}>Performed sets</Text><Text typographyRole="caption" style={styles.setCount}>{items.length}</Text></View><View style={styles.sets}>{items.map((item) => <View key={item.source_id} style={styles.setRow}><Text typographyRole="numeric" style={styles.setIndex}>{String(item.performance?.set_index || '—')}</Text><View style={styles.setCopy}><Text typographyRole="bodyStrong" style={styles.setTitle}>{item.title}</Text><Text typographyRole="caption" style={styles.setDetail}>{setPerformance(item, unit)}</Text></View>{item.media?.video_count ? <Ionicons name="videocam-outline" size={17} color="#5ED7CA" /> : null}</View>)}</View></View>;
+  return <View style={styles.block}><View style={styles.blockHeading}><View style={styles.blockIcon}><Ionicons name="pulse-outline" size={18} color={SLColors.accentMuted} /></View><Text typographyRole="sectionTitle" style={styles.blockTitle}>Performed sets</Text><Text typographyRole="caption" style={styles.setCount}>{items.length}</Text></View><View style={styles.sets}>{items.map((item) => <Pressable key={item.source_id} accessibilityRole={onOpenSource ? "button" : undefined} accessibilityLabel={onOpenSource ? `Inspect ${item.title}, set ${item.performance?.set_index || "record"}` : undefined} onPress={onOpenSource ? () => onOpenSource({ type: item.archive_item_type, id: item.source_id }) : undefined} style={styles.setRow}><Text typographyRole="numeric" style={styles.setIndex}>{String(item.performance?.set_index || '—')}</Text><View style={styles.setCopy}><Text typographyRole="bodyStrong" style={styles.setTitle}>{item.title}</Text><Text typographyRole="caption" style={styles.setDetail}>{setPerformance(item, unit)}</Text></View>{item.media?.video_count ? <Ionicons name="videocam-outline" size={17} color="#5ED7CA" /> : null}{onOpenSource ? <Ionicons name="chevron-forward" size={16} color={SLColors.textMuted} /> : null}</Pressable>)}</View></View>;
 }
 
 function setPerformance(item: ArchiveItem, unit: DisplayWeightUnit): string {

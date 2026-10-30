@@ -1,0 +1,11 @@
+{
+  "database": "strength_ledger_dev",
+  "role": "athlete",
+  "user_id": 78,
+  "athlete_id": 68,
+  "sessions_added": 36,
+  "sets_added": 180,
+  "original_rows_preserved": 37530,
+  "credential_or_relationship_changes": false,
+  "marker": "DEV_LEDGER_ATHLETE_REVIEW_20261030"
+}

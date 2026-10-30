@@ -1,0 +1,30 @@
+{
+  "base": "6e9154d517132208ba94f5f5cee885739ec50c57",
+  "files": {
+    "app/(tabs)/_layout.tsx": "92aeafa56879b9bb929ce1fe62cba39efe0a0abf2e2d981e4488dc15e4db8853",
+    "app/(tabs)/settings.tsx": "747673029f9f428c70fa27a4073a5600c96ba0da7ac2fb80154bb786b6c7097e",
+    "app/(tabs)/ledger/analysis.tsx": "8d13ca0eda0dcf8350e64e7ac9eab02f7af8b7a5d7e3782b560444389238fbc6",
+    "app/movement-history-sheet.tsx": "c3f8efe3595a78323256437ce1b957f522a0f4bf11eb8e6457d92e12c7c904b2",
+    "components/ledger/archive-detail.tsx": "8180e60134fbe71019343a4d561a50e12525f504cdd2861b542eac88fd7f9d6f",
+    "components/ledger/athlete-ledger-subject.tsx": "db88180ace7e6b5b739113dba22710de3499271d150b68d5b2e91956e2dc231f",
+    "components/ledger/route-screen.tsx": "ca23c43f92e586aa4f3abb0725b79df87ce99d4f889aca1c6ab70e7e53f7f1bc",
+    "components/ledger/LedgerCollections.tsx": "73f47b2ddf4266b322a40314ef0389bcf66a019cc3f8d1e44289d8449a049a48",
+    "components/ledger/LedgerExperience.tsx": "d464e5a1bf111f02a2c6628540c593bd3abcaff7544158d953b20806e6c0d600",
+    "components/ledger/LedgerHistoryPane.tsx": "5d1b49268b5eafd621990f3e047958e461d0ddb397a4c0920826efd25c4c85fa",
+    "components/ledger/LedgerSourceContent.tsx": "4dce311e4dbab02abfc22f2fc6516dc4aa4682b5aaa7e9673dd42a4113b59423",
+    "components/ledger/use-ledger-history.ts": "42d63eaee228d2fc15be6c60093f17ff4c894515d6a3462dde2666eda26b929a",
+    "constants/ledger.ts": "3f60e72a8dc27e239c691280df7826887719149969c496387e2bb2a13bbdbbb7",
+    "lib/ledger-records.ts": "ccfbd16bcad04d89bb62a7e1e74237c0f78d71847679e53ef0fe32240be2b98d",
+    "lib/ledger-route-context.ts": "df4c783d64b87934e4756a87090c2b94ee451bb66d4596c68c9746971b7749de",
+    "scripts/test-ledger-connected.mjs": "513455554d49520b0e16dd75afeee5e616641960361d65ad4e3dac9ee1526cdc",
+    "scripts/test-ledger-history.mjs": "ff4e722167a90a21d9dc29b750f30ec5aa46cabc1deceb63d67d4c5bb9a564b6",
+    "package.json": "e11fde8c2441dbd33df0cc2dbc2e35605dea4448f9c0e0a44ac518818be75d7c",
+    "docs/design/LEDGER_RETHINK_2026-10-30.md": "50d4fe618065fd9b8f7f1ec3528e41a5d9e225c392dd0bf6bb61da6f2c4f1454"
+  },
+  "runtime": "Normal Expo Router application via canonical npm start / Expo Go SDK54",
+  "environment": "DEV local backend5017 / strength_ledger_dev",
+  "authenticated_role": "athlete",
+  "user_id": 78,
+  "athlete_id": 68,
+  "production_publication": false
+}

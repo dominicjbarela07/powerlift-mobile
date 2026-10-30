@@ -163,7 +163,6 @@ function FilteredTabBar({
     && sessionEditorOverlayOpen;
 
   if (focusedSession) return null;
-  if (__DEV__ && normalizedPathname === '/dev-mocks/ledger-study') return null;
   if (isImmersiveMeetMode) return null;
   if (normalizedPathname.startsWith('/coach-athlete/')) return null;
   if (normalizedPathname.startsWith('/training-week-report')) return null;
@@ -889,10 +888,6 @@ export default function TabsLayout() {
           name="dev-mocks/text-layout"
           options={{ href: null, headerShown: false, title: 'Text Layout QA' }}
         />
-        {__DEV__ ? <Tabs.Screen
-          name="dev-mocks/ledger-study"
-          options={{ href: null, headerShown: false, title: 'Ledger Design Study' }}
-        /> : null}
         <Tabs.Screen
           name="ledger"
           options={{

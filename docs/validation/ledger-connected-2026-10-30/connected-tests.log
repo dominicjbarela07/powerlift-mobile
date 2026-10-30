@@ -1,0 +1,6 @@
+
+> powerlift_mobile@1.0.0 test:ledger-connected
+> node --import tsx scripts/test-ledger-connected.mjs && node scripts/test-ledger-history.mjs
+
+[connected Ledger] exact Competition identity, literal reps, separate estimates, source provenance, incomplete totals, normal app entry and state boundaries PASS
+PASS: actual connected History hook; athlete self scope, cursor deduplication, repeated taps, obsolete subjects, transient retry, denial clearing, collection search and governed PR paging.
