@@ -21,7 +21,7 @@ import { useLedgerResource } from './use-ledger-resource';
 import { LedgerTrainingArchive, LedgerTrainingSearch, LedgerBestArchive, LedgerPastArchive, LedgerFilmArchive, LedgerMeetArchive } from './LedgerArchiveViews';
 const C = T.colors;
 export type LedgerHistoryFocus={nonce:number;query?:string;from?:string;to?:string};
-export const LEDGER_ARCHIVE_COLLECTIONS=[{key:'training',label:'Training'},{key:'prs',label:'Bests',accessibilityLabel:'Personal bests'},{key:'imports',label:'Past',accessibilityLabel:'Past entries'},{key:'media',label:'Film'},{key:'competition',label:'Meets'}] as const;
+
 export function LedgerHistoryPane({subject,athleteId,unit,open,filter,setFilter,focus}:{filter:HistoryFilter;setFilter:(filter:HistoryFilter)=>void;subject:string;athleteId?:number;unit:LedgerUnit;open:(source:LedgerSource)=>void;focus?:LedgerHistoryFocus}) {
  const router=useRouter(),ledgerSubject=useAthleteLedgerSubject();
  const [query,setQuery]=useState(''),[search,setSearch]=useState(''),[range,setRange]=useState<HistoryDateRange>({}),[month,setMonth]=useState<string|null>(null);

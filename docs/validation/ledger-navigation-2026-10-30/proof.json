@@ -1,0 +1,50 @@
+{
+  "destination": "canonical DEV only",
+  "starting_sha": "0536c04d71be228a0e60d8b664f6b80cd4e030dc",
+  "branch": "dev/canonical-mobile",
+  "source_sha256": {
+    "components/ledger/LedgerExperience.tsx": "feb1b5742c0a31e69380b189203179313775bef39b5d25d80653c76d3ea92945",
+    "components/ledger/LedgerHistoryPane.tsx": "9f362ac119d3051e85f0ad11240b319bb2adc770462af116ba3b8cbffdbc1ef9",
+    "components/ledger/LedgerViewNavigation.tsx": "06e030cf43a6df0e867e3b8c521295e45c833708c9e1e7448c6a1bc77bb2be8b",
+    "lib/ledger-navigation.ts": "9350697a0f75b067a1e26325e42d7e79d4e5f5eda1be2f7d01c5d3894327db9c",
+    "scripts/test-ledger-navigation.mjs": "362825ffb734375c8acca63278ccb5e788cf1d74f030cf75ef66f1b50c8aa269",
+    "scripts/test-ledger-archive-visuals.mjs": "a01b8ce0c2ec0400c6e4e8947dbed896aa807e19b2752f7d294a438fae784f0c",
+    "package.json": "ddf15794b525c448aa228fb3fea86f6ccebe58435ee394e4e1032163eb69a625"
+  },
+  "retired_owner_rejected_component": "components/ledger/LedgerSectionPicker.tsx",
+  "native_observation": {
+    "simulator": "iPhone Air",
+    "os": "iOS 26.2",
+    "role": "athlete",
+    "athlete_id": 68,
+    "metro": "127.0.0.1:8081",
+    "api": "127.0.0.1:5017",
+    "views_observed": [
+      "Core lifts",
+      "Personal bests",
+      "Film",
+      "All nine chooser options visible and selected state accurate"
+    ],
+    "corrected_weaknesses": [
+      "Excess chooser height",
+      "Overpowering purple selected row",
+      "Accessory icon implied health monitoring"
+    ],
+    "final_state": "Core lifts open"
+  },
+  "captures_sha256": {
+    "history-final.png": "f7d434bd6f4a75cb8e280210c0997696ee1c42dae13d449dc30cfdfd24f6ff0d",
+    "film-final.png": "71388c23f486808a25948dc04f2a700969c4c09df658c44d18bfeb1ee7f4fc11",
+    "owner-records-reference.png": "4914f5549845eb8c070b00ef5acaa94cc6918a5580110d24f96c591f4efe5178",
+    "menu-final.png": "949ed7986d138a6a14dc2772b824449f4266715bb406a7f8f3e6fdc682b66d72",
+    "menu-pass1.png": "d2915a4762515d1d860c0a7030bd061bdbaf4c06f48d2f14b1707b64447d28f6",
+    "owner-history-reference.png": "845addb3c39db38e599c977b7c895bded9d7b4f2dd6c442a34ca83e94a6bf45b",
+    "records-final.png": "0c44fe8393eb5a35cb5a4b579366424eb405b8338dafd4fc7118f99d89110043"
+  },
+  "limitations": [
+    "Native observation is one iOS simulator, not Android or physical-device certification",
+    "Five pre-existing unrelated UI constitution findings retained",
+    "Backend/data/media/artwork inputs unchanged; existing applicable evidence reused",
+    "No Production/TestFlight/native build operation"
+  ]
+}
