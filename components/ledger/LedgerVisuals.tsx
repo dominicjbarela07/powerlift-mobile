@@ -96,7 +96,7 @@ export function LedgerPlateArt({lift,renderKey,value,unit,large=false}:{lift:Rec
   const catalog=resolvePlateStackRender({weight:value,unit})??resolvePlateStackRender({weight:renderKey,unit:'lb'});
   return <LinearGradient colors={[T.material.artFace,T.material.chartFace]} style={[large?v.plateLarge:v.plate,v.plateStage]}><View style={v.full}><Image source={catalog?.imageSource??milestoneRenderAsset(lift,renderKey)} resizeMode="contain" style={[v.full,!catalog&&MILESTONE_RENDER_ORIENTATION_STYLE]} accessibilityIgnoresInvertColors/></View></LinearGradient>;
 }
-export function LedgerEarnedMedallion({compact=false}:{compact?:boolean}){return <Image source={require('@/assets/images/ledger-cleanup/earned-pr-medallion-v1.png')} style={[v.medallion,compact&&v.medallionCompact]} resizeMode="contain" accessibilityIgnoresInvertColors/>;}
+export function LedgerEarnedMedallion({compact=false}:{compact?:boolean}){return <Image source={require('@/assets/images/ledger-cleanup/earned-pr-medallion-v2.png')} style={[v.medallion,compact&&v.medallionCompact]} resizeMode="contain" accessibilityIgnoresInvertColors/>;}
 
 export function LedgerProgressMeter({value,maximum,color=C.accent}:{value:number;maximum:number;color?:string}) {
   return <View style={v.meter}><View style={[v.meterFill,{backgroundColor:color,width:`${ledgerBarFraction(value,maximum)*100}%`}]}/></View>;

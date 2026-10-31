@@ -1,0 +1,12 @@
+{
+  "file": "assets/images/ledger-cleanup/earned-pr-medallion-v2.png",
+  "sha256": "9fc5bd016702f1d6f3a6abdbd64cb050cc23f7b6ca99e8ed45b293d7f2b64a7c",
+  "width": 1254,
+  "height": 1254,
+  "mode": "RGBA",
+  "tool": "image_gen.imagegen",
+  "edit_target": "assets/images/ledger-cleanup/earned-pr-medallion-v1.png",
+  "generated_source": "/Users/dominic/.codex/generated_images/01a16161-4520-7831-bf82-fa67f2d53abc/exec-a6c8efc4-4021-4d8a-890e-e481a48ddd1a.png",
+  "purpose": "Correct malformed SL lettering on symbolic earned-PR medal; no qualification or movement artwork change.",
+  "generation_brief": "Use case: precise-object-edit.\nAsset type: Strength Ledger earned-personal-best medal UI asset, displayed at 118 px and 62 px.\nEdit target: the attached gold circular medal. Correct only the malformed monogram below the barbell. Replace it with exactly two capital letters, \"SL\", clearly horizontal from left to right on ONE shared baseline, identical cap height, separated by a small clean gap. The S is on the left, the L on the right. Bold straightforward geometric sans-serif block lettering, clearly recognizable normal S and normal L, with simple broad gold faces, restrained shallow metal relief and dark inner contrast. Make \"SL\" about 27 percent of the medal diameter wide and 16 percent tall, centered below the barbell with clear breathing room from barbell and inner rim, legible at 62 px. No interlocking, no stacked letters, no vertical offsets, no extra stems, no third character, no decorative monogram abstraction. Letter text verbatim: \"SL\".\nPreserve the existing front-on circular brass medal, raised central barbell, thin concentric machined rims, brushed-metal finish, studio highlight direction, overall composition and complete circular silhouette. Keep the full medal centered with generous transparent padding outside the rim. Do not add text, ribbons, stars, laurel, background, UI, or watermark. True transparent alpha outside the medal, not a black or checkerboard background. The central horizontal letters are the only design correction."
+}
