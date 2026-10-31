@@ -238,10 +238,10 @@ const styles = StyleSheet.create({
 const ledgerStyles = StyleSheet.create({
   anchor: { alignSelf:'flex-start', flexShrink:1, minHeight:44, justifyContent:'center' },
   trigger: { flex:0, minHeight:34, gap:9, paddingVertical:6, paddingHorizontal:11, borderWidth:StyleSheet.hairlineWidth, borderRadius:T.radius.inner, borderColor:T.colors.line, backgroundColor:T.colors.panel },
-  triggerOpen: { backgroundColor:T.colors.raised, borderColor:T.colors.strongLine },
+  triggerOpen: { backgroundColor:T.material.selectionFace, borderColor:T.material.controlEdge },
   triggerLabel: { flex:0, flexShrink:1, fontSize:T.type.small, lineHeight:19, fontFamily:T.fonts.bodyMedium, fontWeight:'500', color:T.colors.secondary },
   menu: { backgroundColor:T.colors.panel, borderColor:T.colors.strongLine, borderRadius:T.radius.control },
-  optionSelected: { backgroundColor:T.colors.raised },
+  optionSelected: { backgroundColor:T.material.selectionFace },
   optionLabel: { color:T.colors.secondary, fontSize:T.type.bodySmall, fontFamily:T.fonts.bodyMedium, fontWeight:'500' },
   optionLabelSelected: { color:T.colors.text, fontFamily:T.fonts.bodySemiBold, fontWeight:'600' },
 });

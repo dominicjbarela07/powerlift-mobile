@@ -43,6 +43,17 @@ const palette=source('constants/theme.ts').split('export const SLLedgerMaterial 
 const color=key=>new RegExp(`${key}: '(#[0-9A-Fa-f]{6})'`).exec(palette)?.[1];
 const luminance=hex=>{const c=hex.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return c[0]*.2126+c[1]*.7152+c[2]*.0722;};
 for(const foreground of ['text','secondary','muted','accent'])for(const background of ['face','top','bottom']){const a=luminance(color(foreground)),b=luminance(color(background));assert.ok((Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5,`${foreground} / ${background} must retain readable contrast`);}
+for(const foreground of ['text','secondary','muted'])for(const background of ['squatFace','benchFace','deadliftFace','goldFace','selectionFace']){const a=luminance(color(foreground)),b=luminance(color(background));assert.ok((Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5,`${foreground} / ${background} stays readable on colored material`);}
+function assertMaterialDepth(read){
+ const levels=['canvas','bottom','face','top'].map(key=>luminance(read(key)));
+ assert.ok(levels.every((level,i)=>i===0||level>levels[i-1]),'Canvas, lower face and illuminated face must remain distinct levels');
+ const selected=read('controlTop').slice(1).match(/../g).map(c=>parseInt(c,16));
+ assert.ok(selected[2]>selected[0]&&selected[0]>selected[1],'Selected control keeps the owner-directed violet role');
+ const ratio=(luminance(read('text'))+.05)/(luminance(read('controlTop'))+.05);assert.ok(ratio>=4.5,'Selected controls retain readable labels');
+}
+assertMaterialDepth(color);
+assert.throws(()=>assertMaterialDepth(key=>['canvas','bottom','face','top'].includes(key)?color('face'):color(key)),'Deliberately flattening all material levels must fail');
+assert.throws(()=>assertMaterialDepth(key=>key==='controlTop'?'#353535':color(key)),'Restoring a gray selected control must fail');
 console.log('PASS: actual visual helpers; chronological scales, missing/zero data, exact rep bars, completed-only calendar, quantitative rhythm, governed anatomy, real product evidence and text contrast.');
 
 const background=source('components/ui/sl-workspace.tsx'),layout=source('app/(tabs)/ledger/_layout.tsx'),chart=source('components/charts/AnalyticalTimeSeriesChart.tsx');

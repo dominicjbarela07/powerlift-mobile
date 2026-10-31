@@ -50,6 +50,19 @@ for(width of [320,375,390,430,768])for(const lift of ['squat','bench','deadlift'
  tree.props.onPress();assert.equal(opened,true,'Artwork does not replace the original record action');
  assert.throws(()=>assertCardArt({type:'View',props:{children:[]}}),'Deliberately removing all art must be rejected');
 }
+// Exercise the actual shared Ledger surface, not a replacement screenshot panel.
+function assertSurfaceDepth(tree){
+ assert.equal(tree.props.colors.length,3);assert.equal(new Set(tree.props.colors).size,3,'Directional faces cannot flatten into one fill');
+ const lighting=nodes(tree).filter(n=>n.props?.pointerEvents==='none'&&n.type==='Gradient');assert.equal(lighting.length,2);
+ assert.ok(lighting.every(n=>n.props.accessible===false),'Material lights do not intercept touches or accessibility');
+}
+for(const tone of ['squat','bench','deadlift']){
+ const surface=exports.LedgerSurface({tone,children:'Recorded evidence'});assertSurfaceDepth(surface);assert.equal(surface.props.style[1].borderColor,`${tone}Edge`);
+}
+const neutral=exports.LedgerSurface({children:'Original source'});assertSurfaceDepth(neutral);assertSurfaceDepth(exports.LedgerSurface({gold:true,children:'Earned'}));
+assert.throws(()=>assertSurfaceDepth({...neutral,props:{...neutral.props,colors:['face','face','face']}}),'An actual flattened surface must fail');
+assert.throws(()=>assertSurfaceDepth({...neutral,props:{...neutral.props,children:['Original source']}}),'Subtracting all material lighting must fail');
+console.log('PASS: actual Ledger surfaces; three directional levels, lift-specific edges, earned gold, noninteractive lighting and deliberate flattening/subtraction failures.');
 const product=fs.readFileSync('components/ledger/LedgerExperience.tsx','utf8'),source=fs.readFileSync('components/ledger/LedgerSourceContent.tsx','utf8'),renderer=fs.readFileSync('components/ledger/LedgerMovementBackdrop.tsx','utf8');
 for(const anchor of ['ledgerCompetitionArtwork(lift)','ledgerVariantArtwork(m)','ledgerDefinitionArtwork(m)'])assert.ok(product.includes(anchor));
 assert.match(source,/ledgerArchiveArtwork\(item\)/);
