@@ -11,6 +11,12 @@ export function ledgerCompetitionArtwork(lift: RecordLift): CanonicalMovementArt
   return canonicalArtworkInputFromDefinition(definition);
 }
 
+/** A typed global Core key selects presentation only; saved source IDs stay put. */
+export function ledgerCoreKeyArtwork(key?:string|null):CanonicalMovementArtworkInput|null {
+  const definition=key?catalog.movements.find(row=>row.kind==='core'&&row.key===key):null;
+  return canonicalArtworkInputFromDefinition(definition);
+}
+
 /** This endpoint names a CoreMovementDefinition ID, not a physical definition ID. */
 export function ledgerVariantArtwork(movement: Pick<CoreVariantMovement, 'core_movement_id' | 'key' | 'family'>): CanonicalMovementArtworkInput {
   return { core_movement_id: movement.core_movement_id, key: movement.key,

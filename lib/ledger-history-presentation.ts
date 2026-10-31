@@ -40,3 +40,9 @@ export function historyItemDateWithin(date:string|undefined|null,range:HistoryDa
 export function ledgerReportedBodyweightPoints(context:import('./ledger-exploration').LedgerExplorationContext|undefined|null,unit:LedgerUnit){
  return (context?.reported_bodyweight?.recent_observations??[]).flatMap((p,index)=>{const date=p.training_date||p.reported_at?.slice(0,10);return date&&ledgerDay(date)!=null&&number(p.reported_bodyweight_kg)?[{id:`check-in:${p.workout_id??p.reported_at??date}:${index}`,date,value:kilogramsToDisplayValue(p.reported_bodyweight_kg,unit),kg:p.reported_bodyweight_kg,workoutId:p.workout_id}]:[];}).sort((a,b)=>a.date.localeCompare(b.date));
 }
+
+/** Display copy never exposes storage/source enum names as customer headings. */
+export function ledgerProvenanceLabel(item:ArchiveItem){
+ if(item.archive_item_type==='historical_performance')return item.source_type==='manual_history'||item.provenance_label==='manual_history'?'Manual training entry':item.source_type==='import'||item.provenance_label==='import'?'Imported training entry':'Earlier training entry';
+ return item.provenance_label||(item.archive_item_type==='session'?'Recorded Session':'Recorded performance');
+}

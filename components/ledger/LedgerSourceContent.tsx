@@ -5,7 +5,7 @@ import { Text } from '@/components/ui/sl-text';
 import { LEDGER as T } from '@/constants/ledger';
 import { type DisplayWeightUnit } from '@/lib/display-units';
 import type { ArchiveItem } from '@/lib/ledger-archive';
-import { ledgerSourceFacts, ledgerReflectionFacts } from '@/lib/ledger-history-presentation';
+import { ledgerSourceFacts, ledgerReflectionFacts, ledgerProvenanceLabel } from '@/lib/ledger-history-presentation';
 import { performedWeightValue, ledgerDate, type LedgerSource } from '@/lib/ledger-records';
 import { LedgerMovementBackdrop } from './LedgerMovementBackdrop';
 import { ledgerArchiveArtwork } from '@/lib/ledger-movement-art';
@@ -24,8 +24,8 @@ export function LedgerSourceContent({item,unit,onOpen,onPlay,onBrowseFilm}:{onBr
  const filmFeedback=typeof item.media?.athlete_visible_feedback==='string'?item.media.athlete_visible_feedback:null;
  const unavailable=item.invalidation_state&&item.invalidation_state!=='valid';
  return <View style={s.page} testID="ledger-source-content">
-  <Text style={s.label}>{item.provenance_label || (item.archive_item_type==='session'?'RECORDED SESSION':'RECORDED PERFORMANCE')}</Text>
-  <Text style={s.title}>{item.title}</Text>{item.subtitle?<Text style={s.copy}>{item.subtitle}</Text>:null}
+  <Text style={s.label}>{ledgerProvenanceLabel(item)}</Text>
+  <Text style={s.title}>{item.title}</Text>{item.subtitle&&item.archive_item_type!=='historical_performance'?<Text style={s.copy}>{item.subtitle}</Text>:null}
   <Text style={s.date}>{ledgerDate(item.occurred_on || item.occurred_at)}</Text>
   {unavailable?<View style={s.notice}><Ionicons name="information-circle-outline" color={C.gold} size={20}/><Text style={s.copy}>No longer current. This original entry is retained in your history.</Text></View>:null}
   {weight!=null||typeof p?.reps==='number'||artwork?<View style={[s.performance,artwork&&s.performanceAtmosphere]}>

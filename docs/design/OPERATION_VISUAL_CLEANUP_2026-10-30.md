@@ -399,3 +399,163 @@ captures are superseded iterations and do not represent the final subject pass.
 The native final pass visibly retains the face, full body, bench position and
 loaded bar for each movement; values and chart axes remain separate and readable.
 No movement source file, human-approval receipt or shared Logger crop was edited.
+
+## Visual archive redesign — October 30, 4:35 PM owner review
+
+Owner rejects the boxed Core/Variants/Accessories controls and the History tab's
+undifferentiated vertical lists, including Personal bests. Requested outcome:
+research proper visual archive patterns, replace those controls, make training
+history and personal records visually browseable, and seed the established DEV
+ATHLETE with past entries, playable film and completed meets so every collection
+can be evaluated. The latest direction preserves integrated movement backgrounds,
+clearly visible subjects, dark brushed gunmetal, balanced density, precise dates,
+units, source identity, full original evidence and all history access controls.
+
+Delivery is canonical DEV and the populated athlete simulator, not a storyboard
+or Production/TestFlight release. Realistic fictional DEV fixtures must be
+append-only/idempotent, bound to the existing QA athlete and local DEV database;
+no credentials, relationships, original sets or real-user evidence may be reset,
+borrowed or altered. Film uses an authorized fictional review asset with actual
+playback and posters; no unrelated user's footage.
+
+Acceptance: research at least three primary app sources and inspect visual
+references; implement distinct visual collection views rather than a renamed
+list; date/search/paging and exact source drill-down stay usable; avoid square
+movement thumbnails and boxed category controls; every empty fixture collection
+is populated; validate totals/units/dates and privacy/identity boundaries; inspect
+actual native screens, identify/correct weakest areas and capture a second pass.
+Keep the final archive open in the actual authenticated athlete DEV app.
+
+
+### Research and decisions implemented
+
+Primary references were researched and the Day One calendar was visually inspected:
+
+- [Day One Calendar View](https://dayoneapp.com/features/calendar-view/): a real
+  month/day index makes dates useful for rediscovery. Adopted date-first training
+  browsing and original-entry access.
+- [Day One journal views](https://dayoneapp.com/guides/tips-and-tutorials/journal-views-in-day-one-for-ios/):
+  different evidence benefits from different views. Adopted distinct collections
+  rather than five filters over the same row layout.
+- [Strava Training Log](https://support.strava.com/en-us/articles/15402077-training-log):
+  temporal overviews help identify training patterns. Adopted an accurate monthly
+  index and direct Session access; never infer missing days are rest days from a
+  partial page.
+- [Apple Photos organization](https://support.apple.com/en-mide/guide/iphone/iph0ea0234e0/27/ios/27):
+  date/collection organization informed the year shelves and dedicated film gallery.
+  This is documentation evidence, not a claim to have inspected the current iOS
+  Photos interface. No reference app's artwork or data was copied.
+
+| Changed | Why |
+| --- | --- |
+| Unboxed, continuous category rails for Records and History | Remove the bulky button grid; show one clear selected position |
+| Pinned History collections, each with its own saved scroll position | Switching collections should not strand the user halfway down unrelated content |
+| Actual monthly calendar, selected-day Session cover and two-column month collection | Make history navigable by date and visually legible rather than repeating list rows |
+| Personal-best movement collection, integrated approved art, performed-load chart and record certificates | Put progression first while keeping each exact event and original qualifying set reachable |
+| One bounded 50-event PR page; older pages append | Give the first chart more useful context without an unbounded history request |
+| Earlier entries organized into year shelves and source-marked cards | Make pre-app/imported/manual history browseable with its real dates, units and provenance |
+| Real film posters, direct native playback, review state and shared feedback | Show the actual medium rather than a generic file row |
+| Meet scorebook with final total, best lifts and nine attempt results | Make competition history readable at a glance, including misses |
+| Human-readable manual/import labels, full years on films and PRs | Avoid source enums and ambiguous dates in customer-facing history |
+
+Removed the repeated archive introduction, the two rows of boxed History chips,
+old family-button styles and the undifferentiated Session/PR/archive row renderer.
+The old compact rhythm visualization is replaced here by a true date calendar.
+Training context, reported bodyweight, muscle history, career chapters and all
+advanced archive filters remain accessible through their established destinations.
+No canonical source renderer, original record, artwork file or protected policy
+was removed. The canonical detailed meet renderer is retained; this pass does not
+claim to reskin every legacy archive destination.
+
+### Fixture safety and actual API evidence
+
+Append-only seed: `scripts/seed-ledger-archive-dev.py`, default rollback, explicit
+`--apply`, canonical checkout/branch/local database guard and exact established
+QA identity/readiness/coach link. It adds three film attachments to existing QA
+sets, six historical performances, two completed fictional meets and eighteen
+attempts/results. All 37,810 original rows were fingerprinted and preserved.
+Rerun is an exact-count no-op; partial fixtures fail instead of overwriting.
+On failure/rollback it removes only files created by that run. No auth, role,
+relationship, profile-weight, notification, email or cloud-storage mutation.
+
+The clips are licensed [Your Move exercise demos](https://ymove.app/free-exercise-videos#licence),
+not footage of this athlete. Visible Session context says “Demo film”; meet names
+say DEV demo and their venue/federation are fictional. Original source URLs and
+SHA-256 values are retained in the seed and video metadata. Actual files are
+480 × 854 H.264, six seconds each. Runtime copies live in local DEV video storage;
+no demo video is added to the mobile asset catalog or Production. Reproduce with
+`--media-dir` containing the three source originals named squat/bench/deadlift.mp4;
+exact source hashes are enforced. No other user's footage is borrowed.
+
+The authenticated running DEV API confirms three posters returning image bytes,
+three playback URLs honoring byte-range requests with HTTP 206, six preserved
+historical-detail round trips, two original meet-detail round trips and eighteen
+attempts. Totals are 310 kg (7/9) and 287.5 kg (8/9), independently recomputed from
+made attempts only. An injected private-note sentinel does not occur in athlete
+archive/playback payloads; foreign-target evidence is denied/unavailable.
+The seed guard was deliberately invoked with a Production database name and
+exited nonzero before any connection/mutation.
+
+### Visual convergence and validation
+
+First native pass exposed three weak areas: repeated introductory chrome delayed
+content, collection controls disappeared while scrolling, and incomplete date/
+provenance presentation weakened the archive. Corrections removed redundant
+headings/counters, pinned the collection rail with independent positions, retained
+years on PRs/films and replaced raw manual/import enums. Calendar interaction
+uses full-cell targets around its smaller visual marks. A later review caught
+fixed spacing plus percentage tiles overflowing narrow phones; spacing now comes
+from the remaining row width, with an actual-renderer negative regression.
+The original approved movement subjects stay contained and visible in the new
+covers. No movement image was generated, recropped or replaced.
+
+Second native pass: actual authenticated ATHLETE, iPhone Air / iOS 26.2, canonical
+Metro 8081 and local DEV services 5017. Observed all five collections, September/
+October navigation, both historic years, manual source evidence and lb→kg,
+completed meet scorebook/original result, film source/shared feedback and native
+playback reaching 0:06. PR paging appended 50→100 events and expanded the exact
+Deadlift load trail from five to nine observations without changing its latest
+303.1 lb × 3 source. Native observations cover this simulator only; this is not
+physical-device, Android or TestFlight/native-3.0 certification.
+
+Passing affected checks: TypeScript; connected Ledger suite including the new
+actual-view/controller regressions; actual History races/cursor dedupe/retry and
+denial clearing; chart fidelity; approved artwork/subject visibility; source/
+reflection/unit preservation; modal material and horizontal layout. Deliberate
+failures cover false partial-month completeness, estimate mixing, narrow-grid
+fixed-gap overflow and Production fixture targeting. The broader UI constitution
+audit retains the same five pre-existing findings in Home/onboarding/Logger/login;
+no protection or exception was changed to hide them.
+
+Receipts: `docs/validation/ledger-archive-2026-10-30/`. Native originals are retained
+at `/Users/dominic/.codex/work/ledger-archive-20261030/` (bests-final.png,
+past-final.png, film-final.png, film-context-final.png, meet-attempts-final.png and
+final handoff captures). These are actual app captures, not design mockups.
+
+State-machine scope is read-only collection navigation, month/date/search reads,
+source evidence and existing video playback. AuthContext, readiness, entitlement,
+relationships, immutable Set identity and all mutation owners are unchanged.
+Adjacent risks were stale subject data, wrong endpoint role, private feedback,
+unit loss and alternate archive access: actual controller/hook/API checks cover
+these boundaries. The parent keyed Ledger resets local state when subject changes;
+film uses self/authorized-coach endpoints and retains native export policy.
+DEV-only delivery on dev/canonical-mobile; no backend source push or Production,
+TestFlight, store or native build is part of this task.
+
+### Guided tour
+
+1. Records → Core lifts / Variants / Accessories: the old boxed controls are gone.
+2. History → Training: use month arrows, tap a marked day, then open its Session.
+   The month collection offers direct Session cards; search spans dates rather
+   than hiding a match outside the current calendar month.
+3. Bests: choose a movement, inspect the performed-load trail, open its qualifying
+   set or a record certificate. Calculated estimates remain explicitly separate.
+   Load older records to expand the collection and chart.
+4. Past: choose 2026 or 2025 and open an imported/manual performance. Original
+   date, performed load, reps and source remain attached.
+5. Film: tap a real poster to play; Set & feedback opens the matching saved film
+   evidence and athlete-visible cue. Three fictional demo clips are populated.
+6. Meets: switch Spring/Summer books, inspect the nine attempts and open the full
+   original result. Misses remain visible and excluded from the final total.
+7. Search/date controls narrow the selected collection; All archive filters and
+   Career chapters preserve deeper existing access.

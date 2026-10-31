@@ -21,10 +21,10 @@ export function useLedgerHistory(subject: string, athleteId: number | undefined,
     try {
       let items: ArchiveItem[] = [], events: AccomplishmentEvent[] = [], next: string | null = null;
       if (filter === 'prs') {
-        const page = await fetchLedgerAccomplishmentPage(24, cursor, athleteId, undefined, [...CAREER_PR_EVENT_TYPES]);
+        const page = await fetchLedgerAccomplishmentPage(50, cursor, athleteId, undefined, [...CAREER_PR_EVENT_TYPES]);
         events = page.items; next = page.hasMore ? page.nextCursor : null;
       } else {
-        const request = { athlete_id: athleteId, limit: 24, cursor, q: query || undefined, source_type: filter==='imports'?'historical':undefined, date_from:range.from,date_to:range.to };
+        const request = { athlete_id: athleteId, limit: 24, cursor, q: query || undefined, source_type: filter==='imports'?'historical':filter==='training'?'session':undefined, date_from:range.from,date_to:range.to };
         const page = await fetchArchiveCollection(filter==='imports'?'training':filter, request);
         items = page.items; next = page.has_more ? page.next_cursor : null;
       }

@@ -1,0 +1,57 @@
+{
+  "destination": "canonical DEV only",
+  "branch": "dev/canonical-mobile",
+  "starting_sha": "4f4ced60f0722e6d752afe99c66a6aa6c1012f5b",
+  "source_sha256": {
+    "components/ledger/LedgerExperience.tsx": "d40bd7b4ecbc63bfee1d4ba12909a1392d9ea244e128057119070c9e49443689",
+    "components/ledger/LedgerHistoryPane.tsx": "abb1950424f1823148884015dab4ed14e08f5b60d001a10b4e4f8527a8145ea7",
+    "components/ledger/LedgerArchiveViews.tsx": "7d5b86617264e844b7c5b2bf70511cfee4f0401978540cd8555e3601ded81489",
+    "components/ledger/LedgerSectionPicker.tsx": "6be1c1be5a4f1491f464a0e29dd63d708b32b8bbe45fffbe10f49e1019265eb2",
+    "components/ledger/LedgerSourceContent.tsx": "8ebd625e53cffa585fad2bd3282df5e2d2ba672aceccc3576282788a3d9d709d",
+    "components/ledger/use-ledger-history.ts": "cf15748e2d297539a829a05259f90076414858c004f093e650ca6f57029e87f2",
+    "constants/ledger.ts": "d6d8942dd2c221a0a97eef0e9167d280e593df6a745da749f5116dbc3c63d55a",
+    "lib/ledger-archive-visuals.ts": "a92354e96628a1bcd463e05c3e441ebc98375c31d29b235db57c021e8c4e65f5",
+    "lib/ledger-history-presentation.ts": "cdf82db5ba639596e12b05a4c129ba96e8953df0abe73b0de0d36acb085627f3",
+    "lib/ledger-movement-art.ts": "8da7759b3b47e42ec25a9a837cc6587ecc6725fa604767d3f2bbdc4fe8979d9a",
+    "scripts/test-ledger-archive-visuals.mjs": "ea0c39321c58db1d2fdcff2a439aaebefab48e5f7ac41e9e2da02ea041b5e190",
+    "scripts/test-ledger-history.mjs": "f66f04ff76dd0dca1602e7918b91a351a8f7c178bb4f374b6c10ad83b8181157",
+    "scripts/seed-ledger-archive-dev.py": "2d3bd48eebe5ba8c844d65576a39d047394686f525fd72fc4d6d652af7ad2bb8",
+    "scripts/test-ledger-archive-dev-api.py": "5968910775d917e368bf648b87f58992b4735d204f35b8b15f5505b3d6520368",
+    "package.json": "3745ba72a73a714514625df7aa04d63b1c6b873575cb7ba4f6ec5a24f1936651"
+  },
+  "native_observation": {
+    "simulator": "iPhone Air",
+    "os": "iOS 26.2",
+    "role": "athlete",
+    "athlete_id": 68,
+    "metro": "127.0.0.1:8081",
+    "api": "127.0.0.1:5017",
+    "database": "strength_ledger_dev",
+    "flows": [
+      "All five collections",
+      "Previous month loads September: 13 Sessions, 66 sets",
+      "Both historical years and original manual evidence",
+      "Native source lb to kg: 220.5lb to 100kg",
+      "Completed meet, nine actual attempts, original result",
+      "Film gallery, original fields, shared feedback",
+      "Native H264 playback reached 0:06",
+      "PR cursor append 50 to 100 events, five to nine Deadlift load points",
+      "Persistent collection rail while scrolled",
+      "Unboxed Records family controls"
+    ]
+  },
+  "native_files": {
+    "records-controls-final.png": "d8a078eab47c2597563a096b60b1dd8e2dfd1d515d9f5dc759c381fe5bacb436",
+    "film-final.png": "1f48bc2713c651cab767f4b50da5da651fdef8cbf58bb6270de391258583ab36",
+    "bests-final.png": "39db03d8dba8897900b04183e79cc80c38e02043da181b2f0908f0026fecacfb",
+    "meet-attempts-final.png": "e708a2d7976af59122c4991bf0bde198d2e46fc87bf7083ad01b68bc5a208b2a",
+    "film-context-final.png": "f34e3e36d54f00be5f424fb8d770bc9c107256a15e6e1731dcd45156949c82e1",
+    "past-final.png": "22da7be29864cb2785b13086caec371dc541febfbfec73f236dca8aec12141df"
+  },
+  "limitations": [
+    "One actual iOS simulator observed; no physical/Android certification",
+    "Existing unrelated five UI constitution findings remain",
+    "Legacy advanced destinations preserved; not all reskinned",
+    "No Production/TestFlight/native build publication"
+  ]
+}

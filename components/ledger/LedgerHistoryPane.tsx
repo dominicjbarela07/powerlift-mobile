@@ -5,49 +5,89 @@ import { ActivityIndicator, Keyboard, Platform, Pressable, StyleSheet, View } fr
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, TextInput } from '@/components/ui/sl-text';
+import SetVideoPlayerModal from '@/components/SetVideoPlayerModal';
+import { useAuth } from '@/context/AuthContext';
+import { getAthleteVideoArchive, getCoachVideoArchive } from '@/lib/api';
 import { LEDGER as T } from '@/constants/ledger';
 import { canonicalPrHistory } from '@/lib/ledger-rewards';
 import type { LedgerUnit } from '@/lib/ledger-data';
-import { eventSource, ledgerDate, recordEventLabel, type LedgerSource } from '@/lib/ledger-records';
-import { ledgerArchiveFacts, ledgerPrValue, historyItemDateWithin, type HistoryDateRange } from '@/lib/ledger-history-presentation';
+import type { ArchiveItem } from '@/lib/ledger-archive';
+import { ledgerDate, type LedgerSource } from '@/lib/ledger-records';
+import { historyItemDateWithin, type HistoryDateRange } from '@/lib/ledger-history-presentation';
+import { archiveMonthBounds, latestArchiveMonth } from '@/lib/ledger-archive-visuals';
 import { fromLocalYMD, toLocalYMD } from '@/lib/coach-calendar';
 import { useLedgerHistory, type HistoryFilter } from './use-ledger-history';
-import { LedgerHistoryCalendar, LedgerMuscleExposure } from './LedgerVisuals';
+import { useLedgerResource } from './use-ledger-resource';
+import { LedgerTrainingArchive, LedgerTrainingSearch, LedgerBestArchive, LedgerPastArchive, LedgerFilmArchive, LedgerMeetArchive } from './LedgerArchiveViews';
 const C = T.colors;
 export type LedgerHistoryFocus={nonce:number;query?:string;from?:string;to?:string};
-const FILTERS=[['training','Training'],['prs','Personal bests'],['imports','Past entries'],['media','Film'],['competition','Meets']] as const;
+export const LEDGER_ARCHIVE_COLLECTIONS=[{key:'training',label:'Training'},{key:'prs',label:'Bests',accessibilityLabel:'Personal bests'},{key:'imports',label:'Past',accessibilityLabel:'Past entries'},{key:'media',label:'Film'},{key:'competition',label:'Meets'}] as const;
 export function LedgerHistoryPane({subject,athleteId,unit,open,filter,setFilter,focus}:{filter:HistoryFilter;setFilter:(filter:HistoryFilter)=>void;subject:string;athleteId?:number;unit:LedgerUnit;open:(source:LedgerSource)=>void;focus?:LedgerHistoryFocus}) {
  const router=useRouter(),ledgerSubject=useAthleteLedgerSubject();
- const [query,setQuery]=useState(''),[search,setSearch]=useState(''),[range,setRange]=useState<HistoryDateRange>({});
+ const [query,setQuery]=useState(''),[search,setSearch]=useState(''),[range,setRange]=useState<HistoryDateRange>({}),[month,setMonth]=useState<string|null>(null);
  const [datesOpen,setDatesOpen]=useState(false),[picker,setPicker]=useState<'from'|'to'|null>(null);
  useEffect(()=>{const timer=setTimeout(()=>setSearch(query.trim()),250);return()=>clearTimeout(timer);},[query]);
- useEffect(()=>{if(focus){setQuery(focus.query??'');setSearch(focus.query??'');setRange({from:focus.from,to:focus.to});setDatesOpen(false);setPicker(null);}},[focus]);
- const data=useLedgerHistory(subject,athleteId,filter,filter==='prs'?'':search,range);
+ useEffect(()=>{if(focus){setQuery(focus.query??'');setSearch(focus.query??'');setRange({from:focus.from,to:focus.to});setMonth(null);setDatesOpen(false);setPicker(null);}},[focus]);
+ const hasDates=Boolean(range.from||range.to),scoped=Boolean(search||hasDates);
+ const effectiveRange=filter==='training'&&month&&!scoped?archiveMonthBounds(month):range;
+ const data=useLedgerHistory(subject,athleteId,filter,filter==='prs'?'':search,effectiveRange);
  const events=canonicalPrHistory(data.events).filter(e=>(!search||`${e.movement_label} ${e.workout_title} ${ledgerDate(e.workout_date)}`.toLowerCase().includes(search.toLowerCase()))&&historyItemDateWithin(e.workout_date||e.occurred_at,range));
- const scoped=Boolean(search||range.from||range.to),hasDates=Boolean(range.from||range.to);
- const title=filter==='training'?'Training records':filter==='prs'?'Personal bests':filter==='media'?'Recorded film':filter==='imports'?'Imported & manual history':'Competition history';
+ const count=filter==='prs'?events.length:data.items.length;
+ const visibleMonth=month??latestArchiveMonth(data.items)??toLocalYMD(new Date()).slice(0,7);
  const chooseDate=(date:Date)=>{if(!picker)return;const value=toLocalYMD(date);setRange(old=>picker==='from'?{...old,from:value,to:old.to&&value>old.to?value:old.to}:{...old,to:value,from:old.from&&value<old.from?value:old.from});setPicker(null);};
  return <View testID="ledger-connected-history" style={s.page}>
-  <Text style={s.title}>Your training, over time.</Text><Text style={s.copy}>Sessions, past lifts and their original evidence.</Text>
-  <View style={s.searchRow}><View style={[s.search,s.flex]}><Ionicons name="search-outline" color={C.muted} size={19}/><TextInput accessibilityLabel="Search training history" placeholder={filter==='prs'?'Filter loaded personal bests':'Find a movement or Session'} placeholderTextColor={C.muted} value={query} onChangeText={setQuery} style={s.input}/>{query?<Pressable accessibilityRole="button" accessibilityLabel="Clear history search" onPress={()=>setQuery('')} style={s.clear}><Ionicons name="close" size={19} color={C.secondary}/></Pressable>:null}</View><Pressable accessibilityRole="button" accessibilityLabel="Filter history by date" accessibilityState={{expanded:datesOpen}} onPress={()=>{Keyboard.dismiss();setDatesOpen(v=>!v);setPicker(null);}} style={[s.dateButton,hasDates&&s.active]}><Ionicons name="calendar-outline" size={21} color={hasDates?C.accent:C.secondary}/></Pressable></View>
-  <View style={s.filters}>{[FILTERS.slice(0,3),FILTERS.slice(3)].map((group,index)=><View key={index} style={s.filterRow}>{group.map(([key,label])=><Pressable accessibilityRole="tab" accessibilityState={{selected:filter===key}} key={key} onPress={()=>{Keyboard.dismiss();setFilter(key);}} style={[s.chip,filter===key&&s.active]}><Text style={[s.small,filter===key&&s.selectedText]}>{label}</Text></Pressable>)}</View>)}</View>
+  <View style={s.searchRow}><View style={[s.search,s.flex]}><Ionicons name="search-outline" color={C.muted} size={18}/><TextInput accessibilityLabel="Search training history" placeholder={filter==='prs'?'Find a movement in loaded records':filter==='media'?'Find a lift in your film':filter==='competition'?'Find a meet':filter==='imports'?'Find earlier training':'Find a movement or Session'} placeholderTextColor={C.muted} value={query} onChangeText={setQuery} style={s.input}/>{query?<Pressable accessibilityRole="button" accessibilityLabel="Clear history search" onPress={()=>setQuery('')} style={s.clear}><Ionicons name="close" size={19} color={C.secondary}/></Pressable>:null}</View><Pressable accessibilityRole="button" accessibilityLabel="Filter history by date" accessibilityState={{expanded:datesOpen}} onPress={()=>{Keyboard.dismiss();setDatesOpen(v=>!v);setPicker(null);}} style={[s.dateButton,hasDates&&s.active]}><Ionicons name="calendar-outline" size={21} color={hasDates?C.accent:C.secondary}/></Pressable></View>
   {hasDates&&!datesOpen?<View style={s.between}><Text style={[s.caption,s.flex]}>{range.from?ledgerDate(range.from):'Any start'} – {range.to?ledgerDate(range.to):'Any end'}</Text><Pressable accessibilityRole="button" accessibilityLabel="Clear history dates" onPress={()=>setRange({})} style={s.clear}><Ionicons name="close-circle-outline" size={21} color={C.secondary}/></Pressable></View>:null}
   {datesOpen?<View style={s.datePanel}><View style={s.between}><Text style={s.heading}>Performed dates</Text><Pressable accessibilityRole="button" onPress={()=>{setDatesOpen(false);setPicker(null);}} style={s.retry}><Text style={s.small}>Done</Text></Pressable></View><View style={s.searchRow}>{(['from','to'] as const).map(key=><Pressable key={key} accessibilityRole="button" accessibilityLabel={key==='from'?'Choose history start date':'Choose history end date'} onPress={()=>setPicker(key)} style={[s.dateField,picker===key&&s.active]}><Text style={s.caption}>{key==='from'?'FROM':'THROUGH'}</Text><Text style={s.small}>{range[key]?ledgerDate(range[key]):'Any date'}</Text></Pressable>)}</View>{picker?<DateTimePicker value={range[picker]?fromLocalYMD(range[picker]!):new Date()} mode="date" display={Platform.OS==='ios'?'inline':'default'} themeVariant="dark" accentColor={C.accent} onChange={(event,date)=>{if(event.type==='dismissed')setPicker(null);else if(date)chooseDate(date);}}/>:null}<Pressable accessibilityRole="button" onPress={()=>{setRange({});setPicker(null);}} style={s.retry}><Text style={s.small}>Clear dates</Text></Pressable></View>:null}
-  {filter==='training'&&!scoped&&!datesOpen&&!data.error?<LedgerHistoryCalendar compact items={data.items}/>:null}
-  <View style={s.between}><Text style={s.heading}>{title}</Text><Text style={s.caption}>{filter==='prs'?events.length:data.items.length} loaded{data.cursor?' · more available':''}</Text></View>
-  {filter==='imports'?<Text style={s.caption}>Preserved imported and manually entered performances. Original dates and sources stay attached.</Text>:null}
+
   {data.loading?<ActivityIndicator accessibilityLabel="Loading training history" color={C.accent} style={s.loading}/>:null}
   {data.error?<View style={s.notice}><Text style={s.copy}>{[401,403].includes(Number((data.error as {status?:number})?.status))?'History is not available to this account.':'History could not be refreshed. Your saved records are safe.'}</Text><Pressable accessibilityRole="button" onPress={data.reload} style={s.retry}><Text style={s.small}>Try again</Text></Pressable></View>:null}
-  {!data.loading&&!data.error&&!(filter==='prs'?events.length:data.items.length)?<View style={s.empty}><Text style={s.heading}>{scoped?'No matching records in this view.':'No records here yet.'}</Text><Text style={s.copy}>{filter==='prs'&&data.cursor?'Older personal bests are available below.':scoped?'Try another movement or widen the dates.':'Saved evidence will appear with its original context.'}</Text></View>:null}
-  {filter==='prs'?events.map(e=>{const source=eventSource(e);return <Pressable key={e.id} accessibilityRole={source?'button':undefined} accessibilityLabel={`Inspect ${e.movement_label||'movement'} ${recordEventLabel(e)}`} disabled={!source} onPress={()=>source&&open(source)} style={s.row}><View style={s.date}><Ionicons name="trending-up-outline" color={C.success} size={20}/></View><View style={s.flex}><Text style={s.heading}>{e.movement_label||'Recorded movement'}</Text><Text style={s.copy}>{recordEventLabel(e)} · {ledgerDate(e.workout_date||e.occurred_at)}</Text><Text style={s.value}>{ledgerPrValue(e,unit)}</Text>{!source?<Text style={s.caption}>Source link unavailable</Text>:null}</View>{source?<Ionicons name="chevron-forward" color={C.muted} size={17}/>:null}</Pressable>;}):data.items.map(i=><Pressable key={`${i.archive_item_type}:${i.source_id}`} accessibilityRole="button" accessibilityLabel={`Open ${i.title}, ${ledgerDate(i.occurred_on)}`} onPress={()=>open({type:i.archive_item_type,id:i.source_id})} style={s.row}><View style={s.date}><Text style={s.day}>{i.occurred_on?.slice(8,10)||'—'}</Text><Text style={s.caption}>{i.occurred_on?ledgerDate(i.occurred_on).split(' ')[0].toUpperCase():''}</Text><View style={s.line}/></View><View style={s.flex}><Text style={s.heading}>{i.title}</Text>{i.subtitle?<Text style={s.copy}>{i.subtitle}</Text>:null}{ledgerArchiveFacts(i,unit).length?<Text style={s.facts}>{ledgerArchiveFacts(i,unit).join(' · ')}</Text>:null}<Text style={s.caption}>{ledgerDate(i.occurred_on)} · {i.provenance_label||'Recorded evidence'}</Text></View><Ionicons name="chevron-forward" color={C.muted} size={17}/></Pressable>)}
+  {!data.loading&&!data.error&&!count&&!(filter==='training'&&!scoped)?<View style={s.empty}><Text style={s.heading}>{scoped?'No matching records in this view.':'No records here yet.'}</Text><Text style={s.copy}>{filter==='prs'&&data.cursor?'Older personal bests are available below.':scoped?'Try another movement or widen the dates.':'Saved evidence will appear with its original context.'}</Text></View>:null}
+  {!data.loading&&(!data.error||count>0)?<>
+   {filter==='training'?(scoped?<LedgerTrainingSearch items={data.items} unit={unit} open={open}/>:<LedgerTrainingArchive items={data.items} month={visibleMonth} hasMore={Boolean(data.cursor)} subject={subject} athleteId={athleteId} unit={unit} onMonth={setMonth} open={open}/>):null}
+   {filter==='prs'?<LedgerBestArchive events={events} unit={unit} open={open}/>:null}
+   {filter==='imports'?<LedgerPastArchive items={data.items} unit={unit} open={open}/>:null}
+   {filter==='media'?<FilmCollection key={subject} items={data.items} subject={subject} athleteId={athleteId} unit={unit} open={open}/>:null}
+   {filter==='competition'?<LedgerMeetArchive items={data.items} unit={unit} open={open}/>:null}
+  </>:null}
+  {!data.loading&&count>0?<Text style={s.coverage}>{count} {filter==='prs'?'records':filter==='media'?'films':filter==='competition'?'meets':'entries'} loaded{data.cursor?' · more available':''}{scoped?' · filtered':''}</Text>:null}
   {data.cursor?<Pressable accessibilityRole="button" disabled={data.loadingMore} onPress={()=>void data.more()} style={s.more}><Text style={s.small}>{data.loadingMore?'Loading older records…':data.error?'Retry older records':'Load older records'}</Text><Ionicons name="arrow-down" size={17} color={C.secondary}/></Pressable>:null}
-  {filter==='training'&&!scoped&&!data.error?<LedgerMuscleExposure athleteId={athleteId} onPress={()=>router.push({pathname:'/(tabs)/ledger/muscle-groups',params:ledgerSubject.routeParams} as never)}/>:null}
-  <Pressable accessibilityRole="button" onPress={()=>router.push({pathname:'/(tabs)/ledger/journey',params:ledgerSubject.routeParams} as never)} style={s.more}><Text style={s.small}>Career timeline & training chapters</Text><Ionicons name="chevron-forward" size={16} color={C.muted}/></Pressable>
-  <Pressable accessibilityRole="button" onPress={()=>router.push({pathname:'/(tabs)/ledger/archive',params:{...ledgerSubject.routeParams,displayUnit:unit}} as never)} style={s.more}><Text style={s.small}>Advanced history filters</Text><Ionicons name="options-outline" size={18} color={C.muted}/></Pressable>
-  {filter==='prs'?<Text style={s.caption}>Text and date filters apply to loaded personal-best pages. Load older records to continue through your history.</Text>:null}
+  <View style={s.archiveTools}><Pressable accessibilityRole="button" onPress={()=>router.push({pathname:'/(tabs)/ledger/journey',params:ledgerSubject.routeParams} as never)} style={s.tool}><Ionicons name="git-branch-outline" size={19} color={C.muted}/><Text style={s.small}>Career chapters</Text><Ionicons name="chevron-forward" size={16} color={C.muted}/></Pressable><Pressable accessibilityRole="button" onPress={()=>router.push({pathname:'/(tabs)/ledger/archive',params:{...ledgerSubject.routeParams,displayUnit:unit}} as never)} style={s.tool}><Ionicons name="options-outline" size={19} color={C.muted}/><Text style={s.small}>All archive filters</Text><Ionicons name="chevron-forward" size={16} color={C.muted}/></Pressable></View>
+  {filter==='prs'?<Text style={s.caption}>Search and dates apply to the loaded personal-best pages. Load older records to continue.</Text>:null}
  </View>;
 }
+function FilmCollection({items,subject,athleteId,unit,open}:{items:ArchiveItem[];subject:string;athleteId?:number;unit:LedgerUnit;open:(source:LedgerSource)=>void}){
+ const {user}=useAuth(),[video,setVideo]=useState<number|null>(null);
+ const posters=useLedgerResource(`archive-posters:${subject}:${athleteId??'self'}:${user?.role}`,async()=>{
+  const own=user?.athlete_id??user?.self_athlete_id,target=athleteId??own;
+  const response=user?.role==='coach'&&target?await getCoachVideoArchive({athlete_id:target,per_page:100}):user?.role==='athlete'&&(athleteId==null||athleteId===own)?await getAthleteVideoArchive():null;
+  if(!response?.ok||!response.json?.ok)throw new Error('Previews unavailable');
+  return Object.fromEntries((Array.isArray(response.json.videos)?response.json.videos:[]).flatMap((v:{id?:number;thumbnail_url?:string})=>typeof v.id==='number'&&typeof v.thumbnail_url==='string'&&v.thumbnail_url?[[v.id,v.thumbnail_url]]:[])) as Record<number,string>;
+ });
+ return <><LedgerFilmArchive items={items} posters={posters.data??{}} unit={unit} open={open} play={setVideo} loadingPosters={posters.loading}/>{posters.error?<Pressable accessibilityRole="button" onPress={posters.load} style={s.retry}><Text style={s.small}>Retry film previews</Text></Pressable>:null}<SetVideoPlayerModal visible={video!==null} videoId={video} allowExport={athleteId==null||athleteId===user?.athlete_id||athleteId===user?.self_athlete_id?undefined:false} onClose={()=>setVideo(null)}/></>;
+}
 const s=StyleSheet.create({
- page:{gap:12},title:{color:C.text,fontFamily:T.fonts.bodySemiBold,fontSize:T.type.heading,lineHeight:33,letterSpacing:-.5},copy:{color:C.secondary,fontSize:T.type.small,lineHeight:21},caption:{color:C.muted,fontSize:T.type.caption,lineHeight:19},small:{color:C.text,fontFamily:T.fonts.bodyMedium,fontSize:T.type.small},heading:{color:C.text,fontFamily:T.fonts.bodySemiBold,fontSize:T.type.body,lineHeight:23},selectedText:{color:C.accent},facts:{color:C.secondary,fontSize:T.type.small,lineHeight:20},between:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8},searchRow:{flexDirection:'row',gap:9,alignItems:'center'},
- search:{flexDirection:'row',alignItems:'center',gap:10,backgroundColor:C.panel,borderWidth:1,borderColor:C.line,borderRadius:T.radius.control,paddingLeft:13},input:{flex:1,minWidth:0,minHeight:50,color:C.text,fontFamily:T.fonts.body,fontSize:T.type.body,paddingVertical:12},clear:{minHeight:44,minWidth:44,alignItems:'center',justifyContent:'center'},dateButton:{height:52,width:50,alignItems:'center',justifyContent:'center',backgroundColor:C.panel,borderWidth:1,borderColor:C.line,borderRadius:T.radius.control},datePanel:{gap:12,padding:14,backgroundColor:C.panel,borderWidth:1,borderColor:C.strongLine,borderRadius:T.radius.card},dateField:{flex:1,gap:5,minHeight:65,padding:10,borderWidth:1,borderColor:C.line,borderRadius:T.radius.chip},filters:{gap:7},filterRow:{flexDirection:'row',gap:7},chip:{flex:1,minHeight:44,alignItems:'center',justifyContent:'center',paddingHorizontal:8,borderWidth:1,borderColor:C.line,borderRadius:T.radius.control},active:{backgroundColor:C.action,borderColor:T.material.accentEdge},loading:{padding:28},notice:{paddingVertical:20,gap:12},retry:{minHeight:44,alignSelf:'flex-start',justifyContent:'center',paddingHorizontal:15,borderWidth:1,borderColor:C.strongLine,borderRadius:T.radius.control},empty:{paddingVertical:28,gap:10},row:{flexDirection:'row',gap:13,minHeight:108,padding:15,borderWidth:1,borderColor:C.strongLine,borderRadius:T.radius.card,backgroundColor:C.panel},date:{width:36,alignItems:'center',gap:3,paddingTop:3},day:{color:C.text,fontFamily:T.fonts.bodyMedium,fontSize:T.type.section},line:{height:15,width:2,borderRadius:T.radius.hairline,backgroundColor:C.accent,marginTop:5},flex:{flex:1,gap:5,minWidth:0},value:{color:C.success,fontFamily:T.fonts.bodyMedium,fontSize:T.type.body,marginTop:4},more:{minHeight:48,alignItems:'center',justifyContent:'center',flexDirection:'row',gap:8,borderWidth:1,borderColor:C.line,borderRadius:T.radius.control,marginVertical:12},
+ page:{gap:16},
+ copy:{color:C.secondary,fontSize:T.type.small,lineHeight:21},
+ caption:{color:C.muted,fontSize:T.type.caption,lineHeight:19},
+ small:{color:C.text,fontFamily:T.fonts.bodyMedium,fontSize:T.type.small},
+ heading:{color:C.text,fontFamily:T.fonts.bodySemiBold,fontSize:T.type.body,lineHeight:23},
+ between:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8},
+ searchRow:{flexDirection:'row',gap:9,alignItems:'center'},
+ coverage:{color:C.muted,fontSize:T.type.caption,lineHeight:18},
+ archiveTools:{gap:2,marginTop:12,borderTopWidth:StyleSheet.hairlineWidth,borderTopColor:C.line},
+ tool:{minHeight:50,flexDirection:'row',alignItems:'center',gap:9},
+ search:{flexDirection:'row',alignItems:'center',gap:10,backgroundColor:C.panel,borderWidth:1,borderColor:C.line,borderRadius:T.radius.control,paddingLeft:13},
+ input:{flex:1,minWidth:0,minHeight:50,color:C.text,fontFamily:T.fonts.body,fontSize:T.type.body,paddingVertical:12},
+ clear:{minHeight:44,minWidth:44,alignItems:'center',justifyContent:'center'},
+ dateButton:{height:52,width:50,alignItems:'center',justifyContent:'center',backgroundColor:C.panel,borderWidth:1,borderColor:C.line,borderRadius:T.radius.control},
+ datePanel:{gap:12,padding:14,backgroundColor:C.panel,borderWidth:1,borderColor:C.strongLine,borderRadius:T.radius.card},
+ dateField:{flex:1,gap:5,minHeight:65,padding:10,borderWidth:1,borderColor:C.line,borderRadius:T.radius.chip},
+ active:{backgroundColor:C.action,borderColor:T.material.accentEdge},
+ loading:{padding:28},
+ notice:{paddingVertical:20,gap:12},
+ retry:{minHeight:44,alignSelf:'flex-start',justifyContent:'center',paddingHorizontal:15,borderWidth:1,borderColor:C.strongLine,borderRadius:T.radius.control},
+ empty:{paddingVertical:28,gap:10},
+ flex:{flex:1,gap:5,minWidth:0},
+ more:{minHeight:48,alignItems:'center',justifyContent:'center',flexDirection:'row',gap:8,borderWidth:1,borderColor:C.line,borderRadius:T.radius.control,marginVertical:12}
 });

@@ -16,6 +16,7 @@ export const LEDGER = {
     action: SLLedgerMaterial.accentFace,
     onAction: SLColors.textStrong,
     success: SLColors.success,
+    danger: SLColors.danger,
     gold: SLColors.warning,
     squat: SLColors.squat,
     bench: SLColors.bench,

@@ -1,0 +1,19 @@
+
+> powerlift_mobile@1.0.0 test:ledger-connected
+> node --import tsx scripts/test-ledger-connected.mjs && node scripts/test-ledger-history.mjs && node --import tsx scripts/test-ledger-archive-visuals.mjs && node --import tsx scripts/test-ledger-visuals.mjs && node scripts/test-ledger-modal-material.mjs && node --import tsx scripts/test-ledger-source-presentation.mjs && node --import tsx scripts/test-ledger-chart-render.mjs && node --import tsx scripts/test-ledger-movement-art.mjs
+
+[connected Ledger] exact Competition identity, literal reps, separate estimates, source provenance, incomplete totals, normal app entry and state boundaries PASS
+PASS: actual connected History hook; athlete self scope, cursor deduplication, repeated taps, obsolete subjects, transient retry, denial clearing, collection search and governed PR paging.
+PASS: actual History hook; imported/manual collection, server date bounds and obsolete-window rejection.
+PASS: real month/leap-day placement, partial-page honesty, multi-Session days, cross-month search, zero/missing counts, exact movement/load PR trails and sources, separate estimates, year collections, full-frame film/play/source actions, meet attempts/totals/units and unboxed accessible selectors.
+PASS: actual archive controller and film flow; month server bounds, collection scope, athlete self endpoint, coach target, denied foreign scope, native player open/close/export policy, pinned collection navigation and independent scroll positions.
+PASS: actual visual helpers; chronological scales, missing/zero data, exact rep bars, completed-only calendar, quantitative rhythm, governed anatomy, real product evidence and text contrast.
+PASS: actual Ledger canvas owner and deliberate subtraction/opaque-navigation failures; exact performed-volume stacks, active units, performed-only medallion, and native-safe plate alpha.
+PASS: actual native modal owner; default/explicit materials, transparent/opaque bounds, keyboard states and close callbacks preserved.
+PASS: actual source renderer; performed/estimated separation, zero/missing loads, saved reflection ratings, shared film feedback, immutable Set links, film rediscovery and preserved competition evidence.
+PASS: reported bodyweight chronology, literal units, original Session source and rejection of profile-weight substitution.
+PASS: actual analytical chart render; same-day observation identities, single selection, truthful count and opt-in filled series.
+PASS: exact approved Core art, physical/Core/private identity boundaries, immutable source references, actual card rendering/actions at five widths, readable artwork/chart balance, approved-source background rendering and scoped gunmetal texture.
+PASS: actual backdrop render; approved-only pixels, full source containment, two alpha masks, no thumbnail frame and no input interception.
+PASS: square, landscape and portrait raster-edge feathering; deliberate wider-mask failure; opt-in Ledger history header with unchanged shared-history default.
+PASS: actual masked output preserves inspected face/torso/lower-body points for Squat, Bench and Deadlift; deliberately rejected subject-fading mask fails.
