@@ -118,3 +118,20 @@ by the post-push `canonical-runtime.json` receipt in the evidence folder and
 remote-reference verification. This is a canonical npm-start/Expo development
 observation; no native3.0 archive, TestFlight update or Production release is
 claimed. Unrelated dirty backend and untracked historical evidence are preserved.
+
+## Owner correction — restore page identity
+
+Owner asked what happened to the page title “The Ledger”. Removing the global
+chooser did not authorize removing the page identity. Restore the persistent
+page heading above the chapter controls, with units alongside the heading; retain
+anchored local dropdowns and all navigation/state/data/art behavior. Scope is a
+small DEV presentation correction. Verify title/controls in the actual athlete
+simulator, navigation regressions, TypeScript and horizontal layout; reuse the
+unchanged data/source/art evidence above. Push canonical DEV and leave it open.
+
+Title restoration validated: navigation controller/guard, TypeScript and horizontal
+layout PASS. The native heading is visible in Records and History; the dropdown
+remeasures its new trigger position correctly. Final athlete Records screen is
+open, captured at `title-restored.png` in the evidence folder. This correction
+adds only presentation hierarchy; prior navigation/data/state scope is unchanged.
+Post-push source identity is recorded separately in `title-runtime.json`.

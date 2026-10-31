@@ -85,11 +85,12 @@ function ConnectedLedger() {
   return <SLScreen edges="none" padded={false} style={s.screen} disableEntranceMotion><FloatingControlCoordinator context="tab-screen">
     <View testID="ledger-connected-app" style={s.container}>
       {subject.isWorkspaceScoped ? <Text style={s.subjectLabel}>{data.progression?.athlete?.name || 'Athlete'} · TRAINING RECORD</Text> : null}
-      <View style={s.header}><LedgerViewNavigation section={tab} onSectionChange={next=>{
+      <View style={s.header}><Text testID="ledger-page-title" accessibilityRole="header" style={[s.title,s.headerTitle]}>The Ledger</Text><Pressable accessibilityRole="button" accessibilityLabel={`Weight unit ${unit}. Switch units`} onPress={toggleUnit} style={s.unit}><Text style={s.small}>{unit}</Text><Ionicons name="swap-horizontal" color={C.muted} size={17}/></Pressable></View>
+      <View style={s.navigation}><LedgerViewNavigation section={tab} onSectionChange={next=>{
         Keyboard.dismiss();
         if(next===tab){scroll.current?.scrollTo({y:0,animated:true});return;}
         changeTab(next);
-      }}/><Pressable accessibilityRole="button" accessibilityLabel={`Weight unit ${unit}. Switch units`} onPress={toggleUnit} style={s.unit}><Text style={s.small}>{unit}</Text><Ionicons name="swap-horizontal" color={C.muted} size={17}/></Pressable></View>
+      }}/></View>
       {subject.returnPath ? <Pressable accessibilityRole="button" onPress={()=>router.navigate(subject.returnPath as any)} style={s.workspaceBack}><Text style={s.caption}>Back to athlete workspace</Text><Ionicons name="arrow-back" size={15} color={C.muted}/></Pressable> : null}
       <KeyboardScrollView ref={scroll} showsVerticalScrollIndicator={false} onScroll={e=>{if(!restoringScroll.current)offsets.current[location]=e.nativeEvent.contentOffset.y;}} scrollEventThrottle={100} contentContainerStyle={s.content}>
         <SLMotionEntrance motionKey={location} distance={6}>
@@ -206,7 +207,9 @@ const s=StyleSheet.create({
  subjectLabel:{color:C.muted,fontFamily:T.fonts.bodyMedium,fontSize:T.type.micro,lineHeight:17,paddingHorizontal:20,paddingTop:6},
  screen:{backgroundColor:'transparent'},
  container:{flex:1},
- header:{flexDirection:'row',alignItems:'center',gap:12,paddingHorizontal:20,paddingTop:10,paddingBottom:10},
+ header:{flexDirection:'row',alignItems:'center',gap:12,paddingHorizontal:20,paddingTop:6,paddingBottom:6},
+ headerTitle:{flex:1,minWidth:0},
+ navigation:{flexDirection:'row',paddingHorizontal:20,paddingBottom:8},
  flex:{flex:1,gap:5,minWidth:0},
  label:{color:C.muted,fontFamily:T.fonts.bodyMedium,fontSize:T.type.micro,lineHeight:15,letterSpacing:1},
  title:{color:C.text,fontFamily:T.fonts.bodySemiBold,fontSize:T.type.screenTitle,lineHeight:34,letterSpacing:-.5},
