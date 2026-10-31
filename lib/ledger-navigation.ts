@@ -7,7 +7,7 @@ export type LedgerNavigationState = Readonly<{
   history: LedgerHistoryCollection;
 }>;
 
-/** Flat destinations: choosing Film must not require first choosing History. */
+/** Stable view identities; only the active chapter exposes its local choices. */
 export const LEDGER_DESTINATIONS = [
   { key: 'records:core', section: 'records', family: 'core', label: 'Core lifts', icon: 'barbell-outline', testID: 'ledger-family-core' },
   { key: 'records:variants', section: 'records', family: 'variants', label: 'Variants', icon: 'options-outline', testID: 'ledger-family-variants' },
@@ -26,18 +26,11 @@ export const LEDGER_CHAPTERS = [
   { key: 'milestones', label: 'Milestones' },
 ] as const;
 
-export function currentLedgerDestination(state: LedgerNavigationState): LedgerDestination {
-  const key = state.section === 'records' ? `records:${state.family}` : state.section === 'history' ? `history:${state.history}` : 'milestones';
-  return LEDGER_DESTINATIONS.find(destination => destination.key === key) ?? LEDGER_DESTINATIONS[0];
+export function ledgerContextOptions(section:'records'|'history') {
+  return LEDGER_DESTINATIONS.filter(destination => destination.section === section);
 }
-
-/** Preserve the other chapter's selection. Unknown keys cannot become routes. */
-export function selectLedgerDestination(state: LedgerNavigationState, key: string): LedgerNavigationState {
-  const destination = LEDGER_DESTINATIONS.find(item => item.key === key);
-  if (!destination) return state;
-  if (destination.section === 'records') return { ...state, section: 'records', family: destination.family };
-  if (destination.section === 'history') return { ...state, section: 'history', history: destination.filter };
-  return { ...state, section: 'milestones' };
+export function ledgerContextDestination(section:'records'|'history', key:string) {
+  return LEDGER_DESTINATIONS.find(destination => destination.section === section && destination.key === key) ?? null;
 }
 
 /** An inactive chapter cannot move the current view's scroll restoration key. */

@@ -1,10 +1,12 @@
 import { KeyboardModal as Modal, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { StyleSheet, useWindowDimensions, View, type StyleProp, type ViewStyle } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Keyboard, StyleSheet, useWindowDimensions, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useKeyboardState } from '@/components/keyboard/keyboard-state';
+import { LEDGER as T } from '@/constants/ledger';
 import { SLColors } from '@/constants/theme';
 import {
   resolveCompactDropdownLayout,
@@ -17,9 +19,11 @@ export type SLCompactDropdownOption<TValue extends string | number> = {
   value: TValue;
   label: string;
   accessibilityLabel?: string;
+  testID?: string;
 };
 
 type SLCompactDropdownProps<TValue extends string | number> = {
+  appearance?: 'default' | 'ledger';
   accessibilityHint?: string;
   accessibilityLabel: string;
   icon?: keyof typeof Ionicons.glyphMap;
@@ -38,6 +42,7 @@ const ROW_HEIGHT = 48;
 const MENU_VERTICAL_PADDING = 8;
 
 export function SLCompactDropdown<TValue extends string | number>({
+  appearance = 'default',
   accessibilityHint,
   accessibilityLabel,
   icon,
@@ -54,16 +59,32 @@ export function SLCompactDropdown<TValue extends string | number>({
   const anchorRef = useRef<View>(null);
   const [anchor, setAnchor] = useState<CompactDropdownAnchor | null>(null);
   const [visible, setVisible] = useState(false);
+  const [opening, setOpening] = useState(false);
+  const keyboard = useKeyboardState();
+  const ledger = appearance === 'ledger';
   const insets = useSafeAreaInsets();
   const { height: viewportHeight, width: viewportWidth } = useWindowDimensions();
 
-  const open = useCallback(() => {
+  const measureAndOpen = useCallback(() => {
     anchorRef.current?.measureInWindow((x, y, width, height) => {
+      if (width <= 0 || height <= 0) return;
       setAnchor({ x, y, width, height });
       setVisible(true);
     });
   }, []);
-  const close = useCallback(() => setVisible(false), []);
+  const open = useCallback(() => {
+    if (keyboard.visible) { setOpening(true); Keyboard.dismiss(); }
+    else measureAndOpen();
+  }, [keyboard.visible, measureAndOpen]);
+  // Measure after keyboard avoidance settles, in the modal's window coordinates.
+  useEffect(() => {
+    if (!opening || keyboard.visible) return;
+    const frame = requestAnimationFrame(() => { setOpening(false); measureAndOpen(); });
+    return () => cancelAnimationFrame(frame);
+  }, [opening, keyboard.visible, measureAndOpen]);
+  const close = useCallback(() => { setOpening(false); setVisible(false); }, []);
+  // A rotation changes width; keyboard-driven height changes must not cancel opening.
+  useEffect(() => close(), [viewportWidth, close]);
   const estimatedHeight = options.length * ROW_HEIGHT + MENU_VERTICAL_PADDING * 2;
   const menuLayout = useMemo(() => anchor ? resolveCompactDropdownLayout({
     anchor,
@@ -77,19 +98,20 @@ export function SLCompactDropdown<TValue extends string | number>({
 
   return (
     <>
-      <View collapsable={false} ref={anchorRef} style={[styles.anchor, style]}>
+      <View collapsable={false} ref={anchorRef} style={[styles.anchor, ledger && ledgerStyles.anchor, style]}>
         <SLMotionPressable
           accessibilityHint={accessibilityHint}
           accessibilityLabel={accessibilityLabel}
           accessibilityRole="button"
           accessibilityState={{ expanded: visible }}
           onPress={open}
-          style={[styles.trigger, visible && styles.triggerOpen]}
+          hitSlop={ledger ? {top:5,bottom:5} : undefined}
+          style={[styles.trigger, visible && styles.triggerOpen, ledger && ledgerStyles.trigger, ledger && visible && ledgerStyles.triggerOpen]}
           testID={testID}
         >
           {icon ? <Ionicons color={SLColors.accentViolet} name={icon} size={16} /> : null}
-          <Text numberOfLines={1} style={styles.triggerLabel}>{label}</Text>
-          <Ionicons color={SLColors.textMuted} name={visible ? 'chevron-up' : 'chevron-down'} size={14} />
+          <Text numberOfLines={1} style={[styles.triggerLabel, ledger && ledgerStyles.triggerLabel]}>{label}</Text>
+          <Ionicons color={ledger ? T.colors.muted : SLColors.textMuted} name={visible ? 'chevron-up' : 'chevron-down'} size={14} />
         </SLMotionPressable>
       </View>
 
@@ -104,6 +126,7 @@ export function SLCompactDropdown<TValue extends string | number>({
         <View accessibilityViewIsModal style={styles.modalRoot}>
           <SLMotionPressable
             accessibilityLabel="Close dropdown"
+            accessibilityRole="button"
             onPress={close}
             pressScale={1}
             style={StyleSheet.absoluteFill}
@@ -113,6 +136,7 @@ export function SLCompactDropdown<TValue extends string | number>({
             <View
               style={[
                 styles.menu,
+                ledger && ledgerStyles.menu,
                 {
                   left: menuLayout.left,
                   maxHeight: menuLayout.maxHeight,
@@ -143,15 +167,15 @@ export function SLCompactDropdown<TValue extends string | number>({
                           onValueChange(option.value);
                         }
                       }}
-                      style={[styles.option, selected && styles.optionSelected]}
-                      testID={testID ? `${testID}-option-${String(option.value)}` : undefined}
+                      style={[styles.option, selected && styles.optionSelected, ledger && selected && ledgerStyles.optionSelected]}
+                      testID={option.testID ?? (testID ? `${testID}-option-${String(option.value)}` : undefined)}
                     >
                       <Ionicons
-                        color={selected ? SLColors.accentViolet : 'transparent'}
+                        color={selected ? (ledger ? T.colors.accent : SLColors.accentViolet) : 'transparent'}
                         name="checkmark"
                         size={17}
                       />
-                      <Text numberOfLines={2} style={[styles.optionLabel, selected && styles.optionLabelSelected]}>
+                      <Text numberOfLines={2} style={[styles.optionLabel, selected && styles.optionLabelSelected, ledger && ledgerStyles.optionLabel, ledger && selected && ledgerStyles.optionLabelSelected]}>
                         {option.label}
                       </Text>
                     </SLMotionPressable>
@@ -208,4 +232,16 @@ const styles = StyleSheet.create({
   optionSelected: { backgroundColor: SLColors.accentSoft },
   optionLabel: { color: SLColors.text, flex: 1, fontSize: 14, fontWeight: '700', minWidth: 0 },
   optionLabelSelected: { color: SLColors.accentViolet },
+});
+
+// Ledger is a scoped presentation of the canonical menu, not a second menu owner.
+const ledgerStyles = StyleSheet.create({
+  anchor: { alignSelf:'flex-start', flexShrink:1, minHeight:44, justifyContent:'center' },
+  trigger: { flex:0, minHeight:34, gap:9, paddingVertical:6, paddingHorizontal:11, borderWidth:StyleSheet.hairlineWidth, borderRadius:T.radius.inner, borderColor:T.colors.line, backgroundColor:T.colors.panel },
+  triggerOpen: { backgroundColor:T.colors.raised, borderColor:T.colors.strongLine },
+  triggerLabel: { flex:0, flexShrink:1, fontSize:T.type.small, lineHeight:19, fontFamily:T.fonts.bodyMedium, fontWeight:'500', color:T.colors.secondary },
+  menu: { backgroundColor:T.colors.panel, borderColor:T.colors.strongLine, borderRadius:T.radius.control },
+  optionSelected: { backgroundColor:T.colors.raised },
+  optionLabel: { color:T.colors.secondary, fontSize:T.type.bodySmall, fontFamily:T.fonts.bodyMedium, fontWeight:'500' },
+  optionLabelSelected: { color:T.colors.text, fontFamily:T.fonts.bodySemiBold, fontWeight:'600' },
 });

@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ActivityIndicator, BackHandler, Pressable, StyleSheet, View, type ScrollView } from 'react-native';
+import { ActivityIndicator, BackHandler, Keyboard, Pressable, StyleSheet, View, type ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Text, TextInput } from '@/components/ui/sl-text';
@@ -31,7 +31,9 @@ import { LedgerRecordCard, LedgerSurface, LedgerTrainingRhythm, LedgerRepBar, Le
 
 import { LedgerMovementBackdrop } from './LedgerMovementBackdrop';
 import { LedgerViewNavigation } from './LedgerViewNavigation';
-import { selectLedgerDestination, ledgerNavigationLocation } from '@/lib/ledger-navigation';
+import { LedgerContextFilter } from './LedgerContextFilter';
+import { SLMotionEntrance } from '@/components/ui/sl-motion';
+import { ledgerNavigationLocation } from '@/lib/ledger-navigation';
 import { ledgerCompetitionArtwork, ledgerDefinitionArtwork, ledgerVariantArtwork } from '@/lib/ledger-movement-art';
 import type { CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
 
@@ -83,18 +85,19 @@ function ConnectedLedger() {
   return <SLScreen edges="none" padded={false} style={s.screen} disableEntranceMotion><FloatingControlCoordinator context="tab-screen">
     <View testID="ledger-connected-app" style={s.container}>
       {subject.isWorkspaceScoped ? <Text style={s.subjectLabel}>{data.progression?.athlete?.name || 'Athlete'} · TRAINING RECORD</Text> : null}
-      <View style={s.header}><LedgerViewNavigation state={{section:tab,family,history:historyFilter}} onSelect={destination=>{
-        const next=selectLedgerDestination({section:tab,family,history:historyFilter},destination.key);
-        if(destination.section==='records')back();
-        setFamily(next.family);setHistoryFilter(next.history);changeTab(next.section);
+      <View style={s.header}><LedgerViewNavigation section={tab} onSectionChange={next=>{
+        Keyboard.dismiss();
+        if(next===tab){scroll.current?.scrollTo({y:0,animated:true});return;}
+        changeTab(next);
       }}/><Pressable accessibilityRole="button" accessibilityLabel={`Weight unit ${unit}. Switch units`} onPress={toggleUnit} style={s.unit}><Text style={s.small}>{unit}</Text><Ionicons name="swap-horizontal" color={C.muted} size={17}/></Pressable></View>
       {subject.returnPath ? <Pressable accessibilityRole="button" onPress={()=>router.navigate(subject.returnPath as any)} style={s.workspaceBack}><Text style={s.caption}>Back to athlete workspace</Text><Ionicons name="arrow-back" size={15} color={C.muted}/></Pressable> : null}
       <KeyboardScrollView ref={scroll} showsVerticalScrollIndicator={false} onScroll={e=>{if(!restoringScroll.current)offsets.current[location]=e.nativeEvent.contentOffset.y;}} scrollEventThrottle={100} contentContainerStyle={s.content}>
+        <SLMotionEntrance motionKey={location} distance={6}>
         <View style={tab!=='records'&&s.hidden}>
           {lift ? <CoreRecord key={lift} lift={lift} range={range} metric={metric} setRange={setRange} setMetric={setMetric} unit={unit} back={back} open={open} onStandards={()=>setStandards(true)} onAnalysis={()=>route('/(tabs)/ledger/analysis',{lift})} standards={standards}/>
           : variant ? <VariantRecord movement={variant} unit={unit} back={back} open={open}/>
           : context ? <TrainingContext athleteId={subject.athleteId} unit={unit} back={back} open={open} onMuscles={()=>route('/(tabs)/ledger/muscle-groups')} onHistory={()=>changeTab('history')}/>
-          : <><Text style={s.overviewCopy}>{family==='core'?'Best recorded loads · 90-day trends':family==='variants'?'Exact variations. Independent history.':'Your movements, in their equipment context.'}</Text>
+          : <><View style={s.contextToolbar}><LedgerContextFilter section="records" value={family} onChange={setFamily}/><Text style={s.caption}>{family==='core'?'90-day trends':family==='variants'?'Independent records':'Equipment context'}</Text></View>
             {family==='core' ? data.loading ? <State busy title="Opening your records"/> : data.error ? <State title={data.error} retry={()=>void data.reload()}/> : <>{RECORD_LIFTS.map(l=>{const p=recordProfile(l.key,data.progression,data.currentBests);return <LedgerRecordCard key={l.key} lift={l.key} label={l.label} kg={p.best?.best_value} reps={p.reps} unit={unit} points={p.lenses?.weight_on_bar.points ?? []} aggregation={p.lenses?.weight_on_bar.aggregation} onPress={()=>setLift(l.key)}/>})}
               <LedgerTrainingRhythm unit={unit} progression={data.progression} onPress={()=>changeTab('history')}/>
               {recent ? <Pressable accessibilityRole="button" disabled={!eventSource(recent)} onPress={()=>{const source=eventSource(recent);if(source)open(source);}} style={s.recent}><View style={s.recentFeature}>{performedPr?<LedgerEarnedMedallion compact/>:<Ionicons name="trending-up-outline" size={28} color={C.gold}/>}<View style={s.flex}><Text style={s.goldLabel}>LATEST PERSONAL BEST</Text><Text style={s.rowTitle}>{(recent.movement_label || 'Recorded movement').replace(/^Competition /,'')}</Text>{performedPr?<Weight kg={performedPr.current_value} unit={unit} reps={typeof performedPr.evidence?.actual_reps==='number'?performedPr.evidence.actual_reps:null}/>:<Text style={s.copy}>{recordEventLabel(recent)}</Text>}<Text style={s.caption}>{ledgerDate(recent.workout_date||recent.occurred_at)}</Text></View><Ionicons name="chevron-forward" size={19} color={C.gold}/></View></Pressable> : null}</>
@@ -105,6 +108,7 @@ function ConnectedLedger() {
         </View>
         {visited.history ? <View style={tab!=='history'&&s.hidden}><LedgerHistoryPane focus={historyFocus} subject={`${user?.id}:${athleteId ?? 'self'}`} athleteId={subject.athleteId} unit={unit} open={open} filter={historyFilter} setFilter={setHistoryFilter}/></View> : null}
         {visited.milestones ? <View style={tab!=='milestones'&&s.hidden}><Milestones performedPr={performedPr} clubs={clubs} unit={unit} loading={data.loading} error={data.error} reload={()=>void data.reload()} open={open} collection={()=>route('/(tabs)/ledger/achievements')} history={()=>{setHistoryFilter('prs');changeTab('history');}}/></View> : null}
+        </SLMotionEntrance>
       </KeyboardScrollView>
     </View>
     <Modal backdropColor={T.material.canvas} visible={sources.length>0} animationType="slide" presentationStyle="pageSheet" onRequestClose={()=>setSources(v=>v.slice(0,-1))}>
@@ -123,7 +127,7 @@ function CoreRecord({lift,unit,range,metric,setRange,setMetric,back,open,standar
   const standing=club.lifts.find(l=>l.key===lift)?.standingState;
   const loadLabel=p.lenses?.weight_on_bar.aggregation==='week'?'Weekly top load':'Session top load';
   const reps=p.lenses?.rep_strength.series??[],maxRep=Math.max(1,...reps.map(r=>r.best_in_range_kg??0));
-  return <View testID="ledger-connected-core-record"><Back onPress={back}/><Text style={s.title}>Competition {label}</Text>
+  return <View testID="ledger-connected-core-record"><Back label="Core lifts" onPress={back}/><Text style={s.title}>Competition {label}</Text>
     {data.loading ? <State busy title="Loading recorded performance"/>:data.error ? <State title={data.error} retry={()=>void data.reload()}/>:<>
       <View style={s.detailHero}><View style={s.recentKicker}><Label>BEST RECORDED LOAD</Label>{p.best?<View style={s.performed}><Ionicons name="checkmark" color={C.success} size={14}/><Text style={s.caption}>Performed</Text></View>:null}</View><View style={s.movementHero}><LedgerMovementBackdrop movement={ledgerCompetitionArtwork(lift)} width={236} testID="ledger-core-detail-artwork"/><View style={s.movementHeroCopy}><Weight kg={p.best?.best_value} unit={unit} reps={p.reps} emphasis/><Text style={s.copy}>{p.best ? `All-time best · ${ledgerDate(p.best.event?.workout_date||p.best.event?.occurred_at)}`:'A performed set will start this record.'}</Text></View></View></View>
       <LedgerSurface style={s.chartPanel}>
@@ -198,7 +202,7 @@ const s=StyleSheet.create({
  movementRowCopy:{paddingRight:92},
  movementHeroCopy:{width:'53%',gap:10},
  movementHero:{minHeight:200,justifyContent:'center',paddingVertical:18},
- overviewCopy:{color:C.secondary,fontSize:T.type.small,lineHeight:20,marginBottom:14},
+ contextToolbar:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:10,marginBottom:10},
  subjectLabel:{color:C.muted,fontFamily:T.fonts.bodyMedium,fontSize:T.type.micro,lineHeight:17,paddingHorizontal:20,paddingTop:6},
  screen:{backgroundColor:'transparent'},
  container:{flex:1},
