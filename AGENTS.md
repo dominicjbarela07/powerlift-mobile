@@ -157,3 +157,8 @@ Subject visibility is an explicit part of this direction: do not fade or crowd
 the lifter's face, torso or lower body to make room for data. Give the movement
 a protected visual area, inspect each actual image, and verify the final native
 composition for Squat, Bench and Deadlift.
+
+October30 density follow-up: the owner explicitly rejected excessive padding.
+Keep Ledger gutters and repeated panel/section gaps compact; avoid compounded
+container insets. Preserve readable type, complete artwork subjects, comfortable
+tap targets and dock/safe-area clearance. Clean surfaces must leave room for data.

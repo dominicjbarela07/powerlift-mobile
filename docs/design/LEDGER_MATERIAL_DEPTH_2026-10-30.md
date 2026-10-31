@@ -107,3 +107,32 @@ Delivery: canonical mobile DEV branch `dev/canonical-mobile`, based on
 verification is retained as `canonical-runtime.json` in the evidence folder.
 This is DEV only; no Production/TestFlight/native-build operation. Unrelated
 untracked and dirty backend work is preserved.
+
+## Owner density correction
+
+Owner: “take it easy on the padding ... dont be choking me out all the time”.
+Tighten the Ledger's page gutters, repeated container padding and section gaps
+in canonical DEV. Keep the approved depth/color, page title, readable typography,
+full movement subjects, 44-point primary/filter/calendar targets, safe dock
+clearance, original data/axes and existing navigation. Remove surplus spacing;
+do not achieve density by shrinking fonts or interactive controls. Validate the
+actual native Records/History/Milestones layout, affected navigation/art/layout
+checks and TypeScript. Reuse unchanged data/material/contrast proof. Leave the
+populated athlete Ledger open after canonical DEV push and source verification.
+
+Density correction result: gutters18→14, repeated panel padding generally12,
+reduced header/filter/section gaps, compact milestone cards and calendar framing.
+Font sizes, chart values, calendar44-point rows, primary/filter hit areas and dock
+clearance are preserved. The Records screenshot now shows all three full lift
+cards above the dock and the beginning of Training rhythm. Native History and
+Milestones were also inspected; selected day/collection and original evidence
+remain attached. Full movement subjects and plate art remain visible.
+
+Validation PASS: existing actual navigation/controller, archive/history/source,
+material/artwork guards, horizontal layout and TypeScript. No new low-impact
+spacing-only tests were added. Prior unchanged material/contrast/backend/fixture
+checks remain applicable. Actual captures and logs are in
+`/Users/dominic/.codex/work/ledger-spacing-20261030/`; post-push source/runtime
+receipt is `canonical-runtime.json`. Presentation spacing only; no state-machine,
+identity, mutation, backend, artwork or release change. Owner density guidance is
+retained in AGENTS.md. DEV-only delivery; leave athlete Records open.

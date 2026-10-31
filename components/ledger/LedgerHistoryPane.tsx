@@ -70,7 +70,7 @@ function FilmCollection({items,subject,athleteId,unit,open}:{items:ArchiveItem[]
  return <><LedgerFilmArchive items={items} posters={posters.data??{}} unit={unit} open={open} play={setVideo} loadingPosters={posters.loading}/>{posters.error?<Pressable accessibilityRole="button" onPress={posters.load} style={s.retry}><Text style={s.small}>Retry film previews</Text></Pressable>:null}<SetVideoPlayerModal visible={video!==null} videoId={video} allowExport={athleteId==null||athleteId===user?.athlete_id||athleteId===user?.self_athlete_id?undefined:false} onClose={()=>setVideo(null)}/></>;
 }
 const s=StyleSheet.create({
- page:{gap:14},toolbar:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12},tools:{flexDirection:'row'},toolIcon:{width:44,minHeight:44,alignItems:'center',justifyContent:'center'},
+ page:{gap:8},toolbar:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12},tools:{flexDirection:'row'},toolIcon:{width:44,minHeight:44,alignItems:'center',justifyContent:'center'},
  copy:{color:C.secondary,fontSize:T.type.small,lineHeight:21},
  caption:{color:C.muted,fontSize:T.type.caption,lineHeight:19},
  small:{color:C.text,fontFamily:T.fonts.bodyMedium,fontSize:T.type.small},
