@@ -11,12 +11,13 @@ const react = { createElement(type, props, ...children) {
   return typeof type === 'function' ? type({ ...props, children }) : { type, props: props || {}, children };
 }, isValidElement: node => !!node && typeof node === 'object' && 'props' in node,
 useState: () => [0, () => {}], useCallback: fn => fn };
-const deps = { react, 'react-native': { Pressable: 'Pressable', View: 'View', StyleSheet: { create: x => x } },
+const deps = { react, 'react-native': { Pressable: 'Pressable', View: 'View', StyleSheet: { create: x => x }, useWindowDimensions: () => ({ width: 390 }) },
   '@expo/vector-icons': { Ionicons: 'Icon' }, '@/components/ui/sl-text': { Text: 'Text' },
   '@/lib/approved-art-runtime': { approvedArtRuntimeEnabled: () => false },
   '@/components/movement/CanonicalMovementArtwork': { CanonicalMovementArtwork: 'Artwork' },
   '@/components/movement/MovementArtworkHero': { MovementArtworkHero: 'Hero' },
   '@/lib/movement-artwork-hero': { resolveMovementArtworkPresentation: () => ({ hero: null }) },
+  '@/lib/movement-artwork-geometry.mjs': { movementAtmosphereHeaderHeight: () => 260 },
   './logger-primitives': { LoggerPlateStackVisual: 'Plates' },
   './manufacturer-brand-mark': { ManufacturerBrandMark: 'Brand' },
   '@/constants/theme': { SLColors: {}, SLFontFamilies: {}, SLTypography: { micro: {}, label: {}, caption: {} } } };
@@ -35,7 +36,7 @@ const props = { title: 'EZ-Bar Curl', index: 1, expanded: true, complete: false,
 let tree = SessionV3MovementLayout(props);
 const edit = nodes(tree).find(n => n.props.accessibilityLabel === 'Edit Prescription for EZ-Bar Curl');
 assert.ok(edit, 'real expanded workspace must expose the prescription editor');
-assert.ok(nodes(tree).some(n => n.children.includes(edit) && text(n).includes('PRESCRIBED')),
+assert.ok(nodes(tree).some(n => n.children.includes(edit) && text(n).includes('TARGET')),
   'the edit affordance belongs beside the prescription label');
 edit.props.onPress(); assert.equal(edits, 1);
 let movementSwaps = 0;

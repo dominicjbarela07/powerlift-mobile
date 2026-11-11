@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { assertProtectionFile } from './reviewed-protection-progression.mjs';
 
 export const establishedIncidentIds = [
   'unauthorized-testflight-subtraction', 'dev-testflight-divergence',
@@ -68,7 +69,7 @@ export function assertOwnerNonRecurrenceGovernance({ root = process.cwd(), backe
   const evidence = fs.readFileSync(within(root, policy.ownerEvidencePath));
   assert.equal(hash(evidence), policy.ownerEvidenceSha256, 'Owner non-recurrence authorization changed');
   assert.ok(evidence.toString().includes(policy.ownerInstruction));
-  for (const record of policy.canonicalFiles) assert.equal(hash(fs.readFileSync(within(backendRoot, record.path))), record.sha256, `Owner non-recurrence record changed without reviewed protection: ${record.path}`);
+  for (const record of policy.canonicalFiles) assertProtectionFile(root, baseline, record.path, record.sha256, backendRoot, 'backend');
   const constitution = fs.readFileSync(path.join(backendRoot, 'docs/RELEASE_INVARIANTS.md'), 'utf8');
   assert.ok(constitution.includes('OWNER NON-RECURRENCE DIRECTIVE') && constitution.includes('I should never encounter that CLASS OF FAILURE again.'), 'Owner meaning disappeared');
   for (const file of [path.join(backendRoot, 'AGENTS.md'), path.join(root, 'AGENTS.md'), path.join(root, 'docs/RELEASE_INVARIANTS.md')])

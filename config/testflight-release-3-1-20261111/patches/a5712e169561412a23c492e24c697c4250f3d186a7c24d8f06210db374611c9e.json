@@ -1,0 +1,6 @@
+[
+  {
+    "before": "  onBrandPress,\n  rightAction,\n  topInset = 0,\n}: {\n  brandAccessibilityLabel?: string;\n  leftAction: StrengthLedgerAppHeaderAction;\n  onBrandPress: () => void;\n  rightAction: StrengthLedgerAppHeaderAction;\n  topInset?: number;\n}) {\n  return (\n    <ThemedView style={[styles.shell, { paddingTop: Math.max(0, topInset) }]}>\n      <View style={styles.row}>\n        <HeaderAction action={leftAction} />\n        <TouchableOpacity\n",
+    "after": "  onBrandPress,\n  rightAction,\n  topInset = 0,\n  canvasColor,\n}: {\n  brandAccessibilityLabel?: string;\n  leftAction: StrengthLedgerAppHeaderAction;\n  onBrandPress: () => void;\n  rightAction: StrengthLedgerAppHeaderAction;\n  topInset?: number;\n  canvasColor?: string;\n}) {\n  return (\n    <ThemedView style={[styles.shell, { paddingTop: Math.max(0, topInset) }, canvasColor ? { backgroundColor: canvasColor } : null]}>\n      <View style={styles.row}>\n        <HeaderAction action={leftAction} />\n        <TouchableOpacity\n"
+  }
+]

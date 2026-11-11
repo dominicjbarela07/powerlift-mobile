@@ -2,6 +2,8 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 
 import LedgerExperience from './LedgerExperience';
+import SelfCoachLedgerExperience from './SelfCoachLedgerExperience';
+import { useAuth } from '@/context/AuthContext';
 import AchievementsExperience from './AchievementsExperience';
 import AccessoriesExperience from './AccessoriesExperience';
 import VariantsExperience from './VariantsExperience';
@@ -14,7 +16,10 @@ import type { LedgerLiveDataFixture } from './use-ledger-live-data';
 import { useAthleteLedgerSubject } from './athlete-ledger-subject';
 
 export function LedgerRouteScreen({ screen, achievementsDevFixture }: { screen: LedgerScreen; achievementsDevFixture?: LedgerLiveDataFixture }) {
-  if (screen === 'home' || screen === 'strength') return <LedgerExperience />;
+  const { activeMobileMode } = useAuth();
+  const subject = useAthleteLedgerSubject();
+  if (screen === 'home' || screen === 'strength') return activeMobileMode === 'individual' && !subject.isWorkspaceScoped
+    ? <SelfCoachLedgerExperience /> : <LedgerExperience />;
   if (screen === 'achievements') return <LedgerAchievementsRoom devFixture={achievementsDevFixture} />;
   if (screen === 'accessories') return <LedgerSpecializedRoom active="accessories"><AccessoriesExperience /></LedgerSpecializedRoom>;
   if (screen === 'variants') return <LedgerSpecializedRoom active="variants"><VariantsExperience /></LedgerSpecializedRoom>;

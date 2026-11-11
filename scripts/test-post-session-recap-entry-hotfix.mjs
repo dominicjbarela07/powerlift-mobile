@@ -13,7 +13,7 @@ assert.match(logger, /freshCompletionSummaryIdRef\.current = summaryId;[\s\S]*se
 assert.match(logger, /stopRestTimer\(\);[\s\S]*const completionTransitioned/, 'successful completion must clear the rest timer before post-session UI');
 assert.match(logger, /shouldShowCompletionCeremony[\s\S]*animatedCompletionSummaryId === completionSummaryId/, 'ceremony must be tied to the exact completed summary');
 assert.match(logger, /<SessionImpactPanel[\s\S]*animateEntry[\s\S]*ceremonyOnly[\s\S]*onCeremonyComplete=/, 'fresh completion must use the canonical post-session ceremony before recap');
-assert.match(logger, /<CompletedSessionRecap[\s\S]*onClose=\{handleCloseCompletedRecap\}[\s\S]*onDone=\{handleCloseCompletedRecap\}/, 'historical and completed routes must retain working Back and Done exits');
+assert.match(logger, /<CompletedSessionRecap[\s\S]*onClose=\{isIndividualUser \? \(\) => setShowFullSelfCoachRecap\(false\) : handleCloseCompletedRecap\}[\s\S]*onDone=\{handleCloseCompletedRecap\}/, 'Self-Coach returns to its saved summary and historical/completed routes retain their Back and Done exits');
 
 assert.match(ceremony, /summary\.session_streak/, 'ceremony must render the canonical streak value');
 assert.match(ceremony, /if \(!animateEntry \|\| reduceMotion\)/, 'reduced motion must use the restrained ceremony path');

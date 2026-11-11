@@ -1,5 +1,12 @@
 # Strength Ledger Mobile Engineering Guidance
 
+## Product language
+
+People train in Strength Ledger. Use **Training Session** for the activity and
+**Session** where a short label is needed. The release constitution prohibits
+"workout" in product copy, including accessibility labels, education, errors
+and generated default titles. Keep existing API and storage identifiers.
+
 ## Active mobile runtime — owner correction, October 18, 2026
 
 The owner declared: “2.1 is obsolete now. please stop tending to it”. Target
@@ -157,6 +164,25 @@ Subject visibility is an explicit part of this direction: do not fade or crowd
 the lifter's face, torso or lower body to make room for data. Give the movement
 a protected visual area, inspect each actual image, and verify the final native
 composition for Squat, Bench and Deadlift.
+
+November 10 Session correction: the owner rejected the small square placed below
+the movement heading. Expanded Session art must command the header as a large
+background behind its title and foreground information. A protected visual area
+does not mean a separate below-title photo slot. Do not shrink the whole source
+raster into a short canvas and call containment visual acceptance. Preserve the
+approved source, its proportions, canonical identity and approval gates; inspect
+the actual atmospheric composition and deliberately reject the small-square
+failure in the actual renderer. See
+`docs/design/MOVEMENT_ATMOSPHERE_AUDIT_2026-11-10.md` for the correction and proof.
+
+November 11 per-image correction requires individual action-bound framing for
+every approved Session background. Use the exact source-bound inventory in
+`config/movement-atmosphere-framing.json` and the shared renderer. Inspect each
+movement's actual pose and contact points. Reduce empty studio margins through
+scene framing and height while retaining the atmospheric background behind its
+title. Keep historical human artwork/crop receipts and source pixels. New source
+bytes require their own framing review. The guard must reject the old empty-top
+square scene as well as the small-square failure.
 
 October30 density follow-up: the owner explicitly rejected excessive padding.
 Keep Ledger gutters and repeated panel/section gaps compact; avoid compounded

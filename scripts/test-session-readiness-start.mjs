@@ -61,7 +61,7 @@ assert.equal(starts, 4, 'ownership/navigation change cannot start the old Sessio
 
 for (const status of ['in_progress', 'completed']) assert.equal(sessionExecutionCapabilities({status, canLog: true, previewRequested: false}).canBegin, false, 'resume does not enter pre-Session readiness');
 const screen = fs.readFileSync('app/(tabs)/workout/[workoutId].tsx', 'utf8');
-assert.ok(screen.includes('onPress={isPreSession ? () => { void handleBeginWorkoutPress(); }'));
+assert.ok(screen.includes("onPress={canEditComposition && isActiveSession && plannedSets === 0 ? () => openComposition('add') : isPreSession ? () => { void handleBeginWorkoutPress(); }"));
 assert.ok(!screen.includes('Check-in · optional'));
 assert.ok(screen.includes("onSkip={() => { void chooseReadinessAndBegin('skip'); }}"));
 assert.ok(screen.includes('readOnly={isCoachAthletePreview}'));

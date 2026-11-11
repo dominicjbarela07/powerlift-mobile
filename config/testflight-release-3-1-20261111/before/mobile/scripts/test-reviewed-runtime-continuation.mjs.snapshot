@@ -1,0 +1,41 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { assertReviewedRuntimeContinuation } from './reviewed-runtime-continuation.mjs';
+import { productFiles, fingerprintFiles } from './testflight-cumulative-integrity.mjs';
+const root = '/Users/dominic/powerlifting_app/powerlift_mobile_testflight';
+const state = JSON.parse(fs.readFileSync(`${root}/config/testflight-release-integrity.json`));
+const fingerprint = fingerprintFiles(productFiles(root));
+if (['video-engine-20261022','approved-artwork-portability-20261021','session-copy-backdown-20261018','weekly-training-report-20261017','canonical-set-save-recovery-20261008','canonical-copied-week-identity-20261013','athlete-video-archive-access-20261014','set-entry-video-preview-20261014','canonical-logger-floating-unit-20261014','canonical-fixed-equipment-eligibility-20261014','mobile-navigation-loading-20261016'].includes(state.ownerDirectedClientFix?.scope)) {
+  // A real logic change cannot borrow the earlier byte-equivalent image
+  // transport observations. Its separate exact owner contract scope must run.
+  assert.throws(() => assertReviewedRuntimeContinuation(root, state, fingerprint), /another product candidate/);
+  const relabelled = structuredClone(state);
+  relabelled.reviewedRuntimeContinuation.productFingerprint = fingerprint;
+  assert.throws(() => assertReviewedRuntimeContinuation(root, relabelled, fingerprint), /AssertionError/,
+    'relabeling old runtime proof cannot authorize this new Set mutation');
+  console.log('Owner retained runtime boundary PASS: Set save logic change and relabelled old observations rejected; exact current client-fix contracts required.');
+  process.exit(0);
+}
+const result = assertReviewedRuntimeContinuation(root, state, fingerprint);
+assert.equal(result.priorFlows, 32);
+assert.equal(result.freshFullJourneyRun, false);
+assert.equal(result.newProductionNativeBinaryCertified, false);
+assert.throws(() => assertReviewedRuntimeContinuation(root, state, 'a'.repeat(64)), /another product candidate/);
+const altered = structuredClone(state);
+altered.reviewedRuntimeContinuation.nativeSourceSha = 'a'.repeat(40);
+assert.throws(() => assertReviewedRuntimeContinuation(root, altered, fingerprint), /AssertionError/);
+const obsolete = structuredClone(state);
+obsolete.reviewedRuntimeContinuation.priorUpdateId = 'wrong-update';
+assert.throws(() => assertReviewedRuntimeContinuation(root, obsolete, fingerprint), /current shipped baseline/);
+const stale = structuredClone(state);
+stale.reviewedRuntimeContinuation.nativeObservedAt = '2026-01-01T00:00:00Z';
+assert.throws(() => assertReviewedRuntimeContinuation(root, stale, fingerprint), /stale/);
+if (state.reviewedRuntimeContinuation.publishedProof) {
+  const wrongProof = structuredClone(state);
+  wrongProof.reviewedRuntimeContinuation.publishedProof.gateC.sha256 = 'a'.repeat(64);
+  assert.throws(() => assertReviewedRuntimeContinuation(root, wrongProof, fingerprint), /published proof bytes changed/);
+  const wrongCurrent = structuredClone(state);
+  wrongCurrent.currentTestFlight.gitCommitHash = 'a'.repeat(40);
+  assert.throws(() => assertReviewedRuntimeContinuation(root, wrongCurrent, fingerprint), /AssertionError/);
+}
+console.log('Owner repeat-check continuation PASS: 32 retained actual journeys, byte-equivalent image transport and exact served publication; wrong candidate/source/baseline/stale or altered published proof rejected; no fresh-run or new-binary claim.');

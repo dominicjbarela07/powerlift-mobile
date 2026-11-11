@@ -11,7 +11,11 @@ export function SessionSetEntryContext({ title, visual, target }: {
 }) {
   const endpoints = visual.plateStack?.endpoints || [];
   return <View style={s.context}>
-    <View style={s.copy}><Text style={s.label}>PRESCRIBED · CONFIRM YOUR ACTUALS</Text><Text style={s.title}>{title}</Text><Text style={s.target}>{target}</Text></View>
+    <View style={s.copy}>
+      <Text style={s.label}>{target ? 'PRESCRIBED · CONFIRM YOUR ACTUALS' : 'RECORD YOUR SET'}</Text>
+      <Text style={s.title}>{title}</Text>
+      {target ? <Text style={s.target}>{target}</Text> : null}
+    </View>
     {endpoints.length ? <View style={s.stacks}>{endpoints.map((endpoint, index) => <View key={index} style={s.endpoint}>
       {endpoint.plateStack ? <LoggerPlateStackVisual plateStack={endpoint.plateStack} style={s.stack} /> : null}
       <Text style={s.load}>{endpoint.displayLabel}</Text>

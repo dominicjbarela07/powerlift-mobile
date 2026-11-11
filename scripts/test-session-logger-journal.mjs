@@ -28,6 +28,10 @@ assert.deepEqual(writes, ['core:1', 'core:2', 'acc:3'], 'asynchronous storage wr
 console.log('Session logger journal: PASS (restart, ambiguous retry, subject, identity, revision, accepted clearing, write order)');
 
 await assert.rejects(journal.saveDraft({ ...draft, weightKg: NaN }), /Invalid local/);
+await journal.saveDraft({ ...draft, weightKg: null, reps: '8', effort: '' });
+const blankLoad = createLoggerJournal(store, 'actor:7', 10); await blankLoad.ready;
+assert.equal(blankLoad.draft(30, 'core:1', 2, 1).weightKg, null, 'an unentered load never becomes performed zero');
+assert.equal(blankLoad.draft(30, 'core:1', 2, 1).reps, '8', 'reps entered before load survive restart');
 const key = 'strength-ledger:logger-journal:v1:actor:7:10';
 const damaged = JSON.parse(disk.get(key)); damaged.drafts['30'] = { ...draft, setIndex: '1' }; damaged.attempts.bad = { id: 5, signature: 'x' };
 disk.set(key, JSON.stringify(damaged));

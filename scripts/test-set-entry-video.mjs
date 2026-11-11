@@ -51,7 +51,9 @@ for(const kind of ['straight','top','bk','fc']){
  queueCore({kind,itemId:9,setIndex:2,weight:'10',reps:'5',rpe:'7',selectedVideo:video});assert.equal(pending.selectedVideo,video);
  const start=source.indexOf('    if (!pendingCoreWheelLog) return;');const end=source.indexOf('\n  }, [pendingCoreWheelLog',start);const dispatched=[];
  vm.runInNewContext(ts.transpileModule('(function(){'+source.slice(start,end)+'})()',{}).outputText,{pendingCoreWheelLog:pending,setPendingCoreWheelLog(){},requestAnimationFrame:fn=>fn(),...Object.fromEntries(['logStraightSet','logTopSet','logBackdownSet','logFullCustomSet'].map(name=>[name,(...args)=>dispatched.push(args)]))});
- assert.equal(dispatched.length,1);assert.equal(dispatched[0].at(-1),video,kind+' preserves selected video through actual dispatch');
+ assert.equal(dispatched.length,1);
+ assert.equal(dispatched[0][kind === 'fc' ? 2 : 1],video,kind+' preserves selected video through actual dispatch');
+ assert.equal(dispatched[0][kind === 'fc' ? 1 : 2],2,kind+' preserves the exact pending set index');
 }
 const accStart=source.indexOf('  const queueAccessoryWheelLog =');const accEnd=source.indexOf('  const commitAccessoryWheel',accStart);
 const queueAcc=vm.runInNewContext(ts.transpileModule(source.slice(accStart,accEnd)+'\nqueueAccessoryWheelLog;',{}).outputText,{feedbackAnalytics(){},setAccInputs(){},setPendingAccessoryLogItemId:v=>pending=v});queueAcc({itemId:10,selectedVideo:video});assert.equal(pending.selectedVideo,video);

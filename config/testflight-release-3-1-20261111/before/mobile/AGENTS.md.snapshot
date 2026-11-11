@@ -1,0 +1,136 @@
+# Strength Ledger Mobile Engineering Guidance
+
+## Active mobile runtime — owner correction, October 18, 2026
+
+The owner declared: “2.1 is obsolete now. please stop tending to it”. Target
+3.0 going forward. Do not prepare, validate or publish companion 2.1 releases
+unless the owner explicitly reopens that runtime. Preserve historical evidence
+and existing frozen-client protections; retirement does not authorize deletion
+or channel remapping. Read `docs/release/MOBILE_RUNTIME_TARGET_2026-10-18.md`.
+
+Credential handling: read canonical `../docs/release/GITHUB_KEY_ALERT_2026-10-13.md`
+before provider configuration or secret-alert work. Private sending/admin keys
+never enter Git or mobile bundles. Public Firebase client identifiers require an
+actual provider restriction review before push; a filename is not a safety check.
+
+Read the parent project's `AGENTS.md` and governing architecture before work.
+Before any TestFlight/release operation, read and enforce
+`docs/RELEASE_INVARIANTS.md`, which points to the single canonical constitution.
+Run `npm run release:verify-testflight`. Use the guarded publisher/native wrapper;
+never bypass failed gates or infer owner authorization. DEV must contain all valid
+TestFlight state. Restore missing release state into DEV in the same workflow.
+
+Explicit owner `unacceptable` means `OWNER NON-RECURRENCE DIRECTIVE`. Read the
+UNACCEPTABLE section of the canonical `docs/RELEASE_INVARIANTS.md` and canonical
+`docs/OWNER_NON_RECURRENCE_INCIDENTS.md` before addressing it: fix the failure
+class, audit equivalents, retain and deliberately failure-test permanent guards,
+record all seven closeout fields, and carry guards through releases. Known
+equivalent failures or unknown counts prohibit closure. Recurrence is also a
+release/process failure. Product decisions require owner approval; default NO.
+
+For the October 4 imagery restoration, read
+`docs/release/MOVEMENT_IMAGERY_RESTORATION_2026-10-04.md`. The owner selected the
+valid immediately-pre-October-2 imagery baseline and prohibited simulator runs.
+Keep every baseline image and the Accessory PR celebration fix. Preservation
+requires no new approval; retain historical thumbnails on disk and do not invent
+removal receipts. The guarded publisher verifies actual exported/served bytes.
+
+Accessory PR owner policy: machine records MUST NOT leak across manufacturers.
+Compare all accepted historical sets inside the same governed equipment context;
+Other is separate. This supersedes the earlier cross-brand PR scope. Machines
+recognize improvements over their own baseline; first baselines stay quiet.
+Free-weight baseline recognition remains allowed. Read canonical DEV's
+`../docs/ACCESSORY_PR_BACKEND_RELEASE.md` and the release constitution; run save,
+supersession/rebuild, replay/query/recap isolation and mobile recognition guards.
+Deploy the required server fix by validated Production Git push; verify the
+actual serving SHA and equipment-isolation policy afterward.
+
+Cable equipment owner law: brand selection finishes setup. Read canonical
+`../docs/CABLE_BRAND_EQUIPMENT.md`; run the cable API and actual-handler regressions.
+Preserve old typed cable evidence and compare it by canonical movement + brand.
+Do not apply this simplification to non-cable machines or claim shipment without
+the matching deployed backend and actual published update.
+
+Canonical Logger zero-load law: zero is valid performed load when editing a
+bodyweight set. Read `../docs/CANONICAL_LOGGER_ZERO_LOAD.md`; run both actual
+editor-handler and edit-API regressions. Preserve the same set and its immutable
+identity, reload/reopen zero correctly, and invalidate stale recognition.
+
+Canonical Logger Option E owner direction: read `docs/LOGGER_OPTION_E.md`.
+Use near-black material, a real cyan remaining-time ring, compact History and
+precise green/violet state signals. Preserve art and all canonical mutations.
+The October 5 Option E task explicitly requires actual simulator convergence
+and a second screenshot pass; its publication scope cannot cover other changes.
+
+## Canonical Mobile 3.0 Education
+
+Read `docs/MOBILE_3_EDUCATION_CANONICAL_2026-10-06.md` when changing Education.
+The role-aware provider, lessons, replay controls and contextual tips now live
+in canonical DEV. Keep completion and learned-state scoped to the canonical
+user ID; AuthContext continues to own readiness, access and mobile mode.
+Retain the automatically discovered Education policy and actual-provider
+navigation contracts, including deliberate exit-loop failure testing. Verify
+permitted consumer actions retire their tips without changing mutation guards.
+
+## Complete-request delivery
+
+Read the canonical constitution's **Complete-request Delivery Law** before work.
+Record the full request, acceptance criteria, preserved owner rules, restrictions
+and required destination. Reconcile product instructions before implementing;
+ask only about unresolved product conflicts, not already-authorized delivery.
+Account for every requested outcome and separate local tests, publication,
+verified live source/artifact and actual device observations in closeout.
+Respect explicit no-simulator instructions. Shared-backend pushes require the
+source-pinned canonical owner-policy acceptance guard, outside candidate tests.
+Never refresh protection pins merely to pass a candidate.
+
+## Mobile 3 readiness and release evidence
+
+Read `docs/release/MOBILE_3_READINESS_FIXES_2026-10-06.md` for the readiness fixes
+and the remaining human-art/native certification gaps. Explicit Draft, Canceled
+and Archived states outrank date projections; clients never grant execution
+access. Keep the unavailable-Session projection failure contract.
+
+Canonical DEV owns current source-delta receipts. A release must retain the
+original protected files and prove every owner-directed DEV addition with its
+exact before/after patch; filename exemptions and refreshed hashes are invalid.
+Keep the existing Cable backend/catalog holdback until separately reconciled.
+Run the accepted and critical suites, including their deliberate subtraction,
+hidden-source-change and visual-value/root-drift failures.
+
+`production3-preparation` is a separate 3.0.0 native preparation target. Its
+approved-art channel AND runtime switches must agree in the resolver and inline
+asset registries. Audit actual exported bytes independently on each platform;
+source approval alone cannot prove bundling. Preserve Production 2.0.2 and human
+image/crop approvals. This profile grants no build, publish or submit authority.
+
+## Native simulator candidate handoff
+
+When the owner explicitly requests a native simulator candidate, read
+`docs/release/SIMULATOR_LIVE_BACKEND_HANDOFF_2026-10-07.md` and run
+`scripts/verify-ios-simulator-handoff.py` against the installed app and fresh
+native runtime receipt before handoff. Verify embedded keychain permissions,
+actual installed candidate bundle and actual native live-backend request; a Metro
+manifest or visible login screen alone is insufficient. Leave owner takeover at
+the requested screen. This is separate from store/device release certification.
+
+## Native upload readiness
+
+Before declaring a native candidate ready, read
+`docs/release/BUILD_ARCHIVE_UPLOAD_RECOVERY_2026-10-08.md`. Run the native upload
+policy and its deliberate failure contracts, inspect the actual EAS archive stage,
+measure the compressed upload, and byte-verify every runtime asset/source input.
+Keep the entire assets tree and runtime approval manifests. Exclude Git history,
+non-runtime review masters and development proof captures only from the upload;
+never delete them. Direct Production 3 configuration enforces the upload policy.
+The owner alone starts and monitors the native build unless explicitly delegated.
+
+## Distribution screenshot delivery
+
+Match the actual App Store Connect upload slot before delivery; a physical device
+diagonal or generally supported resolution does not establish slot acceptance.
+Read `docs/release/APP_STORE_SCREENSHOTS_2026-10-09.md`. Validate every delivered
+PNG with `scripts/verify-distribution-screenshots.py` for its target slot. Retain
+the deliberate rejection of the known 1206 × 2622 / 6.5-inch mismatch. Preserve
+original captures, use the owner-required backend and fictional data, and label
+folders by exact upload slot with pixel dimensions in the file guide.

@@ -1,6 +1,6 @@
 import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import * as Haptics from 'expo-haptics';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { SLTactileOpacity as TouchableOpacity } from '@/components/ui/sl-motion';
 
@@ -28,6 +28,7 @@ export type LoggerWheelColumnConfig = {
   accessibilityValue?: (value: string) => string;
   formatValue?: (value: string) => string;
   disabled?: boolean;
+  allowUnset?: boolean;
 };
 
 function wheelGeometry(density: LoggerWheelDensity) {
@@ -59,32 +60,35 @@ function LoggerWheelColumn({ column, density, grouped, onSettle, reserveSheetLab
   const programmaticTargetIndex = useRef<number | null>(null);
   const { framePadding, rowHeight, visibleRows } = wheelGeometry(density);
   const centerPadding = rowHeight * Math.floor(visibleRows / 2);
+  const options = useMemo(() => column.allowUnset && !column.options.includes('')
+    ? ['', ...column.options] : column.options, [column.allowUnset, column.options]);
   const firstValidValue = column.options.find((option) => option !== '') || column.options[0] || '';
   const selectedValue = column.value && column.options.includes(column.value) ? column.value : firstValidValue;
-  const selectedIndex = Math.max(0, column.options.indexOf(selectedValue));
+  const selectedOption = column.allowUnset && column.value === '' ? '' : selectedValue;
+  const selectedIndex = Math.max(0, options.indexOf(selectedOption));
 
   useEffect(() => {
     if (isInteracting.current) return;
-    const index = Math.max(0, column.options.indexOf(selectedValue));
+    const index = Math.max(0, options.indexOf(selectedOption));
     requestAnimationFrame(() => {
       wheelRef.current?.scrollTo({
         y: index * rowHeight,
         animated: false,
       });
     });
-  }, [column.options, rowHeight, selectedValue]);
+  }, [options, rowHeight, selectedOption]);
 
   useEffect(() => () => {
     if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
   }, []);
 
   const updateValue = (index: number) => {
-    const next = column.options[Math.max(0, Math.min(column.options.length - 1, index))];
-    if (next != null && next !== selectedValue) column.onChange(next);
+    const next = options[Math.max(0, Math.min(options.length - 1, index))];
+    if (next != null && next !== selectedOption) column.onChange(next);
   };
 
   const settleToOffset = (offsetY: number) => {
-    const index = Math.max(0, Math.min(column.options.length - 1, Math.round(offsetY / rowHeight)));
+    const index = Math.max(0, Math.min(options.length - 1, Math.round(offsetY / rowHeight)));
     updateValue(index);
     const targetY = index * rowHeight;
     if (Math.abs(offsetY - targetY) > 1) {
@@ -103,7 +107,7 @@ function LoggerWheelColumn({ column, density, grouped, onSettle, reserveSheetLab
 
   const adjustForAccessibility = (direction: -1 | 1) => {
     if (column.disabled) return;
-    const nextIndex = Math.max(0, Math.min(column.options.length - 1, selectedIndex + direction));
+    const nextIndex = Math.max(0, Math.min(options.length - 1, selectedIndex + direction));
     if (nextIndex === selectedIndex) return;
     programmaticTargetIndex.current = nextIndex;
     updateValue(nextIndex);
@@ -111,11 +115,11 @@ function LoggerWheelColumn({ column, density, grouped, onSettle, reserveSheetLab
     onSettle();
   };
 
-  const displayedValue = (column.formatValue?.(selectedValue) ?? selectedValue) || '—';
-  const spokenValue = column.accessibilityValue?.(selectedValue)
+  const displayedValue = (column.formatValue?.(selectedOption) ?? selectedOption) || '—';
+  const spokenValue = (selectedOption === '' && column.allowUnset ? 'Not set' : column.accessibilityValue?.(selectedOption))
     ?? `${displayedValue}${column.suffix ? ` ${column.suffix}` : ''}`;
   const accessibilityActions = [
-    ...(selectedIndex < column.options.length - 1 ? [{ name: 'increment' as const }] : []),
+    ...(selectedIndex < options.length - 1 ? [{ name: 'increment' as const }] : []),
     ...(selectedIndex > 0 ? [{ name: 'decrement' as const }] : []),
   ];
 
@@ -178,20 +182,20 @@ function LoggerWheelColumn({ column, density, grouped, onSettle, reserveSheetLab
           onScrollEndDrag={(event) => settleAfterQuietDrag(event.nativeEvent.contentOffset.y)}
           onScroll={(event) => {
             if (!isInteracting.current || programmaticTargetIndex.current != null) return;
-            const index = Math.max(0, Math.min(column.options.length - 1, Math.round(event.nativeEvent.contentOffset.y / rowHeight)));
+            const index = Math.max(0, Math.min(options.length - 1, Math.round(event.nativeEvent.contentOffset.y / rowHeight)));
             updateValue(index);
           }}
           scrollEventThrottle={16}
         >
-          {column.options.map((option, index) => {
-            const selected = option === selectedValue;
+          {options.map((option, index) => {
+            const selected = option === selectedOption;
             const distance = Math.abs(index - selectedIndex);
             const display = (column.formatValue?.(option) ?? option) || '—';
             return (
               <TouchableOpacity
                 accessible={false}
                 disabled={column.disabled}
-                key={`${column.key}-${option || index}`}
+                key={`${column.key}-${index}:${option}`}
                 style={[styles.option, { height: rowHeight }]}
                 onPress={() => {
                   programmaticTargetIndex.current = index;

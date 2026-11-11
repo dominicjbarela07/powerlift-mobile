@@ -1,0 +1,163 @@
+import { approvedArtRuntimeEnabled } from '@/lib/approved-art-runtime';
+import React, { useCallback, useState } from 'react';
+import { Pressable, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Text } from '@/components/ui/sl-text';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { MovementArtworkHero } from '@/components/movement/MovementArtworkHero';
+import { resolveMovementArtworkPresentation } from '@/lib/movement-artwork-hero';
+import { LoggerPlateStackVisual } from './logger-primitives';
+import type { ActiveMovementVisualContext, MovementLoggerFocusModel } from './core-loggers';
+import type { AccessoryLastBestCue } from '@/lib/accessory-last-best';
+import { SLColors, SLFontFamilies } from '@/constants/theme';
+
+/** Lifecycle composition only; prescription, identity and write callbacks stay canonical. */
+type SessionMovementProps = {
+  title: string; index: number; expanded: boolean; complete: boolean; active?: boolean; reduceMotion?: boolean;
+  prescription?: string | null; focus?: MovementLoggerFocusModel | null;
+  visual?: ActiveMovementVisualContext | null; note?: string | null;
+  prior?: AccessoryLastBestCue | null;
+  equipment?: React.ReactNode; actions?: React.ReactNode; warmup?: React.ReactNode;
+  movementAction?: React.ReactNode; onEditPrescription?: () => void;
+  history?: React.ReactNode; timeline?: React.ReactNode; onOpen: () => void;
+};
+
+export function SessionV3Movement(props: SessionMovementProps) {
+  const { visual, expanded, complete } = props;
+  const { hero } = resolveMovementArtworkPresentation(visual?.movementArtworkInput, expanded, complete, 'session-v3-movement');
+  return <SessionV3MovementLayout {...props} artwork={hero ?
+    <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} movementDefinitionId={hero.movement_definition_id} reduceMotion={props.reduceMotion} /> : null} />;
+}
+
+/** Shared measured layout. The product wrapper above owns artwork eligibility;
+ * the private DEV reviewer supplies a clearly labelled candidate layer. */
+export function SessionV3MovementLayout({ title, index, expanded, complete, prescription, focus,
+  visual, note, prior, equipment, actions, warmup, history, timeline, onOpen, reduceMotion = false,
+  artwork, movementAction, onEditPrescription,
+}: SessionMovementProps & { artwork?: React.ReactNode }) {
+  const thumbnailPresentation = expanded ? 'muscle-focus' : 'movement';
+  const [artworkEnd, setArtworkEnd] = useState(0);
+  // The first detail row is the visual endpoint: manufacturer for machines,
+  // history/picker context for other lifts. Its measured middle puts the end
+  // of the fade at the line while the visible photograph recedes just above it.
+  const onArtworkBoundaryLayout = useCallback((event: LayoutChangeEvent) => {
+    const { y, height } = event.nativeEvent.layout;
+    // Expanded history must not pull the photograph down through its records.
+    const end = y + Math.min(height / 2, 52);
+    setArtworkEnd(previous => Math.abs(previous - end) < .5 ? previous : end);
+  }, []);
+  if (!expanded) return <Pressable accessibilityRole="button" accessibilityLabel={`Expand ${title}`} onPress={onOpen} style={({ pressed }) => [s.row, pressed && s.pressed]}>
+    <Text style={[s.index, complete && s.success]}>{complete ? '✓' : String(index).padStart(2, '0')}</Text>
+    <CanonicalMovementArtwork surface="session-v3-movement" requireHumanApproval movement={visual?.movementArtworkInput} accessoryPresentation={thumbnailPresentation} size={approvedArtRuntimeEnabled() ? 64 : 42} />
+    <View style={s.copy}><Text numberOfLines={0} style={s.rowTitle}>{title}</Text><Text style={s.detail}>{prescription}</Text></View>
+    <Ionicons name="chevron-forward" color={SLColors.textMuted} size={17} />
+  </Pressable>;
+
+  const stacks = visual?.plateStack?.endpoints || [];
+  const load = focus?.currentSetLoadLabel || '';
+  const setPosition = focus?.currentSetPositionLabel?.replace(/^Set (\d+) · SET \1 OF (\d+)$/, 'Set $1 of $2');
+  const loadParts = load.match(/^(.*?)\s*(kg|lb)$/i);
+  const progress = prior || visual?.progress;
+  const inlineAction = React.isValidElement<{ onPress?: () => void; accessibilityLabel?: string }>(movementAction)
+    ? movementAction.props : null;
+  return <View style={s.workspace}>
+    {artwork ? <View pointerEvents="none" style={[s.artworkStage, { height: Math.max(0, artworkEnd + 14) }]}>
+      {artwork}
+    </View> : null}
+    <View style={s.activeHeader}>
+    <View style={s.heading}>
+      <CanonicalMovementArtwork surface="session-v3-movement" requireHumanApproval movement={visual?.movementArtworkInput} accessoryPresentation="muscle-focus" size={approvedArtRuntimeEnabled() ? 68 : 48} />
+      <View style={s.copy}>
+        <Text numberOfLines={0} style={s.title} accessibilityRole="button" accessibilityLabel={title}
+          accessibilityActions={[{ name: 'activate', label: `Collapse ${title}` },
+            ...(inlineAction?.onPress ? [{ name: 'swap', label: inlineAction.accessibilityLabel || 'Swap movement' }] : [])]}
+          onAccessibilityAction={({ nativeEvent }) => {
+            if (nativeEvent.actionName === 'swap') inlineAction?.onPress?.();
+            else if (nativeEvent.actionName === 'activate') onOpen();
+          }}>
+          <Text style={s.title} accessible accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen}>{title}</Text>
+          {movementAction ? '\u00a0 ' : null}{movementAction}
+        </Text>
+        <View style={s.positionRow}>
+          <Text style={[s.eyebrow, s.positionLabel]}>{complete ? 'MOVEMENT COMPLETE' : setPosition || prescription}</Text>
+          {complete && onEditPrescription ? <PrescriptionEditIcon title={title} onPress={onEditPrescription} /> : null}
+        </View>
+      </View>
+    </View>
+    {!complete && focus ? <>
+      <View style={[s.instrument, stacks.length > 1 && s.rangeInstrument]}>
+        <View style={s.loadCopy}>
+          <View style={s.prescriptionHeading}>
+            <Text style={[s.eyebrow, s.prescriptionLabel]}>{load ? 'TARGET LOAD' : 'PRESCRIBED'}</Text>
+            {onEditPrescription ? <PrescriptionEditIcon title={title} onPress={onEditPrescription} /> : null}
+          </View>
+          <Text adjustsFontSizeToFit minimumFontScale={0.7} numberOfLines={1} style={[s.load, (stacks.length > 1 || load.length > 10) && s.rangeLoad]}>{loadParts ? loadParts[1] : load || focus.currentSetRepsLabel || '—'}{loadParts ? <Text style={s.loadUnit}> {loadParts[2]}</Text> : null}</Text>
+          <Text style={s.target}>{[load ? focus.currentSetRepsLabel : null, focus.currentSetEffortLabel].filter(Boolean).join(' · ')}</Text>
+        </View>
+        {stacks.length ? <View style={[s.stackStage, stacks.length > 1 && s.rangeStage]}>
+          {stacks.map((endpoint, i) => <View key={i} style={stacks.length > 1 ? s.rangeEndpoint : s.singleEndpoint}>
+            {endpoint.plateStack ? <LoggerPlateStackVisual plateStack={endpoint.plateStack} style={[s.stack, stacks.length > 1 && s.rangeStack]} /> : <Text style={s.detail}>Stack unavailable</Text>}
+            {stacks.length > 1 ? <Text style={s.stackLabel}>{endpoint.displayLabel}</Text> : null}
+          </View>)}
+        </View> : null}
+      </View>
+      {visual?.physicalSetup ? <Text style={s.setup}>{visual.physicalSetup}</Text> : null}
+    </> : null}
+    </View>
+    {equipment ? <View onLayout={onArtworkBoundaryLayout}>{equipment}</View> : null}
+    {note ? <Text style={s.note}>{note}</Text> : null}
+    <View onLayout={!equipment ? onArtworkBoundaryLayout : undefined}>
+    {history || (progress ? <Pressable accessibilityRole="button" accessibilityLabel={`View ${title} movement history`} onPress={focus?.onViewHistory} style={s.evidence}>
+      <View style={s.evidenceHeader}><Text style={s.evidenceLabel}>{prior?.kind === 'last_best' ? 'LAST COMPARABLE' : progress.eyebrow}</Text><Text style={s.detail}>{progress.supporting}</Text></View>
+      <Text style={s.evidenceValue}>{progress.primary}</Text>
+      <View style={s.historyAction}><Text style={s.historyLink}>Movement history</Text><Ionicons name="arrow-forward" size={15} color="#aadce5" /></View>
+    </Pressable> : focus?.onViewHistory ? <Pressable onPress={focus.onViewHistory} accessibilityRole="button" style={s.emptyHistory}><View style={s.historyAction}><Text style={s.historyLink}>Movement history</Text><Ionicons name="arrow-forward" size={15} color="#aadce5" /></View></Pressable> : null)}
+    </View>
+    {actions ? <View style={s.tools}>{actions}</View> : null}
+    {timeline}
+    {warmup}
+  </View>;
+}
+
+function PrescriptionEditIcon({ title, onPress }: { title: string; onPress: () => void }) {
+  return <Pressable accessibilityRole="button" accessibilityLabel={`Edit Prescription for ${title}`}
+    accessibilityHint="Change this Session’s Sets, reps and effort target" hitSlop={8}
+    onPress={onPress} style={({ pressed }) => [s.editPrescription, pressed && s.controlPressed]}>
+    <Ionicons name="create-outline" size={20} color="#c8a6ff" />
+  </Pressable>;
+}
+
+const s = StyleSheet.create({
+  row: { minHeight: 68, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#2b2632', flexDirection: 'row', alignItems: 'center', gap: 10 },
+  pressed: { backgroundColor: '#17101f' }, index: { color: '#8e819f', fontSize: 12, width: 21 }, success: { color: '#88deb5' },
+  copy: { flex: 1, minWidth: 0 }, rowTitle: { color: '#f8f6fb', fontFamily: SLFontFamilies.sansSemiBold, fontSize: 16 },
+  detail: { color: '#b7b0c2', fontSize: 12, lineHeight: 17, marginTop: 3 },
+  activeHeader: { position: 'relative' },
+  // Bleed through the Session's 20 px content gutters; foreground keeps its inset.
+  artworkStage: { position: 'absolute', top: -14, left: -20, right: -20 },
+  workspace: { paddingVertical: 8 }, heading: { flexDirection: 'row', gap: 12, alignItems: 'center', paddingVertical: 8 },
+  title: { color: '#faf7ff', fontFamily: SLFontFamilies.sansBold, fontSize: 26, lineHeight: 31 },
+  eyebrow: { color: '#b391ec', fontFamily: SLFontFamilies.sansBold, fontSize: 10, letterSpacing: 1.2, marginTop: 7 },
+  positionRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 5, flexWrap: 'wrap' },
+  positionLabel: { marginTop: 0 },
+  prescriptionHeading: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 28 },
+  prescriptionLabel: { marginTop: 0 },
+  editPrescription: { width: 30, height: 28, alignItems: 'center', justifyContent: 'center' },
+  controlPressed: { opacity: 0.6 },
+  instrument: { minHeight: 145, flexDirection: 'row', alignItems: 'center' },
+  rangeInstrument: { minHeight: 125 },
+  loadCopy: { width: '53%', zIndex: 1 }, load: { color: '#f7f4ff', fontFamily: SLFontFamilies.sansBold, fontSize: 53, letterSpacing: -1.5, marginVertical: 4 },
+  loadUnit: { fontSize: 18, letterSpacing: 0 },
+  rangeLoad: { fontSize: 34, letterSpacing: -0.8 }, target: { color: '#e6deee', fontSize: 17, fontFamily: SLFontFamilies.sansSemiBold },
+  stackStage: { position: 'absolute', right: -8, top: -4, bottom: 0, width: '55%', justifyContent: 'center' },
+  rangeStage: { width: '51%', flexDirection: 'row', alignItems: 'center', right: -6 },
+  singleEndpoint: { width: '100%', height: 155 }, rangeEndpoint: { width: '54%', marginHorizontal: -3 },
+  stack: { width: '100%', height: 155 }, rangeStack: { height: 122 }, stackLabel: { fontSize: 11, color: '#c4bbd3', textAlign: 'center' },
+  setup: { color: '#c1b8cb', fontSize: 11, lineHeight: 14, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: '#302936' },
+  note: { color: '#d6cfdf', borderLeftWidth: 2, borderLeftColor: '#a177e8', paddingLeft: 10, marginVertical: 12, fontSize: 13, lineHeight: 19 },
+  evidence: { marginTop: 12, backgroundColor: '#0c141a', borderWidth: 1, borderColor: '#2b3b42', padding: 13, borderRadius: 14 },
+  evidenceHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, evidenceLabel: { fontSize: 10, color: '#b4dbe0' },
+  evidenceValue: { color: '#f0edf7', fontFamily: SLFontFamilies.sansSemiBold, fontSize: 20, marginVertical: 8 },
+  historyAction: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  historyLink: { color: '#aadce5', fontSize: 13 }, emptyHistory: { paddingVertical: 14 }, tools: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginVertical: 4 },
+});

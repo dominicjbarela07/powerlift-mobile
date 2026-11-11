@@ -398,12 +398,6 @@
       "reason": "shared adapter plus explicit top drag region"
     },
     {
-      "file": "app/(tabs)/athlete-dashboard.tsx",
-      "index": 0,
-      "presentation": "excluded-non-bottom-modal",
-      "reason": "centered individual Today welcome dialog; obsolete 2.0 patch-note presentation replaced by role-aware 3.0 Education"
-    },
-    {
       "file": "app/(tabs)/coach-calendar.tsx",
       "index": 0,
       "presentation": "legacy-bottom-sheet",
@@ -414,6 +408,30 @@
       "index": 0,
       "presentation": "excluded-non-bottom-modal",
       "reason": "full-screen local clip preview before Set submission; native playback controls, explicit return, no bottom-sheet drag surface"
+    },
+    {
+      "file": "components/movement/SelfCoachExercisePicker.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "full-screen Self-Coach exercise search using the canonical keyboard viewport"
+    },
+    {
+      "file": "components/ledger-study/LedgerDesignStudy.tsx",
+      "index": 0,
+      "presentation": "legacy-bottom-sheet",
+      "reason": "existing DEV Ledger study detail panel with canonical chrome-only sheet drag authority"
+    },
+    {
+      "file": "components/ledger/LedgerExperience.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "native pageSheet navigation for the existing Ledger source evidence stack"
+    },
+    {
+      "file": "components/ledger/SelfCoachLedgerExperience.tsx",
+      "index": 0,
+      "presentation": "excluded-non-bottom-modal",
+      "reason": "native pageSheet navigation for Self-Coach original evidence with a retained archive return"
     }
   ],
   "inlineBottomPanels": [

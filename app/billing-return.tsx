@@ -8,19 +8,28 @@ import { SLButton } from '@/components/ui/sl-button';
 import { SLColors, SLTypography } from '@/constants/theme';
 
 export default function BillingReturn() {
-  const { authReady, user, refreshAccountState } = useAuth();
+  const { authReady, user, applyAccountStatePayload, refreshAccountState } = useAuth();
   const router = useRouter();
   const [waiting, setWaiting] = useState(true);
   useEffect(() => {
     if (!authReady) return;
     let live = true;
     void (async () => {
-      try { if (user) await checkMobileBillingStatus(); } catch { /* setup screen provides recovery */ }
-      try { if (user) await refreshAccountState(); } catch { /* retain current account */ }
+      let reconciled = false;
+      try {
+        if (user) {
+          const billing = await checkMobileBillingStatus();
+          if (billing.ok && billing.json?.account_state) {
+            await applyAccountStatePayload(billing.json);
+            reconciled = true;
+          }
+        }
+      } catch { /* setup screen provides recovery */ }
+      try { if (user && !reconciled) await refreshAccountState(); } catch { /* retain current account */ }
       if (live) { setWaiting(false); router.replace(user ? '/' : '/login'); }
     })();
     return () => { live = false; };
-  }, [authReady, user?.id, refreshAccountState, router]);
+  }, [authReady, user?.id, applyAccountStatePayload, refreshAccountState, router]);
   return <View style={{ flex: 1, justifyContent: 'center', padding: 28, gap: 18 }}>
     {waiting && <ActivityIndicator color={SLColors.accentViolet} />}
     <Text style={{ color: SLColors.textStrong, fontSize: SLTypography.title.fontSize }}>Checking your membership</Text>

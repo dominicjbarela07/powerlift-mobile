@@ -30,7 +30,7 @@ assert.match(wheel, /LOGGER_WHEEL_SHEET_VISIBLE_ROWS = 5/);
 assert.match(wheel, /LOGGER_WHEEL_SHEET_LABEL_HEIGHT = 28/);
 assert.match(wheel, /LoggerWheelDensity = 'standard' \| 'compact' \| 'sheet'/, 'the shared primitive owns a purpose-built sheet density without duplicating wheel behavior');
 assert.match(wheel, /firstValidValue = column\.options\.find\(\(option\) => option !== ''\)[\s\S]*selectedValue = column\.value && column\.options\.includes\(column\.value\) \? column\.value : firstValidValue/);
-assert.match(wheel, /next != null && next !== selectedValue/, 'programmatic alignment must not dirty an unset field');
+assert.match(wheel, /next != null && next !== selectedOption/, 'programmatic alignment must not dirty an unset field');
 assert.match(wheel, /decelerationRate="normal"/);
 assert.match(wheel, /onScroll=\{\(event\) => \{[\s\S]*updateValue\(index\)/, 'draft callbacks must update live while a wheel moves');
 assert.match(wheel, /onMomentumScrollEnd[\s\S]*settleToOffset/);

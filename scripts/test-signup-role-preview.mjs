@@ -16,6 +16,7 @@ function load(source, modules) {
   return context.exports;
 }
 const paths = load(read('lib/signup-paths.ts'), {});
+const draft = load(read('lib/onboarding-draft.ts'), {});
 function runtime(os = 'android') {
   let states = [];
   const componentStates = new Map(), effects = [], back = new Map();
@@ -40,6 +41,8 @@ function runtime(os = 'android') {
     SLTypography: new Proxy({}, { get: () => ({ fontSize: 14, lineHeight: 20 }) }) };
   const modules = {
     react: React,
+    '@react-native-async-storage/async-storage': { getItem: async () => null, setItem: async () => {}, removeItem: async () => {} },
+    '@/lib/onboarding-draft': draft,
     'react-native': { View: 'View', Pressable: 'Pressable', Image, Platform: { OS: os },
       StyleSheet: { create: x => x, absoluteFill: {}, hairlineWidth: 0.5 }, Linking: {},
       Keyboard: { dismiss: () => dismissed++ }, useWindowDimensions: () => ({ width: 375, height: 667, fontScale: 2 }),
@@ -78,6 +81,8 @@ async function exerciseLogin(source = read('app/login.tsx')) {
     const component = load(source, r.modules).default;
     const render = () => r.render(component);
     let tree = render();
+    await new Promise(setImmediate);
+    tree = render();
     assert.equal(tree.type, 'SignupWelcome', 'Signup must begin with the role experience, including the signed-out entry');
     tree.props.onSignIn(); tree = render();
     assert.equal(flatten(tree).filter(node => node.type === 'Input').length, 2, 'Existing email sign-in stays available');
@@ -136,8 +141,9 @@ async function exerciseLogin(source = read('app/login.tsx')) {
     assert.equal(requests[0].role, role); assert.equal(requests[0].email, 'example@onboarding.test');
     assert.equal(requests[0].access_code, role === 'coach' ? 'FICTIONAL-CODE' : undefined);
     assert.equal(routes.length, 0); assert.equal(logins.length, 0, 'Presentation must not grant access after server rejection');
-    response = { ok: true, token: 'fictional-token', role: role === 'athlete' ? 'athlete' : 'coach', email: 'example@onboarding.test', account_state: 'EMAIL_VERIFICATION_REQUIRED', email_verified: false, verification_required: true, can_access_product: false };
+    response = { ok: true, id: 77, user_id: 77, token: 'fictional-token', role: role === 'athlete' ? 'athlete' : 'coach', email: 'example@onboarding.test', account_state: 'EMAIL_VERIFICATION_REQUIRED', email_verified: false, verification_required: true, can_access_product: false };
     await submit().props.onPress();
+    assert.equal(logins[0][0].user.id, 77, 'Pre-ready identity comes from authenticated registration');
     assert.equal(logins.length, 1); assert.equal(logins[0][0].user.account_state, 'EMAIL_VERIFICATION_REQUIRED');
     assert.equal(logins[0][0].user.can_access_product, false);
     assert.deepEqual(routes, ['/'], 'Successful registration must return to the canonical account-state resolver');

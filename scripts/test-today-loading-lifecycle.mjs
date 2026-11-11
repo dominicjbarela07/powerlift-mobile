@@ -65,6 +65,9 @@ function harness({ mode = 'athlete', broken = false, storagePending = null, igno
     '@/components/ui/floating-control-coordinator': { FloatingControlCoordinator: 'Coordinator' },
     '@/components/AthleteCheckInExperience': { TodayCheckInSurface: 'CoachCheckIn', TodaySubmittedCheckIn: 'SubmittedCheckIn' },
     '@/components/home/AthleteHomeV3': { AthleteHomeV3: 'Home' },
+    '@/components/home/SelfCoachTrain': { SelfCoachTrain: 'SelfCoachTrain' },
+    '@/lib/self-coach-workouts': { reuseSelfCoachWorkout: () => { throw Error('Unexpected reuse during Today lifecycle check'); } },
+    '@/components/onboarding/OnboardingSupport': { OnboardingSupport: 'Support' },
     '@/components/workout-logger/readiness-modal': { ReadinessModal: 'Readiness' },
     '@/lib/motion': { useSLReducedMotion: () => true },
     '@/lib/mobileMovementNames': { simplifyMobileMovementName: name => name },
@@ -127,8 +130,11 @@ async function coldResume(h) {
   assert.ok(h.find('ActivityIndicator'), 'cancelled first request must leave replacement loading, never Today unavailable');
   assert.equal(h.find('Button'), undefined, 'a cancelled request is not a failure requiring Retry');
   h.state.calls[1].resolve(response('Fresh after resume')); await h.flush();
-  assert.equal(h.find('Home').props.today.athlete.name, 'Fresh after resume');
-  assert.equal(h.find('Home').props.preferredUnits, 'lb', 'loading recovery must retain authenticated display-unit preferences');
+  const loaded = h.find('Home') || h.find('SelfCoachTrain');
+  assert.ok(loaded, 'both athlete and Self-Coach recover into their current training surface');
+  if (h.find('Home')) assert.equal(loaded.props.today.athlete.name, 'Fresh after resume');
+  else assert.equal(loaded.props.date, '2026-10-30');
+  assert.equal(loaded.props.preferredUnits, 'lb', 'loading recovery must retain authenticated display-unit preferences');
 }
 
 for (const mode of ['athlete', 'individual']) await coldResume(harness({ mode }));

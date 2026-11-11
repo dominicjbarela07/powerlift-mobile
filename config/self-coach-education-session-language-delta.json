@@ -1,0 +1,38 @@
+{
+  "path": "components/education/SelfCoachEducationOpening.tsx",
+  "ownerInstruction": "I don't work out. I train. So these are training sessions, not workouts. That is a hard rule for Strength Ledger.",
+  "beforeSha256": "7ed982184b8e265a954d0d434839fa85c988c2d982e69e036edcf7e3265d0fcc",
+  "afterSha256": "29e6070e1f4edcbab408076e20165ce546544598ac21a147945d711fbff23b6b",
+  "changes": [
+    {
+      "before": "Tap Start workout in Train. Search for an exercise, tap Add, then enter your weight and reps. Your first workout can start right here.",
+      "after": "Tap Start session in Train. Search for an exercise, tap Add, then enter your weight and reps.",
+      "count": 1
+    },
+    {
+      "before": "EXAMPLE · YOUR FIRST WORKOUT",
+      "after": "EXAMPLE · YOUR FIRST SESSION",
+      "count": 1
+    },
+    {
+      "before": "YOUR WORKOUT",
+      "after": "YOUR SESSION",
+      "count": 1
+    },
+    {
+      "before": "Finish saves the workout",
+      "after": "Finish saves the session",
+      "count": 1
+    },
+    {
+      "before": "original workouts",
+      "after": "original sessions",
+      "count": 1
+    },
+    {
+      "before": "Start workout",
+      "after": "Start session",
+      "count": 2
+    }
+  ]
+}

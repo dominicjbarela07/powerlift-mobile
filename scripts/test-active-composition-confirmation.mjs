@@ -29,6 +29,7 @@ function harness() {
     '@/components/ui/sl-confirmation-modal': { SLConfirmationModal: 'Confirmation' },
     '@/components/sheets/StrengthLedgerBottomSheet': { StrengthLedgerBottomSheet: 'Sheet' },
     '@/components/movement/GovernedAccessoryPickerModal': {},
+    '@/components/movement/SelfCoachExercisePicker': { SelfCoachExercisePicker: 'SelfCoachExercisePicker' },
     '@/components/coach-mobile/SessionEditingWorkspace': {},
     '@/lib/active-session-composition': {},
     '@/lib/governed-movement-classes': { governedCoreChoices: () => [] },

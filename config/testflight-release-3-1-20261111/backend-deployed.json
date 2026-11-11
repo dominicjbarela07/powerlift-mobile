@@ -1,0 +1,31 @@
+{
+  "result": "PASS",
+  "servingSourceSha": "031337cee243fa5bd56121338023416c4f1a2007",
+  "verifiedAt": "2026-11-11T23:23:16.059839+00:00",
+  "health": {
+    "lower_rep_thresholds_derived_from_performed_sets": true,
+    "machine_first_baseline_recognized": false,
+    "manufacturers_isolated": true,
+    "migration_revisions": [
+      "f5b7d9e1a3c5"
+    ],
+    "minimum_delivery_client_version": "2.1.0",
+    "other_is_separate_equipment_context": true,
+    "policy_version": "accessory-rep-chain-equipment-isolated-v4",
+    "pr_comparison_scope": "canonical_movement_exact_equipment",
+    "ready": true,
+    "rep_threshold_policy": "at-least-completed-reps-canonical-kg-v1",
+    "schema_fingerprint": "1b6cc126eae7e5f1bd77a57a9043cff5cbd2f6bb2bc6283c31a12552d0a92eba",
+    "source_sha": "031337cee243fa5bd56121338023416c4f1a2007",
+    "synthetic_lower_rep_recognitions": false
+  },
+  "sharedBackendGatePath": "/Users/dominic/powerlifting_app/.git/release-receipts/shared-backend-031337cee243fa5bd56121338023416c4f1a2007.json",
+  "localContracts": [
+    "Self-Coach Plan and reuse 83 tests",
+    "identity and account compatibility 69 tests",
+    "Cable brand-only API 3 tests",
+    "actual Cable equipment handlers",
+    "independent frozen iOS/Android parity and deliberate corruption rejection"
+  ],
+  "liveQualification": "Healthy serving SHA and versioned authenticated account-state responses. QA subscription has ended, so product-access paths are separately validated through actual service/handler regression fixtures."
+}

@@ -38,7 +38,9 @@ function loadKg(
   evidence: SetLoggerLoadEvidence | null | undefined,
   allowZeroLoad: boolean,
 ): number | null {
-  const value = Number(evidence?.actual_weight_kg ?? evidence?.weight_kg);
+  const raw = evidence?.actual_weight_kg ?? evidence?.weight_kg;
+  if (raw == null) return null;
+  const value = Number(raw);
   if (!Number.isFinite(value)) return null;
   if (value > 0 || (allowZeroLoad && value === 0)) return value;
   return null;
@@ -125,7 +127,7 @@ export function resolveSetLoggerLoadDefault({
     });
   }
 
-  const prescription = Number(prescribedWeightKg);
+  const prescription = prescribedWeightKg == null ? NaN : Number(prescribedWeightKg);
   const hasPrescription = Number.isFinite(prescription)
     && (prescription > 0 || (allowZeroLoad && prescription === 0));
   if (preferPrescriptionForStageTransition && hasPrescription) {

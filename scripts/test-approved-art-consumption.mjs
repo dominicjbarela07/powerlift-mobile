@@ -25,14 +25,15 @@ for (const [family, expected] of [['canonical_bodyweight_accessories',103],['can
 }
 for(const runtime of [{dev:true,channel:''},{dev:false,channel:'testflight'}]) {
 let currentPolicy=policy;
-let measuredArtworkEnd=0;
+const measuredHeights=[0,0,0];
+let numericStateSlot=0;
 const NativeImage=Object.assign(function Image(){},{resolveAssetSource:source=>{
  const png=fs.readFileSync(source.replace('@/', ''));
  return {width:png.readUInt32BE(16),height:png.readUInt32BE(20)};
 }});
 const react={isValidElement:x=>Boolean(x && typeof x==='object' && 'type' in x && x.props),cloneElement:(x,p)=>({...x,props:{...x.props,...p}}),createElement:(type,props,...children)=>typeof type==='function' && ['SessionV3MovementLayout','MovementArtworkHeroLayer'].includes(type.name)
- ? type({...props,children}) : ({type:type===NativeImage?'Image':type,props:{...props,children}}),useEffect:callback=>callback(),useState:x=>x===0?[measuredArtworkEnd,update=>{measuredArtworkEnd=typeof update==='function'?update(measuredArtworkEnd):update;}]:[x?.width===0&&x?.height===0?{width:393,height:250}:x,()=>{}],useCallback:f=>f,memo:f=>f};
-const mocks={react,'react-native':{View:'View',Image:NativeImage,Pressable:'Pressable',ActivityIndicator:'ActivityIndicator',StyleSheet:{create:x=>x,hairlineWidth:1}},
+ ? type({...props,children}) : ({type:type===NativeImage?'Image':type,props:{...props,children}}),useEffect:callback=>callback(),useState:x=>{if(x===0){const slot=numericStateSlot++%3;return [measuredHeights[slot],update=>{measuredHeights[slot]=typeof update==='function'?update(measuredHeights[slot]):update;}];}return [x?.width===0&&x?.height===0?{width:393,height:250}:x,()=>{}];},useCallback:f=>f,memo:f=>f};
+const mocks={react,'expo-asset':{Asset:{fromModule:NativeImage.resolveAssetSource}},'react-native':{useWindowDimensions:()=>({width:393,height:852}),View:'View',Image:NativeImage,Pressable:'Pressable',ActivityIndicator:'ActivityIndicator',StyleSheet:{create:x=>x,hairlineWidth:1}},
  '@expo/vector-icons':{Ionicons:'Ionicons'},'expo-image':{Image:'ExpoImage'},'expo-linear-gradient':{LinearGradient:'LinearGradient'},'@/components/ui/sl-text':{Text:'Text'},
  '@/constants/theme':{SLColors:{},SLRadius:{lg:18},SLFontFamilies:{}},
  '@/lib/canonical-movement-artwork':identity,
@@ -59,23 +60,51 @@ const {CanonicalMovementArtwork:thumbnail}=load('components/movement/CanonicalMo
 const {SessionV3Movement:single}=load('components/workout-logger/session-v3-movement.tsx');
 const {SupersetRoundWorkspace:superset}=load('components/workout-logger/superset-round-workspace.tsx');
 const nodes=(tree,type)=>{const out=[];function walk(n){if(!n||typeof n!=='object')return;if(Array.isArray(n)){n.forEach(walk);return;}if(n.type===type)out.push(n);walk(n.props?.children);}walk(tree);return out;};
+const assertBackgroundSpan=(layer,key)=>{
+ const raster=nodes(layer,'ExpoImage')[0];assert.ok(raster,'real raster paints');
+ const frame=Object.assign({},...raster.props.style);
+ assert.ok(frame.width >= 393 * .82 - 1e-7,
+  'actual atmospheric raster must command the movement header');
+ const framing = art.movementAtmosphereFraming(key);
+ const actionTop = frame.top + frame.height * framing.top / framing.sourceHeight;
+ assert.ok(actionTop >= 0 && actionTop <= 20, 'actual renderer removes individually measured empty source margin');
+};
 const subject=id=>{const core=coreCatalog.find(row=>row.id===id);if(core)return identity.canonicalArtworkInputFromDefinition(core);const row=identity.CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id] || ({91:{key:'accessory_machine_shoulder_press',primary:'front_delts'},999999:{key:'fixture_unapproved_accessory',primary:'side_delts'}})[id];return {identity_type:'accessory',movement_definition_id:id,key:row.key,primary_muscle_group:row.primary};};
-const renderSingle=(id,expanded,active)=>single({title:'Deliberately unrelated label',index:1,expanded,complete:false,active,onOpen:()=>{},visual:{movementArtworkInput:subject(id)},focus:{currentSetRepsLabel:'6–8 reps',currentSetEffortLabel:'1 RIR'}});
+const renderSingle=(id,expanded,active,complete=false)=>single({title:'Deliberately unrelated label',index:1,expanded,complete,active,onOpen:()=>{},visual:{movementArtworkInput:subject(id)},focus:{currentSetRepsLabel:'6–8 reps',currentSetEffortLabel:'1 RIR'}});
 const renderGroup=(ids,selected,phase)=>superset({groupLabel:'A',expanded:selected!=null,selectedItemId:selected,phase,canLog:phase==='active',swapActionForItem:()=>null,model:{status:'pending',roundCount:1,currentRoundIndex:1,completedRounds:0,rounds:[{index:1,entries:ids.map((id,position)=>({itemId:id,position:position+1}))}],movements:ids.map((id,position)=>({item:{id,title:'Unrelated label',prescription:'1×6–8',movementArtwork:subject(id)},position:position+1,requiredSets:1,loggedRequiredSets:0,nextSetIndex:1,complete:false}))}});
 for(const equipment of [null,{type:'View',props:{children:['Manufacturer']}}]) {
+ measuredHeights.fill(0);
  const props={title:'Boundary probe',index:1,expanded:true,complete:false,onOpen:()=>{},equipment,history:'Movement history',visual:{movementArtworkInput:subject(49)}};
  const render=()=>single(props);
  const anchors=nodes(render(),'View').filter(n=>n.props.onLayout);
- assert.equal(anchors.length,1,'manufacturer owns the endpoint; otherwise the next detail row owns it');
- anchors[0].props.onLayout({nativeEvent:{layout:{y:260,height:100}}});
- const stage=()=>nodes(render(),'View').find(n=>n.props.pointerEvents==='none');
- assert.equal(stage().props.style[0].top+stage().props.style[1].height,310,'fade reaches the measured line after the prescription');
- anchors[0].props.onLayout({nativeEvent:{layout:{y:260,height:400}}});
- assert.equal(stage().props.style[0].top+stage().props.style[1].height,312,'expanded history cannot drag art into historical records');
- assert.ok(stage().props.style[0].left<0 && stage().props.style[0].right<0,'background extends through the foreground content gutters');
- assert.equal(stage().props.pointerEvents,'none','background never intercepts equipment/picker interaction');
+ assert.equal(anchors.length,2,'the whole header owns the background; caption measurement only protects foreground content');
+ anchors[1].props.onLayout({nativeEvent:{layout:{height:90}}});
+ anchors[0].props.onLayout({nativeEvent:{layout:{width:353,height:374}}});
+ const stage=()=>Object.assign({},...nodes(render(),'View').find(n=>n.props.pointerEvents==='none').props.style);
+ assert.equal(stage().top,0,'background must extend behind the movement title');
+ assert.equal(stage().height,374,'background commands the complete header, rather than a below-title slot');
+ anchors[0].props.onLayout({nativeEvent:{layout:{width:280,height:310}}});
+ assert.equal(stage().top,0);
+ assert.equal(stage().height,310,'actual measured width/height support nested/narrow phone surfaces');
+ assert.ok(stage().left<0 && stage().right<0,'background extends through content gutters');
+ assert.equal(nodes(render(),'View').find(n=>n.props.pointerEvents==='none').props.pointerEvents,'none','background never intercepts equipment/picker interaction');
+ const caption=nodes(render(),'View').find(n=>Array.isArray(n.props.style)&&n.props.style.some(style=>style?.bottom===12));
+ assert.ok(caption,'full-width title overlays the lower atmosphere, clear of upright faces');
 }
-measuredArtworkEnd=0;
+measuredHeights.fill(0);
+for(const count of [1,2]) {
+ const endpoints=Array.from({length:count},(_,index)=>({displayLabel:`${135+index*10} lb`,plateStack:{fixture:index}}));
+ const tree=single({title:'Competition Bench',index:1,expanded:true,complete:false,onOpen:()=>{},
+  visual:{movementArtworkInput:subject(2),plateStack:{mode:count===1?'single':'range',endpoints}},
+  focus:{currentSetLoadLabel:count===1?'135 lb':'135–145 lb',currentSetRepsLabel:'8 reps'}});
+ const column=nodes(tree,'View').find(node=>node.props.style?.width==='53%');
+ const plates=nodes(column,'LoggerPlateStackVisual');
+ assert.equal(plates.length,count,'all prescribed load endpoints remain in the foreground load column');
+ plates.forEach((plate,index)=>assert.equal(plate.props.plateStack,endpoints[index].plateStack,'physical setup identity is preserved'));
+ const stage=nodes(column,'View').find(node=>Array.isArray(node.props.style)&&node.props.style[0]?.width===130);
+ assert.ok(stage&&!stage.props.style[0].position,'load reference no longer floats over the lifter’s face');
+}
+measuredHeights.fill(0);
 function assertCue(tree,exact,key){
  const props=nodes(tree,'CanonicalMovementArtwork')[0].props;
  const resolution=identity.resolveCanonicalMovementArtwork(props.movement), rendered=thumbnail(props);
@@ -106,6 +135,7 @@ for(const receipt of policy.approved_exact_artwork){
  assert.equal(raster.props.source,asset.source);assert.equal(raster.props.contentFit,'contain');assert.equal(raster.props.transition,0);
  const frame=Object.assign({},...raster.props.style),dimensions=NativeImage.resolveAssetSource(asset.source);
  assert.ok(Math.abs(frame.width/frame.height-dimensions.width/dimensions.height)<1e-9,'actual hero respects PNG aspect ratio');
+ assertBackgroundSpan(layer,key);
  const canvasFades=nodes(layer,'LinearGradient').slice(-2);
  assert.ok(frame.opacity>0 && frame.opacity<1,'artwork sits below foreground contrast');
  assert.equal(canvasFades[1].props.locations[0],0);
@@ -113,8 +143,8 @@ for(const receipt of policy.approved_exact_artwork){
  assert.ok(!canvasFades[0].props.colors.slice(1,-1).some(color=>color.endsWith(',1)')),'the prescription side is shaded, never hidden behind an opaque panel');
  for(const active of [false,true]){
   const compact=renderSingle(id,false,active);assertCue(compact,true,key);assert.equal(nodes(compact,'MovementArtworkHero').length,0);
-  for(let remount=0;remount<2;remount++){
-   const detail=renderSingle(id,true,active);assertCue(detail,false,key);const hero=nodes(detail,'MovementArtworkHero');assert.equal(hero.length,1);assert.equal(hero[0].props.artworkKey,key);assert.equal(hero[0].props.receiptId,receipt.candidate_id);
+  for(const complete of [false,true])for(let remount=0;remount<2;remount++){
+   const detail=renderSingle(id,true,active,complete);assertCue(detail,false,key);const hero=nodes(detail,'MovementArtworkHero');assert.equal(hero.length,1);assert.equal(hero[0].props.artworkKey,key);assert.equal(hero[0].props.receiptId,receipt.candidate_id);
   }
  }
  for(const phase of ['pre','active']){
@@ -124,6 +154,31 @@ for(const receipt of policy.approved_exact_artwork){
  }
  for(const size of [40,44,64,80]){const rendered=thumbnail({movement:subject(id),size,accessoryPresentation:'movement'});assert.equal(nodes(rendered,'Image')[0].props.source,asset.source,'all row sizes reuse the approved app image');const box=art.movementThumbnailGeometry(size,key);assert.equal(box.width,box.height);assert.ok(box.left<=0&&box.top<=0&&box.left+box.width>=size&&box.top+box.height>=size,'bounded crop covers frame without stretching');}
 }
+// Reproduce the exact rejected failure class inside the actual TSX renderer:
+// whole-raster containment shrinks a square into a small image window.
+const goodGeometry=mocks['@/lib/movement-artwork-geometry.mjs'];
+try {
+ mocks['@/lib/movement-artwork-geometry.mjs']={...geometry,movementAtmosphereFrame:(box,sw,sh,w,h)=>{
+  const raw=geometry.movementHeroSourceFrame(box,sw,sh),scale=Math.min(1,w/raw.width,h/raw.height);
+  return {left:w-raw.width*scale,top:0,width:raw.width*scale,height:raw.height*scale};
+ }};
+ const faulty=load('components/movement/MovementArtworkHero.tsx').MovementArtworkHero;
+ assert.throws(()=>assertBackgroundSpan(faulty({artworkKey:'accessory_push_up',receiptId:'deliberate-rejected-thumbnail',movementDefinitionId:67,reduceMotion:true}),'accessory_push_up'),
+  /actual atmospheric raster must command/,'the owner-rejected small square is rejected inside the actual renderer');
+} finally { mocks['@/lib/movement-artwork-geometry.mjs']=goodGeometry; }
+// Reproduce the latest owner screenshot through the real component. A wide
+// square photograph still fails if its empty upper studio remains visible.
+try {
+ mocks['@/lib/movement-artwork-geometry.mjs']={...geometry,movementAtmosphereFrame:(box,sw,sh,w,h)=>geometry.movementAtmosphereFrame(box,sw,sh,w,h)};
+ const faulty=load('components/movement/MovementArtworkHero.tsx').MovementArtworkHero;
+ assert.throws(()=>assertBackgroundSpan(faulty({artworkKey:'accessory_push_up',receiptId:'deliberate-empty-top',movementDefinitionId:67,reduceMotion:true}),'accessory_push_up'),
+  /empty source margin/,'the owner-rejected full-square empty-space composition is rejected in the real renderer');
+} finally { mocks['@/lib/movement-artwork-geometry.mjs']=goodGeometry; }
+measuredHeights.fill(0);
+const pushUp=renderSingle(67,true,true,true);
+const pushUpHeader=nodes(pushUp,'View').find(node=>node.props.onLayout);
+const pushUpStyle=Object.assign({},...pushUpHeader.props.style.filter(Boolean));
+assert.ok(pushUpStyle.minHeight < 240, 'the actual completed Push-Up header drops the old tall square scene');
 for(const mode of ['pending','rejected','missing']){
  const key=policy.approved_exact_artwork.find(r=>r.movement_definition_id===253).key;
  currentPolicy={denied_keys:mode==='missing'?[]:[key],approved_exact_artwork:[]};

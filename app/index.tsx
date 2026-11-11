@@ -1,13 +1,14 @@
+import { SLButton } from '@/components/ui/sl-button';
+import { useSetupStatusRefresh } from '@/hooks/useSetupStatusRefresh';
 import { onboardingMessage } from '@/lib/onboarding-message';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress';
 import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 // app/index.tsx
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, View } from 'react-native';
 import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { Text } from '@/components/ui/sl-text';
-import { useFocusEffect } from '@react-navigation/native';
 import { Redirect, useRouter } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -31,12 +32,14 @@ function AccountAccessGate({
   actionUrl?: string | null;
 }) {
   const router = useRouter();
-  const { user, token, login, logout, refreshAccountState } = useAuth();
+  const { user, applyAccountStatePayload, logout, refreshAccountState } = useAuth();
+  const checkoutInFlight = useRef(false);
   const [simulating, setSimulating] = useState(false);
   const [activating, setActivating] = useState(false);
   const [checking, setChecking] = useState(false);
   const [terms, setTerms] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const activationRequired =
     user?.account_state === 'ACTIVATION_REQUIRED' ||
     user?.billing_required === true ||
@@ -51,11 +54,15 @@ function AccountAccessGate({
   const refreshActivationState = useCallback(
     async ({ showMessage = false }: { showMessage?: boolean } = {}) => {
       if (showMessage) setChecking(true);
-      if (showMessage) setError(null);
+      if (showMessage) { setError(null); setNotice(null); }
       try {
-        const billing = await checkMobileBillingStatus();
-        if (billing.ok && billing.json?.billing_terms) setTerms(billing.json.billing_terms);
-        const refreshed = await refreshAccountState();
+        const [profile, billing] = await Promise.all([
+          refreshAccountState().catch(() => null),
+          checkMobileBillingStatus().catch(() => null),
+        ]);
+        if (billing?.ok && billing.json?.billing_terms) setTerms(billing.json.billing_terms);
+        const refreshed = billing?.ok && billing.json?.account_state
+          ? await applyAccountStatePayload(billing.json) : profile;
         const stillActivationRequired =
           refreshed?.account_state === 'ACTIVATION_REQUIRED' ||
           refreshed?.billing_required === true ||
@@ -65,7 +72,8 @@ function AccountAccessGate({
           return;
         }
         if (showMessage) {
-          setError('Your account is saved. If you finished checkout, Stripe may still be confirming it. Check again shortly; you do not need to enter your card again.');
+          if (billing?.ok) setNotice('Your account is saved. If you finished checkout, confirmation may still be on its way. Check again shortly.');
+          else setError('We could not refresh membership confirmation. Your account is saved. Please check again.');
         }
       } catch (err: any) {
         if (showMessage) {
@@ -75,73 +83,20 @@ function AccountAccessGate({
         if (showMessage) setChecking(false);
       }
     },
-    [refreshAccountState, router]
+    [refreshAccountState, applyAccountStatePayload, router]
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      void refreshActivationState();
-    }, [refreshActivationState])
-  );
+  useSetupStatusRefresh(refreshActivationState);
 
   const applyActivationPayload = async (payload: any = {}) => {
-    if (!user) return;
-    const payloadUser = payload.user || payload;
-    const refreshed = {
-      ...user,
-      account_state: payloadUser.account_state ?? user.account_state ?? null,
-      next_url: payloadUser.next_url ?? user.next_url ?? null,
-      next_route: payloadUser.next_route ?? user.next_route ?? null,
-      can_access_product:
-        payloadUser.can_access_product === false
-          ? false
-          : payloadUser.can_access_product === true
-          ? true
-          : user.can_access_product,
-      link_coach_required:
-        payloadUser.link_coach_required === true
-          ? true
-          : payloadUser.link_coach_required === false
-          ? false
-          : user.link_coach_required,
-      account_state_detail: payloadUser.account_state_detail ?? user.account_state_detail,
-      billing_required:
-        payloadUser.billing_required === true
-          ? true
-          : payloadUser.billing_required === false
-          ? false
-          : user.billing_required,
-      billing_url: payloadUser.billing_url ?? user.billing_url ?? null,
-      verification_required:
-        payloadUser.verification_required === true
-          ? true
-          : payloadUser.verification_required === false
-          ? false
-          : user.verification_required,
-      workspace_mode: payloadUser.workspace_mode ?? user.workspace_mode,
-      is_individual_workspace:
-        payloadUser.is_individual_workspace === true
-          ? true
-          : payloadUser.is_individual_workspace === false
-          ? false
-          : user.is_individual_workspace,
-      is_self_coached:
-        payloadUser.is_self_coached === true
-          ? true
-          : payloadUser.is_self_coached === false
-          ? false
-          : user.is_self_coached,
-      self_athlete_id: payloadUser.self_athlete_id ?? user.self_athlete_id ?? null,
-      dev_onboarding_simulation_enabled:
-        payloadUser.dev_onboarding_simulation_enabled === true ||
-        user.dev_onboarding_simulation_enabled === true,
-    };
-    await login({ user: refreshed, token });
+    await applyAccountStatePayload(payload);
   };
 
   const openActivation = async () => {
+    if (checkoutInFlight.current) return;
+    checkoutInFlight.current = true;
     setActivating(true);
-    setError(null);
+    setError(null); setNotice(null);
     try {
       const result = await startMobileBillingCheckout();
       const payload = result.json || {};
@@ -158,13 +113,16 @@ function AccountAccessGate({
         setError('Could not start activation. Please try again.');
         return;
       }
-      await openRecoverableCheckoutBrowser(checkoutUrl);
+      const browser = await openRecoverableCheckoutBrowser(checkoutUrl);
       setActivating(false);
-      await refreshActivationState({ showMessage: true });
+      const closed = browser.type === 'cancel' || browser.type === 'dismiss';
+      if (closed) setNotice('Checkout closed. Your account is saved. Continue when you are ready.');
+      await refreshActivationState({ showMessage: !closed });
     } catch (err: any) {
       console.warn('Could not start activation', err);
       setError(err?.message || 'Could not start activation. Please try again.');
     } finally {
+      checkoutInFlight.current = false;
       setActivating(false);
     }
   };
@@ -235,43 +193,45 @@ function AccountAccessGate({
           <Text style={{ color: SLColors.textStrong, fontSize: SLTypography.rowTitle.fontSize, fontWeight: '600' }}>{terms?.recovery_required ? 'Continue your existing membership' : terms ? `${terms.trial_days > 0 ? `${terms.trial_days} days free, then ` : ''}${terms.price_label}` : 'Review your trial and price with Stripe'}</Text>
           <Text style={{ color: SLColors.textMuted, fontSize: SLTypography.micro.fontSize, lineHeight: 18 }}>{terms?.recovery_required ? 'Resolve payment without creating another subscription.' : 'Card required. Review the price and trial terms before confirming. Cancel before the trial ends to avoid a charge.'}</Text>
         </View>
-        {error ? <Text style={styles.gateError}>{onboardingMessage(error)}</Text> : null}
-        <Pressable
-          style={[styles.gatePrimary, activating && styles.disabledButton]}
-          onPress={openActivation}
-          disabled={activating}
-        >
-          {simulating || activating ? (
-            <ActivityIndicator color={SLColors.white} />
-          ) : (
-            <Text style={styles.gatePrimaryText}>
-              {actionLabel}
-            </Text>
-          )}
-        </Pressable>
+        {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.gateError}>{onboardingMessage(error)}</Text> : null}
+        {notice ? <Text accessibilityLiveRegion="polite" style={styles.gateBody}>{notice}</Text> : null}
+        <SLButton label={actionLabel} onPress={openActivation} loading={activating} disabled={simulating} fullWidth />
         {pendingTeamCoach ? (
-          <Pressable style={styles.gateOutline} onPress={cancelTeamCoachUpgrade} disabled={activating}>
+          <Pressable accessibilityRole="button" style={styles.gateOutline} onPress={cancelTeamCoachUpgrade} disabled={activating}>
             <Text style={styles.gateOutlineText}>Cancel Team Coach upgrade</Text>
           </Pressable>
         ) : null}
-        <Pressable
-          style={[styles.gateOutline, checking && styles.disabledButton]}
-          onPress={() => refreshActivationState({ showMessage: true })}
-          disabled={checking}
-        >
-          <Text style={styles.gateOutlineText}>I finished checkout · Check status</Text>
-        </Pressable>
+        <SLButton label="I finished checkout · Check status" onPress={() => refreshActivationState({ showMessage: true })} loading={checking} variant="secondary" fullWidth />
         <Text style={styles.gateBody}>Your card details are entered securely with Stripe. You can close checkout and return here to continue.</Text>
         <OnboardingSupport step="checkout" />
-        {showDevSimulation ? <Pressable style={styles.gateSecondary} onPress={simulateActivation} disabled={simulating}><Text style={styles.gateSecondaryText}>{simulating ? 'Simulating…' : 'DEV · Simulate Stripe activation'}</Text></Pressable> : null}
-        <Pressable style={styles.gateSecondary} onPress={() => router.push('/(tabs)/settings')}><Text style={styles.gateSecondaryText}>Account settings</Text></Pressable>
-        <Pressable style={styles.gateSecondary} onPress={logout}>
+        {showDevSimulation ? <Pressable accessibilityRole="button" style={styles.gateSecondary} onPress={simulateActivation} disabled={simulating}><Text style={styles.gateSecondaryText}>{simulating ? 'Simulating…' : 'DEV · Simulate Stripe activation'}</Text></Pressable> : null}
+        <Pressable accessibilityRole="button" style={styles.gateSecondary} onPress={() => router.push('/(tabs)/settings')}><Text style={styles.gateSecondaryText}>Account settings</Text></Pressable>
+        <Pressable accessibilityRole="button" style={styles.gateSecondary} onPress={logout}>
           <Text style={styles.gateSecondaryText}>Log out</Text>
         </Pressable>
       </View>
     </ScrollView>
     </SafeAreaView>
   );
+}
+
+function IdentityRecovery() {
+  const { refreshAccountState, logout } = useAuth();
+  const [busy, setBusy] = useState(false);
+  const retry = async () => {
+    setBusy(true);
+    try { await refreshAccountState(); } catch { /* Retain the authenticated setup and retry control. */ }
+    finally { setBusy(false); }
+  };
+  return <SafeAreaView style={styles.gateScreen}><ScrollView contentContainerStyle={styles.gateContent}>
+    <View style={styles.gatePanel}>
+      <Text accessibilityRole="header" style={styles.gateTitle}>Reconnect your account</Text>
+      <Text style={styles.gateBody}>Sign-in was received. Reconnect so we can confirm your account and resume the right step.</Text>
+      <SLButton label="Retry connection" loading={busy} onPress={retry} />
+      <OnboardingSupport step="login" errorCode="network" />
+      <SLButton label="Sign out" variant="ghost" onPress={() => { void logout(); }} />
+    </View>
+  </ScrollView></SafeAreaView>;
 }
 
 export default function IndexGate() {
@@ -281,6 +241,8 @@ export default function IndexGate() {
   if (!user) {
     return <Redirect href="/login" />;
   }
+
+  if (!user.id && !user.user_id) return <IdentityRecovery />;
 
   const isIndividual = activeMobileMode === 'individual';
   const accountState = user.account_state;
@@ -399,6 +361,8 @@ const styles = StyleSheet.create({
   },
   gateOutline: {
     minHeight: 48,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: SLRadius.sm,

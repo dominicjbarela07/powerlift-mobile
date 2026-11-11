@@ -1,0 +1,256 @@
+# Strength Ledger Engineering Directive
+
+## Ledger Bot: coach-led assistance only
+
+Before Ledger Bot work, read `docs/LEDGER_BOT_POLICY.md`. The owner permanently
+prohibits Bot-generated Sessions/programs/prescriptions. Use the closed backend
+tool boundary; no model prompt or UI restriction substitutes for enforcement.
+Existing-source reuse and explicit coach-directed numeric transformations do not
+authorize missing-data synthesis. The initial foundation is DEV-only/read-only.
+
+## Credential boundaries
+
+Before adding credentials or provider client configuration, or handling a secret
+alert, read `docs/release/GITHUB_KEY_ALERT_2026-10-13.md` and its permanent
+credential handling rule. Private credentials never enter Git or client bundles.
+Classify client identifiers and verify actual provider restrictions before push;
+keep secret scanning/push protection enabled and never dismiss an alert by filename.
+
+## Complete-request delivery and owner-policy reconciliation
+
+Before implementation, record the complete current request, acceptance criteria,
+preserved product laws and required delivery destination in the task's tracked
+release/engineering record. Read established owner policy; do not implement one
+message fragment while dropping the rest. An explicit owner correction controls.
+If product instructions remain ambiguous or conflict without a clear correction,
+ask about that specific decision before changing its behavior; continue independent
+safe work. Do not invent product decisions or another approval for authorized work.
+
+Follow the **Complete-request Delivery Law** in `docs/RELEASE_INVARIANTS.md`.
+Before closeout, account for every requested outcome with exact evidence or an
+explicit remaining gap. Separate local test results, publication/push, verified
+live source/artifact, and observed device behavior. Never call a local fix shipped,
+a pushed commit live, or backend eligibility proof observed phone playback.
+No guarantee may exceed the evidence. Respect explicit restrictions on simulators. Follow the owner-directed Mac lock handling in that constitution: continue non-simulator checks and the authorized push if passing; retain honest skipped-check evidence.
+
+Production main pushes require the source-pinned canonical gate installed by
+`scripts/install_shared_backend_push_guard.py`. Its independent owner-policy
+acceptance suite must reject cross-manufacturer machine PR leakage even if the
+candidate rewrites its own tests/gate. Missing/changed trusted checks fail closed;
+never remove the hook or refresh pins merely to pass a candidate. Owner product
+policy changes need explicit owner evidence before protection changes.
+
+
+## Efficient delivery and stopping
+
+Follow the **Efficient Delivery and Stopping Rule** in
+`docs/RELEASE_INVARIANTS.md` and `docs/release/DELIVERY_EFFICIENCY_2026-10-14.md`.
+Scope validation before work; check the governed wrapper before duplicating its
+suites. Reuse exact applicable passing evidence for unchanged inputs and shared
+runtime behavior; verify only target-specific differences separately. Diagnose
+failed checks before retrying, and avoid concurrency that creates contention.
+Keep mandatory protections, report verified shipment promptly, finish only
+necessary closeout, and stop. Owner stop/resume instructions control immediately;
+a temporary stop is not permanent product or runtime retirement.
+
+## Web performance acceptance
+
+Follow the **Web performance release requirement — October 18, 2026** in
+`docs/RELEASE_INVARIANTS.md`. Web visual and workflow work also requires measured
+loading, responsive controls and asset/cache validation before it is called ready.
+Keep the existing backend and real-browser performance regression checks in the
+affected DEV/release validation; preserve functionality and access protections.
+Distinguish lab evidence, verified live delivery and actual owner observation.
+
+Web workspace visual/workflow passes must cover both Team Coach and Self-Coach.
+Reuse shared Athlete Workspace components; validate personal ownership and the
+absence of Team-only requests with a fictional Self-Coach browser fixture.
+Retain `npm run test:self-coach-web` alongside affected Team Coach checks in
+explicit DEV/release validation. A passing Team-only audit does not establish
+Self-Coach parity; these checks are not claimed to be automatic push-hook gates.
+
+## Owner Non-Recurrence Directive
+
+Before responding to an owner-designated unacceptable failure, read the
+UNACCEPTABLE section of `docs/RELEASE_INVARIANTS.md` and
+`docs/OWNER_NON_RECURRENCE_INCIDENTS.md`. Explicit owner `unacceptable` means
+`OWNER NON-RECURRENCE DIRECTIVE`: fix the instance AND prevent its technical
+failure class from recurring. Determine cause/process gap, audit equivalents,
+retain a permanent protection, deliberately failure-test it, and carry it through
+DEV/TestFlight/release workflows. Record the incident and all seven required
+closeout fields in the repository. Known equivalent failures or unknown counts
+prevent closure. Recurrence is also a release/process failure: repair the failed
+protection. Product decisions still require explicit owner approval; default NO.
+
+## Mandatory Release Constitution
+
+Read the **Worktree Lifecycle Law** in that same constitution before creating,
+using, reconciling, or removing a worktree. Dirty canonical DEV is expected and
+must be preserved. Isolation needs a concrete recorded reason; register source
+DEV state, starting SHA, purpose, and planned changes. Inventory all worktrees
+before cleanup, reconcile valid unique state first, retain ambiguous work for an
+owner decision, assess/synchronize legitimate active worktrees, and close every
+completed temporary worktree in the same release workflow. Publication without
+exact-source DEV back-propagation and verified worktree removal is incomplete.
+Use the governed lifecycle tool; never delete unaccounted product/evidence files.
+
+Before any TestFlight/release operation, read and enforce
+`docs/RELEASE_INVARIANTS.md`. It is the single authoritative release constitution:
+DEV must be the superset; TestFlight is cumulative; explicit owner removals only;
+every release-path fix must reach DEV in the same workflow. Gate violations block
+publication. Missing valid release state must flow TestFlight → DEV.
+
+Before modifying, auditing, promoting, or validating any Strength Ledger code,
+read the governing architecture document:
+
+`docs/Strength_Ledger_Identity_Relationship_Architecture_v2.md`
+
+This document is authoritative for:
+
+- identity
+- athlete/coach relationships
+- onboarding
+- billing and entitlement
+- authentication and routing
+- role/workspace state
+- web/mobile account-state behavior
+- regression prevention
+- production promotion
+
+Strength Ledger is a production platform. No implementation is complete unless
+it preserves the platform laws in that document and validates the blast radius
+for the affected state machine.
+
+For any task touching auth, onboarding, billing, routing, role access,
+workspace mode, athlete-coach linking, mobile/web navigation, or protected
+product access, explicitly answer before closing the task:
+
+- What state machine did this touch?
+- What adjacent systems could be affected?
+- What existing workflows were validated?
+- Why can we be confident this did not introduce a regression?
+
+Compile/type checks are required, but they are not sufficient validation.
+
+## Visual Convergence Handoff Gate
+
+For storyboard, reference-convergence, and other material UI work, visual
+quality is an acceptance requirement. Before handoff, Codex must:
+
+1. implement the requested experience in canonical DEV;
+2. inspect actual mobile screenshots from the canonical `npm start` runtime;
+3. compare the implementation directly with the supplied reference;
+4. identify the three weakest visual areas;
+5. correct those weaknesses; and
+6. capture and inspect a second screenshot pass before declaring completion.
+
+For web palette changes and new web components, run `npm run test:web-palette`.
+All web chrome, inline styles and generated UI must resolve through the canonical
+`app/static/css/00_tokens.css` palette; keep status and chart meanings distinct.
+Do not introduce page-owned hardcoded palettes. Retain a deliberate old-color
+injection showing the audit rejects the failure class. This does not authorize
+changes to artwork, mail, account access or any feature's controls/behavior.
+
+For Athlete Performance Analysis UI changes, run `npm run test:analysis-controls` against the actual served DEV/candidate with the intended authenticated fixture. Retain its rendered control measurements and reproduce undersized controls using `ANALYSIS_REPRODUCE_SMALL_CONTROLS=1`; the guard must reject them. This check is part of the affected web DEV/release validation; do not substitute source-only size assertions or shrink targets for compact columns.
+
+Functional correctness alone is not completion for visual work. Do not hand
+over a screen that is generic, prototype-looking, poorly balanced, excessively
+empty, cramped, visually inconsistent, badly cropped, difficult to read, or
+materially weaker than the supplied specification.
+
+Do not create containers merely because multiple data points exist. Compose
+information according to hierarchy, density, and mobile readability. If the
+supplied reference is materially more polished than the implementation,
+convergence is not complete.
+
+## Canonical Movement Identity Completion Law
+
+A current Session item has one authoritative movement ID:
+`WorkoutItem.movement_definition_id`. Real Swap X→Y persists Y. Same Swap
+X→X is a semantic no-op. Initial hydration and mutation responses use the same
+normalization, and titles, taxonomy, artwork, anatomy, equipment policy and
+history all start from that ID. Current effective/performed compatibility
+aliases are derived outputs, never competing identity owners.
+
+Original prescription and authorized transitions are append-only provenance.
+SetLog performed snapshots remain immutable historical evidence. Neither may
+be repurposed as a live movement selector. Reads must not repair Session
+identity or persist side effects. See `docs/SINGLE_CURRENT_MOVEMENT_ID.md` for
+writer boundaries, migration, invariants and the TestFlight compatibility limit.
+
+Production transfer of a consolidated movement catalog must combine every
+governed source history under its surviving ID, without rewriting or double
+counting performed sets. Follow `docs/MOVEMENT_CATALOG_PRODUCTION_TRANSFER.md`
+and archive passing destination-database reconciliation and read-only receipts
+before release closeout; DEV numeric IDs and data must never be copied over.
+
+## Canonical Dynamic Anatomy System Law
+
+Full-figure muscle anatomy is one registered aggregate-evidence system. Every
+Session, week, muscle-group, athlete-summary, post-Session, and coach aggregate
+must render through `powerlift_mobile/components/anatomy/MuscleMap.tsx`, normally
+via `ProgrammingMuscleRegionArt` or `GovernedMuscleThumbnail`. Screens may size
+their container, but may not own overlay geometry, load anatomy masters, or
+apply corrective figure transforms.
+
+Each masculine/feminine and front/rear master owns independently registered
+paths in the same 418 × 941 coordinate space as that master. Highlights must be
+silhouette-clipped, must preserve the master's texture and seams, and must keep
+primary/secondary semantics distinct. Do not transfer geometry between
+presentations with scale or translation, and do not approximate a muscle with
+generic circles, ellipses, or rectangles.
+
+One exact movement is not an aggregate anatomy surface. It remains governed by
+the Individual Movement Artwork Law and `CanonicalMovementArtwork`; never
+replace exact movement identity with a full-body figure.
+
+Any anatomy-system change must update the consumer inventory in
+`powerlift_mobile/docs/CANONICAL_DYNAMIC_ANATOMY_SYSTEM.md`, pass the executable
+consumer-convergence guard, and complete the DEV visual gate across masculine
+front/rear, feminine front/rear, a dense state, and thumbnail/card/hero sizes.
+
+## Core Variants Ledger Law
+
+Core Variants are organized by their governed parent Core lift (Squat, Bench
+Press, or Deadlift), never by muscle group. Each exact variant owns an
+independent performed-set history. Variant evidence may contextualize
+supplemental training, but it must never be merged into or presented as causal
+improvement of the parent Competition lift.
+
+The primary Variants surface is continuous and curated: active rotation,
+family context, meaningful exact-task progress, block exposure, and the
+historical record belong in one chapter. Exhaustive evidence belongs in exact
+variant drill-downs. Membership, progress, and source evidence must resolve
+from governed Core movement IDs and immutable performed identity, never from
+display names, broad families, or inferred carryover.
+
+## Human Movement Artwork Approval Law
+
+Read `docs/DEV_MOVEMENT_ART_REVIEW.md` before generating, replacing, or promoting
+movement artwork. Register generated candidates as pending and stop for human
+review in the DEV review tool. Codex and automated tools must never approve real
+candidates through the browser, HTTP, service calls, or direct manifest edits.
+Workflow tests belong only in the isolated, non-promotable QA store.
+
+An explicit owner instruction in the current conversation to mark one exact image
+approved may be transcribed as `explicit_owner_chat`, retaining the exact message,
+conversation ID and image hash. This records the owner's decision, never an agent
+quality judgment; do not impersonate an authenticated UI reviewer. It grants no
+approval to other candidates and does not authorize a release.
+
+Regenerate only the latest rejected candidates, using their exact written
+rejection reasons. Approved candidates remain locked until the human explicitly
+reopens them. Preserve candidate versions and decision history. Promotion must
+pass the exact human-approval receipt and content-hash guards. The one-time
+preserved-existing-DEV backfill exception authorizes only its original bytes;
+it never authorizes a new image or substitutes for human approval.
+
+## Accessory PR backend release requirement
+
+Read `docs/ACCESSORY_PR_BACKEND_RELEASE.md` before accessory PR or shared-backend
+release work. Machine PR history MUST remain within the exact equipment/manufacturer context;
+Other is separate and first machine baselines stay quiet. The latest isolation
+directive supersedes the earlier cross-brand scope. Ship required server changes by validated
+Git push from the Production repo to SCUI/main. Client OTA/local tests do not
+prove server delivery. The source-bound shared-backend push guard and frozen
+2.0.2 compatibility checks are mandatory; verify the live serving SHA afterward.

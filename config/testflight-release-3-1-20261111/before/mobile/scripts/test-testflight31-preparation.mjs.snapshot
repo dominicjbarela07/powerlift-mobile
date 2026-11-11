@@ -1,0 +1,70 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import { createRequire } from 'node:module';
+import { approvedArtRuntimeEnabled } from '../lib/approved-art-runtime.ts';
+
+const require = createRequire(import.meta.url);
+const app = JSON.parse(fs.readFileSync('app.json', 'utf8'));
+const eas = JSON.parse(fs.readFileSync('eas.json', 'utf8'));
+const profile = eas.build.testflight31;
+const source = fs.readFileSync('app.config.js', 'utf8');
+const resolve = env => {
+  const module = { exports: {} };
+  vm.runInNewContext(source, { module, __dirname: process.cwd(), process: { env }, require: name => {
+    if (name === './app.json') return structuredClone(app);
+    assert.equal(name, './scripts/native-build-upload-policy.cjs');
+    return require('./native-build-upload-policy.cjs');
+  } });
+  return module.exports.expo;
+};
+
+assert.equal(profile.channel, 'testflight-3-1');
+assert.equal(profile.environment, 'production');
+assert.equal(profile.ios.distribution, 'store');
+assert.equal(profile.autoIncrement, true);
+assert.equal(eas.cli.appVersionSource, 'remote');
+assert.equal(eas.submit.testflight31.ios.ascAppId, '6756639297');
+const resolved = resolve(profile.env);
+assert.equal(resolved.version, '3.1.0');
+assert.equal(resolved.runtimeVersion, '3.1.0');
+assert.equal(resolved.extra.preparationTarget, 'testflight31');
+assert.equal(resolved.extra.releaseTrack, 'testflight');
+assert.equal(resolved.extra.publicationAuthorized, false);
+assert.equal(resolved.ios.bundleIdentifier, 'com.dominicbarela.strengthcoachui');
+assert.equal(resolved.extra.eas.projectId, '7afb1a4b-46b6-4295-b33f-816b05589e81');
+assert.equal(resolved.ios.buildNumber, undefined, 'remote native build numbering stays authoritative');
+assert.equal(approvedArtRuntimeEnabled(false, profile.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL, '3.1.0'), true);
+for (const key of Object.keys(profile.env)) {
+  const missing = { ...profile.env };
+  delete missing[key];
+  assert.throws(() => resolve(missing), /BLOCKED/, `missing ${key} must fail`);
+}
+for (const changes of [
+  { EXPO_PUBLIC_API_BASE: 'http://localhost:5017' },
+  { EXPO_PUBLIC_ART_RUNTIME_VERSION: '3.0.0' },
+  { EXPO_PUBLIC_APPROVED_ART_CHANNEL: 'production' },
+]) assert.throws(() => resolve({ ...profile.env, ...changes }), /BLOCKED/);
+assert.equal(resolve({}).version, app.expo.version);
+assert.equal(resolve(eas.build['production3-preparation'].env).version, '3.0.0');
+assert.equal(eas.build.production.channel, 'production');
+assert.equal(eas.build.testflight.channel, 'testflight');
+const wrapper = fs.readFileSync('scripts/eas-build-testflight.sh', 'utf8');
+const validation = wrapper.split("node <<'NODE'\n")[1].split('\nNODE')[0];
+const checkWrapperConfig = (config, profiles) => vm.runInNewContext(validation, {
+  require: name => name === './app.config.js' ? { expo: config } : profiles,
+  process: { env: { TESTFLIGHT_NATIVE_PROFILE: 'testflight31' }, exit: () => { throw Error('Rejected native configuration'); } },
+  console: { error() {} },
+});
+assert.doesNotThrow(() => checkWrapperConfig(resolved, eas));
+assert.throws(() => checkWrapperConfig({ ...resolved, runtimeVersion: '3.0.0' }, eas), /Rejected/);
+const wrongProfile = structuredClone(eas);
+wrongProfile.build.testflight31.ios.distribution = 'internal';
+assert.throws(() => checkWrapperConfig(resolved, wrongProfile), /Rejected/);
+for (const protection of [
+  'git status --porcelain', 'verify-testflight-release-integrity.mjs --gate-a-only',
+  'test-release-source-lineage.mjs', 'test-testflight-source-parity.mjs',
+  'assert-no-dev-artwork-export.mjs', 'assert-ota-route-bundle.mjs',
+  'npm run release:verify-testflight', 'STRENGTH_LEDGER_RUNTIME_RECEIPT', 'BUILD TESTFLIGHT',
+]) assert.ok(wrapper.indexOf(protection) < wrapper.indexOf('npx eas-cli build'), protection);
+console.log('PASS actual 3.1 config, live API, approved artwork, isolated channel, remote numbering and App Store identity. Missing switches and mismatched runtime/API fail closed.');

@@ -1,0 +1,38 @@
+[
+  {
+    "before": "import { useMobileEducation } from '@/context/MobileEducationContext';\nimport { useDevLiveScreenSession } from '@/lib/release-preview-stubs';\nimport { fetchJson, getUnreadSummary } from '@/lib/api';\nimport { SLColors, SLRadius, SLTypography } from '@/constants/theme';\nimport type { MobileViewMode } from '@/lib/mobileViewMode';\nimport { useSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';\nimport { canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';\n",
+    "after": "import { useMobileEducation } from '@/context/MobileEducationContext';\nimport { useDevLiveScreenSession } from '@/lib/release-preview-stubs';\nimport { fetchJson, getUnreadSummary } from '@/lib/api';\nimport { SLColors, SLRadius, SLTypography, SLSelfCoach } from '@/constants/theme';\nimport type { MobileViewMode } from '@/lib/mobileViewMode';\nimport { useSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';\nimport { canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';\n"
+  },
+  {
+    "before": "    'athlete-meet-plan': { label: 'Meet', icon: 'trophy-outline' },\n    settings: { label: 'Settings', icon: 'settings-outline' },\n    'link-coach': { label: 'Invite', icon: 'mail-outline' },\n  };\n\n  const normalizedPathname = pathname.replace(/\\/+$/, '') || '/';\n",
+    "after": "    'athlete-meet-plan': { label: 'Meet', icon: 'trophy-outline' },\n    settings: { label: 'Settings', icon: 'settings-outline' },\n    'link-coach': { label: 'Invite', icon: 'mail-outline' },\n    ...(isIndividual ? {\n      'athlete-dashboard': { label: 'Train', icon: 'barbell-outline' as const },\n      'workout/index': { label: 'Plan', icon: 'calendar-outline' as const },\n      workout: { label: 'Plan', icon: 'calendar-outline' as const },\n      ledger: { label: 'Progress', icon: 'book-outline' as const },\n    } : {}),\n  };\n\n  const normalizedPathname = pathname.replace(/\\/+$/, '') || '/';\n"
+  },
+  {
+    "before": "    || normalizedPathname.startsWith('/athlete-meet-plan/');\n  const isCalendarPreviewPath = __DEV__ && normalizedPathname.startsWith('/dev-mocks/calendar-');\n  const usesCalendarPreviewSelection = isCalendarPreviewPath;\n  const usesTrainingMapSelection = normalizedPathname === '/workout/program-timeline';\n  const usesCoachHomeSelection = normalizedPathname.startsWith('/coach-roster')\n    || normalizedPathname.startsWith('/coach-athlete/')\n    || normalizedPathname.startsWith('/coach-attention/');\n",
+    "after": "    || normalizedPathname.startsWith('/athlete-meet-plan/');\n  const isCalendarPreviewPath = __DEV__ && normalizedPathname.startsWith('/dev-mocks/calendar-');\n  const usesCalendarPreviewSelection = isCalendarPreviewPath;\n  const usesTrainingMapSelection = normalizedPathname === '/workout/program-timeline'\n    || (isIndividual && normalizedPathname.startsWith('/athlete-calendar'));\n  const usesCoachHomeSelection = normalizedPathname.startsWith('/coach-roster')\n    || normalizedPathname.startsWith('/coach-athlete/')\n    || normalizedPathname.startsWith('/coach-attention/');\n"
+  },
+  {
+    "before": "  if (focusedSession) return null;\n  if (isImmersiveMeetMode) return null;\n  if (normalizedPathname.startsWith('/coach-athlete/')) return null;\n  if (normalizedPathname.startsWith('/ledger') && focusedParams.returnToWorkspace === '1') return null;\n  if (focusedParams.returnToWorkspace === '1'\n    && ['/coach-session-review', '/coach-video-review', '/check-ins'].includes(normalizedPathname)) return null;\n",
+    "after": "  if (focusedSession) return null;\n  if (isImmersiveMeetMode) return null;\n  if (normalizedPathname.startsWith('/coach-athlete/')) return null;\n  if (normalizedPathname.startsWith('/training-week-report')) return null;\n  if (normalizedPathname.startsWith('/ledger') && focusedParams.returnToWorkspace === '1') return null;\n  if (focusedParams.returnToWorkspace === '1'\n    && ['/coach-session-review', '/coach-video-review', '/check-ins'].includes(normalizedPathname)) return null;\n"
+  },
+  {
+    "before": "\n        return {\n          accessibilityLabel: cfg.label,\n          badge: isMessagesRoute && hasMessageNotifications ? 'dot' as const : undefined,\n          new: isLedgerHomeRoute && education.showNew('ledger'),\n          icon: cfg.icon,\n",
+    "after": "\n        return {\n          accessibilityLabel: cfg.label,\n          label: isIndividual ? cfg.label : undefined,\n          badge: isMessagesRoute && hasMessageNotifications ? 'dot' as const : undefined,\n          new: isLedgerHomeRoute && education.showNew('ledger'),\n          icon: cfg.icon,\n"
+  },
+  {
+    "before": "    const isAthleteFacingPath =\n      pathname.includes('/athlete-dashboard') ||\n      pathname.includes('/athlete-calendar') ||\n      pathname.includes('/athlete-progression') ||\n      pathname.includes('/reflection') ||\n      pathname.includes('/coach-reviews') ||\n",
+    "after": "    const isAthleteFacingPath =\n      pathname.includes('/athlete-dashboard') ||\n      pathname.includes('/athlete-calendar') ||\n      pathname.includes('/training-week-report') ||\n      pathname.includes('/athlete-progression') ||\n      pathname.includes('/reflection') ||\n      pathname.includes('/coach-reviews') ||\n"
+  },
+  {
+    "before": "        screenOptions={{\n          header: () => (\n            <StrengthLedgerAppHeader\n              brandAccessibilityLabel=\"Open Home\"\n              leftAction={{\n                accessibilityLabel: 'Open Settings',\n",
+    "after": "        screenOptions={{\n          header: () => (\n            <StrengthLedgerAppHeader\n              canvasColor={isIndividual ? SLSelfCoach.canvas : undefined}\n              brandAccessibilityLabel=\"Open Home\"\n              leftAction={{\n                accessibilityLabel: 'Open Settings',\n"
+  },
+  {
+    "before": "                onPress: () => router.push('/coach-team-brief' as any),\n                size: 20,\n              } : isIndividual ? {\n                accessibilityLabel: 'Create Session',\n                icon: 'add-circle-outline',\n                onPress: () => router.push('/create-workout'),\n                size: 23,\n              } : {\n                accessibilityLabel: 'Open messages',\n",
+    "after": "                onPress: () => router.push('/coach-team-brief' as any),\n                size: 20,\n              } : isIndividual ? {\n                accessibilityLabel: 'Open profile',\n                icon: 'person-circle-outline',\n                onPress: () => router.push('/(tabs)/settings'),\n                size: 23,\n              } : {\n                accessibilityLabel: 'Open messages',\n"
+  },
+  {
+    "before": "          }}\n        />\n\n        <Tabs.Screen\n          name=\"athlete-calendar\"\n          options={{\n",
+    "after": "          }}\n        />\n\n        <Tabs.Screen name=\"training-week-report\" options={{ href: null, title: 'Weekly training report' }} />\n        <Tabs.Screen\n          name=\"athlete-calendar\"\n          options={{\n"
+  }
+]

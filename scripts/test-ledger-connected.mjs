@@ -22,7 +22,9 @@ const clubs=resolveLedgerClubsRuntimeState(mixed,null,null,'kg');assert.equal(cl
 const root=new URL('../',import.meta.url),read=p=>fs.readFileSync(new URL(p,root),'utf8');
 const product=read('components/ledger/LedgerExperience.tsx');
 assert.doesNotMatch(product,/dev-mocks|STUDY_|LedgerDesignStudy|Alex Morgan|AppRegistry/,'Normal Ledger must not import illustrative records or register an alternate app');
-assert.match(read('components/ledger/route-screen.tsx'),/screen === 'home' \|\| screen === 'strength'\) return <LedgerExperience/);
+const routeScreen=read('components/ledger/route-screen.tsx');
+assert.match(routeScreen,/activeMobileMode === 'individual' && !subject\.isWorkspaceScoped/);
+assert.match(routeScreen,/<SelfCoachLedgerExperience \/> : <LedgerExperience \/>/,'Self-Coach uses its normal authenticated Progress entry while athlete/workspace routes retain their reader');
 assert.match(product,/<ConnectedLedger key=\{`\$\{user\?\.id\}:\$\{subject\.athleteId/,'Identity changes must reset local state and sheets');
 assert.match(product,/ArchiveDetailExperience[\s\S]*target=\{sources\.at\(-1\)\}[\s\S]*initialDisplayUnit=\{sourceUnit\?\?unit\}/);
 assert.match(read('components/ledger/use-ledger-history.ts'),/current\.current !== key/);assert.match(read('components/ledger/use-ledger-history.ts'),/CAREER_PR_EVENT_TYPES/);

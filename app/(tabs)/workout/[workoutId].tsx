@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 import { ActiveCompositionEditor } from '@/components/workout-logger/active-composition-editor';
 import { SessionActionsSheet } from '@/components/workout-logger/session-actions-sheet';
 import { canEditActiveComposition, orderSessionMovementRows, focusAfterCompositionChange, validateCompositionResponse, type SessionComposition } from '@/lib/active-session-composition';
@@ -16,7 +17,9 @@ import { SetEntryVideo, SessionVideoUploadStatus } from '@/components/workout-lo
 import { videoUploadPresentation } from '@/lib/set-video-upload-status';
 import { SessionSetEntryContext } from '@/components/workout-logger/session-set-entry-context';
 import { SessionFollowThrough } from '@/components/workout-logger/session-follow-through';
-import { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator } from '@/components/workout-logger/session-v3-shell';
+import { trainingSessionTitle } from '@/lib/training-session-title';
+import { SelfCoachWorkoutSaved } from '@/components/workout-logger/SelfCoachWorkoutSaved';
+import { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator, SessionExerciseStrip } from '@/components/workout-logger/session-v3-shell';
 import { EquipmentHistoryEvidence } from '@/components/workout-logger/equipment-history-evidence';
 import { EducationInlineHint, useEducationHint, useMobileEducation } from '@/context/MobileEducationContext';
 import { SessionHistoryPeek } from '@/components/workout-logger/session-history-peek';
@@ -498,6 +501,7 @@ type PlannedSet = {
 
 type WorkoutItem = {
   id: number;
+  evidence_revision?: number | null;
   lift: string;
   designation?: string | null;
   variant: string; // "TOP" | "BK" | "STRAIGHT" | "ACC"
@@ -1138,6 +1142,7 @@ type CoreWheelState = {
 type AccessoryWheelState = {
   visible: boolean;
   itemId: number;
+  setIndex?: number;
   title: string;
   targetLine?: string | null;
   weight: string;
@@ -1308,7 +1313,7 @@ function missingSetLabelsForWorkout(workout?: WorkoutPayload['workout'] | null):
     const isBackdown = isBackdownWorkoutItem(core);
     if (isBackdown && core.parent_item_id != null) continue;
 
-    const name = liftDisplayName(core);
+    const name = resolveLoggerMovementIdentity(core).displayName;
     if (isFullCustomWorkoutItem(core)) {
       const planned = Array.isArray(core.planned_sets) ? core.planned_sets : [];
       const plannedIndexes = planned
@@ -1438,7 +1443,7 @@ function buildCoreWeightOptions(unit: 'kg' | 'lb', defaultValue: string) {
   }
 
   const snapped = formatWheelNumber(snapCoreWheelWeight(Number(defaultValue), unit));
-  if (snapped && !options.includes(snapped)) options.push(snapped);
+  if (Number(snapped) > 0 && !options.includes(snapped)) options.push(snapped);
   return options.sort((a, b) => Number(a) - Number(b));
 }
 
@@ -1534,12 +1539,14 @@ function defaultCoreWeight({
   currentSetIndex,
   acceptedSet,
   planned,
+  allowFallback = true,
 }: {
   item: WorkoutItem;
   unit: 'kg' | 'lb';
   currentSetIndex: number;
   acceptedSet?: SetLoggerLoadEvidence | null;
   planned?: PlannedSet | null;
+  allowFallback?: boolean;
 }) {
   const prescribedWeightKg = resolveLoggerPrescribedWeight({ item, planned, unit: 'kg' })?.canonicalWeightKg ?? null;
   const resolved = resolveSetLoggerLoadDefault({
@@ -1554,7 +1561,7 @@ function defaultCoreWeight({
     allowZeroLoad: loadWheelAllowsZero(item),
     preferPrescriptionForStageTransition: coreStagePrescriptionChanged(item, planned),
   });
-  return displayWeightFromKg(resolved.weightKg, unit);
+  return !allowFallback && resolved.source === 'fallback' ? '' : displayWeightFromKg(resolved.weightKg, unit);
 }
 
 function defaultCoreReps(item: WorkoutItem, planned?: PlannedSet | null) {
@@ -1601,11 +1608,13 @@ function defaultAccessoryWeight({
   unit,
   currentSetIndex,
   acceptedSet,
+  allowFallback = true,
 }: {
   item: WorkoutItem;
   unit: 'kg' | 'lb';
   currentSetIndex: number;
   acceptedSet?: SetLoggerLoadEvidence | null;
+  allowFallback?: boolean;
 }) {
   const prescribedWeightKg = resolveLoggerPrescribedWeight({ item, unit: 'kg' })?.canonicalWeightKg ?? null;
   const resolved = resolveSetLoggerLoadDefault({
@@ -1619,7 +1628,8 @@ function defaultAccessoryWeight({
     fallbackWeightKg: 0,
     allowZeroLoad: loadWheelAllowsZero(item),
   });
-  return displayWeightFromKg(resolved.weightKg, unit);
+  const zeroExternalDefault = ['bodyweight_only', 'no_external_load', 'added_bodyweight'].includes(String(itemLoadSemantics(item).loadConvention || '').toLowerCase());
+  return !allowFallback && resolved.source === 'fallback' && !zeroExternalDefault ? '' : displayWeightFromKg(resolved.weightKg, unit);
 }
 
 function defaultAccessoryRir(item: WorkoutItem) {
@@ -1682,9 +1692,11 @@ export default function WorkoutViewerScreen() {
   const education = useMobileEducation();
   const {
     workoutId,
+    quickStart,
     loggerScenario,
     loggerLifecycle,
     returnTo,
+    planDate,
     returnThreadId,
     programId,
     returnWeekKey,
@@ -1698,9 +1710,11 @@ export default function WorkoutViewerScreen() {
     coachWorkspaceMode,
   } = useLocalSearchParams<{
     workoutId?: string;
+    quickStart?: string;
     loggerScenario?: string;
     loggerLifecycle?: string;
     returnTo?: string;
+    planDate?: string;
     returnThreadId?: string;
     programId?: string;
     returnWeekKey?: string;
@@ -2137,11 +2151,13 @@ export default function WorkoutViewerScreen() {
     if (!journal || !journalHydrated || !wheel || !data?.workout) return;
     const item = [...data.workout.core_items, ...data.workout.accessory_groups.flatMap(group => group.items)].find(item => item.id === wheel.itemId);
     if (!item) return;
+    const draftSetIndex = wheel.setIndex || nextSetIndexFromEvidence(item.set_logs || []);
+    if ((item.set_logs || []).some(log => log.set_index === draftSetIndex)) return;
     const draft = {
       itemId: item.id, identity: journalIdentityForItem(item), revision: Number(item.evidence_revision || 1),
-      setIndex: coreWheel?.setIndex || nextSetIndexFromEvidence(item.set_logs || []),
+      setIndex: draftSetIndex,
       kind: coreWheel ? 'core' as const : 'accessory' as const,
-      weightKg: weightDisplayToKg(wheel.weight, unit), reps: wheel.reps,
+      weightKg: wheel.weight.trim() ? weightDisplayToKg(wheel.weight, unit) : null, reps: wheel.reps,
       effort: coreWheel?.rpe ?? accessoryWheel?.rir ?? '',
     };
     void journal.saveDraft(draft).catch(() => setError('Draft could not be saved on this device. Keep this Session open and retry.'));
@@ -2899,6 +2915,7 @@ export default function WorkoutViewerScreen() {
   const postSessionEffortThumbScale = useRef(new Animated.Value(1)).current;
   const postSessionEffortRailValueRef = useRef<number | null>(null);
 
+  const [showFullSelfCoachRecap, setShowFullSelfCoachRecap] = useState(false);
   const [editSetVisible, setEditSetVisible] = useState(false);
   const [editSetSubmitting, setEditSetSubmitting] = useState(false);
   const editSetInFlightRef = useRef(false);
@@ -2908,6 +2925,7 @@ export default function WorkoutViewerScreen() {
     itemId: number;
     setIndex: number;
     setLogId: number;
+    restoredDraft?: boolean;
     evidenceRevision: number | null;
     mode: 'rpe' | 'rir';
     movementName: string;
@@ -2923,6 +2941,18 @@ export default function WorkoutViewerScreen() {
     rpe: '',
     rir: '',
   });
+
+  useEffect(() => {
+    if (!journal || !journalHydrated || !editSetVisible || !editSetCtx || editSetSubmitting) return;
+    const item = [...(data?.workout?.core_items || []), ...(data?.workout?.accessory_groups || []).flatMap(group => group.items)]
+      .find(candidate => candidate.id === editSetCtx.itemId);
+    if (!item || !editSetCtx.evidenceRevision) return;
+    void journal.saveEdit({ itemId: item.id, identity: journalIdentityForItem(item), revision: editSetCtx.evidenceRevision,
+      setIndex: editSetCtx.setIndex, setLogId: editSetCtx.setLogId, kind: editSetCtx.mode === 'rpe' ? 'core' : 'accessory',
+      weightKg: editSetForm.weight.trim() ? weightDisplayToKg(editSetForm.weight, unit) : null,
+      reps: editSetForm.reps, effort: editSetCtx.mode === 'rpe' ? editSetForm.rpe : editSetForm.rir,
+    }).catch(() => setError('This edit could not be kept on your device. Keep this Session open and retry.'));
+  }, [journal, journalHydrated, editSetVisible, editSetCtx, editSetForm, editSetSubmitting, unit, data?.workout]);
 
   const showSetMutationNotice = useCallback((message: string) => {
     if (setMutationNoticeTimerRef.current) clearTimeout(setMutationNoticeTimerRef.current);
@@ -3288,23 +3318,30 @@ export default function WorkoutViewerScreen() {
     opts: { mode: 'rpe' | 'rir'; movementName: string }
   ) => {
     setError(null);
+    const item = [...(data?.workout?.core_items || []), ...(data?.workout?.accessory_groups || []).flatMap(group => group.items)]
+      .find(candidate => candidate.id === itemId);
+    const revision = Number(item?.evidence_revision || 0);
+    const retained = item && journalHydrated ? journal?.edit(setLog.id, journalIdentityForItem(item), revision) : null;
+    if (journal?.hasEdit(setLog.id) && !retained) setError('This Set changed since your saved edit. Review its current values before saving.');
+    const editedWeightKg = retained ? retained.weightKg : setLog.actual_weight_kg;
     const rawWeight =
-      setLog.actual_weight_kg != null
+      editedWeightKg != null
         ? unit === 'kg'
-          ? formatWeight(setLog.actual_weight_kg, 'kg')
-          : String(roundToNearestGymIncrementLb(setLog.actual_weight_kg / KG_PER_LB))
+          ? formatWeight(editedWeightKg, 'kg')
+          : String(roundToNearestGymIncrementLb(editedWeightKg / KG_PER_LB))
         : '';
     const weightOptions = buildEditWeightOptions(opts.mode, unit, rawWeight);
     const repsOptions = ['0', ...Array.from({ length: opts.mode === 'rpe' ? 20 : 30 }, (_, idx) => String(idx + 1))];
     const metricOptions = opts.mode === 'rpe'
       ? Array.from({ length: 11 }, (_, idx) => formatWheelNumber(5 + idx * 0.5))
       : Array.from({ length: 11 }, (_, idx) => formatWheelNumber(idx * 0.5));
-    const rawMetric = opts.mode === 'rpe' ? setLog.actual_rpe : setLog.actual_rir;
+    const rawMetric = retained ? (retained.effort.trim() ? Number(retained.effort) : null) : opts.mode === 'rpe' ? setLog.actual_rpe : setLog.actual_rir;
 
     setEditSetCtx({
       itemId,
       setIndex: setLog.set_index,
       setLogId: setLog.id,
+      restoredDraft: !!retained,
       evidenceRevision: (() => {
         const item = [...(data?.workout?.core_items || []), ...(data?.workout?.accessory_groups || []).flatMap(group => group.items)]
           .find(candidate => candidate.id === itemId);
@@ -3321,12 +3358,12 @@ export default function WorkoutViewerScreen() {
 
     setEditSetForm({
       weight: nearestWheelValue(weightOptions, rawWeight, weightOptions[0] || '0'),
-      reps: nearestWheelValue(repsOptions, setLog.actual_reps != null ? String(setLog.actual_reps) : '', '0'),
+      reps: nearestWheelValue(repsOptions, retained ? retained.reps : setLog.actual_reps != null ? String(setLog.actual_reps) : '', '0'),
       rpe: opts.mode === 'rpe'
-        ? nearestWheelValue(metricOptions, rawMetric != null ? formatWheelNumber(Number(rawMetric)) : '', '8')
+        ? (isIndividualUser && rawMetric == null ? '' : nearestWheelValue(metricOptions, rawMetric != null ? formatWheelNumber(Number(rawMetric)) : '', '8'))
         : '',
       rir: opts.mode === 'rir'
-        ? nearestWheelValue(metricOptions, rawMetric != null ? formatWheelNumber(Number(rawMetric)) : '', '2')
+        ? (isIndividualUser && rawMetric == null ? '' : nearestWheelValue(metricOptions, rawMetric != null ? formatWheelNumber(Number(rawMetric)) : '', '2'))
         : '',
     });
 
@@ -3443,6 +3480,7 @@ export default function WorkoutViewerScreen() {
       });
       assertEditOwner();
 
+      void journal?.acceptedEdit(editSetCtx.setLogId).catch(() => undefined);
       feedbackDispatch({ type: 'SET_EDITED', sourceSetLogId: editSetCtx.setLogId });
       const invalidatedEventIds = Array.isArray(json?.invalidated_recognition_event_ids)
         ? json.invalidated_recognition_event_ids.map(Number).filter(Number.isFinite)
@@ -4235,8 +4273,8 @@ export default function WorkoutViewerScreen() {
       ...(acceptedSet ? [acceptedSet] : []),
     ]);
     const restoredDraft = journal?.draft(item.id, journalIdentityForItem(item), Number(item.evidence_revision || 1), currentSetIndex);
-    const rawWeight = (restoredDraft ? displayWeightFromKg(restoredDraft.weightKg, unit) : '') || idealSuggestedWeight
-      || defaultAccessoryWeight({ item: executionItem, unit, currentSetIndex, acceptedSet });
+    const rawWeight = restoredDraft ? (restoredDraft.weightKg == null ? '' : displayWeightFromKg(restoredDraft.weightKg, unit)) : idealSuggestedWeight
+      || defaultAccessoryWeight({ item: executionItem, unit, currentSetIndex, acceptedSet, allowFallback: !isIndividualUser });
     const weightOptions = buildAccessoryWeightOptions(unit, rawWeight);
     const repsOptions = ['0', ...Array.from({ length: 30 }, (_, idx) => String(idx + 1))];
     const rirOptions = Array.from({ length: 11 }, (_, idx) => formatWheelNumber(idx * 0.5));
@@ -4246,11 +4284,12 @@ export default function WorkoutViewerScreen() {
     setAccessoryWheel({
       visible: true,
       itemId: item.id,
+      setIndex: currentSetIndex,
       title: accessoryExecutionName(item),
       targetLine: accessoryTargetLine(executionItem),
-      weight: nearestWheelValue(weightOptions, rawWeight, '0'),
-      reps: nearestWheelValue(repsOptions, repsDefault, '10'),
-      rir: nearestWheelValue(rirOptions, rirDefault, '2'),
+      weight: !rawWeight && isIndividualUser ? '' : nearestWheelValue(weightOptions, rawWeight, '0'),
+      reps: isIndividualUser && restoredDraft ? restoredDraft.reps : isIndividualUser && executionItem.reps == null && !executionItem.reps_text ? '' : nearestWheelValue(repsOptions, repsDefault, '10'),
+      rir: isIndividualUser ? restoredDraft?.effort || '' : nearestWheelValue(rirOptions, rirDefault, '2'),
       weightOptions,
       repsOptions,
       rirOptions,
@@ -4271,6 +4310,7 @@ export default function WorkoutViewerScreen() {
     }));
     setPendingAccessoryLogItemId({
       itemId,
+      setIndex: wheel.setIndex,
       selectedVideo: wheel.selectedVideo || null,
     });
   };
@@ -4873,7 +4913,7 @@ export default function WorkoutViewerScreen() {
     setCoreWheel((prev) => {
       if (!prev) return prev;
       const weightKg = weightDisplayToKg(prev.weight, currentUnit);
-      const nextWeightRaw = displayWeightFromKg(weightKg, nextUnit);
+      const nextWeightRaw = prev.weight.trim() ? displayWeightFromKg(weightKg, nextUnit) : '';
       const weightOptions = buildCoreWeightOptions(nextUnit, nextWeightRaw);
       return {
         ...prev,
@@ -4881,19 +4921,19 @@ export default function WorkoutViewerScreen() {
         prescriptionLine: convertLoggerPrescriptionUnit(prev.prescriptionLine, nextUnit),
         subtitle: nextUnit.toUpperCase(),
         weightOptions,
-        weight: nearestWheelValue(weightOptions, nextWeightRaw, weightOptions[0] || (nextUnit === 'kg' ? '100' : '225')),
+        weight: !nextWeightRaw && isIndividualUser ? '' : nearestWheelValue(weightOptions, nextWeightRaw, weightOptions[0] || (nextUnit === 'kg' ? '100' : '225')),
       };
     });
 
     setAccessoryWheel((prev) => {
       if (!prev) return prev;
       const weightKg = weightDisplayToKg(prev.weight, currentUnit);
-      const nextWeightRaw = displayWeightFromKg(weightKg, nextUnit);
+      const nextWeightRaw = prev.weight.trim() ? displayWeightFromKg(weightKg, nextUnit) : '';
       const weightOptions = buildAccessoryWeightOptions(nextUnit, nextWeightRaw);
       return {
         ...prev,
         weightOptions,
-        weight: nearestWheelValue(weightOptions, nextWeightRaw, '0'),
+        weight: !nextWeightRaw && isIndividualUser ? '' : nearestWheelValue(weightOptions, nextWeightRaw, '0'),
       };
     });
 
@@ -4954,31 +4994,33 @@ export default function WorkoutViewerScreen() {
       ? requestedSetIndex
       : nextSetIndexFromEvidence(sessionEvidence);
     const restoredDraft = journal?.draft(item.id, journalIdentityForItem(item), Number(item.evidence_revision || 1), currentSetIndex);
-    const rawWeight = (restoredDraft ? displayWeightFromKg(restoredDraft.weightKg, unit) : '') || defaultCoreWeight({
+    const rawWeight = restoredDraft ? (restoredDraft.weightKg == null ? '' : displayWeightFromKg(restoredDraft.weightKg, unit)) : defaultCoreWeight({
       item,
       unit,
       currentSetIndex,
       acceptedSet,
       planned: planned || null,
+      allowFallback: !isIndividualUser,
     });
     const weightOptions = buildCoreWeightOptions(unit, rawWeight);
-    const weight = nearestWheelValue(weightOptions, rawWeight, weightOptions[0] || (unit === 'kg' ? '100' : '225'));
+    const weight = !rawWeight && isIndividualUser ? '' : nearestWheelValue(weightOptions, rawWeight, weightOptions[0] || (unit === 'kg' ? '100' : '225'));
     const repsOptions = ['0', ...Array.from({ length: 20 }, (_, idx) => String(idx + 1))];
     const rpeOptions = Array.from({ length: 11 }, (_, idx) => formatWheelNumber(5 + idx * 0.5));
     const defaultReps = restoredDraft?.reps || defaultCoreReps(item, planned || null);
     const defaultRpe = restoredDraft?.effort || defaultCoreRpe(item, planned || null);
-    const reps = nearestWheelValue(repsOptions, defaultReps, defaultReps);
-    const rpe = nearestWheelValue(rpeOptions, defaultRpe, '8');
+    const reps = isIndividualUser && restoredDraft ? restoredDraft.reps : isIndividualUser && item.reps == null && !planned?.reps
+      ? '' : nearestWheelValue(repsOptions, defaultReps, defaultReps);
+    const rpe = isIndividualUser ? restoredDraft?.effort || '' : nearestWheelValue(rpeOptions, defaultRpe, '8');
 
     setCoreWheel({
       visible: true,
       kind,
       itemId: item.id,
       setIndex: currentSetIndex,
-      title: `${liftDisplayName(item)}${setIndex ? ` · Set ${setIndex}` : ''}`,
+      title: `${resolveLoggerMovementIdentity(item).displayName} · Set ${currentSetIndex}`,
       subtitle: unit.toUpperCase(),
       targetLine,
-      prescriptionLine: targetLine ? `${targetLine} × ${reps} @${rpe}` : null,
+      prescriptionLine: targetLine ? [targetLine, reps ? `× ${reps}` : null, rpe ? `@${rpe}` : null].filter(Boolean).join(' ') : null,
       weight,
       reps,
       rpe,
@@ -5174,7 +5216,7 @@ export default function WorkoutViewerScreen() {
     }
   }, [data?.workout?.id]);
 
-  const logStraightSet = async (itemId: number, selectedVideo?: SelectedSetVideo | null) => {
+  const logStraightSet = async (itemId: number, selectedVideo?: SelectedSetVideo | null, selectedSetIndex?: number) => {
     if (!workoutId || !data) return;
 
     const input = straightInputs[itemId] || { weight: '', reps: '', rpe: '' };
@@ -5209,7 +5251,7 @@ export default function WorkoutViewerScreen() {
       const it = data?.workout?.core_items?.find((x: any) => x?.id === itemId);
       return it?.reps != null ? String(it.reps) : '';
     })();
-    const setIndex = intendedSetIndex(itemId);
+    const setIndex = selectedSetIndex ?? intendedSetIndex(itemId);
     const attemptKey = `straight:${itemId}:${setIndex}`;
     const canonicalPayload = {
       intended_set_index: setIndex,
@@ -5348,7 +5390,7 @@ export default function WorkoutViewerScreen() {
     }
   };
 
-  const logTopSet = async (itemId: number, selectedVideo?: SelectedSetVideo | null) => {
+  const logTopSet = async (itemId: number, selectedVideo?: SelectedSetVideo | null, selectedSetIndex?: number) => {
     if (!workoutId || !data) return;
 
     const input = topInputs[itemId] || { weight: '', reps: '', rpe: '' };
@@ -5383,7 +5425,7 @@ export default function WorkoutViewerScreen() {
       const it = data?.workout?.core_items?.find((x: any) => x?.id === itemId);
       return it?.reps != null ? String(it.reps) : '';
     })();
-    const setIndex = intendedSetIndex(itemId);
+    const setIndex = selectedSetIndex ?? intendedSetIndex(itemId);
     const attemptKey = `top:${itemId}:${setIndex}`;
     const canonicalPayload = {
       intended_set_index: setIndex,
@@ -5438,7 +5480,7 @@ export default function WorkoutViewerScreen() {
     }
   };
 
-  const logBackdownSet = async (itemId: number, selectedVideo?: SelectedSetVideo | null) => {
+  const logBackdownSet = async (itemId: number, selectedVideo?: SelectedSetVideo | null, selectedSetIndex?: number) => {
     if (!workoutId || !data) return;
 
     const input = bkInputs[itemId] || { weight: '', reps: '', rpe: '' };
@@ -5473,7 +5515,7 @@ export default function WorkoutViewerScreen() {
       const it = data?.workout?.core_items?.find((x: any) => x?.id === itemId);
       return it?.reps != null ? String(it.reps) : '';
     })();
-    const setIndex = intendedSetIndex(itemId);
+    const setIndex = selectedSetIndex ?? intendedSetIndex(itemId);
     const attemptKey = `backdown:${itemId}:${setIndex}`;
     const canonicalPayload = {
       intended_set_index: setIndex,
@@ -5625,9 +5667,9 @@ export default function WorkoutViewerScreen() {
     setPendingCoreWheelLog(null);
 
     requestAnimationFrame(() => {
-      if (pending.kind === 'straight') logStraightSet(pending.itemId, pending.selectedVideo);
-      else if (pending.kind === 'top') logTopSet(pending.itemId, pending.selectedVideo);
-      else if (pending.kind === 'bk') logBackdownSet(pending.itemId, pending.selectedVideo);
+      if (pending.kind === 'straight') logStraightSet(pending.itemId, pending.selectedVideo, pending.setIndex);
+      else if (pending.kind === 'top') logTopSet(pending.itemId, pending.selectedVideo, pending.setIndex);
+      else if (pending.kind === 'bk') logBackdownSet(pending.itemId, pending.selectedVideo, pending.setIndex);
       else if (pending.kind === 'fc' && pending.setIndex != null) {
         logFullCustomSet(pending.itemId, pending.setIndex, pending.selectedVideo);
       }
@@ -5643,7 +5685,7 @@ export default function WorkoutViewerScreen() {
     setPendingAccessoryLogItemId(null);
 
     requestAnimationFrame(() => {
-      handleAccessorySave(itemId, pending.selectedVideo || null);
+      handleAccessorySave(itemId, pending.selectedVideo || null, pending.setIndex);
     });
   }, [pendingAccessoryLogItemId, accInputs]);
 
@@ -5837,7 +5879,7 @@ export default function WorkoutViewerScreen() {
     };
   }
 
-  const handleAccessorySave = async (itemId: number, selectedVideo?: SelectedSetVideo | null) => {
+  const handleAccessorySave = async (itemId: number, selectedVideo?: SelectedSetVideo | null, selectedSetIndex?: number) => {
     if (!workoutId || !data) return;
 
     const input = accInputs[itemId] || { weight: '', reps: '', rir: '' };
@@ -5885,6 +5927,7 @@ export default function WorkoutViewerScreen() {
     );
     let accessorySetIndex = 1;
     while (loggedIndexes.has(accessorySetIndex)) accessorySetIndex += 1;
+    accessorySetIndex = selectedSetIndex ?? accessorySetIndex;
     const attemptKey = `accessory:${itemId}:${accessorySetIndex}`;
     const canonicalPayload = {
       intended_set_index: accessorySetIndex,
@@ -6162,6 +6205,22 @@ export default function WorkoutViewerScreen() {
 
     await beginWorkoutConfirmed();
   };
+
+  const quickStartScopeRef = useRef('');
+  const quickAddScopeRef = useRef('');
+  useEffect(() => {
+    if (quickStart !== '1' || !isIndividualUser || coachPreviewRequested || !data?.workout || loading) return;
+    if (data.workout.status === 'assigned' && data.permissions?.can_log === true && quickStartScopeRef.current !== executionScope) {
+      quickStartScopeRef.current = executionScope;
+      void beginWorkout();
+    }
+    if (data.workout.status === 'in_progress' && data.permissions?.can_edit_composition === true
+      && data.workout.composition?.item_ids.length === 0 && quickAddScopeRef.current !== executionScope) {
+      quickAddScopeRef.current = executionScope;
+      setCompositionMode('add');
+    }
+  }, [quickStart, isIndividualUser, coachPreviewRequested, data?.workout?.status, data?.workout?.id,
+    data?.permissions?.can_log, data?.permissions?.can_edit_composition, loading, executionScope]);
 
   const correctCompletedSessionEquipment = (movement: CompletedRecapMovement) => {
     const itemId = Number(movement.item_id || 0);
@@ -7495,6 +7554,13 @@ export default function WorkoutViewerScreen() {
           <ThemedText variant="error" style={styles.errorText}>
             {error || 'Something went wrong'}
           </ThemedText>
+          {journal && Object.keys(journal.snapshot().drafts).length > 0 ? <Text style={styles.muted}>Your unfinished set entries are kept on this device.</Text> : null}
+          <TouchableOpacity accessibilityRole="button" onPress={() => { void fetchWorkout({ reason: 'manual' }); }} style={[styles.actionButton, styles.actionPrimary, { minWidth: 160, marginTop: 16 }]}>
+            <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Retry session</Text>
+          </TouchableOpacity>
+          <TouchableOpacity accessibilityRole="button" onPress={() => { if (router.canGoBack()) router.back(); else router.replace('/(tabs)/workout' as any); }} style={[styles.actionButton, { minWidth: 160 }]}>
+            <Text style={styles.muted}>Back to training</Text>
+          </TouchableOpacity>
         </View>
       </>
     );
@@ -7549,6 +7615,7 @@ export default function WorkoutViewerScreen() {
     (item) => !(isBackdownWorkoutItem(item) && item.parent_item_id != null),
   ).length;
   const accessoryMovementOrder = workout.accessory_groups.flatMap((group) => group.items);
+  const firstArtworkItem = workout.core_items.find(item => !item.parent_item_id) || accessoryMovementOrder[0];
   const progressPct = plannedSets ? Math.min(100, Math.round((loggedSets / plannedSets) * 100)) : 0;
   const focusLine = firstSessionFocus(workout);
   const sessionNoteAuthor = resolveSessionNoteAuthor({
@@ -7692,6 +7759,10 @@ export default function WorkoutViewerScreen() {
       router.navigate('/(tabs)/athlete-dashboard' as any);
       return;
     }
+    if (returnTo === 'plan' && isIndividualUser) {
+      router.navigate({ pathname: '/(tabs)/workout', params: { planDate } } as any);
+      return;
+    }
     if (returnTo === 'calendar') {
       router.navigate('/(tabs)/athlete-calendar' as any);
       return;
@@ -7714,6 +7785,10 @@ export default function WorkoutViewerScreen() {
   const handleCloseCompletedRecap = () => {
     if (isCoachAthletePreview) {
       handleReturnToCoachEditor();
+      return;
+    }
+    if (returnTo === 'plan' && isIndividualUser) {
+      handleBackToTrainingHub();
       return;
     }
     if (freshCompletionSummaryIdRef.current) {
@@ -7861,7 +7936,7 @@ export default function WorkoutViewerScreen() {
     return ({
     itemId: item.id,
     groupItemId: item.parent_item_id || item.id,
-    movementName: liftDisplayName(item),
+    movementName: resolveLoggerMovementIdentity(item).displayName,
     designation: formatDesignation((item as any).designation) || null,
     liftType:
       kind === 'fc'
@@ -7926,7 +8001,7 @@ export default function WorkoutViewerScreen() {
         ? () =>
             openEditSet(item.id, log, {
               mode: 'rpe',
-              movementName: liftDisplayName(item),
+              movementName: resolveLoggerMovementIdentity(item).displayName,
             })
         : undefined,
       onDelete: canLog && canDeletePersistedSetLog(log, item.set_logs)
@@ -8682,12 +8757,16 @@ export default function WorkoutViewerScreen() {
   const coreWheelItem = coreWheel
     ? data?.workout?.core_items.find((item) => item.id === coreWheel.itemId) || null
     : null;
+  const coreWheelSaveDisabled = coreWheelSubmitAction.disabled || Boolean(isIndividualUser && coreWheel
+    && (!coreWheel.weight.trim() || !coreWheel.reps.trim() || (coreWheel.kind === 'top' && coreWheel.reps !== '0' && !coreWheel.rpe)));
   const coreWheelLastLog = lastLogForItem(coreWheelItem);
   const accessoryWheelItem = accessoryWheel
     ? data?.workout?.accessory_groups
         .flatMap((group) => group.items)
         .find((item) => item.id === accessoryWheel.itemId) || null
     : null;
+  const accessoryWheelSaveDisabled = accessoryWheelSubmitAction.disabled || Boolean(isIndividualUser && accessoryWheel
+    && (!accessoryWheel.weight.trim() || !accessoryWheel.reps.trim()));
   const accessoryWheelLastLog = lastLogForItem(accessoryWheelItem);
   const coreWheelRepeatPreview = coreWheelLastLog
     ? repeatSetPreview(coreWheelLastLog, {
@@ -8722,9 +8801,9 @@ export default function WorkoutViewerScreen() {
     const draft = coreRepeatDraft(coreWheelLastLog, toWheelWeight(coreWheelLastLog, unit));
     const repeatedWheel = {
       ...coreWheel,
-      weight: nearestWheelValue(coreWheel.weightOptions, draft.weight, coreWheel.weight),
-      reps: nearestWheelValue(coreWheel.repsOptions, draft.reps, coreWheel.reps),
-      rpe: nearestWheelValue(coreWheel.rpeOptions, draft.rpe, coreWheel.rpe),
+      weight: isIndividualUser ? draft.weight : nearestWheelValue(coreWheel.weightOptions, draft.weight, coreWheel.weight),
+      reps: isIndividualUser ? draft.reps : nearestWheelValue(coreWheel.repsOptions, draft.reps, coreWheel.reps),
+      rpe: isIndividualUser ? draft.rpe : nearestWheelValue(coreWheel.rpeOptions, draft.rpe, coreWheel.rpe),
     };
     setCoreWheel(repeatedWheel);
     queueCoreWheelLog(repeatedWheel);
@@ -8743,9 +8822,9 @@ export default function WorkoutViewerScreen() {
     );
     const repeatedWheel = {
       ...accessoryWheel,
-      weight: nearestWheelValue(accessoryWheel.weightOptions, draft.weight, accessoryWheel.weight),
-      reps: nearestWheelValue(accessoryWheel.repsOptions, draft.reps, accessoryWheel.reps),
-      rir: nearestWheelValue(accessoryWheel.rirOptions, draft.rir, accessoryWheel.rir),
+      weight: isIndividualUser ? draft.weight : nearestWheelValue(accessoryWheel.weightOptions, draft.weight, accessoryWheel.weight),
+      reps: isIndividualUser ? draft.reps : nearestWheelValue(accessoryWheel.repsOptions, draft.reps, accessoryWheel.reps),
+      rir: isIndividualUser ? draft.rir : nearestWheelValue(accessoryWheel.rirOptions, draft.rir, accessoryWheel.rir),
       selectedVideo: accessoryWheel.selectedVideo || null,
     };
     setAccessoryWheel(repeatedWheel);
@@ -8762,7 +8841,9 @@ export default function WorkoutViewerScreen() {
     return (
       <>
         <Tabs.Screen options={{ headerShown: loggerHeaderShown }} />
-        {shouldShowCompletionCeremony ? (
+        {isIndividualUser && !showFullSelfCoachRecap ? <SelfCoachWorkoutSaved key={`${executionScope}:saved`} owner={String(user?.id || '')} workoutId={workout.id} recap={workout.completed_recap} unit={unit} top={insets.top} bottom={insets.bottom} unrecordedSets={missingSetLabelsForWorkout(workout).length > 0}
+          onView={() => setShowFullSelfCoachRecap(true)} onDone={returnTo === 'today' || quickStart === '1' ? () => router.navigate('/(tabs)/athlete-dashboard') : handleCloseCompletedRecap} onTrain={() => router.navigate('/(tabs)/athlete-dashboard')}
+          onPlan={() => router.push('/(tabs)/workout' as any)} onProgress={() => router.push('/(tabs)/ledger' as any)} /> : shouldShowCompletionCeremony ? (
           <View
             style={[
               styles.completionCeremonyScreen,
@@ -8788,7 +8869,7 @@ export default function WorkoutViewerScreen() {
             viewerMode={coachPreviewRequested ? 'coach' : 'athlete'}
             refreshing={refreshing}
             onRefresh={onRefresh}
-            onClose={handleCloseCompletedRecap}
+            onClose={isIndividualUser ? () => setShowFullSelfCoachRecap(false) : handleCloseCompletedRecap}
             onDone={handleCloseCompletedRecap}
             onViewLedger={coachPreviewRequested ? undefined : () => router.push('/(tabs)/ledger' as any)}
             onViewCalendar={coachPreviewRequested
@@ -8826,18 +8907,46 @@ export default function WorkoutViewerScreen() {
     );
   }
 
+  const orderedSessionMovements = getOrderedWorkoutMovements(workout);
+  const sessionNavigatorRows = orderedSessionMovements.map(row => {
+    const item = workout.core_items.find(item => item.id === row.id) || accessoryMovementOrder.find(item => item.id === row.id);
+    return { key: row.key, title: row.key.startsWith('ss:') ? `Superset ${row.key.slice(3)}` : item ? resolveLoggerMovementIdentity(item).displayName : 'Movement',
+      summary: `${row.logged} / ${row.total} ${row.key.startsWith('ss:') ? 'rounds' : 'sets'} saved`, complete: row.complete,
+      selected: row.key === focusedMovementKey, artwork: item ? canonicalArtworkInputForLoggerItem(item) : null };
+  });
+  const focusedSessionIndex = orderedSessionMovements.findIndex(row => row.key === focusedMovementKey);
+  const nextUnfinishedMovement = orderedSessionMovements[focusedSessionIndex]?.complete
+    ? orderedSessionMovements.find((row, index) => index > focusedSessionIndex && row.total > 0 && !row.complete)
+      || orderedSessionMovements.find(row => row.total > 0 && !row.complete)
+    : undefined;
+  const continuationTitle = sessionNavigatorRows.find(row => row.key === nextUnfinishedMovement?.key)?.title;
+  const showSelfCoachControls = isIndividualUser && isActiveSession && canLog;
+  const sessionControlsBusy = Boolean(actionLoading || readinessVisible || readinessSubmitting
+    || feedbackState.submission.status === 'submitting' || canonicalSetSubmissionControllerRef.current.isInFlight());
+  const selectSessionMovement = (key: string) => {
+    if (sessionControlsBusy) return;
+    manualMovementSelectionRef.current = true;
+    openMovementCard(key);
+    setNavigatorVisible(false);
+    scrollRef.current?.scrollTo?.({ y: 0, animated: false });
+  };
+
   return (
     <View style={styles.screen}>
       <Tabs.Screen options={{ headerShown: loggerHeaderShown }} />
       {canEditComposition && compositionMode && workout.composition ? <ActiveCompositionEditor
         key={`${executionScope}:${compositionMode}`} mode={compositionMode} workoutId={workout.id} athlete={athlete}
-        unit={unit} composition={workout.composition} onClose={() => setCompositionMode(null)} onSaved={payload => {
+        unit={unit} composition={workout.composition} quickAdd={isIndividualUser} onClose={() => setCompositionMode(null)} onSaved={payload => {
           if (!validateCompositionResponse(payload, dataRef.current, String(workoutId))) {
             throw new Error('Session saved. Refresh to see the updated movements.');
           }
           const previous = getOrderedWorkoutMovements(dataRef.current?.workout);
           const next = getOrderedWorkoutMovements(payload.workout);
-          const focus = focusAfterCompositionChange(previous, next, focusedMovementKey);
+          const addedItemId = payload.composition_mutation?.added_item_ids?.[0];
+          const focus = isIndividualUser && addedItemId
+            ? findRenderedMovementKeyForItem(payload.workout, addedItemId)
+            : focusAfterCompositionChange(previous, next, focusedMovementKey);
+          if (isIndividualUser && addedItemId) { setCoreWheel(null); setAccessoryWheel(null); }
           workoutRequestManagerRef.current.cancel();
           dataRef.current = payload;
           setData(payload);
@@ -8858,14 +8967,17 @@ export default function WorkoutViewerScreen() {
           setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
           showSetMutationNotice('Prescription updated');
         }} /> : null}
-      <SessionV3Header title={workout.label || 'Training Session'} subtitle={[workout.week_number ? `W${workout.week_number}` : null, workout.date ? new Date(`${workout.date.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : null].filter(Boolean).join(' · ')} active={isActiveSession} preview={isCoachAthletePreview ? athlete.name : null} inset={insets.top}
+      <SessionV3Header title={trainingSessionTitle(workout.label)} subtitle={[workout.week_number ? `W${workout.week_number}` : null, workout.date ? new Date(`${workout.date.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : null].filter(Boolean).join(' · ')} active={isActiveSession} preview={isCoachAthletePreview ? athlete.name : null} inset={insets.top}
         logged={loggedSets} total={plannedSets} startedAt={workout.started_at}
+        onFinish={showSelfCoachControls ? requestCompleteWorkout : undefined} disabled={sessionControlsBusy}
         onBack={() => { if (isPreSession && focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else handleBackToTrainingHub(); }}
         onActions={() => canLog ? setSessionActionsVisible(true) : Alert.alert('Session actions', undefined, [
           ...(isCoachAthletePreview ? [{ text: 'Return to Session Workspace', onPress: handleReturnToCoachEditor }] : [
             ...(canEdit ? [{ text: 'Edit Session', onPress: handleEditWorkout }] : []),
           ]), { text: 'Close', style: 'cancel' },
         ])} />
+      {showSelfCoachControls && sessionNavigatorRows.length ? <SessionExerciseStrip rows={sessionNavigatorRows}
+        onSelect={selectSessionMovement} onBrowse={() => setNavigatorVisible(true)} disabled={sessionControlsBusy} /> : null}
       <SessionActionsSheet visible={sessionActionsVisible && canLog} canEditComposition={canEditComposition}
         removeUnavailableReason={workout.composition?.items.some(item => item.can_remove && item.set_log_count === 0
           && !acceptedSetEvidenceItemIds.has(item.id)) ? undefined : 'No movements without logged Sets are available to remove.'}
@@ -8883,7 +8995,6 @@ export default function WorkoutViewerScreen() {
         onDismissEvent={dismissCurrentRecognition}
       />
 
-      {/* Scrollable Training Session content */}
       <RefreshScreen
         key={`session-logger-body:${workout.id}:${bodyRenderGeneration}`}
         ref={scrollRef}
@@ -8919,9 +9030,9 @@ export default function WorkoutViewerScreen() {
         </View> : null}
         {isPreSession && !focusedMovementKey ? <SessionV3PlanHero
           eyebrow={workout.status === 'draft' ? 'DRAFT SESSION' : 'YOUR SESSION'}
-          title={workout.label || 'Training Session'} focus={focusLine} planned={plannedSets}
+          title={trainingSessionTitle(workout.label)} focus={focusLine} planned={plannedSets}
           movements={coreMovementCount + accessoryMovementOrder.length}
-          artwork={canonicalArtworkInputForLoggerItem(workout.core_items.find(item => !item.parent_item_id) || accessoryMovementOrder[0])}
+          artwork={firstArtworkItem ? canonicalArtworkInputForLoggerItem(firstArtworkItem) : null}
           note={workout.programming_notes}
         /> : null}
         {isPreSession && !isCoachAthletePreview && unavailableExplanation ? (
@@ -8984,7 +9095,7 @@ export default function WorkoutViewerScreen() {
           onRetry={jobId => { void retryVideoUploadJob(jobId); }}
         /> : null}
 
-        {!!error && (
+        {!!error && (<>
           <View style={styles.errorBanner}>
             <Text style={styles.errorBannerText}>{error}</Text>
             <TouchableOpacity
@@ -8995,7 +9106,8 @@ export default function WorkoutViewerScreen() {
               <Text style={styles.errorBannerCloseText}>✕</Text>
             </TouchableOpacity>
           </View>
-        )}
+          <OnboardingSupport step="session" errorCode="save_unconfirmed" />
+        </>)}
         <TardyReasonModal
           visible={tardyReasonVisible}
           tardyReason={tardyReason}
@@ -9312,6 +9424,13 @@ export default function WorkoutViewerScreen() {
           })}
         </View>
 
+        {showSelfCoachControls && canEditComposition && plannedSets > 0 ? <Pressable accessibilityRole="button"
+          disabled={sessionControlsBusy} onPress={() => openComposition('add')}
+          style={{ minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Ionicons name="add" size={20} color={SLColors.accentViolet} />
+          <Text style={{ color: SLColors.accentViolet, fontSize: 15 }}>Add exercise</Text>
+        </Pressable> : null}
+
         {/* Bottom-of-page actions: Complete / Cancel */}
         {isFinishedSession && canCompleteOrCancel && (
             <View style={[styles.actionBar, { marginTop: 16, marginBottom: 24 }]}>
@@ -9371,23 +9490,22 @@ export default function WorkoutViewerScreen() {
       </RefreshScreen>
 
       <SessionV3Footer bottom={insets.bottom} unit={unit} onUnit={() => switchDisplayUnit(unit === 'kg' ? 'lb' : 'kg')}
-        label={isCoachAthletePreview ? (isActiveSession ? 'Log set · Preview' : 'Begin Session · Preview') : isPreSession ? 'Begin Session' : sessionAllSetsSaved ? 'Complete Session' : focusedSetLabel}
-        disabled={(isCoachAthletePreview && !isPreSession) || !!actionLoading || readinessVisible || readinessSubmitting || (isPreSession && !isCoachAthletePreview && !canBegin) || feedbackState.submission.status === 'submitting' || canonicalSetSubmissionControllerRef.current.isInFlight()}
-        onPress={isPreSession ? () => { void handleBeginWorkoutPress(); } : sessionAllSetsSaved ? requestCompleteWorkout : focusedSetAction || (() => setNavigatorVisible(true))}
-        secondary={isPreSession ? (focusedMovementKey ? 'Back to Session plan' : isCoachAthletePreview ? 'Session movements' : null) : `${getOrderedWorkoutMovements(workout).findIndex(row => row.key === focusedMovementKey) + 1} of ${getOrderedWorkoutMovements(workout).length} movements`}
+        inlineTools={showSelfCoachControls}
+        remainingSets={Math.max(0, plannedSets - loggedSets)}
+        label={canEditComposition && isActiveSession && plannedSets === 0 ? 'Add exercise' : isCoachAthletePreview ? (isActiveSession ? 'Log set · Preview' : 'Begin Session · Preview') : isPreSession ? 'Begin Session' : sessionAllSetsSaved ? 'Complete Session' : showSelfCoachControls && continuationTitle ? `Continue ${continuationTitle}` : focusedSetLabel}
+        disabled={isCoachAthletePreview && !isPreSession || !!actionLoading || readinessVisible || readinessSubmitting || (isPreSession && !isCoachAthletePreview && !canBegin) || feedbackState.submission.status === 'submitting' || canonicalSetSubmissionControllerRef.current.isInFlight()}
+        onPress={canEditComposition && isActiveSession && plannedSets === 0 ? () => openComposition('add') : isPreSession ? () => { void handleBeginWorkoutPress(); } : sessionAllSetsSaved ? requestCompleteWorkout : showSelfCoachControls && nextUnfinishedMovement ? () => selectSessionMovement(nextUnfinishedMovement.key) : focusedSetAction || (() => setNavigatorVisible(true))}
+        secondary={isPreSession ? (focusedMovementKey ? 'Back to Session plan' : isCoachAthletePreview ? 'Session movements' : null) : showSelfCoachControls ? `Exercises · ${Math.max(0, focusedSessionIndex) + 1}/${orderedSessionMovements.length}` : `${focusedSessionIndex + 1} of ${orderedSessionMovements.length} movements`}
         onSecondary={() => { if (isPreSession) { if (focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else if (isCoachAthletePreview) setNavigatorVisible(true);  } else setNavigatorVisible(true); }}
         rest={activeRestTimer} onRest={() => openTimerPicker()} onSkip={stopRestTimer} onAddRest={addRestTime} onRestSecond={deliverRestTimerCue}
       />
       <SessionMovementNavigator visible={navigatorVisible} bottom={insets.bottom} onClose={() => setNavigatorVisible(false)}
-        rows={getOrderedWorkoutMovements(workout).map(row => {
-          const item = workout.core_items.find(item => item.id === row.id) || accessoryMovementOrder.find(item => item.id === row.id);
-          return { key: row.key, title: row.key.startsWith('ss:') ? `Superset ${row.key.slice(3)}` : item ? (row.kind === 'core' ? liftDisplayName(item) : accessoryExecutionName(item)) : 'Movement', summary: `${row.logged} / ${row.total} ${row.key.startsWith('ss:') ? 'rounds' : 'sets'} saved`, complete: row.complete, selected: row.key === focusedMovementKey, artwork: item ? canonicalArtworkInputForLoggerItem(item) : null };
-        })}
-        onSelect={(key) => { manualMovementSelectionRef.current = true; openMovementCard(key); setNavigatorVisible(false); scrollRef.current?.scrollTo?.({ y: 0, animated: false }); }}
+        rows={sessionNavigatorRows} onSelect={selectSessionMovement}
       />
 
       {bodyRecoveryFailed ? (
-        <View style={styles.bodyRecoveryOverlay} accessibilityRole="alert">
+        <View style={styles.bodyRecoveryOverlay}>
+          <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', gap: 10, paddingVertical: 20 }}>
           <Ionicons name="refresh-circle-outline" size={32} color={SLColors.accentViolet} />
           <Text style={styles.bodyRecoveryTitle}>Session view needs to reconnect</Text>
           <Text style={styles.bodyRecoveryBody}>
@@ -9404,6 +9522,8 @@ export default function WorkoutViewerScreen() {
           >
             <Text style={styles.bodyRecoveryButtonText}>Retry Session View</Text>
           </Pressable>
+          <OnboardingSupport step="session" errorCode="network" />
+          </ScrollView>
         </View>
       ) : null}
 
@@ -9443,9 +9563,9 @@ export default function WorkoutViewerScreen() {
                 target={coreWheel.prescriptionLine}
               /> : null}
               <LoggerWheelPicker columns={[
-                { key: 'weight', label: 'Weight', value: coreWheel.weight, options: coreWheel.weightOptions, suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, weight: value } : prev) },
-                { key: 'reps', label: 'Reps', value: coreWheel.reps, options: coreWheel.repsOptions, accessibilityValue: (value) => `${value} reps`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, reps: value } : prev) },
-                { key: 'rpe', label: 'RPE', value: coreWheel.rpe, options: coreWheel.rpeOptions, accessibilityValue: (value) => `${value} RPE`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, rpe: value } : prev) },
+                { key: 'weight', label: 'Weight', value: coreWheel.weight, allowUnset: isIndividualUser, options: coreWheel.weightOptions, suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, weight: value } : prev) },
+                { key: 'reps', label: 'Reps', value: coreWheel.reps, allowUnset: isIndividualUser, options: coreWheel.repsOptions, accessibilityValue: (value) => `${value} reps`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, reps: value } : prev) },
+                { key: 'rpe', label: 'RPE', value: coreWheel.rpe, allowUnset: isIndividualUser, options: coreWheel.rpeOptions, accessibilityValue: (value) => `${value} RPE`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, rpe: value } : prev) },
               ]} />
 
               <SetEntryVideo video={coreWheel.selectedVideo} onPick={() => pickVideoForEntry('core')}
@@ -9500,14 +9620,15 @@ export default function WorkoutViewerScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={coreWheelSubmitAction.accessibilityLabel}
                   accessibilityLiveRegion="polite"
-                  accessibilityState={{ disabled: coreWheelSubmitAction.disabled, busy: ['saving', 'refreshing'].includes(coreWheelSubmitAction.tone) }}
-                  disabled={coreWheelSubmitAction.disabled}
+                  accessibilityState={{ disabled: coreWheelSaveDisabled, busy: ['saving', 'refreshing'].includes(coreWheelSubmitAction.tone) }}
+                  disabled={coreWheelSaveDisabled}
                   onPress={feedbackState.submission.status === 'stale_conflict' ? refreshAfterStaleConflict : commitCoreWheel}
                   style={({ pressed }) => [
                     styles.actionButton,
                     styles.actionPrimary,
                     styles.logSheetSubmit,
                     styles.coreWheelSubmit,
+                    coreWheelSaveDisabled && coreWheelSubmitAction.tone === 'ready' && { opacity: 0.55 },
                     coreWheelSubmitAction.tone === 'accepted' && styles.logSheetSubmitAccepted,
                     coreWheelSubmitAction.tone === 'failure' && styles.logSheetSubmitFailure,
                     pressed && !reduceMotion && styles.logSheetSubmitPressed,
@@ -9544,9 +9665,9 @@ export default function WorkoutViewerScreen() {
               /></StrengthLedgerSheetDragRegion>
 
               <LoggerWheelPicker columns={[
-                { key: 'weight', label: 'Weight', value: accessoryWheel.weight, options: accessoryWheel.weightOptions, suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, weight: value } : prev) },
-                { key: 'reps', label: 'Reps', value: accessoryWheel.reps, options: accessoryWheel.repsOptions, accessibilityValue: (value) => `${value} reps`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, reps: value } : prev) },
-                { key: 'rir', label: 'RIR', value: accessoryWheel.rir, options: accessoryWheel.rirOptions, accessibilityValue: (value) => `${value} RIR`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, rir: value } : prev) },
+                { key: 'weight', label: 'Weight', value: accessoryWheel.weight, allowUnset: isIndividualUser, options: accessoryWheel.weightOptions, suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, weight: value } : prev) },
+                { key: 'reps', label: 'Reps', value: accessoryWheel.reps, allowUnset: isIndividualUser, options: accessoryWheel.repsOptions, accessibilityValue: (value) => `${value} reps`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, reps: value } : prev) },
+                { key: 'rir', label: 'RIR', value: accessoryWheel.rir, allowUnset: isIndividualUser, options: accessoryWheel.rirOptions, accessibilityValue: (value) => `${value} RIR`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, rir: value } : prev) },
               ]} />
 
               <SetEntryVideo video={accessoryWheel.selectedVideo} onPick={() => pickVideoForEntry('accessory')}
@@ -9600,13 +9721,14 @@ export default function WorkoutViewerScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={accessoryWheelSubmitAction.accessibilityLabel}
                   accessibilityLiveRegion="polite"
-                  accessibilityState={{ disabled: accessoryWheelSubmitAction.disabled, busy: ['saving', 'refreshing'].includes(accessoryWheelSubmitAction.tone) }}
-                  disabled={accessoryWheelSubmitAction.disabled}
+                  accessibilityState={{ disabled: accessoryWheelSaveDisabled, busy: ['saving', 'refreshing'].includes(accessoryWheelSubmitAction.tone) }}
+                  disabled={accessoryWheelSaveDisabled}
                   onPress={feedbackState.submission.status === 'stale_conflict' ? refreshAfterStaleConflict : commitAccessoryWheel}
                   style={({ pressed }) => [
                     styles.actionButton,
                     styles.actionPrimary,
                     styles.logSheetSubmit,
+                    accessoryWheelSaveDisabled && accessoryWheelSubmitAction.tone === 'ready' && { opacity: 0.55 },
                     accessoryWheelSubmitAction.tone === 'accepted' && styles.logSheetSubmitAccepted,
                     accessoryWheelSubmitAction.tone === 'failure' && styles.logSheetSubmitFailure,
                     pressed && !reduceMotion && styles.logSheetSubmitPressed,
@@ -10635,19 +10757,19 @@ export default function WorkoutViewerScreen() {
               >
               <LoggerSheetHeader
                 onUnitChange={switchDisplayUnit}
-                supporting={`Currently logged: ${editSetCtx.loggedWeightKg != null ? formatWeight(editSetCtx.loggedWeightKg, unit) : '—'} ${unit} × ${editSetCtx.loggedReps ?? '—'}${editSetCtx.mode === 'rpe'
+                supporting={`${editSetCtx.restoredDraft ? 'Unsaved edit restored. ' : ''}Currently logged: ${editSetCtx.loggedWeightKg != null ? formatWeight(editSetCtx.loggedWeightKg, unit) : '—'} ${unit} × ${editSetCtx.loggedReps ?? '—'}${editSetCtx.mode === 'rpe'
                   ? ` @${editSetCtx.loggedRpe != null ? formatWheelNumber(editSetCtx.loggedRpe) : '—'}`
                   : ` @${editSetCtx.loggedRir != null ? formatWheelNumber(editSetCtx.loggedRir) : '—'} RIR`}`}
                 title={`${editSetCtx.movementName} · Set ${editSetCtx.setIndex}`}
                 unit={unit}
               />
 
-              {error && !editSetSubmitting ? <Text accessibilityRole="alert" style={styles.errorText}>{error}</Text> : null}
+              {error && !editSetSubmitting ? <View><Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.errorText}>{error}</Text><OnboardingSupport step="session" errorCode="save_unconfirmed" /></View> : null}
 
               <LoggerWheelPicker columns={[
-                { key: 'weight', label: 'Weight', value: editSetForm.weight, options: buildEditWeightOptions(editSetCtx.mode, unit, editSetForm.weight), suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (weight) => setEditSetForm((prev) => ({ ...prev, weight })) },
-                { key: 'reps', label: 'Reps', value: editSetForm.reps, options: ['0', ...Array.from({ length: editSetCtx.mode === 'rpe' ? 20 : 30 }, (_, idx) => String(idx + 1))], accessibilityValue: (value) => `${value} reps`, onChange: (reps) => setEditSetForm((prev) => ({ ...prev, reps })) },
-                { key: editSetCtx.mode, label: editSetCtx.mode === 'rpe' ? 'RPE' : 'RIR', value: editSetCtx.mode === 'rpe' ? editSetForm.rpe : editSetForm.rir, options: editSetCtx.mode === 'rpe' ? Array.from({ length: 11 }, (_, idx) => formatWheelNumber(5 + idx * 0.5)) : Array.from({ length: 11 }, (_, idx) => formatWheelNumber(idx * 0.5)), accessibilityValue: (value) => `${value} ${editSetCtx.mode.toUpperCase()}`, onChange: (metric) => setEditSetForm((prev) => editSetCtx.mode === 'rpe' ? { ...prev, rpe: metric } : { ...prev, rir: metric }) },
+                { key: 'weight', disabled: editSetSubmitting, label: 'Weight', value: editSetForm.weight, options: buildEditWeightOptions(editSetCtx.mode, unit, editSetForm.weight), suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (weight) => setEditSetForm((prev) => ({ ...prev, weight })) },
+                { key: 'reps', disabled: editSetSubmitting, label: 'Reps', value: editSetForm.reps, options: ['0', ...Array.from({ length: editSetCtx.mode === 'rpe' ? 20 : 30 }, (_, idx) => String(idx + 1))], accessibilityValue: (value) => `${value} reps`, onChange: (reps) => setEditSetForm((prev) => ({ ...prev, reps })) },
+                { key: editSetCtx.mode, disabled: editSetSubmitting, label: editSetCtx.mode === 'rpe' ? 'RPE' : 'RIR', value: editSetCtx.mode === 'rpe' ? editSetForm.rpe : editSetForm.rir, allowUnset: isIndividualUser, options: editSetCtx.mode === 'rpe' ? Array.from({ length: 11 }, (_, idx) => formatWheelNumber(5 + idx * 0.5)) : Array.from({ length: 11 }, (_, idx) => formatWheelNumber(idx * 0.5)), accessibilityValue: (value) => `${value} ${editSetCtx.mode.toUpperCase()}`, onChange: (metric) => setEditSetForm((prev) => editSetCtx.mode === 'rpe' ? { ...prev, rpe: metric } : { ...prev, rir: metric }) },
               ]} />
 
               <TouchableOpacity
@@ -10656,6 +10778,7 @@ export default function WorkoutViewerScreen() {
                   styles.coreWheelFailedToggle,
                   editSetForm.reps === '0' && styles.failedSetToggleActive,
                 ]}
+                disabled={editSetSubmitting}
                 onPress={() =>
                   setEditSetForm((prev) => ({
                     ...prev,
@@ -10673,6 +10796,9 @@ export default function WorkoutViewerScreen() {
               <View style={styles.coreWheelActions}>
                 <TouchableOpacity
                   style={[styles.actionButton, styles.actionPrimary, styles.coreWheelSubmit]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Save Set changes"
+                  accessibilityState={{ busy: editSetSubmitting, disabled: editSetSubmitting }}
                   onPress={saveEditedSet}
                   disabled={editSetSubmitting}
                 >
@@ -10715,7 +10841,7 @@ export default function WorkoutViewerScreen() {
             </View>
             <Text style={styles.postSessionTitle}>Finish with unlogged sets?</Text>
             <Text style={styles.incompleteCompleteCopy}>
-              These prescribed sets have not been logged. You can keep logging or continue to the post-session survey.
+              These sets have not been logged. You can keep logging or continue to the post-session survey.
             </Text>
 
             <View style={styles.incompleteMissingListFrame}>

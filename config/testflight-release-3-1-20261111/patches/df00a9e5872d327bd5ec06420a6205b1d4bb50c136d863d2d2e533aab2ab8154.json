@@ -1,0 +1,10 @@
+[
+  {
+    "before": "import { useKeyboardState } from '@/components/keyboard/keyboard-state';\nimport { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';\nimport { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';\n",
+    "after": "import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';\nimport { useKeyboardState } from '@/components/keyboard/keyboard-state';\nimport { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';\nimport { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';\n"
+  },
+  {
+    "before": "              onPress: () => setFeedbackModalOpen(true),\n              accent: 'neutral',\n            })}\n            {settingsRow({\n              icon: 'information-circle-outline',\n              title: 'About',\n",
+    "after": "              onPress: () => setFeedbackModalOpen(true),\n              accent: 'neutral',\n            })}\n            <OnboardingSupport step=\"account\" />\n            {settingsRow({\n              icon: 'information-circle-outline',\n              title: 'About',\n"
+  }
+]

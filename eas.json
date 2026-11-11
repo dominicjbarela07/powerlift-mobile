@@ -37,6 +37,20 @@
         "distribution": "store"
       }
     },
+    "testflight31": {
+      "channel": "testflight-3-1",
+      "environment": "production",
+      "autoIncrement": true,
+      "env": {
+        "STRENGTH_LEDGER_RELEASE_TARGET": "testflight31",
+        "EXPO_PUBLIC_APPROVED_ART_CHANNEL": "testflight",
+        "EXPO_PUBLIC_ART_RUNTIME_VERSION": "3.1.0",
+        "EXPO_PUBLIC_API_BASE": "https://app.strengthledger.fit"
+      },
+      "ios": {
+        "distribution": "store"
+      }
+    },
     "testflight": {
       "channel": "testflight",
       "autoIncrement": true,
@@ -50,6 +64,11 @@
     }
   },
   "submit": {
+    "testflight31": {
+      "ios": {
+        "ascAppId": "6756639297"
+      }
+    },
     "production": {
       "android": {
         "track": "internal"

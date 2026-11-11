@@ -2,9 +2,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 
-// The owner requires preservation of approved imagery. Keep the ENTIRE assets
-// tree; only Git history, development outputs and non-runtime review media leave
-// the upload. Do not replace this policy with a broad assets/ exclusion.
+// Preserve runtime imagery and on-disk source originals. Only the individually
+// verified, unreferenced master folder may leave the assets upload.
+const SOURCE_ONLY_DIRECTORY = 'assets/images/movement-artwork/free-weight-v1/masters';
 const BASE_RULES = ['node_modules/', '.expo/', 'dist/', 'web-build/',
   'expo-env.d.ts', '.kotlin/', '*.orig.*', '*.jks', '*.p8', '*.p12', '*.key',
   '*.mobileprovision', '.metro-health-check*', 'npm-debug.*', 'yarn-debug.*',
@@ -14,20 +14,21 @@ const UPLOAD_ONLY_RULES = ['/.git', '/artwork-review/candidates/',
   '/artwork-review/generation-attempts/', '/artwork-review/exports/',
   '/artwork-review/equipment-types/', '/artwork-review/.review.lock',
   '/artwork-review/.*.json*', '/docs/evidence/', '/docs/validation/',
-  '/artifacts/', '/.pytest_cache/', '/.worktrees/'];
+  '/artifacts/', '/.pytest_cache/', '/.worktrees/', `/${SOURCE_ONLY_DIRECTORY}/`];
 const OMIT_DIRECTORIES = ['.git', 'node_modules', '.expo', 'dist', 'web-build',
   '.kotlin', 'app-example', 'ios', 'android', 'artwork-review/candidates',
   'artwork-review/generation-attempts', 'artwork-review/exports',
   'artwork-review/equipment-types', 'docs/evidence', 'docs/validation',
-  'artifacts', '.pytest_cache', '.worktrees'];
+  'artifacts', '.pytest_cache', '.worktrees', SOURCE_ONLY_DIRECTORY];
 const REQUIRED_ROOTS = ['assets', 'app', 'components', 'constants', 'hooks',
   'lib', 'config', 'scripts', 'dev-mocks', 'context'];
 const REQUIRED_FILES = ['package.json', 'package-lock.json', 'app.json',
   'app.config.js', 'eas.json', 'tsconfig.json', '.gitignore', '.easignore',
   'theme.ts', 'eslint.config.js',
-  'artwork-review/runtime-policy.json', 'artwork-review/review-state.json'];
+  'artwork-review/runtime-policy.json', 'artwork-review/review-state.json',
+  'config/native-source-only-assets.json'];
 const MAX_SOURCE_BYTES = 1_900_000_000;
-const MAX_UPLOAD_BYTES = 2_000_000_000;
+const MAX_UPLOAD_BYTES = 1_500_000_000;
 const rules = text => text.split(/\r?\n/).map(s => s.trim())
   .filter(s => s && !s.startsWith('#'));
 
@@ -71,6 +72,7 @@ function assertNativeBuildUploadPolicy(root) {
     throw new Error('NATIVE UPLOAD BLOCKED: .easignore is missing; oversized Git/review uploads must not recur.');
   }
   assertUploadRules(read('.easignore'), read('.gitignore'));
+  assertSourceOnlyAssets(root);
   // Conservative upper bound: includes small ignored files too. A compressed
   // archive must still be measured separately before native build readiness.
   const sourceFiles = filesUnder(root, '', true);
@@ -83,6 +85,35 @@ function assertNativeBuildUploadPolicy(root) {
 }
 
 const hash = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+function assertSourceOnlyAssets(root) {
+  const inventory = JSON.parse(fs.readFileSync(path.join(root, 'config/native-source-only-assets.json'), 'utf8'));
+  if (inventory.schemaVersion !== 1 || inventory.directory !== SOURCE_ONLY_DIRECTORY
+      || !Array.isArray(inventory.files) || inventory.files.length === 0) {
+    throw new Error('NATIVE UPLOAD BLOCKED: source-only asset inventory is invalid.');
+  }
+  const expected = new Map();
+  const delivered = new Set((inventory.runtimeExportAssetHashes || []).map(value => Buffer.from(value, 'base64url').toString('hex')));
+  for (const row of inventory.files) {
+    if (path.posix.dirname(row.path) !== SOURCE_ONLY_DIRECTORY || !/^[a-f0-9]{64}$/.test(row.sha256)
+        || expected.has(row.path) || delivered.has(row.sha256)) throw new Error('NATIVE UPLOAD BLOCKED: source-only asset scope changed.');
+    expected.set(row.path, row.sha256);
+  }
+  const directory = path.join(root, SOURCE_ONLY_DIRECTORY);
+  if (fs.existsSync(directory)) {
+    const actual = filesUnder(root, SOURCE_ONLY_DIRECTORY);
+    if (actual.length > 0 && (actual.length !== expected.size || actual.some(file => hash(path.join(root, file)) !== expected.get(file)))) {
+      throw new Error('NATIVE UPLOAD BLOCKED: source-only master bytes changed or lack an inventory.');
+    }
+  }
+  for (const folder of ['app', 'components', 'lib', 'hooks', 'constants', 'context']) {
+    for (const file of filesUnder(root, folder).filter(file => /\.[cm]?[jt]sx?$/.test(file))) {
+      if (fs.readFileSync(path.join(root, file), 'utf8').includes('free-weight-v1/masters')) {
+        throw new Error(`NATIVE UPLOAD BLOCKED: runtime source references excluded masters: ${file}`);
+      }
+    }
+  }
+  return new Set(expected.keys());
+}
 function assertNativeBuildArchive(root, archiveRoot, compressedBytes) {
   const policy = assertNativeBuildUploadPolicy(root);
   assertUploadBudget(compressedBytes, MAX_UPLOAD_BYTES);
@@ -94,8 +125,9 @@ function assertNativeBuildArchive(root, archiveRoot, compressedBytes) {
       throw new Error(`NATIVE UPLOAD BLOCKED: excluded ${dir} remains in actual archive.`);
     }
   }
+  const sourceOnlyAssets = assertSourceOnlyAssets(root);
   const required = [...new Set([...REQUIRED_FILES,
-    ...REQUIRED_ROOTS.flatMap(dir => filesUnder(root, dir)),
+    ...REQUIRED_ROOTS.flatMap(dir => filesUnder(root, dir).filter(file => !sourceOnlyAssets.has(file))),
     ...fs.readdirSync(path.join(root, 'artwork-review')).filter(f => f.endsWith('.json') && !f.startsWith('.'))
       .map(f => `artwork-review/${f}`)])];
   const failures = [];
@@ -111,7 +143,7 @@ function assertNativeBuildArchive(root, archiveRoot, compressedBytes) {
 }
 
 module.exports = { BASE_RULES, UPLOAD_ONLY_RULES, MAX_SOURCE_BYTES, MAX_UPLOAD_BYTES,
-  assertUploadRules, assertUploadBudget, assertNativeBuildUploadPolicy, assertNativeBuildArchive };
+  assertUploadRules, assertUploadBudget, assertSourceOnlyAssets, assertNativeBuildUploadPolicy, assertNativeBuildArchive };
 
 if (require.main === module) {
   try {

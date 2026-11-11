@@ -26,6 +26,7 @@ function harness(text = source) {
   const ctx = {
     workoutId: '8', API_BASE: 'https://qa.invalid', unit: 'kg', KG_PER_LB: .45359237,
     isIdealWorkoutDetailPreview: false,
+    journal: { acceptedEdit: async id => { state.clearedEdit = id; } },
     editSetCtx: { itemId: 12, setLogId: 93, setIndex: 2, mode: 'rir', evidenceRevision: 4 },
     editSetForm: { weight: '25', reps: '10', rir: '0', rpe: '' },
     data: { workout: { id: 8, core_items: [], accessory_groups: [{ items: [{ id: 12, variant: 'ACC', evidence_revision: 4, set_logs: [{ ...row }] }] }] } },
@@ -67,6 +68,7 @@ async function promptlySaved(h) {
   try {
     await Promise.race([h.save(), new Promise((_, reject) => { timeout = setTimeout(() => reject(new Error('confirmed edit remained blocked on Session reload')), 100); })]);
   } finally { clearTimeout(timeout); }
+  assert.equal(h.state.clearedEdit, 93, 'Confirmed edits retire their exact retained draft');
   assert.equal(h.state.submitting, false); assert.equal(h.state.visible, false);
   assert.equal(h.state.notices.length, 1); assert.deepEqual(h.state.errors, []);
   assert.equal(h.ctx.data.workout.accessory_groups[0].items[0].set_logs[0].actual_weight_kg, 25);

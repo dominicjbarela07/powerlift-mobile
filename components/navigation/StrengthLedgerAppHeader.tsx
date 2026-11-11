@@ -26,15 +26,17 @@ export function StrengthLedgerAppHeader({
   onBrandPress,
   rightAction,
   topInset = 0,
+  canvasColor,
 }: {
   brandAccessibilityLabel?: string;
   leftAction: StrengthLedgerAppHeaderAction;
   onBrandPress: () => void;
   rightAction: StrengthLedgerAppHeaderAction;
   topInset?: number;
+  canvasColor?: string;
 }) {
   return (
-    <ThemedView style={[styles.shell, { paddingTop: Math.max(0, topInset) }]}>
+    <ThemedView style={[styles.shell, { paddingTop: Math.max(0, topInset) }, canvasColor ? { backgroundColor: canvasColor } : null]}>
       <View style={styles.row}>
         <HeaderAction action={leftAction} />
         <TouchableOpacity

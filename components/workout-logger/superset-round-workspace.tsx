@@ -1,16 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { MovementArtworkHero } from '@/components/movement/MovementArtworkHero';
-import { resolveMovementArtworkPresentation } from '@/lib/movement-artwork-hero';
+import { movementAtmosphereFraming, resolveMovementArtworkPresentation } from '@/lib/movement-artwork-hero';
 import type { CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
 import { CompactSetTimeline } from './compact-set-timeline';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
 import type { SupersetRoundLog, SupersetRoundModel, SupersetRoundSourceItem } from '@/lib/superset-rounds';
 import { supersetMemberLabel } from '@/lib/superset-workspace-focus';
 import { canDeletePersistedSetLog } from '@/lib/set-log-delete-order';
+import { movementAtmosphereHeaderHeight } from '@/lib/movement-artwork-geometry.mjs';
 
 export type SupersetWorkspaceLog = SupersetRoundLog & Readonly<{
   id: number; actual_weight_kg?: number | null; actual_reps?: number | null;
@@ -40,6 +41,9 @@ export function SupersetRoundWorkspace({ groupLabel, model, phase, expanded, sel
   reduceMotion = false, onToggle, onSelectMember, onConfigureEquipment, onOpenHistory,
   onEditPrescription, onSwapMovement, swapActionForItem, swappingItemId, onEditSet, onDeleteSet }: Props) {
   const [evidenceItemId, setEvidenceItemId] = useState<number | null>(null);
+  const { width: screenWidth } = useWindowDimensions();
+  const [groupBounds, setGroupBounds] = useState({ width: 0 });
+  const [captionHeights, setCaptionHeights] = useState<Record<number, number>>({});
   const isActive = phase === 'active';
   const complete = model.status === 'complete';
   const currentRound = model.rounds.find(round => round.index === model.currentRoundIndex);
@@ -49,7 +53,8 @@ export function SupersetRoundWorkspace({ groupLabel, model, phase, expanded, sel
   const progress = complete ? `${model.roundCount} rounds complete`
     : isActive ? `Round ${model.currentRoundIndex || 1} of ${model.roundCount}`
       : `${model.roundCount} ${model.roundCount === 1 ? 'round' : 'rounds'}`;
-  return <View style={[s.group, isActive && s.activeGroup]} testID={`superset-${groupLabel}`}>
+  return <View style={[s.group, isActive && s.activeGroup]} testID={`superset-${groupLabel}`}
+    onLayout={event => { const width = event.nativeEvent.layout.width; setGroupBounds(previous => previous.width === width ? previous : { width }); }}>
     <Pressable disabled={isActive} accessibilityRole={isActive ? "header" : "button"} accessibilityState={{ expanded }} accessibilityLabel={`Superset ${groupLabel}, ${progress}`} onPress={onToggle} style={s.header}>
       <Text style={s.eyebrow}>SUPERSET {groupLabel}</Text>
       <Text style={[s.roundLabel, complete && s.complete]}>{progress}</Text>
@@ -70,18 +75,26 @@ export function SupersetRoundWorkspace({ groupLabel, model, phase, expanded, sel
       const showEvidence = selected && evidenceItemId === item.id;
       const { hero, thumbnailPresentation } = resolveMovementArtworkPresentation(item.movementArtwork, selected, movement.complete, 'superset-round-workspace');
       return <View key={item.id} style={[s.member, selected && isActive && s.selectedMember]}>
-        {hero ? <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} movementDefinitionId={hero.movement_definition_id} surface="superset" reduceMotion={reduceMotion} /> : null}
-        <Pressable accessibilityRole="button" accessibilityLabel={`${label}, ${item.title}, ${movement.loggedRequiredSets} of ${movement.requiredSets} sets${state ? `, ${state}` : ''}`} onPress={() => onSelectMember(item.id)} style={s.memberRow}>
+        <View style={hero ? { minHeight: movementAtmosphereHeaderHeight(groupBounds.width || screenWidth - 40, movementAtmosphereFraming(hero.key), captionHeights[item.id] || 120) } : undefined}>
+        {hero ? <View pointerEvents="none" style={s.artworkReference}>
+          <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} movementDefinitionId={hero.movement_definition_id} surface="superset" reduceMotion={reduceMotion} />
+        </View> : null}
+        <Pressable accessibilityRole="button" accessibilityLabel={`${label}, ${item.title}, ${movement.loggedRequiredSets} of ${movement.requiredSets} sets${state ? `, ${state}` : ''}`} onPress={() => onSelectMember(item.id)} style={[s.memberRow, hero && s.atmosphericHeading]}
+          onLayout={hero ? event => {
+            const height = event.nativeEvent.layout.height;
+            setCaptionHeights(previous => Math.abs((previous[item.id] || 0) - height) < .5 ? previous : { ...previous, [item.id]: height });
+          } : undefined}>
           <Text style={[s.memberLabel, movement.complete && s.complete]}>{label}</Text>
           <CanonicalMovementArtwork surface="superset-round-workspace" requireHumanApproval movement={item.movementArtwork} accessoryPresentation={thumbnailPresentation} size={selected && isActive ? 56 : 44} />
           <View style={s.memberCopy}>
-            <Text numberOfLines={0} style={[s.title, selected && isActive && s.activeTitle]}>{item.title}</Text>
+            <Text numberOfLines={0} style={[s.title, selected && isActive && s.activeTitle, hero && s.atmosphericTitle]}>{item.title}</Text>
             <Text style={[s.prescription, selected && isActive && s.activePrescription, hero && s.heroPrescription]}>{item.prescription}</Text>
             {item.equipmentRequired ? <Text style={s.required}>Equipment required</Text> : item.equipmentContext ? <Text style={s.equipment}>{item.equipmentContext}</Text> : null}
             {state ? <Text style={[s.state, movement.complete || roundEntry?.log ? s.complete : selected ? s.current : null]}>{state}</Text> : null}
           </View>
           {movement.complete ? <Ionicons name="checkmark-circle" color={SLColors.success} size={18} /> : null}
         </Pressable>
+        </View>
         {selected ? <View style={s.details}>
           <View style={s.tools}>
             {item.canConfigureEquipment ? <Pressable accessibilityRole="button" accessibilityLabel={`Configure equipment for ${label}, ${item.title}`} onPress={() => onConfigureEquipment(item.id)} style={({ pressed }) => [s.tool, pressed && s.controlPressed]}>
@@ -133,6 +146,9 @@ const s = StyleSheet.create({
   required: { color: '#e8bd83', fontSize: 11, lineHeight: 17, marginTop: 2 },
   state: { color: '#9c91ad', fontSize: 10, lineHeight: 16, marginTop: 4, fontFamily: SLFontFamilies.sansSemiBold },
   current: { color: '#d7a9f1' }, complete: { color: '#86ddb0' },
+  artworkReference: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 },
+  atmosphericHeading: { position: 'absolute', left: 0, right: 0, bottom: 12 },
+  atmosphericTitle: { textShadowColor: 'rgba(0,0,0,0.8)', textShadowRadius: 8, textShadowOffset: { width: 0, height: 1 } },
   details: { paddingLeft: 4 }, tools: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 15 },
   tool: { flexDirection: 'row', alignItems: 'center', gap: 5, minHeight: 44 },
   controlPressed: { opacity: 0.6 },

@@ -16,5 +16,5 @@ async function check(text,role='coach'){
  assert.ok(calls.indexOf('identity')<calls.indexOf('queue'));assert.equal(userRef.current.role,role);
 }
 for(const role of ['coach','athlete'])await check(source,role);
-const original=source.replace('      await refreshAccountState();\n','');await assert.rejects(()=>check(original),/fresh login must resolve canonical account ID/,'deliberately omitting authenticated hydration reproduces accountId0');
+const original=source.replace('      await refreshAccountState();\n','');await assert.rejects(()=>check(original),/fresh login must resolve canonical account ID|Could not confirm your account/,'deliberately omitting authenticated hydration reproduces accountId0');
 console.log('Actual fresh login hydrates canonical account ID under the installed token before scoped work; coach/athlete retained; original missing-ID path rejected.');

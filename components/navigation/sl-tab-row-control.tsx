@@ -22,7 +22,7 @@ import {
 import { SLCanonicalIcon } from '@/components/ui/sl-trophy';
 import { Text } from '@/components/ui/sl-text';
 import { SLMotionPressable } from '@/components/ui/sl-motion';
-import { SLColors, SLFontFamilies, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing } from '@/constants/theme';
+import { SLColors, SLFontFamilies, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing, SLTypographyRoles } from '@/constants/theme';
 
 export const SL_TAB_ROW_FALLBACK_SHEEN = [
   'rgba(255, 255, 255, 0.12)',
@@ -63,6 +63,7 @@ export const SL_TAB_ROW_CONTROL = {
 
 export type SLFloatingNavigationDockItem = {
   accessibilityLabel: string;
+  label?: string;
   badge?: number | 'dot';
   new?: boolean;
   icon: keyof typeof Ionicons.glyphMap;
@@ -94,7 +95,12 @@ export function SLFloatingNavigationDock({
   flow?: boolean;
   items: SLFloatingNavigationDockItem[];
 }) {
-  const { width: viewportWidth } = useWindowDimensions();
+  const { width: viewportWidth, fontScale } = useWindowDimensions();
+  const labeled = items.some(item => Boolean(item.label));
+  const labelScale = Math.min(Math.max(fontScale, 1), SLTypographyRoles.navigationLabel.maximumFontSizeMultiplier);
+  const itemHeight = labeled ? Math.max(SL_TAB_ROW_CONTROL.itemSize,
+    Math.ceil(20 + SLTypographyRoles.navigationLabel.lineHeight.large * labelScale + 2)) : SL_TAB_ROW_CONTROL.itemSize;
+  const shellHeight = Math.max(SL_TAB_ROW_CONTROL.shellHeight, itemHeight + SL_TAB_ROW_CONTROL.shellPadding * 2);
   const keyboard = useKeyboardState();
   const [reduceTransparency, setReduceTransparency] = useState(false);
   const usesNativeLiquidGlass = supportsNativeLiquidGlass() && !reduceTransparency;
@@ -130,7 +136,7 @@ export function SLFloatingNavigationDock({
         styles.navigationDock,
         flow && styles.navigationDockFlow,
         {
-          height: SL_TAB_ROW_CONTROL.dockFrameHeight + bottomInset,
+          height: SL_TAB_ROW_CONTROL.dockFrameHeight + shellHeight - SL_TAB_ROW_CONTROL.shellHeight + bottomInset,
           paddingBottom: bottomInset + SLSpacing.xs,
         },
       ]}
@@ -139,7 +145,7 @@ export function SLFloatingNavigationDock({
         style={[
           styles.navigationShell,
           usesNativeLiquidGlass && styles.navigationShellNativeMaterial,
-          { width: expandedWidth },
+          { width: expandedWidth, height: shellHeight },
         ]}
       >
         <View pointerEvents="none" style={styles.navigationMaterialClip}>
@@ -209,16 +215,18 @@ export function SLFloatingNavigationDock({
                   item.onPress();
                 }}
                 pressScale={SLMotion.prominentPressScale}
-                style={styles.navigationItem}
+                style={[styles.navigationItem, item.label ? [styles.navigationLabeledItem, { height: itemHeight }] : null]}
               >
-                <View style={styles.navigationIconRow}>
+                <View style={[styles.navigationIconRow, item.label ? { height: 20 } : null]}>
                   <SLCanonicalIcon
                     color={color}
                     name={icon}
-                    size={SL_TAB_ROW_CONTROL.iconSize}
+                    size={item.label ? 20 : SL_TAB_ROW_CONTROL.iconSize}
                     trophyTier="bronze"
                   />
                 </View>
+                {item.label ? <Text numberOfLines={1} typographyRole="navigationLabel"
+                  style={[styles.navigationLabel, { color }]}>{item.label}</Text> : null}
               </SLMotionPressable>
               {item.badge === 'dot' ? <View pointerEvents="none" style={styles.notificationDot} /> : null}
               {item.new ? <View pointerEvents="none" style={styles.newBadge}><Text style={styles.newBadgeText}>NEW</Text></View> : null}
@@ -385,6 +393,8 @@ const styles = StyleSheet.create({
     width: SL_TAB_ROW_CONTROL.itemSize,
     zIndex: 1,
   },
+  navigationLabeledItem: { width: '100%', gap: 1 },
+  navigationLabel: { fontSize: 11, lineHeight: 13, fontFamily: SLFontFamilies.sansMedium },
   navigationSelectedLens: {
     borderColor: SL_TAB_ROW_CONTROL.indicatorBorderColor,
     borderRadius: SL_TAB_ROW_CONTROL.indicatorRadius,

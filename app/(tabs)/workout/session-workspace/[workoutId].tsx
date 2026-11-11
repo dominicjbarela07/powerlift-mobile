@@ -474,12 +474,14 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
     programmingWeek?: string | string[];
     programmingDay?: string | string[];
     section?: string | string[];
+    planDate?: string | string[];
   }>();
   const workoutId = props.workoutId == null ? firstParam(params.workoutId) : String(props.workoutId);
   const programmingAthleteId = props.athleteId == null ? firstParam(params.athleteId) : String(props.athleteId);
   const programmingBlockId = props.programmingBlockId == null ? firstParam(params.programmingBlockId) : String(props.programmingBlockId);
   const programmingWeek = props.programmingWeek == null ? firstParam(params.programmingWeek) : String(props.programmingWeek);
   const programmingDay = props.programmingDay == null ? firstParam(params.programmingDay) : String(props.programmingDay);
+  const planDate = activeMobileMode === 'individual' ? firstParam(params.planDate) : null;
   const requestedSection = props.section == null ? firstParam(params.section) : String(props.section);
 
   const [loading, setLoading] = useState(true);
@@ -633,9 +635,9 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
     if (!redirectingToLogger || !workoutId) return;
     router.replace({
       pathname: '/workout/[workoutId]',
-      params: { workoutId: String(workoutId) },
+      params: { workoutId: String(workoutId), ...(planDate ? { returnTo: 'plan', planDate } : {}) },
     });
-  }, [redirectingToLogger, router, workoutId]);
+  }, [redirectingToLogger, router, workoutId, planDate]);
 
   const workout = payload?.workout || null;
   const workspaceCapabilities = workout?.workspace_capabilities || {};
@@ -652,6 +654,10 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   const closeToProgrammingHome = () => {
     if (props.onClose) {
       props.onClose();
+      return;
+    }
+    if (planDate) {
+      router.navigate({ pathname: '/(tabs)/workout', params: { planDate } } as any);
       return;
     }
     router.replace({
@@ -1299,7 +1305,10 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
           <Text style={styles.stateTitle}>
             {redirectingToLogger ? 'Opening Training Session' : error ? 'Workspace unavailable' : 'Loading Session Workspace'}
           </Text>
-          {error ? <Text style={styles.stateBody}>{error}</Text> : null}
+          {error ? <><Text style={styles.stateBody}>{error}</Text>
+            <Pressable accessibilityRole="button" onPress={() => { sessionExposureCache.invalidate(); void loadSession(); }} style={{ minHeight: 48, justifyContent: 'center' }}><Text style={{ color: colors.violet }}>Retry</Text></Pressable>
+            <Pressable accessibilityRole="button" onPress={closeToProgrammingHome} style={{ minHeight: 48, justifyContent: 'center' }}><Text style={styles.stateBody}>Back to Plan</Text></Pressable>
+          </> : null}
         </View>
       </View>
     );

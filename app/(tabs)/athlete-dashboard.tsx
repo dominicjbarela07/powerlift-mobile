@@ -1,3 +1,4 @@
+import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 import { KeyboardModal as Modal, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 // app/athlete-dashboard.tsx
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,6 +12,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TodayCheckInSurface, TodaySubmittedCheckIn } from '@/components/AthleteCheckInExperience';
 import { AthleteHomeV3 } from '@/components/home/AthleteHomeV3';
+import { SelfCoachTrain } from '@/components/home/SelfCoachTrain';
+import { reuseSelfCoachWorkout } from '@/lib/self-coach-workouts';
 import { type TodayReadinessObservation } from '@/components/home/TodayHomeExperience';
 import { SLButton, SLProfileAvatar } from '@/components/ui';
 import { FloatingControlCoordinator } from '@/components/ui/floating-control-coordinator';
@@ -231,7 +234,6 @@ function normalizeTodayPayload(payload: TodayPayload): TodayPayload {
   };
 }
 
-const INDIVIDUAL_TODAY_WELCOME_VERSION = 'strength_ledger_individual_today_welcome_seen_v1';
 const TODAY_CACHE_VERSION = 'strength_ledger.today.cache.v2';
 const REST_DAY_IMAGE = require('@/assets/images/chair.png');
 const TRAINING_DAY_IMAGE = require('@/assets/images/gym_vibe.jpg');
@@ -269,7 +271,6 @@ export default function AthleteDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [creatingTodaySession, setCreatingTodaySession] = useState(false);
   const creatingTodaySessionRef = useRef(false);
-  const [showIndividualWelcome, setShowIndividualWelcome] = useState(false);
   const [dailyReadinessVisible, setDailyReadinessVisible] = useState(false);
   const [dailyReadinessSubmitting, setDailyReadinessSubmitting] = useState(false);
   const [dailyReadinessError, setDailyReadinessError] = useState<string | null>(null);
@@ -279,7 +280,6 @@ export default function AthleteDashboard() {
   const isIndividual = activeMobileMode === 'individual';
   const isAuthenticatedCoach = user?.role === 'coach' || user?.is_coach === true;
   const showCoachCheckIn = !isAuthenticatedCoach && !isIndividual;
-  const individualWelcomeKey = `${INDIVIDUAL_TODAY_WELCOME_VERSION}:${user?.email || 'unknown'}`;
   const todayCacheKey = `${TODAY_CACHE_VERSION}:${workspaceKey}:${user?.athlete_id || user?.email || 'unknown'}`;
 
   useEffect(() => {
@@ -305,44 +305,6 @@ export default function AthleteDashboard() {
       mounted = false;
     };
   }, [todayCacheKey]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const checkIndividualWelcome = async () => {
-      if (!isIndividual || !today || hasActiveProgram(today)) {
-        setShowIndividualWelcome(false);
-        return;
-      }
-
-      try {
-        const seen = await AsyncStorage.getItem(individualWelcomeKey);
-        if (!cancelled) setShowIndividualWelcome(seen !== '1');
-      } catch {
-        if (!cancelled) setShowIndividualWelcome(true);
-      }
-    };
-
-    checkIndividualWelcome();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [individualWelcomeKey, isIndividual, today]);
-
-  const dismissIndividualWelcome = async () => {
-    setShowIndividualWelcome(false);
-    try {
-      await AsyncStorage.setItem(individualWelcomeKey, '1');
-    } catch {
-      // no-op
-    }
-  };
-
-  const goToProgrammingFromWelcome = async () => {
-    await dismissIndividualWelcome();
-    router.push('/(tabs)/workout' as any);
-  };
 
   const loadToday = React.useCallback(
     async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
@@ -585,8 +547,8 @@ export default function AthleteDashboard() {
       }
       await loadToday({ silent: true, showRefreshIndicator: false });
       router.push({
-        pathname: '/workout/session-workspace/[workoutId]' as any,
-        params: { workoutId: String(payload.workout_id) },
+        pathname: '/workout/[workoutId]' as any,
+        params: { workoutId: String(payload.workout_id), returnTo: 'today', quickStart: '1' },
       });
     } catch (reason: any) {
       setError(reason?.message || "Today's Session could not be created.");
@@ -601,6 +563,28 @@ export default function AthleteDashboard() {
       if (!action) return;
       if (action.route === 'create_today_session') {
         void createTodaySession();
+        return;
+      }
+      if (isIndividual && action.route === 'edit_workout' && action.workout_id) {
+        router.push({ pathname: '/workout/session-workspace/[workoutId]', params: { workoutId: String(action.workout_id) } } as any);
+        return;
+      }
+      if (isIndividual && action.route === 'start_workout' && action.workout_id) {
+        router.push({ pathname: '/workout/[workoutId]',
+          params: { workoutId: String(action.workout_id), returnTo: 'today', quickStart: '1' } });
+        return;
+      }
+      if (isIndividual && ['repeat_workout', 'new_workout'].includes(action.route || '') && action.workout_id) {
+        if (creatingTodaySessionRef.current) return;
+        creatingTodaySessionRef.current = true;
+        setCreatingTodaySession(true);
+        void reuseSelfCoachWorkout({ owner: String(user?.id || user?.user_id || ''), workoutId: action.workout_id, action: action.route === 'new_workout' ? 'start_empty' : 'repeat' })
+          .then(result => {
+            if (!result.workout_id) throw new Error('The new session could not be opened.');
+            router.push({ pathname: '/workout/[workoutId]',
+              params: { workoutId: String(result.workout_id), returnTo: 'today', quickStart: '1' } });
+          }).catch(reason => setError(reason?.message || 'Could not open the new session.'))
+          .finally(() => { creatingTodaySessionRef.current = false; setCreatingTodaySession(false); });
         return;
       }
       if (action.route === 'daily_readiness') {
@@ -698,12 +682,12 @@ export default function AthleteDashboard() {
       }
       router.push('/(tabs)/workout' as any);
     },
-    [createTodaySession, isIndividual, openDailyReadiness, router]
+    [createTodaySession, isIndividual, openDailyReadiness, router, user?.id, user?.user_id]
   );
 
   if (loading && !today) {
     return (
-      <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
+      <SafeAreaView edges={['left', 'right']} style={[styles.safeArea, isIndividual && { backgroundColor: '#100E16' }]}>
         <View style={styles.centered}>
           <ActivityIndicator color={palette.violetSoft} />
           <Text style={styles.centeredText}>Loading Today...</Text>
@@ -714,23 +698,19 @@ export default function AthleteDashboard() {
 
   if (!today) {
     return (
-      <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
+      <SafeAreaView edges={['left', 'right']} style={[styles.safeArea, isIndividual && { backgroundColor: '#100E16' }]}>
         <View style={styles.centered}>
           <Text style={styles.errorText}>{error || 'Today is unavailable.'}</Text>
           <SLButton label="Retry" onPress={() => void loadToday()} size="md" />
+          <OnboardingSupport step="account" errorCode="network" />
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
+    <SafeAreaView edges={['left', 'right']} style={[styles.safeArea, isIndividual && { backgroundColor: '#100E16' }]}>
       <FloatingControlCoordinator context="tab-screen">
-      <IndividualTodayWelcomeModal
-        onGoToProgramming={goToProgrammingFromWelcome}
-        onNotNow={dismissIndividualWelcome}
-        visible={showIndividualWelcome}
-      />
       <ReadinessModal
         context="daily"
         visible={dailyReadinessVisible}
@@ -759,7 +739,8 @@ export default function AthleteDashboard() {
             </Pressable>
           </View>
         ) : null}
-        <AthleteHomeV3
+        {isIndividual ? <SelfCoachTrain date={today.date} home={today.home_v3 || {}}
+          preferredUnits={user?.preferred_units} creating={creatingTodaySession} onAction={openAction} /> : <AthleteHomeV3
           creatingTodaySession={creatingTodaySession}
           isIndividual={isIndividual}
           onAction={openAction}
@@ -771,7 +752,7 @@ export default function AthleteDashboard() {
             </>
           ) : null}
           today={today}
-        />
+        />}
       </ScrollView>
       </FloatingControlCoordinator>
     </SafeAreaView>
@@ -1234,55 +1215,6 @@ function GlanceCell({
 
 function hasActiveProgram(today: TodayPayload) {
   return !!(today.phase?.active_program?.id || today.phase?.block?.id);
-}
-
-function IndividualTodayWelcomeModal({
-  onGoToProgramming,
-  onNotNow,
-  visible,
-}: {
-  onGoToProgramming: () => void;
-  onNotNow: () => void;
-  visible: boolean;
-}) {
-  return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onNotNow}>
-      <View style={styles.patchModalBackdrop}>
-        <View style={styles.patchModalCard}>
-          <View style={styles.patchModalHeader}>
-            <View style={styles.patchModalIconWrap}>
-              <Ionicons name="barbell" size={22} color={palette.violetSoft} />
-            </View>
-            <View style={styles.patchModalHeaderCopy}>
-              <Text style={styles.patchModalTitle}>Welcome to Strength Ledger Mobile</Text>
-              <Text style={styles.patchModalSubtitle}>Pilot Self-Coach workspace</Text>
-            </View>
-          </View>
-          <Text style={styles.patchModalBody}>
-            Thanks for downloading Strength Ledger and participating in the pilot. Let&apos;s get you started by creating your first training program.
-          </Text>
-          <View style={styles.individualWelcomeActions}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Go to Programming"
-              onPress={onGoToProgramming}
-              style={({ pressed }) => [styles.patchModalButton, pressed && styles.primaryActionPressed]}
-            >
-              <Text style={styles.patchModalButtonText}>Go to Programming</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Not now"
-              onPress={onNotNow}
-              style={({ pressed }) => [styles.individualWelcomeSecondary, pressed && styles.rowPressed]}
-            >
-              <Text style={styles.individualWelcomeSecondaryText}>Not now</Text>
-            </Pressable>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
 }
 
 function meetDaysLabel(days?: number | null) {

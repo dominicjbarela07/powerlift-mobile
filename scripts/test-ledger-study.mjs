@@ -20,5 +20,12 @@ for(const m of STUDY_MOVEMENTS.filter(m => m.family === 'variants')) assert.ok([
 assert.equal(new Set(STUDY_TOUR.map(t=>t.key)).size,9); cases++;
 const source = fs.readFileSync('components/ledger-study/LedgerDesignStudy.tsx','utf8');
 assert.doesNotMatch(source,/from ['"]@\/lib\/(api|ledger-archive)['"]|\bfetch\s*\(|AsyncStorage|SecureStore/, 'Storyboard must not read or mutate actual athlete data'); cases++;
-assert.match(fs.readFileSync('app/(tabs)/dev-mocks/ledger-study.tsx','utf8'),/if \(!__DEV__\) return null/); cases++;
+const studyRoute = 'app/(tabs)/dev-mocks/ledger-study.tsx';
+if (fs.existsSync(studyRoute)) {
+  assert.match(fs.readFileSync(studyRoute, 'utf8'), /if \(!__DEV__\) return null/);
+} else {
+  const projection = JSON.parse(fs.readFileSync('config/protected-fix-manifest.json', 'utf8'));
+  assert.ok(projection.releaseProjectionPaths.includes(studyRoute), 'absent DEV route requires its explicit release projection');
+}
+cases++;
 console.log(JSON.stringify({pass:true,cases,scope:'DEV storyboard fixture consistency, canonical unit/award/estimate reuse, exact contexts and no product data boundary'}));

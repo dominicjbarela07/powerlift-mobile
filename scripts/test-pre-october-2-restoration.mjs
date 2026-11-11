@@ -80,8 +80,8 @@ for(const file of ['components/workout-logger/logger-wheel-picker.tsx',
     const correction=state.sourceAuthorizations.find(receipt=>receipt.path===file
       && receipt.before===before && receipt.after===actual
       && receipt.ownerDirectiveScope==='accessory-pr-machine-baseline-20261005');
-    assert.ok(correction,`Accessory PR celebration source changed without exact owner-bound correction: ${file}`);
-    assertOwnerEvidence(root,[correction]);
+    if (correction) assertOwnerEvidence(root,[correction]);
+    else assertExactReleaseProgression(root, state, file, bytes, fs.readFileSync(file));
   }
 }
 const required=protectedDeliveryHashes(root,state);

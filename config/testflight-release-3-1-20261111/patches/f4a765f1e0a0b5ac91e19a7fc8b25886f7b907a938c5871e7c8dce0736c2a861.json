@@ -1,0 +1,6 @@
+[
+  {
+    "before": "    } | null;\n    interpolated: false;\n  } | null;\n  training_frequency_per_week: number;\n  lifetime_set_count: number;\n}>;\n",
+    "after": "    } | null;\n    interpolated: false;\n  } | null;\n  readiness?: {\n    range_label: string;\n    points: { date: string; value: number; workout_id?: number | null; context?: string | null }[];\n    metadata: { scale: string; point_count: number; days: number };\n  } | null;\n  training_frequency_per_week: number;\n  lifetime_set_count: number;\n}>;\n"
+  }
+]

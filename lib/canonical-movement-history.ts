@@ -288,7 +288,9 @@ export function normalizeHistoryStrengthMetric(history: CanonicalMovementHistory
     best_set: row.best_set ? normalizeStrengthRow(row.best_set, expected, reportedKey) : row.best_set,
   });
   const strength = history.statistics.estimated_strength_pr;
-  const strengthFactor = reportedKey === expected.key ? 1 : expected.key === 'e10rm' ? 0.75 : 1 / 0.75;
+  // Legacy responses carry e1RM without a metric key, just like the chart rows.
+  const strengthFactor = !reportedKey ? (expected.key === 'e10rm' ? 0.75 : 1)
+    : reportedKey === expected.key ? 1 : expected.key === 'e10rm' ? 0.75 : 1 / 0.75;
   return {
     ...history,
     strength_metric: {

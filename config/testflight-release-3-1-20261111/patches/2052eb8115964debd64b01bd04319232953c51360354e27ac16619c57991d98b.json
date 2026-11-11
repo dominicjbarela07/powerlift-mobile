@@ -1,0 +1,10 @@
+[
+  {
+    "before": "import { useLocalSearchParams } from 'expo-router';\nimport React, { createContext, type ReactNode, useContext, useMemo } from 'react';\n\ntype AthleteLedgerSubject = {\n  athleteId?: number;\n",
+    "after": "import { useGlobalSearchParams, usePathname } from 'expo-router';\nimport { ledgerRouteContext } from '@/lib/ledger-route-context';\nimport React, { createContext, type ReactNode, useContext, useMemo, useRef } from 'react';\n\ntype AthleteLedgerSubject = {\n  athleteId?: number;\n"
+  },
+  {
+    "before": "  return Array.isArray(value) ? value[0] : value;\n}\nexport function AthleteLedgerSubjectProvider({ children }: { children: ReactNode }) {\n  const params = useLocalSearchParams<{\n    athleteId?: string | string[];\n    athlete_id?: string | string[];\n    workspaceAthleteId?: string | string[];\n    returnToWorkspace?: string | string[];\n    workspaceReturn?: string | string[];\n  }>();\n  const values = [first(params.workspaceAthleteId), first(params.athleteId), first(params.athlete_id)]\n    .filter((value): value is string => Boolean(value));\n  const ids = [...new Set(values.map(Number).filter((value) => Number.isInteger(value) && value > 0))];\n",
+    "after": "  return Array.isArray(value) ? value[0] : value;\n}\nexport function AthleteLedgerSubjectProvider({ children }: { children: ReactNode }) {\n  const activeParams = useGlobalSearchParams<{\n    athleteId?: string | string[];\n    athlete_id?: string | string[];\n    workspaceAthleteId?: string | string[];\n    returnToWorkspace?: string | string[];\n    workspaceReturn?: string | string[];\n  }>();\n  const retained = useRef(activeParams);\n  retained.current = ledgerRouteContext(usePathname(), activeParams, retained.current);\n  const params = retained.current;\n  const values = [first(params.workspaceAthleteId), first(params.athleteId), first(params.athlete_id)]\n    .filter((value): value is string => Boolean(value));\n  const ids = [...new Set(values.map(Number).filter((value) => Number.isInteger(value) && value > 0))];\n"
+  }
+]

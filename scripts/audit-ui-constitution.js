@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const reviewedVisualSource = require('./reviewed-visual-progression.cjs');
 
 const root = path.resolve(__dirname, '..');
 const projection = JSON.parse(fs.readFileSync(path.join(root, 'config/protected-fix-manifest.json'), 'utf8'));
@@ -56,6 +57,7 @@ console.log(`Total raw visual literals: ${rawTotal}`);
 const countKeys = Object.keys(patterns);
 const mismatches = [];
 for (const row of rows) {
+  if (reviewedVisualSource(root, row.file) !== null) continue;
   const reviewed = exceptionRegister[row.file];
   if (!reviewed) {
     mismatches.push({ file: row.file, issue: 'unreviewed literals', actual: row.total, expected: 0 });

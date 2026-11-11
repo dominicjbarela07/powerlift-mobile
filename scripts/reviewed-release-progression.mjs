@@ -12,11 +12,21 @@ export function assertProgressionEvidence(root, row) {
   assert.equal(hash(evidence), row.ownerEvidenceSha256, 'reviewed progression owner evidence changed');
   assert.ok(row.ownerInstruction && evidence.includes(row.ownerInstruction), 'reviewed progression requires the exact owner instruction');
 }
+function reviewedChanges(root, row) {
+  if (!row.changesPath) return row.changes;
+  assert.ok(row.changesPath.startsWith('config/testflight-release-')
+    && !row.changesPath.split('/').includes('..'), 'reviewed patch must remain in retained release evidence');
+  const bytes = fs.readFileSync(path.join(root, row.changesPath));
+  assert.equal(hash(bytes), row.changesSha256, 'reviewed patch bytes changed');
+  const changes = JSON.parse(bytes);
+  assert.ok(Array.isArray(changes) && changes.length > 0, 'reviewed patch list is required');
+  return changes;
+}
 export function assertExactReleaseProgression(root, state, file, before, after) {
   const row = state.reviewedPublication?.sourceProgressions.find(row => row.path === file && row.before === hash(before) && row.after === hash(after));
   assert.ok(row, `unreviewed release source progression: ${file}`);
   assertProgressionEvidence(root, row);
-  assert.equal(row.changes.reduce((source, change) => applySharedReleaseFix(source, change), before.toString()), after.toString(), `unreviewed bytes: ${file}`);
+  assert.equal(reviewedChanges(root, row).reduce((source, change) => applySharedReleaseFix(source, change), before.toString()), after.toString(), `unreviewed bytes: ${file}`);
   return row;
 }
 export function assertReviewedPublicationSource(root, state, files) {

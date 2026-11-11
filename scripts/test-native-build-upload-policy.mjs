@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import { createHash } from 'node:crypto';
 
 const require = createRequire(import.meta.url);
 const { BASE_RULES, UPLOAD_ONLY_RULES, MAX_SOURCE_BYTES, MAX_UPLOAD_BYTES,
@@ -18,6 +19,7 @@ for (const unsafe of ['/assets/', '/assets/images/movement-artwork/', '/lib/', '
 }
 assert.throws(() => assertUploadBudget(8_747_596_603, MAX_UPLOAD_BYTES), /safe/);
 assert.throws(() => assertUploadBudget(MAX_SOURCE_BYTES), /safe/);
+assert.throws(() => assertUploadBudget(1_500_000_000, MAX_UPLOAD_BYTES), /safe/);
 assert.doesNotThrow(() => assertUploadBudget(1_500_000_000));
 
 // Exercise the real archive checker against a portable native-input fixture,
@@ -35,6 +37,14 @@ try {
   }
   fs.writeFileSync(path.join(source, '.gitignore'), base);
   fs.writeFileSync(path.join(source, '.easignore'), valid);
+  const masterDirectory = 'assets/images/movement-artwork/free-weight-v1/masters';
+  const masterPath = `${masterDirectory}/fixture-master.png`;
+  fs.mkdirSync(path.join(source, masterDirectory), { recursive: true });
+  fs.writeFileSync(path.join(source, masterPath), 'reference master');
+  const masterHash = createHash('sha256').update('reference master').digest('hex');
+  const inventory = { schemaVersion: 1, directory: masterDirectory, runtimeExportAssetHashes: [], files: [{ path: masterPath, sha256: masterHash }] };
+  const inventoryPath = path.join(source, 'config/native-source-only-assets.json');
+  fs.writeFileSync(inventoryPath, JSON.stringify(inventory));
   fs.copyFileSync('app.config.js', path.join(source, 'app.config.js'));
   fs.copyFileSync('app.json', path.join(source, 'app.json'));
   fs.copyFileSync('scripts/native-build-upload-policy.cjs', path.join(source, 'scripts', 'native-build-upload-policy.cjs'));
@@ -64,8 +74,18 @@ try {
   }
   fs.writeFileSync(path.join(source, 'assets', 'approved.png'), Buffer.from([137,80,78,71,1,2,3]));
   fs.cpSync(source, archive, { recursive: true });
+  fs.rmSync(path.join(archive, masterDirectory), { recursive: true });
   fs.mkdirSync(path.join(archive, '.expo'));
   assert.equal(assertNativeBuildArchive(source, archive, 1000).missingOrChangedRequiredFiles, 0);
+  fs.writeFileSync(path.join(source, 'app/master-reference.ts'), `require('../${masterPath}')`);
+  assert.throws(() => assertNativeBuildUploadPolicy(source), /runtime source references excluded masters/);
+  fs.unlinkSync(path.join(source, 'app/master-reference.ts'));
+  fs.writeFileSync(path.join(source, masterPath), 'changed master');
+  assert.throws(() => assertNativeBuildUploadPolicy(source), /master bytes changed/);
+  fs.writeFileSync(path.join(source, masterPath), 'reference master');
+  fs.writeFileSync(inventoryPath, JSON.stringify({ ...inventory, runtimeExportAssetHashes: [Buffer.from(masterHash, 'hex').toString('base64url')] }));
+  assert.throws(() => assertNativeBuildUploadPolicy(source), /asset scope changed/);
+  fs.writeFileSync(inventoryPath, JSON.stringify(inventory));
   fs.writeFileSync(path.join(archive, '.expo', 'unexpected-cache'), 'payload');
   assert.throws(() => assertNativeBuildArchive(source, archive, 1000), /excluded .expo/);
   fs.unlinkSync(path.join(archive, '.expo', 'unexpected-cache'));

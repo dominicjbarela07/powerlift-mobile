@@ -33,6 +33,7 @@ type Props = Readonly<{
   presentationBoundary?: 'viewport' | 'app-shell';
   motionPreset?: 'standard' | 'deliberate';
   onDismiss: () => void;
+  onNativeDismiss?: () => void;
   onDismissBlocked?: (reason: StrengthLedgerSheetCloseReason) => void;
   onPresent?: () => void;
   onRequestClose?: (reason: StrengthLedgerSheetCloseReason) => void;
@@ -176,6 +177,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   presentationBoundary = 'viewport',
   motionPreset = 'standard',
   onDismiss,
+  onNativeDismiss,
   onDismissBlocked,
   onPresent,
   onRequestClose,
@@ -338,7 +340,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   const chromeDismissGesture = useSheetChromeGesture({ update: updateDrag, release: finishDrag, cancel: settle });
 
   return (
-    <ReactNativeModal animationType="none" onRequestClose={() => requestClose('system-back')} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={visible}>
+    <ReactNativeModal animationType="none" onDismiss={onNativeDismiss} onRequestClose={() => requestClose('system-back')} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={visible}>
       <GestureHandlerRootView style={styles.gestureModalRoot}>
         <View style={styles.stage} testID={testID}>
           <Animated.View pointerEvents="none" style={[styles.backdrop, { opacity: backdropOpacity }]} />

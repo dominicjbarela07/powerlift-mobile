@@ -5,6 +5,11 @@ import path from 'node:path';
 import { resolveSetLoggerLoadDefault } from '../lib/set-logger-load-default.ts';
 import { formatLoggerWeightKg } from '../lib/logger-weight-format.js';
 
+assert.equal(resolveSetLoggerLoadDefault({ currentSessionSets: [], prescribedWeightKg: null,
+  fallbackWeightKg: 0, allowZeroLoad: true }).source, 'fallback', 'missing prescription is distinct from an explicit zero load');
+assert.equal(resolveSetLoggerLoadDefault({ currentSessionSets: [{ set_index: 1, actual_weight_kg: null }],
+  currentSetIndex: 1, fallbackWeightKg: 0, allowZeroLoad: true }).source, 'fallback', 'missing evidence is distinct from a performed zero');
+
 const historicalExposure = {
   identity_scope: 'exact_identity', comparison_allowed: true, comparison_identity_key: 'movement:10',
   movement_definition_id: 42,
@@ -146,7 +151,7 @@ assert.match(route, /if \(!json\) return;[\s\S]{0,240}rememberAcceptedLoad/);
 assert.match(route, /identity_scope[^\n]*exact_identity|comparableHistory/);
 assert.match(route, /unitLocalOverrideRef\.current = nextUnit/);
 assert.match(route, /if \(unitLocalOverrideRef\.current == null\)/);
-assert.match(route, /setLog\.actual_weight_kg != null[\s\S]*buildEditWeightOptions/);
+assert.match(route, /const editedWeightKg = retained \? retained\.weightKg : setLog\.actual_weight_kg;[\s\S]*editedWeightKg != null[\s\S]*buildEditWeightOptions/);
 assert.doesNotMatch(route, /defaultAccessoryWeight\(item, unit, accInputs/);
 
 console.log('Set Logger load-wheel defaulting regression checks passed.');

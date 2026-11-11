@@ -1,0 +1,18 @@
+Owner direction in this chat on November 11, 2026
+
+"Fix those fucking blockers and get 3.1 actually ready for TestFlight. Deploy the required backend changes and validate everything. I will handle the build and TestFlight release. Figure out a fucking way to get it under 1.5 gigabytes, dude. I can't have this being such a large app. I feel like we're— there's got to be a way to optimize."
+
+Earlier owner directions retained by this integration
+
+"Approve these illustrations. Let’s begin phase 1"
+"I had this a hard rule before, but we don't. I don't in the app refer to training sessions as a quote-unquote workout. My philosophy around the gym and fitness is I don't work out. I train. So these are training sessions, not workouts. That is a hard rule for Strength Ledger."
+"next roll into phase 3 and return the remaining phases you have left and what they are to do"
+"Go ahead and roll into phase 4. Be fucking thorough with onboarding and recovery, validate it on iOS and Android, and leave it open in the simulator with a walkthrough when you're done."
+"dont worry about android at the minute. focus on ios. i want to get this to testflight eventually"
+"you need to ensure that every image is cropped correctly to reduce dead space. that means individually checking every movement"
+
+Scope of this source/protection reconciliation
+
+Retain all original protected pins, canonical movement identities, exact approved artwork/crop receipts, equipment isolation, immutable data and existing regression assertions. Integrate the owner-directed Self-Coach Phases 1–4 and per-source atmospheric layout through exact before/after patches. Repair stale test expectations by checking the current approved implementation, preserving their behavioral assertions and deliberate failure controls. Restore missing font license notices from the font authors' official license source. The reviewed packaging exception excludes only inventoried, unreferenced reference masters from upload. Their on-disk source bytes remain protected, all runtime assets remain required and the compressed archive cap becomes 1,500,000,000 bytes.
+
+The owner retains native compilation and TestFlight release authority. Source preparation and the matching backend deployment are authorized.

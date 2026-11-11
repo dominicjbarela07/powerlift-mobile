@@ -1,0 +1,61 @@
+import { parseSessionHistoryOrigin } from '@/lib/movement-history-launch';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useRef } from 'react';
+
+import { CanonicalMovementHistoryScreen } from '@/components/movement-history/CanonicalMovementHistoryScreen';
+import {
+  StrengthLedgerBottomSheet,
+  type StrengthLedgerBottomSheetHandle,
+} from '@/components/sheets/StrengthLedgerBottomSheet';
+
+function numericParam(value?: string | string[]) {
+  const parsed = Number(Array.isArray(value) ? value[0] : value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+export default function MovementHistorySheetRoute() {
+  const router = useRouter();
+  const params = useLocalSearchParams<{
+    sessionOrigin?: string;
+    athleteId?: string | string[];
+    equipmentContextDefinitionId?: string | string[];
+    equipmentDefinitionId?: string | string[];
+    movementDefinitionId?: string | string[];
+    coreMovementId?: string | string[];
+  }>();
+  const origin = parseSessionHistoryOrigin(params.sessionOrigin);
+  const sheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
+  const movementDefinitionId = numericParam(params.movementDefinitionId);
+  const coreMovementId = numericParam(params.coreMovementId);
+  const athleteId = numericParam(params.athleteId);
+  const equipmentContextDefinitionId = numericParam(
+    params.equipmentContextDefinitionId ?? params.equipmentDefinitionId,
+  );
+  const requestClose = useCallback(() => sheetRef.current?.dismiss(), []);
+
+  return (
+    <StrengthLedgerBottomSheet
+      ref={sheetRef}
+      accessibilityLabel="Movement History"
+      heightFraction={0.93}
+      motionPreset="deliberate"
+      onDismiss={() => router.back()}
+      testID="canonical-movement-history-sheet"
+      visible
+    >
+      {movementDefinitionId || coreMovementId ? (
+        <CanonicalMovementHistoryScreen
+          athleteId={athleteId}
+          readOnly={origin?.mode === 'preview'}
+          initialDisplayUnit={origin?.displayUnit}
+          initialEquipmentContextDefinitionId={equipmentContextDefinitionId}
+          activeSessionId={origin?.mode === 'execute' ? origin.workoutId : null}
+          movementDefinitionId={movementDefinitionId}
+          coreMovementId={coreMovementId}
+          onRequestClose={requestClose}
+          presentation="sheet"
+        />
+      ) : null}
+    </StrengthLedgerBottomSheet>
+  );
+}

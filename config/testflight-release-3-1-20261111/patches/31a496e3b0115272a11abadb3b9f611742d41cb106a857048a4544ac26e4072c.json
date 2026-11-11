@@ -1,0 +1,18 @@
+[
+  {
+    "before": "import { useKeyboardState } from '@/components/keyboard/keyboard-state';\nimport { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';\nimport { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';\n",
+    "after": "import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';\nimport { useKeyboardState } from '@/components/keyboard/keyboard-state';\nimport { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';\nimport { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';\n"
+  },
+  {
+    "before": "  PRODUCTION_API_BASE,\n  deleteAccountRequest,\n  fetchJson,\n  getDeviceTimezone,\n  setManualTimezonePreference,\n} from '@/lib/api';\nimport type { MobileViewMode } from '@/lib/mobileViewMode';\nimport { openRecoverableCheckoutBrowser } from '@/lib/checkoutBrowser';\nimport { ACCESSORY_REVIEW_CATALOG, canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';\nimport {\n  convertDisplayWeightValue,\n",
+    "after": "  PRODUCTION_API_BASE,\n  deleteAccountRequest,\n  fetchJson,\n  startMobileBillingCheckout,\n  getDeviceTimezone,\n  setManualTimezonePreference,\n} from '@/lib/api';\nimport type { MobileViewMode } from '@/lib/mobileViewMode';\nimport { openRecoverableCheckoutBrowser, waitForBlockingUiToDismiss } from '@/lib/checkoutBrowser';\nimport { ACCESSORY_REVIEW_CATALOG, canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';\nimport {\n  convertDisplayWeightValue,\n"
+  },
+  {
+    "before": "        setUpgradeBetaCode('');\n        setUpgradeSubmitting(false);\n        try {\n          await openRecoverableCheckoutBrowser(json.checkout_url);\n        } catch {\n          Alert.alert(\n            'Stripe Checkout could not be opened',\n",
+    "after": "        setUpgradeBetaCode('');\n        setUpgradeSubmitting(false);\n        try {\n          const checkout = await startMobileBillingCheckout();\n          if (!checkout.ok || !checkout.json?.checkout_url) throw new Error('Checkout is still being prepared.');\n          await waitForBlockingUiToDismiss();\n          await openRecoverableCheckoutBrowser(checkout.json.checkout_url);\n        } catch {\n          Alert.alert(\n            'Stripe Checkout could not be opened',\n"
+  },
+  {
+    "before": "              onPress: () => setFeedbackModalOpen(true),\n              accent: 'neutral',\n            })}\n            {settingsRow({\n              icon: 'information-circle-outline',\n              title: 'About',\n",
+    "after": "              onPress: () => setFeedbackModalOpen(true),\n              accent: 'neutral',\n            })}\n            <OnboardingSupport step=\"account\" />\n            {settingsRow({\n              icon: 'information-circle-outline',\n              title: 'About',\n"
+  }
+]

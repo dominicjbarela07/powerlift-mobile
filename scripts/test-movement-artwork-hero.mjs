@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { resolveApprovedExactMovementArtwork, movementHeroFocal, movementHeroGeometry } from '../lib/movement-artwork-hero.ts';
+import { resolveApprovedExactMovementArtwork, resolveMovementArtworkPresentation, movementHeroFocal, movementHeroGeometry } from '../lib/movement-artwork-hero.ts';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, canonicalArtworkInputFromDefinition } from '../lib/canonical-movement-artwork.ts';
 import { movementHeroSourceFrame } from '../lib/movement-artwork-geometry.mjs';
 import { approvedExactArtworkPolicy, assertHumanArtworkGate } from './canonical-art-review-gate.mjs';
+import './test-movement-atmosphere.mjs';
 const state=JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
 const reuse=JSON.parse(fs.readFileSync('config/governed-movement-art-reuse.json'));
 const reuseRows=[...reuse.shared_artwork_identities,...reuse.legacy_artwork_identities];
@@ -12,11 +13,26 @@ const coreCatalog=JSON.parse(fs.readFileSync('config/governed-movement-art-taxon
 const subject=id=>coreCatalog.some(row=>row.id===id) ? canonicalArtworkInputFromDefinition(coreCatalog.find(row=>row.id===id)) : ({ identity_type:'accessory', movement_definition_id:id, key:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.key, primary_muscle_group:CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id]?.primary });
 assertHumanArtworkGate();
 assert.deepEqual(policy.approved_exact_artwork,approvedExactArtworkPolicy(state));
+const pushUp = Object.values(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES).find(row => row.key === 'accessory_push_up');
+assert.ok(pushUp);
+const pushUpId = Number(Object.entries(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES).find(([, row]) => row === pushUp)[0]);
+const pushUpArt = resolveApprovedExactMovementArtwork(subject(pushUpId), true, policy);
+assert.ok(pushUpArt, 'Push-Up has its exact positive human receipt');
+for (const complete of [false, true]) {
+  assert.deepEqual(resolveMovementArtworkPresentation(subject(pushUpId), true, complete, 'test-session', true, policy).hero, pushUpArt,
+    'saving the last set must retain the approved Push-Up illustration on its expanded card');
+  assert.equal(resolveMovementArtworkPresentation(subject(pushUpId), false, complete, 'test-session', true, policy).hero, null,
+    'collapsed rows retain compact presentation');
+  assert.equal(resolveMovementArtworkPresentation(subject(pushUpId), true, complete, 'test-session', true, { ...policy, denied_keys: [...policy.denied_keys, pushUpArt.key] }).hero, null,
+    'completion never overrides artwork denial');
+}
 for (const row of state.canonical_assets) {
   const result=resolveApprovedExactMovementArtwork(subject(row.movement_definition_id),true,policy);
   const binding=reuseRows.find(entry=>entry.movement_definition_id===row.movement_definition_id && entry.key===row.key);
   const receipt=policy.approved_exact_artwork.find(entry=>entry.key===(binding?.artwork_key || row.key));
   assert.equal(Boolean(result),Boolean(receipt),'only current positive human receipts enable exact heroes');
+  assert.deepEqual(resolveMovementArtworkPresentation(subject(row.movement_definition_id), true, true, 'test-session', true, policy).hero, result,
+    `${row.key}: all expanded approved movements retain their artwork after completion`);
   assert.equal(resolveApprovedExactMovementArtwork(subject(row.movement_definition_id),false,policy),null,'DEV-only enhancement cannot enter release runtime');
 }
 const original=state.canonical_assets.find(row=>row.movement_definition_id===33);

@@ -19,6 +19,7 @@ export function assertApprovedArtworkExport(exported, { root = process.cwd(), ch
   assert.deepEqual(runtime.approved_exact_artwork, approved, 'runtime projection must match human approval');
   const app = read('app.json').expo;
   const testflight = channel === 'testflight';
+  const testflight31 = testflight && process.env.STRENGTH_LEDGER_RELEASE_TARGET === 'testflight31';
   const production3 = channel === 'production3';
   if (production3) {
     assert.equal(process.env.STRENGTH_LEDGER_RELEASE_TARGET, 'production3', '3.0 artwork requires the explicit native preparation target');
@@ -29,7 +30,16 @@ export function assertApprovedArtworkExport(exported, { root = process.cwd(), ch
     assert.equal(resolved.extra.publicationAuthorized, false, 'local preparation cannot grant publication');
   }
   const enabled = testflight || production3;
-  if (testflight) {
+  if (testflight31) {
+    assert.equal(process.env.EXPO_PUBLIC_ART_RUNTIME_VERSION, '3.1.0', '3.1 artwork requires runtime 3.1.0');
+    assert.equal(process.env.EXPO_PUBLIC_API_BASE, 'https://app.strengthledger.fit', '3.1 artwork export requires live services');
+    const resolved = createRequire(import.meta.url)(path.join(root, 'app.config.js')).expo;
+    assert.equal(resolved.version, '3.1.0');
+    assert.equal(resolved.runtimeVersion, '3.1.0');
+    assert.equal(resolved.extra.releaseTrack, 'testflight');
+    assert.equal(resolved.extra.preparationTarget, 'testflight31');
+    assert.equal(resolved.extra.publicationAuthorized, false);
+  } else if (testflight) {
     assert.equal(app.extra?.releaseTrack, 'testflight', 'approved artwork requires the TestFlight release projection');
     assert.match(app.version, /^2\.1\.\d+$/, 'approved artwork requires the compatible TestFlight runtime');
   }

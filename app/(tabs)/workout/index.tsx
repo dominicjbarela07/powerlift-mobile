@@ -1,3 +1,4 @@
+import { SelfCoachPlanEntry } from '@/components/home/SelfCoachPlanEntry';
 import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { evidenceReadCache } from '@/lib/evidence-read-cache';
@@ -629,6 +630,8 @@ export default function TrainingIndexScreen() {
     programmingDay?: string;
     workspaceReturn?: string;
     workspaceSubjectKey?: string;
+    planningTools?: string;
+    planDate?: string;
   }>();
   const programmingSubject = resolveProgrammingSubject(athleteWorkspace, params.athleteId);
   const { athleteId: programmingAthleteId, ready: programmingSubjectReady } = programmingSubject;
@@ -909,8 +912,19 @@ export default function TrainingIndexScreen() {
 
   if (needsAthleteSelection) return <ProgrammingAthleteChooser />;
 
+  if (isIndividual && !params.planningTools && !directWorkoutId && !directProgramId && !returnBlockId && !programCreatedNonce) {
+    return <SelfCoachPlanEntry key={workspaceKey} athleteId={visibleHub?.athlete?.id || Number(user?.athlete_id) || null}
+      owner={workspaceKey} unit={user?.preferred_units === 'kg' ? 'kg' : 'lb'}
+      selectedDate={typeof params.planDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(params.planDate) ? params.planDate : ''}
+      onDateChange={planDate => router.setParams({ planDate })}
+      onContextRetry={() => { void loadTraining({ silent: true }); }}
+      onPrograms={() => router.setParams({ planningTools: '1' })} />;
+  }
+
   if (isProgrammingManager) {
     return (
+      <View style={{ flex: 1 }}>
+      {isIndividual ? <Pressable accessibilityRole="button" onPress={() => router.setParams({ planningTools: undefined, programId: undefined, workoutId: undefined, programCreated: undefined, programmingBlockId: undefined, programmingWeek: undefined, programmingDay: undefined })} style={{ minHeight: 48, paddingHorizontal: 20, justifyContent: 'center', backgroundColor: '#100E16' }}><Text style={{ color: '#C09AF6' }}>‹ Back to Plan</Text></Pressable> : null}
       <IndividualProgrammingHome
         key={trainingScopeKey}
         onWeekSelected={(blockId, week) => {
@@ -941,6 +955,7 @@ export default function TrainingIndexScreen() {
         workspaceReturn={params.workspaceReturn}
         onConsumeDirectOpen={() => router.setParams({ workoutId: undefined, programId: undefined } as any)}
       />
+      </View>
     );
   }
 

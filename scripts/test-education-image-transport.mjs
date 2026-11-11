@@ -27,10 +27,15 @@ try {
   const component = fs.readFileSync(path.join(fixture, contract.components[0]), 'utf8');
   rejects(contract.components[0], component.replace('athlete-session-20261001.png', 'coach-home-20261001.png'), /screen behavior/);
   rejects(contract.components[0], component + '\nexport const hiddenBehavior = true;\n', /screen behavior/);
+  const selfCoach = fs.readFileSync(path.join(fixture, contract.components[3]), 'utf8');
+  rejects(contract.components[3], selfCoach + '\nexport const hiddenBehavior = true;\n', /screen behavior/);
+  rejects(transportFiles[3], fs.readFileSync(path.join(fixture, transportFiles[3]), 'utf8') + '\n', /owner-directed education delta changed/);
+  rejects(transportFiles[4], '{}\n', /education owner evidence changed/);
+  rejects(transportFiles[5], '{}\n', /owner-directed Session terminology delta changed/);
   rejects(transportFiles[1], fs.readFileSync(path.join(fixture, transportFiles[1]), 'utf8').replace('return image;', 'return images["coach-home-20261001.png"];'), /resolver behavior/);
   assert.throws(() => assertEducationTransport(fixture, { bundle: Buffer.from('no images') }), /actual bundle is missing/);
   assert.throws(() => assertEducationTransport(fixture, { sourceCommit: 'wrong' }), /actual observed native source/);
   assert.equal(assertOtaAssetLimit({ fileMetadata: { ios: { assets: Array(999).fill({}) } } }), 1000);
   assert.throws(() => assertOtaAssetLimit({ fileMetadata: { ios: { assets: Array(1000).fill({}) } } }), /1001\/1000/);
 } finally { fs.rmSync(fixture, { recursive: true, force: true }); }
-console.log('Lossless education transport PASS: all 17 PNG bytes/dimensions and four screen bindings preserved; corrupted payload/original, wrong image/resolver, changed screen, absent artifact and excess OTA assets rejected.');
+console.log('Lossless education transport PASS. All 17 original PNG bytes and dimensions, four original source lineages and the exact owner-approved Phase 1 guide delta verified. Corrupted images, resolver drift, extra screen changes, altered delta/owner evidence, absent artifact and excess OTA assets rejected.');

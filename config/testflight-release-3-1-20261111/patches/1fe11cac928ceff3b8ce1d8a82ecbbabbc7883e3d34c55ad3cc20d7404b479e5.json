@@ -1,0 +1,10 @@
+[
+  {
+    "before": "  evidence: SetLoggerLoadEvidence | null | undefined,\n  allowZeroLoad: boolean,\n): number | null {\n  const value = Number(evidence?.actual_weight_kg ?? evidence?.weight_kg);\n  if (!Number.isFinite(value)) return null;\n  if (value > 0 || (allowZeroLoad && value === 0)) return value;\n  return null;\n",
+    "after": "  evidence: SetLoggerLoadEvidence | null | undefined,\n  allowZeroLoad: boolean,\n): number | null {\n  const raw = evidence?.actual_weight_kg ?? evidence?.weight_kg;\n  if (raw == null) return null;\n  const value = Number(raw);\n  if (!Number.isFinite(value)) return null;\n  if (value > 0 || (allowZeroLoad && value === 0)) return value;\n  return null;\n"
+  },
+  {
+    "before": "    });\n  }\n\n  const prescription = Number(prescribedWeightKg);\n  const hasPrescription = Number.isFinite(prescription)\n    && (prescription > 0 || (allowZeroLoad && prescription === 0));\n  if (preferPrescriptionForStageTransition && hasPrescription) {\n",
+    "after": "    });\n  }\n\n  const prescription = prescribedWeightKg == null ? NaN : Number(prescribedWeightKg);\n  const hasPrescription = Number.isFinite(prescription)\n    && (prescription > 0 || (allowZeroLoad && prescription === 0));\n  if (preferPrescriptionForStageTransition && hasPrescription) {\n"
+  }
+]

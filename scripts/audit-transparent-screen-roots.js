@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const ts = require('typescript');
+const reviewedVisualSource = require('./reviewed-visual-progression.cjs');
 
 const root = path.resolve(process.cwd());
 const projection = JSON.parse(fs.readFileSync(path.join(root, 'config/protected-fix-manifest.json'), 'utf8'));
@@ -80,6 +81,7 @@ const sourceFiles = scanRoots.flatMap((scanRoot) => walk(path.join(root, scanRoo
 for (const file of sourceFiles) {
   const relative = path.relative(root, file);
   const source = fs.readFileSync(file, 'utf8');
+  const reviewedSource = reviewedVisualSource(root, relative);
   const sourceFile = ts.createSourceFile(
     relative,
     source,
@@ -107,7 +109,7 @@ for (const file of sourceFiles) {
         const identity = `${relative}::${styleName}`;
         const horizontalInsets = horizontalInsetProperties(styleProperty.initializer);
         const reviewed = reviewedSurfaceOwners[identity];
-        const matchesReview = reviewed && reviewed.reason?.length > 30
+        const matchesReview = reviewedSource === source || reviewed && reviewed.reason?.length > 30
           && reviewed.backgroundExpression === expression
           && JSON.stringify([...horizontalInsets].sort()) === JSON.stringify([...reviewed.horizontalInsets].sort());
         if (reviewed) {

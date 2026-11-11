@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { extname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
 
 const root = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 const appRoots = [join(root, 'app'), join(root, 'components'), join(root, 'constants'), join(root, 'dev-mocks'), join(root, 'lib')];
@@ -20,6 +21,20 @@ const collectSourceFiles = (directory) => readdirSync(directory, { withFileTypes
   if (entry.isDirectory()) return collectSourceFiles(path);
   return ['.ts', '.tsx', '.js', '.jsx'].includes(extname(entry.name)) ? [path] : [];
 });
+
+function nativeTextImports(source) {
+  const tree = ts.createSourceFile('surface.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  return tree.statements.filter(node => ts.isImportDeclaration(node) && node.moduleSpecifier.text === 'react-native')
+    .flatMap(node => {
+      const clause = node.importClause;
+      if (!clause || clause.isTypeOnly || !clause.namedBindings || !ts.isNamedImports(clause.namedBindings)) return [];
+      return clause.namedBindings.elements.filter(item => !item.isTypeOnly && ['Text', 'TextInput'].includes(item.propertyName?.text || item.name.text))
+        .map(item => item.getText(tree));
+    });
+}
+assert.deepEqual(nativeTextImports("import { type TextInput } from 'react-native'"), []);
+assert.equal(nativeTextImports("import { Text as NativeText } from 'react-native'").length, 1, 'aliased native text must be rejected');
+assert.equal(nativeTextImports("import { TextInput } from 'react-native'").length, 1, 'native input bypass must be rejected');
 
 for (const file of Object.values(selectedFonts)) {
   assert.equal(existsSync(join(root, 'assets/fonts', file)), true, `bundled font is missing: ${file}`);
@@ -85,34 +100,32 @@ assert.match(textPrimitive, /fontFamily: SLFontFamilies\.body/);
 assert.match(textPrimitive, /typographyRole = 'input'/);
 assert.match(textPrimitive, /SLTypographyTextBehaviors\[typographyRole\]/);
 assert.match(textPrimitive, /ellipsizeMode=\{ellipsizeMode \?\? textBehavior\?\.ellipsizeMode\}/);
-assert.match(textPrimitive, /style=\{\[SLAppTextStyle, style, typographyRole \? getSLTypographyRoleStyle\(typographyRole, width\) : null\]\}/);
-assert.match(textPrimitive, /style=\{\[SLAppTextStyle, style, getSLTypographyRoleStyle\(typographyRole, width\)\]\}/);
+assert.match(textPrimitive, /const composedStyle = \[SLAppTextStyle, style, typographyRole \? getSLTypographyRoleStyle\(typographyRole, width\) : null\]/);
+assert.match(textPrimitive, /const composedStyle = \[SLAppTextStyle, style, getSLTypographyRoleStyle\(typographyRole, width\)\]/);
+assert.equal((textPrimitive.match(/style=\{\[composedStyle, guardedLineHeight/g) || []).length, 2, 'both native controls retain semantic styles and full glyph-height protection');
 
 const representativeChecks = [
   ['app/(tabs)/athlete-dashboard.tsx', /typographyRole="dynamicName"[^>]*style=\{styles\.athleteName\}/, 'athlete name'],
   ['app/(tabs)/athlete-dashboard.tsx', /typographyRole="workoutName"[^>]*style=\{\[styles\.todayTrainingTitle/, 'home workout name'],
-  ['components/coach-mobile/SessionEditingWorkspace.tsx', /typographyRole="heroTitle"[^>]*style=\{styles\.identityTitle\}/, 'session workspace hero title'],
+  ['components/coach-mobile/SessionEditingWorkspace.tsx', /<Text style=\{styles\.identityTitle\}>\{title\}<\/Text>/, 'compact session workspace title'],
   ['app/(tabs)/messages/index.tsx', /typographyRole="messageText"/, 'message body'],
   ['app/(tabs)/messages/[threadId].tsx', /typographyRole="dynamicName"[^>]*style=\{styles\.headerTitle\}/, 'thread participant'],
   ['components/workout-logger/session-shell.tsx', /typographyRole="workoutName"/, 'logger workout name'],
   ['components/workout-logger/core-loggers.tsx', /typographyRole="movementName"/, 'logger movement name'],
-  ['components/workout-logger/readiness-modal.tsx', /typographyRole="modalBody"[^>]*style=\{styles\.subtitle\}/, 'readiness explanation'],
+  ['components/workout-logger/readiness-modal.tsx', /typographyRole="caption"[^>]*style=\{styles\.subtitle\}/, 'compact readiness explanation'],
   ['components/volume-achievements/VolumeAchievementExperience.tsx', /typographyRole="supportingBody"[^>]*style=\{styles\.totalCaption\}/, 'volume description'],
-  ['app/(tabs)/dev-mocks/milestones.tsx', /typographyRole="heroNumeric"[^>]*style=\{styles\.heroValue\}/, 'milestone hero value'],
+  ['components/volume-achievements/VolumeAchievementExperience.tsx', /typographyRole="heroNumeric"[^>]*style=\{styles\.detailThreshold\}/, 'shipping milestone threshold'],
 ];
 for (const [file, pattern, label] of representativeChecks) {
   assert.match(readFileSync(join(root, file), 'utf8'), pattern, `representative semantic role missing: ${label}`);
 }
+assert.match(readFileSync(join(root, 'components/coach-mobile/SessionEditingWorkspace.tsx'), 'utf8'), /identityTitle: \{[^\n]*fontFamily: SLFontFamilies\.sansBold, fontSize: 22, lineHeight: 28/, 'the compact title keeps its approved hierarchy and full glyph height');
 
 for (const file of appRoots.flatMap(collectSourceFiles)) {
   const source = readFileSync(file, 'utf8');
   const label = relative(root, file);
   if (label !== 'components/ui/sl-text.tsx') {
-    assert.doesNotMatch(
-      source,
-      /import\s*\{[^;]*\b(?:Text|TextInput)\b[^;]*\}\s*from\s*['\"]react-native['\"]/s,
-      `${label} bypasses the app-owned typography primitive`,
-    );
+    if (source.includes('react-native')) assert.deepEqual(nativeTextImports(source), [], `${label} bypasses the app-owned typography primitive`);
   }
   assert.doesNotMatch(source, /https?:\/\/[^'\"]+\.(?:ttf|otf|woff2?)/i, `${label} fetches a runtime font`);
   assert.doesNotMatch(source, /fontFamily\s*:\s*['\"](?:Ionicons|MaterialIcons|FontAwesome)['\"]/, `${label} attempts to restyle an icon font`);

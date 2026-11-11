@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { StrengthLedgerBottomSheet, type StrengthLedgerBottomSheetHandle } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { KeyboardScrollView } from '@/components/keyboard/KeyboardSurface';
@@ -39,15 +39,18 @@ export function SessionActionsSheet(props: Props) {
     selected.current = action;
     sheet.current?.dismiss();
   };
-  const dismiss = () => {
+  const runSelectedAction = () => {
     const action = selected.current;
     selected.current = null;
+    if (action) handlers[action]();
+  };
+  const dismiss = () => {
     props.onDismiss();
-    // Let the menu close before presenting the existing editor/confirmation.
-    if (action) setTimeout(() => handlers[action](), 0);
+    // iOS presents a second native modal only after the first has dismissed.
+    if (Platform.OS !== 'ios') setTimeout(runSelectedAction, 0);
   };
   return <StrengthLedgerBottomSheet ref={sheet} visible={props.visible} accessibilityLabel="Session actions"
-    testID="active-session-actions" onDismiss={dismiss}
+    testID="active-session-actions" onDismiss={dismiss} onNativeDismiss={Platform.OS === 'ios' ? runSelectedAction : undefined}
     heightFraction={Math.min(0.86, desiredHeight / height)}>
     <KeyboardScrollView contentContainerStyle={s.content} onContentSizeChange={(_width, value) => setContentHeight(value)}>
       <Text accessibilityRole="header" style={s.title}>Session actions</Text>

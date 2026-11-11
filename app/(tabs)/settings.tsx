@@ -1,3 +1,4 @@
+import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 import { useKeyboardState } from '@/components/keyboard/keyboard-state';
 import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
@@ -1855,6 +1856,7 @@ export default function SettingsScreen() {
               onPress: () => setFeedbackModalOpen(true),
               accent: 'neutral',
             })}
+            <OnboardingSupport step="account" />
             {settingsRow({
               icon: 'information-circle-outline',
               title: 'About',

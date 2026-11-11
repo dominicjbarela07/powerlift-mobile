@@ -73,6 +73,9 @@ type ApiFetchInit = RequestInit & {
 };
 
 export type AccountStatePayload = {
+  email?: string | null;
+  id?: number | null;
+  user_id?: number | null;
   ok?: boolean;
   error?: string;
   email_verified?: boolean;
@@ -406,7 +409,7 @@ export async function fetchJson<T = any>(
         if (res.ok && /\/workouts\/mobile\//.test(url)) json = normalizeSessionMovementResponse(json);
         if (res.ok && method === 'GET') json = filterRetiredMovementLibraryResponse(path, json);
       } catch {
-        console.log('fetchJson parse failed:', res.status, url, trimmed.slice(0, 300));
+        console.warn('Unexpected API response format', { status: res.status, path: new URL(url).pathname });
         json = null;
       }
     }
@@ -419,7 +422,7 @@ export async function fetchJson<T = any>(
       const endpoint = (() => {
         try {
           const parsed = new URL(url);
-          return `${parsed.pathname}${parsed.search}`;
+          return parsed.pathname;
         } catch {
           return path;
         }
@@ -754,6 +757,8 @@ export async function declinePendingCoachInvite(inviteId: number): Promise<Fetch
 }
 
 export type ApiLoginResponse = {
+  id?: number | null;
+  user_id?: number | null;
   ok: boolean;
   error?: string;
   needs_account_setup?: boolean;
@@ -799,10 +804,10 @@ export async function loginRequest(email: string, password: string): Promise<Api
     });
 
     const json = r.json || ({} as any);
-    console.log('Login OK raw:', json);
+
 
     if (!r.ok || !json.ok) {
-      console.warn('Login response not ok:', r.status, json || r.raw?.slice(0, 300));
+      console.warn('Sign-in request rejected', { status: r.status });
       return {
         ok: false,
         error: json.error || `HTTP ${r.status}`,

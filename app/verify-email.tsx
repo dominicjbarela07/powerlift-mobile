@@ -1,12 +1,13 @@
+import { useSetupStatusRefresh } from '@/hooks/useSetupStatusRefresh';
+import { validSupportEmail } from '@/lib/recovery-support';
 import { onboardingMessage } from '@/lib/onboarding-message';
 import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress';
 import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, Keyboard, Platform, Pressable, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLButton } from '@/components/ui/sl-button';
-import { useFocusEffect } from '@react-navigation/native';
 import { Redirect, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -21,7 +22,8 @@ import { SLColors, SLFontFamilies, SLOpacity, SLRadius, SLTypography } from '@/c
 
 export default function VerifyEmailScreen() {
   const router = useRouter();
-  const { user, token, login, logout, refreshAccountState } = useAuth();
+  const { user, applyAccountStatePayload, logout, refreshAccountState } = useAuth();
+  const actionInFlight = useRef(false);
   const [code, setCode] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -34,17 +36,18 @@ export default function VerifyEmailScreen() {
   const [newEmail, setNewEmail] = useState('');
   const [savingEmail, setSavingEmail] = useState(false);
   const changeEmail = async () => {
-    if (savingEmail) return;
+    if (actionInFlight.current) return;
+    actionInFlight.current = true;
     setSavingEmail(true); setError(null);
     try {
       const result = await correctOnboardingEmail(newEmail);
       if (!result.ok) throw new Error(result.json?.error || 'We could not update that email. Please retry.');
-      if (user && result.json?.email) await login({ user: { ...user, email: result.json.email }, token });
-      await refreshAccountState();
+      if (result.json?.email) await applyAccountStatePayload(result.json);
       setCode(''); setCorrecting(false); setResendWait(60);
+      void refreshAccountState().catch(() => undefined);
       setMessage('Email updated. Enter the new code we sent you.');
     } catch (err: any) { setError(err?.message || 'Could not connect. Your account is saved; please retry.'); }
-    finally { setSavingEmail(false); }
+    finally { actionInFlight.current = false; setSavingEmail(false); }
   };
   useEffect(() => {
     if (!resendWait) return;
@@ -82,11 +85,7 @@ export default function VerifyEmailScreen() {
     [refreshAccountState, router]
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      void refreshVerificationState();
-    }, [refreshVerificationState])
-  );
+  useSetupStatusRefresh(refreshVerificationState);
 
   if (!user) return <Redirect href="/login" />;
   if (!user.verification_required || user.email_verified !== false) return <Redirect href="/" />;
@@ -98,75 +97,22 @@ export default function VerifyEmailScreen() {
     user.dev_onboarding_simulation_enabled === true;
 
   const applyVerifiedPayload = async (payload: any = {}) => {
-    const payloadUser = payload.user || payload;
-    const refreshed = {
-      ...user,
-      email_verified: true,
-      account_state: payloadUser.account_state ?? user.account_state ?? null,
-      next_url: payloadUser.next_url ?? user.next_url ?? null,
-      next_route: payloadUser.next_route ?? user.next_route ?? null,
-      can_access_product:
-        payloadUser.can_access_product === false
-          ? false
-          : payloadUser.can_access_product === true
-          ? true
-          : user.can_access_product,
-      link_coach_required:
-        payloadUser.link_coach_required === true
-          ? true
-          : payloadUser.link_coach_required === false
-          ? false
-          : user.link_coach_required,
-      account_state_detail: payloadUser.account_state_detail ?? user.account_state_detail,
-      verification_required:
-        payloadUser.verification_required === true
-          ? true
-          : payloadUser.verification_required === false
-          ? false
-          : false,
-      verification_url: null,
-      billing_required:
-        payloadUser.billing_required === true
-          ? true
-          : payloadUser.billing_required === false
-          ? false
-          : user.billing_required,
-      billing_url: payloadUser.billing_url ?? user.billing_url ?? null,
-      workspace_mode: payloadUser.workspace_mode ?? user.workspace_mode,
-      is_individual_workspace:
-        payloadUser.is_individual_workspace === true
-          ? true
-          : payloadUser.is_individual_workspace === false
-          ? false
-          : user.is_individual_workspace,
-      is_self_coached:
-        payloadUser.is_self_coached === true
-          ? true
-          : payloadUser.is_self_coached === false
-          ? false
-          : user.is_self_coached,
-      self_athlete_id: payloadUser.self_athlete_id ?? user.self_athlete_id ?? null,
-      has_linked_athlete:
-        payloadUser.has_linked_athlete === true
-          ? true
-          : payloadUser.has_linked_athlete === false
-          ? false
-          : user.has_linked_athlete,
-      athlete_id: payloadUser.athlete_id ?? user.athlete_id ?? null,
-      dev_onboarding_simulation_enabled:
-        payloadUser.dev_onboarding_simulation_enabled === true ||
-        user.dev_onboarding_simulation_enabled === true,
-    };
-    await login({ user: refreshed, token });
+    const refreshed = await applyAccountStatePayload(payload);
+    if (refreshed?.email_verified !== true || refreshed.account_state === 'EMAIL_VERIFICATION_REQUIRED') {
+      setError('We could not confirm email verification. Check status or retry your code.');
+      return;
+    }
     router.replace('/');
   };
 
   const handleVerify = async () => {
+    if (actionInFlight.current) return;
     if (normalizedCode.length !== 6) {
       setError('Enter the 6-digit code from your email.');
       setMessage(null);
       return;
     }
+    actionInFlight.current = true;
     setSubmitting(true);
     setError(null);
     setMessage(null);
@@ -181,11 +127,14 @@ export default function VerifyEmailScreen() {
     } catch (err: any) {
       setError(err?.message || 'Network error. Please try again.');
     } finally {
+      actionInFlight.current = false;
       setSubmitting(false);
     }
   };
 
   const handleDevSimulate = async () => {
+    if (actionInFlight.current) return;
+    actionInFlight.current = true;
     setSimulating(true);
     setError(null);
     setMessage(null);
@@ -200,11 +149,14 @@ export default function VerifyEmailScreen() {
     } catch (err: any) {
       setError(err?.message || 'Network error. Please try again.');
     } finally {
+      actionInFlight.current = false;
       setSimulating(false);
     }
   };
 
   const handleResend = async () => {
+    if (resendWait || actionInFlight.current) return;
+    actionInFlight.current = true;
     setResending(true);
     setError(null);
     setMessage(null);
@@ -221,6 +173,7 @@ export default function VerifyEmailScreen() {
     } catch (err: any) {
       setError(err?.message || 'Network error. Please try again.');
     } finally {
+      actionInFlight.current = false;
       setResending(false);
     }
   };
@@ -252,6 +205,7 @@ export default function VerifyEmailScreen() {
               </Text>
 
               <TextInput
+                accessibilityLabel="6-digit email verification code"
                 value={normalizedCode}
                 onChangeText={(value) => setCode(value.replace(/\D/g, '').slice(0, 6))}
                 keyboardType="number-pad"
@@ -265,14 +219,15 @@ export default function VerifyEmailScreen() {
                 onSubmitEditing={Keyboard.dismiss}
               />
 
-              {error ? <Text style={styles.error}>{onboardingMessage(error)}</Text> : null}
-              {message ? <Text style={styles.message}>{message}</Text> : null}
+              {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.error}>{onboardingMessage(error)}</Text> : null}
+              {message ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.message}>{message}</Text> : null}
 
               <SLButton
                 fullWidth
                 label="Verify email and continue"
                 variant="secondary"
                 style={{ backgroundColor: SLColors.accentVioletSoft, borderColor: SLColors.accentViolet }}
+                disabled={resending || savingEmail || simulating}
                 loading={submitting}
                 onPress={handleVerify}
                 size="lg"
@@ -281,7 +236,7 @@ export default function VerifyEmailScreen() {
               <SLButton
                 fullWidth
                 label={resendWait ? `Resend code in ${resendWait}s` : 'Resend code'}
-                disabled={resendWait > 0 || resending}
+                disabled={resendWait > 0 || resending || submitting || savingEmail || simulating}
                 loading={resending}
                 onPress={handleResend}
                 variant="secondary"
@@ -298,14 +253,15 @@ export default function VerifyEmailScreen() {
               {user.is_coach ? <>
                 <SLButton label="Wrong email address?" variant="ghost" onPress={() => setCorrecting(!correcting)} />
                 {correcting && <View style={{ gap: 12 }}>
-                  <Text style={styles.body}>Correct your email. Your account stays the same; we will send a new code.</Text>
+                  <Text style={styles.body}>Correct your email. We will send a new code for this account.</Text>
                   <TextInput accessibilityLabel="Correct email" autoCapitalize="none" keyboardType="email-address" autoComplete="email" value={newEmail} onChangeText={setNewEmail} placeholder="Your correct email" placeholderTextColor={SLColors.textMuted} style={{ minHeight: 48, padding: 12, borderRadius: SLRadius.radiusControl, borderWidth: 1, borderColor: SLColors.borderDefault, color: SLColors.textStrong }} />
-                  <SLButton label="Update email and send code" variant="secondary" loading={savingEmail} onPress={changeEmail} disabled={!newEmail.includes('@') || savingEmail} />
+                  <SLButton label="Update email and send code" variant="secondary" loading={savingEmail} onPress={changeEmail} disabled={!validSupportEmail(newEmail) || savingEmail} />
                 </View>}
               </> : null}
               <OnboardingSupport step="verify" />
               {showDevSimulation ? (
                 <Pressable
+                  accessibilityRole="button"
                   style={[styles.devButton, simulating && styles.disabledButton]}
                   onPress={handleDevSimulate}
                   disabled={simulating}

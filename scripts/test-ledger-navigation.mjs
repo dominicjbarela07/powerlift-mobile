@@ -84,7 +84,7 @@ Object.assign(mocks,{
  '@/lib/ledger-records':records,'@/lib/ledger-rewards':rewards,'@/lib/ledger-data':{},'@/lib/display-units':{},'@/components/charts/AnalyticalTimeSeriesChart':{},'@/lib/chart-fidelity':{},'@/lib/ledger-history-presentation':{},
  '@/lib/ledger-exploration':{},'@/lib/ledger-variants':{},'@/lib/movement-history-launch':{},'@/lib/surface-weight-unit':{useSurfaceWeightUnit:()=>({unit:'kg',toggleUnit:()=>{}})},
  './use-ledger-live-data':{useLedgerLiveData:()=>liveData},'./use-ledger-resource':{},'./archive-detail':{ArchiveDetailExperience:'Detail'},'./LedgerSourceContent':{},'./LedgerCollections':{},
- './LedgerHistoryPane':{LedgerHistoryPane:'HistoryPane'},'./LedgerContextFilter':{LedgerContextFilter:'ContextFilter'},'./LedgerVisuals':{LedgerRecordCard:'RecordCard',LedgerTrainingRhythm:'Rhythm'},'./LedgerMovementBackdrop':{},'./LedgerViewNavigation':{LedgerViewNavigation:'ViewNavigation'},'@/lib/ledger-movement-art':{},
+ './LedgerHistoryPane':{LedgerHistoryPane:'HistoryPane'},'./LedgerContextFilter':{LedgerContextFilter:'ContextFilter'},'./LedgerVisuals':{LedgerRecordCard:'RecordCard',LedgerTrainingRhythm:'Rhythm'},'./LedgerBodyweightHistory':{LedgerBodyweightHistory:'BodyweightHistory'},'./LedgerMovementBackdrop':{},'./LedgerViewNavigation':{LedgerViewNavigation:'ViewNavigation'},'@/lib/ledger-movement-art':{},
 });
 slots=[];index=0;const root=load('components/ledger/LedgerExperience.tsx').default();const connected=root.type;
 const scrollCalls=[];

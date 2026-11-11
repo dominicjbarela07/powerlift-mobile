@@ -1193,3 +1193,20 @@ export const SLLedgerMaterial = {
   benchFace: '#3A2635',
   deadliftFace: '#3B292D',
 } as const;
+
+/** Self-Coach mobile rebuild, approved November 10. */
+export const SLSelfCoach = {
+  canvas: '#100E16',
+  surface: '#1C1825',
+  raised: '#282132',
+  line: 'rgba(220, 207, 241, 0.17)',
+  text: '#F7F3FB',
+  secondary: '#C8C0D3',
+  muted: '#B1A6BE',
+  accent: '#C09AF6',
+  accentInk: '#170D25',
+  success: '#96D9AE',
+  warning: '#E9BE79',
+  danger: '#F0A4B3',
+  cyan: '#6ADCE4',
+} as const;

@@ -11,10 +11,11 @@ import { additionDraft, additionRequest, type AdditionSelection, type SessionCom
 import { fetchJson } from '@/lib/api';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
 import { governedCoreChoices, type GovernedCoreChoice } from '@/lib/governed-movement-classes';
+import { SelfCoachExercisePicker } from '@/components/movement/SelfCoachExercisePicker';
 
-export function ActiveCompositionEditor({ mode, workoutId, athlete, composition, unit, onClose, onSaved }: {
+export function ActiveCompositionEditor({ mode, workoutId, athlete, composition, unit, onClose, onSaved, quickAdd = false }: {
   mode: 'add' | 'remove'; workoutId: number; athlete: { id: number; sex?: string | null; anatomy_display_preference?: string | null };
-  composition: SessionComposition; unit: 'kg' | 'lb'; onClose: () => void; onSaved: (payload: any) => void;
+  composition: SessionComposition; unit: 'kg' | 'lb'; onClose: () => void; onSaved: (payload: any) => void; quickAdd?: boolean;
 }) {
   const [selection, setSelection] = useState<AdditionSelection | null>(null);
   const [draft, setDraft] = useState<CoachMovementDraft | null>(null);
@@ -27,6 +28,7 @@ export function ActiveCompositionEditor({ mode, workoutId, athlete, composition,
   const [busy, setBusy] = useState(false);
   const [manual, setManual] = useState(false);
   const [backdownManual, setBackdownManual] = useState(false);
+  const [advanced, setAdvanced] = useState(false);
   const alive = useRef(true), saving = useRef(false);
   useEffect(() => {
     alive.current = true;
@@ -39,26 +41,53 @@ export function ActiveCompositionEditor({ mode, workoutId, athlete, composition,
       .finally(() => { if (alive.current) setCoreLoading(false); });
     return () => { alive.current = false; };
   }, [mode]);
-  const select = (value: AdditionSelection) => { setSelection(value); setDraft(additionDraft(value, unit)); };
-  const save = async (removeId?: number) => {
-    if (saving.current || (removeId == null && (!selection || !draft))) return;
+  const select = (value: AdditionSelection) => {
+    setSelection(value); setDraft(additionDraft(value, unit));
+    if (quickAdd && !advanced && value.lift !== 'VR') void save(undefined, value);
+  };
+  const save = async (removeId?: number, immediateSelection?: AdditionSelection) => {
+    if (saving.current || (removeId == null && !immediateSelection && (!selection || !draft))) return;
     if (removeId != null && (removeId !== pendingRemoval?.id || !pendingRemoval.can_remove)) return;
     saving.current = true; setBusy(true); setError('');
     try {
       const response = await fetchJson(`/workouts/mobile/${workoutId}/composition/items${removeId != null ? `/${removeId}` : ''}?history=summary`, {
         method: removeId != null ? 'DELETE' : 'POST', auth: true,
         body: JSON.stringify(removeId != null ? { expected_item_ids: composition.item_ids }
+          : immediateSelection ? { expected_item_ids: composition.item_ids,
+            movement_definition_id: immediateSelection.id, kind: immediateSelection.kind,
+            scheme: 'STRAIGHT', quick_add: true }
           : additionRequest(selection!, draft!, unit, composition, beforeId)),
       });
       if (!alive.current) return;
       if (!response.ok || !response.json?.ok) throw new Error(response.json?.error || 'Could not update Session movements.');
       onSaved(response.json); onClose();
-    } catch (reason: any) { if (alive.current) setError(reason.message || 'Could not update Session movements.'); }
+    } catch (reason: any) {
+      if (immediateSelection && alive.current) {
+        try {
+          const recovered = await fetchJson<any>(`/workouts/mobile/${workoutId}?history=summary`);
+          const fresh = recovered.json?.workout?.composition;
+          const added = fresh?.items?.filter((item: any) => !composition.item_ids.includes(item.id)) || [];
+          const sameOriginals = fresh?.item_ids?.filter((id: number) => composition.item_ids.includes(id));
+          if (recovered.ok && recovered.json?.ok && added.length === 1
+            && added[0].movement_definition_id === immediateSelection.id
+            && JSON.stringify(sameOriginals) === JSON.stringify(composition.item_ids)) {
+            if (!alive.current) return;
+            onSaved({ ...recovered.json, composition_mutation: { added_item_ids: [added[0].id] } });
+            onClose();
+            return;
+          }
+        } catch { /* Keep the original failure and the user's selection for retry. */ }
+      }
+      if (alive.current) setError(reason.message || 'Could not update Session movements.');
+    }
     finally {
       saving.current = false;
       if (alive.current) { setBusy(false); setPendingRemovalId(null); }
     }
   };
+  if (mode === 'add' && quickAdd && !advanced && (!selection || busy || error)) return <SelfCoachExercisePicker
+    athleteId={athlete.id} coreChoices={coreChoices} coreLoading={coreLoading} busy={busy} error={error}
+    onSelect={select} onClose={onClose} onAdvanced={() => { setSelection(null); setError(''); setAdvanced(true); }} />;
   if (mode === 'add' && !selection && !error) return <GovernedAccessorySubstitutionPickerModal
     context="in-session-addition" visible title="Add Movement" athleteId={athlete.id} athleteAnatomy={athlete}
     coreLoading={coreLoading} coreChoices={coreChoices} onSelectCore={value => {

@@ -35,7 +35,7 @@ assert.match(source, /<SessionV3Movement/);
 assert.match(v3, /stacks.map/ , 'every range endpoint keeps its independent physical render');
 assert.match(v3, /stacks.length > 1/);
 assert.match(v3, /instrument: \{ minHeight: 145/);
-assert.match(v3, /rangeStack: \{ height: 122/);
+assert.match(v3, /rangeStack: \{ height: 72/);
 assert.match(v3, /history \|\|/ , 'only one evidence presentation occupies the history zone');
 assert.match(source, /visibleDetailRows.map/);
 assert.match(source, /minHeight: 42/ , 'set rows retain phone-height density');

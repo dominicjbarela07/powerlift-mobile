@@ -1,3 +1,4 @@
+import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 import { useKeyboardState } from '@/components/keyboard/keyboard-state';
 import { KeyboardAvoidingView, KeyboardModal as Modal, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import { StrengthLedgerSheetGestureSurface, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';
@@ -539,7 +540,7 @@ export default function SetVideoPlayerModal({
     formatHudDate(context?.session_date),
     video?.video_angle_label,
   ]);
-  const movementTitle = simplifyMobileMovementName(context?.movement_name || context?.lift_name) || 'Movement unavailable';
+  const movementTitle = simplifyMobileMovementName(context?.movement_name || context?.lift_name) || 'Set video';
   const setLabel = context?.set_display_label || context?.set_context_label || (context?.set_index != null ? `Set ${context.set_index}` : null);
   const planLine = compactPrescriptionContext(context, viewerDisplayUnit);
   const logLine = compactContextActual(context, viewerDisplayUnit);
@@ -558,7 +559,7 @@ export default function SetVideoPlayerModal({
   const canOpenCoachFeedback = !!showCoachFeedback;
   const availableToolCount = [canOpenReviewTools, canOpenCoachFeedback, canExport].filter(Boolean).length;
   const hasActivePlayerPanel = reviewSheetOpen || exportSheetOpen || feedbackSheetOpen || toolMenuOpen;
-  const canShowFloatingPlayerActions = !hasActivePlayerPanel && !keyboardVisible;
+  const canShowFloatingPlayerActions = !hasActivePlayerPanel && !keyboardVisible && !urlError && !playbackError;
   const hasMovementForExport = !!(context?.movement_name || context?.lift_name);
   const hasDateForExport = !!context?.session_date;
   const defaultWeightUnit = defaultExportWeightUnit(user?.preferred_units, context);
@@ -1056,11 +1057,14 @@ export default function SetVideoPlayerModal({
               </View>
             ) : null}
             {!isLoading && (urlError || playbackError) ? (
-              <View style={styles.overlay}>
-                <Text style={styles.errorText}>{urlError || playbackError}</Text>
-                <TouchableOpacity style={styles.retryButton} onPress={() => { recoverAttempts.current = 0; void refreshVideoUrl(true); }}>
+              <View style={[styles.overlay, styles.recoveryOverlay, { top: hudTop + 90 }]}>
+                <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20, gap: 12 }}>
+                <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.errorText}>{urlError || playbackError}</Text>
+                <TouchableOpacity accessibilityRole="button" accessibilityLabel="Retry video playback" style={styles.retryButton} onPress={() => { recoverAttempts.current = 0; void refreshVideoUrl(true); }}>
                   <Text style={styles.retryText}>Retry</Text>
                 </TouchableOpacity>
+                <OnboardingSupport step="media" errorCode="media_retry" />
+                </ScrollView>
               </View>
             ) : null}
             {(canShowFloatingPlayerActions && availableToolCount > 0) ? (
@@ -2401,6 +2405,10 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     marginTop: 10,
   },
+  recoveryOverlay: {
+    padding: 0,
+    backgroundColor: SLColors.surfaceMedia,
+  },
   errorText: {
     color: SLColors.danger,
     fontSize: SLTypography.label.fontSize,
@@ -2409,7 +2417,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   retryButton: {
-    minHeight: 36,
+    minHeight: 44,
     borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(129,140,248,0.36)',

@@ -418,19 +418,26 @@ export function CoreMovementLedgerRow({
       history={historyPeek} onOpen={onOpen}
       timeline={expanded ? <View style={v3Sets.list}>
         <Text style={v3Sets.heading}>{isPreSessionCard ? 'PRESCRIBED SETS' : 'TODAY’S SETS'}</Text>
-        {visibleDetailRows.map(row => <CompletedSetSwipeRow key={row.key} onEdit={row.onEdit} onDelete={row.onDelete} reduceMotion={reduceMotion}
+        {visibleDetailRows.map(row => {
+          const result = row.resultText || setTimelinePrescription({ ...row, prescription: row.prescription?.replace(/^\d+\s*[x×]\s*/i, '') });
+          return <CompletedSetSwipeRow key={row.key} onEdit={row.onEdit} onDelete={row.onDelete} reduceMotion={reduceMotion}
           shouldShowCompletedSetSwipeTooltip={row.setLogId === completedSetSwipeTooltipSetLogId}
           onCompletedSetSwipeTooltipStarted={onCompletedSetSwipeTooltipStarted}>
           <View style={[v3Sets.row, row.state === 'active' && v3Sets.current]}>
             <Text style={[v3Sets.dot, row.state === 'completed' && v3Sets.saved]}>{row.state === 'completed' ? '✓' : row.state === 'active' ? '◉' : '○'}</Text>
             <Text style={v3Sets.stage}>{row.timelineLabel || row.label}</Text>
-            <SLMotionPressable accessibilityRole="button" disabled={!row.onEdit && !row.onLogSet} onPress={row.onEdit || row.onLogSet} style={v3Sets.copy}>
-              <Text style={v3Sets.result}>{row.resultText || setTimelinePrescription({ ...row, prescription: row.prescription?.replace(/^\d+\s*[x×]\s*/i, '') })}</Text>
+            <SLMotionPressable accessibilityRole="button" accessibilityLabel={row.onEdit ? `Edit ${row.timelineLabel || row.label}, ${row.resultText || ''}` : row.onLogSet ? `Log ${row.timelineLabel || row.label}` : undefined}
+              disabled={!row.onEdit && !row.onLogSet} onPress={row.onEdit || row.onLogSet} style={v3Sets.copy}>
+              <View style={v3Sets.resultLine}>
+                <Text style={v3Sets.result}>{row.onLogSet && (!result || result === '—') ? 'Log set' : result}</Text>
+                {row.onEdit ? <Ionicons name="create-outline" size={15} color={SLColors.textMuted} /> : null}
+              </View>
               {row.videoStatus && row.videoStatus !== 'No video attached' ? <Text style={[v3Sets.videoStatus, { color: /failed|not uploaded/i.test(row.videoStatus) ? SLColors.danger : /uploading|queued/i.test(row.videoStatus) ? SLColors.accentCyanMuted : SLColors.success }]}>{row.videoStatus}</Text> : null}
             </SLMotionPressable>
             {row.onVideo ? <SLMotionPressable accessibilityRole="button" accessibilityLabel={row.videoLabel || 'Set video'} disabled={row.videoDisabled} onPress={row.onVideo} style={v3Sets.video}><Ionicons name={row.videoLabel === 'View' ? 'play-circle-outline' : 'videocam-outline'} size={18} color={row.videoLabel === 'View' ? SLColors.success : SLColors.accentViolet} /><Text style={v3Sets.videoAction}>{row.videoLabel || 'Video'}</Text></SLMotionPressable> : <Text style={[v3Sets.state, row.state === 'completed' && v3Sets.saved]}>{row.state === 'completed' ? 'Saved' : row.state === 'active' ? 'Current' : 'Target'}</Text>}
           </View>
-        </CompletedSetSwipeRow>)}
+        </CompletedSetSwipeRow>;
+        })}
       </View> : null}
     />;
   }
@@ -535,6 +542,7 @@ export function CoreMovementLedgerRow({
 }
 
 const v3Sets = StyleSheet.create({
+  resultLine: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   videoStatus: { fontFamily: SLFontFamilies.body, fontSize: 11, marginTop: 3 },
   videoAction: { color: SLColors.accentViolet, fontFamily: SLFontFamilies.body, fontSize: 10, textAlign: 'center' },
   list: { marginVertical: 13 }, heading: { color: '#f3edf9', fontFamily: SLFontFamilies.sansSemiBold, fontSize: 11, marginBottom: 9 },

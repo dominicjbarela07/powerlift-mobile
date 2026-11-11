@@ -1,0 +1,23 @@
+{
+  "owner_text": "Approve these illustrations. Let\u2019s begin phase 1",
+  "date": "2026-11-10",
+  "scope": "Approved storyboard design references and canonical DEV Phase 1 implementation",
+  "boards": [
+    {
+      "path": "docs/design/self-coach-mobile-rebuild-storyboards/01-first-workout-v2.png",
+      "sha256": "efe22dd89a1c02422f410670b85ff93201770ca1ad3eff315d55b9a288dc2702"
+    },
+    {
+      "path": "docs/design/self-coach-mobile-rebuild-storyboards/02-plan-v2.png",
+      "sha256": "4a99d9064d89f0cb1bd52d9952a48301bfb433ca09200a960b738c9fa9d9de78"
+    },
+    {
+      "path": "docs/design/self-coach-mobile-rebuild-storyboards/03-ledger-v2.png",
+      "sha256": "0ded7045c8cc6c07a9a1eabc59a1cb52f53302afffbdbbedd45b71a8622bb7ca"
+    },
+    {
+      "path": "docs/design/self-coach-mobile-rebuild-storyboards/04-return-recovery-v2.png",
+      "sha256": "e69e3657c6501146e9ff9ba594441b7d7718444041616dbb7979d35bb14ea7dd"
+    }
+  ]
+}

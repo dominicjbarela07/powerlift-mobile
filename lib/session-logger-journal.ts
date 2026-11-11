@@ -1,23 +1,26 @@
 export type LoggerDraft = {
   itemId: number; identity: string; revision: number; setIndex: number;
-  kind: 'core' | 'accessory'; weightKg: number; reps: string; effort: string;
+  kind: 'core' | 'accessory'; weightKg: number | null; reps: string; effort: string;
 };
+export type LoggerEditDraft = LoggerDraft & { setLogId: number };
 export type LoggerJournalState = {
   version: 1; owner: string; workoutId: number; focusedKey: string | null;
   drafts: Record<string, LoggerDraft>;
+  edits: Record<string, LoggerEditDraft>;
   attempts: Record<string, { id: string; signature: string }>;
 };
 const validDraft = (value: unknown): value is LoggerDraft => {
   const draft = value as LoggerDraft | null;
   return Boolean(draft && Number.isInteger(draft.itemId) && draft.itemId > 0 && typeof draft.identity === 'string' && draft.identity.length
     && Number.isInteger(draft.revision) && draft.revision > 0 && Number.isInteger(draft.setIndex) && draft.setIndex > 0
-    && ['core', 'accessory'].includes(draft.kind) && Number.isFinite(draft.weightKg) && draft.weightKg >= 0
+    && ['core', 'accessory'].includes(draft.kind)
+    && (draft.weightKg === null || (typeof draft.weightKg === 'number' && Number.isFinite(draft.weightKg) && draft.weightKg >= 0))
     && typeof draft.reps === 'string' && typeof draft.effort === 'string');
 };
 type Store = { getItem(key: string): Promise<string | null>; setItem(key: string, value: string): Promise<void> };
 export function createLoggerJournal(store: Store, owner: string, workoutId: number) {
   const key = `strength-ledger:logger-journal:v1:${owner}:${workoutId}`;
-  let state: LoggerJournalState = { version: 1, owner, workoutId, focusedKey: null, drafts: {}, attempts: {} };
+  let state: LoggerJournalState = { version: 1, owner, workoutId, focusedKey: null, drafts: {}, edits: {}, attempts: {} };
   let pending = Promise.resolve();
   const ready = store.getItem(key).then(raw => {
     if (!raw) return;
@@ -26,6 +29,10 @@ export function createLoggerJournal(store: Store, owner: string, workoutId: numb
       if (saved.version === 1 && saved.owner === owner && saved.workoutId === workoutId && saved.drafts && saved.attempts) {
         state = { ...state, focusedKey: typeof saved.focusedKey === 'string' ? saved.focusedKey : null,
           drafts: Object.fromEntries(Object.entries(saved.drafts).filter(([key, draft]) => validDraft(draft) && key === String(draft.itemId))) as Record<string, LoggerDraft>,
+          edits: Object.fromEntries(Object.entries(saved.edits || {}).filter(([key, value]) => {
+            const edit = value as LoggerEditDraft;
+            return validDraft(edit) && Number.isInteger(edit.setLogId) && edit.setLogId > 0 && key === String(edit.setLogId);
+          })) as LoggerJournalState['edits'],
           attempts: Object.fromEntries(Object.entries(saved.attempts).filter(([, value]) => {
             const attempt = value as { id?: unknown; signature?: unknown } | null;
             return attempt && typeof attempt.id === 'string' && attempt.id.length > 0 && typeof attempt.signature === 'string';
@@ -33,7 +40,7 @@ export function createLoggerJournal(store: Store, owner: string, workoutId: numb
         };
       }
     } catch { /* A corrupt local draft is never performed evidence. */ }
-  });
+  }).catch(() => undefined);
   const update = async (change: (value: LoggerJournalState) => LoggerJournalState) => {
     await ready;
     state = change(state);
@@ -54,6 +61,20 @@ export function createLoggerJournal(store: Store, owner: string, workoutId: numb
       const saved = state.drafts[itemId];
       return saved && saved.identity === identity && saved.revision === revision && saved.setIndex === setIndex ? saved : null;
     },
+    saveEdit: (draft: LoggerEditDraft) => {
+      if (!validDraft(draft) || !Number.isInteger(draft.setLogId) || draft.setLogId <= 0) return Promise.reject(new Error('Invalid local Set edit.'));
+      return update(value => ({ ...value, edits: { ...value.edits, [draft.setLogId]: draft } }));
+    },
+    edit: (setLogId: number, identity: string, revision: number) => {
+      const saved = state.edits[setLogId];
+      return saved && saved.identity === identity && saved.revision === revision ? saved : null;
+    },
+    hasEdit: (setLogId: number) => Boolean(state.edits[setLogId]),
+    acceptedEdit: (setLogId: number) => update(value => {
+      const edits = { ...value.edits };
+      delete edits[setLogId];
+      return { ...value, edits };
+    }),
     attempt: async (attemptKey: string, signature: string, createId: () => string) => {
       await ready;
       const previous = state.attempts[attemptKey];

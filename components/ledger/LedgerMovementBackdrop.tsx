@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
-import { Image as NativeImage, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Asset } from 'expo-asset';
 import { Image } from 'expo-image';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,7 +21,7 @@ export const LedgerMovementBackdrop = memo(function LedgerMovementBackdrop({ mov
   const source = approved ? canonicalMovementArtworkSource(movement) : null;
   useEffect(() => { reportApprovedArtworkBypass(movement, source ? approved?.key ?? null : null, 'LedgerMovementBackdrop'); }, [movement, approved, source]);
   if (!source || !approved) return null;
-  const dimensions=NativeImage.resolveAssetSource(source),aspect=(dimensions?.width??1)/(dimensions?.height??1);
+  const dimensions=Asset.fromModule(source as Parameters<typeof Asset.fromModule>[0]),aspect=(dimensions.width??1)/(dimensions.height??1);
   const imageWidth=Math.min(bounds.width,bounds.height*aspect),imageHeight=imageWidth/aspect;
   const imageBox={position:'absolute' as const,width:imageWidth,height:imageHeight,left:(bounds.width-imageWidth)/2,top:(bounds.height-imageHeight)/2};
   return <View pointerEvents="none" accessible={false} importantForAccessibility="no-hide-descendants" testID={testID}

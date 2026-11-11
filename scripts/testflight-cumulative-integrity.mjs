@@ -8,6 +8,7 @@ import { runClientFixContracts } from './owner-directed-client-fix.mjs';
 import { assertLoggerVisualScope } from './owner-directed-logger-visual.mjs';
 import { assertReviewedArtwork, assertReviewedCatalog, assertReviewedPublicationSource } from './reviewed-release-progression.mjs';
 import { assertReviewedRuntimeContinuation } from './reviewed-runtime-continuation.mjs';
+import { assertProtectionFile } from './reviewed-protection-progression.mjs';
 
 export const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 export const expoHash = bytes => crypto.createHash('sha256').update(bytes).digest('base64url');
@@ -173,7 +174,7 @@ export function runIntegrityGate({root=process.cwd(),exportDir,runtimeReceipt,re
   assertOwnerEvidence(root, [...(protectedState.sourceAuthorizations || []), ...(protectedState.assetRemovalAuthorizations || []), ...(protectedState.historicalRemovalAuthorizations || [])]);
   for (const [file, expected] of Object.entries(protectedState.releaseGateFiles || {})) {
     assert.ok(fs.existsSync(path.join(root,file)), `release enforcement disappeared: ${file}`);
-    assert.equal(sha256(fs.readFileSync(path.join(root,file))), expected, `release enforcement changed without a reviewed baseline update: ${file}`);
+    assertProtectionFile(root, protectedState, file, expected);
   }
   const requiredAssets = protectedDeliveryHashes(root, protectedState);
   if(requireRuntime && !protectedState.movementImageryRestoration) assert.equal((protectedState.unresolvedHistoricalAssetChanges || []).length,0,

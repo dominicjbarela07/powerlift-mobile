@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { readOnboardingDraft, writeOnboardingDraft } from '@/lib/onboarding-draft';
 import { SignupWelcome } from '@/components/onboarding/SignupWelcome';
 import { SIGNUP_PATHS, type SignupRole } from '@/lib/signup-paths';
 import { onboardingMessage } from '@/lib/onboarding-message';
@@ -5,7 +7,7 @@ import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress';
 import { OnboardingSupport } from '@/components/onboarding/OnboardingSupport';
 import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 // app/login.tsx
-import React, { ComponentType, useEffect, useState } from 'react';
+import React, { ComponentType, useEffect, useRef, useState } from 'react';
 import { View, Pressable, StyleSheet, Image, Platform, Linking, Keyboard, BackHandler } from 'react-native';
 import { TextInput, Text } from '@/components/ui/sl-text';
 import { useRouter } from 'expo-router';
@@ -56,6 +58,27 @@ export default function LoginScreen() {
   const [setupLastName, setSetupLastName] = useState('');
   const [setupAccessCode, setSetupAccessCode] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [draftReady, setDraftReady] = useState(false);
+  const [draftNotice, setDraftNotice] = useState('');
+  const completed = useRef(false);
+  const submitting = useRef(false);
+  useEffect(() => {
+    let mounted = true;
+    void readOnboardingDraft(AsyncStorage).then(draft => {
+      if (!mounted) return;
+      if (draft) {
+        setEmail(draft.email); setFirstName(draft.firstName); setLastName(draft.lastName);
+        setSignupRole(draft.role); setAuthMode(draft.mode); setSignupStep(draft.step);
+      }
+      setDraftReady(true);
+    });
+    return () => { mounted = false; };
+  }, []);
+  useEffect(() => {
+    if (!draftReady || completed.current) return;
+    void writeOnboardingDraft(AsyncStorage, { email, firstName, lastName, role: signupRole, mode: authMode, step: signupStep })
+      .catch(() => setDraftNotice('Keep this screen open to retain your details. Device storage is unavailable.'));
+  }, [draftReady, email, firstName, lastName, signupRole, authMode, signupStep]);
   const [ssoButtonsModule, setSsoButtonsModule] = useState<{ Component: ComponentType<AuthSsoButtonsProps> } | null>(null);
 
   useEffect(() => {
@@ -130,6 +153,8 @@ export default function LoginScreen() {
     }
 
     const authUser = {
+      id: res.id ?? res.user_id ?? null,
+      user_id: res.user_id ?? res.id ?? null,
       email: res.email ?? fallbackEmail ?? email.trim(),
       user_name: res.user_name ?? null,
       role: (res.role as 'coach' | 'athlete') ||
@@ -159,6 +184,8 @@ export default function LoginScreen() {
       preferred_units: res.preferred_units === 'lbs' ? 'lb' : res.preferred_units ?? null,
     };
     await login({ user: authUser, token: res.token });
+    completed.current = true;
+    await writeOnboardingDraft(AsyncStorage, null).catch(() => undefined);
 
     if (
       authUser.account_state === 'EMAIL_VERIFICATION_REQUIRED' ||
@@ -227,17 +254,19 @@ export default function LoginScreen() {
   };
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    if (submitting.current) return;
+    if (!email.trim() || !password) {
         setError('Email and password are required.');
         return;
     }
 
     setError(null);
+    submitting.current = true;
     setLoading(true);
 
     try {
         const res = await loginRequest(email.trim(), password);
-        console.log('Login response:', res);
+
 
         if (!res.ok) {
         setError(res.error || 'Login failed.');
@@ -246,9 +275,10 @@ export default function LoginScreen() {
 
         await completeLogin(res, email.trim());
     } catch (e) {
-        console.log('Login error', e);
-        setError('Network error. Please try again.');
+        console.warn('Sign-in could not complete.');
+        setError(onboardingMessage(e instanceof Error ? e.message : null, 'Could not finish signing in. Please retry.'));
     } finally {
+        submitting.current = false;
         setLoading(false);
     }
     };
@@ -260,6 +290,7 @@ export default function LoginScreen() {
   }, [authMode, confirmPassword, email, firstName, lastName, password, setupAccessCode, signupRole]);
 
   const handleSignup = async () => {
+    if (submitting.current) return;
     if (!firstName.trim() || !lastName.trim() || !email.trim() || !password || !confirmPassword) {
       setError('First name, last name, email, password, and confirmation are required.');
       return;
@@ -278,6 +309,7 @@ export default function LoginScreen() {
     }
 
     setError(null);
+    submitting.current = true;
     setLoading(true);
 
     try {
@@ -292,15 +324,16 @@ export default function LoginScreen() {
       });
 
       if (!res.ok) {
-        setError(res.error || 'Could not create account.');
+        setError((res.error || 'Could not create account.') + ' If you already created this account, use Sign in below with the same email.');
         return;
       }
 
       await completeLogin(res, email.trim());
     } catch (e) {
-      console.log('Signup error', e);
+      console.warn('Account setup could not complete.');
       setError('Network error. Please try again.');
     } finally {
+      submitting.current = false;
       setLoading(false);
     }
   };
@@ -331,6 +364,8 @@ export default function LoginScreen() {
       (signupRole !== 'coach' || setupAccessCode.trim().length > 0)
     );
 
+  if (!draftReady) return <SafeAreaView style={styles.safeArea}><Text accessibilityRole="progressbar" style={styles.setupHint}>Restoring setup…</Text></SafeAreaView>;
+
   if (authMode === 'signup' && signupStep === 'choose') {
     return <SignupWelcome
       onSelectRole={role => { setError(null); setSignupRole(role); setSignupStep('details'); }}
@@ -351,6 +386,7 @@ export default function LoginScreen() {
             contentContainerStyle={[styles.scrollContent, authMode === 'signup' && styles.signupContent]}
           >
             <View style={[styles.authPane, authMode === 'signup' && styles.signupPane]}>
+            {!!draftNotice && <Text accessibilityRole="alert" style={styles.setupHint}>{draftNotice}</Text>}
             {authMode === 'signup' ? <View style={styles.signupNavigation}>
               <Pressable accessibilityRole="button" accessibilityLabel="Choose another account type" onPress={backToPaths} style={styles.backToPaths}>
                 <Text style={styles.backToPathsText}>←  Back</Text>

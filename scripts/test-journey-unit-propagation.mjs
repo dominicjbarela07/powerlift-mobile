@@ -26,7 +26,7 @@ assert.match(experience, /journeyPerformanceDetail\(entry\.event_type, entry\.pe
 assert.match(experience, /params: \{ \.\.\.ledgerSubject\.routeParams, displayUnit: unit \}/);
 assert.match(archive, /useSurfaceWeightUnit\(preferredDisplayUnit, first\(params\.displayUnit\)\)/);
 assert.match(archive, /ledger-archive-unit-toggle/);
-assert.match(archiveDetail, /useSurfaceWeightUnit\(preferredDisplayUnit, first\(params\.displayUnit\)\)/);
+assert.match(archiveDetail, /useSurfaceWeightUnit\(preferredDisplayUnit, initialDisplayUnit \?\? first\(params\.displayUnit\)\)/);
 assert.match(archiveDetail, /ledger-archive-detail-unit-toggle/);
 
 console.log('Journey and inherited Ledger unit propagation contracts passed.');

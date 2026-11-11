@@ -1,0 +1,6 @@
+[
+  {
+    "before": "    best_set: row.best_set ? normalizeStrengthRow(row.best_set, expected, reportedKey) : row.best_set,\n  });\n  const strength = history.statistics.estimated_strength_pr;\n  const strengthFactor = reportedKey === expected.key ? 1 : expected.key === 'e10rm' ? 0.75 : 1 / 0.75;\n  return {\n    ...history,\n    strength_metric: {\n",
+    "after": "    best_set: row.best_set ? normalizeStrengthRow(row.best_set, expected, reportedKey) : row.best_set,\n  });\n  const strength = history.statistics.estimated_strength_pr;\n  // Legacy responses carry e1RM without a metric key, just like the chart rows.\n  const strengthFactor = !reportedKey ? (expected.key === 'e10rm' ? 0.75 : 1)\n    : reportedKey === expected.key ? 1 : expected.key === 'e10rm' ? 0.75 : 1 / 0.75;\n  return {\n    ...history,\n    strength_metric: {\n"
+  }
+]

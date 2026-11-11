@@ -11,6 +11,9 @@ import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES, type CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
 import { CANONICAL_ACCESSORY_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-artwork-assets';
 import { movementHeroFocal, resolveApprovedExactMovementArtwork, type MovementHeroFocal } from '@/lib/movement-artwork-hero';
+import { canonicalArtworkInputFromDefinition } from '@/lib/canonical-movement-artwork';
+import catalog from '@/config/governed-movement-art-taxonomy.json';
+import { resolveLoggerPlateStackForDisplayWeight, loggerPhysicalSetupLabel } from '@/lib/logger-visual-context';
 
 const SUBJECTS = [
   { id: 197, title: 'T-Bar Row' }, { id: 49, title: 'Incline Machine Chest Press' },
@@ -35,16 +38,23 @@ export default function MovementArtHeroLab() {
   const params = useLocalSearchParams<{ movement?: string; mode?: string }>();
   const [selected, setSelected] = useState(Number(params.movement) || 33);
   const [mode, setMode] = useState<'logger' | 'crop' | 'source'>(params.mode === 'crop' ? 'crop' : 'logger');
-  const entry = SUBJECTS.find(row => row.id === selected) || SUBJECTS[0];
+  const definition = catalog.movements.find(row => row.id === selected);
+  const entry = definition
+    ? { id: definition.id, title: definition.display_name, key: definition.key, primary: definition.primary_muscle_group || undefined }
+    : SUBJECTS.find(row => row.id === selected) || SUBJECTS[0];
   const registered = CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[entry.id as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES];
-  const movement: CanonicalMovementArtworkInput = { identity_type: 'accessory', movement_definition_id: entry.id,
+  const movement: CanonicalMovementArtworkInput = canonicalArtworkInputFromDefinition(definition) || {
+    identity_type: 'accessory', movement_definition_id: entry.id,
     key: registered?.key || entry.key, primary_muscle_group: registered?.primary || entry.primary };
   const approved = resolveApprovedExactMovementArtwork(movement);
-  const [focal, setFocal] = useState<MovementHeroFocal>(registered ? movementHeroFocal(registered.key) : { focalX: 0.5, focalY: 0.45, scale: 1, biasX: 0, biasY: 0 });
+  const artworkKey = approved?.key || registered?.key;
+  const [focal, setFocal] = useState<MovementHeroFocal>(artworkKey ? movementHeroFocal(artworkKey) : { focalX: 0.5, focalY: 0.45, scale: 1, biasX: 0, biasY: 0 });
   useEffect(() => { if (params.movement) setSelected(Number(params.movement)); if (params.mode === 'crop') setMode('crop'); }, [params.movement, params.mode]);
-  useEffect(() => { if (registered) setFocal(movementHeroFocal(registered.key)); }, [registered]);
+  useEffect(() => { if (artworkKey) setFocal(movementHeroFocal(artworkKey)); }, [artworkKey]);
   if (!__DEV__) return null;
-  const asset = registered ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[registered.key] : null;
+  const asset = artworkKey ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[artworkKey] : null;
+  const plateStack = definition?.kind === 'core'
+    ? resolveLoggerPlateStackForDisplayWeight({ movement: definition.family || '' }, 135, 'lb') : null;
   return <ScrollView style={s.page} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 100, paddingHorizontal: 16 }}>
     <Pressable accessibilityLabel="Close focal lab" onPress={() => router.back()} style={s.button}><Text style={s.link}>‹ Close focal lab</Text></Pressable>
     <Text style={s.kicker}>DEV · MOVEMENT ART FOCAL REVIEW</Text>
@@ -59,13 +69,15 @@ export default function MovementArtHeroLab() {
       </View> : null}
       history={<View style={s.history}><Text style={s.link}>Movement history</Text></View>}
       actions={<Text style={s.link}>Swap</Text>}
-      visual={{ liftLabel: entry.title, liftAccentColor: '#ab83e3', movementArtworkInput: movement }}
-      focus={{ movementName: entry.title, currentSetLabel: 'Set 1', currentSetPositionLabel: 'SET 1 OF 3', currentSetRepsLabel: '12–15 reps', currentSetEffortLabel: '1 RIR', progressionLabel: '0 / 3', rail: [], canLog: false, canRepeat: false }} />
+      visual={{ liftLabel: entry.title, liftAccentColor: '#ab83e3', movementArtworkInput: movement, plateStack,
+        physicalSetup: loggerPhysicalSetupLabel(plateStack) }}
+      focus={{ movementName: entry.title, currentSetLabel: 'Set 1', currentSetPositionLabel: 'SET 1 OF 3',
+        currentSetLoadLabel: plateStack ? '135 lb' : null, currentSetRepsLabel: '12–15 reps', currentSetEffortLabel: '1 RIR', progressionLabel: '0 / 3', rail: [], canLog: false, canRepeat: false }} />
       : mode === 'source' ? asset ? <Image source={asset.source} contentFit="contain" style={s.study} cachePolicy="memory-disk" /> : <Text style={s.note}>No source image exists for this identity.</Text>
-      : asset && registered ? <>
+      : asset && artworkKey ? <>
         <Text style={s.warning}>{approved ? 'APPROVED SOURCE · presentation study' : 'CANDIDATE CROP STUDY · NOT APPROVED'}</Text>
         <View style={s.study}>
-          <MovementArtworkHero artworkKey={registered.key} receiptId={`dev-crop:${registered.key}`} focal={focal} reduceMotion />
+          <MovementArtworkHero artworkKey={artworkKey} receiptId={`dev-crop:${artworkKey}`} focal={focal} reduceMotion />
           <Text style={s.studyTitle}>{entry.title}</Text>
           <View style={s.prescription}><Text style={s.kicker}>PRESCRIBED</Text><Text style={s.reps}>12–15</Text><Text style={s.effort}>reps · 1 RIR</Text></View>
         </View>
@@ -74,7 +86,7 @@ export default function MovementArtHeroLab() {
           <Pressable accessibilityLabel={`Decrease ${key}`} style={s.button} onPress={() => setFocal(value => ({ ...value, [key]: value[key] - 0.02 }))}><Text style={s.link}>−</Text></Pressable>
           <Pressable accessibilityLabel={`Increase ${key}`} style={s.button} onPress={() => setFocal(value => ({ ...value, [key]: value[key] + 0.02 }))}><Text style={s.link}>+</Text></Pressable>
         </View>)}
-        <Text selectable style={s.note}>{JSON.stringify({ artworkKey: registered.key, ...focal })}</Text>
+        <Text selectable style={s.note}>{JSON.stringify({ artworkKey, ...focal })}</Text>
         <Text style={s.note}>Local study only. Approval stays in the web review queue; focal presets are owned by movement-artwork-hero.ts.</Text>
       </> : <Text style={s.note}>No hero to crop. The normal Logger keeps its compact identity.</Text>}
     <View style={s.subjects}>{SUBJECTS.map(row => <Pressable key={row.id} accessibilityLabel={`Inspect ${row.title}`} onPress={() => setSelected(row.id)} style={s.subject}><Text style={s.link}>{row.id} · {row.title}</Text></Pressable>)}</View>

@@ -24,7 +24,7 @@ import { useAuth, type AuthUser } from '@/context/AuthContext';
 import { useMobileEducation } from '@/context/MobileEducationContext';
 import { useDevLiveScreenSession } from '@/lib/release-preview-stubs';
 import { fetchJson, getUnreadSummary } from '@/lib/api';
-import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
+import { SLColors, SLRadius, SLTypography, SLSelfCoach } from '@/constants/theme';
 import type { MobileViewMode } from '@/lib/mobileViewMode';
 import { useSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';
 import { canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';
@@ -132,6 +132,12 @@ function FilteredTabBar({
     'athlete-meet-plan': { label: 'Meet', icon: 'trophy-outline' },
     settings: { label: 'Settings', icon: 'settings-outline' },
     'link-coach': { label: 'Invite', icon: 'mail-outline' },
+    ...(isIndividual ? {
+      'athlete-dashboard': { label: 'Train', icon: 'barbell-outline' as const },
+      'workout/index': { label: 'Plan', icon: 'calendar-outline' as const },
+      workout: { label: 'Plan', icon: 'calendar-outline' as const },
+      ledger: { label: 'Progress', icon: 'book-outline' as const },
+    } : {}),
   };
 
   const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
@@ -139,7 +145,8 @@ function FilteredTabBar({
     || normalizedPathname.startsWith('/athlete-meet-plan/');
   const isCalendarPreviewPath = __DEV__ && normalizedPathname.startsWith('/dev-mocks/calendar-');
   const usesCalendarPreviewSelection = isCalendarPreviewPath;
-  const usesTrainingMapSelection = normalizedPathname === '/workout/program-timeline';
+  const usesTrainingMapSelection = normalizedPathname === '/workout/program-timeline'
+    || (isIndividual && normalizedPathname.startsWith('/athlete-calendar'));
   const usesCoachHomeSelection = normalizedPathname.startsWith('/coach-roster')
     || normalizedPathname.startsWith('/coach-athlete/')
     || normalizedPathname.startsWith('/coach-attention/');
@@ -189,6 +196,7 @@ function FilteredTabBar({
 
         return {
           accessibilityLabel: cfg.label,
+          label: isIndividual ? cfg.label : undefined,
           badge: isMessagesRoute && hasMessageNotifications ? 'dot' as const : undefined,
           new: isLedgerHomeRoute && education.showNew('ledger'),
           icon: cfg.icon,
@@ -448,6 +456,7 @@ export default function TabsLayout() {
         screenOptions={{
           header: () => (
             <StrengthLedgerAppHeader
+              canvasColor={isIndividual ? SLSelfCoach.canvas : undefined}
               brandAccessibilityLabel="Open Home"
               leftAction={{
                 accessibilityLabel: 'Open Settings',
@@ -472,9 +481,9 @@ export default function TabsLayout() {
                 onPress: () => router.push('/coach-team-brief' as any),
                 size: 20,
               } : isIndividual ? {
-                accessibilityLabel: 'Create Session',
-                icon: 'add-circle-outline',
-                onPress: () => router.push('/create-workout'),
+                accessibilityLabel: 'Open profile',
+                icon: 'person-circle-outline',
+                onPress: () => router.push('/(tabs)/settings'),
                 size: 23,
               } : {
                 accessibilityLabel: 'Open messages',

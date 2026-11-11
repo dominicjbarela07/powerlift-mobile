@@ -1,8 +1,20 @@
-const { expo } = require('./app.json');
+const expo = { ...require('./app.json').expo };
 
 // Local candidate preparation is separate from legacy Production OTA. This
 // creates a new native runtime; it does not remap channels or grant shipment.
-if (process.env.STRENGTH_LEDGER_RELEASE_TARGET === 'production3') {
+if (process.env.STRENGTH_LEDGER_RELEASE_TARGET === 'testflight31') {
+  if (process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL !== 'testflight'
+      || process.env.EXPO_PUBLIC_ART_RUNTIME_VERSION !== '3.1.0'
+      || process.env.EXPO_PUBLIC_API_BASE !== 'https://app.strengthledger.fit') {
+    throw new Error('TESTFLIGHT 3.1 PREPARATION BLOCKED: approved TestFlight artwork, runtime 3.1.0 and the live API are required.');
+  }
+  expo.version = '3.1.0';
+  expo.runtimeVersion = '3.1.0';
+  expo.extra = { ...expo.extra, releaseTrack: 'testflight', preparationTarget: 'testflight31', publicationAuthorized: false };
+  require('./scripts/native-build-upload-policy.cjs').assertNativeBuildUploadPolicy(__dirname);
+} else if (process.env.EXPO_PUBLIC_ART_RUNTIME_VERSION === '3.1.0') {
+  throw new Error('TESTFLIGHT 3.1 PREPARATION BLOCKED: runtime 3.1.0 requires the explicit testflight31 target.');
+} else if (process.env.STRENGTH_LEDGER_RELEASE_TARGET === 'production3') {
   if (process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL !== 'production3'
       || process.env.EXPO_PUBLIC_ART_RUNTIME_VERSION !== '3.0.0') {
     throw new Error('PRODUCTION 3.0 PREPARATION BLOCKED: explicit approved-art channel and runtime 3.0.0 are required.');
@@ -32,4 +44,10 @@ if (expo.extra?.releaseTrack === 'testflight'
   );
 }
 
-module.exports = { expo };
+function resolveAppConfig({ config }) {
+  return { ...config, ...expo };
+}
+
+// Retain the direct configuration reader used by the guarded native wrapper.
+resolveAppConfig.expo = expo;
+module.exports = resolveAppConfig;

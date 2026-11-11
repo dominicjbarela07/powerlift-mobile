@@ -30,8 +30,8 @@ export function SignupWelcome({ onSelectRole, onSignIn }: Props) {
         <Image accessible accessibilityLabel="Strength Ledger" source={require('../../assets/images/16:9.png')} resizeMode="contain" style={styles.logo} />
         <Pressable accessibilityRole="button" accessibilityLabel="Sign in" onPress={onSignIn} style={styles.signIn}><Text style={styles.headerText}>Sign in</Text></Pressable>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.choiceContent}>
-        <View style={{ minHeight: Math.min(260, height * 0.23) }} />
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={styles.choiceContent}>
+        <View style={{ minHeight: Math.min(140, height * 0.12) }} />
         <View style={styles.choiceBody}>
           <Text accessibilityRole="header" maxFontSizeMultiplier={1.35} style={styles.welcomeTitle}>BUILT FOR{'\n'}THE WORK.</Text>
           <Text style={styles.choiceLabel}>CHOOSE YOUR PATH</Text>

@@ -36,14 +36,17 @@ export type SLTextInputProps = TextInputProps & {
 
 export const Text = React.forwardRef<React.ComponentRef<typeof NativeText>, SLTextProps>(
   function SLText({ style, typographyRole, maxFontSizeMultiplier, numberOfLines, ellipsizeMode, ...props }, ref) {
-    const { width } = useWindowDimensions();
+    const { width, fontScale } = useWindowDimensions();
     const roleDefinition = typographyRole ? SLTypographyRoles[typographyRole] : null;
     const textBehavior = typographyRole ? SLTypographyTextBehaviors[typographyRole] : null;
     const composedStyle = [SLAppTextStyle, style, typographyRole ? getSLTypographyRoleStyle(typographyRole, width) : null];
     const flattenedStyle = StyleSheet.flatten(composedStyle) as TextStyle | undefined;
     const guardedLineHeight = guardedMobileLineHeight(flattenedStyle?.fontSize, flattenedStyle?.lineHeight);
+    // Recreate native measurement when iOS Dynamic Type changes while open.
+    // Updating glyphs alone can retain the previous single-line layout.
     return (
       <NativeText
+        key={fontScale}
         ref={ref}
         {...props}
         maxFontSizeMultiplier={maxFontSizeMultiplier ?? roleDefinition?.maximumFontSizeMultiplier}

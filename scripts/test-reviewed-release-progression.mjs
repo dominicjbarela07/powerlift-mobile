@@ -35,4 +35,13 @@ assert.throws(() => assertReviewedPublicationSource(root, state, { ...files, [re
 const noReceipt = structuredClone(state);
 noReceipt.reviewedPublication.ownerEvidenceSha256 = 'a'.repeat(64);
 assert.throws(() => assertReviewedPublicationSource(root, noReceipt, files), /owner evidence changed/);
+const external = state.reviewedPublication.sourceProgressions.find(row => row.changesPath && row.after === files[row.path]);
+if (external) {
+  const alteredPatch = structuredClone(state);
+  alteredPatch.reviewedPublication.sourceProgressions.find(row => row.changesPath === external.changesPath).changesSha256 = 'a'.repeat(64);
+  assert.throws(() => assertReviewedPublicationSource(root, alteredPatch, files), /reviewed patch bytes changed/);
+  const escapedPatch = structuredClone(state);
+  escapedPatch.reviewedPublication.sourceProgressions.find(row => row.changesPath === external.changesPath).changesPath = '../outside.json';
+  assert.throws(() => assertReviewedPublicationSource(root, escapedPatch, files), /retained release evidence/);
+}
 console.log('Reviewed release progression PASS: original historical pins retained; exact human art/crop and cumulative patches verified; 9 unauthorized-loss/change/identity/receipt controls rejected.');

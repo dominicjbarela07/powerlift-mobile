@@ -1,0 +1,6 @@
+[
+  {
+    "before": "}) {\n  const endpoints = visual.plateStack?.endpoints || [];\n  return <View style={s.context}>\n    <View style={s.copy}><Text style={s.label}>PRESCRIBED \u00b7 CONFIRM YOUR ACTUALS</Text><Text style={s.title}>{title}</Text><Text style={s.target}>{target}</Text></View>\n    {endpoints.length ? <View style={s.stacks}>{endpoints.map((endpoint, index) => <View key={index} style={s.endpoint}>\n      {endpoint.plateStack ? <LoggerPlateStackVisual plateStack={endpoint.plateStack} style={s.stack} /> : null}\n      <Text style={s.load}>{endpoint.displayLabel}</Text>\n",
+    "after": "}) {\n  const endpoints = visual.plateStack?.endpoints || [];\n  return <View style={s.context}>\n    <View style={s.copy}>\n      <Text style={s.label}>{target ? 'PRESCRIBED \u00b7 CONFIRM YOUR ACTUALS' : 'RECORD YOUR SET'}</Text>\n      <Text style={s.title}>{title}</Text>\n      {target ? <Text style={s.target}>{target}</Text> : null}\n    </View>\n    {endpoints.length ? <View style={s.stacks}>{endpoints.map((endpoint, index) => <View key={index} style={s.endpoint}>\n      {endpoint.plateStack ? <LoggerPlateStackVisual plateStack={endpoint.plateStack} style={s.stack} /> : null}\n      <Text style={s.load}>{endpoint.displayLabel}</Text>\n"
+  }
+]

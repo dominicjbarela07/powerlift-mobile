@@ -134,6 +134,11 @@ export type LedgerExplorationContext = Readonly<{
     } | null;
     interpolated: false;
   } | null;
+  readiness?: {
+    range_label: string;
+    points: { date: string; value: number; workout_id?: number | null; context?: string | null }[];
+    metadata: { scale: string; point_count: number; days: number };
+  } | null;
   training_frequency_per_week: number;
   lifetime_set_count: number;
 }>;

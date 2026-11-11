@@ -42,6 +42,7 @@ try {
     const target=path.join(fixture,file);fs.mkdirSync(path.dirname(target),{recursive:true});
     if (!fs.existsSync(target)) fs.linkSync(path.join(devRoot,file),target);
   }
+  fs.cpSync(path.join(devRoot, 'config/testflight-release-3-1-20261111'), path.join(fixture, 'config/testflight-release-3-1-20261111'), { recursive: true });
   fs.writeFileSync(path.join(fixture,'fixture.txt'),'Isolated failure-mode fixture');
   execFileSync('git',['add','fixture.txt'],{cwd:fixture});
   execFileSync('git',['-c','user.name=Release gate test','-c','user.email=release-gate-test@localhost','commit','-qm','Isolated test fixture'],{cwd:fixture});

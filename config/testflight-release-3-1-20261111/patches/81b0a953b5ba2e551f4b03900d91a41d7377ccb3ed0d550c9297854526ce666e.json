@@ -1,0 +1,14 @@
+[
+  {
+    "before": "  presentationBoundary?: 'viewport' | 'app-shell';\n  motionPreset?: 'standard' | 'deliberate';\n  onDismiss: () => void;\n  onDismissBlocked?: (reason: StrengthLedgerSheetCloseReason) => void;\n  onPresent?: () => void;\n  onRequestClose?: (reason: StrengthLedgerSheetCloseReason) => void;\n",
+    "after": "  presentationBoundary?: 'viewport' | 'app-shell';\n  motionPreset?: 'standard' | 'deliberate';\n  onDismiss: () => void;\n  onNativeDismiss?: () => void;\n  onDismissBlocked?: (reason: StrengthLedgerSheetCloseReason) => void;\n  onPresent?: () => void;\n  onRequestClose?: (reason: StrengthLedgerSheetCloseReason) => void;\n"
+  },
+  {
+    "before": "  presentationBoundary = 'viewport',\n  motionPreset = 'standard',\n  onDismiss,\n  onDismissBlocked,\n  onPresent,\n  onRequestClose,\n",
+    "after": "  presentationBoundary = 'viewport',\n  motionPreset = 'standard',\n  onDismiss,\n  onNativeDismiss,\n  onDismissBlocked,\n  onPresent,\n  onRequestClose,\n"
+  },
+  {
+    "before": "  const chromeDismissGesture = useSheetChromeGesture({ update: updateDrag, release: finishDrag, cancel: settle });\n\n  return (\n    <ReactNativeModal animationType=\"none\" onRequestClose={() => requestClose('system-back')} presentationStyle=\"overFullScreen\" statusBarTranslucent transparent visible={visible}>\n      <GestureHandlerRootView style={styles.gestureModalRoot}>\n        <View style={styles.stage} testID={testID}>\n          <Animated.View pointerEvents=\"none\" style={[styles.backdrop, { opacity: backdropOpacity }]} />\n",
+    "after": "  const chromeDismissGesture = useSheetChromeGesture({ update: updateDrag, release: finishDrag, cancel: settle });\n\n  return (\n    <ReactNativeModal animationType=\"none\" onDismiss={onNativeDismiss} onRequestClose={() => requestClose('system-back')} presentationStyle=\"overFullScreen\" statusBarTranslucent transparent visible={visible}>\n      <GestureHandlerRootView style={styles.gestureModalRoot}>\n        <View style={styles.stage} testID={testID}>\n          <Animated.View pointerEvents=\"none\" style={[styles.backdrop, { opacity: backdropOpacity }]} />\n"
+  }
+]

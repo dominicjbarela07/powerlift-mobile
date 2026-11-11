@@ -1,0 +1,18 @@
+[
+  {
+    "before": "import { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';\nimport { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';\nimport { evidenceReadCache } from '@/lib/evidence-read-cache';\n",
+    "after": "import { SelfCoachPlanEntry } from '@/components/home/SelfCoachPlanEntry';\nimport { KeyboardAvoidingView, KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';\nimport { StrengthLedgerSheetModalAdapter, StrengthLedgerSheetDragRegion } from '@/components/sheets/StrengthLedgerBottomSheet';\nimport { evidenceReadCache } from '@/lib/evidence-read-cache';\n"
+  },
+  {
+    "before": "    programmingDay?: string;\n    workspaceReturn?: string;\n    workspaceSubjectKey?: string;\n  }>();\n  const programmingSubject = resolveProgrammingSubject(athleteWorkspace, params.athleteId);\n  const { athleteId: programmingAthleteId, ready: programmingSubjectReady } = programmingSubject;\n",
+    "after": "    programmingDay?: string;\n    workspaceReturn?: string;\n    workspaceSubjectKey?: string;\n    planningTools?: string;\n    planDate?: string;\n  }>();\n  const programmingSubject = resolveProgrammingSubject(athleteWorkspace, params.athleteId);\n  const { athleteId: programmingAthleteId, ready: programmingSubjectReady } = programmingSubject;\n"
+  },
+  {
+    "before": "\n  if (needsAthleteSelection) return <ProgrammingAthleteChooser />;\n\n  if (isProgrammingManager) {\n    return (\n      <IndividualProgrammingHome\n        key={trainingScopeKey}\n        onWeekSelected={(blockId, week) => {\n",
+    "after": "\n  if (needsAthleteSelection) return <ProgrammingAthleteChooser />;\n\n  if (isIndividual && !params.planningTools && !directWorkoutId && !directProgramId && !returnBlockId && !programCreatedNonce) {\n    return <SelfCoachPlanEntry key={workspaceKey} athleteId={visibleHub?.athlete?.id || Number(user?.athlete_id) || null}\n      owner={workspaceKey} unit={user?.preferred_units === 'kg' ? 'kg' : 'lb'}\n      selectedDate={typeof params.planDate === 'string' && /^\\d{4}-\\d{2}-\\d{2}$/.test(params.planDate) ? params.planDate : ''}\n      onDateChange={planDate => router.setParams({ planDate })}\n      onContextRetry={() => { void loadTraining({ silent: true }); }}\n      onPrograms={() => router.setParams({ planningTools: '1' })} />;\n  }\n\n  if (isProgrammingManager) {\n    return (\n      <View style={{ flex: 1 }}>\n      {isIndividual ? <Pressable accessibilityRole=\"button\" onPress={() => router.setParams({ planningTools: undefined, programId: undefined, workoutId: undefined, programCreated: undefined, programmingBlockId: undefined, programmingWeek: undefined, programmingDay: undefined })} style={{ minHeight: 48, paddingHorizontal: 20, justifyContent: 'center', backgroundColor: '#100E16' }}><Text style={{ color: '#C09AF6' }}>\u2039 Back to Plan</Text></Pressable> : null}\n      <IndividualProgrammingHome\n        key={trainingScopeKey}\n        onWeekSelected={(blockId, week) => {\n"
+  },
+  {
+    "before": "        workspaceReturn={params.workspaceReturn}\n        onConsumeDirectOpen={() => router.setParams({ workoutId: undefined, programId: undefined } as any)}\n      />\n    );\n  }\n\n",
+    "after": "        workspaceReturn={params.workspaceReturn}\n        onConsumeDirectOpen={() => router.setParams({ workoutId: undefined, programId: undefined } as any)}\n      />\n      </View>\n    );\n  }\n\n"
+  }
+]

@@ -14,6 +14,8 @@ export const SHIPPING_COACH_TAB_ROUTES = [
   'coach-more',
 ] as const;
 
+export const SELF_COACH_TAB_ROUTES = ['athlete-dashboard', 'workout/index', 'ledger'] as const;
+
 export const SHIPPING_UNLINKED_ATHLETE_TAB_ROUTES = [
   'link-coach',
   'settings',
@@ -45,7 +47,7 @@ export function shippingTabRouteNames({
   hasMeetPlan: boolean;
 }): string[] {
   if (isUnlinkedAthlete) return [...SHIPPING_UNLINKED_ATHLETE_TAB_ROUTES];
-  if (isIndividual) return [...SHIPPING_ATHLETE_TAB_ROUTES];
+  if (isIndividual) return [...SELF_COACH_TAB_ROUTES];
   if (isCoach && viewMode === 'coach') return [...SHIPPING_COACH_TAB_ROUTES];
 
   const athleteRoutes: string[] = [...SHIPPING_ATHLETE_TAB_ROUTES];

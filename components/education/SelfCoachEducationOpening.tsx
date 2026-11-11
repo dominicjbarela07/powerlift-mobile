@@ -1,7 +1,7 @@
 import { educationImage } from '@/lib/mobile-education-images';
 import { KeyboardScrollView as ScrollView } from '@/components/keyboard/KeyboardSurface';
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Animated, Easing, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,25 +14,22 @@ const HERO_ART = educationImage('self-coach-hero-20261001.png');
 
 const SCENES = [
   {
-    location: 'PROGRAMMING → TODAY',
-    title: 'Build your next Session.',
-    instruction: 'Open Programming and create a Session. Add movements, Sets, reps and effort targets. Tap Ready to train to find it in Today.',
-    example: 'EXAMPLE · SESSION WORKSPACE',
-    image: educationImage('self-coach-programming-20261006.png'),
+    location: 'TRAIN',
+    title: 'Start with any exercise.',
+    instruction: 'Tap Start session in Train. Search for an exercise, tap Add, then enter your weight and reps.',
+    example: 'EXAMPLE · YOUR FIRST SESSION',
   },
   {
-    location: 'ACTIVE SESSION',
-    title: 'Adjust the plan as you train.',
-    instruction: 'Tap the edit icon beside Prescribed to change Sets, reps or effort. Use Swap beside the title to change the movement.',
-    example: 'EXAMPLE · SESSION LOGGER',
-    image: educationImage('self-coach-logger-20261006.png'),
+    location: 'YOUR SESSION',
+    title: 'Log it. Keep moving.',
+    instruction: 'Save set records your work. Tap a saved set to edit it, or use Add set and Add exercise as you train. Finish saves the session, with Save as routine ready afterward.',
+    example: 'ILLUSTRATIVE EXAMPLE · SET ENTRY',
   },
   {
-    location: 'LEDGER → MOVEMENT HISTORY',
+    location: 'PROGRESS → THE LEDGER',
     title: 'Review your progress.',
-    instruction: 'Open Ledger and choose a movement. Movement History shows your saved Sets and how your performance changes over time.',
+    instruction: 'Open Progress to reach The Ledger. Choose a movement to see your saved sets, original sessions and performance over time.',
     example: 'EXAMPLE · SIX WEEKS OF PROGRESS',
-    image: educationImage('athlete-movement-history-seeded.png'),
   },
 ] as const;
 
@@ -121,14 +118,13 @@ export function SelfCoachEducationExperience({
         </View>
         <View style={styles.example}>
           <Text style={styles.exampleLabel}>{scene.example}</Text>
-          {step === 0 ? <>
-            <EducationCapture source={scene.image} width={width - 54} from={0.455} to={0.566} label="Example movement row: tap the movement to edit its prescription." />
-            <View style={styles.controlHint}><Ionicons name="create-outline" size={17} color="#C6A0F4" /><Text style={styles.controlHintText}>Tap a movement to edit its prescription.</Text></View>
-            <EducationCapture source={scene.image} width={width - 54} from={0.900} to={0.971} label="Example Add and Ready to train controls." />
-          </> : step === 1 ? <>
-            <EducationCapture source={scene.image} width={width - 54} from={0.177} to={0.443} label="Example movement title with Swap and the edit icon beside Prescribed." />
-            <View style={styles.controlHint}><Ionicons name="checkmark-circle-outline" size={17} color="#7BD9C6" /><Text style={styles.controlHintText}>Completed Sets stay in your record.</Text></View>
-          </> : <EducationHistoryExample />}
+          {step === 0 ? <View style={styles.quickExample} accessible accessibilityRole="image" accessibilityLabel="Start session, add an exercise, enter your first set.">
+            <View style={styles.exampleAction}><Ionicons name="barbell-outline" size={23} color="#170D25" /><Text style={styles.exampleActionText}>Start session</Text><Ionicons name="arrow-forward" size={20} color="#170D25" /></View>
+            <Text style={styles.quickStep}>01  Choose an exercise</Text><Text style={styles.quickStep}>02  Enter weight and reps</Text><Text style={styles.quickStep}>03  Save set</Text>
+          </View> : step === 1 ? <View style={styles.quickExample} accessible accessibilityRole="image" accessibilityLabel="Illustrative set. 100 pounds for 5 reps, saved. Add set is below it.">
+            <Text style={styles.quickExercise}>Competition Bench</Text><View style={styles.exampleSet}><Text style={styles.quickStep}>1</Text><Text style={styles.quickStep}>100 lb × 5</Text><Ionicons name="checkmark-circle" color="#96D9AE" size={24} /></View>
+            <View style={styles.exampleSet}><Ionicons name="add" color="#C09AF6" size={21} /><Text style={styles.quickStep}>Add set</Text></View>
+          </View> : <EducationHistoryExample />}
         </View>
       </ScrollView>}
 
@@ -139,24 +135,13 @@ export function SelfCoachEducationExperience({
         <Text style={styles.secondaryText}>Back</Text>
       </Pressable>}
       <Pressable accessibilityRole="button" onPress={onNext} style={({ pressed }) => [styles.primary, !isOpening && styles.lessonPrimary, pressed && styles.pressed]}>
-        <Text style={styles.primaryText}>{isOpening ? 'Show me how' : step === 2 ? 'Go to Today' : 'Continue'}</Text>
+        <Text style={styles.primaryText}>{isOpening ? 'Show me how' : step === 2 ? 'Go to Train' : 'Continue'}</Text>
         <Ionicons color="#FFF" name="arrow-forward" size={20} />
       </Pressable>
       {isOpening && <Pressable accessibilityRole="button" onPress={onGoToday} style={styles.secondary}>
-        <Text style={styles.secondaryText}>Go to Today</Text>
+        <Text style={styles.secondaryText}>Go to Train</Text>
       </Pressable>}
     </View>
-  </View>;
-}
-
-/** Show only the relevant controls from an unchanged, real DEV capture. */
-function EducationCapture({ source, width, from, to, label }: {
-  source: ReturnType<typeof educationImage>; width: number; from: number; to: number; label: string;
-}) {
-  const asset = Image.resolveAssetSource(source);
-  const imageHeight = asset.height * width / asset.width;
-  return <View accessible accessibilityRole="image" accessibilityLabel={label} style={[styles.capture, { width, height: imageHeight * (to - from) }]}>
-    <Image accessible={false} source={source} style={{ position: 'absolute', top: -from * imageHeight, width, height: imageHeight }} />
   </View>;
 }
 
@@ -181,6 +166,13 @@ function EducationHistoryExample() {
 }
 
 const styles = StyleSheet.create({
+  quickExample: { paddingVertical: 18, gap: 12 },
+  exampleAction: { backgroundColor: '#C09AF6', minHeight: 52, borderRadius: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+  exampleActionText: { color: '#170D25', fontSize: 17, fontFamily: SLFontFamilies.sansSemiBold },
+  quickStep: { color: '#D7CFDF', fontSize: 16, lineHeight: 25 },
+  quickExercise: { color: '#F7F3FB', fontSize: 22, fontFamily: SLFontFamilies.sansSemiBold },
+  exampleSet: { flexDirection: 'row', alignItems: 'center', gap: 20, minHeight: 52, borderBottomWidth: 1, borderBottomColor: '#372A43' },
+
   root: { flex: 1, backgroundColor: '#05030A', overflow: 'hidden' },
   openingRoot: { backgroundColor: '#000' },
   heroArt: { position: 'absolute' },

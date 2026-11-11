@@ -1,0 +1,14 @@
+[
+  {
+    "before": "import { parseSessionHistoryOrigin } from '@/lib/movement-history-launch';\nimport { useLocalSearchParams, useRouter } from 'expo-router';\nimport React, { useCallback, useRef } from 'react';\n",
+    "after": "import { parseDisplayWeightUnit } from '@/lib/display-units';\nimport { parseSessionHistoryOrigin } from '@/lib/movement-history-launch';\nimport { useLocalSearchParams, useRouter } from 'expo-router';\nimport React, { useCallback, useRef } from 'react';\n"
+  },
+  {
+    "before": "  const router = useRouter();\n  const params = useLocalSearchParams<{\n    sessionOrigin?: string;\n    athleteId?: string | string[];\n    equipmentContextDefinitionId?: string | string[];\n    equipmentDefinitionId?: string | string[];\n",
+    "after": "  const router = useRouter();\n  const params = useLocalSearchParams<{\n    sessionOrigin?: string;\n    displayUnit?: string;\n    ledgerAtmosphere?: string;\n    athleteId?: string | string[];\n    equipmentContextDefinitionId?: string | string[];\n    equipmentDefinitionId?: string | string[];\n"
+  },
+  {
+    "before": "        <CanonicalMovementHistoryScreen\n          athleteId={athleteId}\n          readOnly={origin?.mode === 'preview'}\n          initialDisplayUnit={origin?.displayUnit}\n          initialEquipmentContextDefinitionId={equipmentContextDefinitionId}\n          activeSessionId={origin?.mode === 'execute' ? origin.workoutId : null}\n          movementDefinitionId={movementDefinitionId}\n          coreMovementId={coreMovementId}\n          onRequestClose={requestClose}\n          presentation=\"sheet\"\n        />\n      ) : null}\n    </StrengthLedgerBottomSheet>\n",
+    "after": "        <CanonicalMovementHistoryScreen\n          athleteId={athleteId}\n          readOnly={origin?.mode === 'preview'}\n          initialDisplayUnit={origin?.displayUnit ?? parseDisplayWeightUnit(params.displayUnit) ?? undefined}\n          initialEquipmentContextDefinitionId={equipmentContextDefinitionId}\n          activeSessionId={origin?.mode === 'execute' ? origin.workoutId : null}\n          movementDefinitionId={movementDefinitionId}\n          coreMovementId={coreMovementId}\n          onRequestClose={requestClose}\n          presentation=\"sheet\"\n          ledgerAtmosphere={params.ledgerAtmosphere === '1'}\n        />\n      ) : null}\n    </StrengthLedgerBottomSheet>\n"
+  }
+]

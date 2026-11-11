@@ -23,17 +23,19 @@ const code = ts.transpileModule(declarations.join('\n') + '\n({openEditSet,saveE
   compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
 }).outputText;
 const KG_PER_LB = 0.45359237;
-for (const unit of ['lb', 'kg']) {
-  const requests = [], events = [], errors = [];
+for (const isIndividualUser of [false, true]) for (const unit of ['lb', 'kg']) {
+  const requests = [], events = [], errors = [], retiredEdits = [];
   let persisted = { id: 93, set_index: 2, actual_weight_kg: 20, actual_reps: 10, actual_rir: 0 };
   let refreshed = null;
   const ctx = {
-    workoutId: '8', API_BASE: 'https://qa.invalid', unit, KG_PER_LB,
+    workoutId: '8', API_BASE: 'https://qa.invalid', unit, KG_PER_LB, isIndividualUser,
     MAX_ACCESSORY_LOAD_KG: 350, MAX_ACCESSORY_LOAD_LB: 800,
     isIdealWorkoutDetailPreview: false,
     data: { workout: { core_items: [], accessory_groups: [{ items: [{ id: 12, evidence_revision: 4, set_logs: [persisted] }] }] } },
     executionScope: 'actor:1:session:8', executionScopeRef: { current: 'actor:1:session:8' },
     screenMountedRef: { current: true }, editSetInFlightRef: { current: false },
+    journalHydrated: true, journalIdentityForItem: item => `item:${item.id}`,
+    journal: { edit: () => null, hasEdit: () => false, acceptedEdit: async id => { retiredEdits.push(id); } },
     applyConfirmedSetEdit, recoverSetEdit, isApiRequestError,
     setData(update) { ctx.data = update(ctx.data); },
     formatWeight: (kg, toUnit) => String(toUnit === 'kg' ? kg : kg / KG_PER_LB),
@@ -68,6 +70,7 @@ for (const unit of ['lb', 'kg']) {
   assert.equal(requests[0].options.body.set_index, 2);
   assert.equal(refreshed.actual_weight_kg, 0);
   assert.equal(refreshed.id, 93, 'edit preserves the same performed set');
+  assert.deepEqual(retiredEdits, [93], 'confirmed zero edit retires only its own retained draft');
   assert.ok(events.some(event => event.type === 'SET_EDITED' && event.sourceSetLogId === 93));
   assert.ok(events.some(event => event.type === 'INVALIDATE_EVENTS' && event.eventIds.includes(41)));
   assert.equal(formatPerformedLoad(0, unit, { loadConvention: 'added_bodyweight', measurementType: 'bodyweight_reps' }), 'BW');

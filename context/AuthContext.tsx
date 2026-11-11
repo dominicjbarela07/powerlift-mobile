@@ -1,3 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { writeOnboardingDraft } from '@/lib/onboarding-draft';
+import { invalidateEvidenceReads } from '@/lib/evidence-read-cache';
 import { setExecutionActor } from '@/lib/execution-actor';
 import { sessionExposureCache } from '@/lib/session-exposure-cache';
 import { purgeAuthoringJournals } from '@/lib/session-authoring-journal';
@@ -162,9 +165,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     return {
       ...base,
-      id: payloadUser.id ?? payloadUser.user_id ?? base.id ?? base.user_id ?? null,
-      user_id: payloadUser.user_id ?? payloadUser.id ?? base.user_id ?? base.id ?? null,
-      email: String(payloadUser.email || base.email || ''),
+      id: payloadUser.id ?? payloadUser.user_id ?? payload.id ?? payload.user_id ?? base.id ?? base.user_id ?? null,
+      user_id: payloadUser.user_id ?? payloadUser.id ?? payload.user_id ?? payload.id ?? base.user_id ?? base.id ?? null,
+      email: String(payloadUser.email || payload.email || base.email || ''),
       user_name: payloadUser.name ?? payloadUser.user_name ?? base.user_name ?? null,
       role,
       is_coach: isCoach,
@@ -184,6 +187,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         payloadUser.is_individual_workspace === true
           ? true
           : payloadUser.is_individual_workspace === false
+          ? false
+          : payload.workspace_mode === 'individual'
+          ? true
+          : payload.workspace_mode === 'team'
           ? false
           : base.is_individual_workspace,
       is_self_coached:
@@ -283,6 +290,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     async (payload: AccountStatePayload = {}) => {
       const current = userRef.current;
       if (!current) return null;
+      const incomingId = payload.user?.id ?? payload.user?.user_id ?? payload.id ?? payload.user_id;
+      const currentId = current.id ?? current.user_id;
+      if (incomingId != null && currentId != null && Number(incomingId) !== Number(currentId)) return current;
       const nextUser = mergeAccountStatePayload(current, payload);
       // Generic account-state updates may change capabilities or relationships,
       // but only the workspace transition owner may change presentation mode.
@@ -398,14 +408,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refreshAccountStatePromiseRef.current = (async () => {
       const [profile, settings] = await Promise.all([
         fetchJson<any>('/mobile/me', { method: 'GET' }),
-        fetchJson<any>('/mobile/settings', { method: 'GET' }),
+        fetchJson<any>('/mobile/settings', { method: 'GET' }).catch(() => ({ ok: false, json: null })),
       ]);
       const preferredUnits = preferredUnitFromSettingsPayload(settings.ok ? settings.json : null);
       const payload = profile.json || {};
-      if (requestWorkspaceGeneration !== workspaceAuthorityGenerationRef.current) {
+      if (requestWorkspaceGeneration !== workspaceAuthorityGenerationRef.current || tokenRef.current !== currentToken) {
         return userRef.current;
       }
       if (profile.ok && payload?.user) {
+        const profileId = payload.user.id ?? payload.user.user_id;
+        if (current.id != null && profileId != null && Number(current.id) !== Number(profileId)) {
+          throw new Error('Could not confirm your account. Reconnect and retry.');
+        }
         const athlete = payload.athlete || {};
         const nextUser = mergeAccountStatePayload(current, {
           ...payload,
@@ -448,29 +462,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
         ? profilePhoto.profilePhotoVersion
         : payload.user.profilePhotoVersion ?? null,
     };
-    confirmedMobileUserRef.current = loginUser;
-    await persistUser(loginUser);
+    // Persist the credential before publishing its account to consumers.
+    if (payload.token) await SecureStore.setItemAsync(TOKEN_KEY, payload.token);
     setToken(payload.token);
     tokenRef.current = payload.token;
+    confirmedMobileUserRef.current = loginUser;
+    await persistUser(loginUser);
 
     if (payload.token) {
-      await SecureStore.setItemAsync(TOKEN_KEY, payload.token);
-      const settings = await fetchJson<any>('/mobile/settings', { method: 'GET' });
-      const preferredUnits = preferredUnitFromSettingsPayload(settings.ok ? settings.json : null);
-      if (userRef.current && settings.ok && settings.json) {
-        const refreshedUser = mergeAccountStatePayload(userRef.current, {
-          user: {
-            ...settings.json,
-            preferred_units: preferredUnits,
-          },
-        });
-        confirmedMobileUserRef.current = refreshedUser;
-        await saveMobileViewMode(resolveActiveMobileMode(refreshedUser));
-        await persistUser(refreshedUser);
-      }
-      // Login/settings payloads do not carry the canonical user ID. Hydrate
-      // authenticated identity before account-scoped workspaces can open.
+      // Reconcile canonical account state under the new credential. Pre-ready
+      // accounts retain the identity supplied by authenticated login.
       await refreshAccountState();
+      if (!userRef.current?.id) throw new Error('Could not confirm your account. Reconnect and retry.');
+      confirmedMobileUserRef.current = userRef.current;
+      await saveMobileViewMode(resolveActiveMobileMode(userRef.current));
     }
     startVideoUploadQueue();
   }
@@ -479,6 +484,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     sessionExposureCache.deny();
     stopVideoUploadQueue();
     await purgeAuthoringJournals().catch(() => undefined);
+    await writeOnboardingDraft(AsyncStorage, null).catch(() => undefined);
     await persistUser(null);
     setToken(null);
     tokenRef.current = null;
@@ -515,8 +521,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (storedToken) {
           const [profile, settings] = await Promise.all([
             fetchJson<any>('/mobile/me', { method: 'GET' }),
-            fetchJson<any>('/mobile/settings', { method: 'GET' }),
+            fetchJson<any>('/mobile/settings', { method: 'GET' }).catch(() => ({ ok: false, json: null })),
           ]);
+          const serverId = profile.json?.user?.id ?? profile.json?.user?.user_id ?? profile.json?.id ?? profile.json?.user_id;
+          const cachedId = restoredUser?.id ?? restoredUser?.user_id;
+          if (serverId != null && cachedId != null && Number(serverId) !== Number(cachedId)) {
+            // A process interruption between credential and profile persistence
+            // must recover through sign-in without showing another account.
+            await logout();
+            return;
+          }
           const preferredUnits = preferredUnitFromSettingsPayload(settings.ok ? settings.json : null);
           const profileUser = profile.json?.user;
           if (profile.ok && profileUser) {
@@ -583,41 +597,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
             await saveMobileViewMode(resolveActiveMobileMode(refreshedUser));
             await persistUser(refreshedUser);
           } else if (restoredUser && (profile.status === 402 || profile.status === 403)) {
-            const refreshedUser: AuthUser = {
-              ...restoredUser,
-              email_verified:
-                profile.status === 403 && String((profile.json as any)?.error || '').includes('email verification')
-                  ? false
-                  : restoredUser.email_verified,
-              verification_required:
-                profile.status === 403 && String((profile.json as any)?.error || '').includes('email verification')
-                  ? true
-                  : restoredUser.verification_required,
-              verification_url: (profile.json as any)?.verification_url ?? restoredUser.verification_url ?? null,
-              billing_required:
-                (profile.json as any)?.billing_required === true ||
-                (profile.json as any)?.account_state === 'ACTIVATION_REQUIRED' ||
-                (profile.status === 402 && String((profile.json as any)?.error || '').includes('billing'))
-                  ? true
-                  : restoredUser.billing_required,
-              billing_url: (profile.json as any)?.billing_url ?? restoredUser.billing_url ?? null,
-              account_state: (profile.json as any)?.account_state ?? restoredUser.account_state ?? null,
-              next_url: (profile.json as any)?.next_url ?? restoredUser.next_url ?? null,
-              next_route: (profile.json as any)?.next_route ?? restoredUser.next_route ?? null,
-              can_access_product:
-                (profile.json as any)?.can_access_product === false
-                  ? false
-                  : (profile.json as any)?.can_access_product === true
-                  ? true
-                  : restoredUser.can_access_product,
-              link_coach_required:
-                (profile.json as any)?.link_coach_required === true || restoredUser.link_coach_required === true,
-              account_state_detail:
-                (profile.json as any)?.account_state_detail ?? restoredUser.account_state_detail,
-              dev_onboarding_simulation_enabled:
-                (profile.json as any)?.dev_onboarding_simulation_enabled === true ||
-                restoredUser.dev_onboarding_simulation_enabled === true,
-            };
+            const payload = profile.json || {};
+            const verificationBlocked = profile.status === 403 && String(payload.error || '').includes('email verification');
+            const refreshedUser = mergeAccountStatePayload(restoredUser, {
+              ...payload,
+              email_verified: verificationBlocked ? false : payload.email_verified,
+              verification_required: verificationBlocked ? true : payload.verification_required,
+              billing_required: payload.billing_required ?? (profile.status === 402 ? true : restoredUser.billing_required),
+            });
             await persistUser(refreshedUser);
           }
         }
@@ -627,7 +614,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setAuthReady(true);
       }
     })();
-  }, [persistUser]);
+  }, [persistUser, mergeAccountStatePayload]);
 
   useEffect(() => {
     return subscribeAccountStateBlocks((payload) => {
@@ -638,7 +625,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
       if (nextState === 'active') {
-        void refreshAccountState();
+        invalidateEvidenceReads();
+        void refreshAccountState().catch(() => undefined);
       }
     });
     return () => subscription.remove();

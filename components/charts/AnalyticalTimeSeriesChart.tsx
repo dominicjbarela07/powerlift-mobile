@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Path, Text as SvgText } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
@@ -32,6 +32,7 @@ export type AnalyticalChartBandPoint = Readonly<{
   low?: number | null;
   high?: number | null;
 }>;
+const EMPTY_BAND: readonly AnalyticalChartBandPoint[] = [];
 
 export type AnalyticalSelection = Readonly<{
   date: string;
@@ -58,6 +59,8 @@ type Props = Readonly<{
   testID?: string;
   surfaceColor?: string;
   fillArea?: boolean;
+  /** The surrounding view supplies the selected value and source action. */
+  showTooltip?: boolean;
 }>;
 
 type NormalizedPoint = Readonly<{
@@ -84,7 +87,7 @@ function pathFor(points: readonly Readonly<{ x: number; y: number }>[]) {
 export function AnalyticalTimeSeriesChart({
   series,
   metric,
-  band = [],
+  band = EMPTY_BAND,
   bandLabel,
   height = 220,
   emptyTitle = 'Not enough history',
@@ -100,11 +103,13 @@ export function AnalyticalTimeSeriesChart({
   testID,
   surfaceColor,
   fillArea = false,
+  showTooltip = true,
 }: Props) {
   const [width, setWidth] = useState(320);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const selectedRef = useRef<number | null>(null);
   const gestureStartX = useRef<number | null>(null);
+  const gestureStartY = useRef<number | null>(null);
   const plot = useMemo(() => {
     const dateMap = new Map<string, { date: string; time: number }>();
     series.forEach((item) => item.points.forEach((point) => {
@@ -124,7 +129,7 @@ export function AnalyticalTimeSeriesChart({
     ];
     if (!dates.length || !values.length) return null;
     const right = 12;
-    const top = largeReadableText ? 82 : 54;
+    const top = showTooltip ? largeReadableText ? 82 : 54 : 12;
     const bottom = largeReadableText ? 42 : 30;
     const chartHeight = Math.max(78, height - top - bottom);
     const scale = buildNumericScale(values, metric, height < 180 ? 4 : 5);
@@ -164,7 +169,7 @@ export function AnalyticalTimeSeriesChart({
       xTicks: xLayout.ticks,
       bandPath: upper && lower ? `${upper} ${lower} Z` : '',
     };
-  }, [band, height, largeReadableText, metric, readableText, series, width, xDomainMode]);
+  }, [band, height, largeReadableText, metric, readableText, series, showTooltip, width, xDomainMode]);
 
   useEffect(() => {
     const next = plot && selectedInitially === 'latest' ? plot.normalizedDates.length - 1 : null;
@@ -201,34 +206,50 @@ export function AnalyticalTimeSeriesChart({
     : Math.min(190, Math.max(142, width * 0.48));
   const tooltipLeft = selectedDate ? Math.min(Math.max(4, selectedDate.x - tooltipWidth / 2), Math.max(4, width - tooltipWidth - 4)) : 4;
 
+  const finishGesture = (event: { nativeEvent: { locationX: number; locationY?: number } }) => {
+    if (gestureStartX.current == null) return;
+    const moved = Math.hypot(event.nativeEvent.locationX - gestureStartX.current, (event.nativeEvent.locationY ?? 0) - (gestureStartY.current ?? 0));
+    if (moved <= 10) {
+      selectNearest(event.nativeEvent.locationX);
+      const index = selectedRef.current;
+      if (index != null && onPointPress) {
+        const selected = plot.normalizedDates[index];
+        onPointPress({ date: selected.date, index, values: plot.rows.flatMap(item => {
+          const point = item.points.find(row => row.key === selected.key);
+          return point ? [{ key: item.key, label: item.label, color: item.color, value: point.value, meta: point.meta }] : [];
+        }) });
+      }
+    }
+    gestureStartX.current = null;
+    gestureStartY.current = null;
+  };
+
   return <View
     accessibilityLabel={`${metric.label} analytical chart with ${plot.normalizedDates.length} observation${plot.normalizedDates.length === 1 ? '' : 's'} in ${xDomainMode === 'chronological' ? 'time' : 'instance'} mode. Drag horizontally to inspect values.`}
     accessible
     onLayout={(event) => setWidth(Math.max(280, Math.round(event.nativeEvent.layout.width)))}
-    onMoveShouldSetResponder={() => true}
-    onResponderGrant={(event) => { gestureStartX.current = event.nativeEvent.locationX; selectNearest(event.nativeEvent.locationX); }}
-    onResponderMove={(event) => selectNearest(event.nativeEvent.locationX)}
-    onResponderRelease={(event) => {
-      const moved = gestureStartX.current == null ? 0 : Math.abs(event.nativeEvent.locationX - gestureStartX.current);
-      const index = selectedRef.current;
-      if (moved <= 10 && index != null && onPointPress) {
-        const selected = plot.normalizedDates[index];
-        const pressedSelection: AnalyticalSelection = {
-          date: selected.date,
-          index,
-          values: plot.rows.flatMap((item) => {
-            const point = item.points.find((row) => row.key === selected.key);
-            return point ? [{ key: item.key, label: item.label, color: item.color, value: point.value, meta: point.meta }] : [];
-          }),
-        };
-        onPointPress(pressedSelection);
-      }
-      gestureStartX.current = null;
+    onTouchStart={event => { gestureStartX.current = event.nativeEvent.locationX; gestureStartY.current = event.nativeEvent.locationY ?? 0; }}
+    onStartShouldSetResponder={() => Platform.OS === 'web'}
+    onMoveShouldSetResponder={event => {
+      if (gestureStartX.current == null) return false;
+      const horizontal = Math.abs(event.nativeEvent.locationX - gestureStartX.current);
+      const vertical = Math.abs((event.nativeEvent.locationY ?? 0) - (gestureStartY.current ?? 0));
+      return horizontal > 6 && horizontal > vertical;
     }}
+    onResponderTerminationRequest={() => true}
+    onTouchCancel={() => { gestureStartX.current = null; gestureStartY.current = null; }}
+    onResponderTerminate={() => { gestureStartX.current = null; gestureStartY.current = null; }}
+    onResponderGrant={event => {
+      if (gestureStartX.current == null) { gestureStartX.current = event.nativeEvent.locationX; gestureStartY.current = event.nativeEvent.locationY ?? 0; }
+      selectNearest(event.nativeEvent.locationX);
+    }}
+    onResponderMove={event => selectNearest(event.nativeEvent.locationX)}
+    onTouchEnd={finishGesture}
+    onResponderRelease={finishGesture}
     style={[styles.frame, { minHeight: height }, surfaceColor ? { backgroundColor: surfaceColor } : null]}
     testID={testID}
   >
-    <Svg height={height} width={width}>
+    <Svg height={height} width={width} pointerEvents="none">
       {plot.scale.ticks.map((tick) => {
         const y = plot.y(tick);
         const isZero = Math.abs(tick) < 1e-9;
@@ -249,7 +270,7 @@ export function AnalyticalTimeSeriesChart({
       {selectedDate ? <Line x1={selectedDate.x} x2={selectedDate.x} y1={plot.top} y2={plot.top + plot.chartHeight} stroke="#B878FF" strokeDasharray="3 4" strokeWidth={1} /> : null}
       {plot.xTicks.map((tick) => <SvgText key={`${tick.key}:${tick.index}`} x={tick.x} y={height - (largeReadableText ? 10 : 8)} textAnchor={tick.textAnchor} fill="#A4A8B3" fontSize={largeReadableText ? 16 : readableText ? 11 : 9}>{tick.label}</SvgText>)}
     </Svg>
-    {selection ? <View pointerEvents="none" style={[styles.tooltip, { left: tooltipLeft, width: tooltipWidth }]}>
+    {selection && showTooltip ? <View pointerEvents="none" style={[styles.tooltip, { left: tooltipLeft, width: tooltipWidth }]}>
       <Text style={[styles.tooltipDate, readableText && styles.tooltipDateReadable, largeReadableText && styles.tooltipDateLarge]}>{fullDate(selection.date).toUpperCase()}</Text>
       {selection.values.map((row) => <View key={row.key} style={styles.tooltipValueRow}><View style={[styles.tooltipDot, { backgroundColor: row.color }]} /><Text style={[styles.tooltipLabel, readableText && styles.tooltipLabelReadable, largeReadableText && styles.tooltipLabelLarge]}>{row.label}</Text><Text style={[styles.tooltipValue, readableText && styles.tooltipValueReadable, largeReadableText && styles.tooltipValueLarge]}>{formatSeriesValue?.(row.key, row.value) ?? formatAnalyticalValue(row.value, metric)}</Text></View>)}
       {contextualRows.map((row, index) => <Text key={`${row}:${index}`} numberOfLines={1} style={[styles.tooltipMeta, readableText && styles.tooltipMetaReadable, largeReadableText && styles.tooltipMetaLarge]}>{row}</Text>)}

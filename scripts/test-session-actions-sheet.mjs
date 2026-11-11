@@ -7,7 +7,7 @@ const source = fs.readFileSync('components/workout-logger/session-actions-sheet.
 const compiled = ts.transpileModule(source, { compilerOptions: {
   module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React, esModuleInterop: true,
 } }).outputText;
-function harness(overrides = {}) {
+function harness(overrides = {}, platform = 'android') {
   const hooks = [], events = [], timers = [];
   let cursor = 0;
   const react = { createElement: (type, props, ...children) => ({ type, props: { ...props, children } }),
@@ -15,7 +15,7 @@ function harness(overrides = {}) {
     useState(initial) { const index = cursor++; hooks[index] ??= initial; return [hooks[index], value => { hooks[index] = value; }]; } };
   const mocks = {
     react,
-    'react-native': { View: 'View', StyleSheet: { create: value => value, hairlineWidth: 1 },
+    'react-native': { Platform: { OS: platform }, View: 'View', StyleSheet: { create: value => value, hairlineWidth: 1 },
       useWindowDimensions: () => ({ height: 852, fontScale: 1 }) },
     '@expo/vector-icons': { Ionicons: 'Icon' },
     'react-native-safe-area-context': { useSafeAreaInsets: () => ({ bottom: 34 }) },
@@ -71,6 +71,15 @@ for (const [label, event] of [['Add Movement', 'Add'], ['Remove Movement', 'Remo
   test.flush();
   assert.deepEqual(test.events, ['animate-close', 'dismiss', event]);
 }
+const ios = harness({}, 'ios');
+const iosSurface = ios.render();
+row(iosSurface, 'Rest Timer').props.onPress();
+iosSurface.props.onDismiss();
+ios.flush();
+assert.deepEqual(ios.events, ['animate-close', 'dismiss'], 'iOS waits for the native modal to dismiss before opening the next sheet');
+iosSurface.props.onNativeDismiss();
+iosSurface.props.onNativeDismiss();
+assert.deepEqual(ios.events, ['animate-close', 'dismiss', 'Rest']);
 const coached = harness({ canEditComposition: false });
 assert.deepEqual(labels(coached.render()), ['Rest Timer', 'Finish Session', 'Cancel Session']);
 const blocked = harness({ removeUnavailableReason: 'All movements have logged Sets.' });

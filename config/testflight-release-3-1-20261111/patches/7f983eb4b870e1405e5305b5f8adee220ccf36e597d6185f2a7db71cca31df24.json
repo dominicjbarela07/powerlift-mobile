@@ -1,0 +1,18 @@
+[
+  {
+    "before": "import { LinearGradient } from 'expo-linear-gradient';\nimport {\n  Box,\n  BoxShadow,\n",
+    "after": "import { LinearGradient } from 'expo-linear-gradient';\nimport { usePathname } from 'expo-router';\nimport { ledgerCanvasActive } from '@/lib/ledger-surface-policy';\nimport {\n  Box,\n  BoxShadow,\n"
+  },
+  {
+    "before": "import React, { useState, type ReactNode } from 'react';\nimport {\n  ImageBackground,\n  ImageStyle,\n  StyleSheet,\n  View,\n",
+    "after": "import React, { useState, type ReactNode } from 'react';\nimport {\n  ImageBackground,\n  Image,\n  ImageStyle,\n  StyleSheet,\n  View,\n"
+  },
+  {
+    "before": "\nimport {\n  SLColors,\n  SLElevation,\n  SLShadows,\n  SLLayout,\n",
+    "after": "\nimport {\n  SLColors,\n  SLLedgerMaterial,\n  SLElevation,\n  SLShadows,\n  SLLayout,\n"
+  },
+  {
+    "before": "}\n\nexport function SLWorkspaceBackground({ style }: { style?: StyleProp<ViewStyle> }) {\n  return <View pointerEvents=\"none\" style={[StyleSheet.absoluteFillObject, styles.workspace, style]} />;\n}\n\nexport function SLMaterialOverlay({\n",
+    "after": "}\n\nexport function SLWorkspaceBackground({ style }: { style?: StyleProp<ViewStyle> }) {\n  const ledger = ledgerCanvasActive(usePathname());\n  return <View pointerEvents=\"none\" style={[StyleSheet.absoluteFillObject, styles.workspace, ledger && { backgroundColor: SLLedgerMaterial.canvas }, style]}>\n    {ledger ? <Image accessible={false} accessibilityIgnoresInvertColors source={require('@/assets/images/ledger-cleanup/brushed-gunmetal-v1.png')} resizeMode=\"cover\" style={[StyleSheet.absoluteFillObject, { opacity: SLLedgerMaterial.textureOpacity }]} /> : null}\n  </View>;\n}\n\nexport function SLMaterialOverlay({\n"
+  }
+]

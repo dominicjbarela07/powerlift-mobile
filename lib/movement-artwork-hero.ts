@@ -1,9 +1,10 @@
 import { approvedArtRuntimeEnabled } from './approved-art-runtime';
 import policyJson from '@/artwork-review/runtime-policy.json';
+import atmosphereFraming from '@/config/movement-atmosphere-framing.json';
 import artworkReuse from '@/config/governed-movement-art-reuse.json';
 import coreArtworkReuse from '@/config/governed-core-artwork-reuse.json';
 import { governedAccessoryArtworkTaxonomy } from './governed-movement-art-taxonomy';
-import { DEFAULT_FOCAL, thumbnailGeometry, type Presentation, type LoggerCrop } from './movement-artwork-geometry.mjs';
+import { DEFAULT_FOCAL, thumbnailGeometry, type Presentation, type LoggerCrop, type MovementAtmosphereFraming } from './movement-artwork-geometry.mjs';
 export { movementHeroGeometry } from './movement-artwork-geometry.mjs';
 import { normalizeCanonicalMovementArtSubject, resolveCanonicalMovementArtwork, type CanonicalMovementArtworkInput, type MovementArtInput, type CanonicalMovementArtworkKey } from './canonical-movement-artwork';
 
@@ -97,13 +98,13 @@ export function reportApprovedArtworkBypass(movement: MovementArtInput | null | 
  * cue; the same approved identity owns the hero. Compact rows own exact identity.
  */
 export function resolveMovementArtworkPresentation(movement: MovementArtInput | null | undefined,
-  expanded: boolean, complete: boolean, surface: string,
+  expanded: boolean, _complete: boolean, surface: string,
   dev = approvedArtRuntimeEnabled(), approvals: ApprovalPolicy = policy) {
   const approved = resolveApprovedExactMovementArtwork(movement, dev, approvals);
-  if (expanded && !complete) reportApprovedArtworkBypass(movement, approved?.key || null, `${surface}:hero`, approvals);
+  if (expanded) reportApprovedArtworkBypass(movement, approved?.key || null, `${surface}:hero`, approvals);
   return {
     thumbnailPresentation: expanded ? 'muscle-focus' as const : 'movement' as const,
-    hero: expanded && !complete ? approved : null,
+    hero: expanded ? approved : null,
   };
 }
 
@@ -135,6 +136,16 @@ export function movementThumbnailGeometry(size: number, key: CanonicalMovementAr
 export function approvedLoggerCrop(key: CanonicalMovementArtworkKey): LoggerCrop | undefined {
   if (policy.denied_keys.includes(key)) return undefined;
   return policy.approved_exact_artwork?.find(row => row.key === key)?.logger_crop;
+}
+
+/** Owner-directed Session scene layout. A replacement source cannot inherit
+ * another photograph's framing or gain artwork eligibility through this data. */
+export function movementAtmosphereFraming(key: CanonicalMovementArtworkKey): MovementAtmosphereFraming | undefined {
+  if (policy.denied_keys.includes(key)) return undefined;
+  const receipt = policy.approved_exact_artwork?.find(row => row.key === key);
+  const frame = atmosphereFraming.images[key as keyof typeof atmosphereFraming.images];
+  if (frame?.candidate_id !== receipt?.candidate_id || frame?.app_sha256 !== receipt?.app_sha256) return undefined;
+  return frame;
 }
 
 export function movementHeroDefaultFocal(key: CanonicalMovementArtworkKey): MovementHeroFocal {

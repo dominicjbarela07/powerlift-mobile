@@ -10,6 +10,8 @@ try {
   fs.mkdirSync(path.join(fixture, 'scripts'));
   fs.mkdirSync(path.join(fixture, 'config'));
   fs.copyFileSync('config/protected-fix-manifest.json', path.join(fixture, 'config/protected-fix-manifest.json'));
+  for (const folder of ['testflight-release-3-1-20261111', 'testflight-release-owner-evidence']) fs.cpSync(path.join('config', folder), path.join(fixture, 'config', folder), { recursive: true });
+  fs.copyFileSync('scripts/reviewed-visual-progression.cjs', path.join(fixture, 'scripts/reviewed-visual-progression.cjs'));
   for (const file of ['audit-ui-constitution.js', 'audit-transparent-screen-roots.js', 'ui-constitution-exceptions.json', 'mobile-3-surface-owners.json']) fs.copyFileSync(path.join('scripts', file), path.join(fixture, 'scripts', file));
   fs.symlinkSync(path.join(root, 'node_modules'), path.join(fixture, 'node_modules'), 'dir');
   const run = script => spawnSync(process.execPath, [path.join(fixture, 'scripts', script)], { cwd: fixture, encoding: 'utf8', timeout: 10000, maxBuffer: 4 * 1024 * 1024 });
@@ -30,5 +32,10 @@ try {
   const gutter = run('audit-transparent-screen-roots.js');
   assert.notEqual(gutter.status, 0, 'unreviewed page gutter must fail');
   assert.match(gutter.stderr, /prohibited page-level inset/);
+  fs.writeFileSync(file, original);
+  const selfCoachFile = path.join(fixture, 'components/home/SelfCoachTrain.tsx');
+  fs.appendFileSync(selfCoachFile, "\nconst hiddenVisualDrift = '#010203';\n");
+  assert.notEqual(run('audit-ui-constitution.js').status, 0, 'reviewed Self-Coach source rejects an extra color');
+  assert.notEqual(run('audit-transparent-screen-roots.js').status, 0, 'reviewed Self-Coach source rejects hidden root drift');
 } finally { fs.rmSync(fixture, { recursive: true, force: true }); }
 console.log('3.0 visual policy PASS: preserved surfaces accepted; same-count color replacement, altered canvas and extra page gutter rejected by actual audit CLIs.');

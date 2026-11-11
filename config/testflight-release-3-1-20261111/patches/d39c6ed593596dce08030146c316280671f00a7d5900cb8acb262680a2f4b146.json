@@ -1,0 +1,10 @@
+[
+  {
+    "before": "  'messages/index',\n  'coach-more',\n] as const;\n\nexport const SHIPPING_UNLINKED_ATHLETE_TAB_ROUTES = [\n  'link-coach',\n",
+    "after": "  'messages/index',\n  'coach-more',\n] as const;\n\nexport const SELF_COACH_TAB_ROUTES = ['athlete-dashboard', 'workout/index', 'ledger'] as const;\n\nexport const SHIPPING_UNLINKED_ATHLETE_TAB_ROUTES = [\n  'link-coach',\n"
+  },
+  {
+    "before": "  hasMeetPlan: boolean;\n}): string[] {\n  if (isUnlinkedAthlete) return [...SHIPPING_UNLINKED_ATHLETE_TAB_ROUTES];\n  if (isIndividual) return [...SHIPPING_ATHLETE_TAB_ROUTES];\n  if (isCoach && viewMode === 'coach') return [...SHIPPING_COACH_TAB_ROUTES];\n\n  const athleteRoutes: string[] = [...SHIPPING_ATHLETE_TAB_ROUTES];\n",
+    "after": "  hasMeetPlan: boolean;\n}): string[] {\n  if (isUnlinkedAthlete) return [...SHIPPING_UNLINKED_ATHLETE_TAB_ROUTES];\n  if (isIndividual) return [...SELF_COACH_TAB_ROUTES];\n  if (isCoach && viewMode === 'coach') return [...SHIPPING_COACH_TAB_ROUTES];\n\n  const athleteRoutes: string[] = [...SHIPPING_ATHLETE_TAB_ROUTES];\n"
+  }
+]

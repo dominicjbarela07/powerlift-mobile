@@ -5,6 +5,7 @@ import { ActivityIndicator, Keyboard, Platform, Pressable, StyleSheet, View } fr
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, TextInput } from '@/components/ui/sl-text';
+import { SLCompactDropdown } from '@/components/ui/sl-compact-dropdown';
 import SetVideoPlayerModal from '@/components/SetVideoPlayerModal';
 import { useAuth } from '@/context/AuthContext';
 import { getAthleteVideoArchive, getCoachVideoArchive } from '@/lib/api';
@@ -20,10 +21,11 @@ import { useLedgerHistory, type HistoryFilter } from './use-ledger-history';
 import { useLedgerResource } from './use-ledger-resource';
 import { LedgerContextFilter } from './LedgerContextFilter';
 import { LedgerTrainingArchive, LedgerTrainingSearch, LedgerBestArchive, LedgerPastArchive, LedgerFilmArchive, LedgerMeetArchive } from './LedgerArchiveViews';
+import { SelfCoachTrainingArchive } from './SelfCoachTrainingArchive';
 const C = T.colors;
 export type LedgerHistoryFocus={nonce:number;query?:string;from?:string;to?:string};
 
-export function LedgerHistoryPane({subject,athleteId,unit,open,filter,setFilter,focus}:{filter:HistoryFilter;setFilter:(filter:HistoryFilter)=>void;subject:string;athleteId?:number;unit:LedgerUnit;open:(source:LedgerSource)=>void;focus?:LedgerHistoryFocus}) {
+export function LedgerHistoryPane({subject,athleteId,unit,open,filter,setFilter,focus,presentation}:{presentation?:'self-coach';filter:HistoryFilter;setFilter:(filter:HistoryFilter)=>void;subject:string;athleteId?:number;unit:LedgerUnit;open:(source:LedgerSource)=>void;focus?:LedgerHistoryFocus}) {
  const router=useRouter(),ledgerSubject=useAthleteLedgerSubject();
  const [query,setQuery]=useState(''),[search,setSearch]=useState(''),[range,setRange]=useState<HistoryDateRange>({}),[month,setMonth]=useState<string|null>(null);
  const [searchOpen,setSearchOpen]=useState(false),[datesOpen,setDatesOpen]=useState(false),[picker,setPicker]=useState<'from'|'to'|null>(null);
@@ -35,6 +37,7 @@ export function LedgerHistoryPane({subject,athleteId,unit,open,filter,setFilter,
  const data=useLedgerHistory(subject,athleteId,filter,filter==='prs'?'':search,effectiveRange);
  const events=canonicalPrHistory(data.events).filter(e=>(!search||`${e.movement_label} ${e.workout_title} ${ledgerDate(e.workout_date)}`.toLowerCase().includes(search.toLowerCase()))&&historyItemDateWithin(e.workout_date||e.occurred_at,range));
  const count=filter==='prs'?events.length:data.items.length;
+ const countLabel=filter==='prs'?(count===1?'record':'records'):filter==='media'?(count===1?'film':'films'):filter==='competition'?(count===1?'meet':'meets'):(count===1?'entry':'entries');
  const visibleMonth=month??latestArchiveMonth(data.items)??toLocalYMD(new Date()).slice(0,7);
  const chooseDate=(date:Date)=>{if(!picker)return;const value=toLocalYMD(date);setRange(old=>picker==='from'?{...old,from:value,to:old.to&&value>old.to?value:old.to}:{...old,to:value,from:old.from&&value<old.from?value:old.from});setPicker(null);};
  return <View testID="ledger-connected-history" style={s.page}>
@@ -47,15 +50,15 @@ export function LedgerHistoryPane({subject,athleteId,unit,open,filter,setFilter,
   {data.error?<View style={s.notice}><Text style={s.copy}>{[401,403].includes(Number((data.error as {status?:number})?.status))?'History is not available to this account.':'History could not be refreshed. Your saved records are safe.'}</Text><Pressable accessibilityRole="button" onPress={data.reload} style={s.retry}><Text style={s.small}>Try again</Text></Pressable></View>:null}
   {!data.loading&&!data.error&&!count&&!(filter==='training'&&!scoped)?<View style={s.empty}><Text style={s.heading}>{scoped?'No matching records in this view.':'No records here yet.'}</Text><Text style={s.copy}>{filter==='prs'&&data.cursor?'Older personal bests are available below.':scoped?'Try another movement or widen the dates.':'Saved evidence will appear with its original context.'}</Text></View>:null}
   {!data.loading&&(!data.error||count>0)?<>
-   {filter==='training'?(scoped?<LedgerTrainingSearch items={data.items} unit={unit} open={open}/>:<LedgerTrainingArchive items={data.items} month={visibleMonth} hasMore={Boolean(data.cursor)} subject={subject} athleteId={athleteId} unit={unit} onMonth={setMonth} open={open}/>):null}
+   {filter==='training'?(scoped?<LedgerTrainingSearch items={data.items} unit={unit} open={open}/>:presentation==='self-coach'?<SelfCoachTrainingArchive items={data.items} month={visibleMonth} hasMore={Boolean(data.cursor)} unit={unit} onMonth={setMonth} open={open}/>:<LedgerTrainingArchive items={data.items} month={visibleMonth} hasMore={Boolean(data.cursor)} subject={subject} athleteId={athleteId} unit={unit} onMonth={setMonth} open={open}/>):null}
    {filter==='prs'?<LedgerBestArchive events={events} unit={unit} open={open}/>:null}
    {filter==='imports'?<LedgerPastArchive items={data.items} unit={unit} open={open}/>:null}
    {filter==='media'?<FilmCollection key={subject} items={data.items} subject={subject} athleteId={athleteId} unit={unit} open={open}/>:null}
    {filter==='competition'?<LedgerMeetArchive items={data.items} unit={unit} open={open}/>:null}
   </>:null}
-  {!data.loading&&count>0?<Text style={s.coverage}>{count} {filter==='prs'?'records':filter==='media'?'films':filter==='competition'?'meets':'entries'} loaded{data.cursor?' · more available':''}{scoped?' · filtered':''}</Text>:null}
+  {!data.loading&&count>0?<Text style={s.coverage}>{count} {countLabel} loaded{data.cursor?' · more available':''}{scoped?' · filtered':''}</Text>:null}
   {data.cursor?<Pressable accessibilityRole="button" disabled={data.loadingMore} onPress={()=>void data.more()} style={s.more}><Text style={s.small}>{data.loadingMore?'Loading older records…':data.error?'Retry older records':'Load older records'}</Text><Ionicons name="arrow-down" size={17} color={C.secondary}/></Pressable>:null}
-  <View style={s.archiveTools}><Pressable accessibilityRole="button" onPress={()=>router.push({pathname:'/(tabs)/ledger/journey',params:ledgerSubject.routeParams} as never)} style={s.tool}><Ionicons name="git-branch-outline" size={19} color={C.muted}/><Text style={s.small}>Career chapters</Text><Ionicons name="chevron-forward" size={16} color={C.muted}/></Pressable><Pressable accessibilityRole="button" onPress={()=>router.push({pathname:'/(tabs)/ledger/archive',params:{...ledgerSubject.routeParams,displayUnit:unit}} as never)} style={s.tool}><Ionicons name="options-outline" size={19} color={C.muted}/><Text style={s.small}>All archive filters</Text><Ionicons name="chevron-forward" size={16} color={C.muted}/></Pressable></View>
+  {presentation==='self-coach'?<SLCompactDropdown appearance="ledger" label="More archive tools" value="tools" accessibilityLabel="More archive tools" options={[{value:'journey',label:'Career chapters'},{value:'archive',label:'All archive filters'}]} onValueChange={value=>{if(value==='journey'||value==='archive')router.push({pathname:`/(tabs)/ledger/${value}` as any,params:{...ledgerSubject.routeParams,displayUnit:unit}} as never);}}/>:<View style={s.archiveTools}><Pressable accessibilityRole="button" onPress={()=>router.push({pathname:'/(tabs)/ledger/journey',params:ledgerSubject.routeParams} as never)} style={s.tool}><Ionicons name="git-branch-outline" size={19} color={C.muted}/><Text style={s.small}>Career chapters</Text><Ionicons name="chevron-forward" size={16} color={C.muted}/></Pressable><Pressable accessibilityRole="button" onPress={()=>router.push({pathname:'/(tabs)/ledger/archive',params:{...ledgerSubject.routeParams,displayUnit:unit}} as never)} style={s.tool}><Ionicons name="options-outline" size={19} color={C.muted}/><Text style={s.small}>All archive filters</Text><Ionicons name="chevron-forward" size={16} color={C.muted}/></Pressable></View>}
   {filter==='prs'?<Text style={s.caption}>Search and dates apply to the loaded personal-best pages. Load older records to continue.</Text>:null}
  </View>;
 }

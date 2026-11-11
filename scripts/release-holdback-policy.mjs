@@ -17,6 +17,37 @@ export function validateReleaseHoldbacks(holdbacks, candidate, git) {
     git('merge-base', '--is-ancestor', source, candidate);
     assert.ok(row.path && !row.path.startsWith('/') && !row.path.split('/').includes('..'));
     assert.ok(!paths.has(row.path), 'holdbacks must be unique');
+    if (row.resolution) {
+      // Reconcile a formerly deferred feature only with its original shipped
+      // provenance, exact new source, owner instruction and deployed dependency.
+      if (row.blob === null) {
+        assert.equal(git('ls-tree', '--name-only', source, '--', row.path).trim(), '', 'resumed source was absent from its original baseline');
+      } else if (!row.sharedFix) {
+        assert.equal(git('rev-parse', `${source}:${row.path}`), row.blob, 'resolved holdback retains its original shipped provenance');
+      }
+      const before = row.blob === null ? '' : row.sharedFix
+        ? applySharedReleaseFix(git('show', `${source}:${row.path}`), row.sharedFix)
+        : git('show', `${source}:${row.path}`);
+      const resolution = row.resolution;
+      assert.ok(resolution.reason?.length > 30, 'resolution requires a concrete dependency review');
+      const evidence = fs.readFileSync(path.join(process.cwd(), resolution.backendEvidencePath), 'utf8');
+      assert.equal(crypto.createHash('sha256').update(evidence).digest('hex'), resolution.backendEvidenceSha256, 'deployed dependency evidence changed');
+      const backend = JSON.parse(evidence);
+      assert.equal(backend.result, 'PASS', 'resolved backend dependency must have passed');
+      assert.equal(backend.servingSourceSha, resolution.backendSourceSha, 'resolved dependency must identify the serving source');
+      assert.match(resolution.backendSourceSha, /^[a-f0-9]{40}$/);
+      if (resolution.binarySource === true) {
+        assert.equal(before, '', 'binary resumption requires an originally absent asset');
+        const owner = fs.readFileSync(path.join(process.cwd(), resolution.ownerEvidencePath), 'utf8');
+        assert.equal(crypto.createHash('sha256').update(owner).digest('hex'), resolution.ownerEvidenceSha256);
+        assert.ok(owner.includes(resolution.ownerInstruction));
+        const bytes = fs.readFileSync(path.join(process.cwd(), row.path));
+        assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), resolution.after, 'resumed binary asset bytes changed');
+        assert.equal(git('rev-parse', `${candidate}:${row.path}`), resolution.binaryGitBlob, 'resumed binary asset must match the committed candidate');
+      } else assert.equal(applyPublicationProgression(before, resolution), git('show', `${candidate}:${row.path}`), 'resolved holdback must prove every candidate byte');
+      paths.add(row.path);
+      continue;
+    }
     if (row.blob === null) {
       assert.equal(git('ls-tree', '--name-only', source, '--', row.path).trim(), '', 'an excluded DEV-only file must be absent from the shipped baseline');
       assert.equal(git('ls-tree', '--name-only', candidate, '--', row.path).trim(), '', 'an excluded DEV-only file must remain absent from the candidate');
@@ -46,7 +77,9 @@ export function applyPublicationProgression(source, progression, root=process.cw
   assert.equal(hash(evidence), progression.ownerEvidenceSha256);
   assert.ok(progression.ownerInstruction && evidence.includes(progression.ownerInstruction));
   assert.equal(hash(source), progression.before, 'publication patch must begin at the original held source');
-  const after = progression.changes.reduce((value, change) => applySharedReleaseFix(value, change), source);
+  const after = source === '' && typeof progression.addedSource === 'string'
+    ? progression.addedSource
+    : progression.changes.reduce((value, change) => applySharedReleaseFix(value, change), source);
   assert.equal(hash(after), progression.after, 'publication patch must prove its exact endpoint');
   return after;
 }

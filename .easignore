@@ -56,3 +56,6 @@ app-example
 /artifacts/
 /.pytest_cache/
 /.worktrees/
+
+# Individually inventoried reference masters. Runtime derivatives stay included.
+/assets/images/movement-artwork/free-weight-v1/masters/

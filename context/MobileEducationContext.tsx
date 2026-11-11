@@ -55,7 +55,7 @@ const MobileEducationContext = createContext<MobileEducationValue | null>(null);
 const ROLE_CONTENT = {
   individual: {
     name: 'Self-Coach', title: 'Your training\ncomes first.',
-    action: 'Go to Today',
+    action: 'Go to Train',
   },
   coach: {
     name: 'Team Coach', title: 'Coach your athletes\nfrom your phone.',
@@ -259,7 +259,7 @@ export function MobileEducationProvider({ children }: { children: React.ReactNod
             <View style={styles.flexSpace} />
           </>}
           <Pressable accessibilityRole="button" onPress={introStage === 'welcome' ? () => setIntroStage('role') : () => finishIntroduction()} style={({ pressed }) => [styles.primaryAction, pressed && styles.pressed]}><Text style={styles.primaryActionText}>{introStage === 'welcome' ? 'Explore 3.0' : multipleModes ? `Continue in ${role === 'coach' ? 'Coach' : 'Your Training'}` : content?.action}</Text></Pressable>
-          <Pressable accessibilityRole="button" onPress={() => finishIntroduction()} style={styles.skipAction}><Text style={styles.skipText}>{introStage === 'welcome' ? role === 'coach' ? 'Skip and enter Coach Home' : 'Skip and enter Today' : replaying ? 'Close overview' : 'Skip introduction'}</Text></Pressable>
+          <Pressable accessibilityRole="button" onPress={() => finishIntroduction()} style={styles.skipAction}><Text style={styles.skipText}>{introStage === 'welcome' ? role === 'coach' ? 'Skip and enter Coach Home' : role === 'individual' ? 'Skip and enter Train' : 'Skip and enter Today' : replaying ? 'Close overview' : 'Skip introduction'}</Text></Pressable>
         </ScrollView>
       </View>}
     </Modal>

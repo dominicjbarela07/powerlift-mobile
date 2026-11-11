@@ -1,0 +1,6 @@
+[
+  {
+    "before": "  if (subject.isWorkspaceScoped && !subject.valid) {\n    return <View style={styles.state}><Text style={styles.title}>Athlete evidence unavailable</Text><Text style={styles.body}>The athlete workspace subject could not be verified. Return to Coach Home and reopen the athlete.</Text></View>;\n  }\n  return <Stack screenOptions={{ headerShown: false }} />;\n}\n\nconst styles = StyleSheet.create({\n",
+    "after": "  if (subject.isWorkspaceScoped && !subject.valid) {\n    return <View style={styles.state}><Text style={styles.title}>Athlete evidence unavailable</Text><Text style={styles.body}>The athlete workspace subject could not be verified. Return to Coach Home and reopen the athlete.</Text></View>;\n  }\n  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }} />;\n}\n\nconst styles = StyleSheet.create({\n"
+  }
+]
