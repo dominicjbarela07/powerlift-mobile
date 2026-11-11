@@ -168070,7 +168070,7 @@
       "path": "scripts/assert-no-dev-artwork-export.mjs",
       "before": "610934d315a2f34c534e80545d7c8361fbad0110c313c48f3d9642f2c04a7c22",
       "beforePath": "config/testflight-release-3-1-20261111/before/mobile/scripts/assert-no-dev-artwork-export.mjs.snapshot",
-      "sourceCommit": "77a32e212cec6571cd568ad83f3f315887a775a9",
+      "sourceCommit": "9a788c43be25e4ab551c561284c9b11a2bf9b829",
       "after": "bff2ac77a75092c9a425d3e3337ee5d9e2c133187ae2b934c73ac39862b5f234",
       "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-11-11-testflight31-ready.txt",
       "ownerEvidenceSha256": "34438c2e86926d9d135933fd53eafd727feca8c5a009eb28b2ee1a3f9b3819fb",
@@ -168804,6 +168804,28 @@
         {
           "before": "\nconst root = process.cwd();\nconst appConfig = JSON.parse(fs.readFileSync(path.join(root, 'app.json'), 'utf8')).expo;\nconst runtime = process.env.STRENGTH_LEDGER_RELEASE_TARGET === 'production3' ? '3.0.0' : typeof appConfig.runtimeVersion === 'string'\n  ? appConfig.runtimeVersion\n  : appConfig.version;\nconst baselines = JSON.parse(\n",
           "after": "\nconst root = process.cwd();\nconst appConfig = JSON.parse(fs.readFileSync(path.join(root, 'app.json'), 'utf8')).expo;\nconst runtime = process.env.STRENGTH_LEDGER_RELEASE_TARGET === 'testflight31' ? '3.1.0'\n  : process.env.STRENGTH_LEDGER_RELEASE_TARGET === 'production3' ? '3.0.0' : typeof appConfig.runtimeVersion === 'string'\n  ? appConfig.runtimeVersion\n  : appConfig.version;\nconst baselines = JSON.parse(\n"
+        }
+      ]
+    },
+    {
+      "scope": "mobile",
+      "path": "scripts/test-production3-client-fix-policy.mjs",
+      "before": "b2dcd77c3e5de96a32e95344960d55116e86243dcd07c29df798fec837da26e0",
+      "beforePath": "config/testflight-release-3-1-20261111/before/mobile/scripts/test-production3-client-fix-policy.mjs.snapshot",
+      "sourceCommit": "3bbd0e30f95efdfe377ca608791b7722b7e5bcf3",
+      "after": "eabf8c1c5a5f75f19ac0810898b33e02c1a75a957880295865b65219622a96d1",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-11-11-testflight31-ready.txt",
+      "ownerEvidenceSha256": "34438c2e86926d9d135933fd53eafd727feca8c5a009eb28b2ee1a3f9b3819fb",
+      "ownerInstruction": "Fix those fucking blockers and get 3.1 actually ready for TestFlight.",
+      "reason": "Exact reviewed 3.1 preparation progression. Preserve original source/protection preimages and all original negative controls while integrating owner-approved Self-Coach behavior and source-only upload optimization.",
+      "changes": [
+        {
+          "before": "import assert from 'node:assert/strict';\nimport fs from 'node:fs';\nimport crypto from 'node:crypto';\nimport { assertProduction3ClientFix } from './production3-client-fix-policy.mjs';\nconst baselines=JSON.parse(fs.readFileSync('config/native-runtime-baselines.json'));\nconst proof=JSON.parse(fs.readFileSync('config/testflight-release-identity-20261013/native-build35.json'));\nconst input={branch:'production-3-preparation',scope:{scope:'canonical-copied-week-identity-20261013'},\n  baseline:baselines['3.0.0'],proof,packageLockSha256:crypto.createHash('sha256').update(fs.readFileSync('package-lock.json')).digest('hex')};\nassertProduction3ClientFix(input);\nassertProduction3ClientFix({...input,scope:{scope:'weekly-training-report-20261017'}});\nassertProduction3ClientFix({...input,scope:{scope:'athlete-video-archive-access-20261014'}});\n",
+          "after": "import assert from 'node:assert/strict';\nimport fs from 'node:fs';\nimport crypto from 'node:crypto';\nimport { execFileSync } from 'node:child_process';\nimport { assertProduction3ClientFix } from './production3-client-fix-policy.mjs';\nconst baselines=JSON.parse(fs.readFileSync('config/native-runtime-baselines.json'));\nconst proof=JSON.parse(fs.readFileSync('config/testflight-release-identity-20261013/native-build35.json'));\nconst hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');\nconst nativeBuildLock = execFileSync('git', ['show', `${proof.gitCommitHash}:package-lock.json`], { maxBuffer: 4 * 1024 * 1024 });\nassert.equal(hash(nativeBuildLock), proof.packageLockSha256, 'legacy positive fixture must use the actual owner-built native source');\nconst input={branch:'production-3-preparation',scope:{scope:'canonical-copied-week-identity-20261013'},\n  baseline:baselines['3.0.0'],proof,packageLockSha256:hash(nativeBuildLock)};\nassertProduction3ClientFix(input);\nassertProduction3ClientFix({...input,scope:{scope:'weekly-training-report-20261017'}});\nassertProduction3ClientFix({...input,scope:{scope:'athlete-video-archive-access-20261014'}});\n"
+        },
+        {
+          "before": "for(const branch of ['production','main','testflight','production-3-unreviewed']) assert.throws(()=>assertProduction3ClientFix({...input,branch}));\nassert.throws(()=>assertProduction3ClientFix({...input,scope:{scope:'unrelated'}}));\nassert.throws(()=>assertProduction3ClientFix({...input,packageLockSha256:'changed'}));\nassert.throws(()=>assertProduction3ClientFix({...input,proof:{...proof,runtimeVersion:'2.0.2'}}));\nassert.throws(()=>assertProduction3ClientFix({...input,baseline:{...input.baseline,easBuildId:'invented'}}));\nconst publisher=fs.readFileSync('scripts/publish-validated-ios-ota.mjs','utf8');\n",
+          "after": "for(const branch of ['production','main','testflight','production-3-unreviewed']) assert.throws(()=>assertProduction3ClientFix({...input,branch}));\nassert.throws(()=>assertProduction3ClientFix({...input,scope:{scope:'unrelated'}}));\nassert.throws(()=>assertProduction3ClientFix({...input,packageLockSha256:'changed'}));\nconst currentLockSha256 = hash(fs.readFileSync('package-lock.json'));\nif (currentLockSha256 !== proof.packageLockSha256) {\n  assert.throws(() => assertProduction3ClientFix({ ...input, packageLockSha256: currentLockSha256 }), /native dependencies changed/,\n    'the new 3.1 native dependencies cannot borrow the old 3.0 build certification');\n}\nassert.throws(()=>assertProduction3ClientFix({...input,proof:{...proof,runtimeVersion:'2.0.2'}}));\nassert.throws(()=>assertProduction3ClientFix({...input,baseline:{...input.baseline,easBuildId:'invented'}}));\nconst publisher=fs.readFileSync('scripts/publish-validated-ios-ota.mjs','utf8');\n"
         }
       ]
     },

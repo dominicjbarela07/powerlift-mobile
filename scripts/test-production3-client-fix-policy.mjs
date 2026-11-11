@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { assertProduction3ClientFix } from './production3-client-fix-policy.mjs';
 const baselines=JSON.parse(fs.readFileSync('config/native-runtime-baselines.json'));
 const proof=JSON.parse(fs.readFileSync('config/testflight-release-identity-20261013/native-build35.json'));
+const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+const nativeBuildLock = execFileSync('git', ['show', `${proof.gitCommitHash}:package-lock.json`], { maxBuffer: 4 * 1024 * 1024 });
+assert.equal(hash(nativeBuildLock), proof.packageLockSha256, 'legacy positive fixture must use the actual owner-built native source');
 const input={branch:'production-3-preparation',scope:{scope:'canonical-copied-week-identity-20261013'},
-  baseline:baselines['3.0.0'],proof,packageLockSha256:crypto.createHash('sha256').update(fs.readFileSync('package-lock.json')).digest('hex')};
+  baseline:baselines['3.0.0'],proof,packageLockSha256:hash(nativeBuildLock)};
 assertProduction3ClientFix(input);
 assertProduction3ClientFix({...input,scope:{scope:'weekly-training-report-20261017'}});
 assertProduction3ClientFix({...input,scope:{scope:'athlete-video-archive-access-20261014'}});
@@ -14,6 +18,11 @@ for(const field of ['plugins','newArchEnabled','reactNativeDependencies','expoMo
 for(const branch of ['production','main','testflight','production-3-unreviewed']) assert.throws(()=>assertProduction3ClientFix({...input,branch}));
 assert.throws(()=>assertProduction3ClientFix({...input,scope:{scope:'unrelated'}}));
 assert.throws(()=>assertProduction3ClientFix({...input,packageLockSha256:'changed'}));
+const currentLockSha256 = hash(fs.readFileSync('package-lock.json'));
+if (currentLockSha256 !== proof.packageLockSha256) {
+  assert.throws(() => assertProduction3ClientFix({ ...input, packageLockSha256: currentLockSha256 }), /native dependencies changed/,
+    'the new 3.1 native dependencies cannot borrow the old 3.0 build certification');
+}
 assert.throws(()=>assertProduction3ClientFix({...input,proof:{...proof,runtimeVersion:'2.0.2'}}));
 assert.throws(()=>assertProduction3ClientFix({...input,baseline:{...input.baseline,easBuildId:'invented'}}));
 const publisher=fs.readFileSync('scripts/publish-validated-ios-ota.mjs','utf8');
