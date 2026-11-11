@@ -41,6 +41,7 @@ for (const name of accepted) {
     encoding: 'utf8',
     stdio: 'pipe',
     timeout: name === 'test-active-session-mutation-backend.mjs' ? 130_000
+      : name === 'test-dev-testflight-release-gates.mjs' ? 120_000
       : name === 'test-accessory-pr-save-api.mjs' ? 70_000 : 30_000,
   });
   if (result.status !== 0) {

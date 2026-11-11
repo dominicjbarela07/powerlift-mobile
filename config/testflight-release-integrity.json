@@ -168031,6 +168031,24 @@
     },
     {
       "scope": "mobile",
+      "path": "scripts/test-accepted-behavior-contracts.mjs",
+      "before": "975d474b4a2cda87a207bf4cc09f70e18893f768d5612f76ed87ffaf4c10ca77",
+      "beforePath": "config/testflight-release-3-1-20261111/before/mobile/scripts/test-accepted-behavior-contracts.mjs.snapshot",
+      "sourceCommit": "cfda1312dd50f4acc50842bfdd43bec967afa544",
+      "after": "af430511e5c37e72a8d0ca2c421c6f5dd55d647857a538e83b1f0a2d7eb5ef12",
+      "ownerEvidencePath": "config/testflight-release-owner-evidence/2026-11-11-testflight31-ready.txt",
+      "ownerEvidenceSha256": "34438c2e86926d9d135933fd53eafd727feca8c5a009eb28b2ee1a3f9b3819fb",
+      "ownerInstruction": "Fix those fucking blockers and get 3.1 actually ready for TestFlight.",
+      "reason": "Exact reviewed 3.1 preparation progression. Preserve original source/protection preimages and all original negative controls while integrating owner-approved Self-Coach behavior and source-only upload optimization.",
+      "changes": [
+        {
+          "before": "    encoding: 'utf8',\n    stdio: 'pipe',\n    timeout: name === 'test-active-session-mutation-backend.mjs' ? 130_000\n      : name === 'test-accessory-pr-save-api.mjs' ? 70_000 : 30_000,\n  });\n  if (result.status !== 0) {\n",
+          "after": "    encoding: 'utf8',\n    stdio: 'pipe',\n    timeout: name === 'test-active-session-mutation-backend.mjs' ? 130_000\n      : name === 'test-dev-testflight-release-gates.mjs' ? 120_000\n      : name === 'test-accessory-pr-save-api.mjs' ? 70_000 : 30_000,\n  });\n  if (result.status !== 0) {\n"
+        }
+      ]
+    },
+    {
+      "scope": "mobile",
       "path": "config/protected-fix-manifest.json",
       "before": "23d4b2fc3f4af7e91d0c119e88bfd92ba058a60acf9941b437711430f1bd6743",
       "beforePath": "config/testflight-release-3-1-20261111/before/mobile/config/protected-fix-manifest.json.snapshot",
