@@ -1,5 +1,21 @@
 # TestFlight 3.1 preparation
 
+## Current follow-through handoff
+
+The owner-authorized backend is serving `031337cee243fa5bd56121338023416c4f1a2007`. Its independent shared-backend gate passed frozen iOS and Android response parity, actual owner-policy acceptance and deliberate failure controls. Canonical DEV retains every deployed change and the temporary integration checkout has closed with zero unique valid work.
+
+The owner-build checkout is `/Users/dominic/powerlifting_app/powerlift_mobile_testflight` on `release/testflight/3.1-20261111`. Its guarded entry is `bash scripts/eas-build-testflight.sh testflight31`. The 3.1 path validates source, actual exported imagery/routes, functional contracts and types before the owner's native compilation. It produces the native build through the owner's command. Submission is a separate owner action. OTA delivery continues to require a genuine audited 3.1 native baseline.
+
+The measured source upload is approximately **1.31 GB**. Its exact final bytes, checksum, candidate SHA and streamed byte verification are retained in `/Users/dominic/.codex/work/testflight31-ready-20261111/compressed-byte-verification.json`. The current iOS export is **493,735,408 bytes**, containing all **995** previously delivered asset hashes. The upload excludes 195 individually inventoried, unreferenced reference masters, totaling 353,818,291 source bytes. All originals remain on disk. Their absence from the actual runtime export and every retained runtime/source byte are checked independently. The upload guard rejects compressed packages at or above 1,500,000,000 bytes.
+
+The final authoritative preparation outcome, complete test counts, source/package identities, known qualifications and owner instructions are in `/Users/dominic/.codex/work/testflight31-ready-20261111/ready-report.json`. The exact source-bound iOS artifact is `final-ios-export` in that same evidence folder. `full-source-gates.json`, `runtime-asset-preservation.json`, `archive-byte-verification.json` and `expo-doctor-final.log` retain the independent results. The report is the current handoff record. The original blocked preparation below remains historical evidence.
+
+Current validation includes the real Production health/source, authenticated athlete Today, expired QA activation recovery with versioned identities, and the independent deployed-handler regressions for personal Plan, routines, reuse, canonical evidence and support recovery. The previous live Self-Coach QA trial has ended. Its live Plan request correctly requires activation, and the actual Plan happy paths are covered by isolated service/handler regressions. Fresh live Self-Coach billing activation and the standalone 3.1 device journey remain qualifications for the owner's built binary. Android remains deferred by the owner.
+
+Expo Doctor passed all 18 checks after supported SDK 54 patch updates and a static-config-consuming resolver correction. Native compilation establishes the new 3.1 baseline and final installed size. The npm audit retains 29 upstream transitive advisories, including 6 high and 0 critical, after compatible dependency fixes. Their exact packages, affected ranges and upstream remediation constraints are retained in `npm-audit-final.json`. This preparation establishes the measured source/archive and JavaScript artifact results. It makes no physical-device, fresh live-card or new-native-binary certification claim.
+
+GitHub rejected a 119 MB combined proof document during source promotion. The exact new source patches now live in individually SHA-bound proof files, with original pins and byte replay preserved. Only this task's unpublished preparation steps were consolidated, retaining the actual reviewed release parents and a local historical anchor. A narrow test-orchestration allowance gives the full source-inventory deliberate-failure suite 120 seconds to finish. The underlying negative controls remain mandatory.
+
 ## Request and destination
 
 The owner requested preparing the current Self-Coach mobile implementation for TestFlight as 3.1. The owner immediately corrected the authorization and retains all native build and release operations. This task prepares iOS configuration, the release source package, local bundle and archive verification, a release-readiness report and an owner handoff in canonical DEV.
@@ -40,7 +56,7 @@ All 35 source inputs in the Phase 4 manifest match their tested bytes. Its 21 fo
 
 Evidence is retained in `/Users/dominic/.codex/work/testflight31-preparation-20261111`. Key files are `resolved-ios-config.json`, `preparation-contracts.log`, `eas-archive-final.log`, `compressed-package-verified.log`, `archive-byte-verification.json`, `compressed-byte-verification.json`, `runtime-input-manifest.json`, `ios-art-audit.log`, `route-audit.log`, `source-gate-final.json`, `backend-dependency.json` and `preparation-summary.json`.
 
-## Readiness remains blocked
+## Historical blockers from the first preparation
 
 ### Cumulative release reconciliation
 
@@ -65,7 +81,7 @@ The observed source is reported by the live service. [Live recognition health](h
 
 The Phase 4 report identifies two existing broader typography-check failures, missing font-license documents and an exact-source assertion for the earlier movement-title style. Full accepted/critical release qualification must resolve these findings. Live email, Stripe/webhook and owner support-notification delivery also require certification with the matching backend. Physical-device and spoken VoiceOver observations remain pending. Android stays deferred at the owner's request.
 
-## Owner build and release handoff
+## Historical owner-build handoff
 
 The selected profile is **testflight31**, with a **3.1.0** version/runtime and the live backend. The package is staged for review. The overall release status is **BLOCKED**, with the concrete blockers above.
 
