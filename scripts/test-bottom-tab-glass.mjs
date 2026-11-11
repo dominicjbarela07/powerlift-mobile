@@ -127,9 +127,13 @@ assert.match(
 );
 assert.match(
   tabRowControl,
-  /dockFrameHeight:\s*58[\s\S]*height:\s*SL_TAB_ROW_CONTROL\.dockFrameHeight \+ bottomInset[\s\S]*paddingBottom:\s*bottomInset \+ SLSpacing\.xs/,
-  'the existing bottom safe-area geometry must remain unchanged',
+  /dockFrameHeight:\s*58[\s\S]*height:\s*SL_TAB_ROW_CONTROL\.dockFrameHeight \+ shellHeight - SL_TAB_ROW_CONTROL\.shellHeight \+ bottomInset[\s\S]*paddingBottom:\s*bottomInset \+ SLSpacing\.xs/,
+  'the base dock and bottom safe area must retain the exact additional height needed by accessible tab labels',
 );
+assert.match(tabRowControl, /const itemHeight = labeled \? Math\.max\(SL_TAB_ROW_CONTROL\.itemSize,[\s\S]*SLTypographyRoles\.navigationLabel\.lineHeight\.large \* labelScale/,
+  'labeled Self-Coach tabs must grow with the actual bounded text size');
+assert.match(tabRowControl, /const shellHeight = Math\.max\(SL_TAB_ROW_CONTROL\.shellHeight, itemHeight \+ SL_TAB_ROW_CONTROL\.shellPadding \* 2\)/,
+  'the glass plane must contain the whole accessible tab item');
 const tabDockBlock = tabRowControl.match(/navigationDock:\s*\{[\s\S]*?\n  \},/)?.[0] ?? '';
 assert.equal(
   (tabDockBlock.match(/paddingHorizontal:\s*SLLayout\.screenGutter/g) ?? []).length,
@@ -143,7 +147,7 @@ assert.match(
 );
 assert.match(
   tabRowControl,
-  /viewportWidth - \(SLLayout\.screenGutter \* 2\)[\s\S]*\{ width: expandedWidth \}/,
+  /viewportWidth - \(SLLayout\.screenGutter \* 2\)[\s\S]*\{ width: expandedWidth, height: shellHeight \}/,
   'the normal app shell must occupy the persistent full-width navigation row',
 );
 assert.doesNotMatch(
